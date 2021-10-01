@@ -1,14 +1,28 @@
 services:
+  apache:
+    build:
+      context: docker/apache
+    container_name: tconcept_gpao_apache
+    depends_on:
+      - php
+    ports:
+      - 8000:80
+    restart: always
+    volumes:
+      - .:/var/www/html/TConcept-GPAO:cached
+      - ./docker/apache/vhosts:/etc/apache2/sites-enabled:delegated
   php:
     build:
       args:
         GROUP_ID: ${GROUP_ID}
         USER_ID: ${USER_ID}
         USER_NAME: ${USER_NAME}
-      context: docker
+      context: docker/php
     container_name: tconcept_gpao_php
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
-      - .:/var/www/html/TConcept-GPAO/docker:delegated
+      - ./docker/php:/var/www/html/TConcept-GPAO/docker/php:delegated
+      - ./var:/var/www/html/TConcept-GPAO/var:delegated
+      - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
 version: '3.1'
