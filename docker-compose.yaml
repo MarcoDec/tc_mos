@@ -1,0 +1,14 @@
+services:
+  php:
+    build:
+      args:
+        GROUP_ID: ${GROUP_ID}
+        USER_ID: ${USER_ID}
+        USER_NAME: ${USER_NAME}
+      context: docker
+    container_name: tconcept_gpao_php
+    restart: always
+    volumes:
+      - .:/var/www/html/TConcept-GPAO:cached
+      - .:/var/www/html/TConcept-GPAO/docker:delegated
+version: '3.1'
