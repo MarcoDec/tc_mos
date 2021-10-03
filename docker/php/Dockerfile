@@ -1,6 +1,7 @@
 FROM tconcept/tc_php:latest
 
-RUN ln -fs /var/www/html/TConcept-GPAO/.docker/php/php.ini /usr/local/etc/php/php.ini && \
+RUN ln -fs /var/www/html/TConcept-GPAO/docker/php/.zshrc-root ~/.zshrc && \
+    ln -fs /var/www/html/TConcept-GPAO/.docker/php/php.ini /usr/local/etc/php/php.ini && \
     ln -fs /var/www/html/TConcept-GPAO/.docker/php/php-fpm.conf /usr/local/etc/php/php-fpm.conf
 
 ARG GROUP_ID
@@ -20,6 +21,7 @@ WORKDIR /var/www/html
 
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh && \
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && \
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && \
+    ln -fs /var/www/html/TConcept-GPAO/docker/php/.zshrc ~/.zshrc
 
 WORKDIR /var/www/html/TConcept-GPAO
