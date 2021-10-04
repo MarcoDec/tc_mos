@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    paths:
+        - dev
+        - src
+        - utils
+    # If you're using PHP config files for Symfony 5.3+, you also need this for auto-loading of `Symfony\Config`:
+    scanDirectories:
+        - var/cache/dev/Symfony/Config
+    symfony:
+        # container_xml_path Symfony 5+
+        container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml

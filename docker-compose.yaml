@@ -1,16 +1,33 @@
 services:
   apache:
-    build:
-      context: docker/apache
     container_name: tconcept_gpao_apache
     depends_on:
       - php
+    image: tconcept/tc_apache:latest
     ports:
       - 8000:80
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
-      - ./docker/apache/vhosts:/etc/apache2/sites-enabled:delegated
+      - ./docker/apache:/etc/apache2/sites-enabled:delegated
+  mysql:
+    build:
+      args:
+        GROUP_ID: ${GROUP_ID}
+        USER_ID: ${USER_ID}
+        USER_NAME: ${USER_NAME}
+      context: docker/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: tconcept_gpao_mysql
+    environment:
+      MYSQL_DATABASE: sf4
+      MYSQL_PASSWORD: sf4
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: sf4
+    restart: always
+    volumes:
+      - ./docker/mysql/db:/var/lib/mysql:delegated
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf:delegated
   php:
     build:
       args:
@@ -19,10 +36,25 @@ services:
         USER_NAME: ${USER_NAME}
       context: docker/php
     container_name: tconcept_gpao_php
+    depends_on:
+      - mysql
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
       - ./docker/php:/var/www/html/TConcept-GPAO/docker/php:delegated
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
+  phpmyadmin:
+    container_name: tconcept_gpao_phpmyadmin
+    image: phpmyadmin/phpmyadmin:5.1.1
+    environment:
+      PMA_ARBITRARY: '1'
+      PMA_HOST: mysql
+    links:
+      - mysql:mysql
+    ports:
+      - 8080:80
+    restart: always
+    volumes:
+      - /sessions
 version: '3.1'
