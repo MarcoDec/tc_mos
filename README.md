@@ -30,6 +30,15 @@ Depuis la racine du projet, exécutez la commande `docker:recreate`.
 Exécutez la commande `docker:php` pour entrer dans le conteneur `tconcept_gpao_php`. Une fois dans le conteneur,
 exécutez la commande `composer install` pour installer les différentes dépendances.
 
+### Base de données
+
+Les raccourcis ne sont pas encore présents. Il faudra donc entrer pour le moment les commandes suivantes&nbsp;:
+
+```shell
+php bin/console doctrine:schema:update -f
+php bin/console doctrine:fixtures:load
+```
+
 ### PhpStorm
 
 Une fois le projet installé, vous pouvez l'ouvrir avec votre IDE. Attention, sous PhpStorm, l'installation de PHPStan
@@ -47,3 +56,13 @@ Différents conteneurs Docker sont utilisés pour les différents services du pr
   différentes commandes Symfony&nbsp;;
 - `tconcept_gpao_phpmyadmin`&nbsp;: conteneur responsable de phpMyAdmin, pour avoir une interface de la base de données,
   accessible grâce à [http://localhost:8080](http://localhost:8080).
+
+## Qualité du code
+
+### PHP Coding Standards Fixer
+
+Pour modifier le code quant aux standards définis pour le projet, utilisez la commande&nbsp;: `gpao:fix:code`.
+
+### PHPStan-GPAO/vendor/bin/phpstan analyse'
+
+Pour contrôler le code de manière statique, utilisez la commande `gpao:stan`.
