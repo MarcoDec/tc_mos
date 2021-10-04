@@ -17,7 +17,7 @@ final class OpenApiWrapper {
      * @param mixed[]                                    $responses
      * @param array{description: string, schema: string} $requestBody
      */
-    public function addPath(string $id, string $path, string $tag, array $responses, string $description, array $requestBody): self {
+    public function addPath(string $id, string $path, string $tag, array $responses, string $description, ?array $requestBody = null): self {
         $this->api->getPaths()->addPath($path, new PathItem(
             post: new Operation(
                 operationId: $id,
@@ -25,18 +25,18 @@ final class OpenApiWrapper {
                 responses: collect($responses)
                     ->map(static fn (array $response): Response => new Response(
                         description: $response['description'],
-                        content: new ArrayObject([
+                        content: isset($response['schema']) ? new ArrayObject([
                             'application/ld+json' => [
                                 'schema' => [
                                     '$ref' => "#/components/schemas/{$response['schema']['tag']}.jsonld-{$response['schema']['value']}"
                                 ]
                             ]
-                        ])
+                        ]) : null
                     ))
                     ->all(),
                 summary: $description,
                 description: $description,
-                requestBody: new RequestBody(
+                requestBody: !empty($requestBody) ? new RequestBody(
                     description: $requestBody['description'],
                     content: new ArrayObject([
                         'application/json' => [
@@ -45,7 +45,7 @@ final class OpenApiWrapper {
                             ]
                         ]
                     ])
-                )
+                ) : null
             )
         ));
         return $this;

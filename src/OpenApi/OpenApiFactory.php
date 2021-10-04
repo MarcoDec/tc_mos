@@ -39,6 +39,13 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 description: 'Connexion',
                 requestBody: ['description' => 'Identifiants', 'schema' => 'Auth']
             )
+            ->addPath(
+                id: 'logout',
+                path: '/api/logout',
+                tag: 'Auth',
+                responses: [204 => ['description' => 'Déconnexion réussie']],
+                description: 'Déconnexion'
+            )
             ->hidePaths()
             ->getApi();
     }

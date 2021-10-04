@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[
     ApiResource(
         collectionOperations: [],
-        itemOperations: ['get'],
+        itemOperations: ['get' => ['openapi_context' => ['summary' => 'hidden']]],
         normalizationContext: ['groups' => ['read:name', 'read:user'], 'openapi_definition_name' => 'Employee-read']
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
