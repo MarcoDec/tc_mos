@@ -76,7 +76,7 @@ class Roles {
 
     final public function removeRole(string $role): self {
         if (false !== $key = array_search($role, $this->roles, true)) {
-            array_splice($this->roles, $key, 1);
+            array_splice($this->roles, (int) $key, 1);
         }
         return $this;
     }

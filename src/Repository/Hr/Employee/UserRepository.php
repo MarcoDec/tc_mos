@@ -11,6 +11,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
+ * @extends ServiceEntityRepository<User>
+ *
  * @method null|User find($id, $lockMode = null, $lockVersion = null)
  * @method null|User findOneBy(array $criteria, array $orderBy = null)
  * @method User[]    findAll()

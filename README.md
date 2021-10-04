@@ -30,6 +30,12 @@ Depuis la racine du projet, exécutez la commande `docker:recreate`.
 Exécutez la commande `docker:php` pour entrer dans le conteneur `tconcept_gpao_php`. Une fois dans le conteneur,
 exécutez la commande `composer install` pour installer les différentes dépendances.
 
+### PhpStorm
+
+Une fois le projet installé, vous pouvez l'ouvrir avec votre IDE. Attention, sous PhpStorm, l'installation de PHPStan
+peut poser des problèmes d'indexation. Pour les résoudre, il faut ignorer les fichiers `.phar`&nbsp;:<br/>
+![PhpStorm_PHPStan.PNG](./doc/PhpStorm_PHPStan.PNG)
+
 ## Conteneurs
 
 Différents conteneurs Docker sont utilisés pour les différents services du projet&nbsp;:
