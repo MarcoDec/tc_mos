@@ -55,17 +55,9 @@ class Roles {
     public const ROLE_SELLING_WRITER = 'ROLE_SELLING_WRITER';
     // Utilisateur
     public const ROLE_USER = 'ROLE_USER';
-
     /** @var string[] */
     #[ORM\Column(type: 'simple_array')]
     private array $roles = [self::ROLE_USER];
-
-    /**
-     * @return string[]
-     */
-    final public function getRoles(): array {
-        return $this->roles;
-    }
 
     final public function addRole(string $role): self {
         if (!in_array($role, $this->roles)) {
@@ -73,6 +65,13 @@ class Roles {
             sort($this->roles);
         }
         return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    final public function getRoles(): array {
+        return $this->roles;
     }
 
     final public function removeRole(string $role): self {

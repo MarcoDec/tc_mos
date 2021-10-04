@@ -15,11 +15,11 @@ abstract class Entity {
     ]
     private int $id;
 
-    final public function isDeleted(): bool {
-        return $this->deleted;
-    }
-
     final public function getId(): int {
         return $this->id;
+    }
+
+    final public function isDeleted(): bool {
+        return $this->deleted;
     }
 }

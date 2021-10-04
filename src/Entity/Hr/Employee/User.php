@@ -10,46 +10,16 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\MappedSuperclass(repositoryClass: UserRepository::class)]
-abstract class User extends Entity implements UserInterface, PasswordAuthenticatedUserInterface {
-    #[ORM\Column(length: 180, unique: true)]
-    private string $username;
-    #[ORM\Embedded(class: Roles::class)]
-    private Roles $roles;
+abstract class User extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     #[ORM\Column]
     private string $password;
+    #[ORM\Embedded(class: Roles::class)]
+    private Roles $roles;
+    #[ORM\Column(length: 180, unique: true)]
+    private string $username;
 
     public function __construct() {
         $this->roles = new Roles();
-    }
-
-    /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
-    public function getUsername(): string {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self {
-        $this->username = $username;
-        return $this;
-    }
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string {
-        return $this->username;
-    }
-
-    /**
-     * @return string[]
-     * @see UserInterface
-     *
-     */
-    public function getRoles(): array {
-        return $this->roles->getRoles();
     }
 
     final public function addRole(string $role): self {
@@ -57,9 +27,12 @@ abstract class User extends Entity implements UserInterface, PasswordAuthenticat
         return $this;
     }
 
-    final public function removeRole(string $role): self {
-        $this->roles->removeRole($role);
-        return $this;
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     /**
@@ -69,9 +42,13 @@ abstract class User extends Entity implements UserInterface, PasswordAuthenticat
         return $this->password;
     }
 
-    public function setPassword(string $password): self {
-        $this->password = $password;
-        return $this;
+    /**
+     * @return string[]
+     *
+     * @see UserInterface
+     */
+    public function getRoles(): array {
+        return $this->roles->getRoles();
     }
 
     /**
@@ -85,10 +62,33 @@ abstract class User extends Entity implements UserInterface, PasswordAuthenticat
     }
 
     /**
+     * A visual identifier that represents this user.
+     *
      * @see UserInterface
      */
-    public function eraseCredentials() {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+    public function getUserIdentifier(): string {
+        return $this->username;
+    }
+
+    /**
+     * @deprecated since Symfony 5.3, use getUserIdentifier instead
+     */
+    public function getUsername(): string {
+        return $this->username;
+    }
+
+    final public function removeRole(string $role): self {
+        $this->roles->removeRole($role);
+        return $this;
+    }
+
+    public function setPassword(string $password): self {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function setUsername(string $username): self {
+        $this->username = $username;
+        return $this;
     }
 }

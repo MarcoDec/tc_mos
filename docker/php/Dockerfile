@@ -22,6 +22,7 @@ WORKDIR /var/www/html
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh && \
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting && \
     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && \
-    ln -fs /var/www/html/TConcept-GPAO/docker/php/.zshrc ~/.zshrc
+    ln -fs /var/www/html/TConcept-GPAO/docker/php/.zshrc ~/.zshrc && \
+    ln -fs /var/www/html/TConcept-GPAO/docker/php/.bash_aliases ~/.bash_aliases
 
 WORKDIR /var/www/html/TConcept-GPAO
