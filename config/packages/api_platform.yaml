@@ -1,7 +1,9 @@
 api_platform:
+  enable_re_doc: false
   mapping:
     paths: [ '%kernel.project_dir%/src/Entity' ]
   patch_formats:
-    json: [ 'application/merge-patch+json' ]
+    jsonld: [ 'application/ld+json' ]
+    json: [ 'application/json' ]
   swagger:
     versions: [ 3 ]

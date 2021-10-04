@@ -18,8 +18,18 @@ services:
       - '../src/DependencyInjection/'
       - '../src/Entity/'
       - '../src/Kernel.php'
+      - '../src/OpenApi/OpenApiWrapper.php'
       - '../src/Tests/'
     resource: '../src/'
 
+  App\Controller\:
+    resource: ../src/Controller
+    tags: [ controller.service_arguments ]
+
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
+
+  App\OpenApi\OpenApiFactory:
+    arguments: [ '@App\OpenApi\OpenApiFactory.inner' ]
+    autoconfigure: false
+    decorates: api_platform.openapi.factory

@@ -3,6 +3,7 @@
 namespace App\Entity\Embeddable\Hr\Employee;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class Roles {
@@ -56,7 +57,10 @@ class Roles {
     // Utilisateur
     public const ROLE_USER = 'ROLE_USER';
     /** @var string[] */
-    #[ORM\Column(type: 'simple_array')]
+    #[
+        ORM\Column(type: 'simple_array'),
+        Serializer\Groups(['read:user'])
+    ]
     private array $roles = [self::ROLE_USER];
 
     final public function addRole(string $role): self {

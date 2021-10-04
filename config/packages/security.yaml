@@ -13,6 +13,8 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     main:
+      json_login:
+        check_path: login
       lazy: true
       provider: app_user_provider
 
@@ -25,13 +27,11 @@ security:
   # https://symfony.com/doc/current/security.html#c-hashing-passwords
   password_hashers:
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    App\Entity\Hr\Employee\User:
+    App\Entity\Security\User:
       algorithm: auto
 
   # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
   providers:
     # used to reload user from session & other features (e.g. switch_user)
     app_user_provider:
-      entity:
-        class: App\Entity\Hr\Employee\User
-        property: username
+      id: App\Repository\Security\UserRepository
