@@ -19,17 +19,14 @@ abstract class User extends Entity implements PasswordAuthenticatedUserInterface
         Serializer\Groups(['read:user'])
     ]
     private Roles $embRoles;
-
     #[ORM\Column]
     private string $password;
-
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 180, unique: true),
         Serializer\Groups(['read:user'])
     ]
     private string $username;
-
     #[Pure]
     final public function __construct() {
         $this->embRoles = new Roles();
