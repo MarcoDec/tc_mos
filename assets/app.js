@@ -1,3 +1,5 @@
-import "./app.css";
+import './app.css'
+import App from './App.vue'
+import {createApp} from 'vue'
 
-console.debug('toto')
+createApp(App).mount('#vue')

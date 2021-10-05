@@ -1,6 +1,7 @@
 import {resolve} from 'path'
 import {existsSync, unlinkSync} from 'fs'
 import {defineConfig} from 'vite'
+import vue from '@vitejs/plugin-vue'
 
 /* if you're using React */
 // import reactRefresh from "@vitejs/plugin-react-refresh";
@@ -34,6 +35,7 @@ export default defineConfig({
     plugins: [
         /* reactRefresh(), // if you're using React */
         symfonyPlugin,
+        vue()
     ],
     server: {
         watch: {
