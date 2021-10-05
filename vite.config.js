@@ -2,6 +2,7 @@ import {resolve} from 'path'
 import {existsSync, unlinkSync} from 'fs'
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
+import checker from 'vite-plugin-checker'
 
 /* if you're using React */
 // import reactRefresh from "@vitejs/plugin-react-refresh";
@@ -35,7 +36,8 @@ export default defineConfig({
     plugins: [
         /* reactRefresh(), // if you're using React */
         symfonyPlugin,
-        vue()
+        vue(),
+        checker({typescript: true, vueTsc: true})
     ],
     server: {
         watch: {
@@ -56,7 +58,7 @@ export default defineConfig({
         assetsDir: '',
         outDir: '../public/build/',
         rollupOptions: {
-            input: ['./assets/app.js'],
+            input: ['./assets/app.ts'],
         },
     },
 })
