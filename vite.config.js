@@ -37,7 +37,11 @@ export default defineConfig({
         /* reactRefresh(), // if you're using React */
         symfonyPlugin,
         vue(),
-        checker({typescript: true, vueTsc: true})
+        checker({
+            eslint: {extensions: ['.ts', '.vue'], files: ['./assets']},
+            typescript: true,
+            vueTsc: true
+        })
     ],
     server: {
         watch: {
