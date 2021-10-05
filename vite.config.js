@@ -1,6 +1,5 @@
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
-import checker from 'vite-plugin-checker'
 
 export default defineConfig({
     base: '/build/',
@@ -13,10 +12,7 @@ export default defineConfig({
             output: {manualChunks: undefined}
         }
     },
-    plugins: [
-        checker({vueTsc: true}),
-        vue()
-    ],
+    plugins: [vue()],
     server: {port: 8001},
     root: './assets'
 })
