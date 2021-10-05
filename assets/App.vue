@@ -1,9 +1,6 @@
-<script lang="ts">
-    import {defineComponent} from 'vue'
-
-    export default defineComponent({})
+<script lang="ts" setup>
 </script>
 
 <template>
-    <div>Hello</div>
+    <div>Hello les gens !</div>
 </template>

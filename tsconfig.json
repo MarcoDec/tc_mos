@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext",
+    "useDefineForClassFields": true
+  },
+  "exclude": [
+    "bin",
+    "config",
+    "dev",
+    "doc",
+    "docker",
+    "migrations",
+    "node_modules",
+    "public",
+    "src",
+    "templates",
+    "utils",
+    "var",
+    "vendor",
+    ".bash_aliases",
+    ".env",
+    ".git",
+    ".gitignore",
+    ".idea",
+    ".php-cs-fixer.dist.php",
+    "composer.json",
+    "composer.lock",
+    "docker-compose.yaml",
+    "package.json",
+    "phpstan.neon.dist",
+    "README.md",
+    "symfony.lock",
+    "tsconfig.json",
+    "vite.config.js",
+    "yarn.lock"
+  ]
+}
