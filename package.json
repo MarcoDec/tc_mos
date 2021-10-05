@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "vite": "^2.4"
+  },
+  "license": "proprietary",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --emptyOutDir && echo '*\n!.gitignore' > public/build/.gitignore",
+    "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
+    "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"
+  }
+}

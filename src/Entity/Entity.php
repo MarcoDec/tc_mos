@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class Entity {
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $deleted = false;
+
     #[
         ORM\Column(type: 'integer', options: ['unsigned' => true]),
         ORM\GeneratedValue,

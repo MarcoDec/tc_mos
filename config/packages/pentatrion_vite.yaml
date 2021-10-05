@@ -1,0 +1,10 @@
+# config/packages/pentatrion_vite.yaml
+pentatrion_vite:
+  # Base public path when served in development or production
+  base: /build/
+
+  # Server options
+  server:
+    host: localhost
+    port: 8001
+    https: false
