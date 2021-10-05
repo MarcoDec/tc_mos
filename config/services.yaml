@@ -20,6 +20,8 @@ services:
       - '../src/Kernel.php'
       - '../src/OpenApi/OpenApiWrapper.php'
       - '../src/Tests/'
+      - '../src/Twig/ViteFunction.php'
+      - '../src/Twig/Exception/'
     resource: '../src/'
 
   App\Controller\:
@@ -39,3 +41,8 @@ services:
     arguments: [ '@App\OpenApi\OpenApiFactory.inner' ]
     autoconfigure: false
     decorates: api_platform.openapi.factory
+
+  App\Twig\ViteExtension:
+    arguments:
+      $manifest: '%kernel.project_dir%/public/build/manifest.json'
+      $outDir: build

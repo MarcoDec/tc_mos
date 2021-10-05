@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "vue": "^3.2.19"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.9.2",
+    "vite": "^2.6.2"
+  },
+  "name": "TConcept-GPAO",
+  "private": true,
+  "repository": "https://github.com/Florent8/TConcept-GPAO.git",
+  "scripts": {
+    "build": "vite build --emptyOutDir && echo '*\\n!.gitignore' > public/build/.gitignore",
+    "dev": "vite",
+    "postinstall": "echo '*\\n!.gitignore' > node_modules/.gitignore",
+    "postuninstall": "echo '*\\n!.gitignore' > node_modules/.gitignore",
+    "postversion": "echo '*\\n!.gitignore' > node_modules/.gitignore"
+  },
+  "version": "4.0.0"
+}
