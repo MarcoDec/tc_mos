@@ -1,19 +1,21 @@
 module.exports = {
-    root: true,
     env: {
         browser: true,
         es2021: true,
         node: true
     },
-    /* extends: [
-        'plugin:vue/vue3-recommended',
-        'eslint:recommended',
-        '@vue/typescript/recommended'
-    ], */
+    extends: [
+        // 'plugin:vue/vue3-recommended',
+        // 'eslint:recommended',
+        // '@vue/typescript/recommended',
+        // https://eslint.vuejs.org/rules/
+        'plugin:vue/vue3-recommended'
+    ],
+    overrides: [{files: ['*.vue'], rules: {indent: 'off'}}],
     parserOptions: {
         ecmaVersion: 2021
     },
-    // plugins: [],
+    root: true,
     rules: {
         // https://eslint.org/docs/rules/
         // Possible Errors
@@ -147,7 +149,7 @@ module.exports = {
         'eol-last': 'error',
         'func-call-spacing': 'error',
         'func-name-matching': 'error',
-        'func-style': ['error', 'declaration', {'allowArrowFunctions': true}],
+        'func-style': ['error', 'declaration', {allowArrowFunctions: true}],
         'function-call-argument-newline': ['error', 'consistent'],
         'function-paren-newline': ['error', 'consistent'],
         'indent': ['error', 4],
@@ -185,7 +187,7 @@ module.exports = {
         'switch-colon-spacing': 'error',
         // ECMAScript 6
         'arrow-body-style': 'error',
-        'arrow-parens': ["error", "as-needed"],
+        'arrow-parens': ['error', 'as-needed'],
         'arrow-spacing': 'error',
         'constructor-super': 'error',
         'no-class-assign': 'error',
@@ -206,6 +208,115 @@ module.exports = {
         'prefer-template': 'error',
         'rest-spread-spacing': 'error',
         'sort-imports': 'error',
-        'template-curly-spacing': 'error'
+        'template-curly-spacing': 'error',
+        // https://eslint.vuejs.org/rules/
+        // Priority B: Strongly Recommended (Improving Readability)
+        'vue/html-closing-bracket-newline': ['error', {
+            multiline: 'never',
+            singleline: 'never'
+        }],
+        'vue/html-closing-bracket-spacing': ['error', {
+            endTag: 'never',
+            selfClosingTag: 'never',
+            startTag: 'never'
+        }],
+        'vue/html-indent': ['error', 4, {
+            alignAttributesVertically: true,
+            attribute: 1,
+            baseIndent: 1,
+            closeBracket: 0
+        }],
+        'vue/html-self-closing': ['error', {
+            html: {
+                component: 'always',
+                normal: 'always',
+                void: 'always'
+            },
+            math: 'always',
+            svg: 'always'
+        }],
+        'vue/max-attributes-per-line': 'off',
+        // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
+        'vue/component-tags-order': ['error', {
+            'order': ['script', 'template', 'style']
+        }],
+        // Uncategorized
+        'vue/block-lang': ['error', {script: {lang: 'ts'}}],
+        'vue/block-tag-newline': ['error', {
+            maxEmptyLines: 0,
+            multiline: 'always',
+            singleline: 'always'
+        }],
+        'vue/component-api-style': ['error', ['script-setup']],
+        'vue/component-name-in-template-casing': ['error', 'PascalCase'],
+        'vue/custom-event-name-casing': ['error', 'camelCase'],
+        'vue/match-component-file-name': ['error', {
+            extensions: ['jsx', 'ts', 'vue'],
+            shouldMatchCase: false
+        }],
+        'vue/next-tick-style': ['error', 'promise'],
+        'vue/no-boolean-default': ['error'],
+        'vue/no-deprecated-v-is': ['error'],
+        'vue/no-empty-component-block': ['error'],
+        'vue/no-export-in-script-setup': ['error'],
+        'vue/no-invalid-model-keys': ['error'],
+        'vue/no-multiple-objects-in-class': ['error'],
+        'vue/no-potential-component-option-typo': ['error', {presets: ['all']}],
+        'vue/no-reserved-component-names': ['error', {
+            disallowVue3BuiltInComponents: true,
+            disallowVueBuiltInComponents: true
+        }],
+        'vue/no-static-inline-styles': ['error'],
+        'vue/no-template-target-blank': ['error'],
+        'vue/no-this-in-before-route-enter': ['error'],
+        // 'vue/no-undef-properties': ['error'],
+        'vue/no-unused-properties': ['error'],
+        'vue/no-unused-refs': ['error'],
+        'vue/no-use-computed-property-like-method': ['error'],
+        'vue/no-useless-mustaches': ['error'],
+        'vue/no-useless-template-attributes': ['error'],
+        'vue/no-useless-v-bind': ['error'],
+        'vue/no-v-text': ['error'],
+        'vue/padding-line-between-blocks': ['error', 'always'],
+        'vue/require-emit-validator': ['error'],
+        'vue/script-indent': ['error', 4, {baseIndent: 1, switchCase: 1}],
+        'vue/static-class-names-order': ['error'],
+        'vue/v-for-delimiter-style': ['error'],
+        'vue/v-on-event-hyphenation': ['error', 'always', {autofix: true}],
+        'vue/v-on-function-call': ['error'],
+        'vue/valid-define-emits': ['error'],
+        'vue/valid-define-props': ['error'],
+        'vue/valid-next-tick': ['error'],
+        'vue/valid-v-memo': ['error'],
+        // Extension Rules
+        'vue/array-bracket-newline': ['error', 'consistent'],
+        'vue/array-bracket-spacing': 'error',
+        'vue/arrow-spacing': 'error',
+        'vue/block-spacing': 'error',
+        'vue/brace-style': 'error',
+        'vue/camelcase': 'error',
+        'vue/comma-dangle': 'error',
+        'vue/comma-spacing': 'error',
+        'vue/comma-style': 'error',
+        'vue/dot-location': ['error', 'property'],
+        'vue/dot-notation': 'error',
+        'vue/eqeqeq': 'error',
+        'vue/func-call-spacing': 'error',
+        'vue/key-spacing': 'error',
+        'vue/keyword-spacing': 'error',
+        'vue/no-constant-condition': 'error',
+        'vue/no-empty-pattern': 'error',
+        'vue/no-extra-parens': 'error',
+        'vue/no-irregular-whitespace': 'error',
+        'vue/no-sparse-arrays': 'error',
+        'vue/no-useless-concat': 'error',
+        'vue/object-curly-newline': ['error', {consistent: true}],
+        'vue/object-curly-spacing': 'error',
+        'vue/operator-linebreak': ['error', 'before'],
+        'vue/prefer-template': 'error',
+        'vue/space-in-parens': 'error',
+        'vue/space-infix-ops': 'error',
+        'vue/space-unary-ops': 'error',
+        'vue/template-curly-spacing': 'error'
     }
 }

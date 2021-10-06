@@ -19,7 +19,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build --emptyOutDir && echo '*\n!.gitignore' > public/build/.gitignore",
+    "build": "vue-tsc --noEmit && vite build && echo '*\n!.gitignore' > public/build/.gitignore",
     "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
     "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"
   }
