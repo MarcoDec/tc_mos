@@ -1,7 +1,7 @@
-<script setup lang="ts">
-    const a = 'toto'
+<script lang="ts" setup>
+    const a = 'gens'
 </script>
 
 <template>
-    <div>Hello les gens</div>
+    <div>Hello les {{ a }}</div>
 </template>

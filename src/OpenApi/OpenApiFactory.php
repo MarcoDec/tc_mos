@@ -2,12 +2,11 @@
 
 namespace App\OpenApi;
 
-use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\Core\OpenApi\OpenApi;
 
 final class OpenApiFactory implements OpenApiFactoryInterface {
-    public function __construct(private OpenApiFactoryInterface $decorated, private SchemaFactoryInterface $schema) {
+    public function __construct(private OpenApiFactoryInterface $decorated) {
     }
 
     /**

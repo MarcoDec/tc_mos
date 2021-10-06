@@ -1,0 +1,12 @@
+monolog:
+  handlers:
+    main:
+      action_level: error
+      channels: [ '!event' ]
+      excluded_http_codes: [ 404, 405 ]
+      handler: nested
+      type: fingers_crossed
+    nested:
+      level: debug
+      path: '%kernel.logs_dir%/%kernel.environment%.log'
+      type: stream

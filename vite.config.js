@@ -38,7 +38,7 @@ export default defineConfig({
         symfonyPlugin,
         vue(),
         checker({
-            eslint: {extensions: ['.ts', '.vue'], files: ['./assets']},
+            eslint: {extensions: ['.ts', '.vue'], files: [resolve('assets')]},
             typescript: true,
             vueTsc: true
         })

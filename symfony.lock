@@ -13,9 +13,6 @@
             "src/Entity/.gitignore"
         ]
     },
-    "composer/package-versions-deprecated": {
-        "version": "1.11.99.4"
-    },
     "composer/semver": {
         "version": "3.2.5"
     },
@@ -44,10 +41,10 @@
         "version": "3.1.2"
     },
     "doctrine/data-fixtures": {
-        "version": "1.5.0"
+        "version": "1.5.1"
     },
     "doctrine/dbal": {
-        "version": "2.13.3"
+        "version": "2.13.4"
     },
     "doctrine/deprecations": {
         "version": "v0.5.3"
@@ -109,7 +106,7 @@
         "version": "3.2.1"
     },
     "doctrine/orm": {
-        "version": "2.9.5"
+        "version": "2.10.1"
     },
     "doctrine/persistence": {
         "version": "2.2.2"
@@ -140,6 +137,9 @@
     },
     "laminas/laminas-code": {
         "version": "4.4.3"
+    },
+    "monolog/monolog": {
+        "version": "2.3.5"
     },
     "nelmio/cors-bundle": {
         "version": "1.5",
@@ -175,7 +175,7 @@
         "version": "5.2.2"
     },
     "phpdocumentor/type-resolver": {
-        "version": "1.5.0"
+        "version": "1.5.1"
     },
     "phpstan/extension-installer": {
         "version": "1.1.0"
@@ -223,6 +223,18 @@
         },
         "files": [
             "bin/console"
+        ]
+    },
+    "symfony/debug-bundle": {
+        "version": "4.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.1",
+            "ref": "0ce7a032d344fb7b661cd25d31914cd703ad445b"
+        },
+        "files": [
+            "config/packages/dev/debug.yaml"
         ]
     },
     "symfony/dependency-injection": {
@@ -303,6 +315,24 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/monolog-bridge": {
+        "version": "v5.3.7"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.7",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.7",
+            "ref": "a7bace7dbc5a7ed5608dbe2165e0774c87175fe6"
+        },
+        "files": [
+            "config/packages/dev/monolog.yaml",
+            "config/packages/prod/deprecations.yaml",
+            "config/packages/prod/monolog.yaml",
+            "config/packages/test/monolog.yaml"
+        ]
     },
     "symfony/options-resolver": {
         "version": "v5.3.7"
