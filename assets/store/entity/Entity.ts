@@ -4,7 +4,7 @@ import type {State} from './Property'
 export default abstract class Entity {
     private readonly properties: readonly Property[]
 
-    protected constructor(properties: readonly Property[] = []) {
+    protected constructor(properties: readonly Property[]) {
         this.properties = [
             new Property('id', 'number'),
             new Property('deleted', 'boolean')

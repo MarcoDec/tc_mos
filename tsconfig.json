@@ -10,8 +10,10 @@
     "strict": true,
     "target": "esnext",
     "typeRoots": [
-      "assets/types",
-      "node_modules/@types"
+      "assets/types"
+    ],
+    "types": [
+      "node"
     ]
   },
   "exclude": [

@@ -1,4 +1,4 @@
-export type DefaultValue = boolean | number | string | null
+type DefaultValue = boolean | number | string | null
 export type State = Record<string, DefaultValue>
 type Type = 'boolean' | 'number' | 'string'
 

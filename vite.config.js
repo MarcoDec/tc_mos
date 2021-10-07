@@ -3,6 +3,7 @@ import {defineConfig} from 'vite'
 import {resolve} from 'path'
 import checker from 'vite-plugin-checker'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 
 /* if you're using React */
 // import reactRefresh from "@vitejs/plugin-react-refresh";
@@ -47,6 +48,7 @@ export default defineConfig({
         /* reactRefresh(), // if you're using React */
         symfonyPlugin,
         vue(),
+        vueJsx(),
         checker({
             eslint: {extensions: ['.ts', '.vue'], files: [resolve('assets')]},
             typescript: true,
