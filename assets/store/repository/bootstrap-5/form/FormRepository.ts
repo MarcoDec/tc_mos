@@ -10,6 +10,6 @@ export function hasForm(form: string): ComputedRef<boolean> {
 }
 
 export function registerForm(form: string, fields: Field[]): void {
-    registerFields(form, fields)
     useStore().registerModule(form, new Form(form, fields))
+    registerFields(fields)
 }
