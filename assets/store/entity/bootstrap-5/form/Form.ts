@@ -4,7 +4,7 @@ import Property from '../../Property'
 
 export default class Form extends Module {
     public constructor(id: string, fields: Field[]) {
-        super(id, [
+        super([
             new Property('fields', 'Field', fields.map(({moduleName}) => moduleName)),
             new Property('id', 'string', id)
         ])

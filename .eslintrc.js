@@ -118,6 +118,7 @@ module.exports = {
         'no-shadow-restricted-names': 'error',
         'no-undef': 'error',
         'no-undef-init': 'error',
+        'no-undefined': 'error',
         // Stylistic Issues
         'array-bracket-newline': ['error', 'consistent'],
         'array-bracket-spacing': 'error',
@@ -335,7 +336,7 @@ module.exports = {
         '@typescript-eslint/indent': ['error', 4],
         '@typescript-eslint/init-declarations': 'error',
         '@typescript-eslint/keyword-spacing': 'error',
-        '@typescript-eslint/lines-between-class-members': ['error', {exceptAfterSingleLine: true}],
+        '@typescript-eslint/lines-between-class-members': 'error',
         '@typescript-eslint/no-array-constructor': 'error',
         '@typescript-eslint/no-dupe-class-members': 'error',
         '@typescript-eslint/no-duplicate-imports': 'error',
