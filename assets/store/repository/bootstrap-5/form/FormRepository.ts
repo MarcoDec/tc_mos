@@ -4,7 +4,7 @@ import ModuleRepository from '../../ModuleRepository'
 import fieldRepository from './FieldRepository'
 import {useStore} from 'vuex'
 
-class FormRepository extends ModuleRepository {
+class FormRepository extends ModuleRepository<Form> {
     public constructor() {
         super('forms')
     }
