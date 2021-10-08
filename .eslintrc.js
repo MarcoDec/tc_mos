@@ -336,7 +336,7 @@ module.exports = {
         '@typescript-eslint/indent': ['error', 4],
         '@typescript-eslint/init-declarations': 'error',
         '@typescript-eslint/keyword-spacing': 'error',
-        '@typescript-eslint/lines-between-class-members': 'error',
+        '@typescript-eslint/lines-between-class-members': ['error', 'always', {exceptAfterSingleLine: true}],
         '@typescript-eslint/no-array-constructor': 'error',
         '@typescript-eslint/no-dupe-class-members': 'error',
         '@typescript-eslint/no-duplicate-imports': 'error',

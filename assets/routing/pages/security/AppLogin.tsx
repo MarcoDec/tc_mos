@@ -4,5 +4,5 @@ import Field from '../../../store/entity/bootstrap-5/form/Field'
 import type {VNode} from '@vue/runtime-core'
 
 export default (): VNode => <AppCard>
-    <AppForm fields={[new Field('username')]}/>
+    <AppForm fields={[new Field('login', 'username')]} id="login"/>
 </AppCard>

@@ -1,15 +1,25 @@
-import type {ComputedRef} from 'vue'
 import type Field from '../../../entity/bootstrap-5/form/Field'
 import Form from '../../../entity/bootstrap-5/form/Form'
-import {computed} from 'vue'
-import {registerFields} from './FieldRepository'
+import ModuleRepository from '../../ModuleRepository'
+import fieldRepository from './FieldRepository'
 import {useStore} from 'vuex'
 
-export function hasForm(form: string): ComputedRef<boolean> {
-    return computed(() => useStore().hasModule(form))
+class FormRepository extends ModuleRepository {
+    public constructor() {
+        super('forms')
+    }
+
+    public createForm(form: string, fields: Field[]): void {
+        this.createFormModule()
+        this.register(new Form(form))
+        fieldRepository.registerAll(fields)
+    }
+
+    private createFormModule(): void {
+        const store = useStore()
+        if (!store.hasModule(this.name))
+            store.registerModule(this.name, {})
+    }
 }
 
-export function registerForm(form: string, fields: Field[]): void {
-    registerFields(form, fields)
-    useStore().registerModule(form, new Form(form, fields))
-}
+export default new FormRepository()

@@ -2,7 +2,10 @@ import type Property from './Property'
 import type {State} from './Property'
 
 export default abstract class Module {
-    protected constructor(private readonly properties: readonly Property[]) {
+    protected constructor(
+        public readonly module: string,
+        private readonly properties: readonly Property[]
+    ) {
     }
 
     public get state() {

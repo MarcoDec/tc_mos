@@ -1,12 +1,9 @@
-import type Field from '../../../entity/bootstrap-5/form/Field'
-import {useStore} from 'vuex'
+import ModuleRepository from '../../ModuleRepository'
 
-function registerField(form: string, field: Field): void {
-    field.moduleName = `${form}[${field.moduleName}]`
-    useStore().registerModule(field.moduleName, field)
+class FieldRepository extends ModuleRepository {
+    public constructor() {
+        super('fields')
+    }
 }
 
-export function registerFields(form: string, fields: Field[]): void {
-    for (const field of fields)
-        registerField(form, field)
-}
+export default new FieldRepository()
