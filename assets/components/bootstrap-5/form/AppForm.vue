@@ -1,29 +1,24 @@
 <script lang="ts" setup>
-    import {computed, defineProps, onBeforeMount} from 'vue'
-    import Field from '../../../store/entity/bootstrap-5/form/Field'
+    import {findFields, registerForm} from '../../../store/bootstrap-5/Form'
+    import {Field} from '../../../store/bootstrap-5/Field'
     import type {PropType} from 'vue'
-    import formRepository from '../../../store/repository/bootstrap-5/form/FormRepository'
+    import {defineProps} from 'vue'
 
     const props = defineProps({
         fields: {
             required: true,
             type: Array as PropType<Field[]>,
-            validator(fields: unknown[]): boolean {
-                return fields.every(field => field instanceof Field)
-            }
+            validator: (value: unknown[]): boolean => value.every(field => field instanceof Field)
         },
         id: {required: true, type: String as PropType<string>}
     })
 
-    let form = null
+    registerForm(props.id, props.fields)
 
-    onBeforeMount(() => {
-        formRepository.createForm(props.id, props.fields)
-        form = computed(() => formRepository.find(props.id))
-    })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const storedFields = findFields(props.id)
 </script>
 
 <template>
-    {{ form?.module }}
     <form :id="id"/>
 </template>
