@@ -1,8 +1,8 @@
-import {registerModule, store} from '../store'
-import type {ComputedRef} from 'vue'
 import type {Field} from './Field'
-import {computed} from 'vue'
+import type {Ref} from 'vue'
 import {registerFields} from './Field'
+import {registerModule} from '../store'
+import {useNamespacedState} from 'vuex-composition-helpers'
 
 const MODULE_NAME = 'forms'
 
@@ -14,8 +14,8 @@ class Form {
     }
 }
 
-export function findFields(id: string): ComputedRef<string[]> {
-    return computed((): string[] => store.state[`${MODULE_NAME}/${id}/fields`])
+export function findFields(id: string): Ref<readonly string[]> {
+    return useNamespacedState<Form>(`${MODULE_NAME}/${id}`, ['fields']).fields
 }
 
 export function registerForm(id: string, fields: Field[]): void {

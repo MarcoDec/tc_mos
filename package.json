@@ -3,7 +3,8 @@
     "bootstrap": "^5.1.2",
     "vue": "^3.2.19",
     "vue-router": "^4.0.11",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "vuex-composition-helpers": "^2.0.0"
   },
   "devDependencies": {
     "@babel/types": "^7.15.6",

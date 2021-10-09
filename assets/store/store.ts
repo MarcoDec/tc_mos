@@ -7,6 +7,7 @@ type Unkown = Record<string, any>
 export const store = createStore<Unkown>({strict: process.env.NODE_ENV !== 'production'})
 
 function register(path: string[] | string, module: Module<Unkown, Unkown>): void {
+    module.namespaced = true
     if (Array.isArray(path)) {
         if (!store.hasModule(path))
             store.registerModule(path, module)
