@@ -5,13 +5,13 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            component: async(): Promise<RouteComponent> => import('./pages/AppHome'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppHome'),
             meta: {requiresAuth: true},
             name: 'home',
             path: '/'
         },
         {
-            component: async(): Promise<RouteComponent> => import('./pages/security/AppLogin'),
+            component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin'),
             name: 'login',
             path: '/login'
         }

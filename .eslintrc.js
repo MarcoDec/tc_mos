@@ -216,7 +216,10 @@ module.exports = {
             singleline: 'always'
         }],
         'vue/component-api-style': ['error', ['script-setup']],
-        'vue/component-name-in-template-casing': ['error', 'PascalCase'],
+        'vue/component-name-in-template-casing': ['error', 'PascalCase', {
+            ignores: ['component'],
+            registeredComponentsOnly: false
+        }],
         'vue/custom-event-name-casing': ['error', 'camelCase'],
         'vue/match-component-file-name': ['error', {
             extensions: ['jsx', 'ts', 'vue'],
@@ -301,6 +304,7 @@ module.exports = {
         '@typescript-eslint/no-confusing-void-expression': 'error',
         '@typescript-eslint/no-extraneous-class': 'error',
         '@typescript-eslint/no-implicit-any-catch': 'error',
+        '@typescript-eslint/no-inferrable-types': ['error', {ignoreProperties: true}],
         '@typescript-eslint/no-invalid-void-type': 'error',
         '@typescript-eslint/no-meaningless-void-operator': 'error',
         '@typescript-eslint/no-non-null-asserted-nullish-coalescing': 'error',
@@ -357,7 +361,11 @@ module.exports = {
         '@typescript-eslint/quotes': ['error', 'single'],
         '@typescript-eslint/return-await': 'error',
         '@typescript-eslint/semi': ['error', 'never'],
-        '@typescript-eslint/space-before-function-paren': ['error', 'never'],
+        '@typescript-eslint/space-before-function-paren': ['error', {
+            anonymous: 'always',
+            asyncArrow: 'always',
+            named: 'never'
+        }],
         '@typescript-eslint/space-infix-ops': 'error'
     }
 }
