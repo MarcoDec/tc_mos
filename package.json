@@ -1,7 +1,11 @@
 {
   "dependencies": {
+    "@types/bootstrap": "^5.1.6",
+    "axios": "^0.22.0",
     "bootstrap": "^5.1.2",
+    "mitt": "^3.0.0",
     "vue": "^3.2.19",
+    "vue-axios": "^3.3.7",
     "vue-router": "^4.0.11",
     "vuex": "^4.0.2",
     "vuex-composition-helpers": "^2.0.0"

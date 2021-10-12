@@ -9,6 +9,7 @@ export default function AppLogin(): VNode {
             resolveComponent('AppCard'),
             {class: 'bg-blue col'},
             () => h(resolveComponent('AppForm'), {
+                action: '/api/login',
                 fields: [
                     new Field('Identifiant', 'username'),
                     new Field('Mot de passe', 'password', 'password')
