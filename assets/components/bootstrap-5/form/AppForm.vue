@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-    import {defineProps, inject, withDefaults} from 'vue'
+    import type {Axios, AxiosResponse} from 'axios'
+    import {defineEmits, defineProps, inject, withDefaults} from 'vue'
     import {findFields, registerForm} from '../../../store/bootstrap-5/Form'
-    import type {Axios} from 'axios'
     import type {Field} from '../../../store/bootstrap-5/Field'
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const emit = defineEmits<(e: 'success', data: Record<string, unknown>) => void>()
     const props = withDefaults(defineProps<{
         action: string,
         fields: Field[],
@@ -21,15 +23,19 @@
             new FormData(e.target).forEach((value, key) => {
                 data[key] = value
             })
-            axios?.request({
-                data,
-                headers: {
-                    Accept: 'application/ld+json',
-                    'Content-Type': 'application/json'
-                },
-                method: props.method,
-                url: props.action
-            })
+            axios
+                ?.request({
+                    data,
+                    headers: {
+                        Accept: 'application/ld+json',
+                        'Content-Type': 'application/json'
+                    },
+                    method: props.method,
+                    url: props.action
+                })
+                .then((response: AxiosResponse<Record<string, unknown>>): void => {
+                    emit('success', response.data)
+                })
         }
     }
 </script>

@@ -1,5 +1,6 @@
 import type {NavigationGuardNext, RouteComponent, RouteLocationNormalized} from 'vue-router'
 import {createRouter, createWebHistory} from 'vue-router'
+import {hasUser} from '../store/store'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -11,7 +12,7 @@ const router = createRouter({
             path: '/'
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin'),
+            component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
             name: 'login',
             path: '/login'
         }
@@ -19,7 +20,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext): void => {
-    if (to.matched.some(record => record.meta.requiresAuth))
+    if (to.matched.some(record => record.meta.requiresAuth) && !hasUser().value)
         next({name: 'login'})
     else
         next()
