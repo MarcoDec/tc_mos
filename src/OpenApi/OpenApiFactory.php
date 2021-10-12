@@ -36,7 +36,13 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 id: 'login',
                 path: $this->getLogin(),
                 tag: 'Auth',
-                responses: [200 => ['description' => 'Utilisateur connecté', 'schema' => ['tag' => 'Employee', 'value' => 'Employee-read']]],
+                responses: [
+                    200 => [
+                        'description' => 'Utilisateur connecté',
+                        'schema' => ['tag' => 'Employee', 'value' => 'Employee-read']
+                    ],
+                    403 => ['description' => 'hidden'],
+                ],
                 description: 'Connexion',
                 requestBody: ['description' => 'Identifiants', 'schema' => 'Auth']
             )
@@ -48,6 +54,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 description: 'Déconnexion'
             )
             ->hidePaths()
+            ->setDefaultResponses()
             ->securize($this->getLogin(), $securitySchema)
             ->getApi();
     }
