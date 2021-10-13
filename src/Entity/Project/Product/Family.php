@@ -14,10 +14,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiResource(
         itemOperations: ['delete' => [], 'get' => [], 'patch' => []],
-        denormalizationContext: ['groups' => ['write:family', 'write:name'], 'openapi_definition_name' => 'Family-write'],
-        normalizationContext: ['groups' => ['read:family', 'read:name'], 'openapi_definition_name' => 'Family-read']
+        shortName: 'ProductFamily',
+        denormalizationContext: ['groups' => ['write:family', 'write:name'], 'openapi_definition_name' => 'ProductFamily-write'],
+        normalizationContext: ['groups' => ['read:family', 'read:name'], 'openapi_definition_name' => 'ProductFamily-read']
     ),
-    ORM\Entity
+    ORM\Entity,
+    ORM\Table(name: 'product_family')
 ]
 class Family extends Entity {
     use NameTrait;
