@@ -5,7 +5,7 @@ services:
       - php
     image: tconcept/tc_apache:latest
     ports:
-      - 8000:80
+      - '8000:80'
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
@@ -42,6 +42,7 @@ services:
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
       - ./docker/php:/var/www/html/TConcept-GPAO/docker/php:delegated
+      - ./public/bundles:/var/www/html/TConcept-GPAO/public/bundles:delegated
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
   phpmyadmin:
@@ -53,7 +54,7 @@ services:
     links:
       - mysql:mysql
     ports:
-      - 8080:80
+      - '8080:80'
     restart: always
     volumes:
       - /sessions

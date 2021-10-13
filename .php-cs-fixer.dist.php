@@ -5,7 +5,7 @@ return (new PhpCsFixer\Config())
         PhpCsFixer\Finder::create()
             ->exclude([
                 'docker',
-                'php-cs-fixer',
+                'node_modules',
                 'public/bundles',
                 'templates',
                 'var',
@@ -20,7 +20,7 @@ return (new PhpCsFixer\Config())
         'array_push' => true,
         'backtick_to_shell_exec' => true,
         'ereg_to_preg' => true,
-        // 'modernize_strpos' => true,
+        'modernize_strpos' => true,
         'no_alias_functions' => ['sets' => ['@all']],
         'no_alias_language_construct_call' => true,
         'no_mixed_echo_print' => true,
@@ -119,10 +119,10 @@ return (new PhpCsFixer\Config())
         'no_trailing_whitespace_in_comment' => true,
         'single_line_comment_style' => true,
         // Control Structure
-        // 'control_structure_continuation_position' => true,
+        'control_structure_continuation_position' => true,
         'elseif' => true,
         'empty_loop_body' => true,
-        // 'empty_loop_condition' => true,
+        'empty_loop_condition' => true,
         'include' => true,
         'no_alternative_syntax' => true,
         'no_superfluous_elseif' => true,
@@ -186,12 +186,12 @@ return (new PhpCsFixer\Config())
         // Naming
         'no_homoglyph_names' => true,
         // Operator
-        // 'assign_null_coalescing_to_coalesce_equal' => true,
+        'assign_null_coalescing_to_coalesce_equal' => true,
         'binary_operator_spaces' => true,
         'concat_space' => true,
         'logical_operators' => true,
         'new_with_braces' => true,
-        // 'no_space_around_double_colon' => true,
+        'no_space_around_double_colon' => true,
         'object_operator_without_whitespace' => true,
         'operator_linebreak' => true,
         'standardize_increment' => true,

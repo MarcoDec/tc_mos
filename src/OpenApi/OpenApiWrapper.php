@@ -4,6 +4,7 @@ namespace App\OpenApi;
 
 use ApiPlatform\Core\OpenApi\Model\Operation;
 use ApiPlatform\Core\OpenApi\Model\PathItem;
+use ApiPlatform\Core\OpenApi\Model\Paths;
 use ApiPlatform\Core\OpenApi\Model\RequestBody;
 use ApiPlatform\Core\OpenApi\Model\Response;
 use ApiPlatform\Core\OpenApi\OpenApi;
@@ -11,6 +12,54 @@ use ArrayObject;
 
 final class OpenApiWrapper {
     public function __construct(private OpenApi $api) {
+    }
+
+    private static function securizeOperation(Operation $operation, string $schema): Operation {
+        return $operation->withSecurity([[$schema => []]]);
+    }
+
+    private static function setDefaultOperationResponses(Operation $operation): Operation {
+        $responses = collect($operation->getResponses());
+        if (!$responses->offsetExists(400)) {
+            $operation
+                ->addResponse(
+                    response: new Response(description: 'Bad request'),
+                    status: 400
+                );
+        }
+        if (!$responses->offsetExists(401)) {
+            $operation
+                ->addResponse(
+                    response: new Response(description: 'Unauthorized'),
+                    status: 401
+                );
+        }
+        if (!$responses->offsetExists(403)) {
+            $operation
+                ->addResponse(
+                    response: new Response(description: 'Forbidden'),
+                    status: 403
+                );
+        }
+        if (!$responses->offsetExists(405)) {
+            $operation
+                ->addResponse(
+                    response: new Response(description: 'Method Not Allowed'),
+                    status: 405
+                );
+        }
+        if (!$responses->offsetExists(500)) {
+            $operation
+                ->addResponse(
+                    response: new Response(description: 'Internal Server Error'),
+                    status: 500
+                );
+        }
+        return $operation->withResponses(
+            collect($operation->getResponses())
+                ->filter(static fn (Response $response): bool => $response->getDescription() !== 'hidden')
+                ->all()
+        );
     }
 
     /**
@@ -78,6 +127,75 @@ final class OpenApiWrapper {
                 $this->api->getPaths()->addPath($key, $path->withGet(null));
             }
         }
+        return $this;
+    }
+
+    public function securize(string $login, string $schema): self {
+        $paths = new Paths();
+        foreach ($this->api->getPaths()->getPaths() as $path => $item) {
+            /** @var PathItem $item */
+            if ($path !== $login) {
+                if (!empty($delete = $item->getDelete())) {
+                    $item = $item->withDelete(self::securizeOperation($delete, $schema));
+                }
+                if (!empty($get = $item->getGet())) {
+                    $item = $item->withGet(self::securizeOperation($get, $schema));
+                }
+                if (!empty($head = $item->getHead())) {
+                    $item = $item->withHead(self::securizeOperation($head, $schema));
+                }
+                if (!empty($option = $item->getOptions())) {
+                    $item = $item->withOptions(self::securizeOperation($option, $schema));
+                }
+                if (!empty($patch = $item->getPatch())) {
+                    $item = $item->withPatch(self::securizeOperation($patch, $schema));
+                }
+                if (!empty($post = $item->getPost())) {
+                    $item = $item->withPost(self::securizeOperation($post, $schema));
+                }
+                if (!empty($put = $item->getPut())) {
+                    $item = $item->withPut(self::securizeOperation($put, $schema));
+                }
+                if (!empty($trace = $item->getTrace())) {
+                    $item = $item->withTrace(self::securizeOperation($trace, $schema));
+                }
+            }
+            $paths->addPath($path, $item);
+        }
+        $this->api = $this->api->withPaths($paths);
+        return $this;
+    }
+
+    public function setDefaultResponses(): self {
+        $paths = new Paths();
+        foreach ($this->api->getPaths()->getPaths() as $path => $item) {
+            if (!empty($delete = $item->getDelete())) {
+                $item = $item->withDelete(self::setDefaultOperationResponses($delete));
+            }
+            if (!empty($get = $item->getGet())) {
+                $item = $item->withGet(self::setDefaultOperationResponses($get));
+            }
+            if (!empty($head = $item->getHead())) {
+                $item = $item->withHead(self::setDefaultOperationResponses($head));
+            }
+            if (!empty($option = $item->getOptions())) {
+                $item = $item->withOptions(self::setDefaultOperationResponses($option));
+            }
+            if (!empty($patch = $item->getPatch())) {
+                $item = $item->withPatch(self::setDefaultOperationResponses($patch));
+            }
+            if (!empty($post = $item->getPost())) {
+                $item = $item->withPost(self::setDefaultOperationResponses($post));
+            }
+            if (!empty($put = $item->getPut())) {
+                $item = $item->withPut(self::setDefaultOperationResponses($put));
+            }
+            if (!empty($trace = $item->getTrace())) {
+                $item = $item->withTrace(self::setDefaultOperationResponses($trace));
+            }
+            $paths->addPath($path, $item);
+        }
+        $this->api = $this->api->withPaths($paths);
         return $this;
     }
 }
