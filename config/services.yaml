@@ -48,3 +48,7 @@ services:
     arguments: [ '@App\OpenApi\OpenApiFactory.inner' ]
     autoconfigure: false
     decorates: api_platform.openapi.factory
+
+  App\OpenApi\OpenApiNormalizer:
+    autoconfigure: false
+    decorates: api_platform.openapi.normalizer
