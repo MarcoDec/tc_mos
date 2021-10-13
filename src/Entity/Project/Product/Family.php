@@ -2,14 +2,23 @@
 
 namespace App\Entity\Project\Product;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
-#[ORM\Entity]
+#[
+    ApiResource(
+        itemOperations: ['delete' => [], 'get' => [], 'patch' => []],
+        denormalizationContext: ['groups' => ['write:family', 'write:name'], 'openapi_definition_name' => 'Family-write'],
+        normalizationContext: ['groups' => ['read:family', 'read:name'], 'openapi_definition_name' => 'Family-read']
+    ),
+    ORM\Entity
+]
 class Family extends Entity {
     use NameTrait;
 
@@ -17,10 +26,16 @@ class Family extends Entity {
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private Collection $children;
 
-    #[ORM\Column(nullable: true)]
+    #[
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
     private ?string $customsCode;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+    #[
+        ORM\ManyToOne(targetEntity: self::class, fetch: 'EAGER', inversedBy: 'children'),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
     private ?self $parent;
 
     #[Pure]

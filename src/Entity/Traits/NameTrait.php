@@ -8,7 +8,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 trait NameTrait {
     #[
         ORM\Column,
-        Serializer\Groups(['read:name'])
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     private string $name;
 
