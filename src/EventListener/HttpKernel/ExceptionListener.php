@@ -2,9 +2,9 @@
 
 namespace App\EventListener\HttpKernel;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 final class ExceptionListener {
     /**
@@ -14,14 +14,17 @@ final class ExceptionListener {
     }
 
     public function __invoke(ExceptionEvent $event): void {
-        $exceptionClass = get_class($event->getThrowable());
-        $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+        $exception = $event->getThrowable();
+        $exceptionClass = get_class($exception);
+        $statusCode = $exception instanceof HttpExceptionInterface
+            ? $exception->getStatusCode()
+            : Response::HTTP_UNPROCESSABLE_ENTITY;
         foreach ($this->exceptionToStatus as $class => $status) {
             if (is_a($exceptionClass, $class, true)) {
                 $statusCode = $status;
                 break;
             }
         }
-        $event->setResponse(new JsonResponse(null, $statusCode));
+        $event->setResponse(new Response(null, $statusCode));
     }
 }
