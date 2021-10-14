@@ -43,6 +43,7 @@ services:
       - .:/var/www/html/TConcept-GPAO:cached
       - ./docker/php:/var/www/html/TConcept-GPAO/docker/php:delegated
       - ./public/bundles:/var/www/html/TConcept-GPAO/public/bundles:delegated
+      - ./public/uploads:/var/www/html/TConcept-GPAO/public/uploads:delegated
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
   phpmyadmin:

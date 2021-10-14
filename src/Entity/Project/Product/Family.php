@@ -6,7 +6,10 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\FileController;
 use App\Entity\Entity;
+use App\Entity\Interfaces\FileEntity;
+use App\Entity\Traits\FileTrait;
 use App\Entity\Traits\NameTrait;
 use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -24,17 +27,32 @@ use Symfony\Component\Validator\Constraints as Assert;
         itemOperations: [
             'delete' => [],
             'get' => NO_ITEM_GET_OPERATION,
-            'patch' => []
+            'patch' => [],
+            'post' => [
+                'controller' => FileController::class,
+                'deserialize' => false,
+                'input_formats' => ['multipart'],
+                'method' => 'POST',
+                'path' => '/product-families/{id}',
+                'status' => 200
+            ]
         ],
         shortName: 'ProductFamily',
-        denormalizationContext: ['groups' => ['write:family', 'write:name'], 'openapi_definition_name' => 'ProductFamily-write'],
-        normalizationContext: ['groups' => ['read:family', 'read:id', 'read:name'], 'openapi_definition_name' => 'ProductFamily-read'],
+        denormalizationContext: [
+            'groups' => ['write:family', 'write:file', 'write:name'],
+            'openapi_definition_name' => 'ProductFamily-write'
+        ],
+        normalizationContext: [
+            'groups' => ['read:family', 'read:id', 'read:name'],
+            'openapi_definition_name' => 'ProductFamily-read'
+        ],
         paginationEnabled: false
     ),
     ORM\Entity,
     ORM\Table(name: 'product_family')
 ]
-class Family extends Entity {
+class Family extends Entity implements FileEntity {
+    use FileTrait;
     use NameTrait;
 
     /** @var Collection<int, self> */

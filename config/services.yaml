@@ -15,12 +15,13 @@ services:
   # this creates a service per class whose id is the fully-qualified class name
   App\:
     exclude:
-      - '../src/DependencyInjection/'
-      - '../src/Entity/'
-      - '../src/Kernel.php'
-      - '../src/OpenApi/OpenApiWrapper.php'
-      - '../src/Tests/'
-    resource: '../src/'
+      - ../src/DependencyInjection/
+      - ../src/Entity/
+      - ../src/Filesystem/Directory.php
+      - ../src/Kernel.php
+      - ../src/OpenApi/OpenApiWrapper.php
+      - ../src/Tests/
+    resource: ../src/
 
   App\Controller\:
     resource: ../src/Controller
@@ -44,6 +45,11 @@ services:
       - dispatcher: security.event_dispatcher.main
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
+
+  App\Filesystem\FileManager:
+    arguments:
+      $dashGenerator: '@api_platform.path_segment_name_generator.dash'
+      $dir: '%kernel.project_dir%/public/uploads'
 
   App\OpenApi\OpenApiFactory:
     arguments:
