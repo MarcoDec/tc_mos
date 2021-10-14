@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\MappedSuperclass]
 abstract class Entity {
@@ -10,9 +12,11 @@ abstract class Entity {
     private bool $deleted = false;
 
     #[
+        ApiProperty(description: 'id', example: 1),
         ORM\Column(type: 'integer', options: ['unsigned' => true]),
         ORM\GeneratedValue,
-        ORM\Id
+        ORM\Id,
+        Serializer\Groups(['read:id'])
     ]
     private int $id;
 

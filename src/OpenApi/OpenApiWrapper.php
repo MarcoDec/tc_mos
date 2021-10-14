@@ -8,10 +8,11 @@ use ApiPlatform\Core\OpenApi\Model\Paths;
 use ApiPlatform\Core\OpenApi\Model\RequestBody;
 use ApiPlatform\Core\OpenApi\Model\Response;
 use ApiPlatform\Core\OpenApi\OpenApi;
+use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use ArrayObject;
 
 final class OpenApiWrapper {
-    public function __construct(private OpenApi $api) {
+    public function __construct(private OpenApi $api, private DashPathSegmentNameGenerator $dashGenerator) {
     }
 
     private static function securizeOperation(Operation $operation, string $schema): Operation {
@@ -117,6 +118,7 @@ final class OpenApiWrapper {
     }
 
     public function getApi(): OpenApi {
+        // dd($this->api);
         return $this->api;
     }
 
@@ -196,6 +198,36 @@ final class OpenApiWrapper {
             $paths->addPath($path, $item);
         }
         $this->api = $this->api->withPaths($paths);
+        return $this;
+    }
+
+    public function setJsonLdDoc(): self {
+        $apiSchemas = $this->api->getComponents()->getSchemas();
+        if (empty($apiSchemas)) {
+            return $this;
+        }
+
+        $schemas = collect();
+        /** @var ArrayObject<string, mixed[]> $schema */
+        foreach ($apiSchemas as $schemaName => $schema) {
+            $resourceName = explode('.', $schemaName)[0];
+            /** @var mixed[] $properties */
+            $properties = $schema['properties'];
+            if (isset($properties['@context'])) {
+                $properties['@context']['example'] = "/api/contexts/$resourceName";
+            }
+            if (isset($properties['@id'])) {
+                $properties['@id']['example'] = "/api/{$this->dashGenerator->getSegmentName($resourceName)}/1";
+            }
+            if (isset($properties['@type'])) {
+                $properties['@type']['example'] = $resourceName;
+            }
+            $schema['properties'] = $properties;
+            $schemas->put($schemaName, $schema);
+        }
+        $this->api = $this->api->withComponents(
+            $this->api->getComponents()->withSchemas(new ArrayObject($schemas->all()))
+        );
         return $this;
     }
 }
