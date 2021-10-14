@@ -21,15 +21,14 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Famille de produit',
-        itemOperations: ['delete' => [], 'get' => [], 'patch' => []],
+        itemOperations: [
+            'delete' => [],
+            'get' => NO_ITEM_GET_OPERATION,
+            'patch' => []
+        ],
         shortName: 'ProductFamily',
         denormalizationContext: ['groups' => ['write:family', 'write:name'], 'openapi_definition_name' => 'ProductFamily-write'],
         normalizationContext: ['groups' => ['read:family', 'read:id', 'read:name'], 'openapi_definition_name' => 'ProductFamily-read'],
-        openapiContext: [
-            'parameters' => [
-                'name' => ['example' => 'Test']
-            ]
-        ],
         paginationEnabled: false
     ),
     ORM\Entity,

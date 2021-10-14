@@ -6,5 +6,3 @@ const NO_ITEM_GET_OPERATION = [
     'output' => false,
     'read' => false
 ];
-
-const NO_ITEM_OPERATION = ['get' => NO_ITEM_GET_OPERATION];
