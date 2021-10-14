@@ -2,9 +2,12 @@
 
 namespace App\Entity\Project\Product;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
+use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,11 +15,14 @@ use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial']),
     ApiResource(
         itemOperations: ['delete' => [], 'get' => [], 'patch' => []],
         shortName: 'ProductFamily',
         denormalizationContext: ['groups' => ['write:family', 'write:name'], 'openapi_definition_name' => 'ProductFamily-write'],
-        normalizationContext: ['groups' => ['read:family', 'read:name'], 'openapi_definition_name' => 'ProductFamily-read']
+        normalizationContext: ['groups' => ['read:family', 'read:name'], 'openapi_definition_name' => 'ProductFamily-read'],
+        paginationEnabled: false
     ),
     ORM\Entity,
     ORM\Table(name: 'product_family')
