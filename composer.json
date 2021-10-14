@@ -4,7 +4,9 @@
       "utils/api.php"
     ],
     "psr-4": {
-      "App\\": "src/"
+      "App\\": "src/",
+      "App\\Doctrine\\DBAL\\": "lib/doctrine/dbal/lib/Doctrine/DBAL/",
+      "App\\Doctrine\\ORM\\": "lib/doctrine/orm/lib/Doctrine/ORM/"
     }
   },
   "autoload-dev": {

@@ -29,6 +29,9 @@ services:
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
+  App\Doctrine\ORM\Decorator\EntityManagerDecorator:
+    decorates: doctrine.orm.default_entity_manager
+
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'

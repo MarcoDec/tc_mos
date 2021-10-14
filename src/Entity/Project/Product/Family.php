@@ -38,7 +38,7 @@ class Family extends Entity {
     use NameTrait;
 
     /** @var Collection<int, self> */
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     private Collection $children;
 
     #[
