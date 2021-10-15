@@ -16,12 +16,20 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiResource(
         collectionOperations: [],
-        itemOperations: ['get'],
+        itemOperations: ['get' => []],
         normalizationContext: ['groups' => ['read:user'], 'openapi_definition_name' => 'User-read']
     ),
     ORM\MappedSuperclass(repositoryClass: UserRepository::class)
 ]
 abstract class User extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
+    #[
+        ApiProperty(identifier: false),
+        ORM\Column(type: 'integer', options: ['unsigned' => true]),
+        ORM\GeneratedValue,
+        ORM\Id
+    ]
+    protected int $id;
+
     #[
         ORM\Embedded(class: Roles::class),
         Serializer\Groups(['read:user'])
@@ -32,7 +40,7 @@ abstract class User extends Entity implements PasswordAuthenticatedUserInterface
     private string $password;
 
     #[
-        ApiProperty(description: 'identifiant', example: 'super'),
+        ApiProperty(description: 'identifiant', identifier: true, example: 'super'),
         ORM\Column(length: 180, unique: true),
         Serializer\Groups(['read:user'])
     ]

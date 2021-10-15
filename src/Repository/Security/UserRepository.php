@@ -24,7 +24,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     }
 
     public function find($id, $lockMode = null, $lockVersion = null): ?User {
-        return $this->getEmployeeRepository()->find($id, $lockMode, $lockVersion);
+        return $this->findOneBy(['username' => $id]);
     }
 
     /**
@@ -46,7 +46,7 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     }
 
     public function loadUserByIdentifier(string $identifier): ?User {
-        return $this->findOneBy(['username' => $identifier]);
+        return $this->find($identifier);
     }
 
     public function loadUserByUsername(string $username): ?User {
