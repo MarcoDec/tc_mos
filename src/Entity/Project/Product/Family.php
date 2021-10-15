@@ -66,7 +66,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'ProductFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:id', 'read:name'],
+            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
             'openapi_definition_name' => 'ProductFamily-read'
         ],
         paginationEnabled: false
@@ -75,7 +75,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table(name: 'product_family')
 ]
 class Family extends Entity implements FileEntity {
-    use FileTrait;
+    use FileTrait {
+        getFilepath as private _getFilepath;
+    }
     use NameTrait;
 
     /** @var Collection<int, self> */
@@ -126,6 +128,14 @@ class Family extends Entity implements FileEntity {
 
     final public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/product-families/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return $this->_getFilepath();
     }
 
     final public function getParent(): ?self {

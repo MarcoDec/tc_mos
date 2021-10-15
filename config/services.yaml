@@ -49,6 +49,13 @@ services:
         name: kernel.event_listener
         priority: 2
 
+  App\EventListener\Project\Product\FamilyListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Project\Product\Family
+        event: postLoad
+        name: doctrine.orm.entity_listener
+
   App\EventListener\Security\LogoutListener:
     autoconfigure: false
     tags:
@@ -59,7 +66,7 @@ services:
   App\Filesystem\FileManager:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
-      $dir: '%kernel.project_dir%/public/uploads'
+      $dir: '%kernel.project_dir%/public'
 
   App\OpenApi\OpenApiFactory:
     arguments:
