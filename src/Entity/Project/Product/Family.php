@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Traits\FileTrait;
@@ -61,6 +62,9 @@ use Symfony\Component\Validator\Constraints as Assert;
             ]
         ],
         shortName: 'ProductFamily',
+        attributes: [
+            'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
+        ],
         denormalizationContext: [
             'groups' => ['write:family', 'write:file', 'write:name'],
             'openapi_definition_name' => 'ProductFamily-write'
