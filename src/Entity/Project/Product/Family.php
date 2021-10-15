@@ -24,6 +24,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Famille de produit',
+        collectionOperations: [
+            'get' => [],
+            'post' => ['controller' => PlaceholderAction::class, 'input_formats' => ['multipart']]
+        ],
         itemOperations: [
             'delete' => [],
             'get' => NO_ITEM_GET_OPERATION,
