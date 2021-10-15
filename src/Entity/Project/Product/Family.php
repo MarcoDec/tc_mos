@@ -25,17 +25,37 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiResource(
         description: 'Famille de produit',
         collectionOperations: [
-            'get' => [],
-            'post' => ['controller' => PlaceholderAction::class, 'input_formats' => ['multipart']]
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère les familles de produit',
+                    'summary' => 'Récupère les familles de produit',
+                ]
+            ],
+            'post' => [
+                'controller' => PlaceholderAction::class,
+                'input_formats' => ['multipart'],
+                'openapi_context' => [
+                    'description' => 'Créer une famille de produit',
+                    'summary' => 'Créer une famille de produit',
+                ]
+            ]
         ],
         itemOperations: [
-            'delete' => [],
+            'delete' => [
+                'openapi_context' => [
+                    'description' => 'Supprime une famille de produit',
+                    'summary' => 'Supprime une famille de produit',
+                ]
+            ],
             'get' => NO_ITEM_GET_OPERATION,
-            'patch' => [],
             'post' => [
                 'controller' => PlaceholderAction::class,
                 'input_formats' => ['multipart'],
                 'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Modifie une famille de produit',
+                    'summary' => 'Modifie une famille de produit',
+                ],
                 'path' => '/product-families/{id}',
                 'status' => 200
             ]
