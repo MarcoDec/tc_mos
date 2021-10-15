@@ -25,6 +25,8 @@ final class ExceptionListener {
                 break;
             }
         }
-        $event->setResponse(new Response(null, $statusCode));
+        if (!in_array($statusCode, [Response::HTTP_BAD_REQUEST, Response::HTTP_UNPROCESSABLE_ENTITY])) {
+            $event->setResponse(new Response(null, $statusCode));
+        }
     }
 }
