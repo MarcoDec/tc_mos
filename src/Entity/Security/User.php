@@ -3,6 +3,7 @@
 namespace App\Entity\Security;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Repository\Security\UserRepository;
@@ -12,7 +13,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-#[ORM\MappedSuperclass(repositoryClass: UserRepository::class)]
+#[
+    ApiResource(
+        collectionOperations: [],
+        itemOperations: ['get'],
+        normalizationContext: ['groups' => ['read:user'], 'openapi_definition_name' => 'User-read']
+    ),
+    ORM\MappedSuperclass(repositoryClass: UserRepository::class)
+]
 abstract class User extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     #[
         ORM\Embedded(class: Roles::class),

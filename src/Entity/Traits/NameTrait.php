@@ -3,13 +3,9 @@
 namespace App\Entity\Traits;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 
 trait NameTrait {
-    #[
-        ORM\Column,
-        Serializer\Groups(['read:name'])
-    ]
+    #[ORM\Column]
     private string $name;
 
     final public function getName(): string {

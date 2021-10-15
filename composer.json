@@ -1,8 +1,5 @@
 {
   "autoload": {
-    "files": [
-      "utils/api.php"
-    ],
     "psr-4": {
       "App\\": "src/"
     }
