@@ -2,11 +2,11 @@
 
 namespace App\Entity\Project\Product;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\FileController;
 use App\Entity\Entity;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Traits\FileTrait;
@@ -29,8 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [],
             'post' => [
-                'controller' => FileController::class,
-                'deserialize' => false,
+                'controller' => PlaceholderAction::class,
                 'input_formats' => ['multipart'],
                 'method' => 'POST',
                 'path' => '/product-families/{id}',

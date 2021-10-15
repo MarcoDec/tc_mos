@@ -33,14 +33,24 @@ services:
   App\Doctrine\ORM\Decorator\EntityManagerDecorator:
     decorates: doctrine.orm.default_entity_manager
 
+  App\EventListener\DeserializeListener:
+    autoconfigure: false
+    decorates: api_platform.listener.request.deserialize
+    tags:
+      - event: kernel.request
+        name: kernel.event_listener
+
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'
+    autoconfigure: false
     tags:
       - event: kernel.exception
         name: kernel.event_listener
+        priority: 2
 
   App\EventListener\Security\LogoutListener:
+    autoconfigure: false
     tags:
       - dispatcher: security.event_dispatcher.main
         event: Symfony\Component\Security\Http\Event\LogoutEvent
