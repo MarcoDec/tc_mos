@@ -7,8 +7,3 @@
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 ###< symfony/framework-bundle ###
-
-###> pentatrion/vite-bundle ###
-/node_modules/
-/public/build/
-###< pentatrion/vite-bundle ###
