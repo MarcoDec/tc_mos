@@ -4,12 +4,11 @@
     import {findFields, registerForm} from '../../../store/bootstrap-5/Form'
     import type {Field} from '../../../store/bootstrap-5/Field'
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const emit = defineEmits<(e: 'success', data: Record<string, unknown>) => void>()
     const props = withDefaults(defineProps<{
-        action: string,
-        fields: Field[],
-        id: string,
+        action: string
+        fields: Field[]
+        id: string
         method?: 'delete' | 'get' | 'patch' | 'post'
     }>(), {method: 'post'})
     registerForm(props.id, props.fields)

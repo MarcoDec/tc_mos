@@ -221,10 +221,6 @@ module.exports = {
             registeredComponentsOnly: false
         }],
         'vue/custom-event-name-casing': ['error', 'camelCase'],
-        'vue/match-component-file-name': ['error', {
-            extensions: ['jsx', 'ts', 'vue'],
-            shouldMatchCase: false
-        }],
         'vue/next-tick-style': ['error', 'promise'],
         'vue/no-boolean-default': ['error'],
         'vue/no-deprecated-v-is': ['error'],

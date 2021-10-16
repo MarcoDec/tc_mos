@@ -13,7 +13,7 @@ export class Field {
     }
 }
 
-type FieldGetter = {
+export type FieldGetter = {
     id: string
 }
 
