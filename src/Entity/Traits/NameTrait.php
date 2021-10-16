@@ -14,13 +14,13 @@ trait NameTrait {
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
     ]
-    private string $name;
+    private ?string $name = null;
 
-    final public function getName(): string {
+    final public function getName(): ?string {
         return $this->name;
     }
 
-    final public function setName(string $name): self {
+    final public function setName(?string $name): self {
         $this->name = $name;
         return $this;
     }

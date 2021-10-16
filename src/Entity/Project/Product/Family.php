@@ -93,7 +93,7 @@ class Family extends Entity implements FileEntity {
         ORM\Column(nullable: true),
         Serializer\Groups(['read:family', 'write:family'])
     ]
-    private ?string $customsCode;
+    private ?string $customsCode = null;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
@@ -101,14 +101,14 @@ class Family extends Entity implements FileEntity {
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
     ]
-    private string $name;
+    private ?string $name = null;
 
     #[
         ApiProperty(description: 'Famille parente', example: '/api/product-families/1'),
         ORM\ManyToOne(targetEntity: self::class, fetch: 'EAGER', inversedBy: 'children'),
         Serializer\Groups(['read:family', 'write:family'])
     ]
-    private ?self $parent;
+    private ?self $parent = null;
 
     #[Pure]
     public function __construct() {

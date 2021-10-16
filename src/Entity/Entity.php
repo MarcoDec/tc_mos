@@ -18,7 +18,7 @@ abstract class Entity {
         ORM\Id,
         Serializer\Groups(['read:id'])
     ]
-    private int $id;
+    private int $id = 0;
 
     final public function getId(): int {
         return $this->id;
