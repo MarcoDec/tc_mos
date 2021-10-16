@@ -45,7 +45,8 @@ services:
         name: kernel.event_listener
 
   App\OpenApi\OpenApiFactory:
-    arguments: [ '@App\OpenApi\OpenApiFactory.inner' ]
+    arguments:
+      $dashGenerator: '@api_platform.path_segment_name_generator.dash'
     autoconfigure: false
     decorates: api_platform.openapi.factory
 

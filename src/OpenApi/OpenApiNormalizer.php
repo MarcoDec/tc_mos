@@ -6,6 +6,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Tightenco\Collect\Support\Collection;
 
 final class OpenApiNormalizer implements NormalizerInterface {
+    private const METHODS = ['delete', 'get', 'patch', 'post'];
+
     public function __construct(private NormalizerInterface $decorated) {
     }
 
@@ -17,8 +19,19 @@ final class OpenApiNormalizer implements NormalizerInterface {
     private static function sortPaths(array $paths): array {
         $sorted = collect(['hidden' => collect()]);
         foreach ($paths as $path => $item) {
-            $operation = $item['delete'] ?? $item['get'] ?? $item['patch'] ?? $item['post'] ?? null;
-            $tag = !empty($operation) ? $operation['tags'][0] : 'hidden';
+            $tag = 'hidden';
+            foreach (self::METHODS as $method) {
+                if (!isset($item[$method]) || empty($operation = $item[$method])) {
+                    continue;
+                }
+
+                if (isset($operation['parameters']) && !empty($operation['parameters'])) {
+                    $operation['parameters'] = collect($operation['parameters'])->sortBy('name')->values()->all();
+                }
+
+                $item[$method] = $operation;
+                $tag = $operation['tags'][0];
+            }
             if (!$sorted->offsetExists($tag)) {
                 $sorted->put($tag, collect());
             }

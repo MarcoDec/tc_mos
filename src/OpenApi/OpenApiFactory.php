@@ -4,10 +4,15 @@ namespace App\OpenApi;
 
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\Core\OpenApi\OpenApi;
+use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class OpenApiFactory implements OpenApiFactoryInterface {
-    public function __construct(private OpenApiFactoryInterface $decorated, private UrlGeneratorInterface $urlGenerator) {
+    public function __construct(
+        private DashPathSegmentNameGenerator $dashGenerator,
+        private OpenApiFactoryInterface $decorated,
+        private UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     /**
@@ -15,7 +20,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      */
     public function __invoke(array $context = []): OpenApi {
         $securitySchema = 'cookieAuth';
-        return (new OpenApiWrapper($this->decorated->__invoke($context)))
+        return (new OpenApiWrapper($this->decorated->__invoke($context), $this->dashGenerator))
             ->createSecuritySchema($securitySchema, ['in' => 'cookie', 'name' => 'PHPSESSID', 'type' => 'apiKey'])
             ->createSchema('Auth', [
                 'properties' => [
@@ -56,6 +61,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             ->hidePaths()
             ->setDefaultResponses()
             ->securize($this->getLogin(), $securitySchema)
+            ->setJsonLdDoc()
             ->getApi();
     }
 
