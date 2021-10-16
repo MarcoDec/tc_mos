@@ -16,7 +16,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiResource(
         collectionOperations: [],
-        itemOperations: ['get' => []],
+        itemOperations: ['get' => ['openapi_context' => [
+            'description' => 'Récupère un utilisateur selon son identifiant ou l\'utilisateur courant si « current » est passé en paramètre',
+            'summary' => 'Récupère un utilisateur',
+        ]]],
         normalizationContext: ['groups' => ['read:user'], 'openapi_definition_name' => 'User-read']
     ),
     ORM\MappedSuperclass(repositoryClass: UserRepository::class)

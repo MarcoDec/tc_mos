@@ -6,9 +6,10 @@ use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\Security\User;
 use App\Repository\Security\UserRepository;
+use Symfony\Component\Security\Core\Security;
 
 final class UserProvider implements ItemDataProviderInterface, RestrictedDataProviderInterface {
-    public function __construct(private UserRepository $repo) {
+    public function __construct(private UserRepository $repo, private Security $security) {
     }
 
     /**
@@ -16,7 +17,9 @@ final class UserProvider implements ItemDataProviderInterface, RestrictedDataPro
      * @param mixed[] $context
      */
     public function getItem(string $resourceClass, $id, ?string $operationName = null, array $context = []): ?User {
-        return $this->repo->find($id);
+        return $id === 'current' && !empty($user = $this->security->getUser()) && $user instanceof User
+            ? $user
+            : $this->repo->find($id);
     }
 
     /**
