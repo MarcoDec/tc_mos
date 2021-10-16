@@ -35,7 +35,8 @@ app.config.globalProperties.mitt = mitt()
 app.config.globalProperties.axios.interceptors.response.use(
     (response: unknown) => response,
     (error: AxiosError): void => {
-        app.config.globalProperties.mitt.emit('error', error)
+        if (error.response?.status !== 401)
+            app.config.globalProperties.mitt.emit('error', error)
     }
 )
 
