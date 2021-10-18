@@ -104,8 +104,8 @@ class Family extends Entity implements FileEntity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Famille parente', example: '/api/product-families/1'),
-        ORM\ManyToOne(targetEntity: self::class, fetch: 'EAGER', inversedBy: 'children'),
+        ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/product-families/1'),
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?self $parent = null;
