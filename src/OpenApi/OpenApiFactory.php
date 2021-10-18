@@ -44,7 +44,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 responses: [
                     200 => [
                         'description' => 'Utilisateur connecté',
-                        'schema' => ['tag' => 'Employee', 'value' => 'Employee-read']
+                        'schema' => ['tag' => 'User', 'value' => 'User-read']
                     ],
                     403 => ['description' => 'hidden'],
                 ],

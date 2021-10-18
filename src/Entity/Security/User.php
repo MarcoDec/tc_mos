@@ -27,7 +27,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 abstract class User extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     #[
         ApiProperty(identifier: false),
-        ORM\Column(type: 'integer', options: ['unsigned' => true]),
+        ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
         ORM\Id
     ]

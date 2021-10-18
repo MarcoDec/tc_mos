@@ -16,8 +16,11 @@ final class EntityManagerDecorator extends DoctrineEntityManagerDecorator {
         $this->getConnection()->setEm($this);
     }
 
+    /**
+     * @return class-string|null
+     */
     public function getClassNameFor(string $table): ?string {
-        /** @var ClassMetadata $metadata */
+        /** @var ClassMetadata<object> $metadata */
         foreach ($this->getMetadataFactory()->getAllMetadata() as $metadata) {
             if ($metadata->getTableName() === $table) {
                 return $metadata->getName();
