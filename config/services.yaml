@@ -29,13 +29,27 @@ services:
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
+  App\EventListener\HttpKernel\ExceptionListener:
+    arguments:
+      $exceptionToStatus: '%api_platform.exception_to_status%'
+    autoconfigure: false
+    tags:
+      - event: kernel.exception
+        name: kernel.event_listener
+
   App\EventListener\Security\LogoutListener:
+    autoconfigure: false
     tags:
       - dispatcher: security.event_dispatcher.main
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
 
   App\OpenApi\OpenApiFactory:
-    arguments: [ '@App\OpenApi\OpenApiFactory.inner' ]
+    arguments:
+      $dashGenerator: '@api_platform.path_segment_name_generator.dash'
     autoconfigure: false
     decorates: api_platform.openapi.factory
+
+  App\OpenApi\OpenApiNormalizer:
+    autoconfigure: false
+    decorates: api_platform.openapi.normalizer

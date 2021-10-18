@@ -2,20 +2,26 @@
 
 namespace App\OpenApi;
 
-use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\Core\OpenApi\OpenApi;
+use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class OpenApiFactory implements OpenApiFactoryInterface {
-    public function __construct(private OpenApiFactoryInterface $decorated, private SchemaFactoryInterface $schema) {
+    public function __construct(
+        private DashPathSegmentNameGenerator $dashGenerator,
+        private OpenApiFactoryInterface $decorated,
+        private UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     /**
      * @param mixed[] $context
      */
     public function __invoke(array $context = []): OpenApi {
-        return (new OpenApiWrapper($this->decorated->__invoke($context)))
-            ->createSecuritySchema('cookieAuth', ['in' => 'cookie', 'name' => 'PHPSESSID', 'type' => 'apiKey'])
+        $securitySchema = 'cookieAuth';
+        return (new OpenApiWrapper($this->decorated->__invoke($context), $this->dashGenerator))
+            ->createSecuritySchema($securitySchema, ['in' => 'cookie', 'name' => 'PHPSESSID', 'type' => 'apiKey'])
             ->createSchema('Auth', [
                 'properties' => [
                     'password' => [
@@ -33,9 +39,15 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             ])
             ->addPath(
                 id: 'login',
-                path: '/api/login',
+                path: $this->getLogin(),
                 tag: 'Auth',
-                responses: [200 => ['description' => 'Utilisateur connecté', 'schema' => ['tag' => 'Employee', 'value' => 'Employee-read']]],
+                responses: [
+                    200 => [
+                        'description' => 'Utilisateur connecté',
+                        'schema' => ['tag' => 'User', 'value' => 'User-read']
+                    ],
+                    403 => ['description' => 'hidden'],
+                ],
                 description: 'Connexion',
                 requestBody: ['description' => 'Identifiants', 'schema' => 'Auth']
             )
@@ -47,6 +59,13 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 description: 'Déconnexion'
             )
             ->hidePaths()
+            ->setDefaultResponses()
+            ->securize($this->getLogin(), $securitySchema)
+            ->setJsonLdDoc()
             ->getApi();
+    }
+
+    private function getLogin(): string {
+        return $this->urlGenerator->generate('login');
     }
 }

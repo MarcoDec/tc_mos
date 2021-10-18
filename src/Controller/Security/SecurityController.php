@@ -10,6 +10,6 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 final class SecurityController extends AbstractController {
     #[Route(path: '/api/login', name: 'login', methods: 'POST')]
     public function login(NormalizerInterface $normalizer): JsonResponse {
-        return $this->json($normalizer->normalize($this->getUser(), null, ['jsonld_has_context' => false]));
+        return $this->json($normalizer->normalize($this->getUser(), 'jsonld'));
     }
 }

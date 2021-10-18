@@ -3,6 +3,7 @@
 namespace App\Entity\Security;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Repository\Security\UserRepository;
@@ -12,21 +13,42 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-#[ORM\MappedSuperclass(repositoryClass: UserRepository::class)]
+#[
+    ApiResource(
+        collectionOperations: [],
+        itemOperations: ['get' => ['openapi_context' => [
+            'description' => 'Récupère un utilisateur selon son identifiant ou l\'utilisateur courant si « current » est passé en paramètre',
+            'summary' => 'Récupère un utilisateur',
+        ]]],
+        normalizationContext: ['groups' => ['read:user'], 'openapi_definition_name' => 'User-read']
+    ),
+    ORM\MappedSuperclass(repositoryClass: UserRepository::class)
+]
 abstract class User extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
+    #[
+        ApiProperty(identifier: false),
+        ORM\Column(type: 'integer', options: ['unsigned' => true]),
+        ORM\GeneratedValue,
+        ORM\Id
+    ]
+    protected int $id;
+
     #[
         ORM\Embedded(class: Roles::class),
         Serializer\Groups(['read:user'])
     ]
     private Roles $embRoles;
+
     #[ORM\Column]
     private string $password;
+
     #[
-        ApiProperty(description: 'identifiant', example: 'super'),
+        ApiProperty(description: 'identifiant', identifier: true, example: 'super'),
         ORM\Column(length: 180, unique: true),
         Serializer\Groups(['read:user'])
     ]
     private string $username;
+
     #[Pure]
     final public function __construct() {
         $this->embRoles = new Roles();

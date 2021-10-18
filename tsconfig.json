@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "esnext",
+    "typeRoots": [
+      "assets/types"
+    ],
+    "types": [
+      "node"
+    ]
+  },
+  "exclude": [
+    "bin",
+    "config",
+    "dev",
+    "doc",
+    "docker",
+    "migrations",
+    "node_modules",
+    "public",
+    "src",
+    "templates",
+    "utils",
+    "var",
+    "vendor",
+    ".bash_aliases",
+    ".env",
+    ".git",
+    ".gitignore",
+    ".idea",
+    ".php-cs-fixer.dist.php",
+    "composer.json",
+    "composer.lock",
+    "docker-compose.yaml",
+    "phpstan.neon.dist",
+    "README.md",
+    "symfony.lock"
+  ],
+  "include": [
+    "assets",
+    ".eslintrc.js"
+  ]
+}
