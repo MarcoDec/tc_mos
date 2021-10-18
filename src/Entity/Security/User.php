@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[ORM\MappedSuperclass(repositoryClass: UserRepository::class)]
 abstract class User extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     #[
-        ORM\Embedded(class: Roles::class),
+        ORM\Embedded,
         Serializer\Groups(['read:user'])
     ]
     private Roles $embRoles;
@@ -25,7 +25,7 @@ abstract class User extends Entity implements PasswordAuthenticatedUserInterface
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
-        ORM\Column(length: 180, unique: true),
+        ORM\Column(length: 180),
         Serializer\Groups(['read:user'])
     ]
     private ?string $username = null;

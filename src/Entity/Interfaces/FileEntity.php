@@ -9,7 +9,7 @@ interface FileEntity {
 
     public function getFilepath(): ?string;
 
-    public function getId(): int;
+    public function getId(): ?int;
 
     public function setFile(?File $file): self;
 }

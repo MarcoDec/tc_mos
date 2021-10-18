@@ -8,19 +8,19 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\MappedSuperclass]
 abstract class Entity {
-    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    #[ORM\Column(options: ['default' => false])]
     private bool $deleted = false;
 
     #[
         ApiProperty(description: 'id', example: 1),
-        ORM\Column(type: 'integer', options: ['unsigned' => true]),
+        ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
         ORM\Id,
         Serializer\Groups(['read:id'])
     ]
-    private int $id = 0;
+    private ?int $id = null;
 
-    final public function getId(): int {
+    final public function getId(): ?int {
         return $this->id;
     }
 
