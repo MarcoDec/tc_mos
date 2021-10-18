@@ -14,9 +14,6 @@ final class FileDenormalizer implements DenormalizerInterface {
         return $data;
     }
 
-    /**
-     * @param mixed $data
-     */
     public function supportsDenormalization($data, string $type, ?string $format = null): bool {
         return $data instanceof File;
     }

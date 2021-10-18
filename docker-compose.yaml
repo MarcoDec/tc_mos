@@ -38,12 +38,16 @@ services:
     container_name: tconcept_gpao_php
     depends_on:
       - mysql
+    ports:
+      - '8001:8001'
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
       - ./docker/php:/var/www/html/TConcept-GPAO/docker/php:delegated
+      - ./public/build:/var/www/html/TConcept-GPAO/public/build:delegated
       - ./public/bundles:/var/www/html/TConcept-GPAO/public/bundles:delegated
       - ./public/uploads:/var/www/html/TConcept-GPAO/public/uploads:delegated
+      - ./node_modules:/var/www/html/TConcept-GPAO/node_modules:delegated
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
   phpmyadmin:

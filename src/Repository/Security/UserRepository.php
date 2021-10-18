@@ -4,9 +4,11 @@ namespace App\Repository\Security;
 
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Security\User;
+use App\Repository\Hr\Employee\EmployeeRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use function get_class;
+use LogicException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -15,22 +17,36 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * @extends ServiceEntityRepository<User>
- *
- * @method null|User find($id, $lockMode = null, $lockVersion = null)
- * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 final class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserProviderInterface {
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, User::class);
     }
 
+    public function find($id, $lockMode = null, $lockVersion = null): ?User {
+        return $this->findOneBy(['username' => $id]);
+    }
+
+    /**
+     * @return User[]
+     */
+    public function findAll(): array {
+        return $this->getEmployeeRepository()->findAll();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
+        return $this->getEmployeeRepository()->findBy($criteria, $orderBy, $limit, $offset);
+    }
+
     public function findOneBy(array $criteria, ?array $orderBy = null): ?User {
-        return $this->getEntityManager()->getRepository(Employee::class)->findOneBy($criteria, $orderBy);
+        return $this->getEmployeeRepository()->findOneBy($criteria, $orderBy);
     }
 
     public function loadUserByIdentifier(string $identifier): ?User {
-        return $this->findOneBy(['username' => $identifier]);
+        return $this->find($identifier);
     }
 
     public function loadUserByUsername(string $username): ?User {
@@ -56,5 +72,12 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         $user->setPassword($newHashedPassword);
         $this->_em->persist($user);
         $this->_em->flush();
+    }
+
+    private function getEmployeeRepository(): EmployeeRepository {
+        if (($repo = $this->getEntityManager()->getRepository(Employee::class)) instanceof EmployeeRepository) {
+            return $repo;
+        }
+        throw new LogicException(sprintf('Unexpected value. Expect %s, get %s.', EmployeeRepository::class, get_class($repo)));
     }
 }

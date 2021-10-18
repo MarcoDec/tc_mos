@@ -5,6 +5,8 @@ namespace App\Filter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Core\Exception\InvalidArgumentException;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\QueryBuilder;
 
 final class RelationFilter extends NumericFilter {
@@ -28,7 +30,7 @@ final class RelationFilter extends NumericFilter {
             $propertyName = $this->normalizePropertyName($property);
             $description[$propertyName] = [
                 'property' => $propertyName,
-                'type' => $this->getType((string) $this->getDoctrineFieldType($property, $resourceClass)),
+                'type' => $this->getType($this->getDoctrineFieldType($property, $resourceClass)),
                 'required' => false,
             ];
         }
@@ -61,7 +63,18 @@ final class RelationFilter extends NumericFilter {
 
         $queryBuilder
             ->andWhere(sprintf('%s.%s = :%s', $alias, $field, $valueParameter))
-            ->setParameter($valueParameter, $values[0], (string) $this->getDoctrineFieldType($property, $resourceClass));
+            ->setParameter($valueParameter, $values[0], $this->getDoctrineFieldType($property, $resourceClass));
+    }
+
+    protected function getDoctrineFieldType(string $property, string $resourceClass): string {
+        $type = parent::getDoctrineFieldType($property, $resourceClass);
+        if (empty($type)) {
+            return Types::INTEGER;
+        }
+        if ($type instanceof Type) {
+            return $type->getName();
+        }
+        return $type;
     }
 
     /**

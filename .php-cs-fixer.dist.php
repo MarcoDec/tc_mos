@@ -4,8 +4,10 @@ return (new PhpCsFixer\Config())
     ->setFinder(
         PhpCsFixer\Finder::create()
             ->exclude([
+                'assets',
                 'docker',
                 'node_modules',
+                'public/build',
                 'public/bundles',
                 'templates',
                 'var',

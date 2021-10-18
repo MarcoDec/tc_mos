@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {# Run `composer require symfony/webpack-encore-bundle`
-           and uncomment the following Encore helpers to start using Symfony UX #}
-        {% block stylesheets %}
-            {#{{ encore_entry_link_tags('app') }}#}
-        {% endblock %}
-
-        {% block javascripts %}
-            {#{{ encore_entry_script_tags('app') }}#}
-        {% endblock %}
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        {{ vite_entry_link_tags('app.ts') }}
+        <title>T-Concept GPAO</title>
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <div id="vue"></div>
+        {{ vite_entry_script_tags('app.ts') }}
     </body>
 </html>
