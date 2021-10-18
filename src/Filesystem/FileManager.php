@@ -58,7 +58,7 @@ final class FileManager {
         if (empty($extension)) {
             throw new InvalidArgumentException("Cannot guess extension of {$file->getClientOriginalName()}.");
         }
-        $file->move($dir, "{$family->getId()}.{$extension}");
+        $family->setFile($file->move($dir, "{$family->getId()}.{$extension}"));
     }
 
     private function getDashedName(FileEntity $entity): ?string {
