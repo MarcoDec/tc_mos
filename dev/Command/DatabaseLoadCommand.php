@@ -16,10 +16,15 @@ final class DatabaseLoadCommand extends AbstractCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
-        $this
-            ->getApplication()
-            ->find(SchemaUpdateCommand::GPAO_SCHEMA_COMMAND)
-            ->run(new ArrayInput(['command' => SchemaUpdateCommand::GPAO_SCHEMA_COMMAND]), $output);
+        $run = function (string $cmd) use ($output): void {
+            $this
+                ->getApplication()
+                ->find($cmd)
+                ->run(new ArrayInput(['command' => $cmd]), $output);
+        };
+
+        $run(SchemaUpdateCommand::GPAO_SCHEMA_COMMAND);
+        $run(FixturesCommand::GPAO_FIXTURES_COMMAND);
         return 0;
     }
 }

@@ -17,4 +17,5 @@ alias debug:event-dispatcher='php /var/www/html/TConcept-GPAO/bin/console debug:
 alias debug:router='php /var/www/html/TConcept-GPAO/bin/console debug:router'
 ### GPAO
 alias gpao:database:load='php /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
+alias gpao:fixtures:load='php /var/www/html/TConcept-GPAO/bin/console gpao:fixtures:load'
 alias gpao:schema:update='php /var/www/html/TConcept-GPAO/bin/console gpao:schema:update'
