@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Fixtures\EntityConfig;
+use App\Fixtures\Configurations;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,16 +12,16 @@ use Symfony\Component\Yaml\Yaml;
 final class FixturesCommand extends AbstractCommand {
     public const GPAO_FIXTURES_COMMAND = 'gpao:fixtures:load';
 
-    /** @var EntityConfig[] */
-    private array $config = [];
+    private Configurations $configurations;
 
     public function __construct(
         private string $configDir,
-        private EntityManagerInterface $em,
+        EntityManagerInterface $em,
         private string $jsonDir,
         private string $jsonPrefix
     ) {
         parent::__construct(self::GPAO_FIXTURES_COMMAND);
+        $this->configurations = new Configurations($em);
     }
 
     protected function configure(): void {
@@ -41,7 +41,7 @@ final class FixturesCommand extends AbstractCommand {
 
         $persistTag = 'Enregistrement des données en base';
         $this->startTime($persistTag);
-        $this->persist();
+        $this->configurations->persist();
         $this->endTime($output, $persistTag);
 
         return 0;
@@ -59,9 +59,11 @@ final class FixturesCommand extends AbstractCommand {
                 }
 
                 foreach ($yaml as $entity => $config) {
-                    $this->config[removeEnd($file, '.yaml')] = new EntityConfig(
-                        $this->em->getClassMetadata($entity),
-                        $config
+                    /** @var class-string $entity */
+                    $this->configurations->addConfig(
+                        name: removeEnd($file, '.yaml'),
+                        entity: $entity,
+                        config: $config
                     );
                 }
             }
@@ -79,16 +81,11 @@ final class FixturesCommand extends AbstractCommand {
                     throw new RuntimeException("Invalid $json.");
                 }
 
-                $this->config[removeEnd(removeStart($file, $this->jsonPrefix), '.json')]
-                    ->setData(json_decode($json, true));
+                $this->configurations->setData(
+                    name: removeEnd(removeStart($file, $this->jsonPrefix), '.json'),
+                    data: json_decode($json, true)
+                );
             }
-        }
-    }
-
-    private function persist(): void {
-        foreach ($this->config as $config) {
-            dump($sql = $config->toSQL($this->em->getConnection()));
-            $this->em->getConnection()->executeStatement($sql);
         }
     }
 }

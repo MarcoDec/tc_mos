@@ -4,9 +4,12 @@ namespace App\Fixtures;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use JetBrains\PhpStorm\Pure;
 use Tightenco\Collect\Support\Collection;
 
 final class EntityConfig {
+    private ?string $deleted;
+
     /** @var Collection<mixed> */
     private Collection $entities;
 
@@ -14,26 +17,40 @@ final class EntityConfig {
     private array $properties;
 
     /**
-     * @param ClassMetadata<object> $metadata
-     * @param mixed[]               $properties
+     * @param ClassMetadata<object>                        $metadata
+     * @param array{deleted?: string, properties: mixed[]} $config
      */
-    public function __construct(private ClassMetadata $metadata, array $properties) {
+    public function __construct(private ClassMetadata $metadata, array $config) {
+        $this->deleted = $config['deleted'] ?? null;
         $this->entities = collect();
-        $this->properties = collect($properties)
+        $this->properties = collect($config['properties'])
             ->map(static fn (array $config, string $property): PropertyConfig => new PropertyConfig($property, $config))
             ->all();
+    }
+
+    #[Pure]
+    public function count(): int {
+        return $this->entities->count();
+    }
+
+    /**
+     * @return class-string
+     */
+    #[Pure]
+    public function getClassName(): string {
+        return $this->metadata->getName();
     }
 
     /**
      * @param mixed[] $data
      */
-    public function setData(array $data): void {
+    public function setData(array $data, int $count): void {
         foreach ($data as $entity) {
-            if ($entity['statut'] !== '0') {
+            if (!empty($this->deleted) && $entity[$this->deleted] !== '0') {
                 continue;
             }
 
-            $transformed = ['id' => $entity['id']];
+            $transformed = ['id' => ++$count];
             foreach ($this->properties as $property => $config) {
                 $transformed[$config->getNewName()] = $entity[$property];
             }

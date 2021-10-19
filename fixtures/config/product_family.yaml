@@ -1,3 +1,5 @@
 App\Entity\Project\Product\Family:
-  family_name:
-    new_name: name
+  deleted: statut
+  properties:
+    family_name:
+      new_name: name
