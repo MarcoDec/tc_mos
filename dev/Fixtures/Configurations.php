@@ -3,25 +3,24 @@
 namespace App\Fixtures;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Tightenco\Collect\Support\Collection;
 
 final class Configurations {
-    /** @var Collection<EntityConfig> */
-    private Collection $configurations;
+    /** @var array<string, EntityConfig> */
+    private array $configurations = [];
 
     public function __construct(private EntityManagerInterface $em) {
-        $this->configurations = collect();
     }
 
     /**
-     * @param class-string                                 $entity
-     * @param array{deleted?: string, properties: mixed[]} $config
+     * @param class-string                                                                                           $entity
+     * @param array{deleted?: string, properties: array{new_name: string, new_ref?: class-string, old_ref?: string}} $config
      */
     public function addConfig(string $name, string $entity, array $config): void {
-        $this->configurations->put($name, new EntityConfig(
+        $this->configurations[$name] = new EntityConfig(
+            configurations: $this,
             metadata: $this->em->getClassMetadata($entity),
             config: $config
-        ));
+        );
     }
 
     /**
@@ -37,6 +36,10 @@ final class Configurations {
         return $count;
     }
 
+    public function getId(string $name, string $id): ?int {
+        return $this->configurations[$name]->getId($id);
+    }
+
     public function persist(): void {
         foreach ($this->configurations as $config) {
             $this->em->getConnection()->executeStatement($config->toSQL($this->em->getConnection()));
@@ -47,9 +50,9 @@ final class Configurations {
      * @param mixed[] $data
      */
     public function setData(string $name, array $data): void {
-        $this->configurations->get($name)->setData(
+        $this->configurations[$name]->setData(
             data: $data,
-            count: $this->count($this->configurations->get($name)->getClassName())
+            count: $this->count($this->configurations[$name]->getClassName())
         );
     }
 }

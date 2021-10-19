@@ -13,18 +13,28 @@ final class EntityConfig {
     /** @var Collection<mixed> */
     private Collection $entities;
 
+    /** @var array<string, int> */
+    private array $ids = [];
+
     /** @var array<string, PropertyConfig> */
     private array $properties;
 
     /**
-     * @param ClassMetadata<object>                        $metadata
-     * @param array{deleted?: string, properties: mixed[]} $config
+     * @param ClassMetadata<object>                                                                                  $metadata
+     * @param array{deleted?: string, properties: array{new_name: string, new_ref?: class-string, old_ref?: string}} $config
      */
-    public function __construct(private ClassMetadata $metadata, array $config) {
+    public function __construct(
+        private Configurations $configurations,
+        private ClassMetadata $metadata,
+        array $config
+    ) {
         $this->deleted = $config['deleted'] ?? null;
         $this->entities = collect();
         $this->properties = collect($config['properties'])
-            ->map(static fn (array $config, string $property): PropertyConfig => new PropertyConfig($property, $config))
+            ->map(static function (array $config, string $property): PropertyConfig {
+                /** @var array{new_name: string, new_ref?: class-string, old_ref?: string} $config */
+                return new PropertyConfig($property, $config);
+            })
             ->all();
     }
 
@@ -41,6 +51,10 @@ final class EntityConfig {
         return $this->metadata->getName();
     }
 
+    public function getId(string $id): ?int {
+        return $this->ids[$id] ?? null;
+    }
+
     /**
      * @param mixed[] $data
      */
@@ -50,9 +64,14 @@ final class EntityConfig {
                 continue;
             }
 
-            $transformed = ['id' => ++$count];
+            $transformed = ['id' => $id = ++$count];
+            $this->ids[$entity['id']] = $id;
             foreach ($this->properties as $property => $config) {
-                $transformed[$config->getNewName()] = $entity[$property];
+                $value = $entity[$property];
+                if (!empty($ref = $config->getOldRef())) {
+                    $value = $this->configurations->getId($ref, $value);
+                }
+                $transformed[$config->getNewName()] = $value;
             }
             $this->entities->push(collect($transformed));
         }
