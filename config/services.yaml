@@ -15,12 +15,13 @@ services:
   # this creates a service per class whose id is the fully-qualified class name
   App\:
     exclude:
-      - '../src/DependencyInjection/'
-      - '../src/Entity/'
-      - '../src/Kernel.php'
-      - '../src/OpenApi/OpenApiWrapper.php'
-      - '../src/Tests/'
-    resource: '../src/'
+      - ../src/DependencyInjection/
+      - ../src/Entity/
+      - ../src/Filesystem/Directory.php
+      - ../src/Kernel.php
+      - ../src/OpenApi/OpenApiWrapper.php
+      - ../src/Tests/
+    resource: ../src/
 
   App\Controller\:
     resource: ../src/Controller
@@ -29,6 +30,16 @@ services:
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
+  App\Doctrine\ORM\Decorator\EntityManagerDecorator:
+    decorates: doctrine.orm.default_entity_manager
+
+  App\EventListener\DeserializeListener:
+    autoconfigure: false
+    decorates: api_platform.listener.request.deserialize
+    tags:
+      - event: kernel.request
+        name: kernel.event_listener
+
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'
@@ -36,6 +47,14 @@ services:
     tags:
       - event: kernel.exception
         name: kernel.event_listener
+        priority: 2
+
+  App\EventListener\Project\Product\FamilyListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Project\Product\Family
+        event: postLoad
+        name: doctrine.orm.entity_listener
 
   App\EventListener\Security\LogoutListener:
     autoconfigure: false
@@ -43,6 +62,11 @@ services:
       - dispatcher: security.event_dispatcher.main
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
+
+  App\Filesystem\FileManager:
+    arguments:
+      $dashGenerator: '@api_platform.path_segment_name_generator.dash'
+      $dir: '%kernel.project_dir%/public'
 
   App\OpenApi\OpenApiFactory:
     arguments:

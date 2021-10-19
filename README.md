@@ -32,11 +32,11 @@ exécutez la commande `composer install` pour installer les différentes dépend
 
 ### Base de données
 
-Les raccourcis ne sont pas encore présents. Il faudra donc entrer pour le moment les commandes suivantes&nbsp;:
+Les raccourcis ne sont pas encore tous présents. Il faudra donc entrer pour le moment les commandes suivantes&nbsp;:
 
 ```shell
 php bin/console doctrine:schema:update -f
-php bin/console doctrine:fixtures:load
+gpao:fixtures:load
 ```
 
 ### PhpStorm

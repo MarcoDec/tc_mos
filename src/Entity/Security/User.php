@@ -27,27 +27,27 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 abstract class User extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     #[
         ApiProperty(identifier: false),
-        ORM\Column(type: 'integer', options: ['unsigned' => true]),
+        ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
         ORM\Id
     ]
-    protected int $id;
+    protected ?int $id = null;
 
     #[
-        ORM\Embedded(class: Roles::class),
+        ORM\Embedded,
         Serializer\Groups(['read:user'])
     ]
     private Roles $embRoles;
 
     #[ORM\Column]
-    private string $password;
+    private ?string $password = null;
 
     #[
         ApiProperty(description: 'identifiant', identifier: true, example: 'super'),
-        ORM\Column(length: 180, unique: true),
+        ORM\Column(length: 180),
         Serializer\Groups(['read:user'])
     ]
-    private string $username;
+    private ?string $username = null;
 
     #[Pure]
     final public function __construct() {
@@ -74,7 +74,7 @@ abstract class User extends Entity implements PasswordAuthenticatedUserInterface
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    final public function getPassword(): string {
+    final public function getPassword(): ?string {
         return $this->password;
     }
 
@@ -103,14 +103,14 @@ abstract class User extends Entity implements PasswordAuthenticatedUserInterface
      *
      * @see UserInterface
      */
-    final public function getUserIdentifier(): string {
+    final public function getUserIdentifier(): ?string {
         return $this->username;
     }
 
     /**
      * @deprecated since Symfony 5.3, use getUserIdentifier instead
      */
-    final public function getUsername(): string {
+    final public function getUsername(): ?string {
         return $this->username;
     }
 
@@ -119,12 +119,12 @@ abstract class User extends Entity implements PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    final public function setPassword(string $password): self {
+    final public function setPassword(?string $password): self {
         $this->password = $password;
         return $this;
     }
 
-    final public function setUsername(string $username): self {
+    final public function setUsername(?string $username): self {
         $this->username = $username;
         return $this;
     }

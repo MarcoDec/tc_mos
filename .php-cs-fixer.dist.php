@@ -213,7 +213,7 @@ return (new PhpCsFixer\Config())
         'general_phpdoc_tag_rename' => true,
         'no_blank_lines_after_phpdoc' => true,
         'no_empty_phpdoc' => true,
-        'no_superfluous_phpdoc_tags' => true,
+        'no_superfluous_phpdoc_tags' => ['allow_mixed' => true],
         'phpdoc_align' => true,
         'phpdoc_annotation_without_dot' => true,
         'phpdoc_indent' => true,

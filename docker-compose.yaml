@@ -44,9 +44,10 @@ services:
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
       - ./docker/php:/var/www/html/TConcept-GPAO/docker/php:delegated
-      - ./node_modules:/var/www/html/TConcept-GPAO/node_modules:delegated
       - ./public/build:/var/www/html/TConcept-GPAO/public/build:delegated
       - ./public/bundles:/var/www/html/TConcept-GPAO/public/bundles:delegated
+      - ./public/uploads:/var/www/html/TConcept-GPAO/public/uploads:delegated
+      - ./node_modules:/var/www/html/TConcept-GPAO/node_modules:delegated
       - ./var:/var/www/html/TConcept-GPAO/var:delegated
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
   phpmyadmin:
