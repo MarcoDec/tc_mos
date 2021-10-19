@@ -1,7 +1,7 @@
 <script lang="ts" setup>
     import {Field} from '../../../store/bootstrap-5/Field'
     import type {UserResponse} from '../../../store/security/User'
-    import {connect} from '../../../store/store'
+    import {createCookie} from '../../../cookies'
     import router from '../../router'
 
     const fields: Field[] = [
@@ -10,7 +10,7 @@
     ]
 
     function login(user: UserResponse): void {
-        connect(user)
+        createCookie(user)
         router.push({name: 'home'})
     }
 </script>
