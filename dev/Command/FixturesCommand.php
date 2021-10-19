@@ -5,12 +5,14 @@ namespace App\Command;
 use App\Fixtures\Configurations;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 final class FixturesCommand extends AbstractCommand {
     public const GPAO_FIXTURES_COMMAND = 'gpao:fixtures:load';
+    private const DOCTRINE_FIXTURES_COMMAND = 'doctrine:fixtures:load';
 
     private Configurations $configurations;
 
@@ -43,6 +45,14 @@ final class FixturesCommand extends AbstractCommand {
         $this->startTime($persistTag);
         $this->configurations->persist();
         $this->endTime($output, $persistTag);
+
+        $loadDoctrine = 'Chargement des fixtures';
+        $this->startTime($loadDoctrine);
+        $this
+            ->getApplication()
+            ->find(self::DOCTRINE_FIXTURES_COMMAND)
+            ->run(new ArrayInput(['command' => self::DOCTRINE_FIXTURES_COMMAND, '--append' => true]), $output);
+        $this->endTime($output, $loadDoctrine);
 
         return 0;
     }
