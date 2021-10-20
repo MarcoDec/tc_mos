@@ -1,0 +1,60 @@
+# Consignes
+Pour chaque entité, il est demandé&nbsp;:
+- de se placer sur la branche `develop` et de la mettre à jour avec un `git pull origin develop`&nbsp;;
+- de créer une nouvelle branche selon le nom donné et de s'y placer&nbsp;;
+- de créer l'entité demandée (étendant `App\Entity\Entity`) avec ses propriétés typées en PHP 7.4 et leurs attributs PHP 8&nbsp;;
+- d'ouvrir l'entité en tant que ressource d'API avec les routes suivantes&nbsp;:
+    - *collection*&nbsp;: **GET** & **POST**&nbsp;;
+    - *item*&nbsp;: **DELETE** & **PATCH**.
+      ​
+      Les références des entités se trouvent dans la branche [`feature/fixtures` du *refactoring*](https://github.com/Florent8/GPAO-Symfony-Prototype/tree/feature/fixtures/refactoring/src/Entity).
+# Entités
+- `App\Entity\Purchase\Component\Family`&nbsp;:
+    - branche&nbsp;: `feature/api/purchase/component/family`&nbsp;;
+    - propriétés&nbsp;:
+        - code&nbsp;;
+        - copperable&nbsp;;
+        - customsCode&nbsp;;
+        - name&nbsp;;
+        - parent&nbsp;;
+- `App\Entity\Hr\Employee\Skill\Type`&nbsp;:
+    - branche&nbsp;: `feature/api/hr/employee/skill/type`&nbsp;;
+    - propriétés&nbsp;:
+        - name&nbsp;;
+- `App\Entity\Hr\Event\Type`&nbsp;:
+    - branche&nbsp;: `feature/api/hr/employee/event/type`&nbsp;;
+    - propriétés&nbsp;:
+        - name&nbsp;;
+        - toStatus&nbsp;;
+- `App\Entity\Hr\OutTrainer`&nbsp;:
+    - branche&nbsp;: `feature/api/hr/out-trainer`&nbsp;;
+    - propriétés&nbsp;:
+        - address&nbsp;;
+        - firstname&nbsp;;
+        - lastname&nbsp;;
+- `App\Entity\Hr\TimeSlot`&nbsp;:
+    - branche&nbsp;: `feature/api/hr/time-slot`&nbsp;;
+    - propriétés&nbsp;:
+        - end&nbsp;;
+        - endBreak&nbsp;;
+        - name&nbsp;;
+        - start&nbsp;;
+        - startBreak&nbsp;;
+- `App\Entity\Logistics\Carrier`&nbsp;:
+    - branche&nbsp;: `feature/api/logistics/carrier`&nbsp;;
+    - propriétés&nbsp;:
+        - address&nbsp;;
+        - name&nbsp;;
+- `App\Entity\Management\Color`&nbsp;:
+    - branche&nbsp;: `feature/api/management/color`&nbsp;;
+    - propriétés&nbsp;:
+        - name&nbsp;;
+        - ral&nbsp;;
+        - rgb&nbsp;;
+- `App\Entity\Management\InvoiceTimeDue`&nbsp;:
+    - branche&nbsp;: `feature/api/management/invoice-time-due`&nbsp;;
+    - propriétés&nbsp;:
+        - days&nbsp;;
+        - daysAfterEndOfMonth&nbsp;;
+        - endOfMonth&nbsp;;
+        - name.
