@@ -4,21 +4,23 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\MappedSuperclass]
 abstract class Entity {
     #[
-        ApiProperty(identifier: true),
-        ORM\Column(type: 'integer', options: ['unsigned' => true]),
+        ApiProperty(description: 'id', identifier: true, example: 1),
+        ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
-        ORM\Id
+        ORM\Id,
+        Serializer\Groups(['read:id'])
     ]
-    protected int $id;
+    protected ?int $id = null;
 
-    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    #[ORM\Column(options: ['default' => false])]
     private bool $deleted = false;
 
-    final public function getId(): int {
+    final public function getId(): ?int {
         return $this->id;
     }
 

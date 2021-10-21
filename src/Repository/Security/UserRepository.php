@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use function get_class;
 use LogicException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -45,15 +46,18 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         return $this->getEmployeeRepository()->findOneBy($criteria, $orderBy);
     }
 
-    public function loadUserByIdentifier(string $identifier): ?User {
-        return $this->find($identifier);
+    public function loadUserByIdentifier(string $identifier): User {
+        if (!empty($user = $this->find($identifier))) {
+            return $user;
+        }
+        throw new UserNotFoundException();
     }
 
-    public function loadUserByUsername(string $username): ?User {
+    public function loadUserByUsername(string $username): User {
         return $this->loadUserByIdentifier($username);
     }
 
-    public function refreshUser(UserInterface $user): ?User {
+    public function refreshUser(UserInterface $user): User {
         return $this->loadUserByIdentifier($user->getUserIdentifier());
     }
 
