@@ -12,6 +12,57 @@ class Roles {
     public const ROLE_ACCOUNTING_READER = 'ROLE_ACCOUNTING_READER';
     public const ROLE_ACCOUNTING_WRITER = 'ROLE_ACCOUNTING_WRITER';
 
+    // Hiérarchie
+    public const ROLE_HIERARCHY = [
+        // Comptabilité
+        self::ROLE_ACCOUNTING_READER => self::ROLE_USER,
+        self::ROLE_ACCOUNTING_WRITER => self::ROLE_ACCOUNTING_READER,
+        self::ROLE_ACCOUNTING_ADMIN => self::ROLE_ACCOUNTING_WRITER,
+        // RH
+        self::ROLE_HR_READER => self::ROLE_USER,
+        self::ROLE_HR_WRITER => self::ROLE_HR_READER,
+        self::ROLE_HR_ADMIN => self::ROLE_HR_WRITER,
+        // Informatique
+        self::ROLE_IT_ADMIN => self::ROLE_USER,
+        // Niveaux
+        self::ROLE_LEVEL_OPERATOR => self::ROLE_USER,
+        self::ROLE_LEVEL_ANIMATOR => self::ROLE_LEVEL_OPERATOR,
+        self::ROLE_LEVEL_MANAGER => self::ROLE_LEVEL_ANIMATOR,
+        self::ROLE_LEVEL_DIRECTOR => self::ROLE_LEVEL_MANAGER,
+        // Logistique
+        self::ROLE_LOGISTICS_READER => self::ROLE_USER,
+        self::ROLE_LOGISTICS_WRITER => self::ROLE_LOGISTICS_READER,
+        self::ROLE_LOGISTICS_ADMIN => self::ROLE_LOGISTICS_WRITER,
+        // Maintenance
+        self::ROLE_MAINTENANCE_READER => self::ROLE_USER,
+        self::ROLE_MAINTENANCE_WRITER => self::ROLE_MAINTENANCE_READER,
+        self::ROLE_MAINTENANCE_ADMIN => self::ROLE_MAINTENANCE_WRITER,
+        // Direction
+        self::ROLE_MANAGEMENT_READER => self::ROLE_USER,
+        self::ROLE_MANAGEMENT_WRITER => self::ROLE_MANAGEMENT_READER,
+        self::ROLE_MANAGEMENT_ADMIN => self::ROLE_MANAGEMENT_WRITER,
+        // Production
+        self::ROLE_PRODUCTION_READER => self::ROLE_USER,
+        self::ROLE_PRODUCTION_WRITER => self::ROLE_PRODUCTION_READER,
+        self::ROLE_PRODUCTION_ADMIN => self::ROLE_PRODUCTION_WRITER,
+        // Projet
+        self::ROLE_PROJECT_READER => self::ROLE_USER,
+        self::ROLE_PROJECT_WRITER => self::ROLE_PROJECT_READER,
+        self::ROLE_PROJECT_ADMIN => self::ROLE_PROJECT_WRITER,
+        // Achat
+        self::ROLE_PURCHASE_READER => self::ROLE_USER,
+        self::ROLE_PURCHASE_WRITER => self::ROLE_PURCHASE_READER,
+        self::ROLE_PURCHASE_ADMIN => self::ROLE_PURCHASE_WRITER,
+        // Qualité
+        self::ROLE_QUALITY_READER => self::ROLE_USER,
+        self::ROLE_QUALITY_WRITER => self::ROLE_QUALITY_READER,
+        self::ROLE_QUALITY_ADMIN => self::ROLE_QUALITY_WRITER,
+        // Ventes
+        self::ROLE_SELLING_READER => self::ROLE_USER,
+        self::ROLE_SELLING_WRITER => self::ROLE_SELLING_READER,
+        self::ROLE_SELLING_ADMIN => self::ROLE_SELLING_WRITER
+    ];
+
     // RH
     public const ROLE_HR_ADMIN = 'ROLE_HR_ADMIN';
     public const ROLE_HR_READER = 'ROLE_HR_READER';
