@@ -1,16 +1,18 @@
 <script lang="ts" setup>
-    import {Field} from '../../../store/bootstrap-5/Field'
-    import type {UserResponse} from '../../../store/security/User'
-    import {createCookie} from '../../../cookies'
+    import type {UserState} from '../../../store/entity/security/User'
     import router from '../../router'
+    import {useManager} from '../../../store/repository/RepositoryManager'
 
-    const fields: Field[] = [
-        new Field('Identifiant', 'username'),
-        new Field('Mot de passe', 'password', 'password')
-    ]
+    const id = 'login'
+    const manager = useManager()
 
-    function login(user: UserResponse): void {
-        createCookie(user)
+    manager.forms.persist(id, [
+        {label: 'Identifiant', name: 'username'},
+        {label: 'Mot de passe', name: 'password', type: 'password'}
+    ])
+
+    function connect(user: UserState): void {
+        manager.users.connect(user)
         router.push({name: 'home'})
     }
 </script>
@@ -18,7 +20,7 @@
 <template>
     <AppRow>
         <AppCard class="bg-blue col">
-            <AppForm id="login" :fields="fields" action="/api/login" @success="login"/>
+            <AppForm :id="id" action="/api/login" @success="connect"/>
         </AppCard>
     </AppRow>
 </template>

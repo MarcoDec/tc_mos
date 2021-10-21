@@ -1,15 +1,19 @@
 <script lang="ts" setup>
     import {computed, defineEmits, defineProps, onMounted, onUnmounted, ref, watch} from 'vue'
+    import type {BootstrapVariant} from '../../../types/bootstrap-5'
     import {Modal} from 'bootstrap'
 
     const emit = defineEmits<(e: 'hide') => void>()
-    const props = defineProps<{show: boolean, title: string, variant?: string | null}>()
+    const props = defineProps<{show: boolean, title: string, variant?: BootstrapVariant | null}>()
 
-    const classVariant = computed<string | null>(() => (typeof props.variant !== 'undefined' && props.variant !== null && props.variant.length > 0
-        ? `bg-${props.variant}`
-        : null))
     const el = ref<HTMLDivElement>()
     const modal = ref<Modal | null>(null)
+
+    const classVariant = computed(() => (
+        typeof props.variant !== 'undefined' && props.variant !== null
+            ? `bg-${props.variant}`
+            : null
+    ))
 
     function hide(): void {
         modal.value?.hide()
@@ -19,7 +23,7 @@
         emit('hide')
     }
 
-    watch(() => props.show, (show: boolean) => {
+    watch(() => props.show, show => {
         if (show)
             modal.value?.show()
     })
@@ -32,8 +36,7 @@
     })
 
     onUnmounted(() => {
-        if (el.value instanceof HTMLDivElement)
-            el.value.removeEventListener('hidden.bs.modal', onHide)
+        el.value?.removeEventListener('hidden.bs.modal', onHide)
     })
 </script>
 

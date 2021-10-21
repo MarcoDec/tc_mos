@@ -7,16 +7,5 @@ export * from './layout'
 export * from './modal'
 export * from './navbar'
 
-type AppAlertComputed = {alertClass: () => string}
-type AppAlertProps = {variant?: string}
-type AppAlertComponent = Component<AppAlertProps, never, never, AppAlertComputed>
-export const AppAlert = defineAsyncComponent<AppAlertComponent>(async () => import('./AppAlert.vue'))
-
-type AppBtnComputed = {btnClass: () => string}
-type AppBtnProps = {
-    label: string
-    type?: 'button' | 'reset' | 'submit'
-    variant?: string
-}
-type AppBtnComponent = Component<AppBtnProps, never, never, AppBtnComputed>
-export const AppBtn = defineAsyncComponent<AppBtnComponent>(async () => import('./AppBtn.vue'))
+export const AppAlert = defineAsyncComponent<Component>(async () => import('./AppAlert.vue'))
+export const AppBtn = defineAsyncComponent<Component>(async () => import('./AppBtn.vue'))

@@ -134,7 +134,6 @@ module.exports = {
         'function-paren-newline': ['error', 'consistent'],
         'key-spacing': 'error',
         'linebreak-style': 'error',
-        'new-cap': 'error',
         'new-parens': 'error',
         'no-bitwise': 'error',
         'no-continue': 'error',

@@ -1,19 +1,18 @@
 <script lang="ts" setup>
-    import {findField, findFieldGetter} from '../../../store/bootstrap-5/Field'
     import {defineProps} from 'vue'
+    import {useManager} from '../../../store/repository/RepositoryManager'
 
     const props = defineProps<{field: string}>()
-    const {id} = findFieldGetter(props.field)
-    const {form, label, name, type} = findField(props.field)
+    const storedField = useManager().fields.find(props.field)
 </script>
 
 <template>
     <AppRow css-class="mb-3">
-        <AppLabel :for="id">
-            {{ label }}
+        <AppLabel>
+            {{ storedField?.label }}
         </AppLabel>
         <AppCol>
-            <AppInput :id="id" :form="form" :name="name" :type="type"/>
+            <AppInput :form="storedField?.form" :name="storedField?.name" :type="storedField?.type"/>
         </AppCol>
     </AppRow>
 </template>

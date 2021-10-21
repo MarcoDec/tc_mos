@@ -15,35 +15,18 @@ import {
     AppNavbarBrand,
     AppRow
 } from './components'
-import App from './routing/pages/App'
-import type {AxiosError} from 'axios'
-import VueAxios from 'vue-axios'
-import axios from 'axios'
+import App from './routing/App'
 import {createApp} from 'vue'
-import mitt from 'mitt'
+import {emitter} from './api'
+import manager from './store/repository/RepositoryManager'
 import router from './routing/router'
-import {store} from './store/store'
+import store from './store/store'
 
-const app = createApp(App)
-
-app
-    .use(VueAxios, axios)
+createApp(App)
     .use(router)
     .use(store)
-
-app.config.globalProperties.mitt = mitt()
-app.config.globalProperties.axios.interceptors.response.use(
-    (response: unknown) => response,
-    (error: AxiosError): void => {
-        app.config.globalProperties.mitt.emit('error', error)
-    }
-)
-
-app
-    .provide('axios', app.config.globalProperties.axios)
-    .provide('mitt', app.config.globalProperties.mitt)
-
-app
+    .provide('mitt', emitter)
+    .provide('repositories', manager)
     .component('AppAlert', AppAlert)
     .component('AppBtn', AppBtn)
     .component('AppCard', AppCard)
@@ -58,5 +41,4 @@ app
     .component('AppNavbar', AppNavbar)
     .component('AppNavbarBrand', AppNavbarBrand)
     .component('AppRow', AppRow)
-
-app.mount('#vue')
+    .mount('#vue')
