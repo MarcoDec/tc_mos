@@ -1,98 +1,89 @@
 <?php
 
-namespace App\Entity\purchase\component;
+namespace App\Entity;
 
-use App\Entity\Entity;
-use App\Entity\Traits\CodeTrait;
-use App\Entity\Traits\FamilyTrait;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Repository\FamilyRepository;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @method Family[]|Collection getChildren()
- *
- * @ORM\AttributeOverrides({@ORM\AttributeOverride(column=@ORM\Column(nullable=true), name="code")})
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks
- * @ORM\Table(name="component_family")
- */
+#[ORM\Entity(repositoryClass: FamilyRepository::class)]
 class Family extends Entity
 {
-    use CodeTrait;
-    use FamilyTrait {
-        __construct as private constructFamily;
-        addChild as private addFamilyChild;
-        getParent as private getFamilyParent;
-        removeChild as private removeFamilyChild;
-        setParent as private setFamilyParent;
-    }
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
-    /**
-     * @ORM\Column(options={"default": false}, type="boolean")
-     *
-     * @var boolean
-     */
+
+
+    #[ORM\Column( length: 255, nullable: true)]
+    private ?string $code=null;
+
+    #[ORM\Column(type: 'boolean')]
     private $copperable = false;
-    /**
-     * @ORM\ManyToOne(fetch="EAGER", inversedBy="children", targetEntity=Family::class)
-     *
-     * @var Family|null
-     */
 
-    private $parent;
-    public function __construct() {
-        $this->constructFamily();
-    }
+    #[ORM\Column(type: 'string', length: 255)]
+    private $customsCode;
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    #[ORM\Column(type: 'string', length: 255)]
+    private $name;
+
+    #[ORM\ManyToOne()]
+    private ?Family $parent=null;
+
+
+
+    public function getCode(): ?string
     {
-        return $this->name;
+        return $this->code;
     }
 
-    /**
-     * @param mixed $name
-     */
-    public function setName($name): void
+    public function setCode(?string $code): self
     {
-        $this->name = $name;
+        $this->code = $code;
+
+        return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isCopperable(): bool
+    public function getCopperable(): ?bool
     {
         return $this->copperable;
     }
 
-    /**
-     * @param bool $copperable
-     */
-    public function setCopperable(bool $copperable): void
+    public function setCopperable(bool $copperable): self
     {
         $this->copperable = $copperable;
+
+        return $this;
     }
 
-    /**
-     * @return Family|null
-     */
-    public function getParent(): ?Family
+    public function getCustomsCode(): ?string
+    {
+        return $this->customsCode;
+    }
+
+    public function setCustomsCode(string $customsCode): self
+    {
+        $this->customsCode = $customsCode;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getParent(): ?self
     {
         return $this->parent;
     }
 
-    /**
-     * @param Family|null $parent
-     */
-    public function setParent(?Family $parent): void
+    public function setParent(?self $parent): self
     {
         $this->parent = $parent;
-    }
 
+        return $this;
+    }
 }
