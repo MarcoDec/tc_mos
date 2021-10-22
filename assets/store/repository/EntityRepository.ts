@@ -7,5 +7,5 @@ export default abstract class EntityRepository<T extends Entity<S>, S extends En
         return super.find(id)
     }
 
-    public abstract persist(state: S): T
+    public abstract persist(vueComponent: string, state: S): T
 }

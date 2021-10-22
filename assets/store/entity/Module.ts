@@ -2,10 +2,23 @@ import 'reflect-metadata'
 import {useNamespacedMutations, useNamespacedState} from 'vuex-composition-helpers'
 import store from '../store'
 
-export default abstract class Module<T = unknown> {
-    public readonly namespaced: boolean = true
+export function Column(): ReturnType<typeof Reflect.metadata> {
+    return Reflect.metadata('type', 'column')
+}
 
-    protected constructor(public readonly namespace: string, public state: T) {
+type ModuleState = {
+    namespace: string
+    vueComponents: string[]
+}
+
+export default abstract class Module<T = unknown> {
+    @Column() public namespace!: string
+    public readonly namespaced: boolean = true
+    public state: ModuleState & T
+    @Column() public vueComponents!: string[]
+
+    protected constructor(vueComponent: string, namespace: string, state: T) {
+        this.state = {...state, namespace, vueComponents: [vueComponent]}
     }
 
     public get index(): string {
@@ -18,9 +31,9 @@ export default abstract class Module<T = unknown> {
             const metadata = Reflect.getMetadata('type', this, property)
             if (typeof metadata === 'string' && metadata === 'column') {
                 Object.defineProperty(this, property, {
-                    get: () => useNamespacedState(store, this.namespace, [property])[property].value,
+                    get: () => useNamespacedState(store, this.state.namespace, [property])[property].value,
                     set: value => {
-                        useNamespacedMutations(store, this.namespace, [property])[property](value)
+                        useNamespacedMutations(store, this.state.namespace, [property])[property](value)
                     }
                 })
             }
@@ -30,15 +43,11 @@ export default abstract class Module<T = unknown> {
 
     public register(): this {
         const path: string[] = []
-        for (const part of this.namespace.split('/')) {
+        for (const part of this.state.namespace.split('/')) {
             path.push(part)
             if (!store.hasModule(path))
-                store.registerModule(path, path.join('/') === this.namespace ? this : {namespaced: true})
+                store.registerModule(path, path.join('/') === this.state.namespace ? this : {namespaced: true})
         }
         return this
     }
-}
-
-export function Column(): ReturnType<typeof Reflect.metadata> {
-    return Reflect.metadata('type', 'column')
 }

@@ -9,8 +9,8 @@ type FormFields = {fields: string[]}
 export default class Form extends Module<FormState> {
     @Column() public id!: string
 
-    public constructor(id: string, namespace: string) {
-        super(namespace, {id})
+    public constructor(vueComponent: string, id: string, namespace: string) {
+        super(vueComponent, namespace, {id})
     }
 
     public get fields(): string[] {

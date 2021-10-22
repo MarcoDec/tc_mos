@@ -7,7 +7,7 @@ export default abstract class ModuleRepository<T extends Module> {
         return this.items.find(({index}) => index === id) || null
     }
 
-    public abstract persist(...args: unknown[]): T
+    public abstract persist(vueComponent: string, ...args: unknown[]): T
 
     // eslint-disable-next-line class-methods-use-this
     protected postPersist(item: T): T {

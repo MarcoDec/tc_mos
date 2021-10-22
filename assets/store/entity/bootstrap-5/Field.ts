@@ -14,7 +14,7 @@ export default class Field extends Module<FieldState> {
     @Column() public name!: string
     @Column() public type!: InputType
 
-    public constructor(form: string, label: string, name: string, namespace: string, type: InputType = 'text') {
-        super(namespace, {form, label, name, type})
+    public constructor(vueComponent: string, form: string, label: string, name: string, namespace: string, type: InputType = 'text') {
+        super(vueComponent, namespace, {form, label, name, type})
     }
 }

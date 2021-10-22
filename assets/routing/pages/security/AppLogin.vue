@@ -3,10 +3,11 @@
     import router from '../../router'
     import {useManager} from '../../../store/repository/RepositoryManager'
 
-    const id = 'login'
+    const form = 'login'
+    const id = 'app-login'
     const manager = useManager()
 
-    manager.forms.persist(id, [
+    manager.forms.persist(id, form, [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ])
@@ -20,7 +21,7 @@
 <template>
     <AppRow>
         <AppCard class="bg-blue col">
-            <AppForm :id="id" action="/api/login" @success="connect"/>
+            <AppForm :id="form" action="/api/login" @success="connect"/>
         </AppCard>
     </AppRow>
 </template>

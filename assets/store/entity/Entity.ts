@@ -13,7 +13,7 @@ export default abstract class Entity<T extends EntityState> extends Module<T> {
     @Column() public '@type'!: string
     @Column() public id!: number
 
-    protected constructor(namespace: string, state: T) {
-        super(namespace, state)
+    protected constructor(vueComponent: string, namespace: string, state: T) {
+        super(vueComponent, namespace, state)
     }
 }

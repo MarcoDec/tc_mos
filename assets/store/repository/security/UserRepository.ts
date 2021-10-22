@@ -35,8 +35,7 @@ export default class UserRepository extends EntityRepository<User, UserState> {
     }
 
     public connect(state: UserState): User {
-        const user = this.persist(state)
-        user.isCurrent = true
+        const user = this.persist('vue', state, true)
         Cookies.set(COOKIE_NAME, state.username, {expires: 1 / 24})
         return user
     }
@@ -47,8 +46,9 @@ export default class UserRepository extends EntityRepository<User, UserState> {
         Cookies.remove(COOKIE_NAME)
     }
 
-    public persist(state: UserState): User {
-        const item = new User(`users/${state.id}`, state)
+    public persist(vueComponent: string, state: UserState, isCurrent = false): User {
+        state.isCurrent = isCurrent
+        const item = new User(vueComponent, `users/${state.id}`, state)
         this.items.push(item)
         return this.postPersist(item)
     }
