@@ -1,5 +1,6 @@
 <script lang="ts" setup>
     import type {UserState} from '../../../store/entity/security/User'
+    import {onUnmounted} from 'vue'
     import router from '../../router'
     import {useManager} from '../../../store/repository/RepositoryManager'
 
@@ -16,6 +17,10 @@
         manager.users.connect(user)
         router.push({name: 'home'})
     }
+
+    onUnmounted(() => {
+        manager.clear(id)
+    })
 </script>
 
 <template>

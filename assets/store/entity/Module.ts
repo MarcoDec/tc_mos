@@ -50,4 +50,8 @@ export default abstract class Module<T = unknown> {
         }
         return this
     }
+
+    public remove(vueComponent: string): void {
+        this.vueComponents = this.vueComponents.filter(component => component !== vueComponent)
+    }
 }
