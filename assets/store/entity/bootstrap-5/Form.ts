@@ -2,7 +2,7 @@ import Module, {Column} from '../Module'
 import store from '../../store'
 import {useNamespacedState} from 'vuex-composition-helpers'
 
-type FormState = {id: string}
+export type FormState = {id: string}
 
 type FormFields = {fields: string[]}
 

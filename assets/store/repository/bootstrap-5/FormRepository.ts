@@ -1,4 +1,5 @@
 import Form from '../../entity/bootstrap-5/Form'
+import type {FormState} from '../../entity/bootstrap-5/Form'
 import type {InputType} from '../../../types/bootstrap-5'
 import ModuleRepository from '../ModuleRepository'
 import {useManager} from '../RepositoryManager'
@@ -7,7 +8,7 @@ const MODULE_NAME = 'forms'
 
 type Field = {label: string, name: string, type?: InputType}
 
-export default class FormRepository extends ModuleRepository<Form> {
+export default class FormRepository extends ModuleRepository<Form, FormState> {
     public persist(vueComponent: string, id: string, fields: Field[]): Form {
         const namespace = `${MODULE_NAME}/${id}`
         const item = this.postPersist(new Form(vueComponent, id, namespace))

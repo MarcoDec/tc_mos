@@ -1,7 +1,7 @@
 import Module, {Column} from '../Module'
 import type {InputType} from '../../../types/bootstrap-5'
 
-type FieldState = {
+export type FieldState = {
     form: string
     label: string
     name: string

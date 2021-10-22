@@ -1,6 +1,6 @@
 import type Module from '../entity/Module'
 
-export default abstract class ModuleRepository<T extends Module> {
+export default abstract class ModuleRepository<T extends Module<S>, S> {
     protected readonly items: T[] = []
 
     public clear(vueComponent: string): void {

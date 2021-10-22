@@ -1,5 +1,6 @@
 import 'reflect-metadata'
 import {useNamespacedMutations, useNamespacedState} from 'vuex-composition-helpers'
+import type {MutationTree} from 'vuex'
 import store from '../store'
 
 export function Column(): ReturnType<typeof Reflect.metadata> {
@@ -11,14 +12,28 @@ type ModuleState = {
     vueComponents: string[]
 }
 
-export default abstract class Module<T = unknown> {
+type State<T> = ModuleState & T
+
+type ModuleMutation<T> = MutationTree<State<T>>
+
+type ValuesOf<T> = (T[keyof T])[]
+
+export default abstract class Module<T> {
+    public mutations: ModuleMutation<T>
     @Column() public namespace!: string
     public readonly namespaced: boolean = true
-    public state: ModuleState & T
+    public state: State<T>
     @Column() public vueComponents!: string[]
 
     protected constructor(vueComponent: string, namespace: string, state: T) {
         this.state = {...state, namespace, vueComponents: [vueComponent]}
+        this.mutations = {}
+        for (const key in this.state)
+            this.mutations[key] = (storedState: State<T>, value: ValuesOf<typeof storedState>): void => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                storedState[key as keyof State<T>] = value
+            }
     }
 
     public get index(): string {
