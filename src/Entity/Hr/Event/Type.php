@@ -62,7 +62,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(),
     ORM\Table(name: 'event_type')
 ]
-class Family extends Entity {
+class Type extends Entity {
     #[
         ORM\Column(nullable: true),
         Serializer\Groups(['read:type', 'write:type'])
