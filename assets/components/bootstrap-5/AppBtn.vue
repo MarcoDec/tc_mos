@@ -3,15 +3,16 @@
     import type {BootstrapVariant} from '../../types/bootstrap-5'
 
     const props = withDefaults(defineProps<{
-        label: string
-        type?: 'button' | 'reset' | 'submit'
+        label?: string,
+        size?: 'lg' | 'md' | 'sm',
+        type?: 'button' | 'reset' | 'submit',
         variant?: BootstrapVariant
-    }>(), {type: 'button', variant: 'primary'})
-    const btnClass = computed(() => `btn-${props.variant}`)
+    }>(), {label: '', size: 'sm', type: 'button', variant: 'primary'})
+    const btnClass = computed(() => `btn-${props.variant} btn-${props.size}`)
 </script>
 
 <template>
     <button :class="btnClass" :type="type" class="btn">
-        {{ label }}
+        <slot>{{ label }}</slot>
     </button>
 </template>

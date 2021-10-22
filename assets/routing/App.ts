@@ -4,10 +4,7 @@ import type {VNode} from '@vue/runtime-core'
 export default function App(): VNode[] {
     return [
         h(resolveComponent('AppModalError')),
-        h(
-            resolveComponent('AppNavbar'),
-            () => h(resolveComponent('AppNavbarBrand'), {href: '/', title: 'T-Concept'})
-        ),
+        h(resolveComponent('AppTopNavbar')),
         h(resolveComponent('AppContainer'), () => h(resolveComponent('RouterView')))
     ]
 }

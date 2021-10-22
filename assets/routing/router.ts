@@ -21,7 +21,11 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth) && !await manager.users.hasCurrent())
+    if (
+        to.matched.some(record => record.name !== 'login')
+        && to.matched.some(record => record.meta.requiresAuth)
+        && !await manager.users.hasCurrent()
+    )
         next({name: 'login'})
     else
         next()

@@ -1,14 +1,24 @@
 import Cookies from 'js-cookie'
 import EntityRepository from '../EntityRepository'
+import type {Store} from 'vuex'
 import User from '../../entity/security/User'
 import type {UserState} from '../../entity/security/User'
 import {request} from '../../../api'
+import store from '../../store'
+import {useState} from 'vuex-composition-helpers'
 
 const COOKIE_NAME = 'VUESESSID'
 
+type StoreState = {
+    users: Record<number, unknown>[]
+}
+
 export default class UserRepository extends EntityRepository<User, UserState> {
     public get current(): User | null {
-        return this.items.find(({isCurrent}) => isCurrent) || null
+        const users = useState<StoreState>(store as Store<StoreState>, ['users']).users.value
+        return typeof users !== 'undefined' && Object.keys(users).length > 0
+            ? this.items.find(({isCurrent}) => isCurrent) || null
+            : null
     }
 
     public async hasCurrent(): Promise<boolean> {
@@ -29,6 +39,12 @@ export default class UserRepository extends EntityRepository<User, UserState> {
         user.isCurrent = true
         Cookies.set(COOKIE_NAME, state.username, {expires: 1 / 24})
         return user
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    public async disconnect(): Promise<void> {
+        await request({}, 'GET', '/api/logout')
+        Cookies.remove(COOKIE_NAME)
     }
 
     public persist(state: UserState): User {
