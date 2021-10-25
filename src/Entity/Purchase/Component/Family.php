@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity\Purchase\Component;
-
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -65,6 +65,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Family extends Entity {
     #[
+        ApiProperty(description: 'Code ', example: 'CAB'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:family', 'write:family'])
 
@@ -72,25 +73,29 @@ class Family extends Entity {
     private ?string $code = null;
 
     #[
+        ApiProperty(description: 'cuivré ', example: 'True'),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:family', 'write:family'])
         ]
     private bool $copperable = false;
 
     #[
+        ApiProperty(description: 'Code douanier', example: '8544300089'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:family', 'write:family'])
         ]
     private ?string $customsCode = null;
 
     #[
+        ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
         ORM\Column,
-        Serializer\Groups(['read:family', 'write:family']),
+        Serializer\Groups(['read:name', 'write:name']),
         Assert\NotBlank
         ]
     private ?string $name;
 
     #[
+        ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/component-families/2'),
         ORM\ManyToOne,
         Serializer\Groups(['read:family', 'write:family'])
         ]
