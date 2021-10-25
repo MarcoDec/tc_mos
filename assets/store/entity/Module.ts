@@ -76,8 +76,9 @@ export default abstract class Module<T> {
         for (const method of this.methods)
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            this[method] = async (): Promise<void> => {
-                await useNamespacedActions(store, this.state.namespace, [method])[method]
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            this[method] = async (payload?: any): Promise<void> => {
+                await useNamespacedActions(store, this.state.namespace, [method])[method](payload)
             }
         return this
     }
@@ -95,8 +96,12 @@ export default abstract class Module<T> {
 
     public mapActions(): this {
         const columns = this.columns
-        for (const method of this.methods) {
-            this.actions[method] = async (injectee: ModuleActionContext<T>): Promise<void> => {
+        for (const action of this.methods) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const method = this[action]
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            this.actions[action] = async (injectee: ModuleActionContext<T>, payload?: any): Promise<void> => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const binder: any = {}
                 for (const column of columns)
@@ -108,9 +113,7 @@ export default abstract class Module<T> {
                             injectee.commit(column, value)
                         }
                     })
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                await this[method].bind(binder)()
+                await method.bind(binder)(payload)
             }
         }
         return this
