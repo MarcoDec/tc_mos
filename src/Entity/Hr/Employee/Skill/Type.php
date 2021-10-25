@@ -2,6 +2,7 @@
 
 namespace App\Entity\Hr\Employee\Skill;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -64,8 +65,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Type extends Entity {
 
     #[
+        ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
         ORM\Column,
-        Serializer\Groups(['read:type', 'write:type']),
+        Serializer\Groups(['read:name', 'write:name']),
         Assert\NotBlank
         ]
     private ?string $name;
