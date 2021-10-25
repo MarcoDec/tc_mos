@@ -1,12 +1,13 @@
 <script lang="ts" setup>
     import type {UserState} from '../../../store/entity/security/User'
     import {onUnmounted} from 'vue'
-    import router from '../../router'
     import {useManager} from '../../../store/repository/RepositoryManager'
+    import {useRouter} from 'vue-router'
 
     const form = 'login'
     const id = 'app-login'
     const manager = useManager()
+    const router = useRouter()
 
     manager.forms.persist(id, form, [
         {label: 'Identifiant', name: 'username'},
@@ -18,8 +19,8 @@
         router.push({name: 'home'})
     }
 
-    onUnmounted(() => {
-        manager.clear(id)
+    onUnmounted(async () => {
+        await manager.clear(id)
     })
 </script>
 

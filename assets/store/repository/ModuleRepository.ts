@@ -3,9 +3,11 @@ import type Module from '../entity/Module'
 export default abstract class ModuleRepository<T extends Module<S>, S> {
     protected readonly items: T[] = []
 
-    public clear(vueComponent: string): void {
+    public async clear(vueComponent: string): Promise<void> {
+        const removed = []
         for (const item of this.items)
-            item.remove(vueComponent)
+            removed.push(item.remove(vueComponent))
+        await Promise.all(removed)
     }
 
     public find(id: number | string): T | null {

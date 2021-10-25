@@ -9,11 +9,12 @@ class RepositoryManager {
     public forms = new FormRepository()
     public users = new UserRepository()
 
-    public clear(vueComponent: string): void {
-        Object.values(this).forEach(repo => {
+    public async clear(vueComponent: string): Promise<void> {
+        const cleared = []
+        for (const repo of Object.values(this))
             if (repo instanceof ModuleRepository)
-                repo.clear(vueComponent)
-        })
+                cleared.push(repo.clear(vueComponent))
+        await Promise.all(cleared)
     }
 }
 

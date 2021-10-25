@@ -1,15 +1,22 @@
 <script lang="ts" setup>
     import type User from '../../store/entity/security/User'
     import {defineProps} from 'vue'
-    import router from '../../routing/router'
     import {useManager} from '../../store/repository/RepositoryManager'
+    import {useRouter} from 'vue-router'
 
     defineProps<{user: User}>()
     const manager = useManager()
+    const router = useRouter()
 
     async function logout(): Promise<void> {
         await manager.users.disconnect()
-        router.push({name: 'login'})
+        console.debug('logout', {
+            hasLogin: router.hasRoute('login'),
+            router,
+            routes: router.getRoutes()
+        })
+        await router.push({name: 'login'})
+        console.debug('logout', 'finished')
     }
 </script>
 

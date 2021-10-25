@@ -1,4 +1,4 @@
-import type {Method} from 'axios'
+import type {AxiosResponse, Method} from 'axios'
 import axios from 'axios'
 import mitt from 'mitt'
 
@@ -12,7 +12,7 @@ axios.interceptors.response.use(
 )
 
 export async function request(data: Record<string, unknown>, method: Method, url: string): Promise<Record<string, unknown> | null> {
-    const response = await axios.request({
+    const response = await axios.request<typeof data, AxiosResponse<Record<string, unknown>>>({
         data,
         headers: {
             Accept: 'application/ld+json',
