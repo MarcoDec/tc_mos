@@ -50,6 +50,6 @@ export default class UserRepository extends EntityRepository<User, UserState> {
         state.isCurrent = isCurrent
         const item = new User(vueComponent, `users/${state.id}`, state)
         this.items.push(item)
-        return this.postPersist(item)
+        return item.postPersist()
     }
 }
