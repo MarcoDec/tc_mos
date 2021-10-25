@@ -2,6 +2,7 @@
 
 namespace App\Entity\Purchase\Component;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -27,6 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'post' => [
+                'controller' => PlaceholderAction::class,
+                'input_formats' => ['multipart'],
                 'openapi_context' => [
                     'description' => 'Créer une famille de composant',
                     'summary' => 'Créer une famille de composant',
@@ -41,11 +44,16 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
-            'patch' => [
+            'post' => [
+                'controller' => PlaceholderAction::class,
+                'input_formats' => ['multipart'],
+                'method' => 'POST',
                 'openapi_context' => [
                     'description' => 'Modifie une famille de composant',
                     'summary' => 'Modifie une famille de composant',
-                ]
+                ],
+                'path' => '/component-families/{id}',
+                'status' => 200
             ]
         ],
         shortName: 'ComponentFamily',
