@@ -2,22 +2,29 @@
 
 namespace App\Fixtures;
 
+use App\ExpressionLanguage\ExpressionLanguageProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 final class Configurations {
     /** @var array<string, EntityConfig> */
     private array $configurations = [];
 
+    private ExpressionLanguage $exprLang;
+
     public function __construct(private EntityManagerInterface $em) {
+        $this->exprLang = new ExpressionLanguage();
+        $this->exprLang->registerProvider(new ExpressionLanguageProvider($this));
     }
 
     /**
-     * @param class-string                                                                                           $entity
-     * @param array{deleted?: string, properties: array{new_name: string, new_ref?: class-string, old_ref?: string}} $config
+     * @param class-string                                                                                                                             $entity
+     * @param array{deleted?: string, properties: array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}} $config
      */
     public function addConfig(string $name, string $entity, array $config): void {
         $this->configurations[$name] = new EntityConfig(
             configurations: $this,
+            exprLang: $this->exprLang,
             metadata: $this->em->getClassMetadata($entity),
             config: $config
         );
@@ -34,6 +41,13 @@ final class Configurations {
             }
         }
         return $count;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function findData(string $name, int $id) {
+        return $this->configurations[$name]->findData($id);
     }
 
     public function getId(string $name, string $id): ?int {

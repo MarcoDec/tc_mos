@@ -1,6 +1,10 @@
 App\Entity\Purchase\Component\Family:
   deleted: statut
   properties:
+    code:
+      force_value: 'component_subfamily_code(id_family)'
+      new: true
+      new_name: code
     id_family:
       new_name: parent_id
       new_ref: App\Entity\Purchase\Component\Family
