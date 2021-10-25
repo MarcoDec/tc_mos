@@ -2,6 +2,7 @@
 
 namespace App\Entity\Hr\Event;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -64,6 +65,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Type extends Entity {
     #[
+        ApiProperty(description: 'Status', example: 'NULL'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:type', 'write:type'])
 
@@ -72,8 +74,9 @@ class Type extends Entity {
 
 
     #[
+        ApiProperty(description: 'Nom', required: true, example: 'ABSENCE'),
         ORM\Column,
-        Serializer\Groups(['read:type', 'write:type']),
+        Serializer\Groups(['read:name', 'write:name']),
         Assert\NotBlank
         ]
     private ?string $name;
