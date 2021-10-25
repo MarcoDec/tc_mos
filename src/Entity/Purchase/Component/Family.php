@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
@@ -16,8 +17,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: BooleanFilter::class, properties: ['copperable']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial', 'code' => 'partial', 'copperable' => 'exact']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Famille de composant',
         collectionOperations: [
@@ -80,9 +82,9 @@ class Family extends AbstractFamily {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
+        Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:name', 'write:name']),
-        Assert\NotBlank
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name;
 
