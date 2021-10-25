@@ -2,6 +2,7 @@
 
 namespace App\Entity\Hr;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -63,6 +64,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class OutTrainer extends Entity {
     #[
+        ApiProperty(description: 'Prénom', required: true, example: 'RAWAA'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:outtrainer', 'write:outtrainer']),
         Assert\NotBlank
@@ -71,6 +73,7 @@ class OutTrainer extends Entity {
     private ?string $firstname = null;
 
     #[
+        ApiProperty(description: 'Nom', required: true, example: 'CHRAIET'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:Outtrainer', 'write:outtrainer']),
         Assert\NotBlank
@@ -78,6 +81,7 @@ class OutTrainer extends Entity {
     private ?string $lastname = null;
 
     #[
+        ApiProperty(description: 'address', example: 'RUE IBN KHALDOUN'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:outtrainer', 'write:outtrainer'])
         ]
