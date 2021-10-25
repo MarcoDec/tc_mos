@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Logistics;
+namespace App\Entity\Management;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
