@@ -100,7 +100,7 @@ class Family extends AbstractFamily {
 
     #[
         ApiProperty(description: 'Code ', example: 'CAB'),
-        ORM\Column,
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $code = null;
