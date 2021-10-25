@@ -1,13 +1,15 @@
 <?php
 
 namespace App\Entity\Purchase\Component;
-use ApiPlatform\Core\Annotation\ApiProperty;
+
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\Family as AbstractFamily;
 use App\Filter\RelationFilter;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -60,94 +62,61 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity(),
+    ORM\Entity,
     ORM\Table(name: 'component_family')
 ]
-class Family extends Entity {
+class Family extends AbstractFamily {
+    /** @var Collection<int, self> */
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
+    protected Collection $children;
+
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name']),
+        Assert\NotBlank
+    ]
+    protected ?string $name;
+
+    /**
+     * @var null|self
+     */
+    #[
+        ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/component-families/2'),
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
+    protected $parent;
+
     #[
         ApiProperty(description: 'Code ', example: 'CAB'),
-        ORM\Column(nullable: true),
+        ORM\Column,
         Serializer\Groups(['read:family', 'write:family'])
-
     ]
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'cuivré ', example: 'True'),
+        ApiProperty(description: 'Cuivré ', example: true),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:family', 'write:family'])
-        ]
+    ]
     private bool $copperable = false;
 
-    #[
-        ApiProperty(description: 'Code douanier', example: '8544300089'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:family', 'write:family'])
-        ]
-    private ?string $customsCode = null;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name']),
-        Assert\NotBlank
-        ]
-    private ?string $name;
-
-    #[
-        ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/component-families/2'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:family', 'write:family'])
-        ]
-    private ?Family $parent = null;
-
-    public function getCode(): ?string {
+    final public function getCode(): ?string {
         return $this->code;
     }
 
-    public function getCopperable(): ?bool {
+    final public function getCopperable(): ?bool {
         return $this->copperable;
     }
 
-    public function getCustomsCode(): ?string {
-        return $this->customsCode;
-    }
-
-    public function getName(): ?string {
-        return $this->name;
-    }
-
-    public function getParent(): ?self {
-        return $this->parent;
-    }
-
-    public function setCode(?string $code): self {
+    final public function setCode(?string $code): self {
         $this->code = $code;
-
         return $this;
     }
 
-    public function setCopperable(bool $copperable): self {
+    final public function setCopperable(bool $copperable): self {
         $this->copperable = $copperable;
-
-        return $this;
-    }
-
-    public function setCustomsCode(string $customsCode): self {
-        $this->customsCode = $customsCode;
-
-        return $this;
-    }
-
-    public function setName(string $name): self {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function setParent(?self $parent): self {
-        $this->parent = $parent;
-
         return $this;
     }
 }
