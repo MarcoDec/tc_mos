@@ -65,7 +65,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Type extends Entity {
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
+        ApiProperty(description: 'Nom', required: true, example: 'Assemblage'),
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name']),
         Assert\NotBlank
