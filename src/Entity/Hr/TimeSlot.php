@@ -64,7 +64,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 ]
 class TimeSlot extends Entity {
     #[
-        ApiProperty(description: 'fin', example: '2021-10-26T17:00:00.000Z'),
+        ApiProperty(description: 'fin', example: '13:30:00'),
         ORM\Column( type:"time", nullable: true),
         Serializer\Groups(['read:timeslot', 'write:timeslot'])
 
@@ -72,7 +72,7 @@ class TimeSlot extends Entity {
     private ?DateTimeInterface $end = null;
 
     #[
-        ApiProperty(description: 'fin pause', example: '2021-10-26T13:00:00.335Z'),
+        ApiProperty(description: 'fin pause', example: '13:30:00'),
         ORM\Column( type:"time", nullable: true),
         Serializer\Groups(['read:timeslot', 'write:timeslot'])
 
@@ -80,14 +80,14 @@ class TimeSlot extends Entity {
     private ?DateTimeInterface $endBreak = null;
 
     #[
-        ApiProperty(description: 'début', example: '2021-10-26T08:00:00.335Z'),
+        ApiProperty(description: 'début', example: '07:30:00'),
         ORM\Column( type:"time", nullable: true),
         Serializer\Groups(['read:timeslot', 'write:timeslot'])
 
     ]
     private ?DateTimeInterface $start = null;
     #[
-        ApiProperty(description: 'début pause', example: '2021-10-26T12:00:00.335Z'),
+        ApiProperty(description: 'début pause', example: '12:30:00'),
         ORM\Column( type:"time", nullable: true),
         Serializer\Groups(['read:timeslot', 'write:timeslot'])
 
@@ -95,7 +95,7 @@ class TimeSlot extends Entity {
     private ?DateTimeInterface $startBreak = null;
 
     #[
-        ApiProperty(description: 'nom', example: 'Mlika'),
+        ApiProperty(description: 'nom', example: 'journée'),
         ORM\Column,
         Serializer\Groups(['read:timeslot', 'write:timeslot']),
         Assert\NotBlank
