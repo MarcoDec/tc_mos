@@ -19,29 +19,29 @@ use Symfony\Component\Validator\Constraints as Assert;
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les Carriers',
-                    'summary' => 'Récupère les Carriers',
+                    'description' => 'Récupère les Transporteurs',
+                    'summary' => 'Récupère les Transporteurs',
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un Carrier',
-                    'summary' => 'Créer un Carrier',
+                    'description' => 'Créer un Transporteur',
+                    'summary' => 'Créer un Transporteur',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un Carrier',
-                    'summary' => 'Supprime un Carrier',
+                    'description' => 'Supprime un Transporteur',
+                    'summary' => 'Supprime un Transporteur',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie un Carrier',
-                    'summary' => 'Modifie un Carrier',
+                    'description' => 'Modifie un Transporteur',
+                    'summary' => 'Modifie un Transporteur',
                 ]
             ]
         ],
@@ -81,13 +81,13 @@ class Carrier extends Entity {
 
 
    
-    public function getAddress()
+    public function getAddress(): ?string
     {
         return $this->address;
     }
 
     
-    public function setAddress($address)
+    public function setAddress(?string $address): self
     {
         $this->address = $address;
 
@@ -95,13 +95,13 @@ class Carrier extends Entity {
     }
 
      
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
    
-    public function setName($name)
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
