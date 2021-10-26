@@ -91,13 +91,15 @@ class Type extends Entity {
 
         return $this;
     }
+
     
-    public function getToStatus()
+    public function getToStatus(): ?string 
     {
         return $this->toStatus;
     }
 
-    public function setToStatus($toStatus)
+    
+    public function setToStatus(?string $toStatus): self
     {
         $this->toStatus = $toStatus;
 
