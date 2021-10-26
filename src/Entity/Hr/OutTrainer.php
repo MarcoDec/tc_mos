@@ -90,13 +90,13 @@ class OutTrainer extends Entity {
 
 
     
-    public function getFirstname()
+    public function getFirstname(): ?string
     {
         return $this->firstname;
     }
 
     
-    public function setFirstname($firstname)
+    public function setFirstname(?string $firstname): self
     {
         $this->firstname = $firstname;
 
@@ -104,13 +104,13 @@ class OutTrainer extends Entity {
     }
 
    
-    public function getLastname()
+    public function getLastname(): ?string
     {
         return $this->lastname;
     }
 
     
-    public function setLastname($lastname)
+    public function setLastname(?string $lastname): self 
     {
         $this->lastname = $lastname;
 
@@ -118,13 +118,13 @@ class OutTrainer extends Entity {
     }
 
    
-    public function getAddress()
+    public function getAddress(): ?string
     {
         return $this->address;
     }
 
     
-    public function setAddress($address)
+    public function setAddress(?string $address): self 
     {
         $this->address = $address;
 
