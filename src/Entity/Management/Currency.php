@@ -3,6 +3,7 @@
 namespace App\Entity\Management;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -71,6 +72,7 @@ class Currency extends Entity {
     private bool $active = false;
 
     #[
+        ApiProperty(description: 'Code', required: true, example: 'EUR'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:currency', 'write:currency'])
 
