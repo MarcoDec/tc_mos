@@ -2,15 +2,16 @@
 
 namespace App\Entity\Purchase\Component;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 use DateTimeInterface;
+use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Hr\Employee\Roles;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['end' => 'partial', 'endBreak' => 'partial', 'name' => 'partial', 'start' => 'partial', 'startBreak' => 'partial']),
     ApiResource(
@@ -63,6 +64,7 @@ use DateTimeInterface;
 ]
 class TimeSlot extends Entity {
     #[
+        ApiProperty(description: 'fin', example: '2021-10-26T17:00:00.000Z'),
         ORM\Column( type:"time", nullable: true),
         Serializer\Groups(['read:timeslot', 'write:timeslot'])
 
@@ -70,6 +72,7 @@ class TimeSlot extends Entity {
     private ?DateTimeInterface $end = null;
 
     #[
+        ApiProperty(description: 'fin pause', example: '2021-10-26T13:00:00.335Z'),
         ORM\Column( type:"time", nullable: true),
         Serializer\Groups(['read:timeslot', 'write:timeslot'])
 
@@ -77,12 +80,14 @@ class TimeSlot extends Entity {
     private ?DateTimeInterface $endBreak = null;
 
     #[
+        ApiProperty(description: 'début', example: '2021-10-26T08:00:00.335Z'),
         ORM\Column( type:"time", nullable: true),
         Serializer\Groups(['read:timeslot', 'write:timeslot'])
 
     ]
     private ?DateTimeInterface $start = null;
     #[
+        ApiProperty(description: 'début pause', example: '2021-10-26T12:00:00.335Z'),
         ORM\Column( type:"time", nullable: true),
         Serializer\Groups(['read:timeslot', 'write:timeslot'])
 
@@ -90,6 +95,7 @@ class TimeSlot extends Entity {
     private ?DateTimeInterface $startBreak = null;
 
     #[
+        ApiProperty(description: 'nom', example: 'Mlika'),
         ORM\Column,
         Serializer\Groups(['read:timeslot', 'write:timeslot']),
         Assert\NotBlank
@@ -98,70 +104,70 @@ class TimeSlot extends Entity {
 
   
 
-    
-    public function getEnd()
+ 
+    public function getEnd(): ?DateTimeInterface
     {
         return $this->end;
     }
 
-   
-    public function setEnd($end)
+ 
+    public function setEnd(?DateTimeInterface $end): self
     {
         $this->end = $end;
 
         return $this;
     }
 
-    
-    public function getEndBreak()
+ 
+    public function getEndBreak(): ?DateTimeInterface
     {
         return $this->endBreak;
     }
 
-     
-    public function setEndBreak($endBreak)
+   
+    public function setEndBreak(?DateTimeInterface $endBreak): self
     {
         $this->endBreak = $endBreak;
 
         return $this;
     }
 
-    
-    public function getStart()
+
+    public function getStart(): ?DateTimeInterface
     {
         return $this->start;
     }
 
-    
-    public function setStart($start)
+   
+    public function setStart(?DateTimeInterface $start): self
     {
         $this->start = $start;
 
         return $this;
     }
 
-    
-    public function getStartBreak()
+   
+    public function getStartBreak(): ?DateTimeInterface
     {
         return $this->startBreak;
     }
 
-    
-    public function setStartBreak($startBreak)
+   
+    public function setStartBreak(?DateTimeInterface $startBreak): self
     {
         $this->startBreak = $startBreak;
 
         return $this;
     }
 
-    
-    public function getName()
+  
+    public function getName():?string
     {
         return $this->name;
     }
 
-    
-    public function setName($name)
+  
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
