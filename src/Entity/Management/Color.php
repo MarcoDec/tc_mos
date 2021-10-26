@@ -88,13 +88,13 @@ class Color extends Entity {
 
 
      
-    public function getName()
+    public function getName(): ?string 
     {
         return $this->name;
     }
 
    
-    public function setName($name)
+    public function setName(?string  $name): self
     {
         $this->name = $name;
 
@@ -102,13 +102,13 @@ class Color extends Entity {
     }
 
     
-    public function getRal()
+    public function getRal(): ?string 
     {
         return $this->ral;
     }
 
     
-    public function setRal($ral)
+    public function setRal(?string  $ral): self
     {
         $this->ral = $ral;
 
@@ -116,13 +116,13 @@ class Color extends Entity {
     }
 
     
-    public function getRgb()
+    public function getRgb(): ?string 
     {
         return $this->rgb;
     }
 
    
-    public function setRgb($rgb)
+    public function setRgb(?string  $rgb): self
     {
         $this->rgb = $rgb;
 
