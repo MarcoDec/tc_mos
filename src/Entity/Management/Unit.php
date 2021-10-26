@@ -8,8 +8,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
@@ -18,8 +20,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les unités de mesure',
-                    'summary' => 'Récupère les unités de mesure',
+                    'description' => 'Récupère les unités',
+                    'summary' => 'Récupère les unités',
                 ]
             ],
             'post' => [
@@ -33,7 +35,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'delete' => [
                 'openapi_context' => [
                     'description' => 'Supprime une unité',
-                    'summary' => 'Supprime une unitém',
+                    'summary' => 'Supprime une unité',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
@@ -44,53 +46,45 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ]
         ],
-        shortName: 'Unit',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:unit', 'write:name'],
+            'groups' => ['write:name', 'write:unit'],
             'openapi_definition_name' => 'Unit-write'
         ],
         normalizationContext: [
-            'groups' => ['read:unit', 'read:id', 'read:name'],
+            'groups' => ['read:id', 'read:name', 'read:unit'],
             'openapi_definition_name' => 'Unit-read'
-        ],
-        paginationEnabled: false
+        ]
     ),
-    ORM\Entity(),
-    ORM\Table(name: 'unit')
+    ORM\Entity
 ]
 class Unit extends Entity {
-    #[
-        ApiProperty(description: 'Code ', example: 'g'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:unit', 'write:unit'])
+    use NameTrait;
 
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Code ', required: true, example: 'g'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private ?string $code = null;
 
-    #[
-        ApiProperty(description: 'Nom ', example: 'Gramme'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
-
-    ]
-    private ?string $name = null;
-
-    public function getCode(): ?string {
+    final public function getCode(): ?string {
         return $this->code;
     }
 
-    public function getName(): ?string {
-        return $this->name;
-    }
-
-    public function setCode(?string $code): void {
+    final public function setCode(?string $code): self {
         $this->code = $code;
-    }
-
-    public function setName(?string $name): void {
-        $this->name = $name;
+        return $this;
     }
 }
