@@ -2,18 +2,19 @@
 
 namespace App\Entity\Hr\Employee\Skill;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [ 'name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Type de compétence',
         collectionOperations: [
@@ -45,41 +46,31 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ]
         ],
-        shortName: 'TypeSkills',
+        shortName: 'SkillType',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:type', 'write:name'],
-            'openapi_definition_name' => 'TypeSkill-write'
+            'groups' => ['write:name', 'write:type'],
+            'openapi_definition_name' => 'SkillType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:type', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'TypeSkill-read'
+            'groups' => ['read:id', 'read:name', 'read:type'],
+            'openapi_definition_name' => 'SkillType-read'
         ],
         paginationEnabled: false
     ),
-    ORM\Entity(),
+    ORM\Entity,
     ORM\Table(name: 'skill_type')
 ]
 class Type extends Entity {
+    use NameTrait;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Assemblage'),
+        Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:name', 'write:name']),
-        Assert\NotBlank
-        ]
-    private ?string $name;
-
-
-    public function getName(): ?string {
-        return $this->name;
-    }
-
-    public function setName(string $name): self {
-        $this->name = $name;
-
-        return $this;
-    }
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    protected ?string $name = null;
 }

@@ -84,6 +84,14 @@ class Family extends Entity implements FileEntity {
     }
     use NameTrait;
 
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    protected ?string $name = null;
+
     /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     private Collection $children;
@@ -94,14 +102,6 @@ class Family extends Entity implements FileEntity {
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $customsCode = null;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    private ?string $name = null;
 
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/product-families/1'),
