@@ -3,6 +3,7 @@
 namespace App\Entity\Quality\Reject;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -46,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         shortName: 'QualiteReject',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
+            'security' => 'is_granted(\'' . Roles::ROLE_QUALITY_ADMIN . '\')'
         ],
         denormalizationContext: [
             'groups' => ['write:qualite', 'write:name'],
@@ -61,20 +62,23 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(),
     ORM\Table(name: 'reject_type')
 ]
-
-class Type extends Entity {
+class Type extends Entity
+{
     #[
+        ApiProperty(description: 'Nom', required: true, example: 'sertissage dimensionnelle'),
         Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name;
 
-    public function getName(): ?string {
+    public function getName(): ?string
+    {
         return $this->name;
     }
 
-    public function setName(?string $name): void {
+    public function setName(?string $name): void
+    {
         $this->name = $name;
     }
 }
