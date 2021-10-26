@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['active']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['rate' => 'partial', 'code' => 'partial',]),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['rate' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Currency',
         collectionOperations: [
@@ -63,8 +63,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Table(name: 'incoterms')
 ]
 
-class Currency extends Entity
-{
+class Currency extends Entity {
+    #[
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:currency', 'write:currency'])
+    ]
+    private bool $active = false;
+
     #[
         ORM\Column(nullable: true),
         Serializer\Groups(['read:currency', 'write:currency'])
@@ -79,60 +84,27 @@ class Currency extends Entity
     ]
     private ?float $rate = null;
 
-    #[
-        ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:currency', 'write:currency'])
-    ]
-    private bool $active = false;
-
-    /**
-     * @return string|null
-     */
-    public function getCode(): ?string
-    {
+    public function getCode(): ?string {
         return $this->code;
     }
 
-    /**
-     * @param string|null $code
-     */
-    public function setCode(?string $code): void
-    {
-        $this->code = $code;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getRate(): ?float
-    {
+    public function getRate(): ?float {
         return $this->rate;
     }
 
-    /**
-     * @param float|null $rate
-     */
-    public function setRate(?float $rate): void
-    {
-        $this->rate = $rate;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isActive(): bool
-    {
+    public function isActive(): bool {
         return $this->active;
     }
 
-    /**
-     * @param bool $active
-     */
-    public function setActive(bool $active): void
-    {
+    public function setActive(bool $active): void {
         $this->active = $active;
     }
 
+    public function setCode(?string $code): void {
+        $this->code = $code;
+    }
 
-
+    public function setRate(?float $rate): void {
+        $this->rate = $rate;
+    }
 }
