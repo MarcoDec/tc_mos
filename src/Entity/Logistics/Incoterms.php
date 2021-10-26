@@ -8,8 +8,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
@@ -24,27 +26,26 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un incoterm',
-                    'summary' => 'Créer un incoterm',
+                    'description' => 'Créer un incoterms',
+                    'summary' => 'Créer un incoterms',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un incoterm',
-                    'summary' => 'Supprime un incoterm',
+                    'description' => 'Supprime un incoterms',
+                    'summary' => 'Supprime un incoterms',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie un incoterm',
-                    'summary' => 'Modifie un incoterm',
+                    'description' => 'Modifie un incoterms',
+                    'summary' => 'Modifie un incoterms',
                 ]
             ]
         ],
-        shortName: 'Incoterms',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
         ],
@@ -56,42 +57,35 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:incoterms', 'read:id', 'read:name'],
             'openapi_definition_name' => 'Incoterms-read'
         ],
-        paginationEnabled: false
     ),
-    ORM\Entity(),
+    ORM\Entity,
     ORM\Table(name: 'incoterms')
 ]
-
 class Incoterms extends Entity {
-    #[
-        ApiProperty(description: 'Code ', example: 'FCA'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+    use NameTrait;
 
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Delivered Duty Paid'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Code ', required: true, example: 'DDP'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
     private ?string $code = null;
 
-    #[
-        ApiProperty(description: 'Nom ', example: 'Free Carrier'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
-
-    ]
-    private ?string $name = null;
-
-    public function getCode(): ?string {
+    final public function getCode(): ?string {
         return $this->code;
     }
 
-    public function getName(): ?string {
-        return $this->name;
-    }
-
-    public function setCode(?string $code): void {
+    final public function setCode(?string $code): self {
         $this->code = $code;
-    }
-
-    public function setName(?string $name): void {
-        $this->name = $name;
+        return $this;
     }
 }
