@@ -60,31 +60,31 @@ use Symfony\Component\Validator\Constraints as Assert;
         paginationEnabled: false
     ),
     ORM\Entity(),
-    ORM\Table(name: 'timeslot')
+    ORM\Table(name: 'InvoiceTimeDue')
 ]
 class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'jours ', example: '60'),
-        ORM\Column( type:"smallint", nullable: true),
+        ORM\Column( type:"smallint", options: ['default' => 0 ,'unsigned'=> true]),
         Serializer\Groups(['read:invoicetimedue', 'write:invoicetimedue'])
 
     ]
-    private ?int $days = null;
+    private ?int $days = 0;
 
     #[
         ApiProperty(description: 'joursAprèsFinMois ', example: '0'),
-        ORM\Column( type:"smallint", nullable: true),
+        ORM\Column( type:"smallint", options: ['default' => 0 ,'unsigned'=> true]),
         Serializer\Groups(['read:invoicetimedue', 'write:invoicetimedue'])
 
     ]
-    private ?int $daysAfterEndOfMonth = null;
+    private ?int $daysAfterEndOfMonth = 0;
 
     #[
         ApiProperty(description: 'fin du mois ', example: 'True'),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:invoicetimedue', 'write:invoicetimedue'])
     ]
-    private ?int $endOfMonth = null;
+    private ?bool $endOfMonth = false;
    
     #[
         ORM\Column,
@@ -95,27 +95,27 @@ class InvoiceTimeDue extends Entity {
 
   
     
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     
-    public function setName($name)
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-   
-    public function getDays()
+    
+    public function getDays(): ?int
     {
         return $this->days;
     }
 
-  
-    public function setDays($days)
+    
+    public function setDays(?int $days): self
     {
         $this->days = $days;
 
@@ -123,13 +123,13 @@ class InvoiceTimeDue extends Entity {
     }
 
     
-    public function getDaysAfterEndOfMonth()
+    public function getDaysAfterEndOfMonth(): ?int
     {
         return $this->daysAfterEndOfMonth;
     }
 
-  
-    public function setDaysAfterEndOfMonth($daysAfterEndOfMonth)
+    
+    public function setDaysAfterEndOfMonth(?int $daysAfterEndOfMonth): self
     {
         $this->daysAfterEndOfMonth = $daysAfterEndOfMonth;
 
@@ -137,13 +137,13 @@ class InvoiceTimeDue extends Entity {
     }
 
     
-    public function getEndOfMonth()
+    public function getEndOfMonth(): ?bool
     {
         return $this->endOfMonth;
     }
 
-    
-    public function setEndOfMonth($endOfMonth)
+   
+    public function setEndOfMonth(?bool $endOfMonth): self
     {
         $this->endOfMonth = $endOfMonth;
 
