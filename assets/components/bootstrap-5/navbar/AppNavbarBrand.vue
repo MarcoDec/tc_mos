@@ -1,11 +1,11 @@
 <script lang="ts" setup>
     import {defineProps} from 'vue'
 
-    defineProps<{href: string, title: string}>()
+    defineProps<{href: string}>()
 </script>
 
 <template>
     <a :href="href" class="navbar-brand">
-        {{ title }}
+        <slot/>
     </a>
 </template>

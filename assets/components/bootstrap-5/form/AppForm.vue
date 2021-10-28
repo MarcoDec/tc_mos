@@ -1,24 +1,21 @@
 <script lang="ts" setup>
-    import {defineEmits, defineProps, withDefaults} from 'vue'
-    import {requestForm} from '../../../api'
-    import {useManager} from '../../../store/repository/RepositoryManager'
+    import {computed, defineProps, withDefaults} from 'vue'
+    import FormRepository from '../../../store/repository/bootstrap-5/form/FormRepository'
 
-    const emit = defineEmits<(e: 'success', data: Record<string, unknown> | null) => void>()
     const props = withDefaults(
-        defineProps<{action: string, id: string, method?: 'delete' | 'get' | 'patch' | 'post'}>(),
-        {method: 'post'}
+        defineProps<{action: string, id: string, submitLabel?: string}>(),
+        {submitLabel: 'Enregistrer'}
     )
-    const fields = useManager().forms.find(props.id)?.fields
 
-    async function submit(e: Event): Promise<void> {
-        if (e.target instanceof HTMLFormElement)
-            emit('success', await requestForm(e.target, props.method))
-    }
+    const form = FormRepository.find(props.id)
+    const fields = computed(() => form?.fields ?? [])
 </script>
 
 <template>
-    <form :id="id" :action="action" autocomplete="off" method="post" @submit.prevent="submit">
-        <AppFormGroup v-for="field in fields" :key="field" :field="field"/>
-        <AppBtn class="float-end" label="Connexion" type="submit"/>
+    <form :id="id" :action="action" autocomplete="off" method="post">
+        <AppFormGroup v-for="field in fields" :key="field.name" :field="field"/>
+        <AppBtn class="float-end" type="submit">
+            {{ submitLabel }}
+        </AppBtn>
     </form>
 </template>

@@ -1,18 +1,15 @@
 <script lang="ts" setup>
+    import type Field from '../../../store/entity/bootstrap-5/form/Field'
     import {defineProps} from 'vue'
-    import {useManager} from '../../../store/repository/RepositoryManager'
 
-    const props = defineProps<{field: string}>()
-    const storedField = useManager().fields.find(props.field)
+    defineProps<{field: Field}>()
 </script>
 
 <template>
-    <AppRow css-class="mb-3">
-        <AppLabel>
-            {{ storedField?.label }}
-        </AppLabel>
+    <AppRow class="mb-3">
+        <AppLabel>{{ field.label }}</AppLabel>
         <AppCol>
-            <AppInput :form="storedField?.form" :name="storedField?.name" :type="storedField?.type"/>
+            <AppInput :form="field.form" :name="field.name" :type="field.type"/>
         </AppCol>
     </AppRow>
 </template>

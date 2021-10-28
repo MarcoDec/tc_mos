@@ -1,6 +1,5 @@
-import type {RouteComponent, RouteLocationRaw} from 'vue-router'
 import {createRouter, createWebHistory} from 'vue-router'
-import manager from '../store/repository/RepositoryManager'
+import type {RouteComponent} from 'vue-router'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -20,16 +19,10 @@ const router = createRouter({
     ]
 })
 
-// eslint-disable-next-line @typescript-eslint/no-invalid-void-type,consistent-return
-router.beforeEach((to): Promise<RouteLocationRaw | void> | void => {
-    console.debug('router', 'beforeEach')
-    if (to.matched.some(record => record.name !== 'login') && to.matched.some(record => record.meta.requiresAuth)) {
-        // eslint-disable-next-line consistent-return
-        return manager.users.hasCurrent().then(hasCurrent => {
-            if (!hasCurrent)
-                return {name: 'login'}
-        })
-    }
+// eslint-disable-next-line consistent-return
+router.beforeEach(to => {
+    if (to.matched.some(record => record.name !== 'login' && record.meta.requiresAuth))
+        return {name: 'login'}
 })
 
 export default router

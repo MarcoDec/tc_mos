@@ -1,4 +1,4 @@
-import type {VNode} from '@vue/runtime-core'
+import type {VNode} from 'vue'
 import {h} from 'vue'
 
 export default function AppHome(): VNode {

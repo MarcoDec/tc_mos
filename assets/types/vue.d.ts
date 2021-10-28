@@ -1,5 +1,4 @@
-declare module '*.vue' {
-    import type {defineComponent} from 'vue'
-    const component: ReturnType<typeof defineComponent>
-    export default component
-}
+import type {SetupContext} from 'vue'
+
+export type FunContext = Omit<SetupContext, 'expose'>
+export type FunProps = Record<string, unknown>

@@ -1,12 +1,7 @@
 {
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/vue-fontawesome": "^3.0.0-5",
-    "axios": "^0.23.0",
+    "@stdlib/string": "^0.0.13",
     "bootstrap": "^5.1.3",
-    "js-cookie": "^3.0.1",
-    "mitt": "^3.0.0",
     "reflect-metadata": "^0.1.13",
     "vue": "^3.2.20",
     "vue-router": "^4.0.12",
@@ -14,20 +9,19 @@
     "vuex-composition-helpers": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/types": "^7.15.6",
     "@types/bootstrap": "^5.1.6",
-    "@types/node": "^16.11.4",
-    "@typescript-eslint/eslint-plugin": "^5.1.0",
-    "@typescript-eslint/parser": "^5.1.0",
-    "@vitejs/plugin-vue": "^1.9.3",
+    "@types/node": "^16.11.6",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
+    "@vitejs/plugin-vue": "^1.9.4",
     "@vue/eslint-config-typescript": "^8.0.0",
     "eslint": "^8.1.0",
     "eslint-plugin-vue": "^7.20.0",
-    "sass": "^1.43.3",
+    "sass": "^1.43.4",
     "typescript": "^4.4.4",
-    "vite": "^2.6.11",
+    "vite": "^2.6.12",
     "vite-plugin-checker": "^0.3.4",
-    "vue-tsc": "^0.28.8"
+    "vue-tsc": "^0.28.9"
   },
   "license": "proprietary",
   "private": true,

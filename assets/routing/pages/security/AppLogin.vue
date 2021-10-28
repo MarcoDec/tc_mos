@@ -1,33 +1,33 @@
 <script lang="ts" setup>
-    import type {UserState} from '../../../store/entity/security/User'
-    import {onUnmounted} from 'vue'
-    import {useManager} from '../../../store/repository/RepositoryManager'
-    import {useRouter} from 'vue-router'
+    import {onMounted, ref} from 'vue'
+    import type FormRepository from '../../../store/repository/bootstrap-5/form/FormRepository'
+    import {useRepo} from '../../../store/store'
 
-    const form = 'login'
-    const id = 'app-login'
-    const manager = useManager()
-    const router = useRouter()
+    const forms = ref<FormRepository | null>(null)
+    const form = 'login-form'
+    const formRegistered = ref(false)
+    const id = 'login'
 
-    manager.forms.persist(id, form, [
-        {label: 'Identifiant', name: 'username'},
-        {label: 'Mot de passe', name: 'password', type: 'password'}
-    ])
-
-    function connect(user: UserState): void {
-        manager.users.connect(user)
-        router.push({name: 'home'})
-    }
-
-    onUnmounted(async () => {
-        await manager.clear(id)
+    onMounted(async () => {
+        forms.value = await useRepo({repo: 'forms', vueComponent: id})
+        if (forms.value !== null) {
+            await forms.value.persist({
+                fields: [
+                    {label: 'Identifiant', name: 'username'},
+                    {label: 'Mot de passe', name: 'password', type: 'password'}
+                ],
+                id: form,
+                vueComponents: [id]
+            })
+            formRegistered.value = true
+        }
     })
 </script>
 
 <template>
-    <AppRow>
+    <AppRow :id="id">
         <AppCard class="bg-blue col">
-            <AppForm :id="form" action="/api/login" @success="connect"/>
+            <AppForm v-if="formRegistered" :id="form" action="/api/login" submit-label="Connexion"/>
         </AppCard>
     </AppRow>
 </template>
