@@ -63,11 +63,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:name'],
+            'groups' => ['write:family', 'write:file', 'write:name'],
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:id', 'read:name'],
+            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
             'openapi_definition_name' => 'ComponentFamily-read'
         ],
         paginationEnabled: false
@@ -118,6 +118,14 @@ class Family extends AbstractFamily {
 
     final public function getCopperable(): ?bool {
         return $this->copperable;
+    }
+
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/component-families/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return parent::getFilepath();
     }
 
     final public function setCode(?string $code): self {
