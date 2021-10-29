@@ -2,132 +2,106 @@
 
 namespace App\Entity\Hr;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['firstname' => 'partial', 'lastname' => 'partial', 'address' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['address' => 'partial', 'name' => 'partial', 'surname' => 'partial']),
     ApiResource(
-        description: 'OutTrainer',
+        description: 'Formateur extérieur',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les OutTrainers',
-                    'summary' => 'Récupère les OutTrainers',
+                    'description' => 'Récupère les formateurs extérieurs',
+                    'summary' => 'Récupère les formateurs extérieurs',
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer OutTrainer',
-                    'summary' => 'Créer OutTrainer',
+                    'description' => 'Créer un formateur extérieur',
+                    'summary' => 'Créer un formateur extérieur',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime OutTrainer',
-                    'summary' => 'Supprime OutTrainer',
+                    'description' => 'Supprime un formateur extérieur',
+                    'summary' => 'Supprime un formateur extérieur',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie OutTrainer',
-                    'summary' => 'Modifie OutTrainer',
+                    'description' => 'Modifie un formateur extérieur',
+                    'summary' => 'Modifie un formateur extérieur',
                 ]
             ]
         ],
-        shortName: 'OutTrainer',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:outtrainer', 'write:name'],
+            'groups' => ['write:name', 'write:out-trainer'],
             'openapi_definition_name' => 'OutTrainer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:outtrainer', 'read:id', 'read:name'],
+            'groups' => ['read:id', 'read:name', 'read:out-trainer'],
             'openapi_definition_name' => 'OutTrainer-read'
-        ],
-        paginationEnabled: false
+        ]
     ),
-    ORM\Entity(),
-    ORM\Table(name: 'OutTrainer')
+    ORM\Entity,
+    ORM\Table
 ]
 class OutTrainer extends Entity {
-    #[
-        ApiProperty(description: 'Prénom', required: true, example: 'RAWAA'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:outtrainer', 'write:outtrainer']),
-        Assert\NotBlank
+    use NameTrait;
 
+    #[
+        ApiProperty(description: 'Prénom', required: true, example: 'Rawaa'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name'])
     ]
-    private ?string $firstname = null;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'CHRAIET'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:Outtrainer', 'write:outtrainer']),
-        Assert\NotBlank
-        ]
-    private ?string $lastname = null;
+    protected ?string $name = null;
 
     #[
         ApiProperty(description: 'address', example: 'RUE IBN KHALDOUN'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:outtrainer', 'write:outtrainer'])
-        ]
+        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
+    ]
     private ?string $address = null;
 
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'CHRAIET'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
+    ]
+    private ?string $surname = null;
 
-
-    
-    public function getFirstname(): ?string
-    {
-        return $this->firstname;
-    }
-
-    
-    public function setFirstname(?string $firstname): self
-    {
-        $this->firstname = $firstname;
-
-        return $this;
-    }
-
-   
-    public function getLastname(): ?string
-    {
-        return $this->lastname;
-    }
-
-    
-    public function setLastname(?string $lastname): self 
-    {
-        $this->lastname = $lastname;
-
-        return $this;
-    }
-
-   
-    public function getAddress(): ?string
-    {
+    final public function getAddress(): ?string {
         return $this->address;
     }
 
-    
-    public function setAddress(?string $address): self 
-    {
-        $this->address = $address;
+    final public function getSurname(): ?string {
+        return $this->surname;
+    }
 
+    final public function setAddress(?string $address): self {
+        $this->address = $address;
+        return $this;
+    }
+
+    final public function setSurname(?string $surname): self {
+        $this->surname = $surname;
         return $this;
     }
 }
