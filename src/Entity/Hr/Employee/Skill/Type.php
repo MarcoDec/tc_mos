@@ -51,11 +51,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:type'],
+            'groups' => ['write:name'],
             'openapi_definition_name' => 'SkillType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:type'],
+            'groups' => ['read:id', 'read:name'],
             'openapi_definition_name' => 'SkillType-read'
         ]
     ),
