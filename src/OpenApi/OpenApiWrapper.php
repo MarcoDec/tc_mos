@@ -118,7 +118,6 @@ final class OpenApiWrapper {
     }
 
     public function getApi(): OpenApi {
-        // dd($this->api);
         return $this->api;
     }
 
