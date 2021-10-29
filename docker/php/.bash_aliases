@@ -1,5 +1,8 @@
 # Aliases
 
+## Composer
+alias composer:prod='composer install --no-dev --optimize-autoloader'
+
 ## PHP Coding Standards Fixer
 alias gpao:fix:code='/var/www/html/TConcept-GPAO/vendor/bin/php-cs-fixer fix'
 
