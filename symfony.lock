@@ -7,5 +7,8 @@
             "version": "0.1",
             "ref": "bbc1dbabe95240a0988959e1ded978725692bcfa"
         }
+    },
+    "symfony/intl": {
+        "version": "v5.3.8"
     }
 }
