@@ -16,6 +16,11 @@ const router = createRouter({
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
             name: 'login',
             path: '/login'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/purchase/supplier/AppSupplierShow.vue'),
+            name: 'supplier',
+            path: '/Supplier/show'
         }
     ]
 })
