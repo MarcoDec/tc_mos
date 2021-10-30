@@ -2,10 +2,14 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 env:
   COMPOSE_VERSION: 1.4.1
+
+language: php
+
+php:
+  - '8.0'
 
 script:
   - GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$USER docker-compose build --no-cache
