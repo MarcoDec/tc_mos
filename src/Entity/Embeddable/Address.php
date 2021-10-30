@@ -3,6 +3,7 @@
 namespace App\Entity\Embeddable;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Validator\ZipCode;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -52,11 +53,18 @@ class Address {
     #[
         ApiProperty(description: 'E-mail', example: 'sales@tconcept.fr'),
         Assert\Email,
-        Assert\Length(min: 5, max: 255),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $email = null;
+
+    #[
+        ApiProperty(description: 'Code postal', example: '70190'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:address', 'write:address']),
+        ZipCode
+    ]
+    private ?string $zipCode = null;
 
     final public function getAddress(): ?string {
         return $this->address;
@@ -76,6 +84,10 @@ class Address {
 
     final public function getEmail(): ?string {
         return $this->email;
+    }
+
+    final public function getZipCode(): ?string {
+        return $this->zipCode;
     }
 
     final public function setAddress(?string $address): self {
@@ -100,6 +112,11 @@ class Address {
 
     final public function setEmail(?string $email): self {
         $this->email = $email;
+        return $this;
+    }
+
+    final public function setZipCode(?string $zipCode): self {
+        $this->zipCode = $zipCode;
         return $this;
     }
 }
