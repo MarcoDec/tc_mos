@@ -10,6 +10,8 @@ script:
   - sleep 60s # Laisse les conteneurs se charger.
   - docker exec tconcept_gpao_php composer install
   - docker exec tconcept_gpao_php /var/www/html/TConcept-GPAO/vendor/bin/phpstan analyse --memory-limit=1G
+  - docker exec tconcept_gpao_php yarn
+  - docker exec tconcept_gpao_php yarn eslint ./assets/
 
 services:
   - docker
