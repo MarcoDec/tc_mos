@@ -7,11 +7,6 @@ before_install:
 env:
   COMPOSE_VERSION: 1.4.1
 
-language: php
-
-php:
-  - '8.0'
-
 script:
   - GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$USER docker-compose build --no-cache
   - GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$USER docker-compose up -d
