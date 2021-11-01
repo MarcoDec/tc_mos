@@ -11,8 +11,9 @@ use JetBrains\PhpStorm\Pure;
 #[ORM\Entity(repositoryClass: EmployeeRepository::class)]
 class Employee extends User {
     use NameTrait;
-    #[Pure] public function __construct()
-    {
-       parent::__construct();
-    }
+
+    #[Pure]
+ public function __construct() {
+     parent::__construct();
+ }
 }

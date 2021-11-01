@@ -12,11 +12,11 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ApiToken[]    findAll()
  * @method ApiToken[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ApiTokenRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, ApiToken::class);
+class ApiTokenRepository extends ServiceEntityRepository {
+    public function __construct(ManagerRegistry $registry) {
+        /** @var class-string<ApiToken> $classString */
+        $classString = ApiToken::class;
+        parent::__construct($registry, $classString);
     }
 
     // /**
