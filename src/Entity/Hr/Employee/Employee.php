@@ -13,8 +13,6 @@ class Employee extends User {
     use NameTrait;
     #[Pure] public function __construct()
     {
-       dump(['employee:construct before user']);
        parent::__construct();
-       dump(['employee:construct after user']);
     }
 }

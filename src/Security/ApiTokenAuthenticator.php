@@ -67,7 +67,6 @@ class ApiTokenAuthenticator extends AbstractAuthenticator
              if ($apiToken) {
                 /** @var Employee $employee */
                 $employee = $this->entityManager->getRepository(Employee::class)->find($apiToken->getEmployee()->getId());
-                $this->logger->debug('employee',[$apiToken->getEmployee()->getId(),$employee,$employee->getUsername()]);
                 return $employee;
              } return null;
           });
@@ -114,7 +113,6 @@ class ApiTokenAuthenticator extends AbstractAuthenticator
              ];
 
              $userBadge = new UserBadge($credentialsData['username'],function($credentialsData){
-                $this->logger->debug('UserBadge credentialData',[$credentialsData]);
                 /** @var Employee $employee */
                 $employee = $this->entityManager->getRepository(Employee::class)->findOneBy(['username'=>$credentialsData]);
                 return $employee;
