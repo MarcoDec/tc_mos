@@ -20,7 +20,7 @@ class ApiToken
     #[ORM\Column(type: 'datetime')]
     private ?\DateTime $expireAt;
 
-    #[ORM\ManyToOne(targetEntity: Employee::class)]
+    #[ORM\ManyToOne(targetEntity: Employee::class, fetch:"EAGER" )]
     #[ORM\JoinColumn(nullable: false)]
     private Employee $employee;
 

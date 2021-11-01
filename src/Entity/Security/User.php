@@ -50,7 +50,8 @@ abstract class User extends Entity implements PasswordAuthenticatedUserInterface
     private ?string $username = null;
 
     #[Pure]
-    final public function __construct() {
+    public function __construct() {
+       dump(['user::construct']);
         $this->embRoles = new Roles();
     }
 
