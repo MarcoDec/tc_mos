@@ -70,11 +70,11 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     main:
+      custom_authenticator: App\Security\TokenAuthenticator
       lazy: true
       logout:
         path: logout
       provider: app_user_provider
-      custom_authenticator: App\Security\ApiTokenAuthenticator
 
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#firewalls-authentication

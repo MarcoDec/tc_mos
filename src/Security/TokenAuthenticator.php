@@ -3,7 +3,7 @@
 namespace App\Security;
 
 use App\Entity\Hr\Employee\Employee;
-use App\Repository\Api\ApiTokenRepository;
+use App\Repository\Api\TokenRepository;
 use App\Repository\Hr\Employee\EmployeeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -20,9 +20,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CustomCre
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 
-class ApiTokenAuthenticator extends AbstractAuthenticator {
+class TokenAuthenticator extends AbstractAuthenticator {
     public function __construct(
-        private ApiTokenRepository $apiTokenRepository,
+        private TokenRepository $apiTokenRepository,
         private EmployeeRepository $employeeRepository,
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
@@ -50,7 +50,6 @@ class ApiTokenAuthenticator extends AbstractAuthenticator {
                         return $this->entityManager->getRepository(Employee::class)->find($employeeId);
                     }
                 }
-
             });
             $credentials = new CustomCredentials(function ($credentialsDate, $employee) {
                 $apiToken = $this->apiTokenRepository->findOneBy(['token' => $credentialsDate['token']]);
@@ -70,7 +69,7 @@ class ApiTokenAuthenticator extends AbstractAuthenticator {
                     throw new CustomUserMessageAuthenticationException('Token has expired');
                 }
                 //on renouvelle le token
-                $apiToken->renewExpiresAt();
+                $apiToken->renew();
                 $this->entityManager->flush();
 
                 $tokenEmployee = $apiToken->getEmployee();
@@ -97,9 +96,7 @@ class ApiTokenAuthenticator extends AbstractAuthenticator {
                 'requestedUri' => $request->getRequestUri()
             ];
 
-            $userBadge = new UserBadge($credentialsData['username'], function ($credentialsData) {
-                return $this->entityManager->getRepository(Employee::class)->findOneBy(['username' => $credentialsData]);
-            });
+            $userBadge = new UserBadge($credentialsData['username'], fn ($credentialsData) => $this->entityManager->getRepository(Employee::class)->findOneBy(['username' => $credentialsData]));
 
             $credentials = new CustomCredentials(function ($credentialsData, Employee $employee) {
                 $password = $employee->getPassword();

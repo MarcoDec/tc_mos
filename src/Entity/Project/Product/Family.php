@@ -111,7 +111,7 @@ class Family extends Entity implements FileEntity {
     private ?self $parent = null;
 
     #[Pure]
-    public function __construct() {
+    final public function __construct() {
         $this->children = new ArrayCollection();
     }
 
