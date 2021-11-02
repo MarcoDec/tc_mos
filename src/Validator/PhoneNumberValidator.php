@@ -2,16 +2,16 @@
 
 namespace App\Validator;
 
-use App\Validator\ZipCode as ZipCodeAttribute;
-use IsoCodes\ZipCode;
+use App\Validator\PhoneNumber as PhoneNumberAttribute;
+use IsoCodes\PhoneNumber;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
-final class ZipCodeValidator extends CountryValidator {
+final class PhoneNumberValidator extends CountryValidator {
     public function validate($value, Constraint $constraint): void {
-        if (!$constraint instanceof ZipCodeAttribute) {
-            throw new UnexpectedTypeException($constraint, ZipCodeAttribute::class);
+        if (!$constraint instanceof PhoneNumberAttribute) {
+            throw new UnexpectedTypeException($constraint, PhoneNumberAttribute::class);
         }
 
         if (empty($value)) {
@@ -22,10 +22,10 @@ final class ZipCodeValidator extends CountryValidator {
             throw new UnexpectedValueException($value, 'string');
         }
 
-        if (!ZipCode::validate($value, $country = $this->getCountry())) {
+        if (!PhoneNumber::validate($value, $country = $this->getCountry())) {
             $this->context->buildViolation($constraint->message)
                 ->setParameters([
-                    '{{ code }}' => $value,
+                    '{{ phoneNumber }}' => $value,
                     '{{ country }}' => $country
                 ])
                 ->addViolation();

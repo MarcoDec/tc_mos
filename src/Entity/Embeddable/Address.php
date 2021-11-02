@@ -37,7 +37,7 @@ class Address {
     #[
         ApiProperty(description: 'Ville', example: 'Rioz'),
         Assert\Length(min: 3, max: 255),
-        ORM\Column(length: 2, nullable: true),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $city = null;
@@ -45,7 +45,7 @@ class Address {
     #[
         ApiProperty(description: 'Pays', example: 'FR'),
         Assert\Country,
-        ORM\Column(nullable: true),
+        ORM\Column(length: 2, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $country = null;
@@ -57,6 +57,14 @@ class Address {
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $email = null;
+
+    #[
+        ApiProperty(description: 'Numéro de téléphone', example: '03 84 91 99 84'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:address', 'write:address']),
+        ZipCode
+    ]
+    private ?string $phoneNumber = null;
 
     #[
         ApiProperty(description: 'Code postal', example: '70190'),
@@ -86,6 +94,10 @@ class Address {
         return $this->email;
     }
 
+    final public function getPhoneNumber(): ?string {
+        return $this->phoneNumber;
+    }
+
     final public function getZipCode(): ?string {
         return $this->zipCode;
     }
@@ -112,6 +124,11 @@ class Address {
 
     final public function setEmail(?string $email): self {
         $this->email = $email;
+        return $this;
+    }
+
+    final public function setPhoneNumber(?string $phoneNumber): self {
+        $this->phoneNumber = $phoneNumber;
         return $this;
     }
 
