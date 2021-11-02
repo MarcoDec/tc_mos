@@ -1,0 +1,19 @@
+before_install:
+  - curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+script:
+  - GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$USER docker-compose build --no-cache
+  - GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$USER docker-compose up -d
+  - sleep 60s # Laisse les conteneurs se charger.
+  - docker exec tconcept_gpao_php composer install
+  - docker exec tconcept_gpao_php /var/www/html/TConcept-GPAO/vendor/bin/phpstan analyse --memory-limit=1G
+  - docker exec tconcept_gpao_php yarn
+  - docker exec tconcept_gpao_php yarn eslint ./assets/
+
+services:
+  - docker
+
+sudo: required
