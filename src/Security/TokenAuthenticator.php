@@ -60,7 +60,7 @@ final class TokenAuthenticator extends AbstractAuthenticator {
         if ($request->hasCredentials()) {
             $credentials = $request->getCredentials();
             return $this->createPassport(
-                userBadge: new UserBadge($credentials['username'], fn (array $username): ?Employee => $this->getEmployeeRepo()->findOneBy(['username' => $username])),
+                userBadge: new UserBadge($credentials['username'], fn (string $username): ?Employee => $this->getEmployeeRepo()->findOneBy(['username' => $username])),
                 credentials: new CustomCredentials(function (array $credentials, Employee $user): bool {
                     return !empty($user->getPassword())
                         && $this->hasherFactory->getPasswordHasher($user)->verify($user->getPassword(), $credentials['password']);
@@ -115,7 +115,7 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     private function createPassport(UserBadge $userBadge, CustomCredentials $credentials): Passport {
         if (!empty($user = $userBadge->getUser())) {
             $credentials->executeCustomChecker($user);
-            if ($credentials->isResolved()) {
+            if (!$credentials->isResolved()) {
                 throw new CustomUserMessageAuthenticationException('Credentials check failed');
             }
         }

@@ -10,11 +10,13 @@ use ApiPlatform\Core\OpenApi\Model\Response;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use ArrayObject;
+use JetBrains\PhpStorm\Pure;
 
 final class OpenApiWrapper {
     public function __construct(private OpenApi $api, private DashPathSegmentNameGenerator $dashGenerator) {
     }
 
+    #[Pure]
     private static function securizeOperation(Operation $operation, string $schema): Operation {
         return $operation->withSecurity([[$schema => []]]);
     }

@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Token {
     #[
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch: 'EAGER')
+        ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'apiTokens')
     ]
     private Employee $employee;
 

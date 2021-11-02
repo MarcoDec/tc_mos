@@ -15,6 +15,6 @@ final class SecurityController extends AbstractController {
         if (($user = $this->getUser()) instanceof Employee) {
             $tokenRepo->connect($user);
         }
-        return new JsonResponse($normalizer->normalize($this->getUser(), null, ['jsonld_has_context' => false]));
+        return new JsonResponse($normalizer->normalize($user, null, ['jsonld_has_context' => false]));
     }
 }

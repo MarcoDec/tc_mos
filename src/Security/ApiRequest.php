@@ -4,7 +4,6 @@ namespace App\Security;
 
 use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\HttpFoundation\HeaderBag;
-use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 use Symfony\Component\Security\Core\Exception\LogicException;
@@ -24,15 +23,27 @@ final class ApiRequest {
     }
 
     /**
+     * @return array{password?: string, username?: string}
+     */
+    #[ArrayShape(['password' => 'string', 'username' => 'string'])]
+    public function getContent(): array {
+        return is_string($content = $this->request->getContent())
+        && !empty($decoded = json_decode($content, true))
+            ? $decoded
+            : [];
+    }
+
+    /**
      * @return array{password: string, username: string}
      */
-    #[ArrayShape(['password' => 'mixed', 'username' => 'mixed'])]
+    #[ArrayShape(['password' => 'string', 'username' => 'string'])]
     public function getCredentials(): array {
+        $content = $this->getContent();
         if (
-            is_string($username = $this->getRequest()->get('username'))
-            && is_string($password = $this->getRequest()->get('password'))
+            isset($content['username']) && !empty($content['username'])
+            && isset($content['password']) && !empty($content['password'])
         ) {
-            return ['password' => $password, 'username' => $username];
+            return ['password' => $content['password'], 'username' => $content['username']];
         }
         throw new LogicException('No username or password found. Did you call hasCredentials before?');
     }
@@ -57,10 +68,9 @@ final class ApiRequest {
     }
 
     public function hasCredentials(): bool {
-        return ($request = $this->getRequest())->has('username')
-            && !empty($request->get('username'))
-            && $request->has('password')
-            && !empty($request->get('password'));
+        $content = $this->getContent();
+        return isset($content['username']) && !empty($content['username'])
+            && isset($content['password']) && !empty($content['password']);
     }
 
     public function isApiUri(): bool {
@@ -77,9 +87,5 @@ final class ApiRequest {
 
     private function getHeaders(): HeaderBag {
         return $this->request->headers;
-    }
-
-    private function getRequest(): InputBag {
-        return $this->request->request;
     }
 }
