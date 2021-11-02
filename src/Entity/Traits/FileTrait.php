@@ -13,7 +13,7 @@ trait FileTrait {
         return $this->file;
     }
 
-    final public function getFilepath(): ?string {
+    public function getFilepath(): ?string {
         return $this->file?->getPathname();
     }
 
