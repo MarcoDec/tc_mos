@@ -2,6 +2,7 @@
 
 namespace App\Repository\Hr\Employee;
 
+use App\Entity\Api\Token;
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,5 +18,11 @@ use Doctrine\Persistence\ManagerRegistry;
 final class EmployeeRepository extends ServiceEntityRepository {
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Employee::class);
+    }
+
+    public function findByToken(string $token): ?Employee {
+        return !empty($apiToken = $this->_em->getRepository(Token::class)->findOneBy(['token' => $token]))
+            ? $apiToken->getEmployee()
+            : null;
     }
 }
