@@ -20,8 +20,8 @@ services:
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
       - ../src/OpenApi/OpenApiWrapper.php
-      - ../src/Security
-      - ../src/Tests/ApiRequest.php
+      - ../src/Security/ApiRequest.php
+      - ../src/Tests
     resource: ../src/
 
   App\Controller\:
