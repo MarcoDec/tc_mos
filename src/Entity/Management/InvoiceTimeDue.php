@@ -9,6 +9,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -59,7 +60,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ),
     ORM\Entity,
-    ORM\Table
+    ORM\Table,
+    UniqueEntity(['days', 'daysAfterEndOfMonth', 'endOfMonth']),
+    UniqueEntity('name')
 ]
 class InvoiceTimeDue extends Entity {
     use NameTrait;
@@ -74,17 +77,17 @@ class InvoiceTimeDue extends Entity {
 
     #[
         ApiProperty(description: 'Jours ', example: 30),
+        Assert\Length(min: 0, max: 31),
         ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
-
     ]
     private ?int $days = 0;
 
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
+        Assert\Length(min: 0, max: 31),
         ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
-
     ]
     private ?int $daysAfterEndOfMonth = 0;
 
