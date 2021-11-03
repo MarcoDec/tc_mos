@@ -6,6 +6,8 @@ export * from './form'
 export * from './layout'
 export * from './modal'
 export * from './navbar'
+export * from './jsontreeview'
+
 
 type AppAlertComputed = {alertClass: () => string}
 type AppAlertProps = {variant?: string}
