@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "motif": "ABSENCE"
+  },
+  {
+    "id": "2",
+    "motif": "AVERTISSEMENT"
+  },
+  {
+    "id": "3",
+    "motif": "ACCIDENT"
+  },
+  {
+    "id": "4",
+    "motif": "ENTRÉE"
+  },
+  {
+    "id": "5",
+    "motif": "RAPPEL FORMATION"
+  },
+  {
+    "id": "6",
+    "motif": "mise a pied"
+  },
+  {
+    "id": "7",
+    "motif": "ABANDON DE POSTE "
+  },
+  {
+    "id": "8",
+    "motif": "SORTIE"
+  },
+  {
+    "id": "9",
+    "motif": "Changement de poste "
+  }
+]
