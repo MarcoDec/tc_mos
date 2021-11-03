@@ -1,176 +1,147 @@
 <?php
 
-namespace App\Entity\Purchase\Component;
+namespace App\Entity\Hr;
 
-use App\Entity\Entity;
-use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Embeddable\Hr\Employee\Roles;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
+use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Validator\Constraints as Assert;
+
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['end' => 'partial', 'endBreak' => 'partial', 'name' => 'partial', 'start' => 'partial', 'startBreak' => 'partial']),
     ApiResource(
-        description: 'TimeSlot',
+        description: 'Plages horaires',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les TimeSlots',
-                    'summary' => 'Récupère les TimeSlot',
+                    'description' => 'Récupère les plages horaires',
+                    'summary' => 'Récupère les plages horaires',
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un TimeSlot',
-                    'summary' => 'Créer une famille de composant',
+                    'description' => 'Créer une plage horaire',
+                    'summary' => 'Créer une plage horaire',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un TimeSlot',
-                    'summary' => 'Supprime un TimeSlot',
+                    'description' => 'Supprime une plage horaire',
+                    'summary' => 'Supprime une plage horaire',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie un TimeSlot',
-                    'summary' => 'Modifie un TimeSlot',
+                    'description' => 'Modifie une plage horaire',
+                    'summary' => 'Modifie une plage horaire',
                 ]
             ]
         ],
-        shortName: 'TimeSlot',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:timeslot', 'write:name'],
+            'groups' => ['write:time-slot', 'write:name'],
             'openapi_definition_name' => 'TimeSlot-write'
         ],
         normalizationContext: [
-            'groups' => ['read:timeslot', 'read:id', 'read:name'],
+            'groups' => ['read:time-slot', 'read:id', 'read:name'],
             'openapi_definition_name' => 'TimeSlot-read'
-        ],
-        paginationEnabled: false
+        ]
     ),
-    ORM\Entity(),
-    ORM\Table(name: 'timeslot')
+    ORM\Entity,
+    ORM\Table
 ]
 class TimeSlot extends Entity {
-    #[
-        ApiProperty(description: 'fin', example: '13:30:00'),
-        ORM\Column( type:"time", nullable: true),
-        Serializer\Groups(['read:timeslot', 'write:timeslot'])
-
-    ]
-    private ?DateTimeInterface $end = null;
+    use NameTrait;
 
     #[
-        ApiProperty(description: 'fin pause', example: '13:30:00'),
-        ORM\Column( type:"time", nullable: true),
-        Serializer\Groups(['read:timeslot', 'write:timeslot'])
-
-    ]
-    private ?DateTimeInterface $endBreak = null;
-
-    #[
-        ApiProperty(description: 'début', example: '07:30:00'),
-        ORM\Column( type:"time", nullable: true),
-        Serializer\Groups(['read:timeslot', 'write:timeslot'])
-
-    ]
-    private ?DateTimeInterface $start = null;
-    #[
-        ApiProperty(description: 'début pause', example: '12:30:00'),
-        ORM\Column( type:"time", nullable: true),
-        Serializer\Groups(['read:timeslot', 'write:timeslot'])
-
-    ]
-    private ?DateTimeInterface $startBreak = null;
-
-    #[
-        ApiProperty(description: 'nom', example: 'journée'),
+        ApiProperty(description: 'Nom', example: 'Journée'),
+        Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:timeslot', 'write:timeslot']),
-        Assert\NotBlank
-        ]
-    private ?string $name;
+        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+    ]
+    protected ?string $name = null;
 
-  
+    /**
+     * @ORM\Column(type="time_immutable")
+     */
+    #[
+        ApiProperty(description: 'Fin', example: '17:30:00'),
+        ORM\Column(type: 'time_immutable', nullable: true),
+        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
+        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+    ]
+    private ?DateTimeImmutable $end = null;
 
- 
-    public function getEnd(): ?DateTimeInterface
-    {
+    #[
+        ApiProperty(description: 'Fin pause', example: '13:30:00'),
+        ORM\Column(type: 'time_immutable', nullable: true),
+        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
+        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+    ]
+    private ?DateTimeImmutable $endBreak = null;
+
+    #[
+        ApiProperty(description: 'Début', example: '07:30:00'),
+        ORM\Column(type: 'time_immutable', nullable: true),
+        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
+        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+    ]
+    private ?DateTimeImmutable $start = null;
+
+    #[
+        ApiProperty(description: 'Début pause', example: '12:30:00'),
+        ORM\Column(type: 'time_immutable', nullable: true),
+        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
+        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+    ]
+    private ?DateTimeImmutable $startBreak = null;
+
+    final public function getEnd(): ?DateTimeImmutable {
         return $this->end;
     }
 
- 
-    public function setEnd(?DateTimeInterface $end): self
-    {
-        $this->end = $end;
-
-        return $this;
-    }
-
- 
-    public function getEndBreak(): ?DateTimeInterface
-    {
+    final public function getEndBreak(): ?DateTimeImmutable {
         return $this->endBreak;
     }
 
-   
-    public function setEndBreak(?DateTimeInterface $endBreak): self
-    {
-        $this->endBreak = $endBreak;
-
-        return $this;
-    }
-
-
-    public function getStart(): ?DateTimeInterface
-    {
+    final public function getStart(): ?DateTimeImmutable {
         return $this->start;
     }
 
-   
-    public function setStart(?DateTimeInterface $start): self
-    {
-        $this->start = $start;
-
-        return $this;
-    }
-
-   
-    public function getStartBreak(): ?DateTimeInterface
-    {
+    final public function getStartBreak(): ?DateTimeImmutable {
         return $this->startBreak;
     }
 
-   
-    public function setStartBreak(?DateTimeInterface $startBreak): self
-    {
-        $this->startBreak = $startBreak;
-
+    final public function setEnd(?DateTimeImmutable $end): self {
+        $this->end = $end;
         return $this;
     }
 
-  
-    public function getName():?string
-    {
-        return $this->name;
+    final public function setEndBreak(?DateTimeImmutable $endBreak): self {
+        $this->endBreak = $endBreak;
+        return $this;
     }
 
-  
-    public function setName(?string $name): self
-    {
-        $this->name = $name;
+    final public function setStart(?DateTimeImmutable $start): self {
+        $this->start = $start;
+        return $this;
+    }
 
+    final public function setStartBreak(?DateTimeImmutable $startBreak): self {
+        $this->startBreak = $startBreak;
         return $this;
     }
 }
