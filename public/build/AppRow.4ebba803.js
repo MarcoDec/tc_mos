@@ -1,0 +1,1 @@
+import{h as e}from"./vendor.50893d26.js";function n(s){const o=[];for(const t of Object.values(s.slots))typeof t!="undefined"&&o.push(t());return o}function f(s,o){return e("div",{class:"row"},n(o))}export{f as default};

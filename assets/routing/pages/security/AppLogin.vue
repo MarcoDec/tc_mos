@@ -1,33 +1,54 @@
 <script lang="ts" setup>
-    import {onMounted, ref} from 'vue'
-    import type FormRepository from '../../../store/repository/bootstrap-5/form/FormRepository'
-    import {useRepo} from '../../../store/store'
+    import {UsersActionTypes} from '../../../store/security/action-types'
+    import {ref} from 'vue'
+    import {useNamespacedActions, useNamespacedMutations, useNamespacedState} from 'vuex-composition-helpers'
+    import {UsersMutationTypes} from "../../../store/security/mutation-types";
+    const name = useNamespacedState('users', ['username']).username
+    const password = ref<string | null>(null)
+    const username = ref<string | null>(null)
+    const actions = useNamespacedActions('users', [UsersActionTypes.FETCH_USERS])[UsersActionTypes.FETCH_USERS]
+    const mutations = useNamespacedMutations('users', [UsersMutationTypes.SET_USER])[UsersMutationTypes.SET_USER]
+    console.log('name---->',name)
+    async function handleClick(): Promise<void> {
+        await actions({
+            password: password.value,
+            username: username.value
+        })
+      await mutations({
+        username: username.value
+      })
 
-    const forms = ref<FormRepository | null>(null)
-    const form = 'login-form'
-    const formRegistered = ref(false)
-    const id = 'login'
-
-    onMounted(async () => {
-        forms.value = await useRepo({repo: 'forms', vueComponent: id})
-        if (forms.value !== null) {
-            await forms.value.persist({
-                fields: [
-                    {label: 'Identifiant', name: 'username'},
-                    {label: 'Mot de passe', name: 'password', type: 'password'}
-                ],
-                id: form,
-                vueComponents: [id]
-            })
-            formRegistered.value = true
-        }
-    })
+    }
 </script>
 
 <template>
-    <AppRow :id="id">
+    <AppRow>
+        <h3>Connexion</h3>
+
         <AppCard class="bg-blue col">
-            <AppForm v-if="formRegistered" :id="form" action="/api/login" submit-label="Connexion"/>
+            <div>
+                <div class="form-group">
+                    <label>Identifiant</label>
+                    <input
+                        v-model="username"
+                        type="text"
+                        class="form-control form-control-lg"
+                        required/>
+                </div>
+                <div class="form-group">
+                    <label>Mot De Passe</label>
+                    <input
+                        v-model="password"
+                        type="password"
+                        class="form-control form-control-lg"
+                        required/>
+                </div>
+                <button
+                    class="btn btn-block btn-dark btn-lg"
+                    @click="handleClick">
+                    Connexion
+                </button>
+            </div>
         </AppCard>
     </AppRow>
 </template>
