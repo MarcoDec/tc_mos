@@ -2,50 +2,50 @@
 
 namespace App\Entity\Management;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial','ral' => 'partial','rgb' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'ral' => 'partial', 'rgb' => 'partial']),
     ApiResource(
-        description: 'Color',
+        description: 'Couleur',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les Couleurs',
-                    'summary' => 'Récupère les Couleurs',
+                    'description' => 'Récupère les couleurs',
+                    'summary' => 'Récupère les couleurs',
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un Couleur',
-                    'summary' => 'Créer un Couleur',
+                    'description' => 'Créer une couleur',
+                    'summary' => 'Créer une couleur',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un Couleur',
-                    'summary' => 'Supprime un Couleur',
+                    'description' => 'Supprime une couleur',
+                    'summary' => 'Supprime une couleur',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie un Couleur',
-                    'summary' => 'Modifie un Couleur',
+                    'description' => 'Modifie une couleur',
+                    'summary' => 'Modifie une couleur',
                 ]
             ]
         ],
-        shortName: 'Color',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
@@ -57,75 +57,50 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:color', 'read:id', 'read:name'],
             'openapi_definition_name' => 'Color-read'
         ],
-        paginationEnabled: false
     ),
-    ORM\Entity(),
-    ORM\Table(name: 'Color')
+    ORM\Entity,
+    ORM\Table
 ]
 class Color extends Entity {
-    #[
-        ApiProperty(description: 'nom', example: 'Gris'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name']),
-        Assert\NotBlank
+    use NameTrait;
 
+    #[
+        ApiProperty(description: 'nom', required: true, example: 'Gris'),
+        Assert\NotBlank,
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:name', 'write:name'])
     ]
-    private ?string $name = null;
+    protected ?string $name = null;
 
     #[
         ApiProperty(description: 'ral', example: '17122018'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
-        ]
+    ]
     private ?string $ral = null;
 
     #[
         ApiProperty(description: 'rgb', example: '#848484'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
-        ]
+    ]
     private ?string $rgb = null;
 
-
-     
-    public function getName(): ?string 
-    {
-        return $this->name;
-    }
-
-   
-    public function setName(?string  $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    
-    public function getRal(): ?string 
-    {
+    final public function getRal(): ?string {
         return $this->ral;
     }
 
-    
-    public function setRal(?string  $ral): self
-    {
-        $this->ral = $ral;
-
-        return $this;
-    }
-
-    
-    public function getRgb(): ?string 
-    {
+    final public function getRgb(): ?string {
         return $this->rgb;
     }
 
-   
-    public function setRgb(?string  $rgb): self
-    {
-        $this->rgb = $rgb;
+    final public function setRal(?string $ral): self {
+        $this->ral = $ral;
+        return $this;
+    }
 
+    final public function setRgb(?string $rgb): self {
+        $this->rgb = $rgb;
         return $this;
     }
 }
