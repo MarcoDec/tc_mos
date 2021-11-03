@@ -13,4 +13,5 @@ App\Entity\Hr\OutTrainer:
     tel:
       new_name: address_phone_number
     id_phone_prefix:
+      country: true
       new_name: address_country
