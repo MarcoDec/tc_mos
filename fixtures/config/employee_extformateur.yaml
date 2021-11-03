@@ -1,0 +1,16 @@
+App\Entity\Hr\OutTrainer:
+  properties:
+    prenom:
+      new_name: name
+    nom:
+      new_name: surname
+    address:
+      new_name: address_address
+    ville:
+      new_name: address_city
+    code_postal:
+      new_name: address_zip_code
+    tel:
+      new_name: address_phone_number
+    id_phone_prefix:
+      new_name: address_country
