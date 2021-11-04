@@ -10,5 +10,3 @@ export type BootstrapVariant =
     | 'transparent'
     | 'warning'
     | 'white'
-
-export type InputType = 'password' | 'text'
