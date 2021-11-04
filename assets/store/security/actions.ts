@@ -1,6 +1,7 @@
 import {MutationTypes} from './mutations'
 import type {RootState} from '../index'
 import type {State} from './state'
+import {ActionTypes as StoreActionTypes} from '../actions'
 import type {ActionContext as VuexActionContext} from 'vuex'
 
 export enum ActionTypes {
@@ -16,19 +17,12 @@ export type Actions = {
 }
 
 export const actions: Actions = {
-    async [ActionTypes.FETCH_USERS]({commit}: ActionContext, payload: Login): Promise<void> {
-        const response = await fetch(
-            'http://localhost:8000/api/login',
-            {
-                body: JSON.stringify({
-                    password: payload.password,
-                    username: payload.username
-                }),
-                headers: {'Content-Type': 'application/json'},
-                method: 'POST'
-            }
+    async [ActionTypes.FETCH_USERS]({commit, dispatch}: ActionContext, {password, username}: Login): Promise<void> {
+        const user = await dispatch(
+            StoreActionTypes.FETCH_API,
+            {body: {password, username}, method: 'POST', route: '/api/login'},
+            {root: true}
         )
-        const responseData = await response.json()
-        commit(MutationTypes.SET_USER, responseData.username)
+        commit(MutationTypes.SET_USER, user.username)
     }
 }
