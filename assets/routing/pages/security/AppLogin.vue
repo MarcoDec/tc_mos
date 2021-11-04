@@ -1,45 +1,39 @@
 <script lang="ts" setup>
-    import {useNamespacedActions, useNamespacedMutations} from 'vuex-composition-helpers'
-    import {UsersActionTypes} from '../../../store/security/action-types'
-    import {UsersMutationTypes} from '../../../store/security/mutation-types'
+    import {ActionTypes} from '../../../store/security/actions'
+    import type {Actions} from '../../../store/security/actions'
     import {ref} from 'vue'
+    import {useNamespacedActions} from 'vuex-composition-helpers'
+
     const password = ref<string | null>(null)
     const username = ref<string | null>(null)
-    const actions = useNamespacedActions('users', [UsersActionTypes.FETCH_USERS])[UsersActionTypes.FETCH_USERS]
-    const mutations = useNamespacedMutations('users', [UsersMutationTypes.SET_USER])[UsersMutationTypes.SET_USER]
-    async function handleClick(): Promise<void> {
-        await actions({
-            password: password.value,
-            username: username.value
-        })
-        await mutations({
-            username: username.value
-        })
 
+    const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.FETCH_USERS])[ActionTypes.FETCH_USERS]
+
+    async function handleClick(): Promise<void> {
+        await fetchUsers({password: password.value, username: username.value})
     }
 </script>
 
 <template>
     <AppRow>
         <h3>Connexion</h3>
-
         <AppCard class="bg-blue col">
             <div>
                 <div class="form-group">
                     <label>Identifiant</label>
                     <input
                         v-model="username"
-                        type="text"
                         class="form-control form-control-lg"
-                        required/>
+                        required
+                        type="text"/>
                 </div>
                 <div class="form-group">
                     <label>Mot De Passe</label>
                     <input
                         v-model="password"
-                        type="password"
                         class="form-control form-control-lg"
-                        required/>
+                        required
+                        type="password"/>
                 </div>
                 <button
                     class="btn btn-block btn-dark btn-lg"

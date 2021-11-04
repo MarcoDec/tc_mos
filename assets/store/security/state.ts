@@ -1,11 +1,9 @@
 export type State = {
-    password: string ;
-    username: string ;
-
-
+    password: string | null
+    username: string | null
 }
 
 export const state: State = {
-    password: '',
-    username: ''
+    password: null,
+    username: null
 }

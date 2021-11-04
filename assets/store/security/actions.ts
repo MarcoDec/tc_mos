@@ -1,26 +1,22 @@
-import type {ActionContext, ActionTree} from 'vuex'
-import type {Mutations} from './mutations'
+import {MutationTypes} from './mutations'
 import type {RootState} from '../index'
 import type {State} from './state'
-import {UsersActionTypes} from './action-types'
-import {UsersMutationTypes} from './mutation-types'
+import type {ActionContext as VuexActionContext} from 'vuex'
 
-type AugmentedActionContext = Omit<ActionContext<State, RootState>, 'commit'> & {
-    commit: <K extends keyof Mutations>(
-        key: K,
-        payload: Parameters<Mutations[K]>[1],
-    ) => ReturnType<Mutations[K]>;
+export enum ActionTypes {
+    FETCH_USERS = 'FETCH_USERS'
 }
 
-export interface Actions {
-    [UsersActionTypes.FETCH_USERS]: (
-        {commit}: AugmentedActionContext,
-        username: string,
-    ) => Promise<void>;
+type ActionContext = VuexActionContext<State, RootState>
+
+type Login = {username: string | null, password: string | null}
+
+export type Actions = {
+    [ActionTypes.FETCH_USERS]: (injectee: ActionContext, payload: Login) => Promise<void>
 }
 
-export const actions: ActionTree<State, RootState> = {
-    async [UsersActionTypes.FETCH_USERS]({commit}, payload: {username: string, password: string}) {
+export const actions: Actions = {
+    async [ActionTypes.FETCH_USERS]({commit}: ActionContext, payload: Login): Promise<void> {
         const response = await fetch(
             'http://localhost:8000/api/login',
             {
@@ -33,6 +29,6 @@ export const actions: ActionTree<State, RootState> = {
             }
         )
         const responseData = await response.json()
-        commit(UsersMutationTypes.SET_USER, responseData.username)
+        commit(MutationTypes.SET_USER, responseData.username)
     }
 }
