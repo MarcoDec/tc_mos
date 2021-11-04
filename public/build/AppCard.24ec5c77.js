@@ -1,1 +1,0 @@
-import{i as a,o,m as r,k as t,n as c,p as l}from"./vendor.50893d26.js";const n={class:"card-body"},p=a({props:{cssClass:null},setup(s){return(e,d)=>(o(),r("div",{class:l([s.cssClass,"card"])},[t("div",n,[c(e.$slots,"default")])],2))}});export{p as default};

@@ -1,1 +1,0 @@
-import{i as n,f as o,o as r,m as l,n as p,p as u,u as c}from"./vendor.50893d26.js";const d=["type"],m=n({props:{size:{default:"sm"},type:{default:"button"},variant:{default:"primary"}},setup(t){const e=t,s=o(()=>`btn-${e.size} btn-${e.variant}`);return(a,i)=>(r(),l("button",{class:u([c(s),"btn"]),type:t.type},[p(a.$slots,"default")],10,d))}});export{m as default};
