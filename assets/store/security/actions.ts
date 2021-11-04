@@ -33,11 +33,6 @@ export const actions: ActionTree<State, RootState> = {
             }
         )
         const responseData = await response.json()
-        console.log('res:', responseData)
         commit(UsersMutationTypes.SET_USER, responseData.username)
     }
-
-
 }
-
-
