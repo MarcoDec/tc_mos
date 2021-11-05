@@ -1,11 +1,10 @@
 <template>
-  <app-show-gui></app-show-gui>
+    <AppShowGui/>
 </template>
 
 <script>
+    export default {
 
-export default {
-
-}
+    }
 </script>
 

@@ -12,7 +12,6 @@
 
 
 <style lang="scss" scoped>
-
 @media only screen and (min-width: 150px) and (max-width: 1024px) {
   .row{
     display: block;

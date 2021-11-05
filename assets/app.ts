@@ -13,15 +13,14 @@ import {
     AppModalError,
     AppNavbar,
     AppNavbarBrand,
-    AppRow,
+    AppRow
 
 
 } from './components'
-import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
-import AppShowGui from './components/gui/AppShowGui.vue'
-import {Tabs, Tab} from 'vue3-tabs-component'
-import { mdbTabs  } from 'mdbvue'
 import App from './routing/pages/App'
+import AppShowGui from './components/gui/AppShowGui.vue'
+import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
+import AppShowGuiTabs from './components/gui/AppShowGuiTabs.vue'
 import type {AxiosError} from 'axios'
 import VueAxios from 'vue-axios'
 import axios from 'axios'
@@ -29,6 +28,7 @@ import {createApp} from 'vue'
 import mitt from 'mitt'
 import router from './routing/router'
 import {store} from './store/store'
+
 const app = createApp(App)
 
 app
@@ -65,9 +65,9 @@ app
     .component('AppNavbarBrand', AppNavbarBrand)
     .component('AppRow', AppRow)
     .component('AppShowGuiCard', AppShowGuiCard)
+    .component('AppShowGuiTabs', AppShowGuiTabs)
+
     .component('AppShowGui', AppShowGui)
-    .component('AppTabs', Tabs)
-    .component('AppTab', Tab)
-    .component('mdbTabs ', mdbTabs)
+
 
 app.mount('#vue')

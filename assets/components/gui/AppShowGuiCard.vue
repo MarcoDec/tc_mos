@@ -1,22 +1,19 @@
-
 <template>
-  <AppCol>
-    <AppCard :class="cssClass" :style="cssStyle" border-variant="secondary">
-      <slot/>
-    </AppCard>
-  </AppCol>
+    <AppCol>
+        <AppCard :class="cssClass" :style="cssStyle" border-variant="secondary">
+            <slot/>
+        </AppCard>
+    </AppCol>
 </template>
 
 
 <script lang="ts" setup>
-import {defineProps} from 'vue'
-import AppCol from "../bootstrap-5/layout/AppCol.vue";
-import AppCard from "../bootstrap-5/card/AppCard.vue";
+    import {defineProps} from 'vue'
+    import AppCol from '../bootstrap-5/layout/AppCol.vue'
+    import AppCard from '../bootstrap-5/card/AppCard.vue'
 
-defineProps<{cssClass?: string}>()
+    defineProps<{cssClass?: string}>()
 </script>
-
-
 
 
 <style lang="scss" scoped>
@@ -50,8 +47,5 @@ defineProps<{cssClass?: string}>()
   }
 }
 </style>
-
-
-
 
 
