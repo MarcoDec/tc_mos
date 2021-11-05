@@ -5,6 +5,7 @@ namespace App\Fixtures;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Tightenco\Collect\Support\Collection;
 
 final class EntityConfig {
@@ -13,18 +14,19 @@ final class EntityConfig {
     /** @var Collection<mixed> */
     private Collection $entities;
 
-    /** @var array<string, int> */
+    /** @var array<int, int> */
     private array $ids = [];
 
     /** @var array<string, PropertyConfig> */
     private array $properties;
 
     /**
-     * @param ClassMetadata<object>                                                                                  $metadata
-     * @param array{deleted?: string, properties: array{new_name: string, new_ref?: class-string, old_ref?: string}} $config
+     * @param ClassMetadata<object>                                                                                                                    $metadata
+     * @param array{deleted?: string, properties: array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}} $config
      */
     public function __construct(
         private Configurations $configurations,
+        private ExpressionLanguage $exprLang,
         private ClassMetadata $metadata,
         array $config
     ) {
@@ -41,6 +43,13 @@ final class EntityConfig {
     #[Pure]
     public function count(): int {
         return $this->entities->count();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function findData(int $id) {
+        return $this->entities->first(fn (Collection $entity): bool => $entity['id'] === $this->ids[$id]);
     }
 
     /**
@@ -65,9 +74,15 @@ final class EntityConfig {
             }
 
             $transformed = ['id' => $id = ++$count];
-            $this->ids[$entity['id']] = $id;
+            $this->ids[(int) ($entity['id'])] = $id;
             foreach ($this->properties as $property => $config) {
-                $value = $entity[$property];
+                $value = !$config->isNew() ? $entity[$property] : null;
+                if ($config->isCountry()) {
+                    $value = $this->configurations->getCountry($value);
+                }
+                if (!empty($forceValue = $config->getForceValue())) {
+                    $value = $this->exprLang->evaluate($forceValue, $entity);
+                }
                 if (!empty($ref = $config->getOldRef())) {
                     $value = $this->configurations->getId($ref, $value);
                 }
