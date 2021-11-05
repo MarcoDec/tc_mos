@@ -11,6 +11,10 @@ final class UniqueEntity extends DoctrineUniqueEntity {
      * @param string|string[] $fields
      */
     public function __construct(array|string $fields) {
-        parent::__construct(array_merge(is_array($fields) ? $fields : [$fields], ['deleted' => false]));
+        if (!is_array($fields)) {
+            $fields = [$fields];
+        }
+        $fields[] = 'deleted';
+        parent::__construct($fields);
     }
 }
