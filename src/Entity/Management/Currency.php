@@ -11,12 +11,13 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['active']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['rate' => 'partial', 'code' => 'partial']),
     ApiResource(
-        description: 'Currency',
+        description: 'Devises',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -46,7 +47,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ]
         ],
-        shortName: 'Currency',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
@@ -60,12 +60,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity(),
-    ORM\Table(name: 'incoterms')
+    ORM\Entity,
+    ORM\Table
 ]
-
 class Currency extends Entity {
     #[
+        ApiProperty(description: 'Active', example: true),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:currency', 'write:currency'])
     ]
@@ -73,40 +73,45 @@ class Currency extends Entity {
 
     #[
         ApiProperty(description: 'Code', required: true, example: 'EUR'),
-        ORM\Column(nullable: true),
+        Assert\NotBlank,
+        ORM\Column,
         Serializer\Groups(['read:currency', 'write:currency'])
-
     ]
     private ?string $code = null;
 
     #[
-        ORM\Column(nullable: true),
+        ApiProperty(description: 'Taux (€)', required: true, example: 1),
+        Assert\NotBlank,
+        Assert\Positive,
+        ORM\Column(options: ['default' => 1, 'unsigned' => true]),
         Serializer\Groups(['read:currency', 'write:currency'])
-
     ]
-    private ?float $rate = null;
+    private float $rate = 1;
 
-    public function getCode(): ?string {
+    final public function getCode(): ?string {
         return $this->code;
     }
 
-    public function getRate(): ?float {
+    final public function getRate(): float {
         return $this->rate;
     }
 
-    public function isActive(): bool {
+    final public function isActive(): bool {
         return $this->active;
     }
 
-    public function setActive(bool $active): void {
+    final public function setActive(bool $active): self {
         $this->active = $active;
+        return $this;
     }
 
-    public function setCode(?string $code): void {
+    final public function setCode(?string $code): self {
         $this->code = $code;
+        return $this;
     }
 
-    public function setRate(?float $rate): void {
+    final public function setRate(float $rate): self {
         $this->rate = $rate;
+        return $this;
     }
 }
