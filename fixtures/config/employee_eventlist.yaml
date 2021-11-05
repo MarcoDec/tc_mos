@@ -1,0 +1,4 @@
+App\Entity\Hr\Event\Type:
+  properties:
+    motif:
+      new_name: name
