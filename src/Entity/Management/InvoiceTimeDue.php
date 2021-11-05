@@ -5,17 +5,21 @@ namespace App\Entity\Management;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
+use App\Filter\NumericFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['days' => 'partial', 'daysAfterEndOfMonth' => 'partial', 'endOfMonth' => 'exact', 'name' => 'partial']),
+    ApiFilter(filterClass: BooleanFilter::class, properties: ['endOfMonth']),
+    ApiFilter(filterClass: NumericFilter::class, properties: ['days', 'daysAfterEndOfMonth']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Délai de paiement des factures',
         collectionOperations: [
