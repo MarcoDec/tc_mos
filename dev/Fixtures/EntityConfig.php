@@ -77,6 +77,9 @@ final class EntityConfig {
             $this->ids[(int) ($entity['id'])] = $id;
             foreach ($this->properties as $property => $config) {
                 $value = !$config->isNew() ? $entity[$property] : null;
+                if ($config->isCountry()) {
+                    $value = $this->configurations->getCountry($value);
+                }
                 if (!empty($forceValue = $config->getForceValue())) {
                     $value = $this->exprLang->evaluate($forceValue, $entity);
                 }
