@@ -10,6 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -92,8 +93,24 @@ class Currency extends Entity {
         return $this->code;
     }
 
+    #[
+        ApiProperty(description: 'Nom', example: 'Euro'),
+        Serializer\Groups(['read:currency'])
+    ]
+    final public function getName(): ?string {
+        return !empty($this->code) ? Currencies::getName($this->code) : null;
+    }
+
     final public function getRate(): float {
         return $this->rate;
+    }
+
+    #[
+        ApiProperty(description: 'Symbole', example: '€'),
+        Serializer\Groups(['read:currency'])
+    ]
+    final public function getSymbol(): ?string {
+        return !empty($this->code) ? Currencies::getSymbol($this->code) : null;
     }
 
     final public function isActive(): bool {
