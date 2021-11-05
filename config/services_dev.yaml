@@ -5,6 +5,7 @@ services:
 
   App\:
     exclude:
+      - ../dev/ExpressionLanguage/
       - ../dev/Fixtures/
     resource: ../dev/
 

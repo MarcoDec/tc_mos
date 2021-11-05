@@ -1,0 +1,7 @@
+App\Entity\Management\Unit:
+  deleted: statut
+  properties:
+    unit_short_lbl:
+      new_name: code
+    unit_complete_lbl:
+      new_name: name
