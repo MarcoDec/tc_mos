@@ -25,6 +25,6 @@ final class DatabaseLoadCommand extends AbstractCommand {
 
         $run(SchemaUpdateCommand::GPAO_SCHEMA_COMMAND);
         $run(FixturesCommand::GPAO_FIXTURES_COMMAND);
-        return 0;
+        return self::SUCCESS;
     }
 }

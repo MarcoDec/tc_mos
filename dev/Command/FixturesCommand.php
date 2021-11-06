@@ -54,7 +54,7 @@ final class FixturesCommand extends AbstractCommand {
             ->run(new ArrayInput(['command' => self::DOCTRINE_FIXTURES_COMMAND, '--append' => true]), $output);
         $this->endTime($output, $loadDoctrine);
 
-        return 0;
+        return self::SUCCESS;
     }
 
     private function loadConfig(): void {

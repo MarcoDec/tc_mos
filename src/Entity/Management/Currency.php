@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Repository\CurrencyRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -56,7 +57,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: CurrencyRepository::class),
     ORM\Table
 ]
 class Currency extends Entity {

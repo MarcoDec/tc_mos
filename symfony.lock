@@ -17,6 +17,9 @@
     "ronanguilloux/isocodes": {
         "version": "2.3.5"
     },
+    "symfony/http-client": {
+        "version": "v5.3.10"
+    },
     "symfony/intl": {
         "version": "v5.3.8"
     }

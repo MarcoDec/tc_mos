@@ -61,6 +61,7 @@
     "symfony/expression-language": "5.3.*",
     "symfony/flex": "^1.17",
     "symfony/framework-bundle": "5.3.*",
+    "symfony/http-client": "5.3.*",
     "symfony/intl": "5.3.*",
     "symfony/mime": "5.3.*",
     "symfony/monolog-bundle": "^3.7",

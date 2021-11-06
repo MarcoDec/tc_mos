@@ -26,6 +26,6 @@ final class SchemaUpdateCommand extends AbstractCommand {
             $output
         );
         $this->endTime($output, $tag);
-        return 0;
+        return self::SUCCESS;
     }
 }
