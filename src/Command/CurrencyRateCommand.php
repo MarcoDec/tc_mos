@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-#[CronJob]
+#[CronJob('@daily')]
 final class CurrencyRateCommand extends Command {
     public function __construct(private HttpClientInterface $client, private CurrencyRepository $currencyRepo) {
         parent::__construct('gpao:currency:rate');
