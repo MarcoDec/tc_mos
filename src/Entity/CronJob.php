@@ -41,6 +41,11 @@ class CronJob extends Entity {
         return $this;
     }
 
+    final public function setPeriod(string $period): self {
+        $this->period = $period;
+        return $this;
+    }
+
     private function getCronExpression(): CronExpression {
         return new CronExpression($this->period);
     }

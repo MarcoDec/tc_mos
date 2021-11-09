@@ -85,10 +85,16 @@ final class CronCommand extends AbstractCommand {
     }
 
     private function scan(): void {
+        $entities = $this->getEntities();
         foreach ($this->getJobs() as $name => $job) {
             /** @var CronJobAttribute $attribute */
             $attribute = $job['cron'];
-            $this->em->persist(new CronJob($name, $attribute->getPeriod()));
+            if (isset($entities[$name])) {
+                $entity = $entities[$name]->setPeriod($attribute->getPeriod());
+            } else {
+                $entity = new CronJob($name, $attribute->getPeriod());
+            }
+            $this->em->persist($entity);
         }
     }
 }
