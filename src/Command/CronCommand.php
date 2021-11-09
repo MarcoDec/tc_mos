@@ -16,14 +16,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class CronCommand extends AbstractCommand {
     private const OPTION_SCAN = 'scan';
 
+    protected static $defaultDescription = 'Lance les CRON.';
+    protected static $defaultName = 'gpao:cron';
+
     public function __construct(private EntityManagerInterface $em) {
-        parent::__construct('gpao:cron');
+        parent::__construct();
     }
 
     protected function configure(): void {
-        $this
-            ->setDescription('Lance les CRON.')
-            ->addOption(self::OPTION_SCAN, null, InputOption::VALUE_NONE, 'Analyse les commandes et créer les CRON en base de données.');
+        $this->addOption(self::OPTION_SCAN, null, InputOption::VALUE_NONE, 'Analyse les commandes et créer les CRON en base de données.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {

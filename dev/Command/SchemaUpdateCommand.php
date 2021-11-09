@@ -6,17 +6,14 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @method static string getDefaultName()
+ */
 final class SchemaUpdateCommand extends AbstractCommand {
-    public const GPAO_SCHEMA_COMMAND = 'gpao:schema:update';
     private const DOCTRINE_COMMAND = 'doctrine:schema:update';
 
-    public function __construct() {
-        parent::__construct(self::GPAO_SCHEMA_COMMAND);
-    }
-
-    protected function configure(): void {
-        $this->setDescription('Modifie le schéma de la base de données en fonction des entités');
-    }
+    protected static $defaultDescription = 'Modifie le schéma de la base de données en fonction des entités';
+    protected static $defaultName = 'gpao:schema:update';
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $tag = 'Chargement du modèle';
