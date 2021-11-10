@@ -14,7 +14,7 @@ trait NameTrait {
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
     ]
-    private ?string $name = null;
+    protected ?string $name = null;
 
     final public function getName(): ?string {
         return $this->name;
