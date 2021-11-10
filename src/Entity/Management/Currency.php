@@ -21,21 +21,9 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les devises',
                     'summary' => 'Récupère les devises',
                 ]
-            ],
-            'post' => [
-                'openapi_context' => [
-                    'description' => 'Créer une devise',
-                    'summary' => 'Créer une devise',
-                ]
             ]
         ],
         itemOperations: [
-            'delete' => [
-                'openapi_context' => [
-                    'description' => 'Supprime une devise',
-                    'summary' => 'Supprime une devise',
-                ]
-            ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
@@ -72,7 +60,7 @@ class Currency extends Entity {
         ApiProperty(description: 'Code', required: true, example: 'EUR'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:currency', 'write:currency'])
+        Serializer\Groups(['read:currency'])
     ]
     private ?string $code = null;
 
@@ -81,7 +69,7 @@ class Currency extends Entity {
         Assert\NotBlank,
         Assert\Positive,
         ORM\Column(options: ['default' => 1, 'unsigned' => true]),
-        Serializer\Groups(['read:currency', 'write:currency'])
+        Serializer\Groups(['read:currency'])
     ]
     private float $rate = 1;
 
