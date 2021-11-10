@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -15,70 +16,60 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
-        description: 'QualityReject',
+        description: 'Type de rebus',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les qualités du reject',
-                    'summary' => 'Récupère les qualités du reject',
+                    'description' => 'Récupère les type de rebus',
+                    'summary' => 'Récupère les type de rebus',
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer une qualité du reject',
-                    'summary' => 'Créer une qualité du reject',
+                    'description' => 'Créer un type de rebus',
+                    'summary' => 'Créer un type de rebus',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime une qualité du reject',
-                    'summary' => 'Supprime une qualité du reject',
+                    'description' => 'Supprime un type de rebus',
+                    'summary' => 'Supprime un type de rebus',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie une qualité du reject',
-                    'summary' => 'Modifie une qualité du reject',
+                    'description' => 'Modifie un type de rebus',
+                    'summary' => 'Modifie un type de rebus',
                 ]
             ]
         ],
-        shortName: 'QualiteReject',
+        shortName: 'RejectType',
         attributes: [
-            'security' => 'is_granted(\'' . Roles::ROLE_QUALITY_ADMIN . '\')'
+            'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:qualite', 'write:name'],
-            'openapi_definition_name' => 'QualiteReject-write'
+            'groups' => ['write:name'],
+            'openapi_definition_name' => 'RejectType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:qualite', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'QualiteReject-read'
-        ],
-        paginationEnabled: false
+            'groups' => ['read:id', 'read:name'],
+            'openapi_definition_name' => 'RejectType-read'
+        ]
     ),
-    ORM\Entity(),
+    ORM\Entity,
     ORM\Table(name: 'reject_type')
 ]
-class Type extends Entity
-{
+class Type extends Entity {
+    use NameTrait;
+
     #[
         ApiProperty(description: 'Nom', required: true, example: 'sertissage dimensionnelle'),
         Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
     ]
-    protected ?string $name;
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(?string $name): void
-    {
-        $this->name = $name;
-    }
+    protected ?string $name = null;
 }
