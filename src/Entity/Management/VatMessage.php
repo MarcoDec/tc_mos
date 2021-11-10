@@ -8,73 +8,78 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['message' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
-        description: 'VatMessage',
+        description: 'Message TVA',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les messages Vat',
-                    'summary' => 'Récupère les messages Vat',
+                    'description' => 'Récupère les messages TVA',
+                    'summary' => 'Récupère les messages TVA',
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un message vat',
-                    'summary' => 'Créer un message vat',
+                    'description' => 'Créer un message TVA',
+                    'summary' => 'Créer un message TVA',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un message vat',
-                    'summary' => 'Supprime un message vat',
+                    'description' => 'Supprime un message TVA',
+                    'summary' => 'Supprime un message TVA',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie un message vat',
-                    'summary' => 'Modifie un message vat',
+                    'description' => 'Modifie un message TVA',
+                    'summary' => 'Modifie un message TVA',
                 ]
             ]
         ],
-        shortName: 'VatMessage',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:vatMessage'],
+            'groups' => ['write:name'],
             'openapi_definition_name' => 'VatMessage-write'
         ],
         normalizationContext: [
-            'groups' => ['read:vatMessage', 'read:id'],
+            'groups' => ['read:name', 'read:id'],
             'openapi_definition_name' => 'VatMessage-read'
-        ],
-        paginationEnabled: false
+        ]
     ),
-    ORM\Entity(),
-    ORM\Table(name: 'vat_message')
+    ORM\Entity,
+    ORM\Table,
+    UniqueEntity('name')
 ]
 class VatMessage extends Entity {
+    use NameTrait;
+
     #[
-        ApiProperty(description: 'Message', example: 'Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI..'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:vatMessage', 'write:vatMessage'])
-
+        ApiProperty(description: 'Message', required: true, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name'])
     ]
-    private ?string $message = null;
+    protected ?string $name = null;
 
-    public function getMessage(): ?string {
-        return $this->message;
+    final public function getName(): ?string {
+        return $this->name;
     }
 
-    public function setMessage(?string $message): void {
-        $this->message = $message;
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
     }
 }
