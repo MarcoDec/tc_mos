@@ -67,7 +67,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     private ?string $password = null;
 
     #[
-        ApiProperty(description: 'identifiant', identifier: true, example: 'super'),
+        ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 180),
         Serializer\Groups(['read:employee'])
     ]

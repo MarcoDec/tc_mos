@@ -5,8 +5,21 @@ import type {Component} from 'vue'
 import {createApp} from 'vue'
 import router from './routing/router'
 import store from './store/index'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+import {fas} from '@fortawesome/free-solid-svg-icons'
+import {library} from '@fortawesome/fontawesome-svg-core'
 
+
+
+library.add(fas)
 const app = createApp(App).use(router).use(store)
 for (const [name, component] of Object.entries(components))
     app.component(name, component as Component)
-app.mount('#vue')
+    app.component("font-awesome-icon", FontAwesomeIcon)
+
+async function start(): Promise<void>{
+    await store.dispatch('users/connect')
+    app.mount('#vue')
+
+}
+start()

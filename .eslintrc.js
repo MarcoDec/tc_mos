@@ -17,6 +17,7 @@ module.exports = {
     },
     root: true,
     rules: {
+
         // https://eslint.org/docs/rules/
         // Possible Errors
         'for-direction': 'error',

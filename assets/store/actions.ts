@@ -24,7 +24,9 @@ export const actions: Actions = {
             headers: {'Content-Type': 'application/json'},
             method
         })
-        const data = await response.json()
-        return data
+        if (response.status === 200) {
+            const data = await response.json()
+            return data
+        }
     }
 }

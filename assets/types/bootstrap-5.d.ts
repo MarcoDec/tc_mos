@@ -10,3 +10,11 @@ export type BootstrapVariant =
     | 'transparent'
     | 'warning'
     | 'white'
+
+export type FormInput = 'password' | 'text'
+
+export type FormField = {
+    label: string
+    name: string
+    type?: FormInput
+}
