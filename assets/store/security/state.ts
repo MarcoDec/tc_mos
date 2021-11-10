@@ -5,5 +5,5 @@ export type State = {
 
 export const state: State = {
     password: null,
-    username: null,
+    username: null
 }

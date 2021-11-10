@@ -1,6 +1,6 @@
 
 <script lang="ts" setup>
-    import {computed, defineEmits, defineProps} from 'vue'
+    import {defineEmits, defineProps} from 'vue'
     import type {FormField} from '../../../types/bootstrap-5'
 
     const props = defineProps<{field: FormField, value?: number | string}>()
@@ -11,7 +11,7 @@
 
     function input(value: number | string): void {
         emit('update:value', value)
-        emit('input', {value, name: props.field.name})
+        emit('input', {name: props.field.name, value})
     }
 </script>
 

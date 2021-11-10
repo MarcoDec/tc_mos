@@ -18,3 +18,14 @@ export type FormField = {
     name: string
     type?: FormInput
 }
+
+export type UserResponse = {
+    name: string,
+    embRoles: {
+        roles: string[]
+    },
+    username: string,
+    id: string,
+    token: string
+
+}

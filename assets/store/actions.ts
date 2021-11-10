@@ -18,6 +18,7 @@ type Actions = {
 }
 
 export const actions: Actions = {
+    // eslint-disable-next-line consistent-return
     async [ActionTypes.FETCH_API](injectee: ActionContext, {body, method, route}: FetchApi): Promise<unknown> {
         const response = await fetch(route, {
             body: JSON.stringify(body),
