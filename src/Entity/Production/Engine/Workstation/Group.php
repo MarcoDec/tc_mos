@@ -2,45 +2,30 @@
 
 namespace App\Entity\Production\Engine\Workstation;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Production\Engine\Group as EngineGroup;
+use Doctrine\ORM\Mapping as ORM;
 
 #[
-    ApiFilter(filterClass: BooleanFilter::class, properties: ['safetyDevice']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
-        description: 'EngineGroup',
+        description: 'WorkstationGroup',
         collectionOperations: [
             'post' => [
                 'openapi_context' => [
-                    'description' => 'créer un groupe Workstation',
-                    'summary' => 'Récupère un groupe Workstation',
+                    'description' => 'Créer un groupe de poste de travail',
+                    'summary' => 'Créer un groupe de poste de travail',
+                    'tags' => ['EngineGroup']
                 ]
             ],
         ],
-        shortName: 'Group',
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        shortName: 'WorkstationGroup',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
         ],
-        denormalizationContext: [
-            'groups' => ['write:group', 'write:group'],
-            'openapi_definition_name' => 'Group-write'
-        ],
-        normalizationContext: [
-            'groups' => ['read:group', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'Group-read'
-        ],
-        paginationEnabled: false
     ),
-    ORM\Entity(),
-
+    ORM\Entity,
 ]
 class Group extends EngineGroup {
-    final public function getType(): string {
-        return 'tool';
-    }
 }

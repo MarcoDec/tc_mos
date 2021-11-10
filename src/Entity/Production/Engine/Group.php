@@ -9,11 +9,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Production\Engine\CounterPart\Group as CounterPartGroup;
 use App\Entity\Production\Engine\Tool\Group as ToolGroup;
 use App\Entity\Production\Engine\Workstation\Group as WorkstationGroup;
 use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -21,88 +21,94 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: BooleanFilter::class, properties: ['safetyDevice']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
-        description: 'EngineGroup',
+        description: 'Groupe d\'équipement',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les groupes',
-                    'summary' => 'Récupère les groupes',
+                    'description' => 'Récupère les groupes d\'équipement',
+                    'summary' => 'Récupère les groupes d\'équipement',
                 ]
             ],
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un groupe',
-                    'summary' => 'Supprime un groupe',
+                    'description' => 'Supprime un groupe d\'équipement',
+                    'summary' => 'Supprime un groupe d\'équipement',
                 ]
             ],
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie un groupe',
-                    'summary' => 'Modifie un groupe',
+                    'description' => 'Modifie un groupe d\'équipement',
+                    'summary' => 'Modifie un groupe d\'équipement',
                 ]
             ]
         ],
-        shortName: 'Group',
+        shortName: 'EngineGroup',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:group', 'write:group'],
-            'openapi_definition_name' => 'Group-write'
+            'groups' => ['write:engine-group', 'write:name'],
+            'openapi_definition_name' => 'EngineGroup-write'
         ],
         normalizationContext: [
-            'groups' => ['read:group', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'Group-read'
-        ],
-        paginationEnabled: false
+            'groups' => ['read:engine-group', 'read:id', 'read:name'],
+            'openapi_definition_name' => 'EngineGroup-read'
+        ]
     ),
-    ORM\Entity(),
-    ORM\DiscriminatorMap(Group::TYPES),
     ORM\DiscriminatorColumn(name: 'type', type: 'string'),
+    ORM\DiscriminatorMap(Group::TYPES),
+    ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
-    UniqueEntity('code'),
-    UniqueEntity('name'),
     ORM\Table(name: 'engine_group')
 ]
-
 abstract class Group extends Entity {
     use NameTrait;
 
-    public const TYPES = ['tool' => ToolGroup::class, 'workstation' => WorkstationGroup::class];
+    private const TYPES = [
+        'counter-part' => CounterPartGroup::class,
+        'tool' => ToolGroup::class,
+        'workstation' => WorkstationGroup::class
+    ];
 
     #[
-        ApiProperty(description: 'Code ', required: true, example: 'MA'),
+        ApiProperty(description: 'Nom', required: true, example: 'Table d\'assemblage'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:group', 'write:group'])
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Code ', required: true, example: 'TA'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private ?string $code = null;
 
     #[
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:group', 'write:group'])
+        Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private bool $safetyDevice = false;
 
-    public function getCode(): ?string {
+    final public function getCode(): ?string {
         return $this->code;
     }
 
-    public function getType(): string {
-        return 'engine';
-    }
-
-    public function isSafetyDevice(): bool {
+    final public function isSafetyDevice(): bool {
         return $this->safetyDevice;
     }
 
-    public function setCode(?string $code): void {
+    final public function setCode(?string $code): self {
         $this->code = $code;
+        return $this;
     }
 
-    public function setSafetyDevice(bool $safetyDevice): void {
+    final public function setSafetyDevice(bool $safetyDevice): self {
         $this->safetyDevice = $safetyDevice;
+        return $this;
     }
 }
