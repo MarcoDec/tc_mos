@@ -57,10 +57,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
     private Collection $apiTokens;
 
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:employee'])
-    ]
+    #[ORM\Embedded]
     private Roles $embRoles;
 
     #[ORM\Column]
@@ -131,7 +128,11 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      *
      * @see UserInterface
      */
-    #[Pure]
+    #[
+        ApiProperty(description: 'Rôles', example: [Roles::ROLE_USER]),
+        Pure,
+        Serializer\Groups(['read:employee'])
+    ]
     final public function getRoles(): array {
         return $this->embRoles->getRoles();
     }
