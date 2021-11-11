@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Management;
+namespace App\Entity\Logistics;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
@@ -9,7 +9,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
-use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -17,57 +16,56 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
-        description: 'Unit',
+        description: 'Incoterms',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les unités',
-                    'summary' => 'Récupère les unités',
+                    'description' => 'Récupère les incoterms',
+                    'summary' => 'Récupère les incoterms',
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer une unité',
-                    'summary' => 'Créer une unité',
+                    'description' => 'Créer un incoterms',
+                    'summary' => 'Créer un incoterms',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime une unité',
-                    'summary' => 'Supprime une unité',
+                    'description' => 'Supprime un incoterms',
+                    'summary' => 'Supprime un incoterms',
                 ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie une unité',
-                    'summary' => 'Modifie une unité',
+                    'description' => 'Modifie un incoterms',
+                    'summary' => 'Modifie un incoterms',
                 ]
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:unit'],
-            'openapi_definition_name' => 'Unit-write'
+            'groups' => ['write:incoterms', 'write:name'],
+            'openapi_definition_name' => 'Incoterms-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:unit'],
-            'openapi_definition_name' => 'Unit-read'
-        ]
+            'groups' => ['read:incoterms', 'read:id', 'read:name'],
+            'openapi_definition_name' => 'Incoterms-read'
+        ],
     ),
     ORM\Entity,
-    UniqueEntity('code'),
-    UniqueEntity('name')
+    ORM\Table(name: 'incoterms')
 ]
-class Unit extends Entity {
+class Incoterms extends Entity {
     use NameTrait;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
+        ApiProperty(description: 'Nom', required: true, example: 'Delivered Duty Paid'),
         Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
@@ -75,10 +73,10 @@ class Unit extends Entity {
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Code ', required: true, example: 'g'),
+        ApiProperty(description: 'Code ', required: true, example: 'DDP'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:unit', 'write:unit'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
     private ?string $code = null;
 
