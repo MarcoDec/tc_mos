@@ -1,4 +1,7 @@
 {
+    "dragonmantank/cron-expression": {
+        "version": "v3.1.0"
+    },
     "giggsey/libphonenumber-for-php": {
         "version": "8.12.36"
     },
@@ -16,6 +19,9 @@
     },
     "ronanguilloux/isocodes": {
         "version": "2.3.5"
+    },
+    "symfony/http-client": {
+        "version": "v5.3.10"
     },
     "symfony/intl": {
         "version": "v5.3.8"
