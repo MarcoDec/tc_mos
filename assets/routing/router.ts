@@ -1,10 +1,9 @@
 /* eslint-disable consistent-return */
-import type {Actions, Getters} from '../store/security'
 import {createRouter, createWebHistory} from 'vue-router'
-import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
-import {ActionTypes} from '../store/security'
+import type {Getters} from '../store/security'
 import type {RouteComponent} from 'vue-router'
 import store from '../store'
+import {useNamespacedGetters} from 'vuex-composition-helpers'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -24,17 +23,12 @@ const router = createRouter({
     ]
 })
 
-router.beforeEach(async to => {
+router.beforeEach(to => {
     if (
-        to.matched.some(record => record.name === 'login')
-        || useNamespacedGetters<Getters>(store, 'users', ['hasUser']).hasUser.value
+        to.matched.some(record => record.meta.requiresAuth && record.name !== 'login')
+        && !useNamespacedGetters<Getters>(store, 'users', ['hasUser']).hasUser.value
     )
-        return
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        await useNamespacedActions<Actions>(store, 'users', [ActionTypes.CONNECT])[ActionTypes.CONNECT]()
-        if (!useNamespacedGetters<Getters>(store, 'users', ['hasUser']).hasUser.value)
-            return {name: 'login'}
-    }
+        return {name: 'login'}
 })
 
 export default router
