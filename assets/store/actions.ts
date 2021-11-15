@@ -13,11 +13,7 @@ type FetchApi = {
     route: string
 }
 
-type Actions = {
-    [ActionTypes.FETCH_API]: (injectee: ActionContext, payload: FetchApi) => Promise<unknown>
-}
-
-export const actions: Actions = {
+export const actions = {
     // eslint-disable-next-line consistent-return
     async [ActionTypes.FETCH_API](injectee: ActionContext, {body, method, route}: FetchApi): Promise<unknown> {
         const response = await fetch(route, {

@@ -17,7 +17,6 @@ module.exports = {
     },
     root: true,
     rules: {
-
         // https://eslint.org/docs/rules/
         // Possible Errors
         'for-direction': 'error',
@@ -135,6 +134,7 @@ module.exports = {
         'function-paren-newline': ['error', 'consistent'],
         'key-spacing': 'error',
         'linebreak-style': 'error',
+        'new-cap': 'error',
         'new-parens': 'error',
         'no-bitwise': 'error',
         'no-continue': 'error',

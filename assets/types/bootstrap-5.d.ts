@@ -1,3 +1,5 @@
+export type BootstrapSize = 'lg' | 'md' | 'sm'
+
 export type BootstrapVariant =
     'body'
     | 'danger'
@@ -11,13 +13,17 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
-export type FormInput = 'password' | 'text'
-
 export type FormField = {
     label: string
     name: string
     type?: FormInput
 }
+
+export type FormInput = 'password' | 'text'
+
+export type FormValue = number | string
+
+export type FormValues = Record<string, FormValue>
 
 export type UserResponse = {
     name: string,

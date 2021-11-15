@@ -1,10 +1,10 @@
 <script lang="ts" setup>
+    import type {BootstrapSize, BootstrapVariant} from '../../types/bootstrap-5'
     import {computed, defineProps, withDefaults} from 'vue'
-    import type {BootstrapVariant} from '../../types/bootstrap-5'
 
     const props = withDefaults(
         defineProps<{
-            size?: 'lg' | 'md' | 'sm',
+            size?: BootstrapSize,
             type?: 'button' | 'reset' | 'submit',
             variant?: BootstrapVariant
         }>(),

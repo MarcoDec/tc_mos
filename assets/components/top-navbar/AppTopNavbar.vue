@@ -1,59 +1,31 @@
 <script lang="ts" setup>
+    import type {Actions, State} from '../../store/security'
     import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
-    import {ActionTypes} from '../../store/security/actions'
-    import type {Actions} from '../../store/security/actions'
-    import AppNavbar from '../bootstrap-5/navbar/AppNavbar.vue'
-    import AppNavbarBrand from '../bootstrap-5/navbar/AppNavbarBrand.vue'
-    import type {State} from '../../store/security'
-
+    import {ActionTypes} from '../../store/security'
     import {useRouter} from 'vue-router'
 
-    const router = useRouter()
-    const logoutUser = useNamespacedActions<Actions>('users', [ActionTypes.LOGOUT_USERS])[ActionTypes.LOGOUT_USERS]
-    const nameUser = useNamespacedState<State>('users', ['username']).username
     const hasUser = useNamespacedGetters('users', ['hasUser']).hasUser
+    const logout = useNamespacedActions<Actions>('users', [ActionTypes.LOGOUT_USERS])[ActionTypes.LOGOUT_USERS]
+    const name = useNamespacedState<State>('users', ['username']).username
+    const router = useRouter()
 
-    function logout(): void {
-        logoutUser()
-        router.push('login')
+    async function onLogout(): Promise<void> {
+        await logout()
+        router.push({name: 'login'})
     }
 </script>
 
 <template>
     <AppNavbar>
-        <AppNavbarBrand>T-Concept</AppNavbarBrand>
-        <template v-if="hasUser">
-            <div>
-                <FontAwesomeIcon class="avatar" icon="user-circle"/>
-                <AppNavbarBrand>{{ nameUser }}</AppNavbarBrand>
-                <button class="icon" @click="logout">
-                    <FontAwesomeIcon icon="sign-out-alt"/>
-                </button>
-            </div>
-        </template>
+        <AppNavbarBrand to="home">
+            T-Concept
+        </AppNavbarBrand>
+        <div v-if="hasUser" class="text-white">
+            <Fa icon="user-circle"/>
+            {{ name }}
+            <AppBtn variant="danger" @click="onLogout">
+                <Fa icon="sign-out-alt"/>
+            </AppBtn>
+        </div>
     </AppNavbar>
 </template>
-
-<style lang="scss" scoped>
-.icon {
-  background-color: #dc3545;
-  border-color: #dc3545;
-}
-
-.avatar {
-  background-color: grey;
-  width: 46px;
-  height: 38px;
-  margin-bottom: -10px;
-}
-</style>
-
-/*import {h, resolveComponent} from 'vue'
-import type {VNode} from 'vue'
-
-export default function AppTopNavbar(): VNode {
-return h(
-resolveComponent('AppNavbar'),
-() => h(resolveComponent('AppNavbarBrand'), {href: '/'}, () => 'T-Concept')
-)
-}*/
