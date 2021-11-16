@@ -1,0 +1,5 @@
+App\Entity\Management\VatMessage:
+  deleted: statut
+  properties:
+    message:
+      new_name: name
