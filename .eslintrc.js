@@ -17,6 +17,7 @@ module.exports = {
     },
     root: true,
     rules: {
+
         // https://eslint.org/docs/rules/
         // Possible Errors
         'for-direction': 'error',
@@ -134,7 +135,6 @@ module.exports = {
         'function-paren-newline': ['error', 'consistent'],
         'key-spacing': 'error',
         'linebreak-style': 'error',
-        'new-cap': 'error',
         'new-parens': 'error',
         'no-bitwise': 'error',
         'no-continue': 'error',
@@ -222,7 +222,7 @@ module.exports = {
         }],
         'vue/custom-event-name-casing': ['error', 'camelCase'],
         'vue/next-tick-style': ['error', 'promise'],
-        'vue/no-boolean-default': ['error'],
+        'vue/no-boolean-default': ['error', 'default-false'],
         'vue/no-deprecated-v-is': ['error'],
         'vue/no-empty-component-block': ['error'],
         'vue/no-export-in-script-setup': ['error'],
