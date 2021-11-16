@@ -56,6 +56,16 @@ export interface paths {
     delete: operations["deleteComponentFamilyItem"];
     parameters: {};
   };
+  "/api/currencies": {
+    /** Récupère les devises */
+    get: operations["getCurrencyCollection"];
+    parameters: {};
+  };
+  "/api/currencies/{id}": {
+    /** Modifie une devise */
+    patch: operations["patchCurrencyItem"];
+    parameters: {};
+  };
   "/api/employees/{id}": {
     /** Récupère un employé */
     get: operations["getEmployeeItem"];
@@ -131,6 +141,34 @@ export interface paths {
     delete: operations["deleteProductFamilyItem"];
     parameters: {};
   };
+  "/api/quality-types": {
+    /** Récupère les types qualités */
+    get: operations["getQualityTypeCollection"];
+    /** Créer un type qualité */
+    post: operations["postQualityTypeCollection"];
+    parameters: {};
+  };
+  "/api/quality-types/{id}": {
+    /** Supprime un type qualité */
+    delete: operations["deleteQualityTypeItem"];
+    /** Modifie un type qualité */
+    patch: operations["patchQualityTypeItem"];
+    parameters: {};
+  };
+  "/api/reject-types": {
+    /** Récupère les type de rebus */
+    get: operations["getRejectTypeCollection"];
+    /** Créer un type de rebus */
+    post: operations["postRejectTypeCollection"];
+    parameters: {};
+  };
+  "/api/reject-types/{id}": {
+    /** Supprime un type de rebus */
+    delete: operations["deleteRejectTypeItem"];
+    /** Modifie un type de rebus */
+    patch: operations["patchRejectTypeItem"];
+    parameters: {};
+  };
   "/api/skill-types": {
     /** Récupère les types de compétence */
     get: operations["getSkillTypeCollection"];
@@ -171,6 +209,20 @@ export interface paths {
     delete: operations["deleteUnitItem"];
     /** Modifie une unité */
     patch: operations["patchUnitItem"];
+    parameters: {};
+  };
+  "/api/vat-messages": {
+    /** Récupère les messages TVA */
+    get: operations["getVatMessageCollection"];
+    /** Créer un message TVA */
+    post: operations["postVatMessageCollection"];
+    parameters: {};
+  };
+  "/api/vat-messages/{id}": {
+    /** Supprime un message TVA */
+    delete: operations["deleteVatMessageItem"];
+    /** Modifie un message TVA */
+    patch: operations["patchVatMessageItem"];
     parameters: {};
   };
 }
@@ -500,6 +552,49 @@ export interface components {
       filepath?: string | null;
       customsCode?: string | null;
     };
+    /** Devises */
+    "Currency-Currency-read": {
+      /** Active */
+      active?: boolean;
+      /** Code */
+      code: string;
+      /** Taux (€) */
+      rate: number;
+      /** id */
+      id?: number;
+      /** Nom */
+      name?: string | null;
+      /** Symbole */
+      symbol?: string | null;
+    };
+    /** Devises */
+    "Currency-Currency-write": {
+      /** Active */
+      active?: boolean;
+    };
+    /** Devises */
+    "Currency.jsonld-Currency-read": {
+      "@id"?: string;
+      "@type"?: string;
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /** Active */
+      active?: boolean;
+      /** Code */
+      code: string;
+      /** Taux (€) */
+      rate: number;
+      /** id */
+      id?: number;
+      /** Nom */
+      name?: string | null;
+      /** Symbole */
+      symbol?: string | null;
+    };
     /** Employé */
     "Employee-Employee-read": {
       /** Nom */
@@ -791,6 +886,86 @@ export interface components {
       filepath?: string | null;
       customsCode?: string | null;
     };
+    /** Type qualité */
+    "QualityType-QualityType-read": {
+      /** Nom */
+      name: string;
+      /** id */
+      id?: number;
+    };
+    /** Type qualité */
+    "QualityType-QualityType-write": {
+      /** Nom */
+      name: string;
+    };
+    /** Type qualité */
+    "QualityType.jsonld-QualityType-read": {
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      "@id"?: string;
+      "@type"?: string;
+      /** Nom */
+      name: string;
+      /** id */
+      id?: number;
+    };
+    /** Type qualité */
+    "QualityType.jsonld-QualityType-write": {
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      "@id"?: string;
+      "@type"?: string;
+      /** Nom */
+      name: string;
+    };
+    /** Type de rebus */
+    "RejectType-RejectType-read": {
+      /** Nom */
+      name: string;
+      /** id */
+      id?: number;
+    };
+    /** Type de rebus */
+    "RejectType-RejectType-write": {
+      /** Nom */
+      name: string;
+    };
+    /** Type de rebus */
+    "RejectType.jsonld-RejectType-read": {
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      "@id"?: string;
+      "@type"?: string;
+      /** Nom */
+      name: string;
+      /** id */
+      id?: number;
+    };
+    /** Type de rebus */
+    "RejectType.jsonld-RejectType-write": {
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      "@id"?: string;
+      "@type"?: string;
+      /** Nom */
+      name: string;
+    };
     /** Type de compétence */
     "SkillType-SkillType-read": {
       /** Nom */
@@ -950,6 +1125,46 @@ export interface components {
       name: string;
       /** Code */
       code: string;
+    };
+    /** Message TVA */
+    "VatMessage-VatMessage-read": {
+      /** Message */
+      name: string;
+      /** id */
+      id?: number;
+    };
+    /** Message TVA */
+    "VatMessage-VatMessage-write": {
+      /** Message */
+      name: string;
+    };
+    /** Message TVA */
+    "VatMessage.jsonld-VatMessage-read": {
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      "@id"?: string;
+      "@type"?: string;
+      /** Message */
+      name: string;
+      /** id */
+      id?: number;
+    };
+    /** Message TVA */
+    "VatMessage.jsonld-VatMessage-write": {
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      "@id"?: string;
+      "@type"?: string;
+      /** Message */
+      name: string;
     };
   };
   responses: {};
@@ -1469,6 +1684,93 @@ export interface operations {
       405: unknown;
       /** Internal Server Error */
       500: unknown;
+    };
+  };
+  /** Récupère les devises */
+  getCurrencyCollection: {
+    parameters: {};
+    responses: {
+      /** Currency collection */
+      200: {
+        content: {
+          "application/ld+json": {
+            "hydra:member": components["schemas"]["Currency.jsonld-Currency-read"][];
+            "hydra:totalItems"?: number;
+            "hydra:view"?: {
+              "@id"?: string;
+              "@type"?: string;
+              "hydra:first"?: string;
+              "hydra:last"?: string;
+              "hydra:previous"?: string;
+              "hydra:next"?: string;
+            };
+            "hydra:search"?: {
+              "@type"?: string;
+              "hydra:template"?: string;
+              "hydra:variableRepresentation"?: string;
+              "hydra:mapping"?: {
+                "@type"?: string;
+                variable?: string;
+                property?: string | null;
+                required?: boolean;
+              }[];
+            };
+          };
+          "application/json": components["schemas"]["Currency-Currency-read"][];
+          "multipart/form-data": components["schemas"]["Currency-Currency-read"][];
+          "text/html": components["schemas"]["Currency-Currency-read"][];
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Modifie une devise */
+  patchCurrencyItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** Currency resource updated */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["Currency.jsonld-Currency-read"];
+          "application/json": components["schemas"]["Currency-Currency-read"];
+          "multipart/form-data": components["schemas"]["Currency-Currency-read"];
+          "text/html": components["schemas"]["Currency-Currency-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The updated Currency resource */
+    requestBody: {
+      content: {
+        "application/merge-patch+json": components["schemas"]["Currency-Currency-write"];
+      };
     };
   };
   /** Récupère un employé */
@@ -2281,6 +2583,314 @@ export interface operations {
       500: unknown;
     };
   };
+  /** Récupère les types qualités */
+  getQualityTypeCollection: {
+    parameters: {
+      query: {
+        name?: string;
+        /** The collection page number */
+        page?: number;
+      };
+    };
+    responses: {
+      /** QualityType collection */
+      200: {
+        content: {
+          "application/ld+json": {
+            "hydra:member": components["schemas"]["QualityType.jsonld-QualityType-read"][];
+            "hydra:totalItems"?: number;
+            "hydra:view"?: {
+              "@id"?: string;
+              "@type"?: string;
+              "hydra:first"?: string;
+              "hydra:last"?: string;
+              "hydra:previous"?: string;
+              "hydra:next"?: string;
+            };
+            "hydra:search"?: {
+              "@type"?: string;
+              "hydra:template"?: string;
+              "hydra:variableRepresentation"?: string;
+              "hydra:mapping"?: {
+                "@type"?: string;
+                variable?: string;
+                property?: string | null;
+                required?: boolean;
+              }[];
+            };
+          };
+          "application/json": components["schemas"]["QualityType-QualityType-read"][];
+          "multipart/form-data": components["schemas"]["QualityType-QualityType-read"][];
+          "text/html": components["schemas"]["QualityType-QualityType-read"][];
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Créer un type qualité */
+  postQualityTypeCollection: {
+    parameters: {};
+    responses: {
+      /** QualityType resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-read"];
+          "application/json": components["schemas"]["QualityType-QualityType-read"];
+          "multipart/form-data": components["schemas"]["QualityType-QualityType-read"];
+          "text/html": components["schemas"]["QualityType-QualityType-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new QualityType resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-write"];
+        "application/json": components["schemas"]["QualityType-QualityType-write"];
+        "multipart/form-data": components["schemas"]["QualityType-QualityType-write"];
+        "text/html": components["schemas"]["QualityType-QualityType-write"];
+      };
+    };
+  };
+  /** Supprime un type qualité */
+  deleteQualityTypeItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** QualityType resource deleted */
+      204: never;
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Modifie un type qualité */
+  patchQualityTypeItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** QualityType resource updated */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-read"];
+          "application/json": components["schemas"]["QualityType-QualityType-read"];
+          "multipart/form-data": components["schemas"]["QualityType-QualityType-read"];
+          "text/html": components["schemas"]["QualityType-QualityType-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The updated QualityType resource */
+    requestBody: {
+      content: {
+        "application/merge-patch+json": components["schemas"]["QualityType-QualityType-write"];
+      };
+    };
+  };
+  /** Récupère les type de rebus */
+  getRejectTypeCollection: {
+    parameters: {
+      query: {
+        name?: string;
+        /** The collection page number */
+        page?: number;
+      };
+    };
+    responses: {
+      /** RejectType collection */
+      200: {
+        content: {
+          "application/ld+json": {
+            "hydra:member": components["schemas"]["RejectType.jsonld-RejectType-read"][];
+            "hydra:totalItems"?: number;
+            "hydra:view"?: {
+              "@id"?: string;
+              "@type"?: string;
+              "hydra:first"?: string;
+              "hydra:last"?: string;
+              "hydra:previous"?: string;
+              "hydra:next"?: string;
+            };
+            "hydra:search"?: {
+              "@type"?: string;
+              "hydra:template"?: string;
+              "hydra:variableRepresentation"?: string;
+              "hydra:mapping"?: {
+                "@type"?: string;
+                variable?: string;
+                property?: string | null;
+                required?: boolean;
+              }[];
+            };
+          };
+          "application/json": components["schemas"]["RejectType-RejectType-read"][];
+          "multipart/form-data": components["schemas"]["RejectType-RejectType-read"][];
+          "text/html": components["schemas"]["RejectType-RejectType-read"][];
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Créer un type de rebus */
+  postRejectTypeCollection: {
+    parameters: {};
+    responses: {
+      /** RejectType resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-read"];
+          "application/json": components["schemas"]["RejectType-RejectType-read"];
+          "multipart/form-data": components["schemas"]["RejectType-RejectType-read"];
+          "text/html": components["schemas"]["RejectType-RejectType-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new RejectType resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-write"];
+        "application/json": components["schemas"]["RejectType-RejectType-write"];
+        "multipart/form-data": components["schemas"]["RejectType-RejectType-write"];
+        "text/html": components["schemas"]["RejectType-RejectType-write"];
+      };
+    };
+  };
+  /** Supprime un type de rebus */
+  deleteRejectTypeItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** RejectType resource deleted */
+      204: never;
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Modifie un type de rebus */
+  patchRejectTypeItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** RejectType resource updated */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-read"];
+          "application/json": components["schemas"]["RejectType-RejectType-read"];
+          "multipart/form-data": components["schemas"]["RejectType-RejectType-read"];
+          "text/html": components["schemas"]["RejectType-RejectType-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The updated RejectType resource */
+    requestBody: {
+      content: {
+        "application/merge-patch+json": components["schemas"]["RejectType-RejectType-write"];
+      };
+    };
+  };
   /** Récupère les types de compétence */
   getSkillTypeCollection: {
     parameters: {
@@ -2745,6 +3355,160 @@ export interface operations {
     requestBody: {
       content: {
         "application/merge-patch+json": components["schemas"]["Unit-Unit-write"];
+      };
+    };
+  };
+  /** Récupère les messages TVA */
+  getVatMessageCollection: {
+    parameters: {
+      query: {
+        name?: string;
+        /** The collection page number */
+        page?: number;
+      };
+    };
+    responses: {
+      /** VatMessage collection */
+      200: {
+        content: {
+          "application/ld+json": {
+            "hydra:member": components["schemas"]["VatMessage.jsonld-VatMessage-read"][];
+            "hydra:totalItems"?: number;
+            "hydra:view"?: {
+              "@id"?: string;
+              "@type"?: string;
+              "hydra:first"?: string;
+              "hydra:last"?: string;
+              "hydra:previous"?: string;
+              "hydra:next"?: string;
+            };
+            "hydra:search"?: {
+              "@type"?: string;
+              "hydra:template"?: string;
+              "hydra:variableRepresentation"?: string;
+              "hydra:mapping"?: {
+                "@type"?: string;
+                variable?: string;
+                property?: string | null;
+                required?: boolean;
+              }[];
+            };
+          };
+          "application/json": components["schemas"]["VatMessage-VatMessage-read"][];
+          "multipart/form-data": components["schemas"]["VatMessage-VatMessage-read"][];
+          "text/html": components["schemas"]["VatMessage-VatMessage-read"][];
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Créer un message TVA */
+  postVatMessageCollection: {
+    parameters: {};
+    responses: {
+      /** VatMessage resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-read"];
+          "application/json": components["schemas"]["VatMessage-VatMessage-read"];
+          "multipart/form-data": components["schemas"]["VatMessage-VatMessage-read"];
+          "text/html": components["schemas"]["VatMessage-VatMessage-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new VatMessage resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-write"];
+        "application/json": components["schemas"]["VatMessage-VatMessage-write"];
+        "multipart/form-data": components["schemas"]["VatMessage-VatMessage-write"];
+        "text/html": components["schemas"]["VatMessage-VatMessage-write"];
+      };
+    };
+  };
+  /** Supprime un message TVA */
+  deleteVatMessageItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** VatMessage resource deleted */
+      204: never;
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Modifie un message TVA */
+  patchVatMessageItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** VatMessage resource updated */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-read"];
+          "application/json": components["schemas"]["VatMessage-VatMessage-read"];
+          "multipart/form-data": components["schemas"]["VatMessage-VatMessage-read"];
+          "text/html": components["schemas"]["VatMessage-VatMessage-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The updated VatMessage resource */
+    requestBody: {
+      content: {
+        "application/merge-patch+json": components["schemas"]["VatMessage-VatMessage-write"];
       };
     };
   };
