@@ -10,6 +10,7 @@ module.exports = {
         // https://www.npmjs.com/package/@vue/eslint-config-typescript
         '@vue/typescript/recommended'
     ],
+    ignorePatterns: ['assets/types/openapi.d.ts'],
     overrides: [{files: ['*.vue'], rules: {'@typescript-eslint/indent': 'off'}}],
     parserOptions: {
         ecmaVersion: 2021,

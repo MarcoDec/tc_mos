@@ -36,6 +36,7 @@
     "dev": "vite",
     "eslint": "NODE_ENV=production vue-tsc --noEmit && eslint ./assets/",
     "eslint-fix": "NODE_ENV=production vue-tsc --noEmit && eslint --fix ./assets/",
+    "openapi": "php bin/console api:openapi:export -o openapi.json && npx openapi-typescript openapi.json --output assets/types/openapi.d.ts && rm openapi.json",
     "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
     "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"
   }
