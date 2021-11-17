@@ -45,8 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity(repositoryClass: CurrencyRepository::class),
-    ORM\Table
+    ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
 class Currency extends Entity {
     #[
