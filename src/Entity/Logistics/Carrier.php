@@ -61,8 +61,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Carrier-read'
         ]
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class Carrier extends Entity {
     use NameTrait;
@@ -77,6 +76,7 @@ class Carrier extends Entity {
 
     #[
         ApiProperty(description: 'Adresse'),
+        Assert\Valid,
         ORM\Embedded,
         Serializer\Groups(['read:carrier', 'write:carrier'])
     ]
