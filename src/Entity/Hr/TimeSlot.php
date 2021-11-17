@@ -60,8 +60,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'TimeSlot-read'
         ]
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class TimeSlot extends Entity {
     use NameTrait;
@@ -74,9 +73,6 @@ class TimeSlot extends Entity {
     ]
     protected ?string $name = null;
 
-    /**
-     * @ORM\Column(type="time_immutable")
-     */
     #[
         ApiProperty(description: 'Fin', example: '17:30:00'),
         ORM\Column(type: 'time_immutable', nullable: true),
