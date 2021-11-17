@@ -10,12 +10,14 @@ use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
+use App\Filter\EnumFilter;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: EnumFilter::class, id: 'country', properties: ['address.country']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'surname' => 'partial']),
     ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: Address::filter),
     ApiResource(
@@ -61,8 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'OutTrainer-read'
         ]
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class OutTrainer extends Entity {
     use NameTrait;
