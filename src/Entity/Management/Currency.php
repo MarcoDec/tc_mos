@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\CodeTrait;
 use App\Repository\CurrencyRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
@@ -36,11 +37,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:currency', 'write:currency'],
+            'groups' => ['write:currency'],
             'openapi_definition_name' => 'Currency-write'
         ],
         normalizationContext: [
-            'groups' => ['read:currency', 'read:id'],
+            'groups' => ['read:code', 'read:currency', 'read:id'],
             'openapi_definition_name' => 'Currency-read'
         ],
         paginationEnabled: false
@@ -48,20 +49,22 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
 class Currency extends Entity {
+    use CodeTrait;
+
+    #[
+        ApiProperty(description: 'Code', required: true, example: 'EUR'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:code'])
+    ]
+    protected ?string $code = null;
+
     #[
         ApiProperty(description: 'Active', example: true),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:currency', 'write:currency'])
     ]
     private bool $active = false;
-
-    #[
-        ApiProperty(description: 'Code', required: true, example: 'EUR'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:currency'])
-    ]
-    private ?string $code = null;
 
     #[
         ApiProperty(description: 'Taux (€)', required: true, example: 1),
@@ -71,10 +74,6 @@ class Currency extends Entity {
         Serializer\Groups(['read:currency'])
     ]
     private float $rate = 1;
-
-    final public function getCode(): ?string {
-        return $this->code;
-    }
 
     #[
         ApiProperty(description: 'Nom', example: 'Euro'),
@@ -102,11 +101,6 @@ class Currency extends Entity {
 
     final public function setActive(bool $active): self {
         $this->active = $active;
-        return $this;
-    }
-
-    final public function setCode(?string $code): self {
-        $this->code = $code;
         return $this;
     }
 

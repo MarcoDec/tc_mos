@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\CodeTrait;
 use App\Entity\Traits\NameTrait;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -51,11 +52,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:unit'],
+            'groups' => ['write:code', 'write:name'],
             'openapi_definition_name' => 'Unit-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:unit'],
+            'groups' => ['read:code', 'read:id', 'read:name'],
             'openapi_definition_name' => 'Unit-read'
         ]
     ),
@@ -64,7 +65,16 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('name')
 ]
 class Unit extends Entity {
+    use CodeTrait;
     use NameTrait;
+
+    #[
+        ApiProperty(description: 'Code', required: true, example: 'g'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:code', 'write:code'])
+    ]
+    protected ?string $code = null;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
@@ -73,21 +83,4 @@ class Unit extends Entity {
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Code ', required: true, example: 'g'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:unit', 'write:unit'])
-    ]
-    private ?string $code = null;
-
-    final public function getCode(): ?string {
-        return $this->code;
-    }
-
-    final public function setCode(?string $code): self {
-        $this->code = $code;
-        return $this;
-    }
 }
