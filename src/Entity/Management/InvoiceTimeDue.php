@@ -64,7 +64,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ),
     ORM\Entity,
-    ORM\Table,
     UniqueEntity(['days', 'daysAfterEndOfMonth', 'endOfMonth']),
     UniqueEntity('name')
 ]
@@ -85,7 +84,7 @@ class InvoiceTimeDue extends Entity {
         ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?int $days = 0;
+    private int $days = 0;
 
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
@@ -93,38 +92,38 @@ class InvoiceTimeDue extends Entity {
         ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?int $daysAfterEndOfMonth = 0;
+    private int $daysAfterEndOfMonth = 0;
 
     #[
         ApiProperty(description: 'Fin du mois ', example: true),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?bool $endOfMonth = false;
+    private bool $endOfMonth = false;
 
-    final public function getDays(): ?int {
+    final public function getDays(): int {
         return $this->days;
     }
 
-    final public function getDaysAfterEndOfMonth(): ?int {
+    final public function getDaysAfterEndOfMonth(): int {
         return $this->daysAfterEndOfMonth;
     }
 
-    final public function getEndOfMonth(): ?bool {
+    final public function getEndOfMonth(): bool {
         return $this->endOfMonth;
     }
 
-    final public function setDays(?int $days): self {
+    final public function setDays(int $days): self {
         $this->days = $days;
         return $this;
     }
 
-    final public function setDaysAfterEndOfMonth(?int $daysAfterEndOfMonth): self {
+    final public function setDaysAfterEndOfMonth(int $daysAfterEndOfMonth): self {
         $this->daysAfterEndOfMonth = $daysAfterEndOfMonth;
         return $this;
     }
 
-    final public function setEndOfMonth(?bool $endOfMonth): self {
+    final public function setEndOfMonth(bool $endOfMonth): self {
         $this->endOfMonth = $endOfMonth;
         return $this;
     }
