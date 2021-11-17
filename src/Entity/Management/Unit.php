@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
-        description: 'Unit',
+        description: 'Unité',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
