@@ -58,8 +58,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Incoterms-read'
         ],
     ),
-    ORM\Entity,
-    ORM\Table(name: 'incoterms')
+    ORM\Entity
 ]
 class Incoterms extends Entity {
     use NameTrait;
