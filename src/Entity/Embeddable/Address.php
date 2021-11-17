@@ -14,7 +14,6 @@ class Address {
         'address.address' => 'partial',
         'address.address2' => 'partial',
         'address.city' => 'partial',
-        'address.country' => 'partial',
         'address.email' => 'partial',
     ];
 
@@ -43,7 +42,7 @@ class Address {
     private ?string $city = null;
 
     #[
-        ApiProperty(description: 'Pays', example: 'FR'),
+        ApiProperty(description: 'Pays', example: 'FR', openapiContext: ['countries' => true]),
         Assert\Country,
         ORM\Column(length: 2, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
