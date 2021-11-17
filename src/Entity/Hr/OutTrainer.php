@@ -9,10 +9,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\AddressTrait;
 use App\Entity\Traits\NameTrait;
 use App\Filter\EnumFilter;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -66,6 +66,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class OutTrainer extends Entity {
+    use AddressTrait;
     use NameTrait;
 
     #[
@@ -77,13 +78,6 @@ class OutTrainer extends Entity {
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Adresse'),
-        ORM\Embedded,
-        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
-    ]
-    private Address $address;
-
-    #[
         ApiProperty(description: 'Nom', required: true, example: 'CHRAIET'),
         Assert\NotBlank,
         ORM\Column,
@@ -91,22 +85,8 @@ class OutTrainer extends Entity {
     ]
     private ?string $surname = null;
 
-    #[Pure]
-    public function __construct() {
-        $this->address = new Address();
-    }
-
-    final public function getAddress(): Address {
-        return $this->address;
-    }
-
     final public function getSurname(): ?string {
         return $this->surname;
-    }
-
-    final public function setAddress(Address $address): self {
-        $this->address = $address;
-        return $this;
     }
 
     final public function setSurname(?string $surname): self {
