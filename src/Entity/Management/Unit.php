@@ -70,6 +70,7 @@ class Unit extends Entity {
 
     #[
         ApiProperty(description: 'Code', required: true, example: 'g'),
+        Assert\Length(max: 2),
         Assert\NotBlank,
         ORM\Column(length: 2),
         Serializer\Groups(['read:code', 'write:code'])

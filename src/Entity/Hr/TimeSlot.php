@@ -75,6 +75,7 @@ class TimeSlot extends Entity {
 
     #[
         ApiProperty(description: 'Fin', example: '17:30:00'),
+        Assert\Time,
         ORM\Column(type: 'time_immutable', nullable: true),
         Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
@@ -83,6 +84,7 @@ class TimeSlot extends Entity {
 
     #[
         ApiProperty(description: 'Fin pause', example: '13:30:00'),
+        Assert\Time,
         ORM\Column(type: 'time_immutable', nullable: true),
         Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
@@ -91,6 +93,7 @@ class TimeSlot extends Entity {
 
     #[
         ApiProperty(description: 'Début', example: '07:30:00'),
+        Assert\Time,
         ORM\Column(type: 'time_immutable', nullable: true),
         Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
@@ -99,6 +102,7 @@ class TimeSlot extends Entity {
 
     #[
         ApiProperty(description: 'Début pause', example: '12:30:00'),
+        Assert\Time,
         ORM\Column(type: 'time_immutable', nullable: true),
         Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])

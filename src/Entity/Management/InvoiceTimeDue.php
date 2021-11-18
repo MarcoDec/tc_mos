@@ -72,9 +72,9 @@ class InvoiceTimeDue extends Entity {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
+        Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:name', 'write:name']),
-        Assert\NotBlank
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
 
@@ -88,7 +88,7 @@ class InvoiceTimeDue extends Entity {
 
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
-        Assert\Length(min: 0, max: 31),
+        Assert\Length(min: 0, max: 45),
         ORM\Column(type: 'tinyint', length: 45, options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]

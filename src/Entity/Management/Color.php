@@ -73,6 +73,7 @@ class Color extends Entity {
 
     #[
         ApiProperty(description: 'RAL', example: '17122018'),
+        Assert\Length(max: 8),
         ORM\Column(length: 8, nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
     ]
@@ -80,6 +81,7 @@ class Color extends Entity {
 
     #[
         ApiProperty(description: 'RGB', example: '#848484'),
+        Assert\Length(max: 7),
         ORM\Column(length: 7, nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
     ]

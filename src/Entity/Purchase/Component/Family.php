@@ -87,6 +87,7 @@ class Family extends AbstractFamily {
 
     #[
         ApiProperty(description: 'Code', example: 'CAB'),
+        Assert\Length(max: 3),
         ORM\Column(length: 3),
         Serializer\Groups(['read:code', 'write:code'])
     ]

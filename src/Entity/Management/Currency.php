@@ -53,6 +53,7 @@ class Currency extends Entity {
 
     #[
         ApiProperty(description: 'Code', required: true, example: 'EUR'),
+        Assert\Currency,
         Assert\NotBlank,
         ORM\Column(length: 3),
         Serializer\Groups(['read:code'])
