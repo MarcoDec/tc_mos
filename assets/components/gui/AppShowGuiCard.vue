@@ -30,6 +30,7 @@ const heightTopInner = computed(() => (heightTop.value - 10))
 
 
 const heightBottompx = computed(() => (heightBottom.value+'px'))
+const heightTopInnerpx = computed(() => (heightTopInner.value+'px'))
 
 
 
@@ -37,8 +38,7 @@ function resize(): void {
   if (window.top !== null) {
     windowHeight.value = window.top.innerHeight
     windowWidth.value = window.top.innerWidth
-    console.log('windowHeight', window.top.innerHeight)
-    console.log('windowWidth', window.top.innerHeight)
+
   }
 
 }
@@ -47,10 +47,7 @@ onMounted(() => {
   window.addEventListener('resize', resize)
   resize()
 
-  console.log('containerHeight', containerHeight.value)
-  console.log('containerWidth', containerWidth.value)
-  console.log('heightBottom', heightBottom.value)
-  console.log('bbbbbbb', heightBottompx)
+
 
 })
 onUnmounted(() => {
@@ -80,8 +77,8 @@ onUnmounted(() => {
 
 .card-body {
   padding: 4px;
-  max-height: v-bind(heightBottomInner)px;
-  min-height: v-bind(heightBottomInner)px;
+  max-height: v-bind(heightTopInnerpx);
+  min-height: v-bind(heightTopInnerpx);
 
   > div {
     background-color: white;

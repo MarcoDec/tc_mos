@@ -12,11 +12,13 @@
 
 <script lang="ts" setup>
 import {computed, defineProps, onMounted, onUnmounted, ref} from 'vue'
+import {useNamespacedState} from "vuex-composition-helpers";
 
 
 defineProps<{ cssClass?: string }>()
 
-const windowHeight = ref(0)
+
+/*const windowHeight = ref(0)
 const windowWidth = ref(0)
 const freeSpace = ref(.9)
 const topRatio = ref(.6)
@@ -30,13 +32,13 @@ const heightBottomInner = computed(() => (heightBottom.value - 3))
 const heightTop = computed(() => (containerHeight.value * topRatio.value))
 const heightTopInner = computed(() => (heightTop.value - 10))
 
+const heightBottomInnerpx = computed(() => (heightBottomInner.value+'px'))
 
 function resize(): void {
   if (window.top !== null) {
     windowHeight.value = window.top.innerHeight
     windowWidth.value = window.top.innerWidth
-    console.log('windowHeight', window.top.innerHeight)
-    console.log('windowWidth', window.top.innerHeight)
+
   }
 
 
@@ -45,15 +47,13 @@ function resize(): void {
 onMounted(() => {
   window.addEventListener('resize', resize)
   resize()
-  console.log('containerHeight', containerHeight.value)
-  console.log('containerWidth', containerWidth.value)
-  console.log('heightBottom', heightBottom.value)
+
 
 })
 onUnmounted(() => {
       window.removeEventListener('resize', resize)
     }
-)
+)*/
 </script>
 
 
@@ -62,8 +62,8 @@ onUnmounted(() => {
 
 .card-body {
   padding: 4px;
-  max-height: v-bind(heightBottomInner)px !important;
-  min-height: v-bind(heightBottomInner)px !important;
+  max-height: v-bind(heightBottomInnerpx);
+  min-height: v-bind(heightBottomInnerpx);
 
   > div {
     background-color: white;

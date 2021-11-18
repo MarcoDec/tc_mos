@@ -34,9 +34,10 @@ import AppCol from '../bootstrap-5/layout/AppCol.vue'
 import {computed, defineProps, onMounted, onUnmounted, ref} from 'vue'
 import AppRow from '../bootstrap-5/layout/AppRow.vue'
 import AppShowGuiCard from './AppShowGuiCard.vue'
+import AppShowGuiTabs from './AppShowGuiTabs.vue'
 
 
-defineProps<{ cssClass?: string , card}>()
+defineProps<{ cssClass?: string }>()
 
 
 const windowHeight = ref(0)
