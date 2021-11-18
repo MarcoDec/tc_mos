@@ -7,6 +7,7 @@ use App\Entity\CronJob;
 use Doctrine\ORM\EntityManagerInterface;
 use ReflectionClass;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LazyCommand;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,7 +55,7 @@ final class CronCommand extends AbstractCommand {
                     throw new LogicException('Undefined command name.');
                 }
 
-                $refl = new ReflectionClass($command);
+                $refl = new ReflectionClass($command instanceof LazyCommand ? $command->getCommand() : $command);
                 $attributes = $refl->getAttributes(CronJobAttribute::class);
                 if (empty($attributes)) {
                     return [];

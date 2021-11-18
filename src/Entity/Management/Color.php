@@ -73,14 +73,14 @@ class Color extends Entity {
 
     #[
         ApiProperty(description: 'RAL', example: '17122018'),
-        ORM\Column(nullable: true),
+        ORM\Column(length: 8, nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $ral = null;
 
     #[
         ApiProperty(description: 'RGB', example: '#848484'),
-        ORM\Column(nullable: true),
+        ORM\Column(length: 7, nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $rgb = null;

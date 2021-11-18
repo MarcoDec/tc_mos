@@ -68,7 +68,7 @@ class Incoterms extends Entity {
     #[
         ApiProperty(description: 'Code', required: true, example: 'DDP'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 11),
         Serializer\Groups(['read:code', 'write:code'])
     ]
     protected ?string $code = null;

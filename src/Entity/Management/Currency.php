@@ -54,7 +54,7 @@ class Currency extends Entity {
     #[
         ApiProperty(description: 'Code', required: true, example: 'EUR'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 3),
         Serializer\Groups(['read:code'])
     ]
     protected ?string $code = null;

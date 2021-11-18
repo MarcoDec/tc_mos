@@ -71,7 +71,7 @@ class Unit extends Entity {
     #[
         ApiProperty(description: 'Code', required: true, example: 'g'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 2),
         Serializer\Groups(['read:code', 'write:code'])
     ]
     protected ?string $code = null;
