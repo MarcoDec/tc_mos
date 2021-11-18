@@ -62,11 +62,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:file', 'write:name'],
+            'groups' => ['write:customs-code', 'write:family', 'write:file', 'write:name'],
             'openapi_definition_name' => 'ProductFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
+            'groups' => ['read:customs-code', 'read:family', 'read:file', 'read:id', 'read:name'],
             'openapi_definition_name' => 'ProductFamily-read'
         ],
         paginationEnabled: false

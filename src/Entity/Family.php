@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Interfaces\FileEntity;
+use App\Entity\Traits\CustomsCode;
 use App\Entity\Traits\FileTrait;
 use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -15,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
 abstract class Family extends Entity implements FileEntity {
+    use CustomsCode;
     use FileTrait;
     use NameTrait;
 
@@ -36,13 +38,6 @@ abstract class Family extends Entity implements FileEntity {
     ]
     protected $parent;
 
-    #[
-        ApiProperty(description: 'Code douanier', example: '8544300089'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:family', 'write:family'])
-    ]
-    private ?string $customsCode = null;
-
     #[Pure]
     public function __construct() {
         $this->children = new ArrayCollection();
@@ -63,10 +58,6 @@ abstract class Family extends Entity implements FileEntity {
         return $this->children;
     }
 
-    final public function getCustomsCode(): ?string {
-        return $this->customsCode;
-    }
-
     final public function getName(): ?string {
         return $this->name;
     }
@@ -82,11 +73,6 @@ abstract class Family extends Entity implements FileEntity {
                 $children->setParent(null);
             }
         }
-        return $this;
-    }
-
-    final public function setCustomsCode(?string $customsCode): self {
-        $this->customsCode = $customsCode;
         return $this;
     }
 
