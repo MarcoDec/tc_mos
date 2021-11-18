@@ -3,6 +3,8 @@
 namespace App\Entity\Purchase\Component;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\CodeTrait;
@@ -12,7 +14,56 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[
+    ApiResource(
+        description: 'Composant',
+        collectionOperations: [
+            'get' => [
+                'normalization_context' => [
+                    'groups' => ['read:code', 'read:component', 'read:id', 'read:name'],
+                    'openapi_definition_name' => 'Component-read'
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les composants',
+                    'summary' => 'Récupère les composants'
+                ]
+            ],
+            'post' => [
+                'openapi_context' => [
+                    'description' => 'Créer un composant',
+                    'summary' => 'Créer un composant'
+                ]
+            ]
+        ],
+        itemOperations: [
+            'delete' => [
+                'openapi_context' => [
+                    'description' => 'Supprime un composant',
+                    'summary' => 'Supprime un composant'
+                ]
+            ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère un composant',
+                    'summary' => 'Récupère un composant',
+                ]
+            ]
+        ],
+        attributes: [
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
+        ],
+        denormalizationContext: [
+            'groups' => ['write:code', 'write:create', 'write:name'],
+            'openapi_definition_name' => 'Component-write'
+        ],
+        normalizationContext: [
+            'groups' => ['read:code', 'read:component', 'read:component-details', 'read:id', 'read:name'],
+            'openapi_definition_name' => 'Component-details-read'
+        ],
+        validationGroups: ['write:code', 'write:create', 'write:name']
+    ),
+    ORM\Entity
+]
 class Component extends Entity {
     use CodeTrait;
     use NameTrait;
@@ -47,7 +98,7 @@ class Component extends Entity {
         Assert\Date(groups: ['write:create']),
         Assert\NotBlank(groups: ['write:create']),
         ORM\Column(type: 'date_immutable'),
-        Serializer\Groups(['read:component-item', 'write:create'])
+        Serializer\Groups(['read:component-details', 'write:create'])
     ]
     private ?DateTimeImmutable $endOfLife = null;
 
@@ -110,21 +161,21 @@ class Component extends Entity {
     #[
         ApiProperty(description: 'Besoin de join', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:component-item'])
+        Serializer\Groups(['read:component-details'])
     ]
     private bool $needGasket = false;
 
     #[
         ApiProperty(description: 'Notes'),
         ORM\Column(type: 'text'),
-        Serializer\Groups(['read:component-item', 'write:create'])
+        Serializer\Groups(['read:component-details', 'write:create'])
     ]
     private ?string $notes = null;
 
     #[
         ApiProperty(description: 'Info commande'),
         ORM\Column(type: 'text'),
-        Serializer\Groups(['read:component-item', 'write:create'])
+        Serializer\Groups(['read:component-details', 'write:create'])
     ]
     private ?string $orderInfo = null;
 
