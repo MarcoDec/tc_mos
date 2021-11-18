@@ -1,10 +1,15 @@
 <script lang="ts" setup>
-    import {computed, defineEmits, defineProps} from 'vue'
-    import type {FormField} from '../../../types/bootstrap-5'
+    import type {BootstrapSize, FormField, FormValue} from '../../../types/bootstrap-5'
+    import {computed, defineEmits, defineProps, withDefaults} from 'vue'
 
-    const props = defineProps<{field: FormField, value?: number | string}>()
+    const emit = defineEmits<(e: 'update:value', value: FormValue) => void>()
+    const props = withDefaults(
+        defineProps<{field: FormField, value?: FormValue, size?: BootstrapSize}>(),
+        {size: 'sm', value: ''}
+    )
+
+    const sizeClass = computed(() => `form-control-${props.size}`)
     const type = computed(() => (typeof props.field.type !== 'undefined' ? props.field.type : 'text'))
-    const emit = defineEmits<(e: 'update:value', value: number | string) => void>()
 
     function input(e: Event): void {
         if (e instanceof InputEvent)
@@ -13,5 +18,5 @@
 </script>
 
 <template>
-    <input class="form-control" :type="type" :name="field.name" :value="value" @input="input"/>
+    <input :class="sizeClass" :name="field.name" :type="type" :value="value" class="form-control" @input="input"/>
 </template>

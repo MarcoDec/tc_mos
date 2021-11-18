@@ -1,17 +1,14 @@
 <script lang="ts" setup>
-    import {ActionTypes} from '../../../store/security/actions'
-    import type {Actions} from '../../../store/security/actions'
-    import AppForm from '../../../components/bootstrap-5/form/AppForm.vue'
+    import {ActionTypes} from '../../../store/security'
+    import type {Actions} from '../../../store/security'
     import type {FormField} from '../../../types/bootstrap-5'
     import {ref} from 'vue'
     import router from '../../router'
     import {useNamespacedActions} from 'vuex-composition-helpers'
 
-
     const fields: FormField[] = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
-
     ]
 
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
@@ -19,8 +16,7 @@
 
     async function handleClick(): Promise<void> {
         await fetchUsers(formData.value)
-        router.push('home')
-
+        await router.push({name: 'home'})
     }
 </script>
 

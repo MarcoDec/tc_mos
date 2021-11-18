@@ -1,5 +1,9 @@
+/* eslint-disable consistent-return */
 import {createRouter, createWebHistory} from 'vue-router'
+import type {Getters} from '../store/security'
 import type {RouteComponent} from 'vue-router'
+import store from '../store'
+import {useNamespacedGetters} from 'vuex-composition-helpers'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -24,9 +28,11 @@ const router = createRouter({
     ]
 })
 
-// eslint-disable-next-line consistent-return
 router.beforeEach(to => {
-    if (to.matched.some(record => record.name !== 'login' && record.meta.requiresAuth))
+    if (
+        to.matched.some(record => record.meta.requiresAuth && record.name !== 'login')
+        && !useNamespacedGetters<Getters>(store, 'users', ['hasUser']).hasUser.value
+    )
         return {name: 'login'}
 })
 

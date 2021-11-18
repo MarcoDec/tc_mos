@@ -1,24 +1,20 @@
 import './app.scss'
 
 import * as components from './components'
-import App from './routing/App'
+import {createApp, defineAsyncComponent} from 'vue'
+import App from './routing/App.vue'
 import type {Component} from 'vue'
-import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-import {createApp} from 'vue'
 import {fas} from '@fortawesome/free-solid-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import router from './routing/router'
 import store from './store/index'
 
-
 library.add(fas)
-const app = createApp(App).use(router).use(store)
+const app = createApp(App as Component)
+    .use(router)
+    .use(store)
+    .component('Fa', defineAsyncComponent(async () => import('@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon')))
 for (const [name, component] of Object.entries(components))
     app.component(name, component as Component)
-app.component('FontAwesomeIcon', FontAwesomeIcon)
 
-async function start(): Promise<void>{
-    await store.dispatch('users/connect')
-    app.mount('#vue')
-}
-start()
+app.mount('#vue')

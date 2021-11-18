@@ -1,22 +1,21 @@
-
 <script lang="ts" setup>
+    import type {FormField, FormValue} from '../../../types/bootstrap-5'
     import {defineEmits, defineProps} from 'vue'
-    import type {FormField} from '../../../types/bootstrap-5'
 
-    const props = defineProps<{field: FormField, value?: number | string}>()
     const emit = defineEmits<{
-        (e: 'update:value', value: number | string): void
-        (e: 'input', payload: {value: number | string, name: string}): void
+        (e: 'update:value', value: FormValue): void
+        (e: 'input', payload: {value: FormValue, name: string}): void
     }>()
+    const props = defineProps<{field: FormField, value?: FormValue}>()
 
-    function input(value: number | string): void {
+    function input(value: FormValue): void {
         emit('update:value', value)
         emit('input', {name: props.field.name, value})
     }
 </script>
 
 <template>
-    <AppRow css-class="mb-3">
+    <AppRow class="mb-3">
         <AppLabel>
             {{ field.label }}
         </AppLabel>

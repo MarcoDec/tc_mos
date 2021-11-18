@@ -1,28 +1,30 @@
 <script lang="ts" setup>
-    import {computed, defineEmits, defineProps} from 'vue'
-    import AppFormGroup from './AppFormGroup.vue'
-    import type {FormField} from '../../../types/bootstrap-5'
+    import type {FormField, FormValue, FormValues} from '../../../types/bootstrap-5'
+    import {defineEmits, defineProps, withDefaults} from 'vue'
     import clone from 'clone'
 
-    const props = defineProps<{fields: FormField[], values?: Record<string, number | string>}>()
-    const formData = computed(() => (typeof props.values !== 'undefined' ? props.values : {}))
-    const emit = defineEmits<{
-        (e: 'update:values', values: Record<string, number | string>): void
-        (e: 'submit'): void
-    }>()
+    const emit = defineEmits<{(e: 'update:values', values: FormValues): void, (e: 'submit'): void}>()
+    const props = withDefaults(
+        defineProps<{fields: FormField[], values?: FormValues}>(),
+        {values: () => ({})}
+    )
 
-    function input({name, value}: {value: number | string, name: string}): void{
-        const cloned = clone(formData.value)
+    function input({name, value}: {value: FormValue, name: string}): void {
+        const cloned = clone(props.values)
         cloned[name] = value
         emit('update:values', cloned)
-
     }
 </script>
 
 
 <template>
     <form autocomplete="off" @submit.prevent="emit('submit')">
-        <AppFormGroup v-for="field in fields" :key="field.name" :field="field" @input="input"/>
+        <AppFormGroup
+            v-for="field in fields"
+            :key="field.name"
+            :field="field"
+            :value="values[field.name]"
+            @input="input"/>
         <AppBtn class="float-end" type="submit">
             Connexion
         </AppBtn>

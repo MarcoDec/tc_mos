@@ -10,6 +10,7 @@ module.exports = {
         // https://www.npmjs.com/package/@vue/eslint-config-typescript
         '@vue/typescript/recommended'
     ],
+    ignorePatterns: ['assets/types/openapi.d.ts'],
     overrides: [{files: ['*.vue'], rules: {'@typescript-eslint/indent': 'off'}}],
     parserOptions: {
         ecmaVersion: 2021,
@@ -17,7 +18,6 @@ module.exports = {
     },
     root: true,
     rules: {
-
         // https://eslint.org/docs/rules/
         // Possible Errors
         'for-direction': 'error',
@@ -135,6 +135,7 @@ module.exports = {
         'function-paren-newline': ['error', 'consistent'],
         'key-spacing': 'error',
         'linebreak-style': 'error',
+        'new-cap': 'error',
         'new-parens': 'error',
         'no-bitwise': 'error',
         'no-continue': 'error',
