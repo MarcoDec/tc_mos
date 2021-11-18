@@ -30,7 +30,7 @@ type AppFormGroupProps = {field: string}
 type AppFormGroupComponent = Component<AppFormGroupProps, never, AppFormGroupData>
 export const AppFormGroup = defineAsyncComponent<AppFormGroupComponent>(async () => import('./AppFormGroup.vue'))
 
-export const AppInput = defineAsyncComponent(async () => import('./AppInput'))
+export const AppInput = defineAsyncComponent(async () => import('./AppInput.vue'))
 
 type AppLabelProps = {cols?: number}
 type AppLabelComponent = Component<AppLabelProps>

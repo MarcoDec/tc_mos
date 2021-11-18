@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import './app.scss'
 import {
     AppAlert,
@@ -14,16 +15,22 @@ import {
     AppNavbar,
     AppNavbarBrand,
     AppRow
+
 } from './components'
 import App from './routing/pages/App'
+import AppCollectionTable from './components/bootstrap-5/app-collection-table/AppCollectionTable.vue'
 import type {AxiosError} from 'axios'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import VueAxios from 'vue-axios'
 import axios from 'axios'
 import {createApp} from 'vue'
+import {fas} from '@fortawesome/free-solid-svg-icons'
+import {library} from '@fortawesome/fontawesome-svg-core'
 import mitt from 'mitt'
 import router from './routing/router'
 import {store} from './store/store'
 
+library.add(fas)
 const app = createApp(App)
 
 app
@@ -59,5 +66,7 @@ app
     .component('AppNavbar', AppNavbar)
     .component('AppNavbarBrand', AppNavbarBrand)
     .component('AppRow', AppRow)
+    .component('AppCollectionTable', AppCollectionTable)
+    .component('Fa', FontAwesomeIcon)
 
 app.mount('#vue')
