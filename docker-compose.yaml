@@ -63,4 +63,24 @@ services:
     restart: always
     volumes:
       - /sessions
-version: '3.1'
+
+  couchdb-server-0:
+    environment:
+      COUCHDB_PASSWORD: ${COUCH_PASSWORD}
+      COUCHDB_SECRET: ${APP_SECRET}
+      COUCHDB_USER: ${COUCH_USER}
+      NODENAME: couchdb-0
+    build:
+      context: docker/couchdb
+    networks:
+      network:
+        aliases:
+          - couchdb-0.local.com
+    ports:
+      - "5984:5984"
+      - "5986:5986"
+    volumes:
+      - .docker/couchdb/db:/opt/couchdb/data:delegated
+networks:
+  network:
+version: "3.5"
