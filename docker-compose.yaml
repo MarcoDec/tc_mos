@@ -82,7 +82,7 @@ services:
       - "5984:5984"
       - "5986:5986"
     volumes:
-      - .docker/couchdb/db:/opt/couchdb/data:delegated
+      - ./docker/couchdb/db:/opt/couchdb/data:delegated
 networks:
   network:
     driver: "bridge"
