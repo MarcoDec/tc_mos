@@ -1,6 +1,4 @@
 {
-<<<<<<< Updated upstream
-=======
     "doctrine/couchdb": {
         "version": "1.0-dev"
     },
@@ -10,7 +8,6 @@
     "giggsey/locale": {
         "version": "2.0"
     },
->>>>>>> Stashed changes
     "pentatrion/vite-bundle": {
         "version": "0.1",
         "recipe": {

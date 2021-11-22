@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use mysql_xdevapi\Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\CouchDB\CouchDBClient;
@@ -16,12 +17,15 @@ final class CouchDBCreateCommand extends AbstractCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
-       $client = CouchDBClient::create([
-          'url'=>'http://couchdb:couchdb@tconcept-gpao_couchdb-server-0_1:5984',
-          'dbname'=>'tconcept'
-       ]);
-
-       $client->createDatabase($client->getDatabase());
+       try {
+          $client = CouchDBClient::create([
+             'url'=>'http://couchdb:couchdb@couchdb-server-0:5984',
+             'dbname'=>'tconcept'
+          ]);
+          $client->createDatabase($client->getDatabase());
+       } catch (\Exception $e) {
+          echo "Plantage => ".$e->getMessage()."\n";
+       }
         return 0;
     }
 }

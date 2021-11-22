@@ -38,8 +38,7 @@ services:
     container_name: tconcept_gpao_php
     depends_on:
       - mysql
-    networks:
-      network:
+      - couchdb-server-0
     ports:
       - '8001:8001'
     restart: always
@@ -74,16 +73,9 @@ services:
       NODENAME: couchdb-0
     build:
       context: docker/couchdb
-    networks:
-      network:
-        aliases:
-          - couchdb-0.local.com
     ports:
       - "5984:5984"
       - "5986:5986"
     volumes:
       - ./docker/couchdb/db:/opt/couchdb/data:delegated
-networks:
-  network:
-    driver: "bridge"
 version: "3.5"
