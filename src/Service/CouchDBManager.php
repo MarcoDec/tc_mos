@@ -50,4 +50,32 @@ class CouchDBManager
       })->toArray();
       return $filteredClass;
    }
+
+   /**
+    * @throws HTTPException
+    */
+   public function deleteDocument($id, $rev) {
+      echo "Delete document ".$id." ".$rev;
+      $this->client->deleteDocument($id,$rev);
+   }
+
+   public function getDocumentRev($dbDoc):string {
+      foreach ($this->allDocs()->body['rows'] as $doc) {
+         echo "doc \n";
+         echo print_r($doc,true);
+         if ($doc["id"]==$dbDoc) {
+            return $doc["value"]["rev"];
+         }
+      }
+      return "";
+   }
+
+   /**
+    * @throws HTTPException
+    */
+   public function postDocument(array $content): array
+   {
+      return $this->client->postDocument($content);
+   }
+
 }
