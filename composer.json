@@ -53,6 +53,7 @@
     "doctrine/doctrine-bundle": "^2.4",
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "doctrine/orm": ">=2.10",
+    "haydenpierce/class-finder": "^0.4.3",
     "nelmio/cors-bundle": "^2.1",
     "pentatrion/vite-bundle": "^0.1.5",
     "phpdocumentor/reflection-docblock": "^5.2",

@@ -77,3 +77,8 @@ services:
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
+
+  App\Service\CouchDBManager:
+    arguments:
+      - '%env(COUCH_URL)%'
+      - '%env(COUCH_DBNAME)%'

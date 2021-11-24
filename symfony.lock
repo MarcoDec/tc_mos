@@ -8,6 +8,9 @@
     "giggsey/locale": {
         "version": "2.0"
     },
+    "haydenpierce/class-finder": {
+        "version": "0.4.3"
+    },
     "pentatrion/vite-bundle": {
         "version": "0.1",
         "recipe": {
