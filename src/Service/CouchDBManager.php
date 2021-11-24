@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Attribute\Couchdb\Document;
-use App\Entity\Project\Product\Family;
 use Doctrine\CouchDB\CouchDBClient;
 use Doctrine\CouchDB\HTTP\HTTPException;
 use Doctrine\CouchDB\HTTP\Response;
@@ -55,14 +54,11 @@ class CouchDBManager
     * @throws HTTPException
     */
    public function deleteDocument($id, $rev) {
-      echo "Delete document ".$id." ".$rev;
       $this->client->deleteDocument($id,$rev);
    }
 
    public function getDocumentRev($dbDoc):string {
       foreach ($this->allDocs()->body['rows'] as $doc) {
-         echo "doc \n";
-         echo print_r($doc,true);
          if ($doc["id"]==$dbDoc) {
             return $doc["value"]["rev"];
          }

@@ -19,12 +19,7 @@ final class CouchDBSchemaUpdateCommand extends AbstractCommand {
        //Tentative de connexion à la base de donnée couchdb et récupération des documents
        try {
           $docsList = $this->DBManager->getDocList();
-          echo "docsList actuellement en base\n";
-          echo print_r($docsList,true)."\n";
           $entityDocList = $this->DBManager->getCouchdbDocument();
-          echo "entityDocList actuellement définis\n";
-          echo print_r($entityDocList,true)."\n";
-
           //region Identification des Documents à supprimer en base
           $docsToDelete = collect($docsList)->filter(function ($dbDoc) use ($entityDocList) {
              foreach ($entityDocList as $key => $entity) {
@@ -33,11 +28,12 @@ final class CouchDBSchemaUpdateCommand extends AbstractCommand {
              return true;
           })->toArray();
           foreach ($docsToDelete as $dbDoc) {
-             echo "\nSuppression ".$dbDoc."\n";
+             echo "Suppression ".$dbDoc."\n";
             $rev = $this->DBManager->getDocumentRev($dbDoc);
             $this->DBManager->deleteDocument($dbDoc, $rev);
           }
-          echo "\nFin Suppression \n";
+          $nbDeleted = count($docsToDelete);
+          echo "====> ${nbDeleted} Document(s) supprimé(s)\n";
           //endregion
 
           //region Identification des Documents à créer en base
@@ -49,10 +45,13 @@ final class CouchDBSchemaUpdateCommand extends AbstractCommand {
              return $test;
           })->toArray();
           foreach ($docToCreate as $dbDoc) {
-             echo "\nCréation ".$dbDoc."\n";
-             list($dbDoc,$rev) = $this->DBManager->postDocument(array('foo' => 'bar')); //Document vide par défault
+             echo "Création ".$dbDoc."\n";
+             list($dbDoc,$rev) = $this->DBManager->postDocument([
+                '_id' => $dbDoc
+             ]); //Document vide par défault
           }
-          echo "\nFin Suppression \n";
+          $nbAdded = count($docToCreate);
+          echo "====> ${nbAdded} Document(s) ajouté(s)\n";
           //endregion
        } catch (\Exception $e) {
           echo "Plantage => ".$e->getMessage()."\n";
