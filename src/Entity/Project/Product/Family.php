@@ -7,7 +7,6 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Attribute\Couchdb\Document;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
 use App\Filter\RelationFilter;
@@ -72,8 +71,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         paginationEnabled: false
     ),
     ORM\Entity,
-    ORM\Table(name: 'product_family'),
-   Document
+    ORM\Table(name: 'product_family')
 ]
 class Family extends AbstractFamily {
     /** @var Collection<int, self> */

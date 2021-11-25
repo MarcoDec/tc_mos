@@ -19,7 +19,7 @@ final class CouchDBSchemaUpdateCommand extends AbstractCommand {
        //Tentative de connexion à la base de donnée couchdb et récupération des documents
        try {
           $docsList = $this->DBManager->getDocList();
-          $entityDocList = $this->DBManager->getCouchdbDocument();
+          $entityDocList = $this->DBManager->getCouchdbDocuments();
           //region Identification des Documents à supprimer en base
           $docsToDelete = collect($docsList)->filter(function ($dbDoc) use ($entityDocList) {
              foreach ($entityDocList as $key => $entity) {
@@ -29,8 +29,8 @@ final class CouchDBSchemaUpdateCommand extends AbstractCommand {
           })->toArray();
           foreach ($docsToDelete as $dbDoc) {
              echo "Suppression ".$dbDoc."\n";
-            $rev = $this->DBManager->getDocumentRev($dbDoc);
-            $this->DBManager->deleteDocument($dbDoc, $rev);
+            $rev = $this->DBManager->documentGetRev($dbDoc);
+            $this->DBManager->documentDelete($dbDoc, $rev);
           }
           $nbDeleted = count($docsToDelete);
           echo "====> ${nbDeleted} Document(s) supprimé(s)\n";
@@ -46,7 +46,7 @@ final class CouchDBSchemaUpdateCommand extends AbstractCommand {
           })->toArray();
           foreach ($docToCreate as $dbDoc) {
              echo "Création ".$dbDoc."\n";
-             list($dbDoc,$rev) = $this->DBManager->postDocument([
+             list($dbDoc,$rev) = $this->DBManager->documentCreate([
                 '_id' => $dbDoc
              ]); //Document vide par défault
           }
