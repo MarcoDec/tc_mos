@@ -24,6 +24,11 @@ final class ExpressionLanguageProvider implements ExpressionFunctionProviderInte
                 name: 'component_subfamily_code',
                 compiler: static fn (int $id): string => sprintf('strtoupper(substr($this->configurations->findData(\'component_family\', %1$d)[\'family_name\'], 0, 3))', $id),
                 evaluator: fn (array $args, int $id): string => strtoupper(substr($this->configurations->findData('component_family', $id)['code'], 0, 3))
+            ),
+            new ExpressionFunction(
+                name: 'engine_group',
+                compiler: static fn (int $id): string => sprintf('%1$d == 1 ? \'workstation\' : \'tool\'', $id),
+                evaluator: static fn (array $args, int $id): string => $id == 1 ? 'workstation' : 'tool'
             )
         ];
     }
