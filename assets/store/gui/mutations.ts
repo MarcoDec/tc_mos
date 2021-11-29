@@ -1,24 +1,18 @@
-import type {State} from './state'
-import {onMounted, onUnmounted} from "vue";
+import type {State} from '.'
 
 export enum MutationTypes {
-    GUI_SHOW = 'GUI_SHOW'
+    RESIZE = 'RESIZE'
 }
 
-type Mutations = {
-    [MutationTypes.GUI_SHOW]: (state: State) => void
-}
-
-export const mutations: Mutations = {
-    [MutationTypes.GUI_SHOW](state: State): void {
+export const mutations = {
+    [MutationTypes.RESIZE](state: State): void {
         if (window.top !== null) {
-           state.windowHeight = window.top.innerHeight
+            state.windowHeight = window.top.innerHeight
             state.windowWidth = window.top.innerWidth
 
         }
     }
 }
 
-
-
+export type Mutations = typeof mutations
 

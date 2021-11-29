@@ -3,11 +3,12 @@ export type State = {
     windowWidth: number
     freeSpace: number
     topRatio: number
+
 }
 
 export const state: State = {
     windowHeight: 0,
     windowWidth: 0,
     freeSpace: .9,
-    topRatio: .6
+    topRatio: .6,
 }

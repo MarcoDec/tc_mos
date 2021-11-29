@@ -13,6 +13,10 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
+export type Tabs = {
+    name: string
+    isActive: boolean
+}
 export type FormField = {
     label: string
     name: string
