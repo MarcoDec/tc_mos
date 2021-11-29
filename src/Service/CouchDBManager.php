@@ -5,20 +5,22 @@ namespace App\Service;
 use App\Attribute\Couchdb\Document;
 use App\Entity\Couchdb\CouchdbDocument;
 use App\Entity\Couchdb\CouchdbItem;
-use App\Entity\Entity;
-use App\Event\CouchdbPostPersistEvent;
-use App\Event\CouchdbPrePersistEvent;
+use App\Event\Couchdb\Events;
+use App\Event\Couchdb\Item\CouchdbItemPrePersistEvent;
+use App\Event\Couchdb\Item\CouchdbItemPreUpdateEvent;
 use Doctrine\CouchDB\CouchDBClient;
 use Doctrine\CouchDB\HTTP\HTTPException;
 use Doctrine\CouchDB\HTTP\Response;
+use Exception;
 use HaydenPierce\ClassFinder\ClassFinder;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CouchDBManager
 {
    private CouchDBClient $client;
 
-   public function __construct(private string $couchUrl, private string $couchDBName, private EventDispatcherInterface $eventDispatcher) {
+   public function __construct(private string $couchUrl, private string $couchDBName, private EventDispatcherInterface $eventDispatcher, private LoggerInterface $logger) {
       $this->init();
    }
 
@@ -41,21 +43,21 @@ class CouchDBManager
 
    /**
     * @return array
-    * @throws \Exception
+    * @throws Exception
     * Retourne la liste des noms(id) des documents
     */
    public function getDocList():array {
       try {
          $rows =$this->allDocs()->body["rows"];
-         return collect($rows)->map(function($doc){ return $doc["id"]; })->toArray();;
-      } catch (\Exception $e) {
-         throw new \Exception("La base ".$this->couchDBName." n'existe pas",0);
+         return collect($rows)->map(function($doc){ return $doc["id"]; })->toArray();
+      } catch (Exception $e) {
+         throw new Exception("La base ".$this->couchDBName." n'existe pas",0);
       }
    }
 
    /**
     * @return array
-    * @throws \Exception
+    * @throws Exception
     * Retourne la liste des Entités qui ont l'attribut Couchdb\Document
     */
    public function getCouchdbDocuments():array {
@@ -68,11 +70,11 @@ class CouchDBManager
    }
 
    /**
-    * @param Entity $entity
+    * @param object $entity
     * @return bool
     * Retourne Vraie si l'entité est d'une classe comportant l'attribut Couchdb/Document
     */
-   public function isCouchdbDocument(Entity $entity):bool {
+   public function isCouchdbDocument(object $entity):bool {
       $reflexionClass=new \ReflectionClass(get_class($entity));
       return count($reflexionClass->getAttributes(Document::class))>0;
    }
@@ -111,54 +113,38 @@ class CouchDBManager
       public function documentRead($id): CouchdbDocument {
          return new CouchdbDocument($this->client->findDocument($id));
       }
-      /**
-       * Met à jour un document, cela incrémente sa révision
-       * @param CouchdbDocument $couchdbDocument
-       * @return array [$id,$rev]
-       * @throws HTTPException
-       */
+
+   /**
+    * Met à jour un document, cela incrémente sa révision
+    * @param CouchdbDocument $couchdbDocument
+    * @return CouchdbDocument [$id,$rev]
+    * @throws HTTPException
+    */
       public function documentUpdate(CouchdbDocument $couchdbDocument): CouchdbDocument {
-         list($id, $rev) = $this->client->putDocument($couchdbDocument->getContent(), $couchdbDocument->getId(), $couchdbDocument->getRev());
+         $this->logger->info(__METHOD__);
+         list($id, $rev) = $this->client->putDocument(['content'=>$couchdbDocument->getContent()], $couchdbDocument->getId(), $couchdbDocument->getRev());
          return $this->documentRead($id);
       }
    //endregion
    //region CRUD item
-      /**
-       * Crée un item dans la base
-       * @param Entity $entity
-       * @return CouchdbItem
-       * @throws HTTPException
-       */
-      public function itemCreate(Entity $entity): CouchdbItem {
-         $class = get_class($entity);
-         // 1. Récupération Document
-         $couchdbDoc = $this->documentRead($class);
-         // 2. Récupération du contenu
-         $docContent = $couchdbDoc->getContent();
-         // 3. Détermination du plus grand indice
-         $maxId = collect($docContent)->max('id');
-         $newId = $maxId++;
-         // 4. Définition nouvel élément
-         $reflectionClass = new \ReflectionClass($entity);
-         $properties = $reflectionClass->getProperties();
-         $content=[];
-         foreach ($properties as $property) {
-            $content[$property->getName()]=$entity->{$property->getName()};
-         }
-         $content['id']=$newId;
-         // 5. Ajout nouvel élément dans couchdbDoc
-         $docContent[]=$content;
-         $couchdbDoc->setContent($docContent);
-         // 6. Sauvegarde en base
-         $this->documentUpdate($couchdbDoc);
-         return new CouchdbItem($class, $content);
+   /**
+    * Crée un item dans la base
+    * @param  $entity
+    * @return object
+    */
+      public function itemCreate($entity):object {
+         $this->logger->info(__CLASS__.'/'.__METHOD__);
+         $newEventPrePersist = new CouchdbItemPrePersistEvent($entity);
+         $this->eventDispatcher->dispatch($newEventPrePersist,Events::prePersist);
+         return $newEventPrePersist->getEntity();
       }
+
       /**
        * Supprime un item dans la base
-       * @param Entity $entity
+       * @param object $entity
        * @throws HTTPException
        */
-      public function itemDelete(Entity $entity):void {
+      public function itemDelete(object $entity):void {
             $id =$entity->getId();
             $class = get_class($entity);
             // 1. Récupération Document
@@ -174,10 +160,10 @@ class CouchDBManager
             $couchdbDoc=$this->documentUpdate($couchdbDoc);
          }
       /**
-       * @param Entity $entity
+       * @param object $entity
        * @return CouchdbItem
        */
-      public function itemRead(Entity $entity): CouchdbItem {
+      public function itemRead(object $entity): CouchdbItem {
          $id =$entity->getId();
          $class = get_class($entity);
          // 1. Récupération Document
@@ -188,32 +174,14 @@ class CouchDBManager
          return $couchdbDoc->getItem($id);
       }
       /**
-       * @param Entity $entity
-       * @return CouchdbItem
-       * @throws HTTPException
+       * @param object $entity
+       * @return object
        */
-      public function itemUpdate(Entity $entity): CouchdbItem {
-         $id =$entity->getId();
-         $class = get_class($entity);
-         // 1. Récupération Document
-         $couchdbDoc = $this->documentRead($class);
-         // 2. Récupération du contenu
-         $content = $couchdbDoc->getContent();
-         // 3. Mis à jour du contenu
-         $updatedContent = collect($content)->map(function($item) use ($id,$entity){
-            if ($item['id']===$id) {
-               $reflectionClass = new \ReflectionClass($entity);
-               $properties = $reflectionClass->getProperties();
-               foreach ($properties as $property) {
-                  $item[$property->getName()]=$entity->{$property->getName()};
-               }
-            };
-         })->toArray();
-         $couchdbDoc->setContent($updatedContent);
-         // 4. Sauvegarde en base
-         $couchdbDoc=$this->documentUpdate($couchdbDoc);
-         // 5. retour CouchdbItem
-         return $couchdbDoc->getItem($id);
+      public function itemUpdate(object $entity): object {
+         $this->logger->info(__CLASS__.'/'.__METHOD__);
+         $newEventPreUpdate = new CouchdbItemPreUpdateEvent($entity);
+         $this->eventDispatcher->dispatch($newEventPreUpdate,Events::preUpdate);
+         return $newEventPreUpdate->getEntity();
       }
    //endregion
 }

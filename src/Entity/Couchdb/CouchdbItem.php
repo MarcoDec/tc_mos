@@ -9,13 +9,18 @@ use ReflectionException;
 class CouchdbItem
 {
    private string $id;
-   private string $content;
+   private array $content;
    private string $class;
 
    public function __construct(string $class, array $content) {
-      $this->id=$content['id'];
+      if (isset($content['id'])) {
+         $this->id = $content['id'];
+      } else {
+         $this->id = 0;
+      }
+
       $this->class=$class;
-      $this->content = $content['content'];
+      $this->content = $content;
    }
 
    /**
@@ -36,17 +41,17 @@ class CouchdbItem
    }
 
    /**
-    * @return mixed
+    * @return array
     */
-   public function getContent(): mixed
+   public function getContent(): array
    {
       return $this->content;
    }
 
    /**
-    * @param mixed|string $content
+    * @param array $content
     */
-   public function setContent(mixed $content): self
+   public function setContent(array $content): self
    {
       $this->content = $content;
       return $this;
@@ -78,7 +83,7 @@ class CouchdbItem
       $reflectionClass = new ReflectionClass($this->class);
       $properties = $reflectionClass->getProperties();
       foreach ($properties as $property) {
-         $entity->{$property}=$this->content[$property];
+         $entity->{$property->getName()}=$this->content[$property->getName()];
       }
       return $entity;
    }
@@ -90,7 +95,7 @@ class CouchdbItem
       $reflectionClass = new ReflectionClass($this->class);
       $properties = $reflectionClass->getProperties();
       foreach ($properties as $property) {
-         $this->content[$property]=$entity->{$property};
+         $this->content[$property->getName()]=$entity->{$property->getName()};
       }
    }
 }

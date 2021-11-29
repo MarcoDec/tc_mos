@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Event;
+namespace App\Event\Couchdb\Item;
 
 use App\Entity\Entity;
+use App\Event\Couchdb\Events;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class CouchdbPostPersistEvent extends Event
+class CouchdbItemPreUpdateEvent extends Event
 {
-   public const NAME='couchdb.postpersist';
+   public const NAME=Events::preUpdate;
 
-   public function __construct(protected Entity $entity) {
+   public function __construct(protected object $entity) {
    }
 
-   public function getEntity():Entity {
+   public function getEntity():object {
       return $this->entity;
    }
 

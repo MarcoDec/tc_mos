@@ -7,8 +7,10 @@ use App\Attribute\Couchdb\Document;
 #[Document]
 class Notification
 {
-   private string $subject;
-   private string $category;
+   public int $id;
+   public string $subject;
+   public string $category;
+   public bool $read;
 
    /**
     * @return string
@@ -45,7 +47,6 @@ class Notification
       $this->category = $category;
       return $this;
    }
-   private bool $read;
 
    /**
     * @return bool

@@ -14,11 +14,7 @@ class CouchdbDocument
    public function __construct(Response $couchdbDocResponse){
       $this->id = $couchdbDocResponse->body['_id'];
       $this->rev = $couchdbDocResponse->body['_rev'];
-      $this->content=[];
-      $content= $couchdbDocResponse->body['content'];
-      foreach ($content as $item) {
-         $this->content[] = new CouchdbItem($this->id,$item);
-      }
+      $this->content=$couchdbDocResponse->body['content'] ?? [];
    }
 
    /**
@@ -78,6 +74,7 @@ class CouchdbDocument
     * @return CouchdbItem
     */
    public function getItem($id): CouchdbItem {
+      dump([$this,$id]);
       $itemData = collect($this->content)->filter(function($item) use ($id) {
          return $item['id']===$id;
       })->first();
