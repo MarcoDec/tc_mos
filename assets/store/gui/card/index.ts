@@ -8,4 +8,4 @@ import {state} from './state'
 
 export {State}
 
-export const module: Module<State, RootState> = { actions,getters, mutations, namespaced: true, state}
+export const module: Module<State, RootState> = {actions, getters, mutations, namespaced: true, state}

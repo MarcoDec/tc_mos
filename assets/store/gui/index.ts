@@ -7,4 +7,4 @@ import {state} from './state'
 
 export {State}
 
-export const module: Module<State, RootState> = { getters, mutations, namespaced: true, state}
+export const module: Module<State, RootState> = {getters, mutations, namespaced: true, state}

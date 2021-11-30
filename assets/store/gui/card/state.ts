@@ -1,7 +1,7 @@
 export type State = {
-    windowWidth : number
-    windowheight : number
-    freeSpaceUseRatio : number
+    windowWidth: number
+    windowheight: number
+    freeSpaceUseRatio: number
     height: number
     topHeight: number
     onlyOne: boolean

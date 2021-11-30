@@ -1,32 +1,14 @@
-<template>
-  <div>
-  <div class="tab-header">
-    <ul id="myTab" class="nav nav-tabs" role="tablist">
-      <li class="nav-item" role="presentation" v-for="tab in tabs" >
-        <a id="generaliste-tab" :class="{active:tab.isActive}" class="nav-link" data-bs-toggle="tab" href="#" role="tab"
-           aria-controls="home" aria-selected="true" @click="setActive(tab)">{{ tab.name }}</a>
-      </li>
-
-    </ul>
-  </div>
-  <div id="myTabContent" class="tab-content">
-    <div  v-for="tab in tabs" id="generaliste" :class="{active:tab.isActive}" class="fade show tab-pane" role="tabpanel" aria-labelledby="generaliste-tab">
-      {{ tab.name }}
-    </div>
-  </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
-import {defineProps, onMounted, onUnmounted, ref} from "vue";
-import {useNamespacedGetters, useNamespacedMutations} from "vuex-composition-helpers";
-import {Getters} from "../../store/gui/getters";
-import {Mutations, MutationTypes} from "../../store/gui/mutations";
-import {Tabs} from "../../types/bootstrap-5";
+import {defineProps, onMounted, onUnmounted, ref} from 'vue'
+import {useNamespacedGetters, useNamespacedMutations} from 'vuex-composition-helpers'
+import type {Getters} from '../../store/gui/getters'
+import {MutationTypes} from '../../store/gui/mutations'
+import type {Mutations} from '../../store/gui/mutations'
+import type {Tabs} from '../../types/bootstrap-5'
 
-defineProps<{ cssClass?: string }>()
+defineProps<{cssClass?: string}>()
 
-const tabs =ref<Tabs[]>( [
+const tabs = ref<Tabs[]>([
   {name: 'Généralistés', isActive: true},
   {name: 'Fichiers', isActive: false},
   {name: 'Qualité', isActive: false},
@@ -34,13 +16,13 @@ const tabs =ref<Tabs[]>( [
   {name: 'Comptabilité', isActive: false}
 ])
 
-const {tabHeightpx,innerHeightpx} = useNamespacedGetters<Getters>('gui',['tabHeightpx','innerHeightpx'])
+const {tabHeightpx, innerHeightpx} = useNamespacedGetters<Getters>('gui', ['tabHeightpx', 'innerHeightpx'])
 
-const resize = useNamespacedMutations<Mutations>('gui',[MutationTypes.RESIZE])[MutationTypes.RESIZE]
+const resize = useNamespacedMutations<Mutations>('gui', [MutationTypes.RESIZE])[MutationTypes.RESIZE]
 function setActive(current: Tabs): void {
-  tabs.value= tabs.value.map(tab => ({
+  tabs.value = tabs.value.map(tab => ({
     ...tab,
-    isActive:tab === current
+    isActive: tab === current
   }))
 
 }
@@ -49,10 +31,29 @@ onMounted(() => {
   resize()
 })
 onUnmounted(() => {
-      window.removeEventListener('resize', resize)
-    }
-)
+  window.removeEventListener('resize', resize)
+})
 </script>
+<template>
+    <div>
+        <div class="tab-header">
+            <ul id="myTab" class="nav nav-tabs" role="tablist">
+                <li v-for="tab in tabs" class="nav-item" role="presentation">
+                    <a
+                        id="generaliste-tab" :class="{active: tab.isActive}" class="nav-link" data-bs-toggle="tab" href="#" role="tab"
+                        aria-controls="home" aria-selected="true" @click="setActive(tab)">{{ tab.name }}</a>
+                </li>
+            </ul>
+        </div>
+        <div id="myTabContent" class="tab-content">
+            <div v-for="tab in tabs" id="generaliste" :class="{active: tab.isActive}" class="fade show tab-pane" role="tabpanel" aria-labelledby="generaliste-tab">
+                {{ tab.name }}
+            </div>
+        </div>
+    </div>
+</template>
+
+
 
 
 <style scoped>
