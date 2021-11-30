@@ -83,12 +83,9 @@ services:
       - '%env(COUCH_URL)%'
       - '%env(COUCH_DBNAME)%'
 
-  App\EventListener\Couchdb\CouchdbListener:
-    autoconfigure: false
+  App\DataCollector\CouchdbCollector:
     tags:
-      - event: App\Event\Couchdb\Item\CouchdbItemPostPersistEvent
-        name: postPersist
-        priority: 0
-      - event: App\Event\Couchdb\Item\CouchdbItemPrePersistEvent
-        name: prePersist
-        priority: 0
+      -
+        name: data_collector
+        template: 'data_collector/couchdb_collector.html.twig'
+        id: App\DataCollector\CouchdbCollector

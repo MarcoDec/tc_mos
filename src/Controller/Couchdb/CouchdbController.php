@@ -23,7 +23,6 @@ class CouchdbController extends AbstractController
    /**
     * @Route(name="couchdb.create", path="/create")
     * @throws ReflectionException
-    * @throws HTTPException
     */
    public function actionCreate() : Response{
       $newNotification = new Notification();
@@ -45,14 +44,12 @@ class CouchdbController extends AbstractController
    /**
     * @Route(name="couchdb.delete", path="/delete/{id}")
     * @throws ReflectionException
-    * @throws HTTPException
     */
    public function actionDelete($id) : Response{
 
       $notificationDocs = $this->DBManager->documentRead(Notification::class);
       $item = $notificationDocs->getItem($id);
       $deleted = false;
-      dump($item);
       if ($item!=null) {
         $this->DBManager->itemDelete($item->getEntity());
         $deleted = true;
