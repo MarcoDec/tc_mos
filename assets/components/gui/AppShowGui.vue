@@ -107,7 +107,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .gui {
-  width: v-bind(containerWidth);
+  width: v-bind('containerWidth');
 }
 
 .gui-container {
@@ -123,7 +123,7 @@ onUnmounted(() => {
   margin-right: 5px;
   margin-bottom: 5px;
   margin-top: 5px;
-  // height: v-bind(topCssVars);
+  // height: v-bind('topCssVars');
 
 }
 
@@ -142,8 +142,8 @@ onUnmounted(() => {
   border-radius: 10px;
   border: 5px solid #28a745;
   margin-bottom: 5px;
-  height: v-bind(heightBottomCssVars);
-  max-height: v-bind(innerHeightBottomCssVars);
+  height: v-bind('heightBottomCssVars');
+  max-height: v-bind('innerHeightBottomCssVars');
 }
 
 .resizer {

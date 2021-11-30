@@ -35,13 +35,13 @@
 <style lang="scss" scoped>
 .card-body {
   padding: 4px;
-  max-height: v-bind(heightBottomInnerpx);
-  min-height: v-bind(heightBottomInnerpx);
+  max-height: v-bind('heightBottomInnerpx');
+  min-height: v-bind('heightBottomInnerpx');
 
   > div {
     background-color: white;
-    height: v-bind(maxInnerHeightpx);
-    max-height: v-bind(maxInnerHeightpx);
+    height: v-bind('maxInnerHeightpx');
+    max-height: v-bind('maxInnerHeightpx');
     overflow: hidden;
   }
 }

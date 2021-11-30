@@ -87,7 +87,7 @@ onUnmounted(() => {
 
 .tab-header {
   font-size: .8rem;
-  max-height: v-bind(tabHeightpx);
+  max-height: v-bind('tabHeightpx');
   overflow: hidden;
   padding: 0.75rem 0.25rem;
   margin-bottom: 0;

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-    import {ActionTypes} from '../../../store/security'
     import type {Actions} from '../../../store/security'
+    import {ActionTypes} from '../../../store/security'
     import type {FormField} from '../../../types/bootstrap-5'
     import {ref} from 'vue'
     import router from '../../router'
@@ -22,8 +22,10 @@
 
 <template>
     <AppRow>
-        <AppCard class="bg-blue col">
-            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick"/>
-        </AppCard>
+        <AppCol>
+            <AppCard class="bg-blue">
+                <AppForm v-model:values="formData" :fields="fields" @submit="handleClick"/>
+            </AppCard>
+        </AppCol>
     </AppRow>
 </template>
