@@ -7,6 +7,7 @@ use App\Entity\Couchdb\CouchdbDocument;
 use App\Entity\Couchdb\CouchdbItem;
 use App\Event\Couchdb\Events;
 use App\Event\Couchdb\Item\CouchdbItemPrePersistEvent;
+use App\Event\Couchdb\Item\CouchdbItemPreRemoveEvent;
 use App\Event\Couchdb\Item\CouchdbItemPreUpdateEvent;
 use Doctrine\CouchDB\CouchDBClient;
 use Doctrine\CouchDB\HTTP\HTTPException;
@@ -142,22 +143,11 @@ class CouchDBManager
       /**
        * Supprime un item dans la base
        * @param object $entity
-       * @throws HTTPException
        */
       public function itemDelete(object $entity):void {
-            $id =$entity->getId();
-            $class = get_class($entity);
-            // 1. Récupération Document
-            $couchdbDoc = $this->documentRead($class);
-            // 2. Récupération du contenu
-            $content = $couchdbDoc->getContent();
-            // 3. Filtre du contenu
-            $newContent = collect($content)->filter(function($item) use ($id){
-               return $item['id']!=$id;
-            })->toArray();
-            $couchdbDoc->setContent($newContent);
-            // 4. Sauvegarde en base
-            $couchdbDoc=$this->documentUpdate($couchdbDoc);
+         $this->logger->info(__CLASS__.'/'.__METHOD__);
+         $newEventPreRemove = new CouchdbItemPreRemoveEvent($entity);
+         $this->eventDispatcher->dispatch($newEventPreRemove,Events::preRemove);
          }
       /**
        * @param object $entity

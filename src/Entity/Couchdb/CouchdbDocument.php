@@ -70,14 +70,13 @@ class CouchdbDocument
    }
 
    /**
-    * @param $id
-    * @return CouchdbItem
+    * @param int $id
+    * @return CouchdbItem|null
     */
-   public function getItem($id): CouchdbItem {
-      dump([$this,$id]);
+   public function getItem(int $id): ?CouchdbItem {
       $itemData = collect($this->content)->filter(function($item) use ($id) {
          return $item['id']===$id;
       })->first();
-      return new CouchdbItem($this->id,$itemData);
+      return $itemData===null?null:new CouchdbItem($this->id,$itemData);
    }
 }
