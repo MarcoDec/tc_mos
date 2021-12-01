@@ -3,10 +3,29 @@
 .bg-blue {
   background-color: #8ac2f1;
 }
-.container{
+
+.card-body {
+  padding: 0 0 !important;
+}
+
+.container {
   min-width: 100%;
 }
-.card-body {
-  padding: 0rem 0rem !important;
 
+.gui-container {
+  background-color: #cecdcd;
+  border-radius: 15px;
+}
+
+.resizer {
+  background-color: white;
+  margin: 5px 0 0;
+}
+
+@media only screen and (min-width: 1025px) and (max-width: 1600px) {
+  .resizer {
+    border: 3px black solid;
+    cursor: row-resize;
+    margin: 5px 0 0;
+  }
 }
