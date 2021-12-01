@@ -218,7 +218,7 @@ module.exports = {
         }],
         'vue/component-api-style': ['error', ['script-setup']],
         'vue/component-name-in-template-casing': ['error', 'PascalCase', {
-            ignores: ['component'],
+            ignores: ['component', 'teleport'],
             registeredComponentsOnly: false
         }],
         'vue/custom-event-name-casing': ['error', 'camelCase'],
