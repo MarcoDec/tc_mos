@@ -4,6 +4,7 @@ import type {RootState} from '../index'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import {fetchApi} from '../../api'
+import {ErrorCodes} from "vue";
 
 export enum ActionTypes {
     CONNECT = 'CONNECT',
@@ -13,7 +14,7 @@ export enum ActionTypes {
 
 type ActionContext = VuexActionContext<State, RootState>
 
-type Login = {username: string | null, password: string | null}
+type Login = { username: string | null, password: string | null }
 
 export const actions = {
     async [ActionTypes.CONNECT]({commit}: ActionContext): Promise<void> {
@@ -26,19 +27,32 @@ export const actions = {
         }
     },
     async [ActionTypes.FETCH_USERS]({commit}: ActionContext, {password, username}: Login): Promise<void> {
-        const user = await fetchApi('/api/login', {
-            json: {password: password ?? '', username: username ?? ''},
-            method: 'post'
-        })
-        if (
-            typeof user.id !== 'undefined'
-            && typeof user.token !== 'undefined'
-            && user.token !== null
-            && typeof user.username !== 'undefined'
-        ) {
-            Cookies.set('id', user.id.toString())
-            Cookies.set('token', user.token)
-            commit(MutationTypes.SET_USER, user.username)
+        try {
+            const user = await fetchApi('/api/login', {
+                json: {password: password ?? '', username: username ?? ''},
+                method: 'post'
+            })
+            if (
+                typeof user.id !== 'undefined'
+                && typeof user.token !== 'undefined'
+                && user.token !== null
+                && typeof user.username !== 'undefined'
+            ) {
+                Cookies.set('id', user.id.toString())
+                Cookies.set('token', user.token)
+                commit(MutationTypes.SET_USER, user.username)
+            }
+
+        } catch (error: unknown) {
+            if (error instanceof Response) {
+                const response = await error.json()
+                const message = typeof response === 'string' ? response : `${response['hydra:title']} : ${response['hydra:description']}`
+                commit(MutationTypes.MSG_ERROR, message)
+                commit(MutationTypes.STATUS, error.status)
+                commit(MutationTypes.ERROR, true)
+            } else {
+                console.error(error)
+            }
         }
     },
     async [ActionTypes.LOGOUT_USERS]({commit}: ActionContext): Promise<void> {
