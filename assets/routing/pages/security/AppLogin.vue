@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-    import type {Actions} from '../../../store/security'
     import {ActionTypes} from '../../../store/security'
+    import type {Actions} from '../../../store/security'
     import type {FormField} from '../../../types/bootstrap-5'
     import {ref} from 'vue'
     import router from '../../router'

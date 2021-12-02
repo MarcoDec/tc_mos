@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-    import type {Getters, Mutations} from '../../store/gui'
-    import {MutationTypes} from '../../store/gui'
-    import {useNamespacedGetters, useNamespacedMutations} from 'vuex-composition-helpers'
+    import {ActionTypes, MutationTypes} from '../../store/gui'
+    import type {Actions, Getters, Mutations} from '../../store/gui'
+    import {useNamespacedActions, useNamespacedGetters, useNamespacedMutations} from 'vuex-composition-helpers'
 
     const {
         bottomHeightPx,
@@ -12,13 +12,9 @@
         'containerWidthPx',
         'topInnerHeightPx'
     ])
-    const {
-        [MutationTypes.ENABLE_RESIZE]: enableResize,
-        [MutationTypes.INIT_DRAG]: initDrag
-    } = useNamespacedMutations<Mutations>('gui', [
-        MutationTypes.ENABLE_RESIZE,
-        MutationTypes.INIT_DRAG
-    ])
+    const {[MutationTypes.ENABLE_RESIZE]: enableResize} = useNamespacedMutations<Mutations>('gui', [MutationTypes.ENABLE_RESIZE])
+    const actions = useNamespacedActions<Actions>('gui', [ActionTypes.INIT_DRAG])
+    const initDrag = actions[ActionTypes.INIT_DRAG] as (e: MouseEvent) => Promise<void>
 </script>
 
 <template>
