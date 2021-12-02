@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-    import type {Actions, State} from '../../store/security'
+    import {ActionTypes, MutationTypes} from '../../store/security'
+    import type {Actions, Mutations, State} from '../../store/security'
     import {
-      useNamespacedActions,
-      useNamespacedGetters,
-      useNamespacedMutations,
-      useNamespacedState
+        useNamespacedActions,
+        useNamespacedGetters,
+        useNamespacedMutations,
+        useNamespacedState
     } from 'vuex-composition-helpers'
-    import {ActionTypes, Mutations, MutationTypes} from '../../store/security'
     import {useRouter} from 'vue-router'
 
     const hasUser = useNamespacedGetters('users', ['hasUser']).hasUser

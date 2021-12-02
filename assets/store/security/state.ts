@@ -1,15 +1,15 @@
 export type State = {
+    error: boolean
+    msgError: string | null
     password: string | null
+    status: string | null
     username: string | null
-    error : boolean
-    msgError : string | null
-    status : string | null
 }
 
 export const state: State = {
-    password: null,
-    username: null,
     error: false,
     msgError: null,
-    status: null
+    password: null,
+    status: null,
+    username: null
 }

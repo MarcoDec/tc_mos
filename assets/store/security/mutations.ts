@@ -1,12 +1,11 @@
 import type {State} from '.'
-import * as Cookies from "../../cookie";
 
 export enum MutationTypes {
     SET_USER = 'SET_USER',
     ERROR = 'ERROR',
     LOGOUT = 'LOGOUT',
     MSG_ERROR = 'MSG_ERROR',
-    STATUS = 'STATUS',
+    STATUS = 'STATUS'
 
 }
 
@@ -21,11 +20,11 @@ export const mutations = {
         state.error = false
     },
     [MutationTypes.MSG_ERROR](state: State, msg: string): void {
-          state.msgError = msg
+        state.msgError = msg
     },
     [MutationTypes.STATUS](state: State, status: string): void {
         state.status = status
-    },
+    }
 
 }
 

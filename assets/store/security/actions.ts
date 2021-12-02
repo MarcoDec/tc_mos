@@ -4,7 +4,6 @@ import type {RootState} from '../index'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import {fetchApi} from '../../api'
-import {ErrorCodes} from "vue";
 
 export enum ActionTypes {
     CONNECT = 'CONNECT',
@@ -14,7 +13,7 @@ export enum ActionTypes {
 
 type ActionContext = VuexActionContext<State, RootState>
 
-type Login = { username: string | null, password: string | null }
+type Login = {username: string | null, password: string | null}
 
 export const actions = {
     async [ActionTypes.CONNECT]({commit}: ActionContext): Promise<void> {
