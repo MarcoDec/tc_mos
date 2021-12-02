@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\DataCollector\CouchdbLogItem;
 use App\Event\Couchdb\Events;
 use App\Event\Couchdb\Item\CouchdbItemPostPersistEvent;
 use App\Event\Couchdb\Item\CouchdbItemPostRemoveEvent;
@@ -45,22 +46,22 @@ class CouchdbSubscriber implements EventSubscriberInterface
    }
 
    /**
-    * @throws ReflectionException
-    * @throws HTTPException
     */
    public function onPrePersist(CouchdbItemPrePersistEvent $event)
    {
-      $this->logger->info(__METHOD__);
+      $time = date_format(new \DateTime('now'),"Y/m/d - H:i:s:u");
       $entity =  $event->getEntity();
       $class = get_class($entity);
+      $couchLog = new CouchdbLogItem($class,CouchdbLogItem::METHOD_CREATE,__METHOD__);
+      $this->logger->info(__METHOD__);
+      try {
       // 1. Récupération Document
-      $couchdbDoc = $this->manager->documentRead($class);
+         $couchdbDoc = $this->manager->documentRead($class);
       // 2. Récupération du contenu
       $docContent = $couchdbDoc->getContent();
       // 3. Détermination du plus grand indice
       $maxId = collect($docContent)->max('id');
       $newId = $maxId +1;
-
       // 4. Définition nouvel élément
       $reflectionClass = new \ReflectionClass($entity);
       $properties = $reflectionClass->getProperties();
@@ -78,19 +79,27 @@ class CouchdbSubscriber implements EventSubscriberInterface
       $couchdbDoc = $this->manager->documentRead($class);
       $couchdbItem = $couchdbDoc->getItem($newId);
       $entity=$couchdbItem->getEntity();
-      $newPostPersistEvent = new CouchdbItemPostPersistEvent($entity);
-      $this->dispatcher->dispatch($newPostPersistEvent, Events::postPersist);
+         $newPostPersistEvent = new CouchdbItemPostPersistEvent($entity);
+         $this->dispatcher->dispatch($newPostPersistEvent, Events::postPersist);
+         $couchLog->setDetail("Creation nouvel item ok dans le Document $class");
+         $this->manager->actions[$time]=$couchLog;
+      } catch (\Exception $e) {
+         $couchLog->setDetail($e->getMessage());
+         $couchLog->setErrors(true);
+         $this->manager->actions[$time]=$couchLog;
+      }
    }
 
    /**
-    * @throws ReflectionException
-    * @throws HTTPException
     */
    public function onPreRemove(CouchdbItemPreRemoveEvent $event)
    {
+      $time = date_format(new \DateTime('now'),"Y/m/d - H:i:s:u");
       $this->logger->info(__METHOD__);
       $entity =  $event->getEntity();
       $class = get_class($entity);
+      $couchLog = new CouchdbLogItem($class,CouchdbLogItem::METHOD_DELETE,__METHOD__);
+      try {
       $id =$entity->id;
       // 1. Récupération Document
       $couchdbDoc = $this->manager->documentRead($class);
@@ -103,18 +112,27 @@ class CouchdbSubscriber implements EventSubscriberInterface
       $couchdbDoc->setContent($filteredContent);
       // 4. Sauvegarde en base
       $this->manager->documentUpdate($couchdbDoc);
-      $newPostRemoveEvent = new CouchdbItemPostRemoveEvent($entity);
-      $this->dispatcher->dispatch($newPostRemoveEvent, Events::postRemove);
+         $newPostRemoveEvent = new CouchdbItemPostRemoveEvent($entity);
+         $this->dispatcher->dispatch($newPostRemoveEvent, Events::postRemove);
+         $couchLog->setDetail("Suppression item $id ok dans le Document $class");
+         $this->manager->actions[$time]=$couchLog;
+      } catch (\Exception $e) {
+         $couchLog->setDetail($e->getMessage());
+         $couchLog->setErrors(true);
+         $this->manager->actions[$time]=$couchLog;
+      }
    }
 
    /**
-    * @throws HTTPException|ReflectionException
     */
    public function onPreUpdate(CouchdbItemPreUpdateEvent $event)
    {
-      $this->logger->info(__METHOD__);
+      $time = date_format(new \DateTime('now'),"Y/m/d - H:i:s:u");
       $entity =  $event->getEntity();
       $class = get_class($entity);
+      $couchLog = new CouchdbLogItem($class,CouchdbLogItem::METHOD_UPDATE,__METHOD__);
+      $this->logger->info(__METHOD__);
+      try {
       $id =$entity->id;
       // 1. Récupération Document
       $couchdbDoc = $this->manager->documentRead($class);
@@ -135,7 +153,14 @@ class CouchdbSubscriber implements EventSubscriberInterface
       // 4. Sauvegarde en base
       $couchdbDoc=$this->manager->documentUpdate($couchdbDoc);
       $updatedEntity = $couchdbDoc->getItem($id)->getEntity();
-      $newPostUpdateEvent = new CouchdbItemPostUpdateEvent($updatedEntity);
-      $this->dispatcher->dispatch($newPostUpdateEvent, Events::postUpdate);
+         $newPostUpdateEvent = new CouchdbItemPostUpdateEvent($updatedEntity);
+         $this->dispatcher->dispatch($newPostUpdateEvent, Events::postUpdate);
+         $couchLog->setDetail("Update item $id ok dans le Document $class");
+         $this->manager->actions[$time]=$couchLog;
+      } catch (\Exception $e) {
+         $couchLog->setDetail($e->getMessage());
+         $couchLog->setErrors(true);
+         $this->manager->actions[$time]=$couchLog;
+      }
    }
 }

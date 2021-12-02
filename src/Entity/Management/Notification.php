@@ -3,6 +3,7 @@
 namespace App\Entity\Management;
 
 use App\Attribute\Couchdb\Document;
+use JetBrains\PhpStorm\Pure;
 
 #[Document]
 class Notification
@@ -66,5 +67,26 @@ class Notification
       return $this;
    }
 
+   /**
+    * @return int
+    */
+   public function getId(): int
+   {
+      return $this->id;
+   }
+
+   /**
+    * @param int $id
+    */
+   public function setId(int $id): void
+   {
+      $this->id = $id;
+   }
+
+
+
+   #[Pure] public function __toString():string {
+      return $this->getId().' - '.$this->getCategory().': '.$this->getSubject();
+   }
 
 }

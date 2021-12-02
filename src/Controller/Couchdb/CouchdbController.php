@@ -4,7 +4,7 @@ namespace App\Controller\Couchdb;
 
 use App\Entity\Management\Notification;
 use App\Service\CouchDBManager;
-use Doctrine\CouchDB\HTTP\HTTPException;
+use Exception;
 use ReflectionException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -23,6 +23,7 @@ class CouchdbController extends AbstractController
    /**
     * @Route(name="couchdb.create", path="/create")
     * @throws ReflectionException
+    * @throws Exception
     */
    public function actionCreate() : Response{
       $newNotification = new Notification();
@@ -41,22 +42,24 @@ class CouchdbController extends AbstractController
       $this->DBManager->itemUpdate($firstNotification);
       return new Response($this->renderView('couchdb/create.html.twig'));
    }
+
    /**
     * @Route(name="couchdb.delete", path="/delete/{id}")
     * @throws ReflectionException
+    * @throws Exception
     */
    public function actionDelete($id) : Response{
 
       $notificationDocs = $this->DBManager->documentRead(Notification::class);
       $item = $notificationDocs->getItem($id);
-      $deleted = false;
-      if ($item!=null) {
-        $this->DBManager->itemDelete($item->getEntity());
-        $deleted = true;
-      }
+//      $deleted = false;
+//      if ($item!=null) {
+        $this->DBManager->itemDelete($item?->getEntity());
+//        $deleted = true;
+//      }
       return new Response($this->renderView('couchdb/delete.html.twig',[
          'id' => $id,
-         'deleted' => $deleted
+         'deleted' => true
       ]));
    }
 }

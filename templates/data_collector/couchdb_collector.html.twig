@@ -25,13 +25,33 @@
          <span class="sf-toolbar-status sf-toolbar-status-green">{{ collector.getDeleteIndicator()["ok"] }}</span>
          <span class="sf-toolbar-status sf-toolbar-status-red">{{ collector.getDeleteIndicator()["ko"] }}</span>
       </div>
+      <div class="sf-toolbar-info-piece">
+         <b>Document Create</b>
+         <span class="sf-toolbar-status sf-toolbar-status-green">{{ collector.getDocumentCreateIndicator()["ok"] }}</span>
+         <span class="sf-toolbar-status sf-toolbar-status-red">{{ collector.getDocumentCreateIndicator()["ko"] }}</span>
+      </div>
+      <div class="sf-toolbar-info-piece">
+         <b>Document Read</b>
+         <span class="sf-toolbar-status sf-toolbar-status-green">{{ collector.getDocumentReadIndicator()["ok"] }}</span>
+         <span class="sf-toolbar-status sf-toolbar-status-red">{{ collector.getDocumentReadIndicator()["ko"] }}</span>
+      </div>
+      <div class="sf-toolbar-info-piece">
+         <b>Document Update</b>
+         <span class="sf-toolbar-status sf-toolbar-status-green">{{ collector.getDocumentUpdateIndicator()["ok"] }}</span>
+         <span class="sf-toolbar-status sf-toolbar-status-red">{{ collector.getDocumentUpdateIndicator()["ko"] }}</span>
+      </div>
+      <div class="sf-toolbar-info-piece">
+         <b>DocumentDelete</b>
+         <span class="sf-toolbar-status sf-toolbar-status-green">{{ collector.getDocumentDeleteIndicator()["ok"] }}</span>
+         <span class="sf-toolbar-status sf-toolbar-status-red">{{ collector.getDocumentDeleteIndicator()["ko"] }}</span>
+      </div>
    {% endset %}
    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: true }) }}
 {% endblock %}
 {% block head %}
    {{ parent() }}
    {# CSS customisé #}
-   <style type="text/css">
+   <style>
       .couch_th {
          text-align: center;
          background-color: #4f5050;
@@ -65,7 +85,7 @@
          <th class="couch_th">Details</th>
       </tr>
       {% for action in collector.getActions() %}
-         {% if not action["errors"] %}
+         {% if not action.isErrors() %}
             {% set status = "couch_request_ok" %}
             {% set result = "OK" %}
          {% else %}
@@ -73,12 +93,12 @@
             {% set result = "KO" %}
          {% endif %}
          <tr>
-            <td>{{ action["document"] }}</td>
-            <td>{{ action["requestType"] }}</td>
+            <td>{{ action.getDocument() }}</td>
+            <td>{{ action.getRequestType() }}</td>
             <td class="{{ status }}">
                {{ result }}
             </td>
-            <td>{{ action["detail"] }}</td>
+            <td>{{ action.getDetail() }}</td>
          </tr>
       {% endfor %}
    </table>

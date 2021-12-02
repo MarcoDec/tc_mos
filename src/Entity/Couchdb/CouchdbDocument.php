@@ -72,11 +72,13 @@ class CouchdbDocument
    /**
     * @param int $id
     * @return CouchdbItem|null
+    * @throws \Exception
     */
    public function getItem(int $id): ?CouchdbItem {
       $itemData = collect($this->content)->filter(function($item) use ($id) {
          return $item['id']===$id;
       })->first();
-      return $itemData===null?null:new CouchdbItem($this->id,$itemData);
+      if ($itemData===null) throw new \Exception("$this->id ne contient pas d'élément $id",500);
+      return new CouchdbItem($this->id,$itemData);
    }
 }
