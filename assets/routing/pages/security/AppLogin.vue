@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-    /* eslint-disable */
     import type {Actions, State} from '../../../store/security'
     import {
         useNamespacedActions,
@@ -10,7 +9,6 @@
     import {ref} from 'vue'
     import router from '../../router'
     import {useLoading} from 'vue3-loading-overlay'
-    import 'vue3-loading-overlay/dist/vue3-loading-overlay.css'
 
     const fields: FormField[] = [
         {label: 'Identifiant', name: 'username'},
