@@ -25,6 +25,8 @@ export const mutations = {
             state.height = window.top.innerHeight - rect.top - 5
             state.width = window.top.innerWidth - 25
             state.windowWidth = window.top.innerWidth
+            if (state.windowWidth < 1140)
+                state.ratio = 0.5
         }
     }
 }
