@@ -19,7 +19,7 @@ export type FormField = {
     type?: FormInput
 }
 
-export type FormInput = 'password' | 'text'
+export type FormInput = 'boolean' | 'button' | 'date' | 'grpbutton' | 'number' | 'password' | 'select' | 'switch' | 'text' | 'time'
 
 export type FormValue = number | string
 

@@ -99,13 +99,14 @@ export async function fetchApi<Path extends Paths, Method extends Methods = 'get
             k => url = url.replace(`{${k}}`, params[k])
         )
     }
-    return fetch(url, o).then(r => {
-        if (r.status === 204) {
-            return null
-        }
-        if (r.status >= 200 && r.status < 300) {
-            return r.json()
-        }
-        throw r
-    })
+    const r= await fetch(url, o)
+    if (r.status === 204) {
+        // @ts-ignore
+        return null
+    }
+    if (r.status >= 200 && r.status < 300) {
+        const json= await r.json()
+        return json
+    }
+    throw r
 }

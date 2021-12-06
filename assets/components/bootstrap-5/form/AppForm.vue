@@ -1,9 +1,12 @@
 <script lang="ts" setup>
     import type {FormField, FormValue, FormValues} from '../../../types/bootstrap-5'
-    import {defineEmits, defineProps, withDefaults} from 'vue'
+    import {defineEmits, defineProps, withDefaults, ref} from 'vue'
     import clone from 'clone'
 
-    const emit = defineEmits<{(e: 'update:values', values: FormValues): void, (e: 'submit'): void}>()
+    const form = ref<HTMLFormElement>()
+    const emit = defineEmits<{(e: 'update:values', values: FormValues): void,
+     (e: 'submit', data:FormData): void,
+     }>()
     const props = withDefaults(
         defineProps<{fields: FormField[], values?: FormValues}>(),
         {values: () => ({})}
@@ -14,19 +17,22 @@
         cloned[name] = value
         emit('update:values', cloned)
     }
+    function submit():void{
+        if(typeof form.value !== 'undefined')
+        emit('submit' , new FormData(form.value))
+    }
 </script>
 
 
 <template>
-    <form autocomplete="off" @submit.prevent="emit('submit')">
+    <form ref="form" autocomplete="off" @submit.prevent="submit">
         <AppFormGroup
             v-for="field in fields"
             :key="field.name"
             :field="field"
             :value="values[field.name]"
             @input="input"/>
-        <AppBtn class="float-end" type="submit">
-            Connexion
-        </AppBtn>
+        <slot name="buttons"> 
+        </slot>
     </form>
 </template>

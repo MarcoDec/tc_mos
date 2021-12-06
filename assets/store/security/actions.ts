@@ -28,7 +28,7 @@ export const actions = {
     async [ActionTypes.FETCH_USERS]({commit}: ActionContext, {password, username}: Login): Promise<void> {
         const user = await fetchApi('/api/login', {
             json: {password: password ?? '', username: username ?? ''},
-            method: 'post'
+            method: 'post'            
         })
         if (
             typeof user.id !== 'undefined'

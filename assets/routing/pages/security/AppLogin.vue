@@ -14,7 +14,7 @@
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
     const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.FETCH_USERS])[ActionTypes.FETCH_USERS]
 
-    async function handleClick(): Promise<void> {
+    async function handleClick(): Promise<void> {        
         await fetchUsers(formData.value)
         await router.push({name: 'home'})
     }
@@ -23,7 +23,13 @@
 <template>
     <AppRow>
         <AppCard class="bg-blue col">
-            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick"/>
+            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick">
+                <template #buttons>
+                    <AppBtn class="float-end" type="submit">
+                        Connexion
+                    </AppBtn>
+                </template>
+            </AppForm>
         </AppCard>
     </AppRow>
 </template>

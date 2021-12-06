@@ -1,28 +1,33 @@
 <script lang="ts" setup>
+    import {onMounted} from 'vue'
+    import {ActionTypes} from '../../../../store/purchase/component'
+    import type {Actions} from '../../../../store/purchase/component'
+    import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
     import type {TreeItem} from '../../../../types/tree'
 
-    const item: TreeItem = {
-        children: [
-            {
-                children: [
-                    {icon: 'file-alt', id: 2, label: 'CAB — Fil'},
-                    {id: 3, label: 'CAB — Fil'}
-                ],
-                id: 1,
-                label: 'CAB — Câbles'
-            },
-            {
-                children: [
-                    {id: 6, label: 'FIX — Agrafe'},
-                    {id: 7, label: 'FIX — Colliers'}
-                ],
-                id: 5,
-                label: 'FIX — Fixations'
-            }
-        ],
-        id: 0,
-        label: ''
+    const fields: FormField[] = [
+        {label: 'Parent', name: 'parent', type: 'text'},
+        {label: 'Code', name: 'code', type: 'text'},
+        {label: 'Nom', name: 'name',  type: 'text'},
+        {label: 'Copperable', name: 'copperable', type: 'switch'},
+        {label: 'Customs Code', name: 'customsCode', type: 'text'},
+        {label: 'file', name: 'file', type: 'file'}
+    ]
+    const formData = {
+        parent: null, code: null, name: null, copperable: false, customsCode: null, file:''
     }
+    // const addFamilies = await useNamespacedActions<Actions>('component', [ActionTypes.ADD_FAMILIES])[ActionTypes.ADD_FAMILIES]()
+
+    onMounted(async () => {
+        await useNamespacedActions<Actions>('component', [ActionTypes.LOAD_FAMILIES])[ActionTypes.LOAD_FAMILIES]()
+    });
+    const families = useNamespacedGetters('component', ['getListComponentFamiliesInfo']).getListComponentFamiliesInfo
+    console.log('families', families);
+
+    async function addFamily ():void {
+        console.log('add',formData)
+    }
+   
 </script>
 
 <template>
@@ -32,38 +37,5 @@
             Familles
         </h1>
     </AppRow>
-    <AppTreeRow :item="item">
-        <form>
-            <div class="mb-3 row">
-                <label class="col-2 form-label" for="parent">Parent</label>
-                <div class="col">
-                    <input id="parent" class="form-control"/>
-                </div>
-            </div>
-            <div class="mb-3 row">
-                <label class="col-2 form-label" for="code">Code</label>
-                <div class="col">
-                    <input id="code" class="form-control"/>
-                </div>
-            </div>
-            <div class="mb-3 row">
-                <label class="col-2 form-label" for="name">Nom</label>
-                <div class="col">
-                    <input id="name" class="form-control"/>
-                </div>
-            </div>
-            <div class="mb-3 row">
-                <label class="col-2 form-label" for="copperable">Gestion du cuivre</label>
-                <div class="col">
-                    <input id="copperable" class="form-control"/>
-                </div>
-            </div>
-            <div class="mb-3 row">
-                <label class="col-2 form-label" for="customsCode">Code douanier</label>
-                <div class="col">
-                    <input id="customsCode" class="form-control"/>
-                </div>
-            </div>
-        </form>
-    </AppTreeRow>
+    <AppTreeRow :item="families" :fields="fields" label="code" @ajout="addFamily"/>
 </template>

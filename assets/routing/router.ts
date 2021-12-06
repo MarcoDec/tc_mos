@@ -10,9 +10,9 @@ const router = createRouter({
     routes: [
         {
             component: async (): Promise<RouteComponent> => import('./pages/purchase/component/AppComponentFamilies.vue'),
-            meta: {requiresAuth: false},
+            meta: {requiresAuth: true},
             name: 'families',
-            path: '/families'
+            path: '/component/families'
         },
         {
             component: async (): Promise<RouteComponent> => import('./pages/AppHome'),
@@ -30,6 +30,7 @@ const router = createRouter({
 })
 
 router.beforeEach(to => {
+    
     if (
         to.matched.some(record => record.meta.requiresAuth && record.name !== 'login')
         && !useNamespacedGetters<Getters>(store, 'users', ['hasUser']).hasUser.value

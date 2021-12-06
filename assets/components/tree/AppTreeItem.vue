@@ -12,6 +12,6 @@
             <span class="pe-4"/>
         </slot>
         <Fa :icon="icon"/>
-        {{ item.label }}
+        {{ item.code }}-{{ item.name }}
     </span>
 </template>
