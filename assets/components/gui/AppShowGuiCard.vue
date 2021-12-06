@@ -7,6 +7,7 @@
     const props = defineProps({
         bgVariant: {required: true, type: String as PropType<BootstrapVariant>},
         height: {required: true, type: String},
+        innerWidth: {required: true, type: String},
         marginEnd: {default: '0px', type: String},
         marginTop: {default: '0px', type: String},
         width: {required: true, type: String}
@@ -20,11 +21,28 @@
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
     .gui-card {
         height: v-bind('height');
-        margin-right: v-bind('marginEnd');
         margin-top: v-bind('marginTop');
-        width: v-bind('width');
+        max-height: v-bind('height');
+        min-height: v-bind('height');
+    }
+
+    @media (max-width: 1140px) {
+        .gui-card {
+            max-width: v-bind('innerWidth');
+            min-width: v-bind('innerWidth');
+            width: v-bind('innerWidth');
+        }
+    }
+
+    @media (min-width: 1140px) {
+        .gui-card {
+            margin-right: v-bind('marginEnd');
+            max-width: v-bind('width');
+            min-width: v-bind('width');
+            width: v-bind('width');
+        }
     }
 </style>

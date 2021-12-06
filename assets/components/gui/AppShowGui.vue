@@ -8,6 +8,7 @@
     const {
         bottomHeightPx,
         endWidthPx,
+        guiBottom,
         heightPx,
         innerWidthPx,
         marginEndPx,
@@ -19,6 +20,7 @@
     } = useNamespacedGetters<Getters>('gui', [
         'bottomHeightPx',
         'endWidthPx',
+        'guiBottom',
         'heightPx',
         'innerWidthPx',
         'marginEndPx',
@@ -49,13 +51,25 @@
 </script>
 
 <template>
-    <div ref="gui" class="bg-secondary gui overflow-hidden">
-        <div class="d-flex">
-            <AppShowGuiCard :height="topHeightPx" :margin-end="marginEndPx" :width="startWidthPx" bg-variant="info"/>
-            <AppShowGuiCard :height="topHeightPx" :width="endWidthPx" bg-variant="warning" class="d-inline"/>
+    <div ref="gui" class="bg-secondary gui">
+        <div class="gui-top">
+            <AppShowGuiCard
+                :height="topHeightPx"
+                :inner-width="innerWidthPx"
+                :margin-end="marginEndPx"
+                :width="startWidthPx"
+                bg-variant="info"/>
+            <AppShowGuiCard
+                :height="topHeightPx"
+                :inner-width="innerWidthPx"
+                :width="endWidthPx"
+                bg-variant="warning"
+                class="gui-left"/>
         </div>
-        <AppShowGuiResizableCard
+        <component
+            :is="guiBottom"
             :height="bottomHeightPx"
+            :inner-width="innerWidthPx"
             :margin-top="marginTopPx"
             :width="innerWidthPx"
             bg-variant="danger"/>
@@ -64,12 +78,23 @@
 
 <style scoped>
     .gui {
-        height: v-bind('heightPx');
-        max-height: v-bind('heightPx');
         max-width: v-bind('widthPx');
-        min-height: v-bind('heightPx');
         min-width: v-bind('widthPx');
         padding: v-bind('paddingPx');
-        width: v-bind('widthPx')
+        width: v-bind('widthPx');
+    }
+
+    @media (max-width: 1140px) {
+        .gui-left {
+            margin-top: v-bind('marginTopPx') !important;
+        }
+    }
+
+    @media (min-width: 1140px) {
+        .gui {
+            height: v-bind('heightPx');
+            max-height: v-bind('heightPx');
+            min-height: v-bind('heightPx');
+        }
     }
 </style>

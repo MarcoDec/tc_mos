@@ -23,3 +23,27 @@
   margin: 0;
   padding: 2px;
 }
+
+@media (max-width: 1140px) {
+  .gui-left {
+    display: block;
+  }
+
+  .gui-top {
+    display: block;
+  }
+}
+
+@media (min-width: 1140px) {
+  .gui {
+    overflow: hidden;
+  }
+
+  .gui-left {
+    display: inline;
+  }
+
+  .gui-top {
+    display: flex;
+  }
+}

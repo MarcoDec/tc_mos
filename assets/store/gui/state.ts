@@ -6,7 +6,8 @@ export const state = {
     padding: 10,
     ratio: 0.5,
     top: 0,
-    width: 0
+    width: 0,
+    windowWidth: 0
 }
 
 export type State = typeof state
