@@ -15,7 +15,9 @@
 </script>
 
 <template>
-    <div :class="bg" class="gui-card"/>
+    <div :class="bg" class="gui-card">
+        <slot/>
+    </div>
 </template>
 
 <style scoped>

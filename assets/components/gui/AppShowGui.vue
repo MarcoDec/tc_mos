@@ -54,7 +54,11 @@
             <AppShowGuiCard :height="topHeightPx" :margin-end="marginEndPx" :width="startWidthPx" bg-variant="info"/>
             <AppShowGuiCard :height="topHeightPx" :width="endWidthPx" bg-variant="warning" class="d-inline"/>
         </div>
-        <AppShowGuiCard :height="bottomHeightPx" :margin-top="marginTopPx" :width="innerWidthPx" bg-variant="danger"/>
+        <AppShowGuiResizableCard
+            :height="bottomHeightPx"
+            :margin-top="marginTopPx"
+            :width="innerWidthPx"
+            bg-variant="danger"/>
     </div>
 </template>
 
