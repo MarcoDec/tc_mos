@@ -7,13 +7,23 @@
         defineProps<{field: FormField, value?: FormValue, size?: BootstrapSize}>(),
         {size: 'sm', value: ''}
     )
-
+    
     const sizeClass = computed(() => `form-control-${props.size}`)
     const type = computed(() => (typeof props.field.type !== 'undefined' ? props.field.type : 'text'))
 
     function input(e: Event): void {
-        if (e instanceof InputEvent)
-            emit('update:value', (e.target as HTMLInputElement).value)
+        console.log('e',e);
+        console.log('target', e.target);
+        
+        
+            const target = e.target as HTMLInputElement 
+            console.log('checked',target.checked);
+            console.log('value', target.value);
+            console.log( 'type',target.type);
+            emit('update:value', target.type === "checkbox" ? target.checked:target.value )
+
+        
+            
     }
 </script>
 
@@ -32,7 +42,7 @@
     </template>
     <template v-else-if="type === 'switch'">
         <div class="form-check form-switch">
-            <input id="flexSwitchCheckDefault" class="form-check-input" type="checkbox"/>
+            <input  class="form-check-input" type="checkbox" :checked="value" @input="input" />
         </div>
     </template>
     <template v-else-if="type === 'select'">

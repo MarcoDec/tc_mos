@@ -1,24 +1,35 @@
 <script lang="ts" setup>
     import {defineProps, ref} from 'vue'
+    import { FormValues } from '../../types/bootstrap-5'
     import type {TreeItem} from '../../types/tree'
 
-    defineProps<{item: TreeItem, fields: FormField}>()
+    defineProps<{item: TreeItem, fields: FormField , formData:FormValues}>()
 
-    const emit = defineEmits<(e: 'ajout') => void>()
+    const emit = defineEmits<{
+        (e: 'ajout'): void,
+        (e: 'update:formData',formData:FormValues):void
+        (e: 'selected', item : TreeItem):void
+    }>()
 
 
     const selected = ref<TreeItem | null>(null)
-    console.log('select', selected.value);
+
 
     
     function input(item: PointerEvent | TreeItem): void {
-        if (!(item instanceof PointerEvent))
+        if (!(item instanceof PointerEvent)){
             selected.value = item
             console.log('selected', selected.value);
+            emit('selected',item)
+        }
+            
     }
     function bascule ():void {
         selected.value = null
 
+    }
+    function update (formData:FormValues):void{
+        emit('update:formData',formData)
     }
     function addFamily ():void {
         emit('ajout')
@@ -36,7 +47,7 @@
                 <h2 class="col" >{{ selected?.code }}-{{ selected?.name }}</h2>
             </div>
            
-        <AppForm v-model:values="formData" :fields="fields" @submit="handleClick" >
+        <AppForm :values="formData" :fields="fields" @submit="addFamily" @update:values="update" >
             <template #buttons v-if="selected===null"> 
              <AppBtn variant="success"  id="btn"  @click="addFamily" >
                 <Fa icon="plus"/> Ajouter

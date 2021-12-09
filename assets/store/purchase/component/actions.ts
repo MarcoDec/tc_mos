@@ -11,7 +11,6 @@ export enum ActionTypes {
 }
 
 type ActionContext = VuexActionContext<State, RootState>
-type family = {parent: string , code: string, nom:string, copperable: boolean, customsCode: string, file:string}
 
 export const actions = {
     async [ActionTypes.LOAD_FAMILIES]({commit}: ActionContext): Promise<void> {
@@ -32,39 +31,25 @@ export const actions = {
             familyInstances[family['@id']]  = {...family, children: []}    
         }
         console.log('familyInstances',familyInstances);
-        type ComponentFamilyRelation = Omit<ComponentFamilyInstance, 'children' | 'parent'> & {
-            children: ComponentFamilyRelation[]
-            parent?: ComponentFamilyRelation | string | null
-        }
-        const relations: ComponentFamilyRelation[] = []
-        for (const family of Object.values(familyInstances)) {
-            const relation: ComponentFamilyRelation = {...family}
-            if (typeof family.parent !== 'undefined' && family.parent !== null) {
-                const parent: ComponentFamilyRelation = {...familyInstances[family.parent]}
-                parent.children.push(relation)
-                relation.parent = parent
-            } else
-                relation.parent = null
-            relations.push(relation)
-        }
-        console.log('relations',relations);
-        const mappedFamilies:ComponentFamilyRelation[] = []
-        for (const relation of relations){
-            if (relation.parent === null)
-            mappedFamilies.push(relation)
-        }
-        console.log('mappedFamilies', mappedFamilies);
-        commit(MutationTypes.SET_COMPONENT_FAMILIES, mappedFamilies)
+        commit(MutationTypes.SET_FamilyInstance, familyInstances)
+    
     },
-    async [ActionTypes.ADD_FAMILIES]({commit}: ActionContext, {parent, code, nom, copperable, customsCode, file}: family): Promise<void> {
-        // const response  = await fetchApi('/api/component-families', {
-        //     // json: {parent: parent ?? '', code: code ?? '', nom: nom ??, checked: checked ?? false ,codeDouanier: codeDouanier ?? '' },
-        //     method: 'post',
-        //     headers: {'Content-Type': 'multipart/form-data', "Authorization": 'Bearer ' + Cookies.get('token')}
-            
+    async [ActionTypes.ADD_FAMILIES]({commit}: ActionContext, payload:{parent: string , code: string, name:string, copperable: boolean, customsCode: string, file:string}): Promise<void> {
+       console.log('Copperable',payload.copperable);
+        const response  = await  fetch('http://localhost:8000/api/component-families', {
+            method: 'post',
+            headers: {'Content-Type': 'multipart/form-data', "Authorization": 'Bearer ' + Cookies.get('token')},
+            body: {
+                parent: payload.parent,
+                code: payload.code,
+                nom:payload.name,
+                copperable:payload.copperable,
+                customsCode: payload.customsCode,
+                file:payload.file
+            }
+        })
+        console.log('response',response);
 
-        // })
-        console.log('response');
     }
 }
 
