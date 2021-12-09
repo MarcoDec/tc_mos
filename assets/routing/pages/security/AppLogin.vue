@@ -32,7 +32,6 @@
 
         await fetchUsers(formData.value)
         await router.push({name: 'home'})
-
     }
 </script>
 
@@ -43,7 +42,13 @@
             {{ msgError }}
         </div>
         <AppCard class="bg-blue col">
-            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick"/>
+            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick">
+              <template #buttons>
+                <AppBtn class="float-end" type="submit">
+                  Connexion
+                </AppBtn>
+              </template>
+            </AppForm>
         </AppCard>
     </AppRow>
 </template>

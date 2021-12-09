@@ -15,6 +15,12 @@ const router = createRouter({
             path: '/'
         },
         {
+            component: async (): Promise<RouteComponent> => import('./pages/management/currency/AppCurrency.vue'),
+            meta: {requiresAuth: false},
+            name: 'currency',
+            path: '/Currency/list'
+        },
+        {
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
             meta: {requiresAuth: false},
             name: 'login',

@@ -19,9 +19,9 @@ export type FormField = {
     type?: FormInput
 }
 
-export type FormInput = 'password' | 'text'
+export type FormInput = 'password' | 'text' | 'switch'
 
-export type FormValue = number | string
+export type FormValue = number | string | boolean
 
 export type FormValues = Record<string, FormValue>
 
