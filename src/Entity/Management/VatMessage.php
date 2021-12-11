@@ -66,6 +66,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 class VatMessage extends Entity {
     use NameTrait;
 
+    public const FORCE_CHOICES = [
+        'TVA par défaut selon le pays du client' => self::FORCE_DEFAULT,
+        'Force SANS TVA' => self::FORCE_WITH,
+        'Force AVEC TVA' => self::FORCE_WITHOUT,
+    ];
+    public const FORCE_DEFAULT = 0;
+    public const FORCE_WITH = 1;
+    public const FORCE_WITHOUT = 2;
+
     #[
         ApiProperty(description: 'Message', required: true, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
         Assert\NotBlank,
