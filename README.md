@@ -33,11 +33,17 @@ exécutez la commande `composer install` pour installer les différentes dépend
 ### Base de données
 
 Les raccourcis ne sont pas encore tous présents. Il faudra donc entrer pour le moment les commandes suivantes&nbsp;:
-
+#### MySQL
 ```shell
 php bin/console doctrine:schema:update -f
 gpao:fixtures:load
 ```
+#### CouchDB
+
+````shell
+php bin/console gpao:couchdb:create
+php bin/console gpao:couchdb:schema:update
+````
 
 ### PhpStorm
 
@@ -56,6 +62,7 @@ Différents conteneurs Docker sont utilisés pour les différents services du pr
   différentes commandes Symfony&nbsp;;
 - `tconcept_gpao_phpmyadmin`&nbsp;: conteneur responsable de phpMyAdmin, pour avoir une interface de la base de données,
   accessible grâce à [http://localhost:8080](http://localhost:8080).
+- `tconcept-gpao_couchdb-server-0_1`&nbsp;: conteneur responsable de CouchDB le système de gestion de données NoSQL 
 
 ## Qualité du code
 
