@@ -2,39 +2,28 @@
 
 namespace App\Event\Couchdb\Item;
 
-use App\Entity\Entity;
 use App\Event\Couchdb\Events;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class CouchdbItemPrePersistEvent extends Event
-{
-   public const NAME=Events::prePersist;
-   private object $entity;
+class CouchdbItemPrePersistEvent extends Event {
+    public const NAME = Events::prePersist;
 
-   public function __construct(object  $entity) {
-      $this->entity=$entity;
-   }
+    private object $entity;
 
-   public function __toString():string {
-      return 'Entity ('.get_class($this->entity).') ID: '.$this->entity->getId();
-   }
+    public function __construct(object $entity) {
+        $this->entity = $entity;
+    }
 
-   /**
-    * @return object
-    */
-   public function getEntity():object
-   {
-      return $this->entity;
-   }
+    public function __toString(): string {
+       /** @phpstan-ignore-next-line  */
+        return 'Entity ('.get_class($this->entity).') ID: '.$this->entity->getId();
+    }
 
-   /**
-    * @param object  $entity
-    */
-   public function setEntity(object $entity): void
-   {
-      $this->entity = $entity;
-   }
+    public function getEntity(): object {
+        return $this->entity;
+    }
 
-
-
+    public function setEntity(object $entity): void {
+        $this->entity = $entity;
+    }
 }

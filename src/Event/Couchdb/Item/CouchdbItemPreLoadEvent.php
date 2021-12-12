@@ -2,24 +2,23 @@
 
 namespace App\Event\Couchdb\Item;
 
-use App\Entity\Entity;
 use App\Event\Couchdb\Events;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class CouchdbItemPreLoadEvent extends Event
-{
-   public const NAME=Events::preLoad;
+class CouchdbItemPreLoadEvent extends Event {
+    public const NAME = Events::preLoad;
 
-   public function __construct(protected object $entity) {
-   }
+    public function __construct(protected object $entity) {
+    }
 
-   public function getEntity():object {
-      return $this->entity;
-   }
+    #[Pure]
+ public function __toString(): string {
+       /** @phpstan-ignore-next-line  */
+     return 'Entity ('.get_class($this->entity).') ID: '.$this->entity->getId();
+ }
 
-   #[Pure] public function __toString():string {
-      return 'Entity ('.get_class($this->entity).') ID: '.$this->entity->getId();
-   }
-
+    public function getEntity(): object {
+        return $this->entity;
+    }
 }
