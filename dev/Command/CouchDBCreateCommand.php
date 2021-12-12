@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\CouchDBManager;
+use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -16,11 +17,11 @@ final class CouchDBCreateCommand extends AbstractCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
-       try {
-          $this->DBManager->createDatabase();
-       } catch (\Exception $e) {
-          echo "Plantage => ".$e->getMessage()."\n";
-       }
+        try {
+            $this->DBManager->createDatabase();
+        } catch (Exception $e) {
+            echo 'Erreur rencontrée => '.$e->getMessage()."\n";
+        }
         return 0;
     }
 }
