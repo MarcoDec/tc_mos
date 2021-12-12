@@ -1,103 +1,62 @@
 <?php
+
 namespace App\DataCollector;
 
 class CouchdbLogItem {
-   private string $detail;
-   private bool $errors;
+    public const METHOD_CREATE = 'create';
+    public const METHOD_DELETE = 'delete';
+    public const METHOD_DOCUMENT_CREATE = 'documentCreate';
+    public const METHOD_DOCUMENT_DELETE = 'documentDelete';
+    public const METHOD_DOCUMENT_READ = 'documentRead';
+    public const METHOD_DOCUMENT_UPDATE = 'documentUpdate';
+    public const METHOD_READ = 'read';
+    public const METHOD_UPDATE = 'update';
 
-   public const METHOD_CREATE='create';
-   public const METHOD_DOCUMENT_CREATE='documentCreate';
-   public const METHOD_UPDATE='update';
-   public const METHOD_DOCUMENT_UPDATE='documentUpdate';
-   public const METHOD_READ='read';
-   public const METHOD_DOCUMENT_READ='documentRead';
-   public const METHOD_DELETE='delete';
-   public const METHOD_DOCUMENT_DELETE='documentDelete';
+    private string $detail;
+    private bool $errors;
 
-   public function __construct(private string $document, private string $requestType, private string $method){
-      $this->detail="";
-      $this->errors=false;
-   }
+    public function __construct(private string $document, private string $requestType, private string $method) {
+        $this->detail = '';
+        $this->errors = false;
+    }
 
-   /**
-    * @return string
-    */
-   public function getDetail(): string
-   {
-      return $this->detail;
-   }
+    public function getDetail(): string {
+        return $this->detail;
+    }
 
-   /**
-    * @param string $detail
-    */
-   public function setDetail(string $detail): void
-   {
-      $this->detail = $detail;
-   }
+    public function getDocument(): string {
+        return $this->document;
+    }
 
-   /**
-    * @return bool
-    */
-   public function isErrors(): bool
-   {
-      return $this->errors;
-   }
+    public function getMethod(): string {
+        return $this->method;
+    }
 
-   /**
-    * @param bool $errors
-    */
-   public function setErrors(bool $errors): void
-   {
-      $this->errors = $errors;
-   }
+    public function getRequestType(): string {
+        return $this->requestType;
+    }
 
-   /**
-    * @return string
-    */
-   public function getDocument(): string
-   {
-      return $this->document;
-   }
+    public function isErrors(): bool {
+        return $this->errors;
+    }
 
-   /**
-    * @param string $document
-    */
-   public function setDocument(string $document): void
-   {
-      $this->document = $document;
-   }
+    public function setDetail(string $detail): void {
+        $this->detail = $detail;
+    }
 
-   /**
-    * @return string
-    */
-   public function getRequestType(): string
-   {
-      return $this->requestType;
-   }
+    public function setDocument(string $document): void {
+        $this->document = $document;
+    }
 
-   /**
-    * @param string $requestType
-    */
-   public function setRequestType(string $requestType): void
-   {
-      $this->requestType = $requestType;
-   }
+    public function setErrors(bool $errors): void {
+        $this->errors = $errors;
+    }
 
-   /**
-    * @return string
-    */
-   public function getMethod(): string
-   {
-      return $this->method;
-   }
+    public function setMethod(string $method): void {
+        $this->method = $method;
+    }
 
-   /**
-    * @param string $method
-    */
-   public function setMethod(string $method): void
-   {
-      $this->method = $method;
-   }
-
-
+    public function setRequestType(string $requestType): void {
+        $this->requestType = $requestType;
+    }
 }

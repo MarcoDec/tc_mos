@@ -6,68 +6,101 @@ use App\Service\CouchDBManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Throwable;
 
-class CouchdbCollector extends DataCollector
-{
+// DataCollector dans debug bar pour CouchDB
+class CouchdbCollector extends DataCollector {
+    public function __construct(private CouchDBManager $manager) {
+    }
 
-   public function __construct(private CouchDBManager $manager) {
-   }
+    /**
+     * @inheritDoc
+     */
+    public function collect(Request $request, Response $response, ?Throwable $exception = null): void {
+        $this->data['actions'] = collect($this->manager->actions)->sortKeys()->toArray();
+    }
 
    /**
-    * @inheritDoc
+    * @return array<string,CouchdbLogItem>
     */
-   public function collect(Request $request, Response $response, \Throwable $exception = null):void
-   {
-      $this->data['actions'] = collect($this->manager->actions)->sortKeys()->toArray();
-   }
+    public function getActions(): array {
+        return $this->data['actions'];
+    }
 
-   public function getActions():array {
-      return $this->data['actions'];
-   }
-
-   public function getCreateIndicator():array {
-      return $this->getIndicator(CouchdbLogItem::METHOD_CREATE);
-   }
-   public function getReadIndicator():array {
-      return $this->getIndicator(CouchdbLogItem::METHOD_READ);
-   }
-   public function getUpdateIndicator():array {
-      return $this->getIndicator(CouchdbLogItem::METHOD_UPDATE);
-   }
-   public function getDeleteIndicator():array {
-      return $this->getIndicator(CouchdbLogItem::METHOD_DELETE);
-   }
-   public function getDocumentCreateIndicator():array {
-      return $this->getIndicator(CouchdbLogItem::METHOD_DOCUMENT_CREATE);
-   }
-   public function getDocumentReadIndicator():array {
-      return $this->getIndicator(CouchdbLogItem::METHOD_DOCUMENT_READ);
-   }
-   public function getDocumentUpdateIndicator():array {
-      return $this->getIndicator(CouchdbLogItem::METHOD_DOCUMENT_UPDATE);
-   }
-   public function getDocumentDeleteIndicator():array {
-      return $this->getIndicator(CouchdbLogItem::METHOD_DOCUMENT_DELETE);
-   }
-   public function getIndicator($requestType):array {
-      $nbOk = collect($this->data['actions'])->filter(function(CouchdbLogItem $item) use ($requestType){
-         return !$item->isErrors() && $item->getRequestType()==$requestType;
-      })->count();
-      $nbKo = collect($this->data['actions'])->filter(function($item) use ($requestType){
-         return $item->isErrors() && $item->getRequestType()==$requestType;
-      })->count();
-      return ["ok"=>$nbOk, "ko"=>$nbKo];
-   }
    /**
-    * @inheritDoc
+    * @return array<string,int>
     */
-   public function getName():string
-   {
-      return self::class;
-   }
+    public function getCreateIndicator(): array {
+        return $this->getIndicator(CouchdbLogItem::METHOD_CREATE);
+    }
 
-   public function reset():void
-   {
-      $this->data = [];
-   }
+   /**
+    * @return array<string,int>
+    */
+    public function getDeleteIndicator(): array {
+        return $this->getIndicator(CouchdbLogItem::METHOD_DELETE);
+    }
+
+   /**
+    * @return array<string,int>
+    */
+    public function getDocumentCreateIndicator(): array {
+        return $this->getIndicator(CouchdbLogItem::METHOD_DOCUMENT_CREATE);
+    }
+
+   /**
+    * @return array<string,int>
+    */
+    public function getDocumentDeleteIndicator(): array {
+        return $this->getIndicator(CouchdbLogItem::METHOD_DOCUMENT_DELETE);
+    }
+
+   /**
+    * @return array<string,int>
+    */
+    public function getDocumentReadIndicator(): array {
+        return $this->getIndicator(CouchdbLogItem::METHOD_DOCUMENT_READ);
+    }
+
+   /**
+    * @return array<string,int>
+    */
+    public function getDocumentUpdateIndicator(): array {
+        return $this->getIndicator(CouchdbLogItem::METHOD_DOCUMENT_UPDATE);
+    }
+
+   /**
+    * @param string $requestType
+    * @return array<string,int>
+    */
+    public function getIndicator(string $requestType): array {
+        $nbOk = collect($this->data['actions'])->filter(static fn (CouchdbLogItem $item) => !$item->isErrors() && $item->getRequestType() == $requestType)->count();
+        $nbKo = collect($this->data['actions'])->filter(static fn ($item) => $item->isErrors() && $item->getRequestType() == $requestType)->count();
+        return ['ok' => $nbOk, 'ko' => $nbKo];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getName(): string {
+        return self::class;
+    }
+
+   /**
+    * @return array<string,int>
+    */
+    public function getReadIndicator(): array {
+        return $this->getIndicator(CouchdbLogItem::METHOD_READ);
+    }
+
+   /**
+    * @return array<string,int>
+    */
+    public function getUpdateIndicator(): array {
+        return $this->getIndicator(CouchdbLogItem::METHOD_UPDATE);
+    }
+
+    public function reset(): void {
+        $this->data = [];
+    }
 }
