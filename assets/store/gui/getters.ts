@@ -1,47 +1,51 @@
+import {LARGE_SCREEN} from '.'
 import type {State} from '.'
 
 export type Getters = {
-    bottomHeight: (state: State, computed: GettersValues) => number
-    bottomHeightPx: (state: State, computed: GettersValues) => string
-    endWidth: (state: State, computed: GettersValues) => number
-    endWidthPx: (state: State, computed: GettersValues) => string
-    guiBottom: (state: State) => string
-    heightPx: (state: State) => string
-    innerHeight: (state: State) => number
-    innerWidth: (state: State) => number
-    innerWidthPx: (state: State, computed: GettersValues) => string
-    marginEndPx: (state: State) => string
-    marginTopPx: (state: State) => string
-    marginedInnerHeight: (state: State, computed: GettersValues) => number
-    marginedInnerWidth: (state: State, computed: GettersValues) => number
-    paddingPx: (state: State) => string
-    startWidth: (state: State, computed: GettersValues) => number
-    startWidthPx: (state: State, computed: GettersValues) => string
-    topHeight: (state: State, computed: GettersValues) => number
-    topHeightPx: (state: State, computed: GettersValues) => string
-    widthPx: (state: State) => string
+    bottomHeight: (state: Readonly<State>, computed: GettersValues) => number
+    bottomHeightPx: (state: Readonly<State>, computed: GettersValues) => string
+    endWidth: (state: Readonly<State>, computed: GettersValues) => number
+    endWidthPx: (state: Readonly<State>, computed: GettersValues) => string
+    guiBottom: (state: Readonly<State>) => string
+    heightPx: (state: Readonly<State>) => string
+    innerHeight: (state: Readonly<State>) => number
+    innerWidth: (state: Readonly<State>) => number
+    innerWidthPx: (state: Readonly<State>, computed: GettersValues) => string
+    marginEndPx: (state: Readonly<State>) => string
+    marginTopPx: (state: Readonly<State>) => string
+    marginedInnerHeight: (state: Readonly<State>, computed: GettersValues) => number
+    marginedInnerWidth: (state: Readonly<State>, computed: GettersValues) => number
+    paddingPx: (state: Readonly<State>) => string
+    startWidth: (state: Readonly<State>, computed: GettersValues) => number
+    startWidthPx: (state: Readonly<State>, computed: GettersValues) => string
+    topHeight: (state: Readonly<State>, computed: GettersValues) => number
+    topHeightPx: (state: Readonly<State>, computed: GettersValues) => string
+    widthPx: (state: Readonly<State>) => string
 }
 
-type GettersValues = {
-    [key in keyof Getters]: ReturnType<Getters[key]>
+export type GettersValues = {
+    readonly [key in keyof Getters]: ReturnType<Getters[key]>
 }
+
+const INNER_PADDING = 2
+const MIDDLE = 2
 
 export const getters: Getters = {
     bottomHeight: (state, computed) => Math.round(computed.marginedInnerHeight * state.ratio),
     bottomHeightPx: (state, computed) => `${computed.bottomHeight}px`,
     endWidth: (state, computed) => Math.round(computed.marginedInnerWidth - computed.startWidth),
     endWidthPx: (state, computed) => `${computed.endWidth}px`,
-    guiBottom: state => (state.windowWidth >= 1140 ? 'AppShowGuiResizableCard' : 'AppShowGuiCard'),
+    guiBottom: state => (state.windowWidth >= LARGE_SCREEN ? 'AppShowGuiResizableCard' : 'AppShowGuiCard'),
     heightPx: state => `${state.height}px`,
-    innerHeight: state => Math.round(state.height - 2 * state.padding),
-    innerWidth: state => Math.round(state.width - 2 * state.padding),
+    innerHeight: state => Math.round(state.height - INNER_PADDING * state.padding),
+    innerWidth: state => Math.round(state.width - INNER_PADDING * state.padding),
     innerWidthPx: (state, computed) => `${computed.innerWidth}px`,
     marginEndPx: state => `${state.marginEnd}px`,
     marginTopPx: state => `${state.marginTop}px`,
     marginedInnerHeight: (state, computed) => computed.innerHeight - state.marginTop,
     marginedInnerWidth: (state, computed) => computed.innerWidth - state.marginEnd,
     paddingPx: state => `${state.padding}px`,
-    startWidth: (state, computed) => Math.round(computed.marginedInnerWidth / 2),
+    startWidth: (state, computed) => Math.round(computed.marginedInnerWidth / MIDDLE),
     startWidthPx: (state, computed) => `${computed.startWidth}px`,
     topHeight: (state, computed) => Math.round(computed.marginedInnerHeight - computed.bottomHeight),
     topHeightPx: (state, computed) => `${computed.topHeight}px`,

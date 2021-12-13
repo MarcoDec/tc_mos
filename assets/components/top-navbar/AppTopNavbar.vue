@@ -6,7 +6,7 @@
 
     const hasUser = useNamespacedGetters('users', ['hasUser']).hasUser
     const logout = useNamespacedActions<Actions>('users', [ActionTypes.LOGOUT_USERS])[ActionTypes.LOGOUT_USERS]
-    const name = useNamespacedState<State>('users', ['username']).username
+    const username = useNamespacedState<State>('users', ['username']).username
     const router = useRouter()
 
     async function onLogout(): Promise<void> {
@@ -22,7 +22,7 @@
         </AppNavbarBrand>
         <div v-if="hasUser" class="text-white">
             <Fa icon="user-circle"/>
-            {{ name }}
+            {{ username }}
             <AppBtn variant="danger" @click="onLogout">
                 <Fa icon="sign-out-alt"/>
             </AppBtn>

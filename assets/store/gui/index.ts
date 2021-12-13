@@ -1,7 +1,7 @@
 import {ActionTypes, actions} from './actions'
+import type {Getters, GettersValues} from './getters'
 import {MutationTypes, mutations} from './mutations'
 import type {Actions} from './actions'
-import type {Getters} from './getters'
 import type {Module} from 'vuex'
 import type {Mutations} from './mutations'
 import type {RootState} from '../index'
@@ -9,6 +9,9 @@ import type {State} from './state'
 import {getters} from './getters'
 import {state} from './state'
 
-export {ActionTypes, Actions, Getters, MutationTypes, Mutations, State}
+export const LARGE_SCREEN = 1140
 
-export const module: Module<State, RootState> = {actions, getters, mutations, namespaced: true, state}
+export {ActionTypes, MutationTypes}
+export type {Actions, Getters, GettersValues, Mutations, State}
+
+export const gui: Module<State, RootState> = {actions, getters, mutations, namespaced: true, state}

@@ -9,9 +9,9 @@
     )
 
     const sizeClass = computed(() => `form-control-${props.size}`)
-    const type = computed(() => (typeof props.field.type !== 'undefined' ? props.field.type : 'text'))
+    const type = computed(() => props.field.type ?? 'text')
 
-    function input(e: Event): void {
+    function input(e: Readonly<Event>): void {
         if (e instanceof InputEvent)
             emit('update:value', (e.target as HTMLInputElement).value)
     }

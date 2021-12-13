@@ -1,5 +1,4 @@
 import './app.scss'
-
 import * as components from './components'
 import {createApp, defineAsyncComponent} from 'vue'
 import App from './routing/App.vue'
@@ -15,6 +14,6 @@ const app = createApp(App as Component)
     .use(store)
     .component('Fa', defineAsyncComponent(async () => import('@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon')))
 for (const [name, component] of Object.entries(components))
-    app.component(name, component as Component)
+    app.component(name, component)
 
 app.mount('#vue')

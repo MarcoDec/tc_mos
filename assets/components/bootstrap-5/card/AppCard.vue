@@ -3,7 +3,7 @@
     import type {BootstrapVariant} from '../../../types/bootstrap-5'
 
     const props = defineProps<{bgVariant?: BootstrapVariant}>()
-    const bg = computed(() => (typeof props.bgVariant !== 'undefined' ? `bg-${props.bgVariant}` : null))
+    const bg = computed(() => (typeof props.bgVariant === 'undefined' ? null : `bg-${props.bgVariant}`))
 </script>
 
 <template>

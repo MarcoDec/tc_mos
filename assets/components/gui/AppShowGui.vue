@@ -2,9 +2,10 @@
     import type {Getters, Mutations} from '../../store/gui'
     import {onMounted, onUnmounted, ref, watchPostEffect} from 'vue'
     import {useNamespacedGetters, useNamespacedMutations} from 'vuex-composition-helpers'
+    import type {DeepReadonly} from '../../types/types'
     import {MutationTypes} from '../../store/gui'
 
-    const gui = ref<HTMLDivElement>()
+    const gui = ref<DeepReadonly<HTMLDivElement>>()
     const {
         bottomHeightPx,
         endWidthPx,

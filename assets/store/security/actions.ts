@@ -1,4 +1,5 @@
 import * as Cookies from '../../cookie'
+import type {DeepReadonly} from '../../types/types'
 import {MutationTypes} from '.'
 import type {RootState} from '../index'
 import type {State} from '.'
@@ -11,7 +12,7 @@ export enum ActionTypes {
     LOGOUT_USERS = 'LOGOUT_USERS'
 }
 
-type ActionContext = VuexActionContext<State, RootState>
+type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
 
 type Login = {username: string | null, password: string | null}
 
@@ -25,7 +26,7 @@ export const actions = {
             commit(MutationTypes.SET_USER, user.username)
         }
     },
-    async [ActionTypes.FETCH_USERS]({commit}: ActionContext, {password, username}: Login): Promise<void> {
+    async [ActionTypes.FETCH_USERS]({commit}: ActionContext, {password, username}: Readonly<Login>): Promise<void> {
         const user = await fetchApi('/api/login', {
             json: {password: password ?? '', username: username ?? ''},
             method: 'post'

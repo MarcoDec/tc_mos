@@ -6,13 +6,13 @@
 </script>
 
 <template>
-    <teleport :to="nav">
+    <Teleport :to="nav">
         <li class="nav-item" role="presentation">
             <button class="nav-link" role="tab" type="button">
                 {{ title }}
             </button>
         </li>
-    </teleport>
+    </Teleport>
 
     <div class="tab-pane">
         <slot/>
