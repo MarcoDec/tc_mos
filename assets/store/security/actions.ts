@@ -18,7 +18,7 @@ type Login = Readonly<{username: string | null, password: string | null}>
 
 export const actions = {
     async [ActionTypes.CONNECT]({commit}: ActionContext): Promise<void> {
-        if (Cookies.has('token') && Cookies.has('id')) {
+        if (Cookies.has()) {
             const id = Cookies.get('id')
             if (typeof id === 'undefined')
                 return
@@ -38,8 +38,7 @@ export const actions = {
                 && user.token !== null
                 && typeof user.username !== 'undefined'
             ) {
-                Cookies.set('id', user.id.toString())
-                Cookies.set('token', user.token)
+                Cookies.set(user.id, user.token)
                 commit(MutationTypes.SET_USER, user.username)
             }
         } catch (error: unknown) {
@@ -54,8 +53,7 @@ export const actions = {
     },
     async [ActionTypes.LOGOUT_USERS]({commit}: ActionContext): Promise<void> {
         await fetchApi('/api/logout', {method: 'post'})
-        Cookies.remove('id')
-        Cookies.remove('token')
+        Cookies.remove()
         commit(MutationTypes.SET_USER, null)
     }
 }
