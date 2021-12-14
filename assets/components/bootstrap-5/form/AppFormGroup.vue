@@ -1,19 +1,26 @@
 <script lang="ts" setup>
-    import {findField, findFieldGetter} from '../../../store/bootstrap-5/Field'
-    import {defineProps} from 'vue'
+    import type {FormField, FormValue} from '../../../types/bootstrap-5'
+    import {defineEmits, defineProps} from 'vue'
 
-    const props = defineProps<{field: string}>()
-    const {id} = findFieldGetter(props.field)
-    const {form, label, name, type} = findField(props.field)
+    const emit = defineEmits<{
+        (e: 'update:value', value: FormValue): void
+        (e: 'input', payload: {value: FormValue, name: string}): void
+    }>()
+    const props = defineProps<{field: FormField, value?: FormValue}>()
+
+    function input(value: FormValue): void {
+        emit('update:value', value)
+        emit('input', {name: props.field.name, value})
+    }
 </script>
 
 <template>
-    <AppRow css-class="mb-3">
-        <AppLabel :for="id">
-            {{ label }}
+    <AppRow class="mb-3">
+        <AppLabel>
+            {{ field.label }}
         </AppLabel>
         <AppCol>
-            <AppInput :id="id" :form="form" :name="name" :type="type"/>
+            <AppInput :field="field" :value="value" @update:value="input"/>
         </AppCol>
     </AppRow>
 </template>

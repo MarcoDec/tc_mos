@@ -1,5 +1,7 @@
-@import 'bootstrap';
+@use 'bootstrap/scss/bootstrap';
+@use 'vue3-loading-overlay/dist/vue3-loading-overlay';
 
 .bg-blue {
   background-color: #8ac2f1;
 }
+

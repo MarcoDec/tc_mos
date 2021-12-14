@@ -10,6 +10,7 @@ module.exports = {
         // https://www.npmjs.com/package/@vue/eslint-config-typescript
         '@vue/typescript/recommended'
     ],
+    ignorePatterns: ['assets/types/openapi.d.ts'],
     overrides: [{files: ['*.vue'], rules: {'@typescript-eslint/indent': 'off'}}],
     parserOptions: {
         ecmaVersion: 2021,
@@ -222,7 +223,7 @@ module.exports = {
         }],
         'vue/custom-event-name-casing': ['error', 'camelCase'],
         'vue/next-tick-style': ['error', 'promise'],
-        'vue/no-boolean-default': ['error'],
+        'vue/no-boolean-default': ['error', 'default-false'],
         'vue/no-deprecated-v-is': ['error'],
         'vue/no-empty-component-block': ['error'],
         'vue/no-export-in-script-setup': ['error'],
