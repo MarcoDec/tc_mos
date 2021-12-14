@@ -17,12 +17,16 @@ import {
 } from './components'
 import App from './routing/pages/App'
 import type {AxiosError} from 'axios'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import VueAxios from 'vue-axios'
 import axios from 'axios'
 import {createApp} from 'vue'
 import mitt from 'mitt'
 import router from './routing/router'
 import {store} from './store/store'
+import {fas} from '@fortawesome/free-solid-svg-icons'
+import {library} from '@fortawesome/fontawesome-svg-core'
+library.add(fas)
 
 const app = createApp(App)
 
@@ -59,5 +63,6 @@ app
     .component('AppNavbar', AppNavbar)
     .component('AppNavbarBrand', AppNavbarBrand)
     .component('AppRow', AppRow)
+    .component('Fa', FontAwesomeIcon)
 
 app.mount('#vue')
