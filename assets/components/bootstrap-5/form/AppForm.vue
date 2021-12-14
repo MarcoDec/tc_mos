@@ -3,19 +3,18 @@
     import {defineEmits, defineProps, withDefaults} from 'vue'
     import clone from 'clone'
 
-    const emit = defineEmits<{(e: 'update:values', values: FormValues): void, (e: 'submit'): void}>()
+    const emit = defineEmits<{(e: 'update:values', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
     const props = withDefaults(
         defineProps<{fields: FormField[], values?: FormValues}>(),
         {values: () => ({})}
     )
 
-    function input({name, value}: {value: FormValue, name: string}): void {
+    function input(value: Readonly<{value: FormValue, name: string}>): void {
         const cloned = clone(props.values)
-        cloned[name] = value
+        cloned[value.name] = value.value
         emit('update:values', cloned)
     }
 </script>
-
 
 <template>
     <form autocomplete="off" @submit.prevent="emit('submit')">
@@ -30,10 +29,3 @@
         </AppBtn>
     </form>
 </template>
-
-<style lang="scss" scoped>
-.float-end.disabled{
-  pointer-events: none;
-  cursor: default;
-}
-</style>

@@ -1,4 +1,5 @@
 import * as Cookies from '../../cookie'
+import type {DeepReadonly} from '../../types/types'
 import {MutationTypes} from '.'
 import type {RootState} from '../index'
 import type {State} from '.'
@@ -11,9 +12,9 @@ export enum ActionTypes {
     LOGOUT_USERS = 'LOGOUT_USERS'
 }
 
-type ActionContext = VuexActionContext<State, RootState>
+type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
 
-type Login = {username: string | null, password: string | null}
+type Login = Readonly<{username: string | null, password: string | null}>
 
 export const actions = {
     async [ActionTypes.CONNECT]({commit}: ActionContext): Promise<void> {
@@ -41,16 +42,13 @@ export const actions = {
                 Cookies.set('token', user.token)
                 commit(MutationTypes.SET_USER, user.username)
             }
-
         } catch (error: unknown) {
             if (error instanceof Response) {
-                const response = await error.json()
+                const response = await error.json() as string | {'hydra:description': string, 'hydra:title': string}
                 const message = typeof response === 'string' ? response : `${response['hydra:title']} : ${response['hydra:description']}`
                 commit(MutationTypes.MSG_ERROR, message)
-                commit(MutationTypes.STATUS, error.status)
+                commit(MutationTypes.CODE, error.status)
                 commit(MutationTypes.ERROR, true)
-            } else {
-                console.error(error)
             }
         }
     },

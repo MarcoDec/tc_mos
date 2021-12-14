@@ -1,9 +1,6 @@
 <script lang="ts" setup>
     import type {Actions, State} from '../../../store/security'
-    import {
-        useNamespacedActions,
-        useNamespacedState
-    } from 'vuex-composition-helpers'
+    import {useNamespacedActions, useNamespacedState} from 'vuex-composition-helpers'
     import {ActionTypes} from '../../../store/security'
     import type {FormField} from '../../../types/bootstrap-5'
     import {ref} from 'vue'
@@ -17,9 +14,10 @@
 
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
     const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.FETCH_USERS])[ActionTypes.FETCH_USERS]
-    const showError = useNamespacedState<State>('users', ['error']).error
-    const msgError = useNamespacedState<State>('users', ['msgError']).msgError
-    const status = useNamespacedState<State>('users', ['status']).status
+    const {code, error: showError, msgError}
+        = useNamespacedState<State>('users', ['code', 'error', 'msgError'])
+
+    const TIMEOUT = 1000
 
     async function handleClick(): Promise<void> {
         const loader = useLoading()
@@ -28,18 +26,17 @@
         })
         setTimeout(() => {
             loader.hide()
-        }, 1000)
+        }, TIMEOUT)
 
         await fetchUsers(formData.value)
         await router.push({name: 'home'})
-
     }
 </script>
 
 <template>
     <AppRow>
         <div v-if="showError" class="alert alert-danger" role="alert">
-            <span class="badge bg-danger">Erreur {{ status }}</span>
+            <span class="badge bg-danger">Erreur {{ code }}</span>
             {{ msgError }}
         </div>
         <AppCard class="bg-blue col">

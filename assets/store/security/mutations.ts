@@ -1,12 +1,11 @@
 import type {State} from '.'
 
 export enum MutationTypes {
+    CODE = 'CODE',
     SET_USER = 'SET_USER',
     ERROR = 'ERROR',
     LOGOUT = 'LOGOUT',
-    MSG_ERROR = 'MSG_ERROR',
-    STATUS = 'STATUS'
-
+    MSG_ERROR = 'MSG_ERROR'
 }
 
 export const mutations = {
@@ -22,10 +21,9 @@ export const mutations = {
     [MutationTypes.MSG_ERROR](state: State, msg: string): void {
         state.msgError = msg
     },
-    [MutationTypes.STATUS](state: State, status: string): void {
-        state.status = status
+    [MutationTypes.CODE](state: State, code: string): void {
+        state.code = code
     }
-
 }
 
 export type Mutations = typeof mutations

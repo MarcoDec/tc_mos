@@ -9,6 +9,7 @@ import type {State} from './state'
 import {getters} from './getters'
 import {state} from './state'
 
-export {ActionTypes, Actions, Getters, MutationTypes, Mutations, State}
+export type {Actions, Getters, Mutations, State}
+export {ActionTypes, MutationTypes}
 
-export const module: Module<State, RootState> = {actions, getters, mutations, namespaced: true, state}
+export const users: Module<State, RootState> = {actions, getters, mutations, namespaced: true, state}

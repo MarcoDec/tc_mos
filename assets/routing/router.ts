@@ -1,4 +1,4 @@
-/* eslint-disable consistent-return */
+/* eslint-disable consistent-return,@typescript-eslint/prefer-readonly-parameter-types */
 import {createRouter, createWebHistory} from 'vue-router'
 import type {Getters} from '../store/security'
 import type {RouteComponent} from 'vue-router'

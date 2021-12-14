@@ -24,14 +24,3 @@ export type FormInput = 'password' | 'text'
 export type FormValue = number | string
 
 export type FormValues = Record<string, FormValue>
-
-export type UserResponse = {
-    name: string,
-    embRoles: {
-        roles: string[]
-    },
-    username: string,
-    id: string,
-    token: string
-
-}
