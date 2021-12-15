@@ -18,5 +18,6 @@
         :margin-top="marginTop"
         :width="width">
         <hr class="resizer" @click="enableDrag" @mousedown="drag"/>
+        <slot/>
     </AppShowGuiCard>
 </template>

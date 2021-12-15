@@ -32,6 +32,14 @@
   padding: 2px;
 }
 
+.w-10 {
+  width: 10% !important;
+}
+
+.w-90 {
+  width: 90% !important;
+}
+
 @media (max-width: 1140px) {
   .gui-left {
     display: block;
