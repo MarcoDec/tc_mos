@@ -29,12 +29,10 @@ export type FormValue = number | string
 
 export type FormValues = Record<string, FormValue>
 
-export type UserResponse = {
-    name: string
-    embRoles: {
-        roles: string[]
-    }
-    username: string
+export type Tab = {
+    active: {active: boolean}
     id: string
-    token: string
+    labelledby: string
+    target: string
+    title: string
 }

@@ -59,7 +59,17 @@
                 :inner-width="innerWidthPx"
                 :margin-end="marginEndPx"
                 :width="startWidthPx"
-                bg-variant="info"/>
+                bg-variant="info">
+                <AppTabs>
+                    <AppTab id="main" active title="Général">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aliquam consequatur cum dolor
+                    </AppTab>
+                    <AppTab id="logistics" title="Logistique">
+                        dolorum, eos, error et nihil officia porro quae ullam voluptatem voluptates. Ab accusantium
+                        aperiam beatae culpa distinctio?
+                    </AppTab>
+                </AppTabs>
+            </AppShowGuiCard>
             <AppShowGuiCard
                 :height="topHeightPx"
                 :inner-width="innerWidthPx"
