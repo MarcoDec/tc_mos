@@ -22,19 +22,10 @@
     <thead class="table-dark">
         <tr>
             <th scope="col"/>
-            <th id="Actions" scope="col">
+            <th scope="col">
                 Actions
             </th>
             <AppCollectionTableHeaderfieleds :trier="trier" :fields="fields" @trier-alphabet="trierAlphabet"/>
-            <!-- <th v-for="(field, index) in fields" :key="index" scope="col" class="both sortable">
-                {{ field.label }}
-            </th> -->
         </tr>
     </thead>
 </template>
-
-<style scoped>
-#Actions{
-    width: 100px;
-}
-</style>

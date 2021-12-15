@@ -1,68 +1,28 @@
 <script lang="ts" setup>
     import type {FormField, ItemField} from '../../../types/bootstrap-5'
-
+    import {ref} from 'vue'
+    const roleuser = ref<string>('admin')
     const fields: FormField[] = [
-        {label: 'Code', name: 'code', type: 'text'},
-        {label: 'Nom', name: 'name', options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}], type: 'select'},
-        {label: 'Type', name: 'type', type: 'number'},
-        {label: 'Auto', name: 'auto', type: 'grpbutton'},
-        {label: 'Limite', name: 'limite', type: 'text'},
-        {label: 'cadence', name: 'cadence', type: 'number'},
-        {label: 'Prix', name: 'prix', type: 'number'},
-        {label: 'Temps(en ms)', name: 'Temps', type: 'date'}
+        {ajoutVisible: true, label: 'Code', name: 'code', trie: true, type: 'text', updateVisible: true},
+        {ajoutVisible: false, label: 'Nom', name: 'name', options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}], trie: true, type: 'select', updateVisible: true},
+        {ajoutVisible: true, label: 'Type', name: 'type', trie: true, type: 'number', updateVisible: true},
+        {ajoutVisible: false, label: 'Auto', name: 'auto', trie: true, type: 'boolean', updateVisible: true},
+        {ajoutVisible: true, label: 'Limite', name: 'limite', trie: false, type: 'text', updateVisible: true},
+        {ajoutVisible: false, label: 'cadence', name: 'cadence', trie: true, type: 'number', updateVisible: false},
+        {ajoutVisible: true, label: 'Prix', name: 'prix', trie: true, type: 'number', updateVisible: true},
+        {ajoutVisible: true, label: 'Temps(en ms)', name: 'Temps', trie: false, type: 'date', updateVisible: false}
     ]
-    const addRaw: FormField[] = [
-        {label: 'Code', name: 'code', type: 'text'},
-        {label: 'Nom', name: 'name', type: 'text'},
-        {label: 'Type', name: 'type', type: 'number'},
-        {label: 'Auto', name: 'auto', type: 'switch'},
-        {label: 'Limite', name: 'limite', type: 'text'},
-        {label: 'cadence', name: 'cadence', type: 'number'},
-        {label: 'Prix', name: 'prix', type: 'number'},
-        {label: 'Temps(en ms)', name: 'Temps', type: 'date'}
-    ]
-    const items: ItemField[] = [
-        {cadence: '100', code: 'AS 01', limite: 'Mise En Bornier', name: 'Mise en bornnier', prix: '', temps: '', type: ''},
-        {cadence: '100', code: 'AS 02', limite: 'Mise En Bornier', name: 'Mise en bornnier', prix: '', temps: '', type: ''}
 
+    const items: ItemField[] = [
+        {ajout: false, cadence: 100, code: 'AS 01', deletable: true, limite: 'Mise En Bornier', name: 'Mise en bornnier', prix: null, temps: null, type: null},
+        {ajout: true, cadence: 100, code: 'AS 02', deletable: false, limite: 'Mise En Bornier', name: 'Mise en bornnier', prix: null, temps: null, type: null}
     ]
 </script>
 
 <template>
     <h1>
         <Fa icon="atom"/>
-        <span id="nameInterface"> Opération</span>
+        <span> Opération</span>
     </h1>
-    <AppCollectionTable :fields="fields" :add-raw="addRaw" :items="items"/>
-    <nav id="pagination" aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#">Début</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Préc.</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Suiv.</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Fin</a>
-            </li>
-        </ul>
-    </nav>
+    <AppCollectionTable :fields="fields" :items="items" :pag="true" :user="roleuser"/>
 </template>
-
-<style scoped>
-#pagination{
-    float: right;
-}
-</style>

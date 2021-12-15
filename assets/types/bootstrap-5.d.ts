@@ -1,11 +1,13 @@
 export type ItemField = {
+    ajout:boolean
     code: string
     name: string
-    type: number
+    type: number|null
     limite: string
-    cadence: number
-    prix: number
-    temps: number
+    cadence: number|null
+    prix: number|null
+    temps: number|null
+    deletable: boolean 
 }
 
 export type BootstrapVariant =
@@ -29,5 +31,8 @@ export type FormField = {
     name: string
     type?: FormInput
     options?: FormOption[]
+    ajoutVisible: boolean
+    updateVisible: boolean
+    trie: boolean
 }
 

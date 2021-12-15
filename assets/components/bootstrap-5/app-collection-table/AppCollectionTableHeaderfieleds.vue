@@ -6,6 +6,7 @@
     const props = defineProps<{fields: FormField, trier?: string}>()
 
     console.log('pippip', props)
+
     function trierAlpha(): void {
         emit('trierAlphabet')
         console.log('emit')
@@ -15,19 +16,37 @@
 
 <template>
     <template v-if="trier === 'both'">
-        <th v-for="(field, index) in fields" :key="index" scope="col" class="both sortable" @click="trierAlpha">
-            {{ field.label }}
-        </th>
+        <template v-for="(field, index) in fields" :key="index">
+            <th v-if="field.trie" scope="col" class="both sortable" @click="trierAlpha">
+                {{ field.label }}
+            </th>
+
+            <th v-else scope="col" class="sortable" @click="trierAlpha">
+                {{ field.label }}
+            </th>
+        </template>
     </template>
     <template v-else-if="trier === 'asc'">
-        <th v-for="(field, index) in fields" :key="index" scope="col" class="asc sortable" @click="trierAlpha">
-            {{ field.label }}
-        </th>
+        <template v-for="(field, index) in fields" :key="index">
+            <th v-if="field.trie" scope="col" class="asc sortable" @click="trierAlpha">
+                {{ field.label }}
+            </th>
+
+            <th v-else scope="col" class="sortable" @click="trierAlpha">
+                {{ field.label }}
+            </th>
+        </template>
     </template>
     <template v-else>
-        <th v-for="(field, index) in fields" :key="index" scope="col" class="desc sortable" @click="trierAlpha">
-            {{ field.label }}
-        </th>
+        <template v-for="(field, index) in fields" :key="index">
+            <th v-if="field.trie" scope="col" class="desc sortable" @click="trierAlpha">
+                {{ field.label }}
+            </th>
+
+            <th v-else scope="col" class="sortable" @click="trierAlpha">
+                {{ field.label }}
+            </th>
+        </template>
     </template>
 </template>
 

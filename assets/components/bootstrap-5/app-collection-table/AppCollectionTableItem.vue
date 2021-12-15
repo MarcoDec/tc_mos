@@ -4,6 +4,7 @@
     const props = defineProps<{item: ItemField}>()
     console.log('prp', props)
 
+
     const emit = defineEmits<(e: 'update') => void>()
 
     function update(): void {
@@ -13,10 +14,10 @@
 
 <template>
     <td>
-        <button id="btn" class="btn btn-icon btn-primary btn-sm mx-2" @click="update">
+        <button v-if="!item.ajout" class="btn btn-icon btn-primary btn-sm mx-2" :disabled="item.ajout" @click="update">
             <Fa icon="pencil-alt"/>
         </button>
-        <button id="btn" class="btn btn-danger btn-icon btn-sm">
+        <button v-if="!item.deletable" class="btn btn-danger btn-icon btn-sm mx-2" :disabled="item.deletable">
             <Fa icon="trash"/>
         </button>
     </td>
@@ -25,7 +26,7 @@
     <td> {{ item.type }} </td>
     <td>
         <div class="form-check form-switch">
-            <input id="flexSwitchCheckDefault" class="form-check-input" type="checkbox"/>
+            <input class="form-check-input" type="checkbox"/>
         </div>
     </td>
     <td>{{ item.limite }}</td>

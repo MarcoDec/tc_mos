@@ -3,7 +3,8 @@
     import {defineProps, ref} from 'vue'
     import AppCollectionTableItem from './AppCollectionTableItem.vue'
     import AppCollectionTableUpdateItem from './AppCollectionTableUpdateItem.vue'
-    defineProps<{item: ItemField, addRaw: FormField}>()
+    defineProps<{item: ItemField, fields: FormField}>()
+
     const updated = ref(false)
 
     function update(): void {
@@ -18,5 +19,5 @@
 
 <template>
     <AppCollectionTableItem v-if="!updated" :item="item" @update="update"/>
-    <AppCollectionTableUpdateItem v-else :add-raw="addRaw" @annule-update="AnnuleUpdate"/>
+    <AppCollectionTableUpdateItem v-else :fields="fields" @annule-update="AnnuleUpdate"/>
 </template>

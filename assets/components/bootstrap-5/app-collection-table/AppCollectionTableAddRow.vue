@@ -1,9 +1,20 @@
 <script lang="ts" setup>
-    import {defineEmits, defineProps} from 'vue'
+    import {computed, defineEmits, defineProps} from 'vue'
     import type {FormField} from '../../../types/bootstrap-5'
+    import clone from "clone"
 
-    const props = defineProps<{addRaw: FormField}>()
+    const props = defineProps<{fields: FormField}>()
     console.log('pppppp', props)
+
+    const tabFields = computed(() => props.fields.map(element => {
+        const cloned = clone(element)
+
+        if (cloned.type === 'boolean'){
+            cloned.type = 'switch'
+        }
+        return cloned
+    }))
+    console.log('tab', tabFields)
 
     const emit = defineEmits<(e: 'close') => void>()
 
@@ -13,51 +24,32 @@
 </script>
 
 <template>
-    <tr id="addrow">
+    <tr class="addrow">
         <th scope="row" class="">
             <Fa icon="plus-circle"/>
         </th>
         <td>
-            <button id="btn" class="btn btn-icon btn-secondary btn-sm mx-2" @click="bascule">
+            <button class="btn btn-icon btn-secondary btn-sm mx-2" @click="bascule">
                 <Fa icon="filter"/>
             </button>
-            <button id="btn" class="btn btn-icon btn-sm btn-success">
+            <button class="btn btn-icon btn-sm btn-success">
                 <Fa icon="plus-circle"/>
             </button>
         </td>
-        <td v-for="raw in addRaw" :key="raw.name">
-            <AppInput :field="raw"/>
+        <td v-for="raw in tabFields" :key="raw.name">
+            <AppInput v-if="raw.ajoutVisible" :field="raw"/>
         </td>
     </tr>
 </template>
 
 <style scoped>
-#addrow{
+.addrow{
     background-color:#c9ffc1 ;
 }
-#btn{
+.btn{
     width: 24px;
     height: 24px;
     padding-left: 4px;
     padding-bottom: 24px;
-}
-#inputCode {
-    width: 160px;
-}
-
-#inputName{
-    width: 300px;
-}
-
-#inputType{
-    width: 50px;
-}
-
-#btnGroup{
-    width: 100px;
-}
-
-#inputLimite{
-    width: 500px;
 }
 </style>

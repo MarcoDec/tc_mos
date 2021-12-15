@@ -6,6 +6,7 @@
     "@types/bootstrap": "^5.1.6",
     "axios": "^0.22.0",
     "bootstrap": "^5.1.2",
+    "clone": "^2.1.2",
     "mitt": "^3.0.0",
     "vue": "^3.2.19",
     "vue-axios": "^3.3.7",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@babel/types": "^7.15.6",
+    "@types/clone": "^2.1.1",
     "@types/node": "^16.10.3",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",

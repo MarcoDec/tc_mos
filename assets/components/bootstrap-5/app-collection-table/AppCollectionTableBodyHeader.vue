@@ -1,9 +1,21 @@
 <script lang="ts" setup>
-    import {defineEmits, defineProps} from 'vue'
+    import {computed, defineEmits, defineProps} from 'vue'
     import type {FormField} from '../../../types/bootstrap-5'
+    import clone from 'clone'
 
-    const props = defineProps<{fields: FormField}>()
-    console.log('ppp', props)
+    const props = defineProps<{fields: FormField, user: string}>()
+    console.log('prrrrrrops', props)
+
+    const tabFields = computed(() => props.fields.map(element => {
+        const cloned = clone(element)
+
+        if (cloned.type === 'boolean'){
+            cloned.type = 'grpbutton'
+        }
+        return cloned
+    }))
+    console.log('tabFields', tabFields)
+
 
     const emit = defineEmits<(e: 'open') => void>()
 
@@ -13,33 +25,33 @@
 </script>
 
 <template>
-    <tr id="header">
+    <tr class="header">
         <th scope="row" class="">
             <Fa icon="filter"/>
         </th>
         <td>
-            <button id="btn" @click="ajout">
-                <Fa id="icon" icon="plus-circle"/>
+            <button v-if="user !== 'reader'" class="btngris" @click="ajout">
+                <Fa icon="plus-circle"/>
             </button>
-            <button id="btn">
-                <Fa id="icon" icon="search"/>
+            <button class="btngris">
+                <Fa icon="search"/>
             </button>
-            <button id="btntimes">
-                <Fa id="icon" icon="times"/>
+            <button class="btntimes">
+                <Fa icon="times"/>
             </button>
         </td>
 
-        <td v-for="field in fields" :key="field.name">
+        <td v-for="field in tabFields" :key="field.name">
             <AppInput :field="field"/>
         </td>
     </tr>
 </template>
 
 <style scoped>
-#header{
+.header{
     background-color: #c5c5c5 ;
 }
-#btn{
+.btngris{
     width: 24px;
     height: 24px;
     margin-left: 2px;
@@ -50,7 +62,7 @@
     padding-left: 2px;
     padding-bottom: 24px;
 }
-#btntimes{
+.btntimes{
     width: 24px;
     height: 24px;
     margin-left: 2px;
@@ -60,25 +72,5 @@
     border-color: #dc3545;
     padding-left: 4px;
     padding-bottom: 24px;
-}
-
-#inputCode {
-    width: 160px;
-}
-
-#inputName{
-    width: 300px;
-}
-
-#inputType{
-    width: 50px;
-}
-
-#btnGroup{
-    width: 100px;
-}
-
-#inputLimite{
-    width: 500px;
 }
 </style>

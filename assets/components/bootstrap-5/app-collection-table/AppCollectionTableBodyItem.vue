@@ -2,7 +2,7 @@
     import type {FormField, ItemField} from '../../../types/bootstrap-5'
     import AppCollectionTableBody from './AppCollectionTableBody.vue'
     import {defineProps} from 'vue'
-    defineProps<{items: ItemField, addRaw: FormField}>()
+    defineProps<{items: ItemField, fields: FormField}>()
 </script>
 
 <template>
@@ -10,7 +10,7 @@
         <th scope="row">
             {{ index + 1 }}
         </th>
-        <AppCollectionTableBody :item="item" :add-raw="addRaw"/>
+        <AppCollectionTableBody :item="item" :fields="fields"/>
     </tr>
 </template>
 
