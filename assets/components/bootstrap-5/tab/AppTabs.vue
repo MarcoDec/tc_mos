@@ -54,7 +54,7 @@
                 </button>
             </li>
         </ul>
-        <div class="bg-white h-90 tab-content">
+        <div class="bg-white h-90 overflow-hidden tab-content">
             <slot/>
         </div>
     </div>

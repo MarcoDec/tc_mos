@@ -27,7 +27,12 @@
 </script>
 
 <template>
-    <div :id="id" :aria-labelledby="labelledby" :class="activeClass" class="tab-pane" role="tabpanel">
+    <div
+        :id="id"
+        :aria-labelledby="labelledby"
+        :class="activeClass"
+        class="h-100 overflow-auto p-2 tab-pane"
+        role="tabpanel">
         <slot/>
     </div>
 </template>
