@@ -9,6 +9,8 @@ export type Getters = {
     guiBottom: (state: Readonly<State>) => string
     heightPx: (state: Readonly<State>) => string
     innerHeight: (state: Readonly<State>) => number
+    innerStartHeight: (state: Readonly<State>, computed: GettersValues) => number
+    innerStartHeightPx: (state: Readonly<State>, computed: GettersValues) => string
     innerWidth: (state: Readonly<State>) => number
     innerWidthPx: (state: Readonly<State>, computed: GettersValues) => string
     marginEndPx: (state: Readonly<State>) => string
@@ -38,6 +40,8 @@ export const getters: Getters = {
     guiBottom: state => (state.windowWidth >= LARGE_SCREEN ? 'AppShowGuiResizableCard' : 'AppShowGuiCard'),
     heightPx: state => `${state.height}px`,
     innerHeight: state => Math.round(state.height - INNER_PADDING * state.padding),
+    innerStartHeight: (state, computed) => computed.topHeight - INNER_PADDING * state.padding,
+    innerStartHeightPx: (state, computed) => `${computed.innerStartHeight}px`,
     innerWidth: state => Math.round(state.width - INNER_PADDING * state.padding),
     innerWidthPx: (state, computed) => `${computed.innerWidth}px`,
     marginEndPx: state => `${state.marginEnd}px`,

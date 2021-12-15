@@ -38,23 +38,24 @@
 </script>
 
 <template>
-    <ul ref="el" class="nav nav-tabs" role="tablist">
-        <li v-for="tab in tabs" :key="tab.labelledby" class="nav-item" role="presentation">
-            <button
-                :id="tab.labelledby"
-                :aria-controls="tab.id"
-                :class="tab.active"
-                :data-bs-target="tab.target"
-                class="nav-link"
-                data-bs-toggle="tab"
-                role="tab"
-                type="button">
-                {{ tab.title }}
-            </button>
-        </li>
-    </ul>
-
-    <div class="tab-content">
-        <slot/>
+    <div>
+        <ul ref="el" class="bg-white h-10 nav nav-tabs" role="tablist">
+            <li v-for="tab in tabs" :key="tab.labelledby" class="nav-item" role="presentation">
+                <button
+                    :id="tab.labelledby"
+                    :aria-controls="tab.id"
+                    :class="tab.active"
+                    :data-bs-target="tab.target"
+                    class="nav-link"
+                    data-bs-toggle="tab"
+                    role="tab"
+                    type="button">
+                    {{ tab.title }}
+                </button>
+            </li>
+        </ul>
+        <div class="bg-white h-90 tab-content">
+            <slot/>
+        </div>
     </div>
 </template>

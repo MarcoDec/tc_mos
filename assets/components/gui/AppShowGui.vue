@@ -11,6 +11,7 @@
         endWidthPx,
         guiBottom,
         heightPx,
+        innerStartHeightPx,
         innerWidthPx,
         marginEndPx,
         paddingPx,
@@ -23,6 +24,7 @@
         'endWidthPx',
         'guiBottom',
         'heightPx',
+        'innerStartHeightPx',
         'innerWidthPx',
         'marginEndPx',
         'paddingPx',
@@ -59,15 +61,11 @@
                 :inner-width="innerWidthPx"
                 :margin-end="marginEndPx"
                 :width="startWidthPx"
-                bg-variant="info">
-                <AppTabs>
-                    <AppTab id="main" active title="Général">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aliquam consequatur cum dolor
-                    </AppTab>
-                    <AppTab id="logistics" title="Logistique">
-                        dolorum, eos, error et nihil officia porro quae ullam voluptatem voluptates. Ab accusantium
-                        aperiam beatae culpa distinctio?
-                    </AppTab>
+                bg-variant="info"
+                class="gui-card">
+                <AppTabs class="gui-start-content">
+                    <AppTab id="main" active title="Général"/>
+                    <AppTab id="logistics" title="Logistique"/>
                 </AppTabs>
             </AppShowGuiCard>
             <AppShowGuiCard
@@ -75,7 +73,7 @@
                 :inner-width="innerWidthPx"
                 :width="endWidthPx"
                 bg-variant="warning"
-                class="gui-left"/>
+                class="gui-card gui-end"/>
         </div>
         <component
             :is="guiBottom"
@@ -83,7 +81,8 @@
             :inner-width="innerWidthPx"
             :margin-top="marginTopPx"
             :width="innerWidthPx"
-            bg-variant="danger"/>
+            bg-variant="danger"
+            class="gui-card"/>
     </div>
 </template>
 
@@ -95,8 +94,18 @@
         width: v-bind('widthPx');
     }
 
+    .gui-card {
+        padding: v-bind('paddingPx');
+    }
+
+    .gui-start-content {
+        height: v-bind('innerStartHeightPx');
+        max-height: v-bind('innerStartHeightPx');
+        min-height: v-bind('innerStartHeightPx');
+    }
+
     @media (max-width: 1140px) {
-        .gui-left {
+        .gui-end {
             margin-top: v-bind('marginTopPx') !important;
         }
     }
