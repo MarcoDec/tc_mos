@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {defineProps} from 'vue'
+    import {defineProps} from 'vue'
     defineProps<{to: string}>()
 </script>
 
@@ -9,5 +9,4 @@ import {defineProps} from 'vue'
     </AppRouterLink>
 </template>
 
-<style scoped>
-</style>
+

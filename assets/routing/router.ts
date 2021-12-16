@@ -14,12 +14,7 @@ const router = createRouter({
             name: 'home',
             path: '/'
         },
-        {
-            component: async (): Promise<RouteComponent> => import('../components/bootstrap-5/notification/AppNotification.vue'),
-            meta: {requiresAuth: false},
-            name: 'notification',
-            path: '/notification'
-        },
+
         {
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
             meta: {requiresAuth: false},
