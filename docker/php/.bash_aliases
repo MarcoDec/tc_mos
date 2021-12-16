@@ -1,5 +1,8 @@
 # Aliases
 
+## Composer
+alias composer:prod='composer install --no-dev --optimize-autoloader'
+
 ## PHP Coding Standards Fixer
 alias gpao:fix:code='/var/www/html/TConcept-GPAO/vendor/bin/php-cs-fixer fix'
 
@@ -16,6 +19,8 @@ alias debug:container='php /var/www/html/TConcept-GPAO/bin/console debug:contain
 alias debug:event-dispatcher='php /var/www/html/TConcept-GPAO/bin/console debug:event-dispatcher'
 alias debug:router='php /var/www/html/TConcept-GPAO/bin/console debug:router'
 ### GPAO
+alias gpao:cron='php /var/www/html/TConcept-GPAO/bin/console gpao:cron'
+alias gpao:currency:rate='php /var/www/html/TConcept-GPAO/bin/console gpao:currency:rate'
 alias gpao:database:load='php /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
 alias gpao:fixtures:load='php /var/www/html/TConcept-GPAO/bin/console gpao:fixtures:load'
 alias gpao:schema:update='php /var/www/html/TConcept-GPAO/bin/console gpao:schema:update'

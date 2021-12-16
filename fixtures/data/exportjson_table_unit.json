@@ -1,0 +1,82 @@
+[
+  {
+    "id": "1",
+    "statut": "0",
+    "unit_short_lbl": "U",
+    "unit_complete_lbl": "Pi&egrave;ce",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "2",
+    "statut": "0",
+    "unit_short_lbl": "ml",
+    "unit_complete_lbl": "M&egrave;tre lin&eacute;aire",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "3",
+    "statut": "0",
+    "unit_short_lbl": "m²",
+    "unit_complete_lbl": "m&egrave;tre carr&eacute;",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "4",
+    "statut": "0",
+    "unit_short_lbl": "g",
+    "unit_complete_lbl": "Gramme",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "5",
+    "statut": "0",
+    "unit_short_lbl": "Kg",
+    "unit_complete_lbl": "Kilo-gramme",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "6",
+    "statut": "0",
+    "unit_short_lbl": "l",
+    "unit_complete_lbl": "litre",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "7",
+    "statut": "0",
+    "unit_short_lbl": "km",
+    "unit_complete_lbl": "Kilo-m&egrave;tre",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "8",
+    "statut": "0",
+    "unit_short_lbl": "ft",
+    "unit_complete_lbl": "Pied",
+    "date_creation": "2018-04-24 00:00:00",
+    "date_modification": "2018-04-24 06:24:28",
+    "id_user_creation": null,
+    "id_user_modification": null
+  }
+]

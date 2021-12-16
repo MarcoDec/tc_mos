@@ -3,8 +3,8 @@
 namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
+use App\Entity\Family;
 use App\Entity\Interfaces\FileEntity;
-use App\Entity\Project\Product\Family;
 use App\Filesystem\FileManager;
 use Doctrine\ORM\EntityManagerInterface;
 

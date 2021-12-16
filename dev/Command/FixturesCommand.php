@@ -10,10 +10,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @method static string getDefaultName()
+ */
 final class FixturesCommand extends AbstractCommand {
-    public const GPAO_FIXTURES_COMMAND = 'gpao:fixtures:load';
     private const DOCTRINE_FIXTURES_COMMAND = 'doctrine:fixtures:load';
 
+    protected static $defaultDescription = 'Transfert les données de l\'ancien système vers le nouveau.';
+    protected static $defaultName = 'gpao:fixtures:load';
     private Configurations $configurations;
 
     public function __construct(
@@ -22,12 +26,8 @@ final class FixturesCommand extends AbstractCommand {
         private string $jsonDir,
         private string $jsonPrefix
     ) {
-        parent::__construct(self::GPAO_FIXTURES_COMMAND);
+        parent::__construct();
         $this->configurations = new Configurations($em);
-    }
-
-    protected function configure(): void {
-        $this->setDescription('Transfert les données de l\'ancien système vers le nouveau.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
@@ -54,7 +54,15 @@ final class FixturesCommand extends AbstractCommand {
             ->run(new ArrayInput(['command' => self::DOCTRINE_FIXTURES_COMMAND, '--append' => true]), $output);
         $this->endTime($output, $loadDoctrine);
 
-        return 0;
+        $loadCurrencyRate = 'Chargement des taux de change des devises';
+        $this->startTime($loadCurrencyRate);
+        $this
+            ->getApplication()
+            ->find(CurrencyRateCommand::getDefaultName())
+            ->run(new ArrayInput(['command' => CurrencyRateCommand::getDefaultName()]), $output);
+        $this->endTime($output, $loadCurrencyRate);
+
+        return self::SUCCESS;
     }
 
     private function loadConfig(): void {
@@ -80,13 +88,24 @@ final class FixturesCommand extends AbstractCommand {
         }
     }
 
+    private function loadCountries(): void {
+        if (empty($json = file_get_contents("$this->jsonDir/{$this->jsonPrefix}country.json"))) {
+            throw new RuntimeException("Invalid $json.");
+        }
+
+        $this->configurations->setCountries(json_decode($json, true));
+    }
+
     private function loadJSON(): void {
+        $this->loadCountries();
+
         if (empty($jsonDir = scandir($this->jsonDir))) {
             throw new RuntimeException("Invalid or empty dir $this->jsonDir.");
         }
 
+        $excludes = ["{$this->jsonPrefix}country.json"];
         foreach ($jsonDir as $file) {
-            if (str_ends_with($file, '.json')) {
+            if (!in_array($file, $excludes) && str_ends_with($file, '.json')) {
                 if (empty($json = file_get_contents("$this->jsonDir/$file"))) {
                     throw new RuntimeException("Invalid $json.");
                 }

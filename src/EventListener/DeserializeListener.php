@@ -5,6 +5,7 @@ namespace App\EventListener;
 use ApiPlatform\Core\EventListener\DeserializeListener as ApiDeserializeListener;
 use ApiPlatform\Core\Serializer\SerializerContextBuilderInterface;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -13,6 +14,7 @@ final class DeserializeListener {
     public function __construct(
         private ApiDeserializeListener $decorated,
         private DenormalizerInterface $denormalizer,
+        private EntityManagerInterface $em,
         private SerializerContextBuilderInterface $serializer
     ) {
     }
@@ -41,9 +43,25 @@ final class DeserializeListener {
         }
 
         $request->attributes->set('data', $this->denormalizer->denormalize(
-            data: array_merge($request->request->all(), $request->files->all()),
+            data: $this->getData($context, $request),
             type: $attrs['resource_class'],
             context: $context
         ));
+    }
+
+    /**
+     * @param mixed[] $context
+     *
+     * @return mixed[]
+     */
+    private function getData(array $context, Request $request): array {
+        $metadata = $this->em->getClassMetadata($context['resource_class']);
+        return collect(array_merge($request->request->all(), $request->files->all()))
+            ->map(static function ($value, string $name) use ($metadata) {
+                return $metadata->getTypeOfField($name) === 'boolean'
+                    ? is_string($value) && $value === 'true' || $value
+                    : $value;
+            })
+            ->all();
     }
 }

@@ -1,0 +1,2 @@
+@hourly /usr/local/bin/php /var/www/html/sf4/bin/console gpao:cron >> /var/log/cron.log 2>&1
+# This extra line makes it a valid cron
