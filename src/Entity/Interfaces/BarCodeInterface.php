@@ -5,14 +5,19 @@ namespace App\Entity\Interfaces;
 interface BarCodeInterface {
     /** @var string Préfixe du code barre des composants */
     public const COMPONENT_BAR_CODE_TABLE_NUMBER = '01';
+
     /** @var string Préfixe du code barre des employés */
     public const EMPLOYEE_BAR_CODE_TABLE_NUMBER = '03';
+
     /** @var string Préfixe du code barre des machines */
     public const ENGINE_BAR_CODE_TABLE_NUMBER = '04';
+
     /** @var string Préfix du code barre des OF */
     public const MANUFACTURING_ORDER_BAR_CODE_PREFIX = '06';
+
     /** @var string Préfixe du code barre des produits */
     public const PRODUCT_BAR_CODE_TABLE_NUMBER = '02';
+
     /** @var string Préfix du code barre des stocks */
     public const STOCK_BAR_CODE_PREFIX = '05';
 
@@ -43,5 +48,4 @@ interface BarCodeInterface {
      * @see BarCodeInterface::getBarCodeTableNumber
      */
     public function getBarCode(): string;
-
 }

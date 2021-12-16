@@ -2,21 +2,23 @@
 
 namespace App\Entity\Project\Product;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Logistics\Incoterms;
-use App\Entity\Project\Product\Family;
-use App\Entity\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Entity;
+use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Logistics\Incoterms;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\NameTrait;
-use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Traits\RefTrait;
-use App\Entity\Interfaces\BarCodeInterface;
+use DateTimeInterface;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial']),
@@ -43,7 +45,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Supprime un produit',
                 ]
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère un produit',
+                    'summary' => 'Récupère un produit',
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un produit',
@@ -55,18 +62,17 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:product', 'write:incoterms'],
+            'groups' => ['write:product', 'write:name', 'write:family', 'write:incoterms'],
             'openapi_definition_name' => 'Product-write'
         ],
         normalizationContext: [
-            'groups' => ['read:society', 'read:id', 'read:incoterms'],
+            'groups' => ['read:product', 'read:id', 'read:name', 'read:family', 'read:incoterms'],
             'openapi_definition_name' => 'Product-read'
         ],
     ),
     ORM\Entity
 ]
-class Product extends Entity implements BarCodeInterface
-{
+class Product extends Entity implements BarCodeInterface {
     use BarCodeTrait;
     use NameTrait, RefTrait {
         RefTrait::__toString insteadof NameTrait;
@@ -77,80 +83,197 @@ class Product extends Entity implements BarCodeInterface
     public const KIND_SERIES = 'Série';
     public const KIND_SPARE = 'Pièce de rechange';
     public const PRODUCT_KINDS = [
-        self::KIND_EI => self::KIND_EI,
-        self::KIND_PROTOTYPE => self::KIND_PROTOTYPE,
-        self::KIND_SERIES => self::KIND_SERIES,
-        self::KIND_SPARE => self::KIND_SPARE,
+        self::KIND_EI,
+        self::KIND_PROTOTYPE,
+        self::KIND_SERIES,
+        self::KIND_SPARE,
     ];
 
-    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'children')]
-    private ?Product $parent;
+    /**
+     * @var Collection<int, self>
+     */
+    #[
+        ApiProperty(description: 'Produits enfant'),
+        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
+    private Collection $children;
 
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: Product::class)]
-    private $children;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[
+        ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
+        ORM\Column(type: 'string', length: 255, nullable: true),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private ?string $customsCode;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $expirationDate;
+    #[
+        ApiProperty(description: 'Date d\'expériation', example: '2021-01-12 10:39:37'),
+        Assert\DateTime,
+        ORM\Column(type: 'datetime', nullable: true),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
+    private ?DateTimeInterface $expirationDate;
 
-    #[ORM\ManyToOne(targetEntity: Family::class)]
+    #[
+        ApiProperty(description: 'Famille de produit', required: false),
+        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Family::class),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
     private ?Family $family;
 
-    #[ORM\ManyToOne(targetEntity: Incoterms::class)]
-    private $incoterms;
+    #[
+        ApiProperty(description: 'Incoterms', required: true),
+        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
+        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+    ]
+    private ?Incoterms $incoterms;
 
-    #[ORM\Column(type: 'string', length: 255, name:'product_index')]
-    private string $index;
+    #[
+        ApiProperty(description: 'Indice', required: false, example: '02'),
+        Assert\Length(max: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true, name: 'product_index'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
+    private ?string $index;
 
-    #[ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'smallint')]
+    #[
+        ApiProperty(description: 'Index interne', required: true, example: '1'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'smallint'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private int $internalIndex = 1;
 
-    #[ORM\Column(options: ['default' => self::KIND_PROTOTYPE], type: 'string', length: 255)]
+    #[
+        ApiProperty(description: 'Type', example: 'Série', openapiContext: ['enum' => self::PRODUCT_KINDS]),
+        Assert\Choice(choices: self::PRODUCT_KINDS),
+        ORM\Column(options: ['default' => self::KIND_PROTOTYPE], type: 'string', length: 255),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private ?string $kind = self::KIND_PROTOTYPE;
 
-    #[ORM\Column(options: ['default' => false], type: 'boolean')]
+    #[
+        ApiProperty(description: 'Suivre le cuivre', required: false, example: true),
+        ORM\Column(options: ['default' => false], type: 'boolean'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private bool $managedCopper = false;
 
-    #[ORM\Column(options: ['default' => 3, 'unsigned' => true], type: 'smallint')]
+    #[
+        ApiProperty(description: 'Prototype maximum', required: true, example: '3'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 3, 'unsigned' => true], type: 'smallint'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private int $maxProto = 3;
 
-    #[ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint')]
+    #[
+        ApiProperty(description: 'Livraison minimum', required: true, example: '10'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private int $minDelivery = 10;
 
-    #[ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint')]
+    #[
+        ApiProperty(description: 'Production minimum', required: true, example: '10'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private int $minProd = 10;
 
-    #[ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'integer')]
+    #[
+        ApiProperty(description: 'Stock minimum', required: true, example: '12'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'integer'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private int $minStock = 0;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $notes;
+    #[
+        ApiProperty(description: 'Notes', required: false, example: 'Produit préféré des clients'),
+        Assert\Length(max: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
+    private ?string $notes = null;
 
-    #[ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'integer')]
+    #[
+        ApiProperty(description: 'Conditionnement', required: true, example: '1'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'integer'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private int $packaging = 1;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $packagingKind;
+    #[
+        ApiProperty(description: 'Notes', required: false, example: 'Type de packaging'),
+        Assert\Length(max: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
+    private ?string $packagingKind = null;
 
-    #[ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float')]
+    #[
+        ApiProperty(description: 'Unité parente', readableLink: false, example: '/api/products/3'),
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
+    private ?self $parent;
+
+    #[
+        ApiProperty(description: 'Prix', required: true, example: '4.2'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private float $price = 0;
 
-    #[ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float')]
+    #[
+        ApiProperty(description: 'Prix sans cuivre', required: true, example: '3.15'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private float $priceWithoutCopper = 0;
 
-    #[ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'smallint')]
+    #[
+        ApiProperty(description: 'Délai de production', required: true, example: '7'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'tinyint'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private int $productionDelay = 0;
 
-    #[ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float')]
+    #[
+        ApiProperty(description: 'Prix de cession des composants', required: true, example: '1.2'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private float $transfertPriceSupplies = 0;
 
-    #[ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float')]
+    #[
+        ApiProperty(description: 'Prix de cession de main d\'œuvre', required: true, example: '11.2'),
+        Assert\NotNull,
+        Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
     private float $transfertPriceWork = 0;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->children = new ArrayCollection();
     }
 
@@ -158,28 +281,7 @@ class Product extends Entity implements BarCodeInterface
         return self::PRODUCT_BAR_CODE_TABLE_NUMBER;
     }
 
-    public function getParent(): ?self
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?self $parent): self
-    {
-        $this->parent = $parent;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|self[]
-     */
-    public function getChildren(): Collection
-    {
-        return $this->children;
-    }
-
-    public function addChild(self $child): self
-    {
+    public function addChild(self $child): self {
         if (!$this->children->contains($child)) {
             $this->children[] = $child;
             $child->setParent($this);
@@ -188,8 +290,98 @@ class Product extends Entity implements BarCodeInterface
         return $this;
     }
 
-    public function removeChild(self $child): self
-    {
+    /**
+     * @return Collection<int, self>
+     */
+    public function getChildren(): Collection {
+        return $this->children;
+    }
+
+    public function getCustomsCode(): ?string {
+        return $this->customsCode;
+    }
+
+    public function getExpirationDate(): ?DateTimeInterface {
+        return $this->expirationDate;
+    }
+
+    public function getFamily(): ?Family {
+        return $this->family;
+    }
+
+    public function getIncoterms(): ?Incoterms {
+        return $this->incoterms;
+    }
+
+    public function getIndex(): ?string {
+        return $this->index;
+    }
+
+    public function getInternalIndex(): ?int {
+        return $this->internalIndex;
+    }
+
+    public function getKind(): ?string {
+        return $this->kind;
+    }
+
+    public function getManagedCopper(): ?bool {
+        return $this->managedCopper;
+    }
+
+    public function getMaxProto(): ?int {
+        return $this->maxProto;
+    }
+
+    public function getMinDelivery(): ?int {
+        return $this->minDelivery;
+    }
+
+    public function getMinProd(): ?int {
+        return $this->minProd;
+    }
+
+    public function getMinStock(): ?int {
+        return $this->minStock;
+    }
+
+    public function getNotes(): ?string {
+        return $this->notes;
+    }
+
+    public function getPackaging(): ?int {
+        return $this->packaging;
+    }
+
+    public function getPackagingKind(): ?string {
+        return $this->packagingKind;
+    }
+
+    public function getParent(): ?self {
+        return $this->parent;
+    }
+
+    public function getPrice(): ?float {
+        return $this->price;
+    }
+
+    public function getPriceWithoutCopper(): ?float {
+        return $this->priceWithoutCopper;
+    }
+
+    public function getProductionDelay(): ?int {
+        return $this->productionDelay;
+    }
+
+    public function getTransfertPriceSupplies(): ?float {
+        return $this->transfertPriceSupplies;
+    }
+
+    public function getTransfertPriceWork(): ?float {
+        return $this->transfertPriceWork;
+    }
+
+    public function removeChild(self $child): self {
         if ($this->children->removeElement($child)) {
             // set the owning side to null (unless already changed)
             if ($child->getParent() === $this) {
@@ -200,241 +392,127 @@ class Product extends Entity implements BarCodeInterface
         return $this;
     }
 
-    public function getCustomsCode(): ?string
-    {
-        return $this->customsCode;
-    }
-
-    public function setCustomsCode(?string $customsCode): self
-    {
+    public function setCustomsCode(?string $customsCode): self {
         $this->customsCode = $customsCode;
 
         return $this;
     }
 
-    public function getExpirationDate(): ?\DateTimeInterface
-    {
-        return $this->expirationDate;
-    }
-
-    public function setExpirationDate(?\DateTimeInterface $expirationDate): self
-    {
+    public function setExpirationDate(?DateTimeInterface $expirationDate): self {
         $this->expirationDate = $expirationDate;
 
         return $this;
     }
 
-    public function getFamily(): ?Family
-    {
-        return $this->family;
-    }
-
-    public function setFamily(?Family $family): self
-    {
+    public function setFamily(?Family $family): self {
         $this->family = $family;
 
         return $this;
     }
 
-    public function getIncoterms(): ?Incoterms
-    {
-        return $this->incoterms;
-    }
-
-    public function setIncoterms(?Incoterms $incoterms): self
-    {
+    public function setIncoterms(?Incoterms $incoterms): self {
         $this->incoterms = $incoterms;
 
         return $this;
     }
 
-    public function getIndex(): ?string
-    {
-        return $this->index;
-    }
-
-    public function setIndex(string $index): self
-    {
+    public function setIndex(string $index): self {
         $this->index = $index;
 
         return $this;
     }
 
-    public function getInternalIndex(): ?int
-    {
-        return $this->internalIndex;
-    }
-
-    public function setInternalIndex(int $internalIndex): self
-    {
+    public function setInternalIndex(int $internalIndex): self {
         $this->internalIndex = $internalIndex;
 
         return $this;
     }
 
-    public function getKind(): ?string
-    {
-        return $this->kind;
-    }
-
-    public function setKind(string $kind): self
-    {
+    public function setKind(string $kind): self {
         $this->kind = $kind;
 
         return $this;
     }
 
-    public function getManagedCopper(): ?bool
-    {
-        return $this->managedCopper;
-    }
-
-    public function setManagedCopper(bool $managedCopper): self
-    {
+    public function setManagedCopper(bool $managedCopper): self {
         $this->managedCopper = $managedCopper;
 
         return $this;
     }
 
-    public function getMaxProto(): ?int
-    {
-        return $this->maxProto;
-    }
-
-    public function setMaxProto(int $maxProto): self
-    {
+    public function setMaxProto(int $maxProto): self {
         $this->maxProto = $maxProto;
 
         return $this;
     }
 
-    public function getMinDelivery(): ?int
-    {
-        return $this->minDelivery;
-    }
-
-    public function setMinDelivery(int $minDelivery): self
-    {
+    public function setMinDelivery(int $minDelivery): self {
         $this->minDelivery = $minDelivery;
 
         return $this;
     }
 
-    public function getMinProd(): ?int
-    {
-        return $this->minProd;
-    }
-
-    public function setMinProd(int $minProd): self
-    {
+    public function setMinProd(int $minProd): self {
         $this->minProd = $minProd;
 
         return $this;
     }
 
-    public function getMinStock(): ?int
-    {
-        return $this->minStock;
-    }
-
-    public function setMinStock(int $minStock): self
-    {
+    public function setMinStock(int $minStock): self {
         $this->minStock = $minStock;
 
         return $this;
     }
 
-    public function getNotes(): ?string
-    {
-        return $this->notes;
-    }
-
-    public function setNotes(?string $notes): self
-    {
+    public function setNotes(?string $notes): self {
         $this->notes = $notes;
 
         return $this;
     }
 
-    public function getPackaging(): ?int
-    {
-        return $this->packaging;
-    }
-
-    public function setPackaging(int $packaging): self
-    {
+    public function setPackaging(int $packaging): self {
         $this->packaging = $packaging;
 
         return $this;
     }
 
-    public function getPackagingKind(): ?string
-    {
-        return $this->packagingKind;
-    }
-
-    public function setPackagingKind(?string $packagingKind): self
-    {
+    public function setPackagingKind(?string $packagingKind): self {
         $this->packagingKind = $packagingKind;
 
         return $this;
     }
 
-    public function getPrice(): ?float
-    {
-        return $this->price;
+    public function setParent(?self $parent): self {
+        $this->parent = $parent;
+
+        return $this;
     }
 
-    public function setPrice(float $price): self
-    {
+    public function setPrice(float $price): self {
         $this->price = $price;
 
         return $this;
     }
 
-    public function getPriceWithoutCopper(): ?float
-    {
-        return $this->priceWithoutCopper;
-    }
-
-    public function setPriceWithoutCopper(float $priceWithoutCopper): self
-    {
+    public function setPriceWithoutCopper(float $priceWithoutCopper): self {
         $this->priceWithoutCopper = $priceWithoutCopper;
 
         return $this;
     }
 
-    public function getProductionDelay(): ?int
-    {
-        return $this->productionDelay;
-    }
-
-    public function setProductionDelay(int $productionDelay): self
-    {
+    public function setProductionDelay(int $productionDelay): self {
         $this->productionDelay = $productionDelay;
 
         return $this;
     }
 
-    public function getTransfertPriceSupplies(): ?float
-    {
-        return $this->transfertPriceSupplies;
-    }
-
-    public function setTransfertPriceSupplies(float $transfertPriceSupplies): self
-    {
+    public function setTransfertPriceSupplies(float $transfertPriceSupplies): self {
         $this->transfertPriceSupplies = $transfertPriceSupplies;
 
         return $this;
     }
 
-    public function getTransfertPriceWork(): ?float
-    {
-        return $this->transfertPriceWork;
-    }
-
-    public function setTransfertPriceWork(float $transfertPriceWork): self
-    {
+    public function setTransfertPriceWork(float $transfertPriceWork): self {
         $this->transfertPriceWork = $transfertPriceWork;
 
         return $this;

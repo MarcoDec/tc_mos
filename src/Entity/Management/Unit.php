@@ -10,14 +10,19 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'name' => 'partial',
+        'code' => 'partial'
+    ]),
     ApiResource(
-        description: 'Unit',
+        description: 'Unité',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -39,7 +44,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Supprime une unité',
                 ]
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une unité',
+                    'summary' => 'Récupère une unité',
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une unité',
@@ -74,6 +84,14 @@ class Unit extends Entity {
     ]
     protected ?string $name = null;
 
+    /** @var Collection<int, self> */
+    #[
+        ApiProperty(description: 'Unités enfant'),
+        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove']),
+        Serializer\Groups(['read:unit', 'write:unit'])
+    ]
+    private Collection $children;
+
     #[
         ApiProperty(description: 'Code ', required: true, example: 'g'),
         Assert\NotBlank,
@@ -82,12 +100,60 @@ class Unit extends Entity {
     ]
     private ?string $code = null;
 
+    #[
+        ApiProperty(description: 'Unité parente', readableLink: false, example: '/api/unit/3'),
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
+        Serializer\Groups(['read:unit', 'write:unit'])
+    ]
+    private ?self $parent = null;
+
+    public function __construct() {
+        $this->children = new ArrayCollection();
+    }
+
+    public function addChild(self $child): self {
+        if (!$this->children->contains($child)) {
+            $this->children[] = $child;
+            $child->setParent($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getChildren(): Collection {
+        return $this->children;
+    }
+
     final public function getCode(): ?string {
         return $this->code;
     }
 
+    public function getParent(): ?self {
+        return $this->parent;
+    }
+
+    public function removeChild(self $child): self {
+        if ($this->children->removeElement($child)) {
+            // set the owning side to null (unless already changed)
+            if ($child->getParent() === $this) {
+                $child->setParent(null);
+            }
+        }
+
+        return $this;
+    }
+
     final public function setCode(?string $code): self {
         $this->code = $code;
+        return $this;
+    }
+
+    public function setParent(?self $parent): self {
+        $this->parent = $parent;
+
         return $this;
     }
 }
