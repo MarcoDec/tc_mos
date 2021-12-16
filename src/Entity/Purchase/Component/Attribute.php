@@ -98,6 +98,9 @@ class Attribute extends Entity {
     ]
     private ?string $description = null;
 
+    /**
+     * @var Collection<int, Family>
+     */
     #[
         ORM\ManyToMany(targetEntity: Family::class),
         Serializer\Groups(['read:family', 'write:family'])
@@ -128,7 +131,7 @@ class Attribute extends Entity {
     }
 
     /**
-     * @return Collection|Family[]
+     * @return Collection<int, Family>
      */
     public function getFamilies(): Collection {
         return $this->families;
