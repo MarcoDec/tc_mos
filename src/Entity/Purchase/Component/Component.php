@@ -47,6 +47,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère un composant',
                     'summary' => 'Récupère un composant',
                 ]
+            ],
+            'patch' => [
+                'openapi_context' => [
+                    'description' => 'Modifier un composant',
+                    'summary' => 'Modifier un composant',
+                ]
             ]
         ],
         attributes: [
@@ -79,7 +85,7 @@ class Component extends Entity {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
-        Assert\NotBlank(groups: ['write:create']),
+        Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
     ]
