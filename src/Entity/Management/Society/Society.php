@@ -7,11 +7,11 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
+use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\InvoiceTimeDue;
-use App\Entity\Traits\AddressTrait;
 use App\Entity\Traits\NameTrait;
 use App\Entity\Traits\SocietyTrait;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,13 +27,17 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Récupère les sociétés',
                     'summary' => 'Récupère les sociétés',
+                ],
+                'normalization_context' => [
+                    'groups' => 'read:society:collection'
                 ]
             ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer une société',
                     'summary' => 'Créer une société',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -41,49 +45,46 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une société',
                     'summary' => 'Supprime une société',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+            ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une société',
+                    'summary' => 'Récupère une société'
                 ]
             ],
-            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une société',
                     'summary' => 'Modifie une société',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:society', 'write:name', 'write:address', 'write:incoterms'],
+            'groups' => ['write:society', 'write:name', 'write:address', 'write:incoterms', 'write:copper'],
             'openapi_definition_name' => 'Society-write'
         ],
         normalizationContext: [
-            'groups' => ['read:society', 'read:id', 'read:name', 'read:address', 'read:incoterms', 'read:invoice-time-due'],
+            'groups' => ['read:society', 'read:id', 'read:name', 'read:address', 'read:incoterms', 'read:invoice-time-due', 'read:copper'],
             'openapi_definition_name' => 'Society-read'
         ],
     ),
     ORM\Entity
 ]
 class Society extends Entity {
-    use AddressTrait {
-        __construct as private addressContruct;
-    }
     use NameTrait;
     use SocietyTrait;
-
-    #[
-        Assert\Valid,
-        ORM\Embedded(Address::class),
-        Serializer\Groups(['read:address', 'write:address'])
-    ]
-    protected $address;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'TConcept'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:name', 'write:name', 'read:society:collection'])
     ]
     protected ?string $name = null;
 
@@ -96,6 +97,13 @@ class Society extends Entity {
     private ?string $accountingAccount;
 
     #[
+        ApiProperty(description: 'Adresse'),
+        ORM\Embedded,
+        Serializer\Groups(['read:society', 'write:society'])
+    ]
+    private Address $address;
+
+    #[
         ApiProperty(description: 'Détails bancaires', required: false, example: 'IBAN/RIB/Nom de banque'),
         ORM\Column(type: 'text'),
         Serializer\Groups(['read:society'])
@@ -103,11 +111,11 @@ class Society extends Entity {
     private ?string $bankDetails;
 
     #[
-        ApiProperty(description: 'Activer le suivi du cuivre', required: false),
-        ORM\Column(options: ['default' => false], type: 'boolean'),
+        ApiProperty(description: 'Cuivre'),
+        ORM\Embedded(Copper::class),
         Serializer\Groups(['read:society', 'write:society'])
     ]
-    private ?bool $copper = false;
+    private Copper $copper;
 
     #[
         ApiProperty(description: 'Numéro de fax', required: false, example: '02 17 21 11 11'),
@@ -177,14 +185,19 @@ class Society extends Entity {
     private ?string $web;
 
     public function __construct() {
-        $this->addressContruct();
+        $this->address = new Address();
+        $this->copper = new Copper();
+    }
+
+    public function getAddress(): Address {
+        return $this->address;
     }
 
     final public function getBankDetails(): ?string {
         return $this->bankDetails;
     }
 
-    public function getCopper(): ?bool {
+    public function getCopper(): Copper {
         return $this->copper;
     }
 
@@ -208,13 +221,19 @@ class Society extends Entity {
         return $this->web;
     }
 
+    public function setAddress(Address $address): self {
+        $this->address = $address;
+
+        return $this;
+    }
+
     final public function setBankDetails(string $bankDetails): self {
         $this->bankDetails = $bankDetails;
 
         return $this;
     }
 
-    public function setCopper(bool $copper): self {
+    public function setCopper(Copper $copper): self {
         $this->copper = $copper;
 
         return $this;

@@ -43,7 +43,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Supprime un délai de paiement des factures',
                 ]
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère un délai de paiement des factures',
+                    'summary' => 'Récupère un délai de paiement des factures'
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un délai de paiement des factures',

@@ -39,7 +39,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Supprime un message TVA',
                 ]
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère un message TVA',
+                    'summary' => 'Récupère un message TVA'
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un message TVA',
