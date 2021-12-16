@@ -9,6 +9,7 @@ export type ItemField = {
     temps: number|null
     deletable: boolean 
 }
+export type BootstrapSize = 'lg' | 'md' | 'sm'
 
 export type BootstrapVariant =
     'body'
@@ -24,6 +25,7 @@ export type BootstrapVariant =
     | 'white'
 
 export type FormInput = 'boolean' | 'button' | 'date' | 'grpbutton' | 'number' | 'password' | 'select' | 'switch' | 'text' | 'time'
+
 export type FormOption = {text: string, value: number | string}
 
 export type FormField = {
@@ -36,3 +38,6 @@ export type FormField = {
     trie: boolean
 }
 
+export type FormValue = number | string
+
+export type FormValues = Record<string, FormValue>

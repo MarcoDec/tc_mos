@@ -1,7 +1,9 @@
-import type {NavigationGuardNext, RouteComponent, RouteLocationNormalized} from 'vue-router'
-import {connect, hasUser} from '../store/store'
+/* eslint-disable consistent-return,@typescript-eslint/prefer-readonly-parameter-types */
 import {createRouter, createWebHistory} from 'vue-router'
-import {initUser} from '../store/security/User'
+import type {Getters} from '../store/security'
+import type {RouteComponent} from 'vue-router'
+import store from '../store'
+import {useNamespacedGetters} from 'vuex-composition-helpers'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -14,6 +16,7 @@ const router = createRouter({
         },
         {
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
+            meta: {requiresAuth: false},
             name: 'login',
             path: '/login'
         },
@@ -25,16 +28,12 @@ const router = createRouter({
     ]
 })
 
-router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext): Promise<void> => {
-    if (to.matched.some(record => record.meta.requiresAuth) && !hasUser().value) {
-        const user = await initUser()
-        if (user === null) {
-            next({name: 'login'})
-            return
-        }
-        connect(user)
-    }
-    next()
+router.beforeEach(to => {
+    if (
+        to.matched.some(record => record.meta.requiresAuth && record.name !== 'login')
+        && !useNamespacedGetters<Getters>(store, 'users', ['hasUser']).hasUser.value
+    )
+        return {name: 'login'}
 })
 
 export default router

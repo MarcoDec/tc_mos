@@ -1,4 +1,5 @@
-@import "node_modules/bootstrap/scss/bootstrap";
+@use 'bootstrap/scss/bootstrap';
+@use 'vue3-loading-overlay/dist/vue3-loading-overlay';
 
 .bg-blue {
   background-color: #8ac2f1;
@@ -21,3 +22,4 @@
 .both {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC");
 }
+
