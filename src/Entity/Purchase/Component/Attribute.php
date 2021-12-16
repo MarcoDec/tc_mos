@@ -2,22 +2,20 @@
 
 namespace App\Entity\Purchase\Component;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Purchase\Component\Family;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Entity;
 use App\Entity\Management\Unit;
+use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiProperty;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use App\Entity\Traits\NameTrait;
-
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
@@ -81,8 +79,7 @@ use App\Entity\Traits\NameTrait;
     ORM\Entity,
     ORM\Table(name: 'component_attribute'),
 ]
-class Attribute extends Entity
-{
+class Attribute extends Entity {
     use NameTrait;
 
     #[
@@ -92,7 +89,7 @@ class Attribute extends Entity
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
-    
+
     #[
         ApiProperty(description: 'Nom', required: false, example: 'Longueur de l\'embout'),
         Assert\Length(min: 3, max: 255),
@@ -105,7 +102,7 @@ class Attribute extends Entity
         ORM\ManyToMany(targetEntity: Family::class),
         Serializer\Groups(['read:family', 'write:family'])
     ]
-    private $families;
+    private Collection $families;
 
     #[
         ApiProperty(description: 'Unité', required: false, readableLink: false, example: '/api/units/7'),
@@ -114,33 +111,11 @@ class Attribute extends Entity
     ]
     private ?Unit $unit;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->families = new ArrayCollection();
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Family[]
-     */
-    public function getFamilies(): Collection
-    {
-        return $this->families;
-    }
-
-    public function addFamily(Family $family): self
-    {
+    public function addFamily(Family $family): self {
         if (!$this->families->contains($family)) {
             $this->families[] = $family;
         }
@@ -148,20 +123,34 @@ class Attribute extends Entity
         return $this;
     }
 
-    public function removeFamily(Family $family): self
-    {
+    public function getDescription(): ?string {
+        return $this->description;
+    }
+
+    /**
+     * @return Collection|Family[]
+     */
+    public function getFamilies(): Collection {
+        return $this->families;
+    }
+
+    public function getUnit(): ?Unit {
+        return $this->unit;
+    }
+
+    public function removeFamily(Family $family): self {
         $this->families->removeElement($family);
 
         return $this;
     }
 
-    public function getUnit(): ?Unit
-    {
-        return $this->unit;
+    public function setDescription(?string $description): self {
+        $this->description = $description;
+
+        return $this;
     }
 
-    public function setUnit(?Unit $unit): self
-    {
+    public function setUnit(?Unit $unit): self {
         $this->unit = $unit;
 
         return $this;
