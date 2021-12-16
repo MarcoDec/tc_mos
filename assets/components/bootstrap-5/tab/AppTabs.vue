@@ -3,11 +3,17 @@
     import {Tab as BTab} from 'bootstrap'
     import type {Tab} from '../../../types/bootstrap-5'
 
-    const props = defineProps({vertical: {required: false, type: Boolean}})
+    const props = defineProps({
+        iconSwitch: {required: false, type: Boolean},
+        id: {required: true, type: String},
+        vertical: {required: false, type: Boolean}
+    })
 
     const bTab = ref<BTab | null>(null)
-    const el = ref<HTMLUListElement>()
     const divFlex = computed(() => `flex-${props.vertical ? 'row' : 'column'}`)
+    const el = ref<HTMLUListElement>()
+    const iconMode = ref(false)
+    const iconSwitchId = computed(() => `${props.id}-icon-switch`)
     const tabs = ref<Tab[]>([])
     const tabsSize = computed(() => `${props.vertical ? 'w' : 'h'}-90`)
     const ulCss = computed(() => `flex-${props.vertical ? 'column' : 'row'} ${props.vertical ? 'w' : 'h'}-10`)
@@ -43,21 +49,18 @@
 </script>
 
 <template>
-    <div :class="divFlex" class="d-flex">
+    <div :id="id" :class="divFlex" class="d-flex">
         <ul :class="ulCss" class="bg-white d-flex nav nav-tabs" role="tablist">
-            <li v-for="tab in tabs" :key="tab.labelledby" class="nav-item" role="presentation">
-                <button
-                    :id="tab.labelledby"
-                    :aria-controls="tab.id"
-                    :class="tab.active"
-                    :data-bs-target="tab.target"
-                    class="nav-link"
-                    data-bs-toggle="tab"
-                    role="tab"
-                    type="button">
-                    {{ tab.title }}
-                </button>
+            <li v-show="iconSwitch" class="form-check form-switch nav-item" role="presentation">
+                <input :id="iconSwitchId" v-model="iconMode" class="form-check-input" type="checkbox"/>
+                <label :for="iconSwitchId" class="form-check-label">
+                    <Fa icon="icons"/>
+                    <template v-if="!iconMode">
+                        Icône
+                    </template>
+                </label>
             </li>
+            <AppTabBtn v-for="tab in tabs" :key="tab.labelledby" :icon="iconMode" :tab="tab"/>
         </ul>
         <div :class="tabsSize" class="bg-white overflow-hidden tab-content">
             <slot/>

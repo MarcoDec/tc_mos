@@ -31,6 +31,7 @@ export type FormValues = Record<string, FormValue>
 
 export type Tab = {
     active: {active: boolean}
+    icon: string
     id: string
     labelledby: string
     target: string

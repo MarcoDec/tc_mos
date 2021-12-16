@@ -65,60 +65,14 @@
                 :width="startWidthPx"
                 bg-variant="info"
                 class="gui-card">
-                <AppTabs class="gui-start-content">
-                    <AppTab id="main" active title="Général">
-                        <div>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur dolores magnam
-                            temporibus? Dicta ducimus esse excepturi id magnam obcaecati saepe similique ullam veritatis
-                            voluptates! Animi laborum neque numquam saepe sunt.
-                        </div>
-                        <div>
-                            Autem beatae dolor doloremque error eum eveniet ex iste laudantium maiores numquam odio
-                            pariatur perferendis, quae quam, qui quibusdam quo sequi similique sunt ullam. Explicabo
-                            iure necessitatibus nisi saepe sequi!
-                        </div>
-                        <div>
-                            Architecto, at commodi consectetur ea fugit, harum id illo ipsum labore laboriosam officiis
-                            repellendus suscipit, unde. Distinctio et eum fuga fugit harum nostrum quae quaerat, saepe
-                            totam veritatis. Consequatur, vero!
-                        </div>
-                        <div>
-                            Alias animi commodi cumque, dolorem ea error fugiat ipsam nam, neque odio odit officiis
-                            recusandae sed tenetur ut, veniam voluptatem. Ad, delectus, possimus! Cum earum eligendi
-                            inventore laborum maiores sapiente.
-                        </div>
-                        <div>
-                            Adipisci consequuntur, cumque enim expedita nulla obcaecati officia ullam! At, eum eveniet
-                            minus officiis optio placeat sequi velit? Consequuntur deleniti dolorem expedita iusto
-                            laudantium officia omnis perspiciatis ratione rerum veritatis?
-                        </div>
-                        <div>
-                            Ab aliquam doloremque esse id maxime nam quaerat repudiandae. Asperiores commodi
-                            consequatur delectus dolor, dolorem doloremque dolorum eius, esse excepturi explicabo
-                            laudantium libero pariatur, porro quae reiciendis vero voluptas voluptatibus.
-                        </div>
-                        <div>
-                            Aliquam aliquid blanditiis cupiditate dolorem doloribus dolorum ducimus eaque eligendi enim
-                            eos ex facere fuga in iste itaque iure libero magni modi non quaerat quis quos, rem tenetur
-                            ullam voluptate.
-                        </div>
-                        <div>
-                            Aliquam assumenda blanditiis consequuntur cum deserunt doloremque eum ex, inventore laborum
-                            molestias mollitia totam unde vel voluptate voluptatibus. Animi culpa dolore fugiat
-                            laboriosam magni nemo odit perspiciatis placeat provident suscipit.
-                        </div>
-                        <div>
-                            Aperiam blanditiis ducimus eveniet inventore minima mollitia obcaecati, quis quo
-                            reprehenderit tempore. Adipisci aliquid cupiditate doloribus harum laboriosam nesciunt,
-                            nulla, quas quis, rem soluta suscipit veniam! Atque perferendis quasi quis.
-                        </div>
-                        <div>
-                            Accusamus alias, aperiam architecto at cum cumque cupiditate ea eaque earum eius id,
-                            incidunt labore laudantium, modi natus nobis nostrum omnis possimus quas quasi quod
-                            recusandae tempora unde vero vitae?
-                        </div>
-                    </AppTab>
-                    <AppTab id="logistics" title="Logistique"/>
+                <AppTabs id="gui-start" class="gui-start-content">
+                    <AppTab id="gui-start-main" active icon="bars" title="Généralités"/>
+                    <AppTab id="gui-start-files" icon="folder" title="Fichiers"/>
+                    <AppTab id="gui-start-quality" icon="certificate" title="Qualité"/>
+                    <AppTab id="gui-start-purchase-logistics" icon="boxes" title="Achat/Logistique"/>
+                    <AppTab id="gui-start-accounting" icon="file-invoice-dollar" title="Comptabilité"/>
+                    <AppTab id="gui-start-addresses" icon="map-marked-alt" title="Adresses"/>
+                    <AppTab id="gui-start-contacts" icon="address-card" title="Contacts"/>
                 </AppTabs>
             </AppShowGuiCard>
             <AppShowGuiCard
@@ -136,60 +90,10 @@
             :width="innerWidthPx"
             bg-variant="danger"
             class="gui-card">
-            <AppTabs class="gui-bottom-content" vertical>
-                <AppTab id="bottom-main" active title="Général">
-                    <div>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur dolores magnam
-                        temporibus? Dicta ducimus esse excepturi id magnam obcaecati saepe similique ullam veritatis
-                        voluptates! Animi laborum neque numquam saepe sunt.
-                    </div>
-                    <div>
-                        Autem beatae dolor doloremque error eum eveniet ex iste laudantium maiores numquam odio
-                        pariatur perferendis, quae quam, qui quibusdam quo sequi similique sunt ullam. Explicabo
-                        iure necessitatibus nisi saepe sequi!
-                    </div>
-                    <div>
-                        Architecto, at commodi consectetur ea fugit, harum id illo ipsum labore laboriosam officiis
-                        repellendus suscipit, unde. Distinctio et eum fuga fugit harum nostrum quae quaerat, saepe
-                        totam veritatis. Consequatur, vero!
-                    </div>
-                    <div>
-                        Alias animi commodi cumque, dolorem ea error fugiat ipsam nam, neque odio odit officiis
-                        recusandae sed tenetur ut, veniam voluptatem. Ad, delectus, possimus! Cum earum eligendi
-                        inventore laborum maiores sapiente.
-                    </div>
-                    <div>
-                        Adipisci consequuntur, cumque enim expedita nulla obcaecati officia ullam! At, eum eveniet
-                        minus officiis optio placeat sequi velit? Consequuntur deleniti dolorem expedita iusto
-                        laudantium officia omnis perspiciatis ratione rerum veritatis?
-                    </div>
-                    <div>
-                        Ab aliquam doloremque esse id maxime nam quaerat repudiandae. Asperiores commodi
-                        consequatur delectus dolor, dolorem doloremque dolorum eius, esse excepturi explicabo
-                        laudantium libero pariatur, porro quae reiciendis vero voluptas voluptatibus.
-                    </div>
-                    <div>
-                        Aliquam aliquid blanditiis cupiditate dolorem doloribus dolorum ducimus eaque eligendi enim
-                        eos ex facere fuga in iste itaque iure libero magni modi non quaerat quis quos, rem tenetur
-                        ullam voluptate.
-                    </div>
-                    <div>
-                        Aliquam assumenda blanditiis consequuntur cum deserunt doloremque eum ex, inventore laborum
-                        molestias mollitia totam unde vel voluptate voluptatibus. Animi culpa dolore fugiat
-                        laboriosam magni nemo odit perspiciatis placeat provident suscipit.
-                    </div>
-                    <div>
-                        Aperiam blanditiis ducimus eveniet inventore minima mollitia obcaecati, quis quo
-                        reprehenderit tempore. Adipisci aliquid cupiditate doloribus harum laboriosam nesciunt,
-                        nulla, quas quis, rem soluta suscipit veniam! Atque perferendis quasi quis.
-                    </div>
-                    <div>
-                        Accusamus alias, aperiam architecto at cum cumque cupiditate ea eaque earum eius id,
-                        incidunt labore laudantium, modi natus nobis nostrum omnis possimus quas quasi quod
-                        recusandae tempora unde vero vitae?
-                    </div>
-                </AppTab>
-                <AppTab id="bottom-logistics" title="Logistique"/>
+            <AppTabs id="gui-bottom" class="gui-bottom-content" icon-switch vertical>
+                <AppTab id="gui-bottom-components" active icon="puzzle-piece" title="Fournitures"/>
+                <AppTab id="gui-bottom-receipts" icon="receipt" title="Réceptions"/>
+                <AppTab id="gui-bottom-orders" icon="shopping-cart" title="Commandes"/>
             </AppTabs>
         </component>
     </div>
