@@ -5,6 +5,7 @@ namespace App\Entity\Management\Society;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Copper;
@@ -20,6 +21,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(OrderFilter::class, properties: [
+        'name',
+    ]),
     ApiResource(
         description: 'Société',
         collectionOperations: [
