@@ -2,21 +2,71 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Attribute\Couchdb\Abstract\Fetch;
 use App\Attribute\Couchdb\Document;
 use App\Attribute\Couchdb\ORM\ManyToOne;
 use App\Entity\Hr\Employee\Employee;
+use DateTime;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
-#[Document]
+#[
+   Document,
+   ApiResource(
+      collectionOperations: [
+         'get'
+      ],
+      itemOperations: ['get'],
+      paginationClientEnabled: true
+   )
+]
 class Notification {
-    public string $category;
-    public int $id;
-    public bool $read;
-    public string $subject;
+   #[
+      ApiProperty(
+         description: "Notification category"
+      ),
+      Length(min: 2),
+      NotBlank()
+      ]
+    private string $category;
+   #[
+      ApiProperty(
+         description: "Notification unique identifier",
+         identifier: true
+      )]
+    private int $id;
+   #[
+      ApiProperty(
+         description: "if the notification is read then `true` else set to `false`"
+      )]
+    private bool $read;
+   #[
+      ApiProperty(
+         description: "Main notification content"
+      ),
+      Length(min: 3),
+      NotBlank()
+   ]
+    private string $subject;
+
+   #[ApiProperty(
+      description: "Datetime when the notification has been created"
+   ),
+      \Symfony\Component\Validator\Constraints\DateTime()
+   ]
+   private DateTime $creationDatetime;
+
+   #[ApiProperty(
+      description: "Datetime when the notification has been read by the user"
+   )]
+   private DateTime $readDatetime;
+
 
     #[ManyToOne(Employee::class, Fetch::LAZY)]
-   public Employee $user;
+   private Employee $user;
 
     public function __construct() {
     }
@@ -98,4 +148,38 @@ class Notification {
     public function setUser(Employee $user): void {
         $this->user = $user;
     }
+
+   /**
+    * @return DateTime
+    */
+   public function getCreationDatetime(): DateTime
+   {
+      return $this->creationDatetime;
+   }
+
+   /**
+    * @param DateTime $creationDatetime
+    */
+   public function setCreationDatetime(DateTime $creationDatetime): void
+   {
+      $this->creationDatetime = $creationDatetime;
+   }
+
+   /**
+    * @return DateTime
+    */
+   public function getReadDatetime(): DateTime
+   {
+      return $this->readDatetime;
+   }
+
+   /**
+    * @param DateTime $readDatetime
+    */
+   public function setReadDatetime(DateTime $readDatetime): void
+   {
+      $this->readDatetime = $readDatetime;
+   }
+
+
 }

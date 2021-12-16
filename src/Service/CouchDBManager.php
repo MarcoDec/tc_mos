@@ -21,30 +21,52 @@ use Doctrine\CouchDB\CouchDBClient;
 use Doctrine\CouchDB\HTTP\HTTPException;
 use Doctrine\CouchDB\HTTP\Response;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Exception;
 use HaydenPierce\ClassFinder\ClassFinder;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class CouchDBManager {
    /**
     * @var array<string,CouchdbLogItem>
     */
    public array $actions;
+   /**
+    * @var CouchDBClient
+    */
    private CouchDBClient $client;
    /**
     * @var ArrayCollection<int,CouchdbDocumentEntity>
     */
    private ArrayCollection $documents;
 
-    public function __construct(private string $couchUrl, private string $couchDBName, private EventDispatcherInterface $eventDispatcher, private LoggerInterface $logger, private EntityManagerInterface $entityManager) {
+   /**
+    * @param string $couchUrl
+    * @param string $couchDBName
+    * @param EventDispatcherInterface $eventDispatcher
+    * @param LoggerInterface $logger
+    * @param EntityManagerInterface $entityManager
+    * @param CacheInterface $cache
+    */
+    public function __construct(private string $couchUrl,
+                                private string $couchDBName,
+                                private EventDispatcherInterface $eventDispatcher,
+                                private LoggerInterface $logger,
+                                private EntityManagerInterface $entityManager,
+                                private CacheInterface $cache
+
+    ) {
         $this->init();
         $this->documents = new ArrayCollection();
     }
 
+   /**
+    * @return Response
+    */
     public function allDocs(): Response {
         $couchLog = new CouchdbLogItem('all documents', 'allDocs', __METHOD__);
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
@@ -76,19 +98,24 @@ class CouchDBManager {
     */
     public function documentCreate(array $content): ?CouchdbDocumentEntity {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
-        $couchLog = new CouchdbLogItem($content['id'], CouchdbLogItem::METHOD_DOCUMENT_CREATE, __METHOD__);
+        $couchLog = new CouchdbLogItem($content['_id'], CouchdbLogItem::METHOD_DOCUMENT_CREATE, __METHOD__);
         try {
-            $id_rev = $this->client->postDocument($content);
+           $id_rev=$this->client->postDocument($content);
            /** @phpstan-ignore-next-line */
             $couchLog->setDetail('Document '.$id_rev[0].' created ('.$id_rev[1].')');
             $this->actions[$time] = $couchLog;
             /** @phpstan-ignore-next-line  */
-            return $this->documentRead($id_rev[0]);
+            return $this->documentRead($id_rev[0],true);
         } catch (Exception $e) {
             $couchLog->setDetail($e->getMessage());
             $couchLog->setErrors(true);
             $this->actions[$time] = $couchLog;
             return null;
+        } catch (InvalidArgumentException $e) {
+           $couchLog->setDetail($e->getMessage());
+           $couchLog->setErrors(true);
+           $this->actions[$time] = $couchLog;
+           return null;
         }
     }
 
@@ -165,17 +192,24 @@ class CouchDBManager {
     * Charge un document existant.
     *
     * @param string $id
+    * @param bool $forceCacheUpdate
     * @return CouchdbDocumentEntity|null
     */
-    public function documentRead(string $id): ?CouchdbDocumentEntity {
+    public function documentRead(string $id, bool $forceCacheUpdate=false): ?CouchdbDocumentEntity {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
         $couchLog = new CouchdbLogItem($id, CouchdbLogItem::METHOD_DOCUMENT_READ, __METHOD__);
         try {
-            $coudbDoc = new CouchdbDocumentEntity($this->client->findDocument($id));
+           if ($forceCacheUpdate) { //Si on force l'update du cache alors on supprime le cache avant de le recharger
+              $this->cache->delete(CouchdbDocumentEntity::getName($id));
+           }
+           //Recherche l'élément dans le cache et le récupère si présent, sinon le crée
+           $coudbDoc=$this->cache->get(CouchdbDocumentEntity::getName($id), function() use ($id){
+              return new CouchdbDocumentEntity($this->client->findDocument($id));
+           });
             $couchLog->setDetail('Document '.$id.' loaded');
             $this->actions[$time] = $couchLog;
             return $coudbDoc;
-        } catch (Exception $e) {
+        } catch (Exception|InvalidArgumentException $e) {
             $couchLog->setDetail($e->getMessage());
             $couchLog->setErrors(true);
             $this->actions[$time] = $couchLog;
@@ -194,9 +228,15 @@ class CouchDBManager {
         $couchLog = new CouchdbLogItem($couchdbDocument->getId(), CouchdbLogItem::METHOD_DOCUMENT_UPDATE, __METHOD__);
         $this->logger->info(__METHOD__);
         try {
+           //Suppression du cache
+           $this->cache->delete(CouchdbDocumentEntity::getName($couchdbDocument->getId()));
             [$id, $rev] = $this->client->putDocument(['content' => $couchdbDocument->getContent()], $couchdbDocument->getId(), $couchdbDocument->getRev());
             $couchLog->setDetail('Document '.$id.' updated');
             $this->actions[$time] = $couchLog;
+            //Mise à jour du cache
+           $this->cache->get(CouchdbDocumentEntity::getName($id), function() use ($couchdbDocument) {
+              return $couchdbDocument;
+           });
             return $couchdbDocument;
         } catch (Exception $e) {
             $couchLog->setDetail($e->getMessage());
@@ -226,6 +266,8 @@ class CouchDBManager {
             $couchLog->setErrors(true);
         }
         $this->actions[$time] = $couchLog;
+        echo __METHOD__."filteredClass\n";
+        echo print_r($filteredClass, true);
         return $filteredClass;
     }
 
@@ -358,8 +400,7 @@ class CouchDBManager {
             $content = $couchdbDoc->getContent();
             // 3. Récupération de l'item
             $item = $couchdbDoc->getItem($id);
-            if (method_exists($entity,'getId')) $couchLog->setDetail(__METHOD__.' Document => '.$class.' item => '.$entity->getId());
-            else throw new Exception("la methode getId() pour la classe ".$class." n'existe pas");
+            $couchLog->setDetail(__METHOD__.' Document => '.$class.' item => '.$id);
             $this->actions[$time] = $couchLog;
             return $item;
         } catch (Exception $e) {
@@ -412,4 +453,27 @@ class CouchDBManager {
         ]);
         $this->actions = [];
     }
+
+   /**
+    * @param array $itemArray
+    * @param string $className
+    * @return mixed
+    * @throws ReflectionException
+    */
+   public function convertArrayToEntity(array $itemArray, string $className): mixed {
+      $entity = new $className();
+      $refEntity = new \ReflectionObject($entity);
+      $reflectionClass = new \ReflectionClass($className);
+      $arrayProperties = array_keys($itemArray);
+      foreach ($arrayProperties as $arrayProperty) {
+         foreach ($reflectionClass->getProperties() as $property) {
+            if ($property->getName()==$arrayProperty) {
+               $refProperty = $refEntity->getProperty($property->getName());
+               $refProperty->setAccessible(true);
+               $refProperty->setValue($itemArray[$property->getName()]);
+            }
+         }
+      }
+      return $entity;
+   }
 }

@@ -79,4 +79,12 @@ class Document {
         $this->rev = $rev;
         return $this;
     }
+
+   /**
+    * @param $id
+    * @return string
+    */
+    public static function getName($id):string {
+       return "couchdb_document_".md5($id);
+    }
 }

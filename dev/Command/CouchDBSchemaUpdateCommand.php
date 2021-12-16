@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Couchdb\Document;
 use App\Service\CouchDBManager;
 use Exception;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,9 +54,10 @@ final class CouchDBSchemaUpdateCommand extends AbstractCommand {
                 }
                 return $test;
             })->toArray();
-            foreach ($docToCreate as $dbDoc) {
+            /** @var Document $dbDoc */
+           foreach ($docToCreate as $dbDoc) {
                 echo 'Création '.$dbDoc."\n";
-                [$dbDoc, $rev] = $this->DBManager->documentCreate([
+                $this->DBManager->documentCreate([
                     '_id' => $dbDoc
                 ]); //Document vide par défault
             }
