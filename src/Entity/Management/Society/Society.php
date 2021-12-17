@@ -20,7 +20,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'name' => 'partial'
+    ]),
     ApiFilter(OrderFilter::class, properties: [
         'name',
     ]),
@@ -129,7 +131,7 @@ class Society extends Entity {
     private ?string $fax;
 
     #[
-        ApiProperty(description: 'Incoterms', required: false),
+        ApiProperty(description: 'Incoterms', required: false, readableLink: false, example: '/api/incoterms/1'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
         Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]

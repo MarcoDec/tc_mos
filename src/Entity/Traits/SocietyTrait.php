@@ -83,7 +83,7 @@ trait SocietyTrait {
     private ?string $vat = null;
 
     #[
-        ApiProperty(description: 'Message TVA', required: false),
+        ApiProperty(description: 'Message TVA', required: false, readableLink: false, example: '/api/vat-messages/5'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: VatMessage::class),
         Serializer\Groups(['read:name', 'write:name'])
     ]
