@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         'name' => 'partial',
         'code' => 'partial'
     ]),
+    
     ApiResource(
         description: 'Unité',
         collectionOperations: [
@@ -86,7 +87,7 @@ class Unit extends Entity {
 
     /** @var Collection<int, self> */
     #[
-        ApiProperty(description: 'Unités enfant'),
+        ApiProperty(description: 'Unités enfant', readableLink: false, example: ['/api/units/3', '/api/units/4']),
         ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove']),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
@@ -101,7 +102,7 @@ class Unit extends Entity {
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Unité parente', readableLink: false, example: '/api/unit/3'),
+        ApiProperty(description: 'Unité parente', readableLink: false, example: '/api/units/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]

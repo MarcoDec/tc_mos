@@ -19,9 +19,15 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'ref' => 'partial'
+    ]),
+    ApiFilter(filterClass: OrderFilter::class, properties: [
+        'ref'
+    ]),
     ApiResource(
         description: 'Produit',
         collectionOperations: [
@@ -89,11 +95,19 @@ class Product extends Entity implements BarCodeInterface {
         self::KIND_SPARE,
     ];
 
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    protected ?string $name = null;
+
     /**
      * @var Collection<int, self>
      */
     #[
-        ApiProperty(description: 'Produits enfant'),
+        ApiProperty(description: 'Produits enfant', required: false, readableLink: false, example: ['/api/products/5', '/api/products/14']),
         ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
         Serializer\Groups(['read:product', 'write:product'])
     ]
@@ -107,7 +121,7 @@ class Product extends Entity implements BarCodeInterface {
     private ?string $customsCode;
 
     #[
-        ApiProperty(description: 'Date d\'expériation', example: '2021-01-12 10:39:37'),
+        ApiProperty(description: 'Date d\'expiration', example: '2021-01-12 10:39:37'),
         Assert\DateTime,
         ORM\Column(type: 'datetime', nullable: true),
         Serializer\Groups(['read:product', 'write:product'])
@@ -115,14 +129,14 @@ class Product extends Entity implements BarCodeInterface {
     private ?DateTimeInterface $expirationDate;
 
     #[
-        ApiProperty(description: 'Famille de produit', required: false),
+        ApiProperty(description: 'Famille de produit', readableLink: false, example: '/api/product-families/5'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Family::class),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?Family $family;
 
     #[
-        ApiProperty(description: 'Incoterms', required: true),
+        ApiProperty(description: 'Incoterms', required: true, readableLink: false, example: '/api/incoterms/2'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
         Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
