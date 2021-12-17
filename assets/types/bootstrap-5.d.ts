@@ -1,13 +1,13 @@
 export type ItemField = {
-    ajout:boolean
+    ajout: boolean
     code: string
     name: string
-    type: number|null
+    type: number | null
     limite: string
-    cadence: number|null
-    prix: number|null
-    temps: number|null
-    deletable: boolean 
+    cadence: number | null
+    prix: number | null
+    temps: number | null
+    deletable: boolean
 }
 export type BootstrapSize = 'lg' | 'md' | 'sm'
 
@@ -24,11 +24,14 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
-export type FormInput = 'boolean' | 'button' | 'date' | 'grpbutton' | 'number' | 'password' | 'select' | 'switch' | 'text' | 'time'
+// export type FormInput = 'boolean' | 'button' | 'date' | 'grpbutton' | 'number' | 'password' | 'select' | 'switch' | 'text' | 'time'
+
+export type FormInput = 'boolean' | 'password' | 'radio' | 'search-boolean' | 'select' | 'text'
 
 export type FormOption = {text: string, value: number | string}
 
 export type FormField = {
+    btn?: boolean
     label: string
     name: string
     type?: FormInput
@@ -38,6 +41,6 @@ export type FormField = {
     trie: boolean
 }
 
-export type FormValue = number | string
+export type FormValue = boolean | number | string | null
 
 export type FormValues = Record<string, FormValue>

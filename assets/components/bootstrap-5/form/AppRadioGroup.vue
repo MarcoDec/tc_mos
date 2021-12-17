@@ -4,21 +4,20 @@
 
     const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
     const props = defineProps<{field: FormField, id: string, modelValue?: FormValue}>()
-    const type = computed(() => props.field.type ?? 'text')
 
-    function input(e: InputEvent): void {
-        emit('update:modelValue', (e.target as HTMLInputElement).value)
+    const options = computed(() => props.field.options ?? [])
+
+    function input(value: FormValue): void {
+        emit('update:modelValue', value)
     }
 </script>
 
 <template>
-    <input
+    <AppRadio
+        v-for="option in options"
         :id="id"
-        :name="field.name"
-        :placeholder="field.label"
-        :type="type"
-        :value="modelValue"
-        autocomplete="off"
-        class="form-control"
-        @input="input"/>
+        :field="field"
+        :model-value="modelValue"
+        :option="option"
+        @update:model-value="input"/>
 </template>

@@ -20,7 +20,7 @@
             {{ field.label }}
         </AppLabel>
         <AppCol>
-            <AppInput :field="field" :value="value" @update:value="input"/>
+            <AppInputGuesser :field="field" :value="value" @update:value="input"/>
         </AppCol>
     </AppRow>
 </template>
