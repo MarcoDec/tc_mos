@@ -68,16 +68,15 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         denormalizationContext: [
             'groups' => ['write:attribute', 'write:name', 'write:family', 'write:unit'],
-            'openapi_definition_name' => 'ComponentAttribute-write'
+            'openapi_definition_name' => 'Attribute-write'
         ],
         normalizationContext: [
             'groups' => ['read:attribute', 'read:id', 'read:name', 'read:family', 'read:unit'],
-            'openapi_definition_name' => 'ComponentAttribute-read'
+            'openapi_definition_name' => 'Attribute-read'
         ],
-        shortName: 'ComponentAttribute'
     ),
     ORM\Entity,
-    ORM\Table(name: 'component_attribute'),
+    ORM\Table(name: 'attribute'),
 ]
 class Attribute extends Entity {
     use NameTrait;
@@ -102,6 +101,7 @@ class Attribute extends Entity {
      * @var Collection<int, Family>
      */
     #[
+        ApiProperty(description: 'Famille', required: true, readableLink: false, example: ['/api/units/7', '/api/units/15']),
         ORM\ManyToMany(targetEntity: Family::class),
         Serializer\Groups(['read:family', 'write:family'])
     ]
