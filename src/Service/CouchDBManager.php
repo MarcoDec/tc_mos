@@ -2,7 +2,12 @@
 
 namespace App\Service;
 
+use App\Attribute\Couchdb\Abstract\Fetch;
 use App\Attribute\Couchdb\Document as CouchdbDocumentAttribute;
+use App\Attribute\Couchdb\ODM\ManyToMany;
+use App\Attribute\Couchdb\ODM\ManyToOne;
+use App\Attribute\Couchdb\ODM\OneToMany;
+use App\Attribute\Couchdb\ODM\OneToOne;
 use App\Attribute\Couchdb\ORM\ManyToMany as ORMManyToMany;
 use App\Attribute\Couchdb\ORM\ManyToOne as ORMManyToOne;
 use App\Attribute\Couchdb\ORM\OneToMany as ORMOneToMany;
@@ -301,7 +306,7 @@ class CouchDBManager {
     //endregion
 
    /**
-    * Retourne l'ensemble des propriétés liées à un ORM pour une entité $document ayant l'attribut App\Attribute\Couchdb\Document
+    * Retourne l'ensemble des propriétés liées à un ORM pour une entité ($document) ayant l'attribut App\Attribute\Couchdb\Document
     * @param object $document
     * @return array<string,array>
     * @throws ReflectionException
@@ -459,6 +464,7 @@ class CouchDBManager {
     * @param string $className
     * @return mixed
     * @throws ReflectionException
+    * @throws Exception
     */
    public function convertArrayToEntity(array $itemArray, string $className): mixed {
       $entity = new $className();
@@ -470,10 +476,80 @@ class CouchDBManager {
             if ($property->getName()==$arrayProperty) {
                $refProperty = $refEntity->getProperty($property->getName());
                $refProperty->setAccessible(true);
-               $refProperty->setValue($itemArray[$property->getName()]);
+               switch ($refProperty->getType()->getName()) {
+                  case "DateTime":
+                     $refProperty->setValue($entity,new DateTime($itemArray[$property->getName()]));
+                     break;
+                  case "string":
+                  case "int":
+                  case 'float':
+                     $refProperty->setValue($entity,$itemArray[$property->getName()]);
+                     break;
+                  default:  //C'est une entité
+                     /** @var  $manyToManyORM */
+                     $manyToManyORM =$refProperty->getAttributes(ORMManyToMany::class);
+                     if (count($manyToManyORM)>0) {
+                        $propertyData = ManyToMany::getPropertyData($manyToManyORM[0]);
+                        //'targetEntity'=> $instance->targetEntity, 'owned'=> $instance->owned, 'fetch'=>$instance->fetch, 'type'=>self::class
+                        if ($propertyData['fetch']==Fetch::EAGER && $propertyData['owned']) {
+                           $targetEntitiesIds = $itemArray[$property->getName()];
+                           $targetEntityClass = $propertyData['targetEntity'];
+                           $targetEntityRepo = $this->entityManager->getRepository($targetEntityClass);
+                           $targetEntities = $targetEntityRepo->findBy(['id'=>$targetEntitiesIds]);
+                           $refProperty->setValue($entity,$targetEntities);
+                        } else {
+                           $refProperty->setValue($entity,[]);
+                        }
+                     }
+                     $manyToOneORM =$refProperty->getAttributes(ORMManyToOne::class);
+                     if (count($manyToOneORM)) {
+                        $propertyData = ManyToOne::getPropertyData($manyToOneORM[0]);
+                        //[ 'targetEntity'=> $instance->targetEntity, 'inversedBy'=> $instance->inversedBy, 'fetch'=>$instance->fetch, 'type'=>self::class ];
+                        if ($propertyData['fetch']==Fetch::EAGER || !$refProperty->getType()->allowsNull()) {
+                           $targetEntity = $this->entityManager->getRepository($refProperty->getType()->getName())->find($itemArray[$property->getName()]);
+                           $refProperty->setValue($entity,$targetEntity);
+                        } else {
+                           $refProperty->setValue($entity,null);
+                        }
+                     }
+                     $oneToManyORM =$refProperty->getAttributes(ORMOneToMany::class);
+                     if (count($oneToManyORM)>0) {
+                        $propertyData = OneToMany::getPropertyData($oneToManyORM[0]);
+                        //[ 'targetEntity'=> $instance->targetEntity, 'owned'=> $instance->owned, 'fetch'=>$instance->fetch, 'type'=>self::class ];
+                        if ($propertyData['fetch']===Fetch::EAGER && $propertyData['owned']) {
+                           $targetEntitiesIds = $itemArray[$property->getName()];
+                           $targetEntityClass = $propertyData['targetEntity'];
+                           $targetEntityRepo = $this->entityManager->getRepository($targetEntityClass);
+                           $targetEntities = $targetEntityRepo->findBy(['id'=>$targetEntitiesIds]);
+                           $refProperty->setValue($entity,$targetEntities);
+                        } else {
+                           $refProperty->setValue($entity,[]);
+                        }
+                     }
+                     $oneToOneORM =$refProperty->getAttributes(ORMOneToOne::class);
+                     if (count($oneToOneORM)>0) {
+                        $propertyData = OneToOne::getPropertyData($oneToOneORM[0]);
+                        //[ 'targetEntity'=> $instance->targetEntity, 'mappedBy'=> $instance->mappedBy, 'fetch'=>$instance->fetch, 'type'=>self::class ];
+                        if ($propertyData['fetch']===Fetch::EAGER || !$refProperty->getType()->allowsNull()) {
+                           $targetEntity = $this->entityManager->getRepository($refProperty->getType()->getName())->find($itemArray[$property->getName()]);
+                           $refProperty->setValue($entity,$targetEntity);
+                        } else {
+                           $refProperty->setValue($entity,null);
+                        }
+                     }
+
+               }
             }
          }
       }
       return $entity;
+   }
+
+   /**
+    * @param string $className
+    * @return string
+    */
+   public static function getRepositoryFromEntityClass(string $className):string {
+      return str_replace('Entity','Repository', $className).'Repository';
    }
 }

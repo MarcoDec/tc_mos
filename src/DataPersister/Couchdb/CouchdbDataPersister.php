@@ -33,7 +33,8 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface
    public function persist($data, array $context = [])
    {
       $className = get_class($data);
-      $repoClassName=str_replace('Entity','Repository', $className).'Repository';
+      $repoClassName = CouchDBManager::getRepositoryFromEntityClass($className);
+      //$repoClassName=str_replace('Entity','Repository', $className).'Repository';
       /** @var AbstractRepository $repo */
       $repo = new $repoClassName($this->manager,$className);
       $repo->persist($data);
@@ -48,7 +49,8 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface
    public function remove($data, array $context = [])
    {
       $className = get_class($data);
-      $repoClassName=str_replace('Entity','Repository', $className).'Repository';
+      $repoClassName = CouchDBManager::getRepositoryFromEntityClass($className);
+      //$repoClassName=str_replace('Entity','Repository', $className).'Repository';
       /** @var AbstractRepository $repo */
       $repo = new $repoClassName($this->manager,$className);
       $repo->remove($data);
