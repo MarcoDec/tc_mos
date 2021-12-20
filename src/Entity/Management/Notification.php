@@ -10,6 +10,7 @@ use App\Attribute\Couchdb\ORM\ManyToOne;
 use App\Entity\Hr\Employee\Employee;
 use DateTime;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -17,58 +18,100 @@ use Symfony\Component\Validator\Constraints\NotBlank;
    Document,
    ApiResource(
       collectionOperations: [
-         'get'
+         'get'=>[
+            'openapi_context' => [
+               'description' => 'Récupère les notifications',
+               'summary' => 'Récupère les notifications',
+            ],
+            'normalization_context' => ['groups'=>['get:Notification:collection']]
+         ],
+         'post'=>[
+            'openapi_context' => [
+               'description' => 'Ajoute/Créé une notification',
+               'summary' => 'Ajoute/Créé une notification',
+            ],
+            'denormalization_context' => [ 'groups' => ['post:Notification:denorm'] ],
+            'normalization_context' => ['groups' => ['post:Notification:norm']]
+         ]
       ],
-      itemOperations: ['get'],
-      paginationClientEnabled: true
+      itemOperations: [
+         'get'=>[
+            'openapi_context' => [
+               'description' => 'Récupère une notification particulière',
+               'summary' => 'Récupère une notification particulière',
+               ],
+            'normalization_context' => [ 'groups' => ['get:Notification:item' ]]
+         ],
+         'patch' =>[
+            'openapi_context' => [
+               'description' => 'Modifie une notification particulière',
+               'summary' => 'Modifie une notification'
+            ],
+            'normalization_context' => ['groups'=>['patch:Notification:item:norm']],
+            'denormalization_context' => ['groups'=>['patch:Notification:item:denorm']],
+         ],
+         'delete'
+      ],
+      paginationClientEnabled: false
    )
 ]
 class Notification {
    #[
       ApiProperty(
-         description: "Notification category"
+         description: "Catégorie de la notification"
       ),
       Length(min: 2),
-      NotBlank()
+      NotBlank(),
+      Groups(["get:Notification:collection", 'get:Notification:item', 'patch:Notification:item:norm', 'post:Notification:norm', 'post:Notification:denorm', 'patch:Notification:item:denorm'])
       ]
-    private string $category;
+    private string $category="";
    #[
       ApiProperty(
-         description: "Notification unique identifier",
+         description: "Identifiant unique",
          identifier: true
-      )]
-    private int $id;
+      ),
+      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm"])
+   ]
+    private int $id=0;
    #[
       ApiProperty(
-         description: "if the notification is read then `true` else set to `false`"
-      )]
-    private bool $read;
+         description: "Est à `Vrai` lorsque la notification a été lue, sinon à `Faux`"
+      ),
+      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", 'patch:Notification:item:denorm'])
+   ]
+    private bool $read=false;
    #[
       ApiProperty(
-         description: "Main notification content"
+         description: "Sujet de la notification",
       ),
       Length(min: 3),
-      NotBlank()
+      NotBlank(),
+      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "post:Notification:norm", "post:Notification:denorm", 'patch:Notification:item:denorm'])
    ]
-    private string $subject;
+    private string $subject="";
 
    #[ApiProperty(
-      description: "Datetime when the notification has been created"
+      description: "Date de création de la notification"
    ),
-      \Symfony\Component\Validator\Constraints\DateTime()
+      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm"])
    ]
    private DateTime $creationDatetime;
 
    #[ApiProperty(
-      description: "Datetime when the notification has been read by the user"
-   )]
-   private DateTime $readDatetime;
+      description: "Date de lecture de la notification par l'utilisateur"
+   ),
+      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "patch:Notification:item:denorm"])
+   ]
+   private DateTime|null $readDatetime=null;
 
-
-    #[ManyToOne(Employee::class, Fetch::LAZY)]
+    #[
+       ManyToOne(Employee::class, Fetch::EAGER),
+       Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "post:Notification:denorm", "patch:Notification:item:denorm"])
+    ]
    private Employee $user;
 
     public function __construct() {
+       $this->creationDatetime = new DateTime('now');
     }
 
     #[Pure]
@@ -166,9 +209,9 @@ class Notification {
    }
 
    /**
-    * @return DateTime
+    * @return DateTime|null
     */
-   public function getReadDatetime(): DateTime
+   public function getReadDatetime(): ?DateTime
    {
       return $this->readDatetime;
    }
