@@ -5,6 +5,7 @@ namespace App\Entity\Project\Product;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -14,12 +15,12 @@ use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\NameTrait;
 use App\Entity\Traits\RefTrait;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use App\Entity\Management\Unit;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
@@ -68,11 +69,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:product', 'write:name', 'write:family', 'write:incoterms'],
+            'groups' => ['write:product', 'write:name', 'write:family', 'write:incoterms', 'write:unit'],
             'openapi_definition_name' => 'Product-write'
         ],
         normalizationContext: [
-            'groups' => ['read:product', 'read:id', 'read:name', 'read:family', 'read:incoterms'],
+            'groups' => ['read:product', 'read:id', 'read:name', 'read:family', 'read:incoterms', 'write:unit'],
             'openapi_definition_name' => 'Product-read'
         ],
     ),
@@ -102,6 +103,13 @@ class Product extends Entity implements BarCodeInterface {
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Nom', required: false, readableLink: false, example: '/api/units/5'),
+        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Unit::class),
+        Serializer\Groups(['read:unit', 'write:unit'])
+    ]
+    protected ?Unit $unit = null;
 
     /**
      * @var Collection<int, self>
@@ -264,7 +272,7 @@ class Product extends Entity implements BarCodeInterface {
         ApiProperty(description: 'Délai de production', required: true, example: '7'),
         Assert\NotNull,
         Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'tinyint'),
+        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'smallint'),
         Serializer\Groups(['read:product', 'write:product'])
     ]
     private int $productionDelay = 0;
@@ -321,6 +329,10 @@ class Product extends Entity implements BarCodeInterface {
 
     public function getFamily(): ?Family {
         return $this->family;
+    }
+
+    public function getUnit(): ?Unit {
+        return $this->unit;
     }
 
     public function getIncoterms(): ?Incoterms {
@@ -420,6 +432,12 @@ class Product extends Entity implements BarCodeInterface {
 
     public function setFamily(?Family $family): self {
         $this->family = $family;
+
+        return $this;
+    }
+
+    public function setUnit(?Unit $unit): self {
+        $this->unit = $unit;
 
         return $this;
     }

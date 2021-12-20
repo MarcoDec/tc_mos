@@ -15,13 +15,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Embeddable\Measure;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'name' => 'partial',
         'code' => 'partial'
     ]),
-    
     ApiResource(
         description: 'Unité',
         collectionOperations: [
@@ -62,11 +62,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:unit'],
+            'groups' => ['write:name', 'write:unit', 'write:measure'],
             'openapi_definition_name' => 'Unit-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:unit'],
+            'groups' => ['read:id', 'read:name', 'read:unit', 'read:measure'],
             'openapi_definition_name' => 'Unit-read'
         ]
     ),
@@ -80,10 +80,25 @@ class Unit extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(type: 'string'),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Base', required: true, example: '0.845'),
+        Assert\NotBlank,
+        ORM\Column(options: ['default' => 0], type: 'float'),
+        Serializer\Groups(['read:unit', 'write:unit'])
+    ]
+    private ?float $base = 0;
+
+    #[
+        ApiProperty(description: 'Mesure'),
+        ORM\Embedded(Measure::class),
+        Serializer\Groups(['read:measure', 'write:measure'])
+    ]
+    private Measure $measure;
 
     /** @var Collection<int, self> */
     #[
@@ -95,8 +110,7 @@ class Unit extends Entity {
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'g'),
-        Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(type: 'string'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private ?string $code = null;
@@ -108,11 +122,12 @@ class Unit extends Entity {
     ]
     private ?self $parent = null;
 
-    public function __construct() {
+    final public function __construct() {
         $this->children = new ArrayCollection();
+        $this->measure = new Measure();
     }
 
-    public function addChild(self $child): self {
+    final public function addChild(self $child): self {
         if (!$this->children->contains($child)) {
             $this->children[] = $child;
             $child->setParent($this);
@@ -124,19 +139,27 @@ class Unit extends Entity {
     /**
      * @return Collection<int, self>
      */
-    public function getChildren(): Collection {
+    final public function getChildren(): Collection {
         return $this->children;
+    }
+
+    final public function getMeasure(): Measure {
+        return $this->measure;
     }
 
     final public function getCode(): ?string {
         return $this->code;
     }
 
-    public function getParent(): ?self {
+    final public function getBase(): ?float {
+        return $this->base;
+    }
+
+    final public function getParent(): ?self {
         return $this->parent;
     }
 
-    public function removeChild(self $child): self {
+    final public function removeChild(self $child): self {
         if ($this->children->removeElement($child)) {
             // set the owning side to null (unless already changed)
             if ($child->getParent() === $this) {
@@ -152,9 +175,68 @@ class Unit extends Entity {
         return $this;
     }
 
-    public function setParent(?self $parent): self {
+    final public function setBase(?float $base): self {
+        $this->base = $base;
+        return $this;
+    }
+
+    final public function setParent(?self $parent): self {
         $this->parent = $parent;
 
         return $this;
+    }
+
+    final public function setMeasure(Measure $measure): self {
+        $this->measure = $measure;
+
+        return $this;
+    }
+
+    // This function return the top parent's code of the Unit tree
+    final public function getTopCode(): string {
+        ///////
+        // We gotta check all parents as kg may be a child of g but also a parent of a ton. Ton could also have been saved as a child of gramme instead kg.
+        ///////
+
+        // If the Unit has a parent
+        if(null !== $this->parent) {
+            $baseParent = $this->parent;
+
+            // This fn retrieves the upper parent in the tree
+            for ($baseParent ; null !== $baseParent->parent ; $baseParent = $baseParent->parent);
+
+            return $baseParent->code;
+        } else {
+            return $this->code;
+        }
+    }
+
+    // Get the smallest unit in the tree
+    final public function getTopUnit(): Unit {
+        $parent = $this->parent;
+
+
+        if(null === $parent) return $this;
+
+        for($parent ; null !== $parent->parent ; $parent = $parent->parent);
+
+        return $parent;
+    }
+
+    // Get the multiplicator from the upper parent Unit
+    final public function getMultiplicatorFromBase() : float {
+
+        if(null === $this->parent) {
+            return 1;
+        }
+
+        $multiplicator = $this->base;
+        $parent = $this->parent;
+
+        for($parent ; null !== $parent->parent ; $parent = $parent->parent) {
+            $multiplicator *= $parent->base;
+        }
+
+        return $multiplicator;
     }
 }
