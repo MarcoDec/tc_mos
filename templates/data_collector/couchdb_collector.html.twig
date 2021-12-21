@@ -72,16 +72,16 @@
 {% block menu %}
    <span class="label">
         <span class="icon"><img src="{{ asset('images/couch-solid.svg') }}" alt="couch"></span>
-        <strong>Couch</strong>
          {% set hasErrors = false %}
+         {% set errorCount = 0 %}
          {% for action in collector.getActions() %}
-         {% if action.isErrors() %}
-            {% set hasErrors = true %}
-         {% endif %}
+            {% if action.isErrors() %}
+               {% set  errorCount = errorCount + 1%}
+               {% set hasErrors = true %}
+            {% endif %}
          {% endfor %}
-        <span class="count {% if hasErrors %}couch_request_ko{% else %}couch_request_ok{% endif %}">
-           <span>{{ collector.getActions()|length }}</span>
-        </span>
+        <strong {% if hasErrors %}style="color: #e54b4b !important;"{% endif %}>Couch</strong>
+        <span class="count">{{ collector.getActions()|length - errorCount }}</span>
     </span>
 {% endblock %}
 {% block panel %}
