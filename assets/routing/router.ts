@@ -21,9 +21,96 @@ const router = createRouter({
             path: '/login'
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/project/AppOperationList.vue'),
-            name: 'operationList',
-            path: '/operation/list'
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
+            name: 'operation-list',
+            path: '/operation/list',
+            props: {
+                fields: [
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Code',
+                        name: 'code',
+                        sort: true,
+                        sortDir: 'none',
+                        type: 'text',
+                        update: true
+                    },
+                    {
+                        create: false,
+                        filter: true,
+                        label: 'Nom',
+                        name: 'name',
+                        options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}],
+                        sort: true,
+                        sortDir: 'none',
+                        type: 'select',
+                        update: true
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Type',
+                        name: 'type',
+                        sort: true,
+                        sortDir: 'none',
+                        type: 'number',
+                        update: true
+                    },
+                    {
+                        create: false,
+                        filter: true,
+                        label: 'Auto',
+                        name: 'auto',
+                        sort: true,
+                        sortDir: 'none',
+                        type: 'boolean',
+                        update: true
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Limite',
+                        name: 'limite',
+                        sort: false,
+                        sortDir: 'none',
+                        type: 'text',
+                        update: true
+                    },
+                    {
+                        create: false,
+                        filter: true,
+                        label: 'cadence',
+                        name: 'cadence',
+                        sort: true,
+                        sortDir: 'none',
+                        type: 'number',
+                        update: false
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Prix',
+                        name: 'prix',
+                        sort: true,
+                        sortDir: 'none',
+                        type: 'number',
+                        update: true
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Temps(en ms)',
+                        name: 'Temps',
+                        sort: false,
+                        sortDir: 'none',
+                        type: 'date',
+                        update: false
+                    }
+                ],
+                icon: 'atom',
+                title: 'Opération'
+            }
         }
     ]
 })
