@@ -29,7 +29,6 @@ class CouchdbDataProvider implements ContextAwareCollectionDataProviderInterface
    public function getCollection(string $resourceClass, string $operationName = null, array $context = []): array
    {
       $repoClassName = CouchDBManager::getRepositoryFromEntityClass($resourceClass);
-      //$repoClassName=str_replace('Entity','Repository', $resourceClass).'Repository';
       /** @var AbstractRepository $repo */
       $repo = new $repoClassName($this->manager, $resourceClass);
       return $repo->findAll();
@@ -40,6 +39,7 @@ class CouchdbDataProvider implements ContextAwareCollectionDataProviderInterface
     * @param string|null $operationName
     * @param array $context
     * @return bool
+    * @throws ReflectionException
     */
    public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
    {
@@ -59,7 +59,6 @@ class CouchdbDataProvider implements ContextAwareCollectionDataProviderInterface
    public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): mixed
    {
       $repoClassName = CouchDBManager::getRepositoryFromEntityClass($resourceClass);
-      //$repoClassName=str_replace('Entity','Repository', $resourceClass).'Repository';
       /** @var AbstractRepository $repo */
       $repo = new $repoClassName($this->manager, $resourceClass);
       return $repo->find($id);

@@ -34,7 +34,6 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface
    {
       $className = get_class($data);
       $repoClassName = CouchDBManager::getRepositoryFromEntityClass($className);
-      //$repoClassName=str_replace('Entity','Repository', $className).'Repository';
       /** @var AbstractRepository $repo */
       $repo = new $repoClassName($this->manager,$className);
       $repo->persist($data);
@@ -50,7 +49,6 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface
    {
       $className = get_class($data);
       $repoClassName = CouchDBManager::getRepositoryFromEntityClass($className);
-      //$repoClassName=str_replace('Entity','Repository', $className).'Repository';
       /** @var AbstractRepository $repo */
       $repo = new $repoClassName($this->manager,$className);
       $repo->remove($data);
