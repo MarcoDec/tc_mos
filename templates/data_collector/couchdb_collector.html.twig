@@ -58,14 +58,14 @@
          color:white;
       }
       .couch_request_ok {
-         background-color: green;
+         background-color: green !important;
          text-align: center;
-         color: white;
+         color: white !important;
       }
       .couch_request_ko {
-         background-color: red;
+         background-color: red !important;
          text-align: center;
-         color: white;
+         color: white !important;
       }
    </style>
 {% endblock %}
@@ -73,6 +73,15 @@
    <span class="label">
         <span class="icon"><img src="{{ asset('images/couch-solid.svg') }}" alt="couch"></span>
         <strong>Couch</strong>
+         {% set hasErrors = false %}
+         {% for action in collector.getActions() %}
+         {% if action.isErrors() %}
+            {% set hasErrors = true %}
+         {% endif %}
+         {% endfor %}
+        <span class="count {% if hasErrors %}couch_request_ko{% else %}couch_request_ok{% endif %}">
+           <span>{{ collector.getActions()|length }}</span>
+        </span>
     </span>
 {% endblock %}
 {% block panel %}
@@ -98,7 +107,7 @@
             <td class="{{ status }}">
                {{ result }}
             </td>
-            <td>{{ action.getDetail() }}</td>
+            <td><span style="color: {% if action.isErrors() %}red{% else %}green{% endif %};">{{ action.getDetail() }}</span><br><span style="font-weight: bold; color:blue !important;">Context :</span>{{ action.getMethod() }}</td>
          </tr>
       {% endfor %}
    </table>
