@@ -37,5 +37,5 @@
         <Fa :icon="icon"/>
         {{ title }}
     </h1>
-    <AppCollectionTable :id="route.name" :fields="fields" :items="items"/>
+    <AppCollectionTable :id="route.name" :fields="fields" :items="items" create pagination/>
 </template>

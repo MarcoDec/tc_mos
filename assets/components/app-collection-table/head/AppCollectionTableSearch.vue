@@ -3,6 +3,7 @@
     import type {TableField} from '../../../types/app-collection-table'
 
     const emit = defineEmits<(e: 'toggle') => void>()
+    const create = inject<boolean>('create', false)
     const fields = inject<TableField[]>('fields', [])
     const tableId = inject<string>('table-id', 'table')
     const searchFields = computed<TableField[]>(() => fields.map((field: Readonly<TableField>): TableField => ({
@@ -22,7 +23,7 @@
             <Fa icon="filter"/>
         </td>
         <td>
-            <AppBtn icon="plus-circle" variant="success" @click="toggle"/>
+            <AppBtn v-if="create" icon="plus-circle" variant="success" @click="toggle"/>
             <AppBtn icon="search" variant="secondary"/>
             <AppBtn icon="times" variant="danger"/>
         </td>
