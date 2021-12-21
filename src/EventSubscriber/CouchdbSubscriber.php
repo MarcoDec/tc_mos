@@ -136,9 +136,14 @@ class CouchdbSubscriber implements EventSubscriberInterface {
         $class = get_class($entity);
         $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_UPDATE, __METHOD__);
         $this->logger->info(__METHOD__);
+       $refEntity = new \ReflectionObject($entity);
+       /** @var ReflectionProperty $refIdProperty */
+       $refIdProperty = collect($refEntity->getProperties())->filter(function(ReflectionProperty $property){
+          return $property->getName()=='id';
+       })->first();
+       $refIdProperty->setAccessible(true);
         try {
-           /** @phpstan-ignore-next-line  */
-            $id = $entity->id;
+           $id = $refIdProperty->getValue($entity);
             // 1. Récupération Document
             $couchdbDoc = $this->manager->documentRead($class);
             if ($couchdbDoc===null) throw new Exception("Le document $class n'a pas pu être chargé depuis couchdb (null retourné)");
@@ -148,7 +153,7 @@ class CouchdbSubscriber implements EventSubscriberInterface {
            $that = $this;
             $updatedContent = collect($content)->map(static function ($item) use ($id, $entity, $that) {
                 if ($item['id'] === $id) {
-                   $item = $this->manager->convertEntityToArray($entity);
+                   $item = $that->manager->convertEntityToArray($entity);
                 }
                 return $item;
             })->toArray();
@@ -156,7 +161,8 @@ class CouchdbSubscriber implements EventSubscriberInterface {
             // 4. Sauvegarde en base
             $couchdbDoc = $this->manager->documentUpdate($couchdbDoc);
             if ($couchdbDoc===null) throw new Exception("La sauvegarde dans Couchdb d'un document à échoué");
-            $updatedEntity = $couchdbDoc->getItem($id)?->getEntity();
+           $couchdbItem = $couchdbDoc->getItem($id);
+           $updatedEntity = $this->manager->convertCouchdbItemToEntity($couchdbItem,$class);
             if ($updatedEntity===null) throw new Exception("La sauvegarde dans Couchdb du document ".$couchdbDoc->getId()." a échouée.");
             $newPostUpdateEvent = new CouchdbItemPostUpdateEvent($updatedEntity);
             $this->dispatcher->dispatch($newPostUpdateEvent);
