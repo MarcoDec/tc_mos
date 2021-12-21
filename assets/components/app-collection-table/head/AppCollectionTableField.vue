@@ -13,10 +13,10 @@
 </script>
 
 <template>
-    <th :aria-sort="field.sortDir" @click="click">
+    <th @click="click">
         <span class="d-flex justify-content-between">
             <span>{{ field.label }}</span>
-            <span class="d-flex flex-column">
+            <span v-if="field.sort" class="d-flex flex-column">
                 <Fa :class="down" icon="caret-up"/>
                 <Fa :class="up" icon="caret-down"/>
             </span>

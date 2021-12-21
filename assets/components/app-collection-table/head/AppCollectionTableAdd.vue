@@ -20,7 +20,7 @@
             <AppBtn icon="plus" variant="success"/>
         </td>
         <td v-for="field in fields" :key="field.name">
-            <AppInputGuesser :field="field" no-label/>
+            <AppInputGuesser v-if="field.create" :field="field" no-label/>
         </td>
     </tr>
 </template>

@@ -32,7 +32,6 @@ const router = createRouter({
                         label: 'Code',
                         name: 'code',
                         sort: true,
-                        sortDir: 'none',
                         type: 'text',
                         update: true
                     },
@@ -42,8 +41,7 @@ const router = createRouter({
                         label: 'Nom',
                         name: 'name',
                         options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}],
-                        sort: true,
-                        sortDir: 'none',
+                        sort: false,
                         type: 'select',
                         update: true
                     },
@@ -53,27 +51,24 @@ const router = createRouter({
                         label: 'Type',
                         name: 'type',
                         sort: true,
-                        sortDir: 'none',
                         type: 'number',
-                        update: true
+                        update: false
                     },
                     {
                         create: false,
                         filter: true,
                         label: 'Auto',
                         name: 'auto',
-                        sort: true,
-                        sortDir: 'none',
+                        sort: false,
                         type: 'boolean',
                         update: true
                     },
                     {
                         create: true,
-                        filter: true,
+                        filter: false,
                         label: 'Limite',
                         name: 'limite',
                         sort: false,
-                        sortDir: 'none',
                         type: 'text',
                         update: true
                     },
@@ -83,7 +78,6 @@ const router = createRouter({
                         label: 'cadence',
                         name: 'cadence',
                         sort: true,
-                        sortDir: 'none',
                         type: 'number',
                         update: false
                     },
@@ -92,8 +86,7 @@ const router = createRouter({
                         filter: true,
                         label: 'Prix',
                         name: 'prix',
-                        sort: true,
-                        sortDir: 'none',
+                        sort: false,
                         type: 'number',
                         update: true
                     },
@@ -103,7 +96,6 @@ const router = createRouter({
                         label: 'Temps(en ms)',
                         name: 'Temps',
                         sort: false,
-                        sortDir: 'none',
                         type: 'date',
                         update: false
                     }

@@ -8,7 +8,8 @@
 </script>
 
 <template>
-    <td>
+    <td v-if="field.update">
         <AppInputGuesser :field="field" :model-value="value"/>
     </td>
+    <AppCollectionTableItemField v-else :field="field" :item="item"/>
 </template>

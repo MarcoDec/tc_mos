@@ -27,7 +27,7 @@
             <AppBtn icon="times" variant="danger"/>
         </td>
         <td v-for="field in searchFields" :key="field.name">
-            <AppInputGuesser :field="field"/>
+            <AppInputGuesser v-if="field.filter" :field="field"/>
         </td>
     </tr>
 </template>
