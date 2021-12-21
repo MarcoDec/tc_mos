@@ -249,6 +249,7 @@ class CouchDBManager {
             $couchLog->setErrors(true);
             $this->actions[$time] = $couchLog;
             return null;
+        } catch (InvalidArgumentException $e) {
         }
     }
 
@@ -484,6 +485,7 @@ class CouchDBManager {
                      break;
                   case "string":
                   case "int":
+                  case 'bool':
                   case 'float':
                      $refProperty->setValue($entity,$itemArray[$property->getName()]);
                      break;
@@ -560,19 +562,11 @@ class CouchDBManager {
       foreach ($refProperties as $refProperty) {
          $refProperty->setAccessible(true);
          $propertyClass= $refProperty->getType();
-         switch ($propertyClass) {
-            case 'DateTime':
-               $content[$refProperty->getName()]=$refProperty->getValue($entity)?->format('Y-m-d\TH:i:s.u');
-               break;
-            case 'string':
-            case 'bool':
-            case 'int':
-            case 'float':
-               $content[$refProperty->getName()]=$refProperty->getValue($entity);
-               break;
-            default:
-               $content[$refProperty->getName()]=$refProperty->getValue($entity)?->getId();
-         }
+         $content[$refProperty->getName()] = match ($propertyClass->getName()) {
+            'DateTime' => $refProperty->getValue($entity)?->format('Y-m-d\TH:i:s.u'),
+            'string', 'int', 'float', 'bool' => $refProperty->getValue($entity),
+            default => $refProperty->getValue($entity)?->getId(),
+         };
       }
       return $content;
    }
