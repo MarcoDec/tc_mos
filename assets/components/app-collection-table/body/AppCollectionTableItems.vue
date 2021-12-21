@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-    import type {FormValues} from '../../../types/bootstrap-5'
+    import type {TableItem} from '../../../types/app-collection-table'
     import {defineProps} from 'vue'
 
-    defineProps<{items: FormValues[]}>()
+    defineProps<{items: TableItem[]}>()
 </script>
 
 <template>

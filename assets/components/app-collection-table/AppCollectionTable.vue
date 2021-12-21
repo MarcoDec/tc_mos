@@ -1,9 +1,8 @@
 <script lang="ts" setup>
+    import type {TableField, TableItem} from '../../types/app-collection-table'
     import {defineProps, provide} from 'vue'
-    import type {FormValues} from '../../types/bootstrap-5'
-    import type {TableField} from '../../types/app-collection-table'
 
-    const props = defineProps<{fields: TableField, id: string, items: FormValues[]}>()
+    const props = defineProps<{fields: TableField, id: string, items: TableItem[]}>()
     provide('fields', props.fields)
     provide('table-id', props.id)
 </script>
