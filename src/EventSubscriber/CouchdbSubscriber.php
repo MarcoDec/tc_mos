@@ -46,6 +46,10 @@ class CouchdbSubscriber implements EventSubscriberInterface {
         $this->logger->info(__METHOD__);
     }
 
+   /**
+    * @param CouchdbItemPrePersistEvent $event
+    * @return void
+    */
     public function onPrePersist(CouchdbItemPrePersistEvent $event): void {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
         $entity = $event->getEntity();
@@ -62,23 +66,19 @@ class CouchdbSubscriber implements EventSubscriberInterface {
             $maxId = collect($docContent)->max('id');
             $newId = $maxId + 1;
             // 4. Définition nouvel élément
-            $reflectionClass = new ReflectionClass($entity);
-            $properties = $reflectionClass->getProperties();
-            $itemContent = [];
-
-           $this->extractEntityData($properties, $entity,$itemContent);
-
+           $itemContent = $this->manager->convertEntityToArray($entity);
            $itemContent['id'] = $newId;
             // 5. Ajout nouvel élément dans couchdbDoc
             $docContent[] = $itemContent;
             $couchdbDoc->setContent($docContent);
             // 6. Sauvegarde en base
             $this->manager->documentUpdate($couchdbDoc);
-            $couchdbDoc = $this->manager->documentRead($class);
+            $couchdbDoc = $this->manager->documentRead($class,true);
             if ($couchdbDoc===null) throw new Exception("Impossible de récupérer le document CouchDB $class");
             $couchdbItem = $couchdbDoc->getItem($newId);
             if ($couchdbItem===null) throw new Exception("Impossible de récupérer l'item $newId du document CouchDB $class");
-            $entity = $couchdbItem->getEntity();
+
+            $entity = $this->manager->convertCouchdbItemToEntity($couchdbItem,$class);
             if ($entity === null) throw new Exception("Erreur de récupération entité (retour null)");
             $newPostPersistEvent = new CouchdbItemPostPersistEvent($entity);
             $this->dispatcher->dispatch($newPostPersistEvent);
@@ -91,15 +91,24 @@ class CouchdbSubscriber implements EventSubscriberInterface {
         }
     }
 
+   /**
+    * @param CouchdbItemPreRemoveEvent $event
+    * @return void
+    */
     public function onPreRemove(CouchdbItemPreRemoveEvent $event): void {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
         $this->logger->info(__METHOD__);
         $entity = $event->getEntity();
+        $refEntity = new \ReflectionObject($entity);
+        /** @var ReflectionProperty $refIdProperty */
+        $refIdProperty = collect($refEntity->getProperties())->filter(function(ReflectionProperty $property){
+           return $property->getName()=='id';
+        })->first();
+        $refIdProperty->setAccessible(true);
         $class = get_class($entity);
         $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_DELETE, __METHOD__);
         try {
-           /** @phpstan-ignore-next-line  */
-            $id = $entity->id;
+            $id = $refIdProperty->getValue($entity);
             // 1. Récupération Document
             $couchdbDoc = $this->manager->documentRead($class);
             if ($couchdbDoc===null) throw new Exception("Impossible de récupérer le document CouchDB $class (null retourné)");
@@ -139,9 +148,7 @@ class CouchdbSubscriber implements EventSubscriberInterface {
            $that = $this;
             $updatedContent = collect($content)->map(static function ($item) use ($id, $entity, $that) {
                 if ($item['id'] === $id) {
-                    $reflectionClass = new ReflectionClass($entity);
-                    $properties = $reflectionClass->getProperties();
-                   $that->extractEntityData($properties, $entity, $item);
+                   $item = $this->manager->convertEntityToArray($entity);
                 }
                 return $item;
             })->toArray();
@@ -161,31 +168,4 @@ class CouchdbSubscriber implements EventSubscriberInterface {
             $this->manager->actions[$time] = $couchLog;
         }
     }
-
-   /**
-    * @param array<ReflectionProperty> $properties
-    * @param object $entity
-    * @param array<string,mixed> $element
-    */
-   private function extractEntityData(array $properties, object $entity, array $element): void
-   {
-      foreach ($properties as $property) {
-         $ORMManyToManyAttribute = $property->getAttributes(ManyToMany::class);
-         if (count($ORMManyToManyAttribute) > 0 && ManyToMany::getPropertyData($ORMManyToManyAttribute[0])['owned']) {
-            foreach ($entity->{$property->getName()} as $item) {
-               $element[$property->getName()][] = $item->getId();
-            }
-         }
-         $ORMManyToOneAttribute = $property->getAttributes(ManyToOne::class); // On persiste
-         if (count($ORMManyToOneAttribute) > 0) {
-            $element[$property->getName()] = $entity->{$property->getName()}->getId();
-         }
-         $ORMOneToOneAttribute = $property->getAttributes(OneToOne::class); // On persiste si owned === true
-         if (count($ORMOneToOneAttribute) > 0 && ManyToMany::getPropertyData($ORMOneToOneAttribute[0])['owned']) {
-            $element[$property->getName()] = $entity->{$property->getName()}->getId();
-         }
-         //On ne persiste pas les OneToMany
-         //$ORMOneToManyAttribute = $property->getAttributes(OneToMany::class); //On ne persiste pas
-      }
-   }
 }

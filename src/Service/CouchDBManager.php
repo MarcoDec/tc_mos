@@ -202,7 +202,8 @@ class CouchDBManager {
     */
     public function documentRead(string $id, bool $forceCacheUpdate=false): ?CouchdbDocumentEntity {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
-        $couchLog = new CouchdbLogItem($id, CouchdbLogItem::METHOD_DOCUMENT_READ, __METHOD__);
+        $text = __METHOD__.' forceCacheUpdate ='.($forceCacheUpdate?"true":"false");
+        $couchLog = new CouchdbLogItem($id, CouchdbLogItem::METHOD_DOCUMENT_READ,$text );
         try {
            if ($forceCacheUpdate) { //Si on force l'update du cache alors on supprime le cache avant de le recharger
               $this->cache->delete(CouchdbDocumentEntity::getName($id));
@@ -478,7 +479,8 @@ class CouchDBManager {
                $refProperty->setAccessible(true);
                switch ($refProperty->getType()->getName()) {
                   case "DateTime":
-                     $refProperty->setValue($entity,new DateTime($itemArray[$property->getName()]));
+                     $newValue = $itemArray[$property->getName()]===null?null:new DateTime($itemArray[$property->getName()]);
+                     $refProperty->setValue($entity,$newValue);
                      break;
                   case "string":
                   case "int":
@@ -543,6 +545,46 @@ class CouchDBManager {
          }
       }
       return $entity;
+   }
+
+
+   /**
+    * @param mixed $entity
+    * @return array
+    * @throws ReflectionException
+    */
+   public function convertEntityToArray(mixed $entity): array {
+      $content=[];
+      $reflectionClass = new ReflectionClass($entity);
+      $refProperties = $reflectionClass->getProperties();
+      foreach ($refProperties as $refProperty) {
+         $refProperty->setAccessible(true);
+         $propertyClass= $refProperty->getType();
+         switch ($propertyClass) {
+            case 'DateTime':
+               $content[$refProperty->getName()]=$refProperty->getValue($entity)?->format('Y-m-d\TH:i:s.u');
+               break;
+            case 'string':
+            case 'bool':
+            case 'int':
+            case 'float':
+               $content[$refProperty->getName()]=$refProperty->getValue($entity);
+               break;
+            default:
+               $content[$refProperty->getName()]=$refProperty->getValue($entity)?->getId();
+         }
+      }
+      return $content;
+   }
+   /**
+    * @param Item $couchdbItem
+    * @param string $className
+    * @return mixed
+    * @throws ReflectionException
+    */
+   public function convertCouchdbItemToEntity(Item $couchdbItem, string $className):mixed {
+      $itemArray = $couchdbItem->getContent();
+      return $this->convertArrayToEntity($itemArray,$className);
    }
 
    /**
