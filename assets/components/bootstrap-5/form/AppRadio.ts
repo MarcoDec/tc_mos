@@ -1,12 +1,14 @@
-import type {FormField, FormOption, FormValue} from '../../../types/bootstrap-5'
+import type {BootstrapSize, FormField, FormOption, FormValue} from '../../../types/bootstrap-5'
 import type {PropType, SetupContext, VNode} from 'vue'
 import {computed, h} from 'vue'
+import type {DeepReadonly} from '../../../types/types'
 
 type Props = {
     field: FormField
     id: string
     modelValue?: FormValue
     option: FormOption
+    size: BootstrapSize
 }
 
 export default {
@@ -14,24 +16,26 @@ export default {
     props: {
         field: {required: true, type: Object as PropType<FormField>},
         id: {required: true, type: String},
-        modelValue: {type: Object as PropType<FormValue>},
-        option: {required: true, type: Object as PropType<FormOption>}
+        modelValue: {type: [Boolean, Number, String] as PropType<FormValue>},
+        option: {required: true, type: Object as PropType<FormOption>},
+        size: {default: 'sm', type: String as PropType<BootstrapSize>}
     },
-    setup(props: Props, {emit}: SetupContext): () => VNode | VNode[] {
+    setup(props: DeepReadonly<Props>, {emit}: DeepReadonly<SetupContext>): () => VNode | VNode[] {
         const btn = computed(() => Boolean(props.field.btn))
         const checked = computed(() => props.modelValue === props.option.value)
         const inputClass = computed(() => ({
+            [`btn-${props.size}`]: true,
             'btn-check': btn.value,
             'form-check-input': !btn.value
         }))
-        const inputId = computed(() => `${props.id}-${props.option.value}`)
+        const inputId = computed(() => `${props.id}-${String(props.option.value)}`)
         const label = computed(() => ({
             btn: btn.value,
             'btn-outline-primary': btn.value,
             'form-check-label': !btn.value
         }))
 
-        function input(e: InputEvent): void {
+        function input(e: Readonly<InputEvent>): void {
             emit('update:modelValue', (e.target as HTMLInputElement).value)
         }
 

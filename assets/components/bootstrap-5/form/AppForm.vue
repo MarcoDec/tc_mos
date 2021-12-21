@@ -3,26 +3,27 @@
     import {defineEmits, defineProps, withDefaults} from 'vue'
     import clone from 'clone'
 
-    const emit = defineEmits<{(e: 'update:values', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
+    const emit = defineEmits<{(e: 'update:modelValue', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
     const props = withDefaults(
-        defineProps<{fields: FormField[], values?: FormValues}>(),
-        {values: () => ({})}
+        defineProps<{fields: FormField[], id: string, modelValue?: FormValues}>(),
+        {modelValue: () => ({})}
     )
 
     function input(value: Readonly<{value: FormValue, name: string}>): void {
-        const cloned = clone(props.values)
+        const cloned = clone(props.modelValue)
         cloned[value.name] = value.value
-        emit('update:values', cloned)
+        emit('update:modelValue', cloned)
     }
 </script>
 
 <template>
-    <form autocomplete="off" @submit.prevent="emit('submit')">
+    <form :id="id" autocomplete="off" @submit.prevent="emit('submit')">
         <AppFormGroup
             v-for="field in fields"
             :key="field.name"
             :field="field"
-            :value="values[field.name]"
+            :form="id"
+            :model-value="modelValue[field.name]"
             @input="input"/>
         <AppBtn class="float-end" type="submit">
             Connexion

@@ -1,9 +1,15 @@
 <script lang="ts" setup>
-    import type {FormField, FormValue} from '../../../types/bootstrap-5'
+    import type {BootstrapSize, FormField, FormValue} from '../../../types/bootstrap-5'
     import {computed, defineEmits, defineProps} from 'vue'
+    import type {PropType} from 'vue'
 
     const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
-    const props = defineProps<{field: FormField, id: string, modelValue?: FormValue}>()
+    const props = defineProps({
+        field: {required: true, type: Object as PropType<FormField>},
+        modelValue: {default: null, type: [Boolean, Number, String] as PropType<FormValue>},
+        noLabel: {required: false, type: Boolean},
+        size: {default: 'sm', type: String as PropType<BootstrapSize>}
+    })
     const type = computed(() => props.field.type ?? 'text')
 
     const guessed = computed(() => {
@@ -27,5 +33,11 @@
 </script>
 
 <template>
-    <component :is="guessed" :id="id" :field="field" :model-value="modelValue" @update:model-value="input"/>
+    <component
+        :is="guessed"
+        :field="field"
+        :model-value="modelValue"
+        :no-label="noLabel"
+        :size="size"
+        @update:model-value="input"/>
 </template>

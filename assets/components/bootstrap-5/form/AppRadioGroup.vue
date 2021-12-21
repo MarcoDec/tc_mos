@@ -1,9 +1,13 @@
 <script lang="ts" setup>
-    import type {FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps} from 'vue'
+    import type {BootstrapSize, FormField, FormValue} from '../../../types/bootstrap-5'
+    import {computed, defineEmits, defineProps, withDefaults} from 'vue'
 
     const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
-    const props = defineProps<{field: FormField, id: string, modelValue?: FormValue}>()
+    const props = withDefaults(
+        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize}>(),
+        {modelValue: null, size: 'sm'}
+    )
+    const sizeClass = computed(() => `btn-group-${props.size}`)
 
     const options = computed(() => props.field.options ?? [])
 
@@ -13,11 +17,15 @@
 </script>
 
 <template>
-    <AppRadio
-        v-for="option in options"
-        :id="id"
-        :field="field"
-        :model-value="modelValue"
-        :option="option"
-        @update:model-value="input"/>
+    <div :class="sizeClass" class="btn-group">
+        <AppRadio
+            v-for="option in options"
+            :id="field.id"
+            :key="option.value"
+            :field="field"
+            :model-value="modelValue"
+            :option="option"
+            :size="size"
+            @update:model-value="input"/>
+    </div>
 </template>

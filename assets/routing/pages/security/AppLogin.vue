@@ -5,7 +5,6 @@
     import type {FormField} from '../../../types/bootstrap-5'
     import {ref} from 'vue'
     import router from '../../router'
-    import {useLoading} from 'vue3-loading-overlay'
 
     const fields: FormField[] = [
         {label: 'Identifiant', name: 'username'},
@@ -17,17 +16,7 @@
     const {code, error: showError, msgError}
         = useNamespacedState<State>('users', ['code', 'error', 'msgError'])
 
-    const TIMEOUT = 1000
-
     async function handleClick(): Promise<void> {
-        const loader = useLoading()
-        loader.show({
-            canCancel: true
-        })
-        setTimeout(() => {
-            loader.hide()
-        }, TIMEOUT)
-
         await fetchUsers(formData.value)
         await router.push({name: 'home'})
     }
@@ -40,7 +29,7 @@
             {{ msgError }}
         </div>
         <AppCard class="bg-blue col">
-            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick"/>
+            <AppForm id="login" v-model="formData" :fields="fields" @submit="handleClick"/>
         </AppCard>
     </AppRow>
 </template>
