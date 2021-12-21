@@ -24,8 +24,6 @@
             :field="field"
             :value="values[field.name]"
             @input="input"/>
-        <AppBtn class="float-end" type="submit">
-            Connexion
-        </AppBtn>
+        <slot name="buttons"/>
     </form>
 </template>

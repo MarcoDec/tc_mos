@@ -1,0 +1,1 @@
+import{f as n,i as s,j as a,m as r,w as p,I as l}from"./vendor.2217986f.js";const f=n({props:{to:null},setup(o){return(t,c)=>{const e=s("AppRouterLink");return a(),r(e,{to:o.to,class:"navbar-brand"},{default:p(()=>[l(t.$slots,"default")]),_:3},8,["to"])}}});export{f as default};

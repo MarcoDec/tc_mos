@@ -8,7 +8,6 @@
     "js-cookie": "^3.0.1",
     "vue": "^3.2.26",
     "vue-router": "^4.0.12",
-    "vue3-loading-overlay": "^0.0.0",
     "vuex": "^4.0.2",
     "vuex-composition-helpers": "^2.0.1"
   },

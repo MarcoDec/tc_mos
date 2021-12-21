@@ -1,11 +1,11 @@
 <script lang="ts" setup>
     import type {Actions, State} from '../../../store/security'
-    import {useNamespacedActions, useNamespacedState} from 'vuex-composition-helpers'
+    import {useMutations, useNamespacedActions, useNamespacedState} from 'vuex-composition-helpers'
     import {ActionTypes} from '../../../store/security'
     import type {FormField} from '../../../types/bootstrap-5'
+    import {MutationTypes} from '../../../store/mutation'
     import {ref} from 'vue'
     import router from '../../router'
-    import {useLoading} from 'vue3-loading-overlay'
 
     const fields: FormField[] = [
         {label: 'Identifiant', name: 'username'},
@@ -13,23 +13,19 @@
     ]
 
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
-    const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.FETCH_USERS])[ActionTypes.FETCH_USERS]
+    const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.LOGIN])[ActionTypes.LOGIN]
     const {code, error: showError, msgError}
         = useNamespacedState<State>('users', ['code', 'error', 'msgError'])
 
-    const TIMEOUT = 1000
-
+    const loader = useMutations([MutationTypes.SPINNER])[MutationTypes.SPINNER]
     async function handleClick(): Promise<void> {
-        const loader = useLoading()
-        loader.show({
-            canCancel: true
-        })
-        setTimeout(() => {
-            loader.hide()
-        }, TIMEOUT)
-
-        await fetchUsers(formData.value)
-        await router.push({name: 'home'})
+        loader()
+        try {
+            await fetchUsers(formData.value)
+            await router.push({name: 'home'})
+        } finally {
+            loader()
+        }
     }
 </script>
 
@@ -40,7 +36,13 @@
             {{ msgError }}
         </div>
         <AppCard class="bg-blue col">
-            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick"/>
+            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick">
+                <template #buttons>
+                    <AppBtn class="float-end" type="submit">
+                        Connexion
+                    </AppBtn>
+                </template>
+            </AppForm>
         </AppCard>
     </AppRow>
 </template>

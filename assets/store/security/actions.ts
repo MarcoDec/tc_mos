@@ -5,10 +5,12 @@ import type {RootState} from '../index'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import {fetchApi} from '../../api'
+import {nextTick} from "vue";
+import router from '../../routing/router'
 
 export enum ActionTypes {
     CONNECT = 'CONNECT',
-    FETCH_USERS = 'FETCH_USERS',
+    LOGIN = 'LOGIN',
     LOGOUT_USERS = 'LOGOUT_USERS'
 }
 
@@ -26,7 +28,7 @@ export const actions = {
             commit(MutationTypes.SET_USER, user.username)
         }
     },
-    async [ActionTypes.FETCH_USERS]({commit}: ActionContext, {password, username}: Login): Promise<void> {
+    async [ActionTypes.LOGIN]({commit}: ActionContext, {password, username}: Login): Promise<void> {
         try {
             const user = await fetchApi('/api/login', {
                 json: {password: password ?? '', username: username ?? ''},
@@ -39,8 +41,11 @@ export const actions = {
                 && typeof user.username !== 'undefined'
             ) {
                 Cookies.set(user.id, user.token)
+
                 commit(MutationTypes.SET_USER, user.username)
+
             }
+
         } catch (error: unknown) {
             if (error instanceof Response) {
                 const response = await error.json() as string | {'hydra:description': string, 'hydra:title': string}
@@ -48,7 +53,9 @@ export const actions = {
                 commit(MutationTypes.MSG_ERROR, message)
                 commit(MutationTypes.CODE, error.status)
                 commit(MutationTypes.ERROR, true)
+
             }
+
         }
     },
     async [ActionTypes.LOGOUT_USERS]({commit}: ActionContext): Promise<void> {
