@@ -2,7 +2,6 @@
 
 namespace App\Entity\Project\Product;
 
-use App\Controller\Actions\CloneAction;
 use App\Entity\Embeddable\Measure;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use App\Entity\Embeddable\Project\Product\CurrentPlace;
@@ -82,8 +81,8 @@ use App\Entity\Management\Unit;
                 'path' => '/products/{id}/upgrade',
                 'controller' => PlaceholderAction::class,
                 'openapi_context' => [
-                    'description' => '??? un produit',
-                    'summary' => '?? un produit',
+                    'description' => 'Dupliquer un produit en le reliant à son parent',
+                    'summary' => 'Dupliquer un produit en le reliant à son parent',
                 ]
             ],
             'promote' => [
@@ -91,8 +90,8 @@ use App\Entity\Management\Unit;
                 'path' => '/products/{id}/promote',
                 'controller' => PlaceholderAction::class,
                 'openapi_context' => [
-                    'description' => '?? un produit',
-                    'summary' => '?? un produit',
+                    'description' => 'Passer un produit à un nouveau statut',
+                    'summary' => 'Passer un produit à un nouveau statut',
                 ]
             ]
         ],
