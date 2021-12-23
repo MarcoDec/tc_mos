@@ -1,13 +1,11 @@
 import type {State} from './state'
 
 export enum MutationTypes {
-    SPINNER = 'SPINNER',
+    SPINNER = 'SPINNER'
 }
 
 export const mutations = {
-
-    [MutationTypes.SPINNER](state:State): void {
-       state.spinner = !state.spinner
-    },
+    [MutationTypes.SPINNER](state: State): void {
+        state.spinner = !state.spinner
+    }
 }
-

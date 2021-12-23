@@ -5,7 +5,8 @@ export enum MutationTypes {
     SET_USER = 'SET_USER',
     ERROR = 'ERROR',
     LOGOUT = 'LOGOUT',
-    MSG_ERROR = 'MSG_ERROR'
+    MSG_ERROR = 'MSG_ERROR',
+    SHOW_MODAL = 'SHOW_MODAL'
 }
 
 export const mutations = {
@@ -23,6 +24,9 @@ export const mutations = {
     },
     [MutationTypes.CODE](state: State, code: string): void {
         state.code = code
+    },
+    [MutationTypes.SHOW_MODAL](state: State): void {
+        state.showModal = !state.showModal
     }
 }
 

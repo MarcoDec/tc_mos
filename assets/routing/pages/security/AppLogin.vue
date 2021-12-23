@@ -1,9 +1,15 @@
 <script lang="ts" setup>
-    import type {Actions, State} from '../../../store/security'
-    import {useMutations, useNamespacedActions, useNamespacedState} from 'vuex-composition-helpers'
-    import {ActionTypes} from '../../../store/security'
+    import {ActionTypes, MutationTypes} from '../../../store/security'
+    import type {Actions, Mutations, State} from '../../../store/security'
+    import {
+        useMutations,
+        useNamespacedActions,
+        useNamespacedMutations,
+        useNamespacedState
+    } from 'vuex-composition-helpers'
+    import AppModalError from '../../../components/bootstrap-5/modal/AppModalError.vue'
     import type {FormField} from '../../../types/bootstrap-5'
-    import {MutationTypes} from '../../../store/mutation'
+    import {MutationTypes as MutationTypesSpinner} from '../../../store/mutation'
     import {ref} from 'vue'
     import router from '../../router'
 
@@ -14,10 +20,10 @@
 
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
     const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.LOGIN])[ActionTypes.LOGIN]
-    const {code, error: showError, msgError}
-        = useNamespacedState<State>('users', ['code', 'error', 'msgError'])
-
-    const loader = useMutations([MutationTypes.SPINNER])[MutationTypes.SPINNER]
+    const {code, error: showError, msgError, showModal}
+        = useNamespacedState<State>('users', ['code', 'error', 'msgError', 'showModal'])
+    const show = useNamespacedMutations<Mutations>('users', [MutationTypes.SHOW_MODAL])[MutationTypes.SHOW_MODAL]
+    const loader = useMutations([MutationTypesSpinner.SPINNER])[MutationTypesSpinner.SPINNER]
     async function handleClick(): Promise<void> {
         loader()
         try {
@@ -26,6 +32,9 @@
         } finally {
             loader()
         }
+    }
+    function closeModal(): void{
+        show()
     }
 </script>
 
@@ -44,5 +53,6 @@
                 </template>
             </AppForm>
         </AppCard>
+        <AppModalError v-show="showModal" @close="closeModal"/>
     </AppRow>
 </template>

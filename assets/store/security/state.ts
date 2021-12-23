@@ -3,6 +3,7 @@ export type State = {
     error: boolean
     msgError: string | null
     password: string | null
+    showModal: boolean
     username: string | null
 }
 
@@ -11,5 +12,6 @@ export const state: State = {
     error: false,
     msgError: null,
     password: null,
+    showModal: false,
     username: null
 }

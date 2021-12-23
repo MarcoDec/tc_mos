@@ -1,1 +1,0 @@
-import{f as r,z as a,i as p,j as c,m as l,w as u,I as f,p as m}from"./vendor.2217986f.js";const _=r({props:{to:null},setup(o){const t=o,e=a(()=>({name:t.to}));return(n,i)=>{const s=p("RouterLink");return c(),l(s,{to:m(e)},{default:u(()=>[f(n.$slots,"default")]),_:3},8,["to"])}}});export{_ as default};

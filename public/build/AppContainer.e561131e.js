@@ -1,1 +1,0 @@
-import{f as n,z as r,j as t,k as l,I as c,J as f,p as i}from"./vendor.2217986f.js";const u=n({props:{fluid:{required:!1,type:Boolean}},setup(s){const e=s,o=r(()=>({container:!e.fluid,"container-fluid":e.fluid}));return(a,d)=>(t(),l("div",{class:f(i(o))},[c(a.$slots,"default")],2))}});export{u as default};

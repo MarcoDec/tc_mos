@@ -1,1 +1,0 @@
-import{c as s}from"./bootstrap-5.4d5f92e0.js";import{f as a,i as l,j as r,m as c,w as p,I as n}from"./vendor.2217986f.js";const i=a({props:{cols:{default:2,type:Number,validator:s}},setup(o){return(e,f)=>{const t=l("AppCol");return r(),c(t,{cols:o.cols,class:"form-label",tag:"label"},{default:p(()=>[n(e.$slots,"default")]),_:3},8,["cols"])}}});export{i as default};

@@ -8,7 +8,6 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 import router from './routing/router'
 import store from './store/index'
 
-
 library.add(fas)
 const app = createApp(App as Component)
     .use(router)
@@ -17,6 +16,3 @@ const app = createApp(App as Component)
 for (const [name, component] of Object.entries(components))
     app.component(name, component)
 app.mount('#vue')
-
-
-

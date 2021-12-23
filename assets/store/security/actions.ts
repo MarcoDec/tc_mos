@@ -5,8 +5,6 @@ import type {RootState} from '../index'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import {fetchApi} from '../../api'
-import {nextTick} from "vue";
-import router from '../../routing/router'
 
 export enum ActionTypes {
     CONNECT = 'CONNECT',
@@ -41,27 +39,42 @@ export const actions = {
                 && typeof user.username !== 'undefined'
             ) {
                 Cookies.set(user.id, user.token)
-
                 commit(MutationTypes.SET_USER, user.username)
-
             }
-
         } catch (error: unknown) {
             if (error instanceof Response) {
-                const response = await error.json() as string | {'hydra:description': string, 'hydra:title': string}
-                const message = typeof response === 'string' ? response : `${response['hydra:title']} : ${response['hydra:description']}`
+                let message = ''
+                try {
+                    const response = await error.json() as string | {'hydra:description': string, 'hydra:title': string}
+                    message = typeof response === 'string' ? response : `${response['hydra:title']} : ${response['hydra:description']}`
+                } catch (err: unknown) {
+                    message = error.statusText
+                    commit(MutationTypes.SHOW_MODAL, true)
+                }
                 commit(MutationTypes.MSG_ERROR, message)
                 commit(MutationTypes.CODE, error.status)
                 commit(MutationTypes.ERROR, true)
-
+            } else {
+                commit(MutationTypes.ERROR, false)
             }
-
         }
     },
     async [ActionTypes.LOGOUT_USERS]({commit}: ActionContext): Promise<void> {
-        await fetchApi('/api/logout', {method: 'post'})
-        Cookies.remove()
-        commit(MutationTypes.SET_USER, null)
+        try {
+            await fetchApi('/api/logout', {method: 'post'})
+            Cookies.remove()
+            commit(MutationTypes.SET_USER, null)
+        } catch (error: unknown) {
+            if (error instanceof Response) {
+                try {
+                    await error.json() as string | {'hydra:description': string, 'hydra:title': string}
+                } catch (err: unknown) {
+                    commit(MutationTypes.SHOW_MODAL, true)
+                }
+            } else {
+                commit(MutationTypes.ERROR, false)
+            }
+        }
     }
 }
 

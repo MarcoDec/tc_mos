@@ -3,6 +3,6 @@ export type State = {
 }
 
 export const state: State = {
-    spinner: false,
+    spinner: false
 }
 
