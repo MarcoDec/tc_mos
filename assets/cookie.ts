@@ -1,17 +1,27 @@
 import Cookies from 'js-cookie'
 
+const ONE_HOUR = 1
+
+function setExpirableCookie(name: string, value: string): void {
+    const expires = new Date()
+    expires.setHours(expires.getHours() + ONE_HOUR)
+    Cookies.set(name, value, {expires})
+}
+
 export function get(name: string): string | undefined {
     return Cookies.get(name)
 }
 
-export function has(name: string): boolean {
-    return typeof get(name) !== 'undefined'
+export function has(): boolean {
+    return typeof get('id') !== 'undefined' && typeof get('token') !== 'undefined'
 }
 
-export function remove(name: string): void {
-    Cookies.remove(name)
+export function remove(): void {
+    Cookies.remove('id')
+    Cookies.remove('token')
 }
 
-export function set(name: string, value: string): string | undefined {
-    return Cookies.set(name, value)
+export function set(id: number, token: string): void {
+    setExpirableCookie('id', id.toString())
+    setExpirableCookie('token', token)
 }

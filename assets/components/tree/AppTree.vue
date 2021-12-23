@@ -5,14 +5,16 @@
     const emit = defineEmits<(e: 'click', item: TreeItem) => void>()
     const props = defineProps<{item: TreeItem}>()
 
+    const EMPTY = 0
+
     const opened = ref(false)
 
-    const hasChildren = computed(() => typeof props.item.children !== 'undefined' && props.item.children.length > 0)
+    const hasChildren = computed(() => typeof props.item.children !== 'undefined' && props.item.children.length > EMPTY)
     const itemTag = computed(() => (hasChildren.value ? 'AppTreeClickableItem' : 'AppTreeItem'))
     const showChildren = computed(() => hasChildren.value && opened.value)
 
-    function click(event: boolean): void {
-        opened.value = event
+    function click(e: boolean): void {
+        opened.value = e
         emit('click', props.item)
     }
 

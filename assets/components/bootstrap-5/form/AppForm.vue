@@ -4,8 +4,9 @@
     import clone from 'clone'
 
     const form = ref<HTMLFormElement>()
-    const emit = defineEmits<{(e: 'update:values', values: FormValues): void,
-                              (e: 'submit', data: FormData): void,
+    const emit = defineEmits<{
+        (e: 'submit', data: FormData): void
+        (e: 'update:values', values: FormValues): void
     }>()
     const props = withDefaults(
         defineProps<{fields: FormField[], values?: FormValues}>(),
@@ -17,12 +18,12 @@
         cloned[name] = value
         emit('update:values', cloned)
     }
-    function submit(): void{
+
+    function submit(): void {
         if (typeof form.value !== 'undefined')
             emit('submit', new FormData(form.value))
     }
 </script>
-
 
 <template>
     <form ref="form" autocomplete="off" @submit.prevent="submit">

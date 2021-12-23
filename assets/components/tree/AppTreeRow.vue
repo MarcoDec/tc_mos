@@ -4,7 +4,7 @@
     import type {TreeItem} from '../../types/tree'
 
     const emit = defineEmits<{
-        (e: 'ajout'): void,
+        (e: 'ajout'): void
         (e: 'update:formData', formData: FormValues): void
         (e: 'selected', item: TreeItem): void
     }>()

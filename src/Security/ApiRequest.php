@@ -69,8 +69,8 @@ final class ApiRequest {
 
     public function hasCredentials(): bool {
         $content = $this->getContent();
-        return isset($content['username']) && !empty($content['username'])
-            && isset($content['password']) && !empty($content['password']);
+        return isset($content['username'])
+            && isset($content['password']);
     }
 
     public function isApiUri(): bool {

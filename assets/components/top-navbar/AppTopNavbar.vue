@@ -1,18 +1,35 @@
 <script lang="ts" setup>
-    import type {Actions, State} from '../../store/security'
-    import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
-    import {ActionTypes} from '../../store/security'
+    import {ActionTypes, MutationTypes} from '../../store/security'
+    import type {Actions, Mutations, State} from '../../store/security'
+    import {
+        useMutations,
+        useNamespacedActions,
+        useNamespacedGetters,
+        useNamespacedMutations,
+        useNamespacedState
+    } from 'vuex-composition-helpers'
     import Dropdown from '../bootstrap-5/navbar/Dropdown.vue'
+    import {MutationTypes as MutationSpinner} from '../../store/mutation'
     import {useRouter} from 'vue-router'
 
     const hasUser = useNamespacedGetters('users', ['hasUser']).hasUser
     const logout = useNamespacedActions<Actions>('users', [ActionTypes.LOGOUT_USERS])[ActionTypes.LOGOUT_USERS]
     const name = useNamespacedState<State>('users', ['username']).username
+    const error = useNamespacedMutations<Mutations>('users', [MutationTypes.LOGOUT])[MutationTypes.LOGOUT]
+    const loader = useMutations([MutationSpinner.SPINNER])[MutationSpinner.SPINNER]
+
     const router = useRouter()
 
     async function onLogout(): Promise<void> {
-        await logout()
-        await router.push({name: 'login'})
+        loader()
+        try {
+            await logout()
+            await router.push({name: 'login'})
+        } catch (e) {
+            error()
+        } finally {
+            loader()
+        }
     }
 </script>
 
@@ -23,7 +40,6 @@
         </AppNavbarBrand>
         <div v-if="hasUser">
             <Dropdown title="Achats"/>
-
 
             <div id="logout" class="text-white">
                 <Fa icon="user-circle"/>

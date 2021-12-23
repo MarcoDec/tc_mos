@@ -3,7 +3,7 @@
     import type {TreeItem} from '../../types/tree'
 
     const props = defineProps<{item: TreeItem}>()
-    const icon = computed(() => (typeof props.item.icon !== 'undefined' ? props.item.icon : 'folder'))
+    const icon = computed(() => props.item.icon ?? 'folder')
 </script>
 
 <template>

@@ -9,7 +9,7 @@
     )
     const checked = computed(() => Boolean(props.value))
     const sizeClass = computed(() => `form-control-${props.size}`)
-    const type = computed(() => (typeof props.field.type !== 'undefined' ? props.field.type : 'text'))
+    const type = computed(() => props.field.type ?? 'text')
 
     function input(e: Event): void {
         const target = e.target as HTMLInputElement

@@ -7,7 +7,7 @@ export enum MutationTypes {
 }
 
 export const mutations = {
-    [MutationTypes.SET_COMPONENT_FAMILIES](state: State, ComponentFamiliesInfo: {pathid: string | null; id: number | null; code: string | null; copperable: boolean | null; customsCode: string | null; filepath: string | null; name: string; parent: string | null;}[]): void {
+    [MutationTypes.SET_COMPONENT_FAMILIES](state: State, ComponentFamiliesInfo: {pathid: string | null, id: number | null, code: string | null, copperable: boolean | null, customsCode: string | null, filepath: string | null, name: string, parent: string | null}[]): void {
         state.ComponentFamiliesInfo = ComponentFamiliesInfo
     },
     [MutationTypes.SET_FamilyInstance](state: State, families: object): void {

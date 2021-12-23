@@ -24,6 +24,7 @@
     "eslint-plugin-vue": "^8.2.0",
     "humps": "^2.0.1",
     "sass": "^1.45.1",
+    "ts-toolbelt": "^9.6.0",
     "typescript": "^4.5.4",
     "vite": "^2.7.6",
     "vite-plugin-checker": "^0.3.4",
@@ -34,8 +35,8 @@
   "scripts": {
     "build": "vue-tsc --noEmit && vite build && echo '*\n!.gitignore' > public/build/.gitignore",
     "dev": "vite",
-    "eslint": "NODE_ENV=production vue-tsc --noEmit && eslint ./assets/",
-    "eslint-fix": "NODE_ENV=production vue-tsc --noEmit && eslint --fix ./assets/",
+    "eslint": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js assets",
+    "eslint-fix": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js --fix assets",
     "openapi": "php bin/console api:openapi:export -o openapi.json && npx openapi-typescript openapi.json --output assets/types/openapi.d.ts && rm openapi.json",
     "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
     "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"

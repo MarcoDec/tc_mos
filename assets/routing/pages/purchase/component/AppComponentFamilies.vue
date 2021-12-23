@@ -38,6 +38,7 @@
             id: item.id,
             name: item.name,
             // @ts-ignore
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             parent: item.parent['@id'],
             pathid: item['@id'],
             type: item['@type']
