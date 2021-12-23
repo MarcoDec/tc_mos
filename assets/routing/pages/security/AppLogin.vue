@@ -14,7 +14,7 @@
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
     const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.FETCH_USERS])[ActionTypes.FETCH_USERS]
 
-    async function handleClick(): Promise<void> {        
+    async function handleClick(): Promise<void> {
         await fetchUsers(formData.value)
         await router.push({name: 'home'})
     }

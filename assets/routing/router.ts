@@ -30,7 +30,7 @@ const router = createRouter({
 })
 
 router.beforeEach(to => {
-    
+
     if (
         to.matched.some(record => record.meta.requiresAuth && record.name !== 'login')
         && !useNamespacedGetters<Getters>(store, 'users', ['hasUser']).hasUser.value

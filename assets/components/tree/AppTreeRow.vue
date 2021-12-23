@@ -22,7 +22,6 @@
     function input(item: PointerEvent | TreeItem): void {
         if (!(item instanceof PointerEvent)) {
             selected.value = item
-            console.log('selected', selected.value)
             emit('selected', item)
         }
     }

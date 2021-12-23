@@ -22,18 +22,13 @@
         await useNamespacedActions<Actions>('component', [ActionTypes.LOAD_FAMILIES])[ActionTypes.LOAD_FAMILIES]()
     })
     const families = useNamespacedGetters('component', ['treeFamilies']).treeFamilies
-    console.log('families', families)
 
     async function addFamily(): Promise<void> {
-        console.log('add', formData)
         // @ts-ignore
         await addFamilies(formData.value)
     }
 
     function selected(item: TreeItem): void {
-        // formData.value= item
-        console.log('formData', item)
-
         const items = {
             children: item.children,
             code: item.code,
@@ -47,7 +42,6 @@
             pathid: item['@id'],
             type: item['@type']
         }
-        console.log('items', items)
         // @ts-ignore
         formData.value = items
     }

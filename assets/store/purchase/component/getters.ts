@@ -26,13 +26,11 @@ export const getters = {
                 relation.parent = null
             relations.push(relation)
         }
-        console.log('relations', relations)
         const mappedFamilies: ComponentFamilyRelation[] = []
         for (const relation of relations) {
             if (relation.parent === null)
                 mappedFamilies.push(relation)
         }
-        console.log('mappedFamilies', mappedFamilies)
         // @ts-ignore
         return {children: mappedFamilies}
     }
