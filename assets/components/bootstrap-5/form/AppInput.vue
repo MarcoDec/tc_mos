@@ -7,50 +7,40 @@
         defineProps<{field: FormField, value?: FormValue, size?: BootstrapSize}>(),
         {size: 'sm', value: ''}
     )
-    
+    const checked = computed(() => Boolean(props.value))
     const sizeClass = computed(() => `form-control-${props.size}`)
     const type = computed(() => (typeof props.field.type !== 'undefined' ? props.field.type : 'text'))
 
     function input(e: Event): void {
-        console.log('e',e);
-        console.log('target', e.target);
-        
-        
-            const target = e.target as HTMLInputElement 
-            console.log('checked',target.checked);
-            console.log('value', target.value);
-            console.log( 'type',target.type);
-            emit('update:value', target.type === "checkbox" ? target.checked:target.value )
-
-        
-            
+        const target = e.target as HTMLInputElement
+        emit('update:value', target.type === 'checkbox' ? target.checked : target.value)
     }
 </script>
 
 <template>
     <template v-if="type === 'grpbutton'">
-        <div id="btnGroup" class="btn-group btn-group-sm" role="group" aria-label="Basic radio toggle button group">
-            <input id="btnradio1" type="radio" class="btn-check" name="btnradio" autocomplete="off" checked/>
+        <div id="btnGroup" aria-label="Basic radio toggle button group" class="btn-group btn-group-sm" role="group">
+            <input id="btnradio1" autocomplete="off" checked class="btn-check" name="btnradio" type="radio"/>
             <label class="btn btn-outline-success" for="btnradio1"/>
 
-            <input id="btnradio2" type="radio" class="btn-check" name="btnradio" autocomplete="off"/>
+            <input id="btnradio2" autocomplete="off" class="btn-check" name="btnradio" type="radio"/>
             <label class="btn btn-outline-success" for="btnradio2">oui</label>
 
-            <input id="btnradio3" type="radio" class="btn-check" name="btnradio" autocomplete="off"/>
+            <input id="btnradio3" autocomplete="off" class="btn-check" name="btnradio" type="radio"/>
             <label class="btn btn-outline-success" for="btnradio3">non</label>
         </div>
     </template>
     <template v-else-if="type === 'switch'">
         <div class="form-check form-switch">
-            <input  class="form-check-input" type="checkbox" :checked="value" @input="input" />
+            <input :checked="checked" class="form-check-input" type="checkbox" @input="input"/>
         </div>
     </template>
     <template v-else-if="type === 'select'">
-        <select class="form-select" aria-label="Default select example">
+        <select aria-label="Default select example" class="form-select">
             <option selected>
                 Open this select menu
             </option>
-            <option v-for="option in field.options" :key="option.value" :value="option.value">
+            <option v-for="(option, i) in field.options" :key="i" :value="option.value">
                 {{ option.text }}
             </option>
         </select>
@@ -59,4 +49,3 @@
         <input :class="sizeClass" :name="field.name" :type="type" :value="value" class="form-control" @input="input"/>
     </template>
 </template>
-

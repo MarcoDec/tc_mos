@@ -1,40 +1,40 @@
 <script lang="ts" setup>
-    import {onMounted , ref} from 'vue'
+    /* eslint-disable @typescript-eslint/ban-ts-comment */
+    import {onMounted, ref} from 'vue'
+    import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
     import {ActionTypes} from '../../../../store/purchase/component'
     import type {Actions} from '../../../../store/purchase/component'
-    import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
+    import type {FormField} from '../../../../types/bootstrap-5'
     import type {TreeItem} from '../../../../types/tree'
 
     const fields: FormField[] = [
         {label: 'Parent', name: 'parent', type: 'select'},
         {label: 'Code', name: 'code', type: 'text'},
-        {label: 'Nom', name: 'name',  type: 'text'},
+        {label: 'Nom', name: 'name', type: 'text'},
         {label: 'Copperable', name: 'copperable', type: 'switch'},
         {label: 'Customs Code', name: 'customsCode', type: 'text'},
         {label: 'file', name: 'file', type: 'file'}
     ]
-    const formData = ref ({
-        parent: null, code: null, name: null, copperable: false, customsCode: null, file:''
-    })
+    const formData = ref({code: null, copperable: false, customsCode: null, file: '', name: null, parent: null})
     const addFamilies = useNamespacedActions<Actions>('component', [ActionTypes.ADD_FAMILIES])[ActionTypes.ADD_FAMILIES]
 
     onMounted(async () => {
         await useNamespacedActions<Actions>('component', [ActionTypes.LOAD_FAMILIES])[ActionTypes.LOAD_FAMILIES]()
-    });
+    })
     const families = useNamespacedGetters('component', ['treeFamilies']).treeFamilies
-    console.log('families', families);
+    console.log('families', families)
 
-    async function addFamily ():void {
-        console.log('add',formData)
+    async function addFamily(): Promise<void> {
+        console.log('add', formData)
+        // @ts-ignore
         await addFamilies(formData.value)
     }
-    function selected (item : TreeItem):void{
+
+    function selected(item: TreeItem): void {
         // formData.value= item
-        console.log('formData',item);
-        
+        console.log('formData', item)
+
         const items = {
-            pathid: item['@id'],
-            type: item ['@type'],
             children: item.children,
             code: item.code,
             copperable: item.copperable,
@@ -42,10 +42,14 @@
             filepath: item.filepath,
             id: item.id,
             name: item.name,
-            parent: item.parent['@id']
+            // @ts-ignore
+            parent: item.parent['@id'],
+            pathid: item['@id'],
+            type: item['@type']
         }
-        console.log('items',items);
-        formData.value= items
+        console.log('items', items)
+        // @ts-ignore
+        formData.value = items
     }
 </script>
 
@@ -56,5 +60,7 @@
             Familles
         </h1>
     </AppRow>
-    <AppTreeRow :item="families" v-model:formData="formData" :fields="fields" label="code" @ajout="addFamily" @selected="selected"/>
+    <AppTreeRow
+        v-model:formData="formData" :fields="fields" :item="families" label="code" @ajout="addFamily"
+        @selected="selected"/>
 </template>

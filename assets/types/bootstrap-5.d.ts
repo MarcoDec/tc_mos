@@ -16,22 +16,23 @@ export type BootstrapVariant =
 export type FormField = {
     label: string
     name: string
+    options?: {text: string, value: FormValue}[]
     type?: FormInput
 }
 
-export type FormInput = 'boolean' | 'button' | 'date' | 'grpbutton' | 'number' | 'password' | 'select' | 'switch' | 'text' | 'time'
+export type FormInput =
+    'boolean'
+    | 'button'
+    | 'date'
+    | 'file'
+    | 'grpbutton'
+    | 'number'
+    | 'password'
+    | 'select'
+    | 'switch'
+    | 'text'
+    | 'time'
 
-export type FormValue = number | string
+export type FormValue = boolean | number | string
 
 export type FormValues = Record<string, FormValue>
-
-export type UserResponse = {
-    name: string,
-    embRoles: {
-        roles: string[]
-    },
-    username: string,
-    id: string,
-    token: string
-
-}
