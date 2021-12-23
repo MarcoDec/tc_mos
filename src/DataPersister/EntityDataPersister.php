@@ -19,7 +19,7 @@ final class EntityDataPersister implements ContextAwareDataPersisterInterface
     public function persist($data, array $context = [])
     {
         $returnObject = null;
-         $this->em->detach($data);
+        $this->em->detach($data);
 
         switch($context['item_operation_name']) {
             case 'clone':
