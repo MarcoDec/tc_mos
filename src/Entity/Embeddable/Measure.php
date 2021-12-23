@@ -5,7 +5,6 @@ namespace App\Entity\Embeddable;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-// use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Management\Unit;
 
 #[ORM\Embeddable]
@@ -25,16 +24,13 @@ class Measure {
     private ?float $value = 0;
 
     #[
-        ApiProperty(description: 'Unité', example: '/api/units/5'),
-        ORM\ManyToOne(targetEntity: Unit::class),
+        ApiProperty(description: 'Unité', readableLink: false, example: '/api/units/2'),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
-    private Unit $unit;
+    private ?Unit $unit = null;
 
     #[
-        ApiProperty(description: 'Unité dénominateur', example: '/api/units/7'),
-        ORM\ManyToOne(targetEntity: Unit::class),
-        ORM\JoinColumn(nullable: false),
+        ApiProperty(description: 'Dénominateur', readableLink: false, example: '/api/units/3'),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private ?Unit $denominator = null;
@@ -47,7 +43,7 @@ class Measure {
         return $this->value;
     }
 
-    final public function getUnit(): Unit {
+    final public function getUnit(): ?Unit {
         return $this->unit;
     }
 
@@ -67,7 +63,6 @@ class Measure {
         return $this;
     }
     
-
     final public function setUnit(Unit $unit): self {
         $this->unit = $unit;
         $this->code = $unit->getCode();
@@ -82,10 +77,6 @@ class Measure {
         return $this;
     }
 
-    // #[
-    //     ApiProperty(description: 'Ajouter une unité', example: '/api/units/3'),
-    //     Serializer\Groups(['read:measure'])
-    // ]
     final public function add(Measure $measure) : self {
         // The measure's code is the same, then use a simple addition (g + g = g)
         if($this->equals($measure)) {
@@ -99,14 +90,12 @@ class Measure {
                 if(null !== $measure->getDenominator()) {
                     // Check if both measure are from the same family tree
                     if(
-                        $this->unit->getTopCode() === $measure->getUnit()->getTopCode()
-                        && $this->denominator->getTopCode() === $measure->getDenominator()->getTopCode()
+                        $this->unit->getTopUnit()->getCode() === $measure->getUnit()->getTopUnit()->getCode()
+                        && $this->denominator->getTopUnit()->getCode() === $measure->getDenominator()->getTopUnit()->getCode()
                     ) {
                         // Let's convert and do the maths
-
                         $originalUnit = $this->unit;
                         $originalDenominator = $this->denominator;
-
 
                         // First step: convert the unit to the smallest value (unit#base = 0)
                         // e.g. : 50 kg/km ==> 50 000 g / km
@@ -120,7 +109,6 @@ class Measure {
                         // e.g. : 50 000 g/km ==>  50 000 * 100 000 g / cm
                         $unitValue->value /= $this->denominator->getMultiplicatorFromBase();
 
-
                         // Third step; convert the other measure
                         $measureValue = (new Measure())
                             ->setValue($measure->value)
@@ -132,9 +120,7 @@ class Measure {
                         $this->value = $unitValue->value + $measureValue->value;
                         $this->unit = $this->unit->getTopUnit();
                         $this->denominator = $this->denominator->getTopUnit();
-                        $this->code = $this->unit->getTopCode() .'/'. $this->denominator->getTopCode();
-
-                        dump($unitValue);
+                        $this->code = $this->unit->getTopUnit()->getCode() .'/'. $this->denominator->getTopUnit()->getCode();
 
                         // Finally convert it back to the original composed unit
                         // e.g. : 50 000 * 100 000 g / cm  ==> 50 000 g/km
@@ -144,7 +130,7 @@ class Measure {
                         // e.g. : 50 000 g / km ==> 50 kg/km
                         $this->value *= $originalUnit->getMultiplicatorFromBase();
                         $this->unit = $originalUnit;
-                        $this->code = $originalUnit->getCode() .'/'. $originalDenominator->getCode();                    
+                        $this->code = $originalUnit->getCode() .'/'. $originalDenominator->getCode();                
 
                     } else {
                         throw new \Exception('The two measures cannot be substracted as they are not of same type');
@@ -154,13 +140,12 @@ class Measure {
                 }
             } else {
                 // check if we're talking about the same type of unit (e.g.: we can't add a kg to meters)
-                if($this->unit->getTopCode() === $measure->unit->getTopCode()) {
+                if($this->unit->getTopUnit()->getCode() === $measure->unit->getTopUnit()->getCode()) {
 
                     $originalUnit = $this->unit;
 
                     // to avoid float rounding problems, use the smallest mesure (the Unit#base=0 one, so the topCode)
                     $firstValue = $this->convert($this->unit->getTopUnit());
-
                     $secondValue = $measure->convert($measure->unit->getTopUnit());
 
                     // Apply the changes to the entity
@@ -186,7 +171,6 @@ class Measure {
             $this->value -= $measure->getValue();
         } else { // If the two codes ain't the same
 
-
             // We have a composed unit
             if(null !== $this->denominator) {
 
@@ -194,14 +178,12 @@ class Measure {
                 if(null !== $measure->getDenominator()) {
                     // Check if both measure are from the same family tree
                     if(
-                        $this->unit->getTopCode() === $measure->getUnit()->getTopCode()
-                        && $this->denominator->getTopCode() === $measure->getDenominator()->getTopCode()
+                        $this->unit->getTopUnit()->getCode() === $measure->getUnit()->getTopUnit()->getCode()
+                        && $this->denominator->getTopUnit()->getCode() === $measure->getDenominator()->getTopUnit()->getCode()
                     ) {
                         // Let's convert and do the maths
-
                         $originalUnit = $this->unit;
                         $originalDenominator = $this->denominator;
-
 
                         // First step: convert the unit to the smallest value (unit#base = 0)
                         // e.g. : 50 kg/km ==> 50 000 g / km
@@ -215,7 +197,6 @@ class Measure {
                         // e.g. : 50 000 g/km ==>  50 000 * 100 000 g / cm
                         $unitValue->value /= $this->denominator->getMultiplicatorFromBase();
 
-
                         // Third step; convert the other measure
                         $measureValue = (new Measure())
                             ->setValue($measure->value)
@@ -227,7 +208,7 @@ class Measure {
                         $this->value = $unitValue->value - $measureValue->value;
                         $this->unit = $this->unit->getTopUnit();
                         $this->denominator = $this->denominator->getTopUnit();
-                        $this->code = $this->unit->getTopCode() .'/'. $this->denominator->getTopCode();
+                        $this->code = $this->unit->getTopUnit()->getCode() .'/'. $this->denominator->getTopUnit()->getCode();
 
                         // Finally convert it back to the original composed unit
                         // e.g. : 50 000 * 100 000 g / cm  ==> 50 000 g/km
@@ -247,7 +228,7 @@ class Measure {
                 }
             } else {
                  // check if we're talking about the same type of unit (e.g.: we can't substract a kg to meters nor a kg to a kg/m)
-                if($this->unit->getTopCode() === $measure->getUnit()->getTopCode() && null === $measure->getDenominator()) {
+                if($this->unit->getTopUnit()->getCode() === $measure->getUnit()->getTopUnit()->getCode() && null === $measure->getDenominator()) {
 
                     $originalUnit = $this->unit;
 
@@ -281,7 +262,7 @@ class Measure {
     final public function convert(Unit $unit) : self {
 
         // The unit to convert to isn't in the same family
-        if($this->unit->getTopCode() !== $unit->getTopCode()) {
+        if($this->unit->getTopUnit()->getCode() !== $unit->getTopUnit()->getCode()) {
             throw new \Exception('The measure cannot be converted to another type of measure that is not in the same Unit tree');
         }
 

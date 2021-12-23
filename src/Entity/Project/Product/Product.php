@@ -2,6 +2,10 @@
 
 namespace App\Entity\Project\Product;
 
+use App\Controller\Actions\CloneAction;
+use App\Entity\Embeddable\Measure;
+use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -63,17 +67,44 @@ use App\Entity\Management\Unit;
                     'description' => 'Modifie un produit',
                     'summary' => 'Modifie un produit',
                 ]
+            ],
+            'clone' => [
+                'method' => 'POST',
+                'path' => '/products/{id}/clone',
+                'controller' => PlaceholderAction::class,
+                'openapi_context' => [
+                    'description' => 'Clone un produit',
+                    'summary' => 'Clone un produit',
+                ]
+            ],
+            'upgrade' => [
+                'method' => 'POST',
+                'path' => '/products/{id}/upgrade',
+                'controller' => PlaceholderAction::class,
+                'openapi_context' => [
+                    'description' => '??? un produit',
+                    'summary' => '?? un produit',
+                ]
+            ],
+            'promote' => [
+                'method' => 'PATCH',
+                'path' => '/products/{id}/promote',
+                'controller' => PlaceholderAction::class,
+                'openapi_context' => [
+                    'description' => '?? un produit',
+                    'summary' => '?? un produit',
+                ]
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
+            // 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:product', 'write:name', 'write:family', 'write:incoterms', 'write:unit'],
+            'groups' => ['write:product', 'write:name', 'write:family', 'write:incoterms', 'write:measure', 'write:current_place'],
             'openapi_definition_name' => 'Product-write'
         ],
         normalizationContext: [
-            'groups' => ['read:product', 'read:id', 'read:name', 'read:family', 'read:incoterms', 'write:unit'],
+            'groups' => ['read:product', 'read:id', 'read:name', 'read:family', 'read:incoterms', 'read:measure', 'read:current_place'],
             'openapi_definition_name' => 'Product-read'
         ],
     ),
@@ -99,24 +130,31 @@ class Product extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Nom', required: false, readableLink: false, example: '/api/units/5'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Unit::class),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        ApiProperty(description: 'Poids'),
+        ORM\Embedded(Measure::class),
+        Serializer\Groups(['read:measure', 'write:measure'])
     ]
-    protected ?Unit $unit = null;
+    protected Measure $weight;
+
+    #[
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded(CurrentPlace::class),
+        Serializer\Groups(['read:current_place', 'write:current_place'])
+    ]
+    protected CurrentPlace $currentPlace;
 
     /**
      * @var Collection<int, self>
      */
     #[
         ApiProperty(description: 'Produits enfant', required: false, readableLink: false, example: ['/api/products/5', '/api/products/14']),
-        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
+        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['persist', 'remove']),
         Serializer\Groups(['read:product', 'write:product'])
     ]
     private Collection $children;
@@ -127,6 +165,12 @@ class Product extends Entity implements BarCodeInterface {
         Serializer\Groups(['read:product', 'write:product'])
     ]
     private ?string $customsCode;
+
+    #[
+        ApiProperty(description: 'Nouveau statut', required: false, example: 'draft'),
+        Serializer\Groups(['read:product', 'write:product'])
+    ]
+    private ?string $place = null;
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12 10:39:37'),
@@ -156,7 +200,7 @@ class Product extends Entity implements BarCodeInterface {
         ORM\Column(type: 'string', length: 255, nullable: true, name: 'product_index'),
         Serializer\Groups(['read:product', 'write:product'])
     ]
-    private ?string $index;
+    private ?string $index = null;
 
     #[
         ApiProperty(description: 'Index interne', required: true, example: '1'),
@@ -248,7 +292,7 @@ class Product extends Entity implements BarCodeInterface {
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:product', 'write:product'])
     ]
-    private ?self $parent;
+    private ?self $parent = null;
 
     #[
         ApiProperty(description: 'Prix', required: true, example: '4.2'),
@@ -297,6 +341,8 @@ class Product extends Entity implements BarCodeInterface {
 
     public function __construct() {
         $this->children = new ArrayCollection();
+        $this->currentPlace = new CurrentPlace();
+        $this->weight = new Measure();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -371,8 +417,16 @@ class Product extends Entity implements BarCodeInterface {
         return $this->minStock;
     }
 
+    public function getCurrentPlaceName(): ?string {
+        return $this->currentPlace->getName() ?? null;
+    }
+
     public function getNotes(): ?string {
         return $this->notes;
+    }
+
+    public function getPlace(): ?string {
+        return $this->place;
     }
 
     public function getPackaging(): ?int {
@@ -389,6 +443,14 @@ class Product extends Entity implements BarCodeInterface {
 
     public function getPrice(): ?float {
         return $this->price;
+    }
+
+    public function getWeight(): Measure {
+        return $this->weight;
+    }
+
+     public function getCurrentPlace(): CurrentPlace {
+        return $this->currentPlace;
     }
 
     public function getPriceWithoutCopper(): ?float {
@@ -548,5 +610,48 @@ class Product extends Entity implements BarCodeInterface {
         $this->transfertPriceWork = $transfertPriceWork;
 
         return $this;
+    }
+
+    public function setWeight(Measure $weight): self {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function setCurrentPlace(CurrentPlace $currentPlace): self {
+        $this->currentPlace = $currentPlace;
+
+        return $this;
+    }
+
+    public function setPlace(?string $place): self {
+        $this->place = $place;
+
+        return $this;
+    }
+
+    public function setCurrentPlaceName(string $currentPlaceName): self {
+        $currentPlace = new CurrentPlace();
+        $currentPlace->setName($currentPlaceName);
+
+        $this->currentPlaceName = $currentPlaceName;
+        $this->currentPlace = $currentPlace;
+
+        dump($this->currentPlace);
+
+        return $this;
+    }
+
+    public function getEmbeddedMeasures(): array {
+        $measures = [];
+
+        foreach ($this as $key => $value) {
+
+            if($value instanceof Measure) {
+                $measures[$key] = $value;
+            }
+        }
+
+        return $measures;
     }
 }

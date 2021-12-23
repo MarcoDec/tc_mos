@@ -60,7 +60,7 @@ class Currency extends Unit {
         Serializer\Groups(['read:currency'])
     ]
     final public function getName(): ?string {
-        return !empty($this->code) ? Currencies::getName($this->code) : null;
+        return !empty($this->getCode()) ? Currencies::getName($this->getCode()) : null;
     }
 
     #[
@@ -68,7 +68,8 @@ class Currency extends Unit {
         Serializer\Groups(['read:currency'])
     ]
     final public function getSymbol(): ?string {
-        return !empty($this->code) ? Currencies::getSymbol($this->code) : null;
+
+        return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;
     }
 
     final public function isActive(): bool {

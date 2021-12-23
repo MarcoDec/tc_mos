@@ -15,7 +15,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Embeddable\Measure;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
@@ -93,13 +92,6 @@ class Unit extends Entity {
     ]
     private ?float $base = 0;
 
-    #[
-        ApiProperty(description: 'Mesure'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
-    ]
-    private Measure $measure;
-
     /** @var Collection<int, self> */
     #[
         ApiProperty(description: 'Unités enfant', readableLink: false, example: ['/api/units/3', '/api/units/4']),
@@ -116,15 +108,21 @@ class Unit extends Entity {
     private ?string $code = null;
 
     #[
+        ApiProperty(description: 'Dénominateur', readableLink: false, example: '/api/units/3'),
+        ORM\OneToOne(targetEntity: self::class),
+        Serializer\Groups(['read:measure', 'write:measure'])
+    ]
+    private ?Unit $denominator = null;
+
+    #[
         ApiProperty(description: 'Unité parente', readableLink: false, example: '/api/units/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private ?self $parent = null;
 
-    final public function __construct() {
+    public function __construct() {
         $this->children = new ArrayCollection();
-        $this->measure = new Measure();
     }
 
     final public function addChild(self $child): self {
@@ -141,10 +139,6 @@ class Unit extends Entity {
      */
     final public function getChildren(): Collection {
         return $this->children;
-    }
-
-    final public function getMeasure(): Measure {
-        return $this->measure;
     }
 
     final public function getCode(): ?string {
@@ -186,35 +180,9 @@ class Unit extends Entity {
         return $this;
     }
 
-    final public function setMeasure(Measure $measure): self {
-        $this->measure = $measure;
-
-        return $this;
-    }
-
-    // This function return the top parent's code of the Unit tree
-    final public function getTopCode(): string {
-        ///////
-        // We gotta check all parents as kg may be a child of g but also a parent of a ton. Ton could also have been saved as a child of gramme instead kg.
-        ///////
-
-        // If the Unit has a parent
-        if(null !== $this->parent) {
-            $baseParent = $this->parent;
-
-            // This fn retrieves the upper parent in the tree
-            for ($baseParent ; null !== $baseParent->parent ; $baseParent = $baseParent->parent);
-
-            return $baseParent->code;
-        } else {
-            return $this->code;
-        }
-    }
-
     // Get the smallest unit in the tree
     final public function getTopUnit(): Unit {
         $parent = $this->parent;
-
 
         if(null === $parent) return $this;
 
@@ -230,13 +198,24 @@ class Unit extends Entity {
             return 1;
         }
 
-        $multiplicator = $this->base;
+        $multiplicator = $this->base == 0 ? 1 : $this->base;
         $parent = $this->parent;
 
         for($parent ; null !== $parent->parent ; $parent = $parent->parent) {
-            $multiplicator *= $parent->base;
+            $multiplicator *= $parent->base == 0 ? 1 : $parent->base;
         }
 
         return $multiplicator;
+    }
+
+    final public function setDenominator(Unit $denominator): self {
+        $this->denominator = $denominator;
+        $this->code = $this->code . '/' . $denominator->getCode();
+
+        return $this;
+    }
+
+    final public function getDenominator(): ?Unit {
+        return $this->denominator;
     }
 }
