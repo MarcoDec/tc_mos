@@ -28,7 +28,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async to => {
-    const token = Cookies.get('token')
+    const token = Cookies.get('token') ?? ''
     if (to.matched.some(record => record.meta.requiresAuth && record.name !== 'login') && !token)
         return {name: 'login'}
 })
