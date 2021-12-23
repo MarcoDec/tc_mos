@@ -21,6 +21,11 @@ const router = createRouter({
             component: async (): Promise<RouteComponent> => import('./pages/project/AppOperationList.vue'),
             name: 'operationList',
             path: '/operation/list'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/direction/AppCardableCollectionTable.vue'),
+            name: 'societyList',
+            path: '/society/list'
         }
     ]
 })

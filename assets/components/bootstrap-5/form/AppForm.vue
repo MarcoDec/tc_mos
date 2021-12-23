@@ -1,47 +1,37 @@
 <script lang="ts" setup>
-    import type {Axios, AxiosResponse} from 'axios'
-    import {defineEmits, defineProps, inject, withDefaults} from 'vue'
-    import {findFields, registerForm} from '../../../store/bootstrap-5/Form'
-    import type {Field} from '../../../store/bootstrap-5/Field'
+    import type {FormField, FormValue, FormValues} from '../../../types/bootstrap-5'
+    import {defineEmits, defineProps, ref, withDefaults} from 'vue'
+    import clone from 'clone'
 
-    const emit = defineEmits<(e: 'success', data: Record<string, unknown>) => void>()
-    const props = withDefaults(defineProps<{
-        action: string
-        fields: Field[]
-        id: string
-        method?: 'delete' | 'get' | 'patch' | 'post'
-    }>(), {method: 'post'})
-    registerForm(props.id, props.fields)
+    const form = ref<HTMLFormElement>()
+    const emit = defineEmits<{(e: 'update:values', values: FormValues): void,
+                              (e: 'submit', data: FormData): void,
+    }>()
+    const props = withDefaults(
+        defineProps<{fields: FormField[], values?: FormValues}>(),
+        {values: () => ({})}
+    )
 
-    const axios = inject<Axios>('axios')
-    const storedFields = findFields(props.id)
-
-    function submit(e: Event): void {
-        if (e.target instanceof HTMLFormElement) {
-            const data: Record<string, unknown> = {}
-            new FormData(e.target).forEach((value, key) => {
-                data[key] = value
-            })
-            axios
-                ?.request({
-                    data,
-                    headers: {
-                        Accept: 'application/ld+json',
-                        'Content-Type': 'application/json'
-                    },
-                    method: props.method,
-                    url: props.action
-                })
-                .then((response: AxiosResponse<Record<string, unknown>>): void => {
-                    emit('success', response.data)
-                })
-        }
+    function input({name, value}: {value: FormValue, name: string}): void {
+        const cloned = clone(props.values)
+        cloned[name] = value
+        emit('update:values', cloned)
+    }
+    function submit(): void{
+        if (typeof form.value !== 'undefined')
+            emit('submit', new FormData(form.value))
     }
 </script>
 
+
 <template>
-    <form :id="id" :action="action" autocomplete="off" method="post" @submit.prevent="submit">
-        <AppFormGroup v-for="field in storedFields" :key="field" :field="field"/>
-        <AppBtn class="float-end" label="Connexion" type="submit"/>
+    <form ref="form" autocomplete="off" @submit.prevent="submit">
+        <AppFormGroup
+            v-for="field in fields"
+            :key="field.name"
+            :field="field"
+            :value="values[field.name]"
+            @input="input"/>
+        <slot name="buttons"/>
     </form>
 </template>

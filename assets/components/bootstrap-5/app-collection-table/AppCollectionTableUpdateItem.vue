@@ -3,8 +3,7 @@
     import type {FormField} from '../../../types/bootstrap-5'
     import clone from 'clone'
 
-    const props = defineProps<{fields: FormField}>()
-    console.log('ppp', props)
+    const props = defineProps<{fields: FormField []}>()
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
 
@@ -14,10 +13,10 @@
         return cloned
     }))
 
-    const emit = defineEmits<(e: 'annuleUpdate') => void>()
+    const emit = defineEmits<(e: 'annuleAjout') => void>()
 
-    function AnnuleUpdate(): void {
-        emit('annuleUpdate')
+    function AnnuleAjout(): void {
+        emit('annuleAjout')
     }
 </script>
 
@@ -26,7 +25,7 @@
         <button class="btn btn-icon btn-primary btn-sm mx-2">
             <Fa icon="check"/>
         </button>
-        <button class="btn btn-danger btn-icon btn-sm" @click="AnnuleUpdate">
+        <button class="btn btn-danger btn-icon btn-sm" @click="AnnuleAjout">
             <Fa icon="times"/>
         </button>
     </td>

@@ -1,0 +1,1 @@
+import{a as t,c as o,o as l,e as n,L as c,M as p,u}from"./vendor.744fbc74.js";const i=t({props:{variant:{default:"primary"}},setup(a){const e=a,r=o(()=>`alert-${e.variant}`);return(s,d)=>(l(),n("div",{class:p([u(r),"alert"]),role:"alert"},[c(s.$slots,"default")],2))}});export{i as default};

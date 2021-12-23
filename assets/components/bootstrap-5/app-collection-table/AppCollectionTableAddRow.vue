@@ -1,10 +1,9 @@
 <script lang="ts" setup>
     import {computed, defineEmits, defineProps} from 'vue'
     import type {FormField} from '../../../types/bootstrap-5'
-    import clone from "clone"
+    import clone from 'clone'
 
-    const props = defineProps<{fields: FormField}>()
-    console.log('pppppp', props)
+    const props = defineProps<{fields: FormField []}>()
 
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
@@ -14,7 +13,6 @@
         }
         return cloned
     }))
-    console.log('tab', tabFields)
 
     const emit = defineEmits<(e: 'close') => void>()
 

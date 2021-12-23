@@ -3,8 +3,7 @@
     import type {FormField} from '../../../types/bootstrap-5'
     import clone from 'clone'
 
-    const props = defineProps<{fields: FormField, user: string}>()
-    console.log('prrrrrrops', props)
+    const props = defineProps<{fields: FormField [], user: string}>()
 
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
@@ -14,7 +13,6 @@
         }
         return cloned
     }))
-    console.log('tabFields', tabFields)
 
 
     const emit = defineEmits<(e: 'open') => void>()

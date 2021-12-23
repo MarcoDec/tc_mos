@@ -1,23 +1,26 @@
 <script lang="ts" setup>
     import type {FormField, ItemField} from '../../../types/bootstrap-5'
-    import {defineProps, ref} from 'vue'
+    import {defineEmits, defineProps, ref} from 'vue'
     import AppCollectionTableItem from './AppCollectionTableItem.vue'
     import AppCollectionTableUpdateItem from './AppCollectionTableUpdateItem.vue'
-    defineProps<{item: ItemField, fields: FormField}>()
+    defineProps<{item: ItemField, fields: FormField[]}>()
 
-    const updated = ref(false)
+    const ajout = ref(false)
+    const emit = defineEmits<(e: 'update', item: ItemField) => void>()
 
-    function update(): void {
-        updated.value = true
-        console.log('updated', updated)
+
+    function ajoute(): void {
+        ajout.value = true
     }
-    function AnnuleUpdate(): void {
-        updated.value = false
-        console.log('updated', updated)
+    function AnnuleAjout(): void {
+        ajout.value = false
+    }
+    function update(item: ItemField): void {
+        emit('update', item)
     }
 </script>
 
 <template>
-    <AppCollectionTableItem v-if="!updated" :item="item" @update="update"/>
-    <AppCollectionTableUpdateItem v-else :fields="fields" @annule-update="AnnuleUpdate"/>
+    <AppCollectionTableItem v-if="!ajout" :fields="fields" :item="item" @ajoute="ajoute" @update="update"/>
+    <AppCollectionTableUpdateItem v-else :fields="fields" @annule-ajout="AnnuleAjout"/>
 </template>

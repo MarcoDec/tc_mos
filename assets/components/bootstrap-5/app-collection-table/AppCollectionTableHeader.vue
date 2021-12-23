@@ -3,9 +3,9 @@
     import AppCollectionTableHeaderfieleds from './AppCollectionTableHeaderfieleds.vue'
     import type {FormField} from '../../../types/bootstrap-5'
 
-    defineProps<{fields: FormField}>()
+    defineProps<{fields: FormField []}>()
 
-    const trier = ref<number | string>('both')
+    const trier = ref<string>('both')
 
     function trierAlphabet(): void{
         if (trier.value === 'both'){

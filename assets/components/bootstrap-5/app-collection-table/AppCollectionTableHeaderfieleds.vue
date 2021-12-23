@@ -3,14 +3,10 @@
     import type {FormField} from '../../../types/bootstrap-5'
 
     const emit = defineEmits<(e: 'trierAlphabet') => void>()
-    const props = defineProps<{fields: FormField, trier?: string}>()
-
-    console.log('pippip', props)
+    defineProps<{fields: FormField[], trier?: string}>()
 
     function trierAlpha(): void {
         emit('trierAlphabet')
-        console.log('emit')
-
     }
 </script>
 

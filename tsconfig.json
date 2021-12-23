@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "jsx": "preserve",
+    "allowSyntheticDefaultImports": true,
     "lib": [
       "dom",
       "esnext"
@@ -22,6 +22,8 @@
     "dev",
     "doc",
     "docker",
+    "fixtures",
+    "lib",
     "migrations",
     "node_modules",
     "public",

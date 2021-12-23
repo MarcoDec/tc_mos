@@ -1,36 +1,34 @@
 <script lang="ts" setup>
+    import type {FormField, ItemField} from '../../../types/bootstrap-5'
     import {defineEmits, defineProps} from 'vue'
-    import type {ItemField} from '../../../types/bootstrap-5'
-    const props = defineProps<{item: ItemField}>()
-    console.log('prp', props)
+    const props = defineProps<{fields: FormField [], item: ItemField}>()
 
+    const emit = defineEmits<{
+        (e: 'ajoute'): void,
+        (e: 'update', item: ItemField): void
+    }>()
 
-    const emit = defineEmits<(e: 'update') => void>()
-
+    function ajoute(): void {
+        emit('ajoute')
+    }
     function update(): void {
-        emit('update')
+        emit('update', props.item)
     }
 </script>
 
 <template>
     <td>
-        <button v-if="!item.ajout" class="btn btn-icon btn-primary btn-sm mx-2" :disabled="item.ajout" @click="update">
+        <button v-if="item.ajout" class="btn btn-icon btn-primary btn-sm mx-2" @click="ajoute">
             <Fa icon="pencil-alt"/>
         </button>
-        <button v-if="!item.deletable" class="btn btn-danger btn-icon btn-sm mx-2" :disabled="item.deletable">
+        <button v-if="item.update" class="btn btn-icon btn-secondary btn-sm mx-2" @click="update">
+            <Fa icon="eye"/>
+        </button>
+        <button v-if="item.deletable" class="btn btn-danger btn-icon btn-sm mx-2">
             <Fa icon="trash"/>
         </button>
     </td>
-    <td>{{ item.code }}</td>
-    <td>{{ item.name }}</td>
-    <td> {{ item.type }} </td>
-    <td>
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox"/>
-        </div>
+    <td v-for="field in fields" :key="field.name">
+        {{ item[field.name] }}
     </td>
-    <td>{{ item.limite }}</td>
-    <td>{{ item.cadence }}</td>
-    <td> {{ item.prix }}</td>
-    <td> {{ item.temps }}</td>
 </template>
