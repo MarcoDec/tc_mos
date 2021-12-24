@@ -27,8 +27,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
          ],
          'post'=>[
             'openapi_context' => [
-               'description' => 'Ajoute/Créé une notification',
-               'summary' => 'Ajoute/Créé une notification',
+               'description' => 'Créer une notification',
+               'summary' => 'Créer une notification',
             ],
             'denormalization_context' => [ 'groups' => ['post:Notification:denorm'] ],
             'normalization_context' => ['groups' => ['post:Notification:norm']]
@@ -50,7 +50,12 @@ use Symfony\Component\Validator\Constraints\NotBlank;
             'normalization_context' => ['groups'=>['patch:Notification:item:norm']],
             'denormalization_context' => ['groups'=>['patch:Notification:item:denorm']],
          ],
-         'delete'
+         'delete'=> [
+            'openapi_context' => [
+               'description'=> 'Supprime une notification',
+               'summary' => 'Supprime une notification'
+            ]
+         ]
       ],
       paginationClientEnabled: false
    )
