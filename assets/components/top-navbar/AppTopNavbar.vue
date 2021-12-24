@@ -8,7 +8,6 @@
         useNamespacedMutations,
         useNamespacedState
     } from 'vuex-composition-helpers'
-    import Dropdown from '../bootstrap-5/navbar/Dropdown.vue'
     import {MutationTypes as MutationSpinner} from '../../store/mutation'
     import {useRouter} from 'vue-router'
 
@@ -34,14 +33,19 @@
 </script>
 
 <template>
-    <AppNavbar id="nav">
+    <AppNavbar>
         <AppNavbarBrand to="home">
             T-Concept
         </AppNavbarBrand>
+        <AppNavbarCollapse>
+            <AppNavbarItem id="nav-purchase" icon="shopping-bag" title="Achats">
+                <AppNavbarLink icon="layer-group" to="families">
+                    Familles
+                </AppNavbarLink>
+            </AppNavbarItem>
+        </AppNavbarCollapse>
         <div v-if="hasUser">
-            <Dropdown title="Achats"/>
-
-            <div id="logout" class="text-white">
+            <div class="text-white">
                 <Fa icon="user-circle"/>
                 {{ name }}
                 <AppBtn variant="danger" @click="onLogout">
@@ -51,39 +55,3 @@
         </div>
     </AppNavbar>
 </template>
-
-<style scoped>
-    #nav {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    #nav .menu-item {
-        color: #FFF;
-        padding: 10px 20px;
-        position: relative;
-        text-align: center;
-        border-bottom: 3px solid transparent;
-        display: flex;
-        transition: 0.4s;
-        margin-right: 1660px;
-        margin-top: 4px;
-    }
-
-    #nav .menu-item.active,
-    #nav .menu-item:hover {
-        background-color: #444;
-        border-bottom-color: #FF5858;
-    }
-
-    #nav .menu-item a {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    #logout {
-        float: right;
-        margin-top: -35px;
-    }
-</style>
