@@ -58,7 +58,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class Notification {
    #[
       ApiProperty(
-         description: "Catégorie de la notification"
+         description: "Catégorie de la notification",
+         example: "Livraison"
       ),
       Length(min: 2),
       NotBlank(),
@@ -68,14 +69,16 @@ class Notification {
    #[
       ApiProperty(
          description: "Identifiant unique",
-         identifier: true
+         identifier: true,
+         example: "1"
       ),
       Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm"])
    ]
     private int $id=0;
    #[
       ApiProperty(
-         description: "Est à `Vrai` lorsque la notification a été lue, sinon à `Faux`"
+         description: "Est à `Vrai` lorsque la notification a été lue, sinon à `Faux`",
+         example: "`true`"
       ),
       Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", 'patch:Notification:item:denorm'])
    ]
@@ -83,6 +86,7 @@ class Notification {
    #[
       ApiProperty(
          description: "Sujet de la notification",
+         example: "Livraison urgente"
       ),
       Length(min: 3),
       NotBlank(),
@@ -91,14 +95,16 @@ class Notification {
     private string $subject="";
 
    #[ApiProperty(
-      description: "Date de création de la notification"
+      description: "Date de création de la notification",
+      example: "2021-12-24T12:03:34+00:00"
    ),
       Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm"])
    ]
    private DateTime $creationDatetime;
 
    #[ApiProperty(
-      description: "Date de lecture de la notification par l'utilisateur"
+      description: "Date de lecture de la notification par l'utilisateur",
+      example: "2021-12-24T14:03:34+00:00"
    ),
       Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "patch:Notification:item:denorm"])
    ]
@@ -106,7 +112,11 @@ class Notification {
 
     #[
        ManyToOne(Employee::class, Fetch::EAGER),
-       Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "post:Notification:denorm", "patch:Notification:item:denorm"])
+       Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "post:Notification:denorm", "patch:Notification:item:denorm"]),
+       ApiProperty(
+          description: "Employé destinataire de la notification",
+          example: "/api/users/1"
+       )
     ]
    private Employee $user;
 
