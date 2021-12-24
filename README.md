@@ -62,7 +62,9 @@ Différents conteneurs Docker sont utilisés pour les différents services du pr
   différentes commandes Symfony&nbsp;;
 - `tconcept_gpao_phpmyadmin`&nbsp;: conteneur responsable de phpMyAdmin, pour avoir une interface de la base de données,
   accessible grâce à [http://localhost:8080](http://localhost:8080).
-- `tconcept-gpao_couchdb-server-0_1`&nbsp;: conteneur responsable de CouchDB le système de gestion de données NoSQL 
+- `tconcept-gpao_couchdb-server-0_1`&nbsp;: conteneur responsable de CouchDB le système de gestion de données NoSQL. L'URI principale de connexion se trouve [http://localhost:5984/_utils](http://localhost:5984/_utils)
+
+
 
 ## Qualité du code
 
