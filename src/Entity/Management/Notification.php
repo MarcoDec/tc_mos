@@ -23,15 +23,15 @@ use Symfony\Component\Validator\Constraints\NotBlank;
                'description' => 'Récupère les notifications',
                'summary' => 'Récupère les notifications',
             ],
-            'normalization_context' => ['groups'=>['get:Notification:collection']]
+            'normalization_context' => ['groups'=>["read:category","read:id", "read:read", "read:subject", "read:creationDate", "read:readDatetime", "read:user"]]
          ],
          'post'=>[
             'openapi_context' => [
                'description' => 'Créer une notification',
                'summary' => 'Créer une notification',
             ],
-            'denormalization_context' => [ 'groups' => ['post:Notification:denorm'] ],
-            'normalization_context' => ['groups' => ['post:Notification:norm']]
+            'denormalization_context' => [ 'groups' => ["write:category","write:subject", "write:user"] ],
+            'normalization_context' => ['groups' => ["read:category", "read:id", "read:read", "read:subject", "read:creationDate", "read:readDatetime", "read:user"]]
          ]
       ],
       itemOperations: [
@@ -40,15 +40,15 @@ use Symfony\Component\Validator\Constraints\NotBlank;
                'description' => 'Récupère une notification particulière',
                'summary' => 'Récupère une notification particulière',
                ],
-            'normalization_context' => [ 'groups' => ['get:Notification:item' ]]
+            'normalization_context' => [ 'groups' => ["read:category", "read:id", "read:read", "read:subject", "read:creationDate", "read:readDatetime","read:user" ]]
          ],
          'patch' =>[
             'openapi_context' => [
                'description' => 'Modifie une notification particulière',
                'summary' => 'Modifie une notification'
             ],
-            'normalization_context' => ['groups'=>['patch:Notification:item:norm']],
-            'denormalization_context' => ['groups'=>['patch:Notification:item:denorm']],
+            'normalization_context' => ['groups'=>["read:category", "read:id","read:read", "read:subject","read:creationDate", "read:readDatetime", "read:user"]],
+            'denormalization_context' => ['groups'=>["write:category","write:read","write:subject","write:readDatetime","write:user"]],
          ],
          'delete'=> [
             'openapi_context' => [
@@ -68,7 +68,7 @@ class Notification {
       ),
       Length(min: 2),
       NotBlank(),
-      Groups(["get:Notification:collection", 'get:Notification:item', 'patch:Notification:item:norm', 'post:Notification:norm', 'post:Notification:denorm', 'patch:Notification:item:denorm'])
+      Groups([ "read:category","write:category"])
       ]
     private string $category="";
    #[
@@ -77,7 +77,7 @@ class Notification {
          identifier: true,
          example: "1"
       ),
-      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm"])
+      Groups(["read:id"])
    ]
     private int $id=0;
    #[
@@ -85,7 +85,7 @@ class Notification {
          description: "Est à `Vrai` lorsque la notification a été lue, sinon à `Faux`",
          example: "`true`"
       ),
-      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", 'patch:Notification:item:denorm'])
+      Groups(["read:read", "write:read"])
    ]
     private bool $read=false;
    #[
@@ -95,7 +95,7 @@ class Notification {
       ),
       Length(min: 3),
       NotBlank(),
-      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "post:Notification:norm", "post:Notification:denorm", 'patch:Notification:item:denorm'])
+      Groups(["read:subject","write:subject"])
    ]
     private string $subject="";
 
@@ -103,7 +103,7 @@ class Notification {
       description: "Date de création de la notification",
       example: "2021-12-24T12:03:34+00:00"
    ),
-      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm"])
+      Groups(["read:creationDate","write:creationDate"])
    ]
    private DateTime $creationDatetime;
 
@@ -111,13 +111,13 @@ class Notification {
       description: "Date de lecture de la notification par l'utilisateur",
       example: "2021-12-24T14:03:34+00:00"
    ),
-      Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "patch:Notification:item:denorm"])
+      Groups(["read:readDatetime", "write:readDatetime"])
    ]
    private DateTime|null $readDatetime=null;
 
     #[
        ManyToOne(Employee::class, Fetch::EAGER),
-       Groups(["get:Notification:collection", "post:Notification:norm", "get:Notification:item", "patch:Notification:item:norm", "post:Notification:denorm", "patch:Notification:item:denorm"]),
+       Groups(["read:user", "write:user"]),
        ApiProperty(
           description: "Employé destinataire de la notification",
           example: "/api/users/1"
