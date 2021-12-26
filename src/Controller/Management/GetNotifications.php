@@ -25,11 +25,6 @@ class GetNotifications extends AbstractController
          'user'=> $employee->getId(),
          'read'=> false
       ]);
-      dump([
-         'method'=>__METHOD__,
-         'current_employee'=>$employee,
-         '$unReadNotifications'=>$unReadNotifications
-      ]);
       return $unReadNotifications;
    }
 }

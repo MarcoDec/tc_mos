@@ -54,12 +54,6 @@ abstract class AbstractRepository
       $entities = collect($items)->map(function ($item) {
          return $this->manager->convertArrayToEntity($item,$this->className);
       })->toArray();
-      dump([
-         'method'=>__METHOD__,
-         '$conditions'=>$conditions,
-         '$items'=>$items,
-         '$entities'=>$entities
-      ]);
       return $entities;
    }
 
