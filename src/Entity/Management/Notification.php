@@ -31,15 +31,32 @@ use Symfony\Component\Validator\Constraints\Optional;
                'description' => "Récupère les notifications liées à l'utilisateur courant",
                'summary' => "Récupère les notifications liées à l'utilisateur courant",
             ],
-            'normalization_context' => ['groups'=>["read:category","read:id", "read:read", "read:subject", "read:creationDate", "read:readDatetime", "read:user"]]
+            'normalization_context' => ['groups'=>[
+               "notification:read:category",
+               "notification:read:id",
+               "notification:read:read",
+               "notification:read:subject",
+               "notification:read:creationDate",
+               "notification:read:readDatetime",
+               "notification:read:targetUser"]]
          ],
          'post'=>[
             'openapi_context' => [
                'description' => 'Créer une notification',
                'summary' => 'Créer une notification',
             ],
-            'denormalization_context' => [ 'groups' => ["write:category","write:subject", "write:user"] ],
-            'normalization_context' => ['groups' => ["read:category", "read:id", "read:read", "read:subject", "read:creationDate", "read:readDatetime", "read:user"]]
+            'denormalization_context' => [ 'groups' => [
+               "notification:write:category",
+               "notification:write:subject",
+               "notification:write:targetUser"] ],
+            'normalization_context' => ['groups' => [
+               "notification:read:category",
+               "notification:read:id",
+               "notification:read:read",
+               "notification:read:subject",
+               "notification:read:creationDate",
+               "notification:read:readDatetime",
+               "notification:read:targetUser"]]
          ]
       ],
       itemOperations: [
@@ -48,7 +65,14 @@ use Symfony\Component\Validator\Constraints\Optional;
                'description' => 'Récupère une notification particulière',
                'summary' => 'Récupère une notification particulière',
                ],
-            'normalization_context' => [ 'groups' => ["read:category", "read:id", "read:read", "read:subject", "read:creationDate", "read:readDatetime","read:user" ]]
+            'normalization_context' => [ 'groups' => [
+               "notification:read:category",
+               "notification:read:id",
+               "notification:read:read",
+               "notification:read:subject",
+               "notification:read:creationDate",
+               "notification:read:readDatetime",
+               "notification:read:targetUser" ]]
          ],
          'patch_notification_read'=>[
             'method' => 'PATCH',
@@ -56,12 +80,19 @@ use Symfony\Component\Validator\Constraints\Optional;
             'controller' => PatchNotificationRead::class,
             'read'=>false,
             'write'=>false,
+            'output'=>false,
+            'input'=>false,
             'openapi_context' => [
                'description' => 'Marque la notification comme lue',
                'summary' => 'Marque la notification comme lue',
                'requestBody' => [
                   'required' => false,
-                  'content'=>[]
+                  'content'=>[
+                     'application/ld+json'=>[
+                        'schema'=> [],
+                        'example'=>'{}'
+                     ]
+                  ]
                ]
             ]
          ],
@@ -70,8 +101,20 @@ use Symfony\Component\Validator\Constraints\Optional;
                'description' => 'Modifie une notification particulière',
                'summary' => 'Modifie une notification'
             ],
-            'normalization_context' => ['groups'=>["read:category", "read:id","read:read", "read:subject","read:creationDate", "read:readDatetime", "read:user"]],
-            'denormalization_context' => ['groups'=>["write:category","write:read","write:subject","write:readDatetime","write:user"]],
+            'normalization_context' => ['groups'=>[
+               "notification:read:category",
+               "notification:read:id",
+               "notification:read:read",
+               "notification:read:subject",
+               "notification:read:creationDate",
+               "notification:read:readDatetime",
+               "notification:read:targetUser"]],
+            'denormalization_context' => ['groups'=>[
+               "notification:write:category",
+               "notification:write:read",
+               "notification:write:subject",
+               "notification:write:readDatetime",
+               "notification:write:targetUser"]],
          ],
          'delete'=> [
             'openapi_context' => [
@@ -81,18 +124,20 @@ use Symfony\Component\Validator\Constraints\Optional;
          ]
       ],
       shortName: 'Notification',
-      paginationClientEnabled: false
+      paginationEnabled: false
    )
 ]
 class Notification {
    #[
       ApiProperty(
          description: "Catégorie de la notification",
-         example: "Livraison"
+         example: "Livraison",
       ),
       Length(min: 2),
       NotBlank(),
-      Groups([ "read:category","write:category"])
+      Groups([
+         "notification:read:category",
+         "notification:write:category"])
       ]
     private string $category="";
    #[
@@ -101,7 +146,7 @@ class Notification {
          identifier: true,
          example: "1"
       ),
-      Groups(["read:id"])
+      Groups(["notification:read:id"])
    ]
     private int $id=0;
    #[
@@ -109,7 +154,9 @@ class Notification {
          description: "Est à `Vrai` lorsque la notification a été lue, sinon à `Faux`",
          example: "`true`"
       ),
-      Groups(["read:read", "write:read"])
+      Groups([
+         "notification:read:read",
+         "notification:write:read"])
    ]
     private bool $read=false;
    #[
@@ -119,7 +166,9 @@ class Notification {
       ),
       Length(min: 3),
       NotBlank(),
-      Groups(["read:subject","write:subject"])
+      Groups([
+         "notification:read:subject",
+         "notification:write:subject"])
    ]
     private string $subject="";
 
@@ -127,7 +176,9 @@ class Notification {
       description: "Date de création de la notification",
       example: "2021-12-24T12:03:34+00:00"
    ),
-      Groups(["read:creationDate","write:creationDate"])
+      Groups([
+         "notification:read:creationDate",
+         "notification:write:creationDate"])
    ]
    private DateTime $creationDatetime;
 
@@ -135,13 +186,17 @@ class Notification {
       description: "Date de lecture de la notification par l'utilisateur",
       example: "2021-12-24T14:03:34+00:00"
    ),
-      Groups(["read:readDatetime", "write:readDatetime"])
+      Groups([
+         "notification:read:readDatetime",
+         "notification:write:readDatetime"])
    ]
    private DateTime|null $readDatetime=null;
 
     #[
        ManyToOne(Employee::class, Fetch::EAGER),
-       Groups(["read:user", "write:user"]),
+       Groups([
+          "notification:read:targetUser",
+          "notification:write:targetUser"]),
        ApiProperty(
           description: "Employé destinataire de la notification",
           example: "/api/users/1"
