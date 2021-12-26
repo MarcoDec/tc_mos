@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Attribute\Couchdb\Abstract\Fetch;
 use App\Attribute\Couchdb\Document;
 use App\Attribute\Couchdb\ORM\ManyToOne;
+use App\Controller\Management\GetNotifications;
 use App\Controller\Management\PatchNotificationRead;
 use App\Entity\Hr\Employee\Employee;
 use DateTime;
@@ -20,10 +21,15 @@ use Symfony\Component\Validator\Constraints\Optional;
    Document,
    ApiResource(
       collectionOperations: [
-         'get'=>[
+         'get_notifications'=>[
+            'method'=>"GET",
+            'path'=>"/notifications",
+            'controller'=> GetNotifications::class,
+            'read'=>false,
+            'write'=>false,
             'openapi_context' => [
-               'description' => 'Récupère les notifications',
-               'summary' => 'Récupère les notifications',
+               'description' => "Récupère les notifications liées à l'utilisateur courant",
+               'summary' => "Récupère les notifications liées à l'utilisateur courant",
             ],
             'normalization_context' => ['groups'=>["read:category","read:id", "read:read", "read:subject", "read:creationDate", "read:readDatetime", "read:user"]]
          ],

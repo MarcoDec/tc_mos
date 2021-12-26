@@ -47,6 +47,22 @@ abstract class AbstractRepository
       return $this->manager->convertArrayToEntity($item, $this->className);
    }
 
+   public function findBy(array $conditions):array {
+
+      $couchdbDocument =$this->manager->documentRead($this->className);
+      $items = $couchdbDocument->getItemsWhere($conditions);
+      $entities = collect($items)->map(function ($item) {
+         return $this->manager->convertArrayToEntity($item,$this->className);
+      })->toArray();
+      dump([
+         'method'=>__METHOD__,
+         '$conditions'=>$conditions,
+         '$items'=>$items,
+         '$entities'=>$entities
+      ]);
+      return $entities;
+   }
+
    /**
     * @param mixed $entity
     * @return void

@@ -48,6 +48,23 @@ class Document {
         return new Item($this->id, $itemData);
     }
 
+    public function getItemsWhere(array $conditions): array {
+       return collect($this->content)
+          ->filter(function ($item) use ($conditions) {
+             $test = true;
+             foreach ($conditions as $key=>$value) {
+                dump([
+                   'condition '=> $key.' => '.$value,
+                   '$item[$key]' => $item[$key],
+                   'test item '=>$item[$key]!=$value
+                ]);
+                if ($item[$key]!=$value) $test = false;
+             }
+            return $test;
+          }
+          )->toArray();
+    }
+
    /**
     * @return mixed
     */
