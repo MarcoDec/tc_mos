@@ -7,12 +7,14 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Attribute\Couchdb\Abstract\Fetch;
 use App\Attribute\Couchdb\Document;
 use App\Attribute\Couchdb\ORM\ManyToOne;
+use App\Controller\Management\PatchNotificationRead;
 use App\Entity\Hr\Employee\Employee;
 use DateTime;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Optional;
 
 #[
    Document,
@@ -42,6 +44,21 @@ use Symfony\Component\Validator\Constraints\NotBlank;
                ],
             'normalization_context' => [ 'groups' => ["read:category", "read:id", "read:read", "read:subject", "read:creationDate", "read:readDatetime","read:user" ]]
          ],
+         'patch_notification_read'=>[
+            'method' => 'PATCH',
+            'path' => '/notifications/{id}/read',
+            'controller' => PatchNotificationRead::class,
+            'read'=>false,
+            'write'=>false,
+            'openapi_context' => [
+               'description' => 'Marque la notification comme lue',
+               'summary' => 'Marque la notification comme lue',
+               'requestBody' => [
+                  'required' => false,
+                  'content'=>[]
+               ]
+            ]
+         ],
          'patch' =>[
             'openapi_context' => [
                'description' => 'Modifie une notification particulière',
@@ -57,6 +74,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
             ]
          ]
       ],
+      shortName: 'Notification',
       paginationClientEnabled: false
    )
 ]

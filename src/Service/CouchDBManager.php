@@ -564,7 +564,8 @@ class CouchDBManager {
          $propertyClass= $refProperty->getType();
          $content[$refProperty->getName()] = match ($propertyClass->getName()) {
             'DateTime' => $refProperty->getValue($entity)?->format('Y-m-d\TH:i:s.u'),
-            'string', 'int', 'float', 'bool' => $refProperty->getValue($entity),
+            'string', 'int', 'float' => $refProperty->getValue($entity),
+            'bool'=> boolval($refProperty->getValue($entity)),
             default => $refProperty->getValue($entity)?->getId(),
          };
       }
