@@ -9,15 +9,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class SecurityController extends AbstractController
-{
+final class SecurityController extends AbstractController {
     #[Route(path: '/api/login', name: 'login', methods: 'POST')]
-    public function login(NormalizerInterface $normalizer, TokenRepository $tokenRepo): JsonResponse
-    {
+    public function login(NormalizerInterface $normalizer, TokenRepository $tokenRepo): JsonResponse {
         if (($user = $this->getUser()) instanceof Employee) {
             $tokenRepo->connect($user);
         }
         return new JsonResponse($normalizer->normalize($user, null, ['jsonld_has_context' => false]));
     }
-
 }

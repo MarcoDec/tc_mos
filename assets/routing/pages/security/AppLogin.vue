@@ -47,7 +47,7 @@
             {{ msgError }}
         </div>
         <AppCard class="bg-blue col">
-            <AppForm v-model:values="formData" :fields="fields" @submit="handleClick">
+            <AppForm v-model="formData" :fields="fields" @submit="handleClick">
                 <template #buttons>
                     <AppBtn class="float-end" type="submit">
                         Connexion
