@@ -15,7 +15,7 @@ trait RefTrait {
     protected ?string $ref = null;
 
     final public function __toString(): string {
-        return $this->getRef() ?? parent::__toString();
+        return $this->getRef() ?? '';
     }
 
     final public function getRef(): ?string {

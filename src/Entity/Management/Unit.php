@@ -134,6 +134,10 @@ class Unit extends Entity {
         return $this;
     }
 
+    final public function getBase(): ?float {
+        return $this->base;
+    }
+
     /**
      * @return Collection<int, self>
      */
@@ -145,12 +149,47 @@ class Unit extends Entity {
         return $this->code;
     }
 
-    final public function getBase(): ?float {
-        return $this->base;
+    final public function getDenominator(): ?self {
+        return $this->denominator;
+    }
+
+    /**
+     * Returns the multiplicator from the upper parent Unit.
+     *
+     * @return float
+     */
+    final public function getMultiplicatorFromBase(): ?float {
+        if (null === $this->parent) {
+            return 1;
+        }
+
+        $multiplicator = $this->base == 0 ? 1 : $this->base;
+        $parent = $this->parent;
+
+        for ($parent; null !== $parent->parent; $parent = $parent->parent) {
+            $multiplicator *= $parent->base == 0 ? 1 : $parent->base;
+        }
+
+        return $multiplicator;
     }
 
     final public function getParent(): ?self {
         return $this->parent;
+    }
+
+    /**
+     * Returns the smallest unit in the tree.
+     */
+    final public function getTopUnit(): self {
+        $parent = $this->getParent();
+
+        if (null === $parent) {
+            return $this;
+        }
+
+        for ($parent; null !== $parent->getParent(); $parent = $parent->getParent());
+
+        return $parent;
     }
 
     final public function removeChild(self $child): self {
@@ -164,13 +203,20 @@ class Unit extends Entity {
         return $this;
     }
 
+    final public function setBase(?float $base): self {
+        $this->base = $base;
+        return $this;
+    }
+
     final public function setCode(?string $code): self {
         $this->code = $code;
         return $this;
     }
 
-    final public function setBase(?float $base): self {
-        $this->base = $base;
+    final public function setDenominator(self $denominator): self {
+        $this->denominator = $denominator;
+        $this->code = $this->code.'/'.$denominator->getCode();
+
         return $this;
     }
 
@@ -178,44 +224,5 @@ class Unit extends Entity {
         $this->parent = $parent;
 
         return $this;
-    }
-
-    // Get the smallest unit in the tree
-    final public function getTopUnit(): Unit {
-        $parent = $this->parent;
-
-        if(null === $parent) return $this;
-
-        for($parent ; null !== $parent->parent ; $parent = $parent->parent);
-
-        return $parent;
-    }
-
-    // Get the multiplicator from the upper parent Unit
-    final public function getMultiplicatorFromBase() : float {
-
-        if(null === $this->parent) {
-            return 1;
-        }
-
-        $multiplicator = $this->base == 0 ? 1 : $this->base;
-        $parent = $this->parent;
-
-        for($parent ; null !== $parent->parent ; $parent = $parent->parent) {
-            $multiplicator *= $parent->base == 0 ? 1 : $parent->base;
-        }
-
-        return $multiplicator;
-    }
-
-    final public function setDenominator(Unit $denominator): self {
-        $this->denominator = $denominator;
-        $this->code = $this->code . '/' . $denominator->getCode();
-
-        return $this;
-    }
-
-    final public function getDenominator(): ?Unit {
-        return $this->denominator;
     }
 }

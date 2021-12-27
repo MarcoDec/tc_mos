@@ -2,37 +2,40 @@
 
 namespace App\Entity\Project\Product;
 
-use App\Entity\Embeddable\Measure;
 use ApiPlatform\Core\Action\PlaceholderAction;
-use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
+use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\NameTrait;
 use App\Entity\Traits\RefTrait;
+use App\Filter\RelationFilter;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Management\Unit;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use App\Entity\Interfaces\EmbeddedInterface;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'ref' => 'partial',
         'kind' => 'partial',
-        'index' => 'partial',
-        'currentPlace.name' => 'exact',
-        'family.name' => 'partial'
+        'index' => 'partial'
+    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: [
+        'family' => 'name',
+        'currentPlace' => 'name'
     ]),
     ApiFilter(filterClass: DateFilter::class, properties: ['expirationDate']),
     ApiFilter(filterClass: OrderFilter::class, properties: [
@@ -116,7 +119,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
                     'description' => 'Passer un produit à un nouveau statut',
                     'summary' => 'Passer un produit à un nouveau statut',
                 ],
-                 'denormalization_context' => [
+                'denormalization_context' => [
                     'groups' => ['write:product:promote']
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
@@ -136,7 +139,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
     ),
     ORM\Entity
 ]
-class Product extends Entity implements BarCodeInterface {
+class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
     use BarCodeTrait;
     use NameTrait, RefTrait {
         RefTrait::__toString insteadof NameTrait;
@@ -154,6 +157,31 @@ class Product extends Entity implements BarCodeInterface {
     ];
 
     #[
+        ApiProperty(description: 'Temps auto', example: '7'),
+        ORM\Embedded(Measure::class)
+    ]
+    protected Measure $autoDuration;
+
+    #[
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded(CurrentPlace::class),
+        Serializer\Groups(['read:current_place', 'read:product:collection'])
+    ]
+    protected CurrentPlace $currentPlace;
+
+    #[
+        ApiProperty(description: 'Place', required: true, example: 'disabled'),
+    ]
+    protected ?string $currentPlaceName = null;
+
+    #[
+        ApiProperty(description: 'Volume prévisionnel', example: '2000'),
+        ORM\Embedded(Measure::class),
+        Serializer\Groups(['write:measure'])
+    ]
+    protected Measure $forecastVolume;
+
+    #[
         ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
@@ -162,30 +190,17 @@ class Product extends Entity implements BarCodeInterface {
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Poids', example: "100"),
+        ApiProperty(description: 'Référence', example: '54587F'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:ref', 'write:ref', 'read:product:collection', 'patch:product', 'write:product:clone', 'write:product:upgrade'])
+    ]
+    protected ?string $ref = null;
+
+    #[
+        ApiProperty(description: 'Poids', example: '100'),
         ORM\Embedded(Measure::class)
     ]
     protected Measure $weight;
-
-    #[
-        ApiProperty(description: 'Temps auto', example: "7"),
-        ORM\Embedded(Measure::class)
-    ]
-    protected Measure $autoDuration;
-
-    #[
-        ApiProperty(description: 'Volume prévisionnel', example: "2000"),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['write:measure'])
-    ]
-    protected Measure $forecastVolume;
-
-    #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'read:product:collection'])
-    ]
-    protected CurrentPlace $currentPlace;
 
     /**
      * @var Collection<int, self>
@@ -203,12 +218,6 @@ class Product extends Entity implements BarCodeInterface {
         Serializer\Groups(['read:product'])
     ]
     private ?string $customsCode;
-
-    #[
-        ApiProperty(description: 'Nouveau statut', required: false, example: 'draft'),
-        Serializer\Groups(['write:product:promote'])
-    ]
-    private ?string $place = null;
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12 10:39:37'),
@@ -333,6 +342,12 @@ class Product extends Entity implements BarCodeInterface {
     private ?self $parent = null;
 
     #[
+        ApiProperty(description: 'Nouveau statut', required: false, example: 'draft'),
+        Serializer\Groups(['write:product:promote'])
+    ]
+    private ?string $place = null;
+
+    #[
         ApiProperty(description: 'Prix', required: true, example: '4.2'),
         Assert\NotNull,
         Assert\PositiveOrZero,
@@ -349,13 +364,6 @@ class Product extends Entity implements BarCodeInterface {
         Serializer\Groups(['read:product'])
     ]
     private float $priceWithoutCopper = 0;
-
-    #[
-        ApiProperty(description: 'Référence', example: '54587F'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref', 'read:product:collection', 'patch:product', 'write:product:clone', 'write:product:upgrade'])
-    ]
-    protected ?string $ref = null;
 
     #[
         ApiProperty(description: 'Délai de production', required: true, example: '7'),
@@ -412,8 +420,29 @@ class Product extends Entity implements BarCodeInterface {
         return $this->children;
     }
 
+    public function getCurrentPlace(): CurrentPlace {
+        return $this->currentPlace;
+    }
+
+    public function getCurrentPlaceName(): ?string {
+        return $this->currentPlace->getName() ?? null;
+    }
+
     public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    public function getEmbeddedMeasures(): array {
+        $measures = [];
+
+        /** @phpstan-ignore-next-line */
+        foreach ($this as $key => $value) {
+            if ($value instanceof Measure) {
+                $measures[$key] = $value;
+            }
+        }
+
+        return $measures;
     }
 
     public function getExpirationDate(): ?DateTimeInterface {
@@ -424,8 +453,8 @@ class Product extends Entity implements BarCodeInterface {
         return $this->family;
     }
 
-    public function getUnit(): ?Unit {
-        return $this->unit;
+    public function getForecastVolume(): Measure {
+        return $this->forecastVolume;
     }
 
     public function getIncoterms(): ?Incoterms {
@@ -464,16 +493,8 @@ class Product extends Entity implements BarCodeInterface {
         return $this->minStock;
     }
 
-    public function getCurrentPlaceName(): ?string {
-        return $this->currentPlace->getName() ?? null;
-    }
-
     public function getNotes(): ?string {
         return $this->notes;
-    }
-
-    public function getPlace(): ?string {
-        return $this->place;
     }
 
     public function getPackaging(): ?int {
@@ -488,20 +509,12 @@ class Product extends Entity implements BarCodeInterface {
         return $this->parent;
     }
 
+    public function getPlace(): ?string {
+        return $this->place;
+    }
+
     public function getPrice(): ?float {
         return $this->price;
-    }
-
-    public function getWeight(): Measure {
-        return $this->weight;
-    }
-
-    public function getForecastVolume(): Measure {
-        return $this->forecastVolume;
-    }
-
-     public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
     }
 
     public function getPriceWithoutCopper(): ?float {
@@ -520,6 +533,10 @@ class Product extends Entity implements BarCodeInterface {
         return $this->transfertPriceWork;
     }
 
+    public function getWeight(): Measure {
+        return $this->weight;
+    }
+
     public function removeChild(self $child): self {
         if ($this->children->removeElement($child)) {
             // set the owning side to null (unless already changed)
@@ -527,6 +544,22 @@ class Product extends Entity implements BarCodeInterface {
                 $child->setParent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function setCurrentPlace(CurrentPlace $currentPlace): self {
+        $this->currentPlace = $currentPlace;
+
+        return $this;
+    }
+
+    public function setCurrentPlaceName(string $currentPlaceName): self {
+        $currentPlace = new CurrentPlace();
+        $currentPlace->setName($currentPlaceName);
+
+        $this->currentPlaceName = $currentPlaceName;
+        $this->currentPlace = $currentPlace;
 
         return $this;
     }
@@ -549,8 +582,8 @@ class Product extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    public function setUnit(?Unit $unit): self {
-        $this->unit = $unit;
+    public function setForecastVolume(Measure $forecastVolume): self {
+        $this->forecastVolume = $forecastVolume;
 
         return $this;
     }
@@ -633,6 +666,12 @@ class Product extends Entity implements BarCodeInterface {
         return $this;
     }
 
+    public function setPlace(?string $place): self {
+        $this->place = $place;
+
+        return $this;
+    }
+
     public function setPrice(float $price): self {
         $this->price = $price;
 
@@ -667,46 +706,5 @@ class Product extends Entity implements BarCodeInterface {
         $this->weight = $weight;
 
         return $this;
-    }
-
-    public function setForecastVolume(Measure $forecastVolume): self {
-        $this->forecastVolume = $forecastVolume;
-
-        return $this;
-    }
-
-    public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
-
-        return $this;
-    }
-
-    public function setPlace(?string $place): self {
-        $this->place = $place;
-
-        return $this;
-    }
-
-    public function setCurrentPlaceName(string $currentPlaceName): self {
-        $currentPlace = new CurrentPlace();
-        $currentPlace->setName($currentPlaceName);
-
-        $this->currentPlaceName = $currentPlaceName;
-        $this->currentPlace = $currentPlace;
-
-        return $this;
-    }
-
-    public function getEmbeddedMeasures(): array {
-        $measures = [];
-
-        foreach ($this as $key => $value) {
-
-            if($value instanceof Measure) {
-                $measures[$key] = $value;
-            }
-        }
-
-        return $measures;
     }
 }

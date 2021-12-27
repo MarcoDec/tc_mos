@@ -2,17 +2,14 @@
 
 namespace App\EventListener\Embeddable;
 
-use App\Entity\Embeddable\Measure;
 use App\Entity\Management\Unit;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use App\Entity\Interfaces\EmbeddedInterface;
+
 
 final class MeasureListener {
-
-    private $em;
-
-    public function __construct(EntityManagerInterface $em) {
-        $this->em = $em;
+    public function __construct(private EntityManagerInterface $em) {
     }
 
     public function postLoad(LifecycleEventArgs $args): void {
@@ -20,26 +17,28 @@ final class MeasureListener {
 
         // Check if there is any Measure in the entity
         $measureExists = false;
-        if(method_exists($entity, 'getEmbeddedMeasures') && count($entity->getEmbeddedMeasures()) >= 1) {
+        if ($entity instanceof EmbeddedInterface) {
             $measureExists = true;
         }
 
         // If we got measures inside the entity
         // Then set the measure Unit and the denominator if any
-        if($measureExists) {
-            foreach($entity->getEmbeddedMeasures() as $measure) {
-                
-                $unit = $this->em->getRepository(Unit::class)->findOneByCode($measure->getCode());
+        if ($measureExists && count($entity->getEmbeddedMeasures())) {
+            foreach ($entity->getEmbeddedMeasures() as $measure) {
+                if (null !== $measure->getCode()) {
+                    $unit = $this->em->getRepository(Unit::class)->findOneBy(['code' => $measure->getCode()]);
 
-                // If this is a composed unit
-                if(null !== $unit->getDenominator()) {
-                    $measure->setDenominator($unit->getDenominator());
+                    if (null !== $unit) {
+                        // If this is a composed unit
+                        if (null !== $unit->getDenominator()) {
+                            $measure->setDenominator($unit->getDenominator());
+                        }
+
+                        if (null !== $unit) {
+                            $measure->setUnit($unit);
+                        }
+                    }
                 }
-
-                if(null !== $unit) {
-                    $measure->setUnit($unit);
-                }
-
             }
         }
     }

@@ -9,7 +9,6 @@ use App\Repository\CurrencyRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use App\Entity\Management\Unit;
 
 #[
     ApiResource(
@@ -68,7 +67,6 @@ class Currency extends Unit {
         Serializer\Groups(['read:currency'])
     ]
     final public function getSymbol(): ?string {
-
         return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;
     }
 

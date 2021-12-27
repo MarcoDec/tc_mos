@@ -4,9 +4,6 @@ namespace App\Entity\Embeddable\Project\Product;
 
 use App\Entity\Embeddable\AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiProperty;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {
