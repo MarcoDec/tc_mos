@@ -2,11 +2,10 @@
 
 namespace App\EventListener\Embeddable;
 
+use App\Entity\Interfaces\EmbeddedInterface;
 use App\Entity\Management\Unit;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use App\Entity\Interfaces\EmbeddedInterface;
-
 
 final class MeasureListener {
     public function __construct(private EntityManagerInterface $em) {

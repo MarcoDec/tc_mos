@@ -12,7 +12,7 @@ final class EntityDataPersister implements ContextAwareDataPersisterInterface {
     }
 
     /**
-     * @param mixed  $data
+     * @param mixed   $data
      * @param mixed[] $context
      */
     public function persist($data, array $context = []): object|null {
@@ -28,7 +28,7 @@ final class EntityDataPersister implements ContextAwareDataPersisterInterface {
             case 'upgrade':
                 /** @var class-string $className */
                 $className = $context['identifiers']['id'][0];
-                 /** @var mixed $parent */
+                /** @var mixed $parent */
                 $parent = $this->em->getRepository($className)->findOneBy(['id' => $data->getId()]);
                 $returnObject = clone $data;
 
@@ -39,7 +39,7 @@ final class EntityDataPersister implements ContextAwareDataPersisterInterface {
                 }
                 break;
             case 'promote':
-                 /** @var class-string $className */
+                /** @var class-string $className */
                 $className = $context['identifiers']['id'][0];
                 /** @var mixed $returnObject */
                 $returnObject = $this->em->getRepository($className)->findOneBy(['id' => $data->getId()]);
@@ -66,7 +66,7 @@ final class EntityDataPersister implements ContextAwareDataPersisterInterface {
     }
 
     /**
-     * @param mixed  $data
+     * @param mixed   $data
      * @param mixed[] $context
      */
     public function remove($data, array $context = []): void {

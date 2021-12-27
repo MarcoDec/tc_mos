@@ -14,6 +14,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\EmbeddedInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\NameTrait;
@@ -25,7 +26,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Interfaces\EmbeddedInterface;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
