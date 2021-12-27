@@ -13,12 +13,6 @@ const router = createRouter({
             path: '/'
         },
         {
-            component: async (): Promise<RouteComponent> => import('../components/bootstrap-5/modal/AppModalError.vue'),
-            meta: {requiresAuth: false},
-            name: 'error',
-            path: '/error'
-        },
-        {
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
             meta: {requiresAuth: false},
             name: 'login',
@@ -27,7 +21,7 @@ const router = createRouter({
     ]
 })
 
-router.beforeEach(async to => {
+router.beforeEach(to => {
     const token = Cookies.get('token') ?? ''
     if (to.matched.some(record => record.meta.requiresAuth && record.name !== 'login') && !token)
         return {name: 'login'}

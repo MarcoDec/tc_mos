@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import {ActionTypes, MutationTypes} from '../../store/security'
-    import type {Actions, Mutations, State} from '../../store/security'
+    import type {Actions, Getters, Mutations, State} from '../../store/security'
     import {
         useMutations,
         useNamespacedActions,
@@ -8,28 +8,27 @@
         useNamespacedMutations,
         useNamespacedState
     } from 'vuex-composition-helpers'
-    import {MutationTypes as MutationSpinner} from '../../store/mutation'
+    import {MutationTypes as MutationSpinner} from '../../store'
+    import type {Mutations as MutationsSpinner} from '../../store'
     import {useRouter} from 'vue-router'
 
-    const hasUser = useNamespacedGetters('users', ['hasUser']).hasUser
+    const error = useNamespacedMutations<Mutations>('users', [MutationTypes.LOGOUT])[MutationTypes.LOGOUT]
+    const hasUser = useNamespacedGetters<Getters>('users', ['hasUser']).hasUser
+    const loader = useMutations<MutationsSpinner>([MutationSpinner.SPINNER])[MutationSpinner.SPINNER]
     const logout = useNamespacedActions<Actions>('users', [ActionTypes.LOGOUT_USERS])[ActionTypes.LOGOUT_USERS]
     const name = useNamespacedState<State>('users', ['username']).username
-    const error = useNamespacedMutations<Mutations>('users', [MutationTypes.LOGOUT])[MutationTypes.LOGOUT]
-    const loader = useMutations([MutationSpinner.SPINNER])[MutationSpinner.SPINNER]
-
     const router = useRouter()
 
-    async function onLogout(): Promise<void> {
+    async function handleLogout(): Promise<void> {
         loader()
-
         try {
             await logout()
             await router.push({name: 'login'})
+        } catch (e) {
+            error()
         } finally {
             loader()
         }
-
-        error()
     }
 </script>
 
@@ -41,7 +40,7 @@
         <div v-if="hasUser" class="text-white">
             <Fa icon="user-circle"/>
             {{ name }}
-            <AppBtn variant="danger" @click="onLogout">
+            <AppBtn variant="danger" @click="handleLogout">
                 <Fa icon="sign-out-alt"/>
             </AppBtn>
         </div>

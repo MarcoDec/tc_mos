@@ -9,21 +9,26 @@
     } from 'vuex-composition-helpers'
     import AppModalError from '../../../components/bootstrap-5/modal/AppModalError.vue'
     import type {FormField} from '../../../types/bootstrap-5'
-    import {MutationTypes as MutationTypesSpinner} from '../../../store/mutation'
+    import {MutationTypes as MutationTypesSpinner} from '../../../store'
+    import type {Mutations as MutationsSpinner} from '../../../store'
     import {ref} from 'vue'
     import router from '../../router'
 
+    const {code, error: showError, msgError, showModal}
+        = useNamespacedState<State>('users', ['code', 'error', 'msgError', 'showModal'])
     const fields: FormField[] = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
-
-    const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
     const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.LOGIN])[ActionTypes.LOGIN]
-    const {code, error: showError, msgError, showModal}
-        = useNamespacedState<State>('users', ['code', 'error', 'msgError', 'showModal'])
+    const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
+    const loader = useMutations<MutationsSpinner>([MutationTypesSpinner.SPINNER])[MutationTypesSpinner.SPINNER]
     const show = useNamespacedMutations<Mutations>('users', [MutationTypes.SHOW_MODAL])[MutationTypes.SHOW_MODAL]
-    const loader = useMutations([MutationTypesSpinner.SPINNER])[MutationTypesSpinner.SPINNER]
+
+    function closeModal(): void {
+        show()
+    }
+
     async function handleClick(): Promise<void> {
         loader()
         try {
@@ -32,9 +37,6 @@
         } finally {
             loader()
         }
-    }
-    function closeModal(): void{
-        show()
     }
 </script>
 

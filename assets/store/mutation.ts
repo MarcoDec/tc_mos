@@ -9,3 +9,5 @@ export const mutations = {
         state.spinner = !state.spinner
     }
 }
+
+export type Mutations = typeof mutations

@@ -21,6 +21,6 @@ export type FormField = {
 
 export type FormInput = 'password' | 'text'
 
-export type FormValue = number | string
+export type FormValue = number | string | null
 
 export type FormValues = Record<string, FormValue>
