@@ -24,6 +24,8 @@
             :field="field"
             :model-value="modelValue[field.name]"
             @input="input"/>
-        <slot name="buttons"/>
+        <div class="float-end">
+            <slot/>
+        </div>
     </form>
 </template>

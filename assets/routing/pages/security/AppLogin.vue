@@ -1,21 +1,13 @@
 <script lang="ts" setup>
-    import {ActionTypes, MutationTypes} from '../../../store/security'
-    import type {Actions, Mutations, State} from '../../../store/security'
-    import {
-        useMutations,
-        useNamespacedActions,
-        useNamespacedMutations,
-        useNamespacedState
-    } from 'vuex-composition-helpers'
-    import AppModalError from '../../../components/bootstrap-5/modal/AppModalError.vue'
+    import {useMutations, useNamespacedActions} from 'vuex-composition-helpers'
+    import {ActionTypes} from '../../../store/security'
+    import type {Actions} from '../../../store/security'
     import type {FormField} from '../../../types/bootstrap-5'
     import {MutationTypes as MutationTypesSpinner} from '../../../store'
     import type {Mutations as MutationsSpinner} from '../../../store'
     import {ref} from 'vue'
     import router from '../../router'
 
-    const {code, error: showError, msgError, showModal}
-        = useNamespacedState<State>('users', ['code', 'error', 'msgError', 'showModal'])
     const fields: FormField[] = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
@@ -23,11 +15,6 @@
     const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.LOGIN])[ActionTypes.LOGIN]
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
     const loader = useMutations<MutationsSpinner>([MutationTypesSpinner.SPINNER])[MutationTypesSpinner.SPINNER]
-    const show = useNamespacedMutations<Mutations>('users', [MutationTypes.SHOW_MODAL])[MutationTypes.SHOW_MODAL]
-
-    function closeModal(): void {
-        show()
-    }
 
     async function handleClick(): Promise<void> {
         loader()
@@ -42,19 +29,12 @@
 
 <template>
     <AppRow>
-        <div v-if="showError" class="alert alert-danger" role="alert">
-            <span class="badge bg-danger">Erreur {{ code }}</span>
-            {{ msgError }}
-        </div>
         <AppCard class="bg-blue col">
             <AppForm v-model="formData" :fields="fields" @submit="handleClick">
-                <template #buttons>
-                    <AppBtn class="float-end" type="submit">
-                        Connexion
-                    </AppBtn>
-                </template>
+                <AppBtn type="submit">
+                    Connexion
+                </AppBtn>
             </AppForm>
         </AppCard>
-        <AppModalError v-show="showModal" @close="closeModal"/>
     </AppRow>
 </template>
