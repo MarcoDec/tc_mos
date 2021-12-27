@@ -9,6 +9,6 @@ export type RootState = {
     user: UserState
 }
 
-const store = createStore<RootState>({modules: {gui, users}, strict: process.env.NODE_ENV !== 'production'})
+const store = createStore<RootState>({modules: {users}, strict: process.env.NODE_ENV !== 'production'})
 
 export default store
