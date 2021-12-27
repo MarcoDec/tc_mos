@@ -39,7 +39,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     ]),
     ApiFilter(filterClass: DateFilter::class, properties: ['expirationDate']),
     ApiFilter(filterClass: OrderFilter::class, properties: [
-        'ref'
+        'ref',
+        'index',
+        'kind'
     ]),
     ApiResource(
         description: 'Produit',
