@@ -18,7 +18,7 @@ class RelationFilter extends AbstractFilter {
 
         if (null !== $properties) {
             foreach ($properties as $property => $value) {
-                // Embedded classes should be checked there too as we going further in the relation
+                // Embedded classes should be checked there too as we're going further in the relation
                 /** @phpstan-ignore-next-line */
                 if (!$metadata->hasAssociation($property) && !array_key_exists($property, $metadata->embeddedClasses)) {
                     continue;
@@ -26,12 +26,21 @@ class RelationFilter extends AbstractFilter {
 
                 $propertyName = $this->normalizePropertyName($property);
 
+                // If $value is an array, it means we passed other options [0 => value, 'required': true/false]
+                $isFilterRequired = false;
+                if(!is_array($value)) {
+                    $field = $propertyName.'.'.$value;
+                } else {
+                    $field = $propertyName.'.'.$value[0];
+                    $isFilterRequired = true;
+                }
+
                 // Only add the description if the Type exists (if it's null, then we've got an error in the value name as it's not a property of the object)
-                if (null !== $this->getDoctrineFieldType($value, $resourceClass)) {
+                if (null !== $this->getDoctrineFieldType($field, $resourceClass)) {
                     $description[$propertyName] = [
                         'property' => $value,
-                        'type' => $this->getDoctrineFieldType($value, $resourceClass),
-                        'required' => false
+                        'type' => $this->getDoctrineFieldType($field, $resourceClass),
+                        'required' => $isFilterRequired
                     ];
                 } else {
                     $this->getLogger()->notice('Invalid filter ignored', [
@@ -48,17 +57,36 @@ class RelationFilter extends AbstractFilter {
         $metadata = $this->getClassMetadata($resourceClass);
         $properties = $this->getProperties() ?? [];
 
-        // Embedded classes should be checked there too as we going further in the relation
+        // Embedded classes should be checked there too as we're going further in the relation
         /** @phpstan-ignore-next-line */
         if ($metadata->hasAssociation($property) || array_key_exists($property, $metadata->embeddedClasses)) {
             $alias = $queryBuilder->getRootAliases()[0];
             $field = $property;
 
-            if (array_key_exists($property, $properties)) {
-                $queryBuilder
-                    ->andWhere(sprintf('%s.%s.%s = :%s', $alias, $field, $properties[$property], $properties[$property]))
-                    ->setParameter(sprintf('%s', $properties[$property]), $value);
+            if(!is_array($properties[$property])) {
+                $propertyName = $properties[$property];
+            } else {
+                $propertyName = $properties[$property][0];
             }
+
+            $nested = $field.'.'.$propertyName;
+
+            if ($this->isPropertyNested($nested, $resourceClass)) {
+                dump('ok');
+                [$alias, $field] = $this->addJoinsForNestedProperty($nested, $alias, $queryBuilder, $queryNameGenerator, $resourceClass);
+
+                $queryBuilder
+                    ->andWhere(sprintf('%s.%s = :%s', $alias, $field, $propertyName))
+                    ->setParameter(sprintf('%s', $propertyName), $value)
+                ;
+            } else {
+                $queryBuilder
+                    ->andWhere(sprintf('%s.%s.%s = :%s', $alias, $field, $propertyName, $propertyName))
+                    ->setParameter(sprintf('%s', $propertyName), $value)
+                ;
+            }
+
+            dump($queryBuilder);
         }
     }
 }

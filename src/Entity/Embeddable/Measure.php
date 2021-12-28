@@ -25,14 +25,14 @@ class Measure {
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, example: '/api/units/2'),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private Unit $unit;
 
     #[
         ApiProperty(description: 'Valeur', example: '2.66'),
         ORM\Column(type: 'float', nullable: true),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private ?float $value = 0;
 
