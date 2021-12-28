@@ -60,7 +60,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Créer un produit',
                     'summary' => 'Créer un produit',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -69,7 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Supprime un produit',
                     'summary' => 'Supprime un produit',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
@@ -85,7 +85,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'denormalization_context' => [
                     'groups' => ['patch:product']
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
             ],
             'clone' => [
                 'method' => 'POST',
@@ -98,7 +98,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'denormalization_context' => [
                     'groups' => ['write:product:clone']
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT__WRITER.'\')'
             ],
             'upgrade' => [
                 'method' => 'POST',
@@ -111,7 +111,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'denormalization_context' => [
                     'groups' => ['write:product:upgrade']
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
             ],
             'promote' => [
                 'method' => 'PATCH',
@@ -124,7 +124,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'denormalization_context' => [
                     'groups' => ['write:product:promote']
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
             ]
         ],
         attributes: [
