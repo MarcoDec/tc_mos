@@ -9,13 +9,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\AddressTrait;
 use App\Entity\Traits\NameTrait;
+use App\Filter\EnumFilter;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: EnumFilter::class, id: 'country', properties: ['address.country']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: Address::filter),
     ApiResource(
@@ -53,18 +55,18 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:address', 'write:carrier', 'write:name'],
+            'groups' => ['write:address', 'write:name'],
             'openapi_definition_name' => 'Carrier-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:carrier', 'read:id', 'read:name'],
+            'groups' => ['read:address', 'read:id', 'read:name'],
             'openapi_definition_name' => 'Carrier-read'
         ]
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class Carrier extends Entity {
+    use AddressTrait;
     use NameTrait;
 
     #[
@@ -74,25 +76,4 @@ class Carrier extends Entity {
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Adresse'),
-        ORM\Embedded,
-        Serializer\Groups(['read:carrier', 'write:carrier'])
-    ]
-    private Address $address;
-
-    #[Pure]
-    public function __construct() {
-        $this->address = new Address();
-    }
-
-    final public function getAddress(): Address {
-        return $this->address;
-    }
-
-    final public function setAddress(Address $address): self {
-        $this->address = $address;
-        return $this;
-    }
 }

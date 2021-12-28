@@ -11,6 +11,7 @@ use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use ArrayObject;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Intl\Countries;
 
 final class OpenApiWrapper {
     public function __construct(private OpenApi $api, private DashPathSegmentNameGenerator $dashGenerator) {
@@ -222,6 +223,11 @@ final class OpenApiWrapper {
             }
             if (isset($properties['@type'])) {
                 $properties['@type']['example'] = $resourceName;
+            }
+            foreach ($properties as &$property) {
+                if (isset($property['countries']) && $property['countries']) {
+                    $property['enum'] = Countries::getCountryCodes();
+                }
             }
             $schema['properties'] = $properties;
             $schemas->put($schemaName, $schema);

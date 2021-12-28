@@ -34,17 +34,16 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:currency', 'write:currency'],
+            'groups' => ['write:currency'],
             'openapi_definition_name' => 'Currency-write'
         ],
         normalizationContext: [
-            'groups' => ['read:currency', 'read:id'],
+            'groups' => ['read:code', 'read:currency', 'read:id'],
             'openapi_definition_name' => 'Currency-read'
         ],
         paginationEnabled: false
     ),
-    ORM\Entity(repositoryClass: CurrencyRepository::class),
-    ORM\Table
+    ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
 class Currency extends Unit {
     #[

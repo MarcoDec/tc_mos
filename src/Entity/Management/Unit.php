@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\CodeTrait;
 use App\Entity\Traits\NameTrait;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -74,7 +75,17 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('name')
 ]
 class Unit extends Entity {
+    use CodeTrait;
     use NameTrait;
+
+    #[
+        ApiProperty(description: 'Code', required: true, example: 'g'),
+        Assert\Length(max: 2),
+        Assert\NotBlank,
+        ORM\Column(length: 2),
+        Serializer\Groups(['read:code', 'write:code'])
+    ]
+    protected ?string $code = null;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
@@ -99,14 +110,7 @@ class Unit extends Entity {
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private Collection $children;
-
-    #[
-        ApiProperty(description: 'Code ', required: true, example: 'g'),
-        ORM\Column(type: 'string'),
-        Serializer\Groups(['read:unit', 'write:unit'])
-    ]
-    private ?string $code = null;
-
+    
     #[
         ApiProperty(description: 'Dénominateur', readableLink: false, example: '/api/units/3'),
         ORM\OneToOne(targetEntity: self::class),

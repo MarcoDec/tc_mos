@@ -7,8 +7,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use ReflectionProperty;
+use Symfony\Component\Intl\Countries;
 
 final class EnumFilter extends AbstractFilter {
     /**
@@ -16,14 +18,16 @@ final class EnumFilter extends AbstractFilter {
      */
     public function getDescription(string $resourceClass): array {
         $description = [];
+        /** @var ClassMetadata<object> $metadata */
         $metadata = $this->getClassMetadata($resourceClass);
-        $reflClass = $metadata->getReflectionClass();
         foreach ($this->properties as $property => $strategy) {
+            /** @var ReflectionProperty $reflProp */
+            $reflProp = $metadata->reflFields[$property];
             $description[$property] = [
                 'property' => $property,
                 'required' => false,
                 'schema' => [
-                    'enum' => $this->getEnum($reflClass->getProperty($property)),
+                    'enum' => $this->getEnum($reflProp),
                     'type' => $this->getType($metadata->getTypeOfField($property))
                 ]
             ];
@@ -57,10 +61,12 @@ final class EnumFilter extends AbstractFilter {
                 !empty($apiProperty->attributes)
                 && isset($apiProperty->attributes['openapi_context'])
                 && !empty($context = $apiProperty->attributes['openapi_context'])
-                && isset($context['enum'])
-                && !empty($context['enum'])
             ) {
-                $enum = $enum->merge($context['enum']);
+                if (isset($context['enum']) && !empty($context['enum'])) {
+                    $enum = $enum->merge($context['enum']);
+                } elseif (isset($context['countries']) && $context['countries']) {
+                    $enum = $enum->merge(Countries::getCountryCodes());
+                }
             }
         }
         return $enum->values()->all();
