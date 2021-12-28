@@ -28,7 +28,7 @@ class RelationFilter extends AbstractFilter {
 
                 // If $value is an array, it means we passed other options [0 => value, 'required': true/false]
                 $isFilterRequired = false;
-                if(!is_array($value)) {
+                if (!is_array($value)) {
                     $field = $propertyName.'.'.$value;
                 } else {
                     $field = $propertyName.'.'.$value[0];
@@ -63,7 +63,7 @@ class RelationFilter extends AbstractFilter {
             $alias = $queryBuilder->getRootAliases()[0];
             $field = $property;
 
-            if(!is_array($properties[$property])) {
+            if (!is_array($properties[$property])) {
                 $propertyName = $properties[$property];
             } else {
                 $propertyName = $properties[$property][0];
@@ -77,13 +77,11 @@ class RelationFilter extends AbstractFilter {
 
                 $queryBuilder
                     ->andWhere(sprintf('%s.%s = :%s', $alias, $field, $propertyName))
-                    ->setParameter(sprintf('%s', $propertyName), $value)
-                ;
+                    ->setParameter(sprintf('%s', $propertyName), $value);
             } else {
                 $queryBuilder
                     ->andWhere(sprintf('%s.%s.%s = :%s', $alias, $field, $propertyName, $propertyName))
-                    ->setParameter(sprintf('%s', $propertyName), $value)
-                ;
+                    ->setParameter(sprintf('%s', $propertyName), $value);
             }
 
             dump($queryBuilder);
