@@ -47,7 +47,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                     'description' => 'Supprime un fabricant',
                     'summary' => 'Supprime un fabricant',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
