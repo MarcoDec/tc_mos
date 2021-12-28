@@ -1,7 +1,6 @@
-/* eslint-disable consistent-return,@typescript-eslint/prefer-readonly-parameter-types */
 import {createRouter, createWebHistory} from 'vue-router'
-import Cookies from 'js-cookie'
 import type {RouteComponent} from 'vue-router'
+import {app} from '../app'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -21,9 +20,13 @@ const router = createRouter({
     ]
 })
 
+// eslint-disable-next-line consistent-return
 router.beforeEach(to => {
-    const token = Cookies.get('token') ?? ''
-    if (to.matched.some(record => record.meta.requiresAuth && record.name !== 'login') && !token)
+    if (
+        to.matched.some(record => record.meta.requiresAuth && record.name !== 'login')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/strict-boolean-expressions
+        && app.config.globalProperties.$store.getters['security/hasUser']
+    )
         return {name: 'login'}
 })
 
