@@ -1,6 +1,4 @@
-/* eslint-disable consistent-return,@typescript-eslint/prefer-readonly-parameter-types */
 import {createRouter, createWebHistory} from 'vue-router'
-import Cookies from 'js-cookie'
 import type {RouteComponent} from 'vue-router'
 
 const router = createRouter({
@@ -19,12 +17,6 @@ const router = createRouter({
             path: '/login'
         }
     ]
-})
-
-router.beforeEach(to => {
-    const token = Cookies.get('token') ?? ''
-    if (to.matched.some(record => record.meta.requiresAuth && record.name !== 'login') && !token)
-        return {name: 'login'}
 })
 
 export default router

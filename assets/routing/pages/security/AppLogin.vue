@@ -12,7 +12,7 @@
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
-    const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.LOGIN])[ActionTypes.LOGIN]
+    const fetchUsers = useNamespacedActions<Actions>('security', [ActionTypes.LOGIN])[ActionTypes.LOGIN]
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
     const loader = useMutations<MutationsSpinner>([MutationTypesSpinner.SPINNER])[MutationTypesSpinner.SPINNER]
 
