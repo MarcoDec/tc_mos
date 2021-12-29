@@ -72,6 +72,14 @@ abstract class AbstractRepository
    }
 
    /**
+    * @param $entities
+    * @return void
+    */
+   public function persistAll($entities): void {
+      $this->manager->itemsUpdate($entities);
+   }
+
+   /**
     * @param mixed $entity
     * @return void
     * @throws Exception
