@@ -30,8 +30,8 @@ use Symfony\Component\Validator\Constraints\Optional;
             'read'=>false,
             'write'=>false,
             'openapi_context' => [
-               'description' => "Récupère les notifications liées à l'utilisateur courant",
-               'summary' => "Récupère les notifications liées à l'utilisateur courant",
+               'description' => "Récupère les notifications non lues liées à l'utilisateur courant",
+               'summary' => "Récupère les notifications non lues liées à l'utilisateur courant",
             ],
             'normalization_context' => ['groups'=>["notification:read"]]
          ],
@@ -107,14 +107,7 @@ use Symfony\Component\Validator\Constraints\Optional;
          ],
       ],
       itemOperations: [
-         'get'=>[
-            'openapi_context' => [
-               'description' => 'Récupère une notification particulière',
-               'summary' => 'Récupère une notification particulière',
-               ],
-            'normalization_context' => [ 'groups' => [
-               "notification:read" ]]
-         ],
+         'get'=>NO_ITEM_GET_OPERATION,
          'patch_notification_read'=>[
             'method' => 'PATCH',
             'path' => '/notifications/{id}/read',
@@ -137,7 +130,6 @@ use Symfony\Component\Validator\Constraints\Optional;
                ]
             ]
          ],
-
          'delete'=> [
             'openapi_context' => [
                'description'=> 'Supprime une notification',
