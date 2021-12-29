@@ -1,8 +1,9 @@
 <template>
+  <h1>Agenda annual</h1>
 
 </template>
 
-<script>
+<script lang="ts" setup>
 
 </script>
 

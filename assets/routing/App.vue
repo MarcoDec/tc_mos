@@ -17,6 +17,7 @@
             await router.push({name: 'login'})
         }
         connected.value = true
+
     })
 </script>
 

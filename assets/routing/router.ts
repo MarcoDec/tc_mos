@@ -13,10 +13,10 @@ const router = createRouter({
             path: '/'
         },
         {
-            component: async (): Promise<RouteComponent> => import('../components/bootstrap-5/modal/AppModalError.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/company/agenda/AppCompany.vue'),
             meta: {requiresAuth: false},
-            name: 'error',
-            path: '/error'
+            name: 'company',
+            path: '/company'
         },
         {
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),

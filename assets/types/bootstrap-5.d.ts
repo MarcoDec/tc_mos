@@ -24,3 +24,17 @@ export type FormInput = 'password' | 'text'
 export type FormValue = number | string
 
 export type FormValues = Record<string, FormValue>
+
+export type Tabs = {
+    name: string
+    isActive: boolean
+}
+
+export type Tab = {
+    active: {active: boolean}
+    icon: string
+    id: string
+    labelledby: string
+    target: string
+    title: string
+}
