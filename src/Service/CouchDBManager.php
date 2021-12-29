@@ -16,6 +16,7 @@ use App\DataCollector\CouchdbLogItem;
 use App\Entity\Couchdb\Document as CouchdbDocumentEntity;
 use App\Entity\Couchdb\Item;
 use App\Event\Couchdb\Events;
+use App\Event\Couchdb\Item\CouchdbItemPostRemoveEvent;
 use App\Event\Couchdb\Item\CouchdbItemPostUpdateEvent;
 use App\Event\Couchdb\Item\CouchdbItemPrePersistEvent;
 use App\Event\Couchdb\Item\CouchdbItemPreRemoveEvent;
@@ -385,6 +386,44 @@ class CouchDBManager {
             $this->actions[$time] = $couchLog;
         }
     }
+
+      /**
+       * Supprime un item dans la base.
+       * @param object $entity
+       */
+      public function itemsDelete(array $entities): void {
+         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
+         $this->logger->info(__CLASS__.'/'.__METHOD__);
+         $first = collect($entities)->first();
+         $class = get_class($first);
+         $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_DELETE, __METHOD__);
+         $couchdbDoc = $this->documentRead($class);
+         $documentContent = $couchdbDoc->getContent();
+         try {
+            foreach ($entities as $entity){
+               foreach ($documentContent as $key => $content) {
+                  if ($content['id']===$entity->getId()) {
+                     unset($documentContent[$key]);
+                  }
+               }
+            }
+            $couchdbDoc->setContent($documentContent);
+            $this->documentUpdate($couchdbDoc);
+            foreach ($entities as $entity) {
+               $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
+               $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_DELETE, __METHOD__);
+               $newEventPostRemove = new CouchdbItemPostRemoveEvent($entity);
+               $this->eventDispatcher->dispatch($newEventPostRemove, Events::postRemove);
+               if (method_exists($entity,'getId')) $couchLog->setDetail('Document '.$class.' item '.$entity->getId().' CouchdbItemPostRemoveEvent lancé');
+               else throw new Exception("la methode getId() pour la classe ".$class." n'existe pas");
+               $this->actions[$time] = $couchLog;
+            }
+         } catch (Exception $e) {
+            $couchLog->setDetail($e->getMessage());
+            $couchLog->setErrors(true);
+            $this->actions[$time] = $couchLog;
+         }
+      }
 
    /**
     * @param object $entity

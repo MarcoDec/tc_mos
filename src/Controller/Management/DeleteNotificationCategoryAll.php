@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
 #[AsController]
-class PatchNotificationCategoryReadAll extends AbstractController
+class DeleteNotificationCategoryAll extends AbstractController
 {
    public function __construct(private NotificationRepository $repo)
 {
@@ -31,8 +31,7 @@ class PatchNotificationCategoryReadAll extends AbstractController
       foreach ($notifications as $notification) {
          $notification->setRead(true);
       }
-
-      $this->repo->persistAll($notifications);
+      $this->repo->removeAll($notifications);
       return $notifications;
    }
 }

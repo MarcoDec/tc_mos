@@ -89,4 +89,11 @@ abstract class AbstractRepository
       if ($couchdbItem === null) throw new Exception("Impossible to remove an unexisting item in the couchdbDatabase");
       else $this->manager->itemDelete($entity);
    }
+   /**
+    * @param $entities
+    * @return void
+    */
+   public function removeAll($entities): void {
+      $this->manager->itemsDelete($entities);
+   }
 }

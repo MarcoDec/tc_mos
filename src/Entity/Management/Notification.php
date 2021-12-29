@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Attribute\Couchdb\Abstract\Fetch;
 use App\Attribute\Couchdb\Document;
 use App\Attribute\Couchdb\ORM\ManyToOne;
+use App\Controller\Management\DeleteNotificationCategoryAll;
 use App\Controller\Management\GetNotifications;
 use App\Controller\Management\PatchNotificationCategoryReadAll;
 use App\Controller\Management\PatchNotificationRead;
@@ -59,6 +60,37 @@ use Symfony\Component\Validator\Constraints\Optional;
                ]],
                'description' => "Marque les notifications de l'utilisateur appartenant à la catégorie comme lues",
                'summary' => "Marque les notifications de l'utilisateur appartenant à la catégorie comme lues",
+               'requestBody' => [
+                  'required' =>false,
+                  'content' => [
+                     'application/ld+json'=> [
+                        'schema'=>[],
+                        'example'=>'{}'
+                     ]
+                  ]
+               ],
+
+            ],
+            'normalization_context' => ['groups'=>["notification:read"]],
+            'denormalization_context' => ['groups'=>["notification:write"]],
+         ],
+         'delete_notification_category_all' =>[
+            'method'=> 'DELETE',
+            'path'=> '/notifications/{category}/all',
+            'requirements' => ['category' => '\w+'],
+            'controller'=>DeleteNotificationCategoryAll::class,
+            'read'=>false,
+            'write'=>false,
+            'input'=>false,
+            'openapi_context' => [
+               'parameters'=>[[
+                  'in'=>'path',
+                  'name'=>'category',
+                  'type'=>'string',
+                  'required'=>true
+               ]],
+               'description' => "Supprime les notifications de l'utilisateur appartenant à la catégorie",
+               'summary' => "Supprime les notifications de l'utilisateur appartenant à la catégorie",
                'requestBody' => [
                   'required' =>false,
                   'content' => [
