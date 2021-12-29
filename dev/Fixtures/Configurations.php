@@ -10,6 +10,9 @@ final class Configurations {
     /** @var array<string, EntityConfig> */
     private array $configurations = [];
 
+    /** @var array<int, string> */
+    private array $countries = [];
+
     private ExpressionLanguage $exprLang;
 
     public function __construct(private EntityManagerInterface $em) {
@@ -50,6 +53,10 @@ final class Configurations {
         return $this->configurations[$name]->findData($id);
     }
 
+    public function getCountry(int $id): ?string {
+        return $this->countries[$id] ?? null;
+    }
+
     public function getId(string $name, string $id): ?int {
         return $this->configurations[$name]->getId($id);
     }
@@ -58,6 +65,18 @@ final class Configurations {
         foreach ($this->configurations as $config) {
             $this->em->getConnection()->executeStatement($config->toSQL($this->em->getConnection()));
         }
+    }
+
+    /**
+     * @param array{code: string, id: string, statut: string}[] $countries
+     */
+    public function setCountries(array $countries): void {
+        $this->countries = collect($countries)
+            ->mapWithKeys(static function (array $country): array {
+                /** @var array{code: string, id: string, statut: string} $country */
+                return empty($country['statut']) || $country['statut'] === '0' ? [(int) $country['id'] => $country['code']] : [];
+            })
+            ->all();
     }
 
     /**

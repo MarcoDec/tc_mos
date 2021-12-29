@@ -10,6 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
 use App\Filter\RelationFilter;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -71,7 +72,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         paginationEnabled: false
     ),
     ORM\Entity,
-    ORM\Table(name: 'product_family')
+    ORM\Table(name: 'product_family'),
+    UniqueEntity(['name', 'parent'])
 ]
 class Family extends AbstractFamily {
     /** @var Collection<int, self> */

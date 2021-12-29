@@ -14,7 +14,7 @@ Certains alias ont été définis pour rendre plus pratique la gestion des conte
 2. ajoutez les lignes suivantes dans votre fichier de configuration de votre shell (par exemple `~/.bashrc` si vous
    utilisez BASH)&nbsp;::
 
-```shell
+```sh
 # Aliases TConcept-GPAO
 if [ -f [chemin vers le clone du projet]/.bash_aliases ]; then
     . [chemin vers le clone du projet]/.bash_aliases
@@ -30,20 +30,38 @@ Depuis la racine du projet, exécutez la commande `docker:recreate`.
 Exécutez la commande `docker:php` pour entrer dans le conteneur `tconcept_gpao_php`. Une fois dans le conteneur,
 exécutez la commande `composer install` pour installer les différentes dépendances.
 
-### Base de données
+### Bases de données
 
-Les raccourcis ne sont pas encore tous présents. Il faudra donc entrer pour le moment les commandes suivantes&nbsp;:
 #### MySQL
-```shell
-php bin/console doctrine:schema:update -f
-gpao:fixtures:load
+
+Pour charger la base de données SQL, exécutez la commande `gpao:database:load`.
+
+La commande ci-dessus est un raccourci pour les deux commandes ci-dessous&nbsp;:
+
+```sh
+gpao:schema:update # Charge les tables en fonction du schéma défini sur les entités
+gpao:fixtures:load # Transfère les anciennes données au format JSON dans le nouveau modèle
 ```
 #### CouchDB
+
+Pour initialiser la base de données NOSQL, il faudra executer les deux commandes ci-dessous&nbsp;:
 
 ````shell
 php bin/console gpao:couchdb:create
 php bin/console gpao:couchdb:schema:update
 ````
+
+### Vite & Vue
+
+La partie *front* est développée avec le *framework* Vue.js. Les différents fichiers composants les *assets* sont
+transcompilés grâce au *bundler* Vite.
+
+```sh
+yarn # Installe les dépendances
+yarn build # Compile les assets en mode production
+
+yarn dev # À utiliser pour lancer le serveur de développement
+```
 
 ### PhpStorm
 
@@ -65,6 +83,20 @@ Différents conteneurs Docker sont utilisés pour les différents services du pr
 - `tconcept-gpao_couchdb-server-0_1`&nbsp;: conteneur responsable de CouchDB le système de gestion de données NoSQL. L'URI principale de connexion se trouve [http://localhost:5984/_utils](http://localhost:5984/_utils)
 
 
+
+## Cron
+
+Des crons peuvent être définis grâce à l'attribut `App\Attributes\CronJob`. Les commandes ensuite associées sont les
+suivantes&nbsp;:
+
+```sh
+gpao:cron --scan # Analyse les commandes et créer les CRON en base de données.
+gpao:cron # Lance les CRON.
+```
+
+## Devises
+
+Le taux de change des devises est mis à jour par une tâche cron selon la commande `gpao:currency:rate`.
 
 ## Qualité du code
 
