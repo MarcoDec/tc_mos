@@ -16,6 +16,7 @@ use App\DataCollector\CouchdbLogItem;
 use App\Entity\Couchdb\Document as CouchdbDocumentEntity;
 use App\Entity\Couchdb\Item;
 use App\Event\Couchdb\Events;
+use App\Event\Couchdb\Item\CouchdbItemPostUpdateEvent;
 use App\Event\Couchdb\Item\CouchdbItemPrePersistEvent;
 use App\Event\Couchdb\Item\CouchdbItemPreRemoveEvent;
 use App\Event\Couchdb\Item\CouchdbItemPreUpdateEvent;
@@ -240,10 +241,7 @@ class CouchDBManager {
             $couchLog->setDetail('Document '.$id.' updated');
             $this->actions[$time] = $couchLog;
             //Mise à jour du cache
-           $this->cache->get(CouchdbDocumentEntity::getName($id), function() use ($couchdbDocument) {
-              return $couchdbDocument;
-           });
-            return $couchdbDocument;
+           return $this->documentRead($couchdbDocument->getId(),true);
         } catch (Exception $e) {
             $couchLog->setDetail($e->getMessage());
             $couchLog->setErrors(true);
@@ -443,6 +441,48 @@ class CouchDBManager {
         }
     }
 
+   /**
+    * @param array $entities
+    */
+   public function itemsUpdate(array $entities) {
+      $this->logger->info(__CLASS__.'/'.__METHOD__);
+      $class = get_class($entities[0]);
+
+      $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
+      $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_UPDATE, __METHOD__);
+      $couchLog->setDetail('Document '.$class." ".count($entities)." items en cours d'update groupé");
+      $this->actions[$time] = $couchLog;
+
+      $couchdbDoc = $this->documentRead($class);
+      $documentContent = $couchdbDoc->getContent();
+      try {
+         foreach ($entities as $entity) {
+            $entityArray = $this->convertEntityToArray($entity);
+            foreach ($documentContent as $key => $content) {
+               if ($content['id']===$entity->getId()) {
+                  $documentContent[$key] = $entityArray;
+               }
+            }
+         }
+         $couchdbDoc->setContent($documentContent);
+         $this->documentUpdate($couchdbDoc);
+
+         foreach ($entities as $entity) {
+            $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
+            $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_UPDATE, __METHOD__);
+            $newEventPostUpdate = new CouchdbItemPostUpdateEvent($entity);
+            $this->eventDispatcher->dispatch($newEventPostUpdate, Events::postUpdate);
+            if (method_exists($entity,'getId')) $couchLog->setDetail('Document '.$class.' item '.$entity->getId().' CouchdbPostUpdateEvent lancé');
+            else throw new Exception("la methode getId() pour la classe ".$class." n'existe pas");
+            $this->actions[$time] = $couchLog;
+         }
+      } catch (Exception $e) {
+         $couchLog->setDetail($e->getMessage());
+         $couchLog->setErrors(true);
+         $this->actions[$time] = $couchLog;
+
+      }
+   }
    /**
     * @param ArrayCollection<int,CouchdbDocumentEntity> $documents
     */
