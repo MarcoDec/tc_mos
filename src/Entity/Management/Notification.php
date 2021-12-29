@@ -45,11 +45,18 @@ use Symfony\Component\Validator\Constraints\Optional;
          'patch_notification_category_read_all' =>[
             'method'=> 'PATCH',
             'path'=> '/notifications/{category}/read-all',
+            'requirements' => ['category' => '\w+'],
             'controller'=>PatchNotificationCategoryReadAll::class,
             'read'=>false,
             'write'=>false,
             'input'=>false,
             'openapi_context' => [
+               'parameters'=>[[
+                  'in'=>'path',
+                  'name'=>'category',
+                  'type'=>'string',
+                  'required'=>true
+               ]],
                'description' => "Marque les notifications de l'utilisateur appartenant à la catégorie comme lues",
                'summary' => "Marque les notifications de l'utilisateur appartenant à la catégorie comme lues",
                'requestBody' => [
@@ -60,7 +67,8 @@ use Symfony\Component\Validator\Constraints\Optional;
                         'example'=>'{}'
                      ]
                   ]
-               ]
+               ],
+
             ],
             'normalization_context' => ['groups'=>["notification:read"]],
             'denormalization_context' => ['groups'=>["notification:write"]],

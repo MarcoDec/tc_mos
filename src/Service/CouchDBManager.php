@@ -446,7 +446,8 @@ class CouchDBManager {
     */
    public function itemsUpdate(array $entities) {
       $this->logger->info(__CLASS__.'/'.__METHOD__);
-      $class = get_class($entities[0]);
+      $first = collect($entities)->first();
+      $class = get_class($first);
 
       $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
       $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_UPDATE, __METHOD__);
