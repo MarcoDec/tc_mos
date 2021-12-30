@@ -642,12 +642,16 @@ class CouchDBManager {
       foreach ($refProperties as $refProperty) {
          $refProperty->setAccessible(true);
          $propertyClass= $refProperty->getType();
-         $content[$refProperty->getName()] = match ($propertyClass->getName()) {
-            'DateTime' => $refProperty->getValue($entity)?->format('Y-m-d\TH:i:s.u'),
-            'string', 'int', 'float' => $refProperty->getValue($entity),
-            'bool'=> boolval($refProperty->getValue($entity)),
-            default => $refProperty->getValue($entity)?->getId(),
-         };
+         if ($refProperty->isDefault()&&!$refProperty->hasDefaultValue()&&$refProperty->getValue($entity)===null){
+            $content[$refProperty->getName()]=null;
+         } else {
+            $content[$refProperty->getName()] = match ($propertyClass->getName()) {
+               'DateTime' => $refProperty->getValue($entity)?->format('Y-m-d\TH:i:s.u'),
+               'string', 'int', 'float' => $refProperty->getValue($entity),
+               'bool'=> boolval($refProperty->getValue($entity)),
+               default => $refProperty->getValue($entity)?->getId(),
+            };
+         }
       }
       return $content;
    }

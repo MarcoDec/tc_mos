@@ -11,6 +11,7 @@ use App\Controller\Management\DeleteNotificationCategoryAll;
 use App\Controller\Management\GetNotifications;
 use App\Controller\Management\PatchNotificationCategoryReadAll;
 use App\Controller\Management\PatchNotificationRead;
+use App\Controller\Management\PostNotifications;
 use App\Entity\Hr\Employee\Employee;
 use DateTime;
 use JetBrains\PhpStorm\Pure;
@@ -27,8 +28,8 @@ use Symfony\Component\Validator\Constraints\Optional;
             'method'=>"GET",
             'path'=>"/notifications",
             'controller'=> GetNotifications::class,
-            'read'=>false,
-            'write'=>false,
+            'read'=>true,
+            'write'=>true,
             'openapi_context' => [
                'description' => "Récupère les notifications non lues liées à l'utilisateur courant",
                'summary' => "Récupère les notifications non lues liées à l'utilisateur courant",
@@ -36,17 +37,21 @@ use Symfony\Component\Validator\Constraints\Optional;
             'normalization_context' => ['groups'=>["notification:read"]]
          ],
          'post'=>[
+            'method'=>"POST",
+            'path'=>'/notifications',
+            'controller'=> PostNotifications::class,
+            'read'=>false,
             'openapi_context' => [
                'description' => 'Créer une notification',
                'summary' => 'Créer une notification',
             ],
-            'denormalization_context' => [ 'groups' => ["notification:write"] ],
+            'denormalization_context' => [ 'groups' => ["notification:create"] ],
             'normalization_context' => ['groups' => ["notification:read"]]
          ],
          'patch_notification_category_read_all' =>[
             'method'=> 'PATCH',
             'path'=> '/notifications/{category}/read-all',
-            'requirements' => ['category' => '\w+'],
+            'requirements' => ['category' => '(\w\s?)+'],
             'controller'=>PatchNotificationCategoryReadAll::class,
             'read'=>false,
             'write'=>false,
@@ -77,7 +82,7 @@ use Symfony\Component\Validator\Constraints\Optional;
          'delete_notification_category_all' =>[
             'method'=> 'DELETE',
             'path'=> '/notifications/{category}/all',
-            'requirements' => ['category' => '\w+'],
+            'requirements' => ['category' => '(\w\s?)+'],
             'controller'=>DeleteNotificationCategoryAll::class,
             'read'=>false,
             'write'=>false,
@@ -151,7 +156,7 @@ class Notification {
       NotBlank(),
       Groups([
          "notification:read",
-         "notification:write"])
+         "notification:write", "notification:create"])
       ]
     private string $category="";
    #[
@@ -160,7 +165,7 @@ class Notification {
          identifier: true,
          example: "1"
       ),
-      Groups(["notification:read:id"])
+      Groups(["notification:read"])
    ]
     private int $id=0;
    #[
@@ -182,7 +187,7 @@ class Notification {
       NotBlank(),
       Groups([
          "notification:read",
-         "notification:write"])
+         "notification:write", "notification:create"])
    ]
     private string $subject="";
 
@@ -213,13 +218,14 @@ class Notification {
           "notification:write"]),
        ApiProperty(
           description: "Employé destinataire de la notification",
-          example: "/api/users/1"
+          example: "/api/employee/username=johnDo;id=10"
        )
     ]
-   private Employee $user;
+   private ?Employee $user=null;
 
     public function __construct() {
        $this->creationDatetime = new DateTime('now');
+       $this->setUser(null);
     }
 
     #[Pure]
@@ -249,9 +255,9 @@ class Notification {
     }
 
    /**
-    * @return Employee
+    * @return Employee|null
     */
-    public function getUser(): Employee {
+    public function getUser(): ?Employee {
         return $this->user;
     }
 
@@ -294,9 +300,9 @@ class Notification {
     }
 
    /**
-    * @param Employee $user
+    * @param Employee|null $user
     */
-    public function setUser(Employee $user): void {
+    public function setUser(?Employee $user): void {
         $this->user = $user;
     }
 

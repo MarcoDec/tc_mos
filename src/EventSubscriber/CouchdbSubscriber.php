@@ -77,7 +77,6 @@ class CouchdbSubscriber implements EventSubscriberInterface {
             if ($couchdbDoc===null) throw new Exception("Impossible de récupérer le document CouchDB $class");
             $couchdbItem = $couchdbDoc->getItem($newId);
             if ($couchdbItem===null) throw new Exception("Impossible de récupérer l'item $newId du document CouchDB $class");
-
             $entity = $this->manager->convertCouchdbItemToEntity($couchdbItem,$class);
             if ($entity === null) throw new Exception("Erreur de récupération entité (retour null)");
             $newPostPersistEvent = new CouchdbItemPostPersistEvent($entity);
