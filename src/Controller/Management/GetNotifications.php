@@ -3,6 +3,7 @@
 namespace App\Controller\Management;
 
 use App\Entity\Hr\Employee\Employee;
+use App\Entity\Management\Notification;
 use App\Repository\Management\NotificationRepository;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,6 +16,8 @@ class GetNotifications extends AbstractController {
 
     /**
      * @throws Exception
+     *
+     * @return array<Notification>
      */
     public function __invoke(): array {
         /** @var Employee $employee */

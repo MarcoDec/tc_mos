@@ -16,11 +16,13 @@ class PatchNotificationCategoryReadAll extends AbstractController {
 
     /**
      * @throws Exception
+     *
+     * @return array<Notification>
      */
     public function __invoke(string $category): array {
         /** @var Employee $employee */
         $employee = $this->getUser();
-        /** @var Notification $notification */
+        /** @var array<Notification> $notifications */
         $notifications = $this->repo->findBy([
             'category' => $category,
             'user' => $employee->getId()

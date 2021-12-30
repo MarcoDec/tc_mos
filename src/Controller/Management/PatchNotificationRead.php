@@ -17,7 +17,7 @@ class PatchNotificationRead {
      */
     public function __invoke(int $id): Notification {
         /** @var Notification $notification */
-        $notification = $this->repo->find($id);
+        $notification = $this->repo->find((string) $id);
         $notification->setRead(true);
         $this->repo->persist($notification);
         return $notification;

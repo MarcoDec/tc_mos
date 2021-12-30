@@ -159,15 +159,16 @@ class CouchdbSubscriber implements EventSubscriberInterface {
             if ($couchdbDoc === null) {
                 throw new Exception('La sauvegarde dans Couchdb d\'un document à échoué');
             }
-            $couchdbItem = $couchdbDoc->getItem($id);
-            $updatedEntity = $this->manager->convertCouchdbItemToEntity($couchdbItem, $class);
-            if ($updatedEntity === null) {
-                throw new Exception('La sauvegarde dans Couchdb du document '.$couchdbDoc->getId().' a échouée.');
+            if ($couchdbItem = $couchdbDoc->getItem($id)) {
+                $updatedEntity = $this->manager->convertCouchdbItemToEntity($couchdbItem, $class);
+                if ($updatedEntity === null) {
+                    throw new Exception('La sauvegarde dans Couchdb du document '.$couchdbDoc->getId().' a échouée.');
+                }
+                $newPostUpdateEvent = new CouchdbItemPostUpdateEvent($updatedEntity);
+                $this->dispatcher->dispatch($newPostUpdateEvent);
+                $couchLog->setDetail("Update item $id ok dans le Document $class");
+                $this->manager->actions[$time] = $couchLog;
             }
-            $newPostUpdateEvent = new CouchdbItemPostUpdateEvent($updatedEntity);
-            $this->dispatcher->dispatch($newPostUpdateEvent);
-            $couchLog->setDetail("Update item $id ok dans le Document $class");
-            $this->manager->actions[$time] = $couchLog;
         } catch (Exception $e) {
             $couchLog->setDetail($e->getMessage());
             $couchLog->setErrors(true);

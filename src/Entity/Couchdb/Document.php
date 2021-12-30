@@ -24,10 +24,7 @@ class Document {
         $this->content = $couchdbDocResponse->body['content'] ?? [];
     }
 
-    /**
-     * @param $id
-     */
-    public static function getName($id): string {
+    public static function getName(string $id): string {
         return 'couchdb_document_'.md5($id);
     }
 
@@ -53,18 +50,23 @@ class Document {
         return new Item($this->id, $itemData);
     }
 
+    /**
+     * @param array<mixed> $conditions
+     *
+     * @return array<mixed>
+     */
     public function getItemsWhere(array $conditions): array {
         return collect($this->content)
             ->filter(
                 static function ($item) use ($conditions) {
-              $test = true;
-              foreach ($conditions as $key => $value) {
-                  if ($item[$key] != $value) {
-                      $test = false;
-                  }
-              }
-              return $test;
-          }
+                    $test = true;
+                    foreach ($conditions as $key => $value) {
+                        if ($item[$key] != $value) {
+                            $test = false;
+                        }
+                    }
+                    return $test;
+                }
             )->toArray();
     }
 
@@ -73,7 +75,7 @@ class Document {
     }
 
     /**
-     * @param array<string, mixed> $content
+     * @param array<mixed> $content
      *
      * @return Document
      */

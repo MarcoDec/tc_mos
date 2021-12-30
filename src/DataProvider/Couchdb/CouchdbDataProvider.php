@@ -19,7 +19,11 @@ class CouchdbDataProvider implements ContextAwareCollectionDataProviderInterface
     }
 
     /**
+     * @param array<mixed> $context
+     *
      * @throws ReflectionException
+     *
+     * @return array<mixed>
      */
     public function getCollection(string $resourceClass, ?string $operationName = null, array $context = []): array {
         $repoClassName = CouchDBManager::getRepositoryFromEntityClass($resourceClass);
@@ -28,26 +32,35 @@ class CouchdbDataProvider implements ContextAwareCollectionDataProviderInterface
         return $repo->findAll();
     }
 
-    /**
-     * @param $id
-     *
-     * @throws Exception
-     */
-    public function getItem(string $resourceClass, $id, ?string $operationName = null, array $context = []): mixed {
+   /**
+    * @param string $resourceClass
+    * @param mixed $id
+    * @param string|null $operationName
+    * @param array<mixed> $context
+    * @return mixed
+    * @throws Exception
+    */
+    public function getItem(string $resourceClass, mixed $id, ?string $operationName = null, array $context = []): mixed {
         $repoClassName = CouchDBManager::getRepositoryFromEntityClass($resourceClass);
         /** @var AbstractRepository $repo */
         $repo = new $repoClassName($this->manager, $resourceClass);
         return $repo->find($id);
     }
 
-    /**
-     * @throws ReflectionException
-     */
+   /**
+    * @param string $resourceClass
+    * @param string|null $operationName
+    * @param array<mixed> $context
+    * @return bool
+    */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        $reflectionClass = new ReflectionClass($resourceClass);
-        if ($reflectionClass->isAbstract()) {
-            return false;
+        if (class_exists($resourceClass)) {
+            $reflectionClass = new ReflectionClass($resourceClass);
+            if ($reflectionClass->isAbstract()) {
+                return false;
+            }
+            return $this->manager->isCouchdbDocument(new $resourceClass());
         }
-        return $this->manager->isCouchdbDocument(new $resourceClass());
+        return false;
     }
 }

@@ -12,11 +12,11 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface {
     }
 
     /**
-     * @param $data
+     * @param array<mixed> $context
      *
      * @throws Exception
      */
-    public function persist($data, array $context = []): void {
+    public function persist(mixed $data, array $context = []): void {
         $className = get_class($data);
         $repoClassName = CouchDBManager::getRepositoryFromEntityClass($className);
         /** @var AbstractRepository $repo */
@@ -25,11 +25,11 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface {
     }
 
     /**
-     * @param $data
+     * @param array<mixed> $context
      *
      * @throws Exception
      */
-    public function remove($data, array $context = []): void {
+    public function remove(mixed $data, array $context = []): void {
         $className = get_class($data);
         $repoClassName = CouchDBManager::getRepositoryFromEntityClass($className);
         /** @var AbstractRepository $repo */
@@ -38,9 +38,9 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface {
     }
 
     /**
-     * @param $data
+     * @param array<mixed> $context
      */
-    public function supports($data, array $context = []): bool {
+    public function supports(mixed $data, array $context = []): bool {
         return $this->manager->isCouchdbDocument($data);
     }
 }

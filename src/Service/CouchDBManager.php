@@ -34,6 +34,7 @@ use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionNamedType;
 use ReflectionObject;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -91,88 +92,102 @@ class CouchDBManager {
     }
 
     /**
+     * @param array<mixed> $itemArray
+     *
      * @throws ReflectionException
      * @throws Exception
      */
     public function convertArrayToEntity(array $itemArray, string $className): mixed {
-        $entity = new $className();
-        $refEntity = new ReflectionObject($entity);
-        $reflectionClass = new ReflectionClass($className);
-        $arrayProperties = array_keys($itemArray);
-        foreach ($arrayProperties as $arrayProperty) {
-            foreach ($reflectionClass->getProperties() as $property) {
-                if ($property->getName() == $arrayProperty) {
-                    $refProperty = $refEntity->getProperty($property->getName());
-                    $refProperty->setAccessible(true);
-                    switch ($refProperty->getType()->getName()) {
-                  case 'DateTime':
-                     $newValue = $itemArray[$property->getName()] === null ? null : new DateTime($itemArray[$property->getName()]);
-                     $refProperty->setValue($entity, $newValue);
-                     break;
-                  case 'string':
-                  case 'int':
-                  case 'bool':
-                  case 'float':
-                     $refProperty->setValue($entity, $itemArray[$property->getName()]);
-                     break;
-                  default:  //C'est une entité
-                     /** @var $manyToManyORM */
-                     $manyToManyORM = $refProperty->getAttributes(ORMManyToMany::class);
-                     if (count($manyToManyORM) > 0) {
-                         $propertyData = ManyToMany::getPropertyData($manyToManyORM[0]);
-                         //'targetEntity'=> $instance->targetEntity, 'owned'=> $instance->owned, 'fetch'=>$instance->fetch, 'type'=>self::class
-                         if ($propertyData['fetch'] == Fetch::EAGER && $propertyData['owned']) {
-                             $targetEntitiesIds = $itemArray[$property->getName()];
-                             $targetEntityClass = $propertyData['targetEntity'];
-                             $targetEntityRepo = $this->entityManager->getRepository($targetEntityClass);
-                             $targetEntities = $targetEntityRepo->findBy(['id' => $targetEntitiesIds]);
-                             $refProperty->setValue($entity, $targetEntities);
-                         } else {
-                             $refProperty->setValue($entity, []);
-                         }
-                     }
-                     $manyToOneORM = $refProperty->getAttributes(ORMManyToOne::class);
-                     if (count($manyToOneORM)) {
-                         $propertyData = ManyToOne::getPropertyData($manyToOneORM[0]);
-                         //[ 'targetEntity'=> $instance->targetEntity, 'inversedBy'=> $instance->inversedBy, 'fetch'=>$instance->fetch, 'type'=>self::class ];
-                         if ($propertyData['fetch'] == Fetch::EAGER || !$refProperty->getType()->allowsNull()) {
-                             $targetEntity = $this->entityManager->getRepository($refProperty->getType()->getName())->find($itemArray[$property->getName()]);
-                             $refProperty->setValue($entity, $targetEntity);
-                         } else {
-                             $refProperty->setValue($entity, null);
-                         }
-                     }
-                     $oneToManyORM = $refProperty->getAttributes(ORMOneToMany::class);
-                     if (count($oneToManyORM) > 0) {
-                         $propertyData = OneToMany::getPropertyData($oneToManyORM[0]);
-                         //[ 'targetEntity'=> $instance->targetEntity, 'owned'=> $instance->owned, 'fetch'=>$instance->fetch, 'type'=>self::class ];
-                         if ($propertyData['fetch'] === Fetch::EAGER && $propertyData['owned']) {
-                             $targetEntitiesIds = $itemArray[$property->getName()];
-                             $targetEntityClass = $propertyData['targetEntity'];
-                             $targetEntityRepo = $this->entityManager->getRepository($targetEntityClass);
-                             $targetEntities = $targetEntityRepo->findBy(['id' => $targetEntitiesIds]);
-                             $refProperty->setValue($entity, $targetEntities);
-                         } else {
-                             $refProperty->setValue($entity, []);
-                         }
-                     }
-                     $oneToOneORM = $refProperty->getAttributes(ORMOneToOne::class);
-                     if (count($oneToOneORM) > 0) {
-                         $propertyData = OneToOne::getPropertyData($oneToOneORM[0]);
-                         //[ 'targetEntity'=> $instance->targetEntity, 'mappedBy'=> $instance->mappedBy, 'fetch'=>$instance->fetch, 'type'=>self::class ];
-                         if ($propertyData['fetch'] === Fetch::EAGER || !$refProperty->getType()->allowsNull()) {
-                             $targetEntity = $this->entityManager->getRepository($refProperty->getType()->getName())->find($itemArray[$property->getName()]);
-                             $refProperty->setValue($entity, $targetEntity);
-                         } else {
-                             $refProperty->setValue($entity, null);
-                         }
-                     }
+        if (class_exists($className)) {
+            $entity = new $className();
+            $refEntity = new ReflectionObject($entity);
+            $reflectionClass = new ReflectionClass($className);
+            $arrayProperties = array_keys($itemArray);
+            foreach ($arrayProperties as $arrayProperty) {
+                foreach ($reflectionClass->getProperties() as $property) {
+                    if ($property->getName() == $arrayProperty) {
+                        $refProperty = $refEntity->getProperty($property->getName());
+                        $refProperty->setAccessible(true);
+                        $refPropertyType = $refProperty->getType();
+                        if ($refPropertyType instanceof ReflectionNamedType) {
+                            switch ($refPropertyType->getName()) {
+                         case 'DateTime':
+                            $newValue = $itemArray[$property->getName()] === null ? null : new DateTime($itemArray[$property->getName()]);
+                            $refProperty->setValue($entity, $newValue);
+                            break;
+                         case 'string':
+                         case 'int':
+                         case 'bool':
+                         case 'float':
+                            $refProperty->setValue($entity, $itemArray[$property->getName()]);
+                            break;
+                         default:  //C'est une entité
 
-               }
+                            $manyToManyORM = $refProperty->getAttributes(ORMManyToMany::class);
+                            if (count($manyToManyORM) > 0) {
+                                $propertyData = ManyToMany::getPropertyData($manyToManyORM[0]);
+                                //'targetEntity'=> $instance->targetEntity, 'owned'=> $instance->owned, 'fetch'=>$instance->fetch, 'type'=>self::class
+                                if ($propertyData['fetch'] == Fetch::EAGER && $propertyData['owned']) {
+                                    $targetEntitiesIds = $itemArray[$property->getName()];
+                                    $targetEntityClass = $propertyData['targetEntity'];
+                                    /** @phpstan-ignore-next-line */
+                                    $targetEntityRepo = $this->entityManager->getRepository($targetEntityClass);
+                                    $targetEntities = $targetEntityRepo->findBy(['id' => $targetEntitiesIds]);
+                                    $refProperty->setValue($entity, $targetEntities);
+                                } else {
+                                    $refProperty->setValue($entity, []);
+                                }
+                            }
+                            $manyToOneORM = $refProperty->getAttributes(ORMManyToOne::class);
+                            if (count($manyToOneORM)) {
+                                $propertyData = ManyToOne::getPropertyData($manyToOneORM[0]);
+                                //[ 'targetEntity'=> $instance->targetEntity, 'inversedBy'=> $instance->inversedBy, 'fetch'=>$instance->fetch, 'type'=>self::class ];
+                                if ($propertyData['fetch'] == Fetch::EAGER || !$refPropertyType->allowsNull()) {
+                                    /** @phpstan-ignore-next-line */
+                                    $targetEntity = $this->entityManager->getRepository($refPropertyType->getName())->find($itemArray[$property->getName()]);
+                                    $refProperty->setValue($entity, $targetEntity);
+                                } else {
+                                    $refProperty->setValue($entity, null);
+                                }
+                            }
+                            $oneToManyORM = $refProperty->getAttributes(ORMOneToMany::class);
+                            if (count($oneToManyORM) > 0) {
+                                $propertyData = OneToMany::getPropertyData($oneToManyORM[0]);
+                                //[ 'targetEntity'=> $instance->targetEntity, 'owned'=> $instance->owned, 'fetch'=>$instance->fetch, 'type'=>self::class ];
+                                if ($propertyData['fetch'] === Fetch::EAGER && $propertyData['owned']) {
+                                    $targetEntitiesIds = $itemArray[$property->getName()];
+                                    $targetEntityClass = $propertyData['targetEntity'];
+                                    /** @phpstan-ignore-next-line */
+                                    $targetEntityRepo = $this->entityManager->getRepository($targetEntityClass);
+                                    $targetEntities = $targetEntityRepo->findBy(['id' => $targetEntitiesIds]);
+                                    $refProperty->setValue($entity, $targetEntities);
+                                } else {
+                                    $refProperty->setValue($entity, []);
+                                }
+                            }
+                            $oneToOneORM = $refProperty->getAttributes(ORMOneToOne::class);
+                            if (count($oneToOneORM) > 0) {
+                                $propertyData = OneToOne::getPropertyData($oneToOneORM[0]);
+                                //[ 'targetEntity'=> $instance->targetEntity, 'mappedBy'=> $instance->mappedBy, 'fetch'=>$instance->fetch, 'type'=>self::class ];
+                                if ($propertyData['fetch'] === Fetch::EAGER || !$refPropertyType->allowsNull()) {
+                                    /** @phpstan-ignore-next-line */
+                                    $targetEntity = $this->entityManager->getRepository($refPropertyType->getName())->find($itemArray[$property->getName()]);
+                                    $refProperty->setValue($entity, $targetEntity);
+                                } else {
+                                    $refProperty->setValue($entity, null);
+                                }
+                            }
+
+                      }
+                        } else {
+                            throw new Exception("La propriété $property n'a pas de Type, la ReflectionProperty a renvoyé null");
+                        }
+                    }
                 }
             }
+            return $entity;
         }
-        return $entity;
+        return null;
     }
 
     /**
@@ -185,6 +200,9 @@ class CouchDBManager {
 
     /**
      * @throws ReflectionException
+     * @throws Exception
+     *
+     * @return array<mixed>
      */
     public function convertEntityToArray(mixed $entity): array {
         $content = [];
@@ -193,15 +211,19 @@ class CouchDBManager {
         foreach ($refProperties as $refProperty) {
             $refProperty->setAccessible(true);
             $propertyClass = $refProperty->getType();
-            if ($refProperty->isDefault() && !$refProperty->hasDefaultValue() && $refProperty->getValue($entity) === null) {
-                $content[$refProperty->getName()] = null;
+            if ($propertyClass instanceof ReflectionNamedType) {
+                if ($refProperty->isDefault() && !$refProperty->hasDefaultValue() && $refProperty->getValue($entity) === null) {
+                    $content[$refProperty->getName()] = null;
+                } else {
+                    $content[$refProperty->getName()] = match ($propertyClass->getName()) {
+                        'DateTime' => $refProperty->getValue($entity)?->format('Y-m-d\TH:i:s.u'),
+                     'string', 'int', 'float' => $refProperty->getValue($entity),
+                     'bool' => (bool) ($refProperty->getValue($entity)),
+                     default => $refProperty->getValue($entity)?->getId(),
+                    };
+                }
             } else {
-                $content[$refProperty->getName()] = match ($propertyClass->getName()) {
-                    'DateTime' => $refProperty->getValue($entity)?->format('Y-m-d\TH:i:s.u'),
-               'string', 'int', 'float' => $refProperty->getValue($entity),
-               'bool' => (bool) ($refProperty->getValue($entity)),
-               default => $refProperty->getValue($entity)?->getId(),
-                };
+                throw new Exception("La propriété $refProperty->name n'a pas de type defini");
             }
         }
         return $content;
@@ -346,12 +368,11 @@ class CouchDBManager {
             $this->actions[$time] = $couchLog;
             //Mise à jour du cache
             return $this->documentRead($couchdbDocument->getId(), true);
-        } catch (Exception $e) {
+        } catch (Exception|InvalidArgumentException $e) {
             $couchLog->setDetail($e->getMessage());
             $couchLog->setErrors(true);
             $this->actions[$time] = $couchLog;
             return null;
-        } catch (InvalidArgumentException $e) {
         }
     }
 
@@ -535,6 +556,10 @@ class CouchDBManager {
 
     /**
      * Supprime un item dans la base.
+     *
+     * @param array<mixed> $entities
+     *
+     * @throws Exception
      */
     public function itemsDelete(array $entities): void {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
@@ -542,37 +567,43 @@ class CouchDBManager {
         $first = collect($entities)->first();
         $class = get_class($first);
         $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_DELETE, __METHOD__);
-        $couchdbDoc = $this->documentRead($class);
-        $documentContent = $couchdbDoc->getContent();
-        try {
-            foreach ($entities as $entity) {
-                foreach ($documentContent as $key => $content) {
-                    if ($content['id'] === $entity->getId()) {
-                        unset($documentContent[$key]);
+        if ($couchdbDoc = $this->documentRead($class)) {
+            $documentContent = $couchdbDoc->getContent();
+            try {
+                /** @var mixed $entity */
+                foreach ($entities as $entity) {
+                    foreach ($documentContent as $key => $content) {
+                        if ($content['id'] === $entity->getId()) {
+                            unset($documentContent[$key]);
+                        }
                     }
                 }
-            }
-            $couchdbDoc->setContent($documentContent);
-            $this->documentUpdate($couchdbDoc);
-            foreach ($entities as $entity) {
-                $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
-                $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_DELETE, __METHOD__);
-                $newEventPostRemove = new CouchdbItemPostRemoveEvent($entity);
-                $this->eventDispatcher->dispatch($newEventPostRemove, Events::postRemove);
-                if (method_exists($entity, 'getId')) {
+                $couchdbDoc->setContent($documentContent);
+                $this->documentUpdate($couchdbDoc);
+                /** @var mixed $entity */
+                foreach ($entities as $entity) {
+                    $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
+                    $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_DELETE, __METHOD__);
+                    $newEventPostRemove = new CouchdbItemPostRemoveEvent($entity);
+                    $this->eventDispatcher->dispatch($newEventPostRemove, Events::postRemove);
                     $couchLog->setDetail('Document '.$class.' item '.$entity->getId().' CouchdbItemPostRemoveEvent lancé');
-                } else {
-                    throw new Exception('la methode getId() pour la classe '.$class.' n\'existe pas');
+                    $this->actions[$time] = $couchLog;
                 }
+            } catch (Exception $e) {
+                $couchLog->setDetail($e->getMessage());
+                $couchLog->setErrors(true);
                 $this->actions[$time] = $couchLog;
             }
-        } catch (Exception $e) {
-            $couchLog->setDetail($e->getMessage());
-            $couchLog->setErrors(true);
-            $this->actions[$time] = $couchLog;
+        } else {
+            throw new Exception("Le document couchdb `$class` n'a pas été trouvé en base, veuillez relancer la commande d'initialisation de la base");
         }
     }
 
+    /**
+     * @param array<mixed> $entities
+     *
+     * @throws Exception
+     */
     public function itemsUpdate(array $entities): void {
         $this->logger->info(__CLASS__.'/'.__METHOD__);
         $first = collect($entities)->first();
@@ -582,37 +613,37 @@ class CouchDBManager {
         $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_UPDATE, __METHOD__);
         $couchLog->setDetail('Document '.$class.' '.count($entities).' items en cours d\'update groupé');
         $this->actions[$time] = $couchLog;
-
-        $couchdbDoc = $this->documentRead($class);
-        $documentContent = $couchdbDoc->getContent();
-        try {
-            foreach ($entities as $entity) {
-                $entityArray = $this->convertEntityToArray($entity);
-                foreach ($documentContent as $key => $content) {
-                    if ($content['id'] === $entity->getId()) {
-                        $documentContent[$key] = $entityArray;
+        if ($couchdbDoc = $this->documentRead($class)) {
+            $documentContent = $couchdbDoc->getContent();
+            try {
+                /** @var mixed $entity */
+                foreach ($entities as $entity) {
+                    $entityArray = $this->convertEntityToArray($entity);
+                    foreach ($documentContent as $key => $content) {
+                        if ($content['id'] === $entity->getId()) {
+                            $documentContent[$key] = $entityArray;
+                        }
                     }
                 }
-            }
-            $couchdbDoc->setContent($documentContent);
-            $this->documentUpdate($couchdbDoc);
+                $couchdbDoc->setContent($documentContent);
+                $this->documentUpdate($couchdbDoc);
 
-            foreach ($entities as $entity) {
-                $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
-                $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_UPDATE, __METHOD__);
-                $newEventPostUpdate = new CouchdbItemPostUpdateEvent($entity);
-                $this->eventDispatcher->dispatch($newEventPostUpdate, Events::postUpdate);
-                if (method_exists($entity, 'getId')) {
+                /** @var mixed $entity */
+                foreach ($entities as $entity) {
+                    $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
+                    $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_UPDATE, __METHOD__);
+                    $newEventPostUpdate = new CouchdbItemPostUpdateEvent($entity);
+                    $this->eventDispatcher->dispatch($newEventPostUpdate, Events::postUpdate);
                     $couchLog->setDetail('Document '.$class.' item '.$entity->getId().' CouchdbPostUpdateEvent lancé');
-                } else {
-                    throw new Exception('la methode getId() pour la classe '.$class.' n\'existe pas');
+                    $this->actions[$time] = $couchLog;
                 }
+            } catch (Exception $e) {
+                $couchLog->setDetail($e->getMessage());
+                $couchLog->setErrors(true);
                 $this->actions[$time] = $couchLog;
             }
-        } catch (Exception $e) {
-            $couchLog->setDetail($e->getMessage());
-            $couchLog->setErrors(true);
-            $this->actions[$time] = $couchLog;
+        } else {
+            throw new Exception("Le document couchdb `$class` n'a pas été trouvé en base, veuillez relancer la commande d'initialisation de la base");
         }
     }
 
