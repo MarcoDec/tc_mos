@@ -110,7 +110,7 @@ class Unit extends Entity {
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private Collection $children;
-    
+
     #[
         ApiProperty(description: 'Dénominateur', readableLink: false, example: '/api/units/3'),
         ORM\OneToOne(targetEntity: self::class),
