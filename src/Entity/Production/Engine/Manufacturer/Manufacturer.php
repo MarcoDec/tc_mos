@@ -2,27 +2,29 @@
 
 namespace App\Entity\Production\Engine\Manufacturer;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Management\Society\Society;
-use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Entity;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Traits\NameTrait;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Entity;
+use App\Entity\Management\Society\Society;
+use App\Entity\Traits\NameTrait;
+use App\Filter\RelationFilter;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial',
-        'society.name' => 'partial'
+        'name' => 'partial'
+    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: [
+        'society' => 'name',
     ]),
     ApiFilter(OrderFilter::class, properties: [
         'name',
-        'society.name'
     ]),
     ApiResource(
         description: 'Fabricant',
@@ -77,8 +79,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
     ),
     ORM\Entity
 ]
-class Manufacturer extends Entity
-{
+class Manufacturer extends Entity {
     use NameTrait;
 
     #[
@@ -96,13 +97,11 @@ class Manufacturer extends Entity
     ]
     private ?Society $society;
 
-    public function getSociety(): ?Society
-    {
+    public function getSociety(): ?Society {
         return $this->society;
     }
 
-    public function setSociety(?Society $society): self
-    {
+    public function setSociety(?Society $society): self {
         $this->society = $society;
 
         return $this;

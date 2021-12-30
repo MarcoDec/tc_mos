@@ -8,7 +8,6 @@ use App\Entity\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Purchase\Component\Component;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -60,7 +59,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity
 ]
 class Equivalents extends Entity {
-
     /**
      * @var Collection<int, Component>
      */
@@ -98,7 +96,7 @@ class Equivalents extends Entity {
     }
 
     /**
-     * @return Component[]|Collection
+     * @return Collection|Component[]
      */
     final public function getComponents(): Collection {
         return $this->components;
