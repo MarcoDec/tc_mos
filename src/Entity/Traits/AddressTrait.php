@@ -2,21 +2,17 @@
 
 namespace App\Entity\Traits;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Embeddable\Address;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
-use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 trait AddressTrait {
     #[
-        ApiProperty(description: 'Adresse'),
-        ORM\Embedded,
-        Serializer\Groups(['read:address', 'write:address'])
+        Assert\Valid,
+        ORM\Embedded(Address::class),
     ]
-    private Address $address;
+    protected $address;
 
-    #[Pure]
     public function __construct() {
         $this->address = new Address();
     }
