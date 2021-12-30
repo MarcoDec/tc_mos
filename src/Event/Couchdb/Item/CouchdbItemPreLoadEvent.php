@@ -14,7 +14,7 @@ class CouchdbItemPreLoadEvent extends Event {
 
     #[Pure]
  public function __toString(): string {
-       /** @phpstan-ignore-next-line  */
+     /** @phpstan-ignore-next-line  */
      return 'Entity ('.get_class($this->entity).') ID: '.$this->entity->getId();
  }
 

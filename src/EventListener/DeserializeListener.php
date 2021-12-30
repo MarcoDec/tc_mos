@@ -58,17 +58,16 @@ final class DeserializeListener {
      */
     private function getData(array $context, Request $request): array {
         if (!$this->couchDBManager->isCouchdbDocument(new $context['resource_class']())) {
-           $metadata = $this->em->getClassMetadata($context['resource_class']);
-           return collect(array_merge($request->request->all(), $request->files->all()))
-              ->map(static function ($value, string $name) use ($metadata) {
-                 return $metadata->getTypeOfField($name) === 'boolean'
+            $metadata = $this->em->getClassMetadata($context['resource_class']);
+            return collect(array_merge($request->request->all(), $request->files->all()))
+                ->map(static function ($value, string $name) use ($metadata) {
+                  return $metadata->getTypeOfField($name) === 'boolean'
                     ? is_string($value) && $value === 'true' || $value
                     : $value;
               })
-              ->all();
+                ->all();
         } else {
-           return collect(array_merge($request->request->all(), $request->files->all()))->all();
+            return collect(array_merge($request->request->all(), $request->files->all()))->all();
         }
-
     }
 }

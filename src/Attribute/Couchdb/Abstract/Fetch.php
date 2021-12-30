@@ -9,9 +9,9 @@ abstract class Fetch {
     public const EXTRA_LAZY = 'EXTRA_LAZY';
     public const LAZY = 'LAZY';
 
-   /**
-    * @return string[]
-    */
+    /**
+     * @return string[]
+     */
     public static function getAllFetchValues(): array {
         return [self::EAGER, self::EXTRA_LAZY, self::LAZY];
     }

@@ -24,15 +24,16 @@ abstract class ManyToMany {
         $this->fetch = $fetch;
     }
 
-   /**
-    * @param ReflectionAttribute $reflectionAttribute
-    * @return array<string,mixed>
-    * @phpstan-ignore-next-line
-    */
-    #[ArrayShape(['targetEntity' => "mixed", 'owned' => "mixed", 'fetch' => "mixed", 'type' => "string"])]
-    public static function getPropertyData(ReflectionAttribute $reflectionAttribute):array {
-       $instance = $reflectionAttribute->newInstance();
-       /** @phpstan-ignore-next-line  */
-       return [ 'targetEntity'=> $instance->targetEntity, 'owned'=> $instance->owned, 'fetch'=>$instance->fetch, 'type'=>self::class ];
+    /**
+     * @param ReflectionAttribute $reflectionAttribute
+     *
+     * @return array<string,mixed>
+     * @phpstan-ignore-next-line
+     */
+    #[ArrayShape(['targetEntity' => 'mixed', 'owned' => 'mixed', 'fetch' => 'mixed', 'type' => 'string'])]
+    public static function getPropertyData(ReflectionAttribute $reflectionAttribute): array {
+        $instance = $reflectionAttribute->newInstance();
+        /** @phpstan-ignore-next-line  */
+        return ['targetEntity' => $instance->targetEntity, 'owned' => $instance->owned, 'fetch' => $instance->fetch, 'type' => self::class];
     }
 }

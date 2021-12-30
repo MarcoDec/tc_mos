@@ -11,16 +11,17 @@ use ReflectionException;
  */
 class Item {
     private string $class;
-   /**
-    * @var mixed[]
-    */
+
+    /**
+     * @var mixed[]
+     */
     private array $content;
+
     private string|int $id;
 
-   /**
-    * @param string $class
-    * @param array<string,mixed> $content
-    */
+    /**
+     * @param array<string,mixed> $content
+     */
     public function __construct(string $class, array $content) {
         if (isset($content['id'])) {
             $this->id = $content['id'];
@@ -32,40 +33,34 @@ class Item {
         $this->content = $content;
     }
 
-   /**
-    * @return string
-    */
     public function getClass(): string {
         return $this->class;
     }
 
-   /**
-    * @return array<string,mixed>
-    */
+    /**
+     * @return array<string,mixed>
+     */
     public function getContent(): array {
         return $this->content;
     }
 
-   /**
-    * @return mixed
-    */
     public function getId(): mixed {
         return $this->id;
     }
 
-   /**
-    * @param string $class
-    * @return Item
-    */
+    /**
+     * @return Item
+     */
     public function setClass(string $class): self {
         $this->class = $class;
         return $this;
     }
 
-   /**
-    * @param array<string,mixed> $content
-    * @return $this
-    */
+    /**
+     * @param array<string,mixed> $content
+     *
+     * @return $this
+     */
     public function setContent(array $content): self {
         $this->content = $content;
         return $this;
@@ -75,7 +70,7 @@ class Item {
      * @throws ReflectionException
      */
     public function setEntity(Entity $entity): void {
-       /** @phpstan-ignore-next-line */
+        /** @phpstan-ignore-next-line */
         $reflectionClass = new ReflectionClass($this->class);
         $properties = $reflectionClass->getProperties();
         foreach ($properties as $property) {

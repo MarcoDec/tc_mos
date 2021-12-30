@@ -8,59 +8,46 @@ use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Repository\Couchdb\AbstractRepository;
 use App\Service\CouchDBManager;
 use Exception;
+use ReflectionClass;
 use ReflectionException;
 
-class CouchdbDataProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface, ItemDataProviderInterface
-{
+class CouchdbDataProvider implements ContextAwareCollectionDataProviderInterface, ItemDataProviderInterface, RestrictedDataProviderInterface {
+    /**
+     * @param CouchDBManager $manager
+     */
+    public function __construct(private CouchDBManager $manager) {
+    }
 
-   /**
-    * @param CouchDBManager $manager
-    */
-   public function __construct(private CouchDBManager $manager) {
-   }
+    /**
+     * @throws ReflectionException
+     */
+    public function getCollection(string $resourceClass, ?string $operationName = null, array $context = []): array {
+        $repoClassName = CouchDBManager::getRepositoryFromEntityClass($resourceClass);
+        /** @var AbstractRepository $repo */
+        $repo = new $repoClassName($this->manager, $resourceClass);
+        return $repo->findAll();
+    }
 
-   /**
-    * @param string $resourceClass
-    * @param string|null $operationName
-    * @param array $context
-    * @return array
-    * @throws ReflectionException
-    */
-   public function getCollection(string $resourceClass, string $operationName = null, array $context = []): array
-   {
-      $repoClassName = CouchDBManager::getRepositoryFromEntityClass($resourceClass);
-      /** @var AbstractRepository $repo */
-      $repo = new $repoClassName($this->manager, $resourceClass);
-      return $repo->findAll();
-   }
+    /**
+     * @param $id
+     *
+     * @throws Exception
+     */
+    public function getItem(string $resourceClass, $id, ?string $operationName = null, array $context = []): mixed {
+        $repoClassName = CouchDBManager::getRepositoryFromEntityClass($resourceClass);
+        /** @var AbstractRepository $repo */
+        $repo = new $repoClassName($this->manager, $resourceClass);
+        return $repo->find($id);
+    }
 
-   /**
-    * @param string $resourceClass
-    * @param string|null $operationName
-    * @param array $context
-    * @return bool
-    * @throws ReflectionException
-    */
-   public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
-   {
-      $reflectionClass = new \ReflectionClass($resourceClass);
-      if ($reflectionClass->isAbstract()) return false;
-      return $this->manager->isCouchdbDocument(new $resourceClass());
-   }
-
-   /**
-    * @param string $resourceClass
-    * @param $id
-    * @param string|null $operationName
-    * @param array $context
-    * @return mixed
-    * @throws Exception
-    */
-   public function getItem(string $resourceClass, $id, string $operationName = null, array $context = []): mixed
-   {
-      $repoClassName = CouchDBManager::getRepositoryFromEntityClass($resourceClass);
-      /** @var AbstractRepository $repo */
-      $repo = new $repoClassName($this->manager, $resourceClass);
-      return $repo->find($id);
-   }
+    /**
+     * @throws ReflectionException
+     */
+    public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
+        $reflectionClass = new ReflectionClass($resourceClass);
+        if ($reflectionClass->isAbstract()) {
+            return false;
+        }
+        return $this->manager->isCouchdbDocument(new $resourceClass());
+    }
 }

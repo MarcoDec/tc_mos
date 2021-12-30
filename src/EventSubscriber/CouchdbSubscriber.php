@@ -2,9 +2,6 @@
 
 namespace App\EventSubscriber;
 
-use App\Attribute\Couchdb\ORM\ManyToMany;
-use App\Attribute\Couchdb\ORM\ManyToOne;
-use App\Attribute\Couchdb\ORM\OneToOne;
 use App\DataCollector\CouchdbLogItem;
 use App\Event\Couchdb\Events;
 use App\Event\Couchdb\Item\CouchdbItemPostPersistEvent;
@@ -19,7 +16,7 @@ use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use ReflectionClass;
+use ReflectionObject;
 use ReflectionProperty;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -46,10 +43,6 @@ class CouchdbSubscriber implements EventSubscriberInterface {
         $this->logger->info(__METHOD__);
     }
 
-   /**
-    * @param CouchdbItemPrePersistEvent $event
-    * @return void
-    */
     public function onPrePersist(CouchdbItemPrePersistEvent $event): void {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
         $entity = $event->getEntity();
@@ -59,26 +52,34 @@ class CouchdbSubscriber implements EventSubscriberInterface {
         try {
             // 1. Récupération Document
             $couchdbDoc = $this->manager->documentRead($class);
-            if ($couchdbDoc === null) throw new Exception("Impossible de récupérer le document CouchDB $class");
+            if ($couchdbDoc === null) {
+                throw new Exception("Impossible de récupérer le document CouchDB $class");
+            }
             // 2. Récupération du contenu
             $docContent = $couchdbDoc->getContent();
             // 3. Détermination du plus grand indice
             $maxId = collect($docContent)->max('id');
             $newId = $maxId + 1;
             // 4. Définition nouvel élément
-           $itemContent = $this->manager->convertEntityToArray($entity);
-           $itemContent['id'] = $newId;
+            $itemContent = $this->manager->convertEntityToArray($entity);
+            $itemContent['id'] = $newId;
             // 5. Ajout nouvel élément dans couchdbDoc
             $docContent[] = $itemContent;
             $couchdbDoc->setContent($docContent);
             // 6. Sauvegarde en base
             $this->manager->documentUpdate($couchdbDoc);
-            $couchdbDoc = $this->manager->documentRead($class,true);
-            if ($couchdbDoc===null) throw new Exception("Impossible de récupérer le document CouchDB $class");
+            $couchdbDoc = $this->manager->documentRead($class, true);
+            if ($couchdbDoc === null) {
+                throw new Exception("Impossible de récupérer le document CouchDB $class");
+            }
             $couchdbItem = $couchdbDoc->getItem($newId);
-            if ($couchdbItem===null) throw new Exception("Impossible de récupérer l'item $newId du document CouchDB $class");
-            $entity = $this->manager->convertCouchdbItemToEntity($couchdbItem,$class);
-            if ($entity === null) throw new Exception("Erreur de récupération entité (retour null)");
+            if ($couchdbItem === null) {
+                throw new Exception("Impossible de récupérer l'item $newId du document CouchDB $class");
+            }
+            $entity = $this->manager->convertCouchdbItemToEntity($couchdbItem, $class);
+            if ($entity === null) {
+                throw new Exception('Erreur de récupération entité (retour null)');
+            }
             $newPostPersistEvent = new CouchdbItemPostPersistEvent($entity);
             $this->dispatcher->dispatch($newPostPersistEvent);
             $couchLog->setDetail("Creation nouvel item ok dans le Document $class");
@@ -90,19 +91,13 @@ class CouchdbSubscriber implements EventSubscriberInterface {
         }
     }
 
-   /**
-    * @param CouchdbItemPreRemoveEvent $event
-    * @return void
-    */
     public function onPreRemove(CouchdbItemPreRemoveEvent $event): void {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
         $this->logger->info(__METHOD__);
         $entity = $event->getEntity();
-        $refEntity = new \ReflectionObject($entity);
+        $refEntity = new ReflectionObject($entity);
         /** @var ReflectionProperty $refIdProperty */
-        $refIdProperty = collect($refEntity->getProperties())->filter(function(ReflectionProperty $property){
-           return $property->getName()=='id';
-        })->first();
+        $refIdProperty = collect($refEntity->getProperties())->filter(static fn (ReflectionProperty $property) => $property->getName() == 'id')->first();
         $refIdProperty->setAccessible(true);
         $class = get_class($entity);
         $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_DELETE, __METHOD__);
@@ -110,7 +105,9 @@ class CouchdbSubscriber implements EventSubscriberInterface {
             $id = $refIdProperty->getValue($entity);
             // 1. Récupération Document
             $couchdbDoc = $this->manager->documentRead($class);
-            if ($couchdbDoc===null) throw new Exception("Impossible de récupérer le document CouchDB $class (null retourné)");
+            if ($couchdbDoc === null) {
+                throw new Exception("Impossible de récupérer le document CouchDB $class (null retourné)");
+            }
             // 2. Récupération du contenu
             $content = $couchdbDoc->getContent();
             // 3.Filtre du contenu
@@ -135,34 +132,38 @@ class CouchdbSubscriber implements EventSubscriberInterface {
         $class = get_class($entity);
         $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_UPDATE, __METHOD__);
         $this->logger->info(__METHOD__);
-       $refEntity = new \ReflectionObject($entity);
-       /** @var ReflectionProperty $refIdProperty */
-       $refIdProperty = collect($refEntity->getProperties())->filter(function(ReflectionProperty $property){
-          return $property->getName()=='id';
-       })->first();
-       $refIdProperty->setAccessible(true);
+        $refEntity = new ReflectionObject($entity);
+        /** @var ReflectionProperty $refIdProperty */
+        $refIdProperty = collect($refEntity->getProperties())->filter(static fn (ReflectionProperty $property) => $property->getName() == 'id')->first();
+        $refIdProperty->setAccessible(true);
         try {
-           $id = $refIdProperty->getValue($entity);
+            $id = $refIdProperty->getValue($entity);
             // 1. Récupération Document
             $couchdbDoc = $this->manager->documentRead($class);
-            if ($couchdbDoc===null) throw new Exception("Le document $class n'a pas pu être chargé depuis couchdb (null retourné)");
+            if ($couchdbDoc === null) {
+                throw new Exception("Le document $class n'a pas pu être chargé depuis couchdb (null retourné)");
+            }
             // 2. Récupération du contenu
             $content = $couchdbDoc->getContent();
             // 3. Mis à jour du contenu
-           $that = $this;
+            $that = $this;
             $updatedContent = collect($content)->map(static function ($item) use ($id, $entity, $that) {
                 if ($item['id'] === $id) {
-                   $item = $that->manager->convertEntityToArray($entity);
+                    $item = $that->manager->convertEntityToArray($entity);
                 }
                 return $item;
             })->toArray();
             $couchdbDoc->setContent($updatedContent);
             // 4. Sauvegarde en base
             $couchdbDoc = $this->manager->documentUpdate($couchdbDoc);
-            if ($couchdbDoc===null) throw new Exception("La sauvegarde dans Couchdb d'un document à échoué");
-           $couchdbItem = $couchdbDoc->getItem($id);
-           $updatedEntity = $this->manager->convertCouchdbItemToEntity($couchdbItem,$class);
-            if ($updatedEntity===null) throw new Exception("La sauvegarde dans Couchdb du document ".$couchdbDoc->getId()." a échouée.");
+            if ($couchdbDoc === null) {
+                throw new Exception('La sauvegarde dans Couchdb d\'un document à échoué');
+            }
+            $couchdbItem = $couchdbDoc->getItem($id);
+            $updatedEntity = $this->manager->convertCouchdbItemToEntity($couchdbItem, $class);
+            if ($updatedEntity === null) {
+                throw new Exception('La sauvegarde dans Couchdb du document '.$couchdbDoc->getId().' a échouée.');
+            }
             $newPostUpdateEvent = new CouchdbItemPostUpdateEvent($updatedEntity);
             $this->dispatcher->dispatch($newPostUpdateEvent);
             $couchLog->setDetail("Update item $id ok dans le Document $class");

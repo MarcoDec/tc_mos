@@ -55,7 +55,7 @@ final class CouchDBSchemaUpdateCommand extends AbstractCommand {
                 return $test;
             })->toArray();
             /** @var Document $dbDoc */
-           foreach ($docToCreate as $dbDoc) {
+            foreach ($docToCreate as $dbDoc) {
                 echo 'Création '.$dbDoc."\n";
                 $this->DBManager->documentCreate([
                     '_id' => $dbDoc

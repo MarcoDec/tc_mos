@@ -12,7 +12,6 @@ abstract class OneToOne {
     public string $fetch = Fetch::LAZY;
 
     public string $mappedBy;
-
     public string $targetEntity;
 
     public function __construct(
@@ -25,15 +24,16 @@ abstract class OneToOne {
         $this->fetch = $fetch;
     }
 
-   /**
-    * @param ReflectionAttribute $property
-    * @return array<string,mixed>
-    * @phpstan-ignore-next-line
-    */
-   #[ArrayShape(['targetEntity' => "mixed", 'mappedBy' => "mixed", 'fetch' => "mixed", 'type' => "string"])]
-   public static function getPropertyData(ReflectionAttribute $property):array {
-      $instance = $property->newInstance();
-      /** @phpstan-ignore-next-line  */
-      return [ 'targetEntity'=> $instance->targetEntity, 'mappedBy'=> $instance->mappedBy, 'fetch'=>$instance->fetch, 'type'=>self::class ];
+    /**
+     * @param ReflectionAttribute $property
+     *
+     * @return array<string,mixed>
+     * @phpstan-ignore-next-line
+     */
+    #[ArrayShape(['targetEntity' => 'mixed', 'mappedBy' => 'mixed', 'fetch' => 'mixed', 'type' => 'string'])]
+   public static function getPropertyData(ReflectionAttribute $property): array {
+       $instance = $property->newInstance();
+       /** @phpstan-ignore-next-line  */
+       return ['targetEntity' => $instance->targetEntity, 'mappedBy' => $instance->mappedBy, 'fetch' => $instance->fetch, 'type' => self::class];
    }
 }

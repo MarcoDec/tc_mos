@@ -10,10 +10,11 @@ use Exception;
  * Il est créé à partir d'une Réponse Doctrine\CouchDB\HTTP\Response.
  */
 class Document {
-   /**
-    * @var array<string,mixed>
-    */
+    /**
+     * @var array<string,mixed>
+     */
     private array $content;
+
     private string $id;
     private string $rev;
 
@@ -23,16 +24,20 @@ class Document {
         $this->content = $couchdbDocResponse->body['content'] ?? [];
     }
 
-   /**
-    * @return array<string, mixed>
-    */
+    /**
+     * @param $id
+     */
+    public static function getName($id): string {
+        return 'couchdb_document_'.md5($id);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function getContent(): array {
         return $this->content;
     }
 
-   /**
-    * @return mixed
-    */
     public function getId(): mixed {
         return $this->id;
     }
@@ -49,28 +54,29 @@ class Document {
     }
 
     public function getItemsWhere(array $conditions): array {
-       return collect($this->content)
-          ->filter(function ($item) use ($conditions) {
-             $test = true;
-             foreach ($conditions as $key=>$value) {
-                if ($item[$key]!=$value) $test = false;
-             }
-            return $test;
+        return collect($this->content)
+            ->filter(
+                static function ($item) use ($conditions) {
+              $test = true;
+              foreach ($conditions as $key => $value) {
+                  if ($item[$key] != $value) {
+                      $test = false;
+                  }
+              }
+              return $test;
           }
-          )->toArray();
+            )->toArray();
     }
 
-   /**
-    * @return mixed
-    */
     public function getRev(): mixed {
         return $this->rev;
     }
 
-   /**
-    * @param array<string, mixed> $content
-    * @return Document
-    */
+    /**
+     * @param array<string, mixed> $content
+     *
+     * @return Document
+     */
     public function setContent(array $content): self {
         $this->content = $content;
         return $this;
@@ -90,13 +96,5 @@ class Document {
     public function setRev(mixed $rev): self {
         $this->rev = $rev;
         return $this;
-    }
-
-   /**
-    * @param $id
-    * @return string
-    */
-    public static function getName($id):string {
-       return "couchdb_document_".md5($id);
     }
 }
