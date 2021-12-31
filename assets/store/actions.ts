@@ -1,19 +1,23 @@
 import type {DeepReadonly} from '../types/types'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
-
-export enum ActionTypes {
-    FETCH_API = 'FETCH_API'
-}
+import emitter from '../emitter'
 
 type ActionContext = DeepReadonly<VuexActionContext<State, State>>
 
 export const actions = {
-    async [ActionTypes.FETCH_API](context: ActionContext, action: Promise<unknown>): Promise<void> {
+    async fetchApi({commit}: ActionContext, action: () => Promise<unknown>): Promise<void> {
+        commit('spin')
         try {
-            await action
+            await action()
         } catch (e) {
-            console.debug(e)
+            if (e instanceof Response) {
+                commit('responseError', {status: e.status, text: await e.json() as string})
+            } else
+                commit('error')
+            emitter.emit('error')
+        } finally {
+            commit('spin')
         }
     }
 }

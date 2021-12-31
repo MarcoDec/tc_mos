@@ -5,6 +5,7 @@ import {createApp, defineAsyncComponent} from 'vue'
 import App from './routing/App.vue'
 import type {Component} from 'vue'
 import type {State} from './store/security'
+import emitter from './emitter'
 import {fas} from '@fortawesome/free-solid-svg-icons'
 import {fetchApi} from './api'
 import {generateStore} from './store'
@@ -13,12 +14,13 @@ import router from './routing/router'
 
 library.add(fas)
 const app = createApp(App as Component)
+    .provide('emitter', emitter)
     .component('Fa', defineAsyncComponent(async () => import('@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon')))
 for (const [name, component] of Object.entries(components))
     app.component(name, component)
 
 async function mount(): Promise<void> {
-    const security: State = {password: null, username: null}
+    const security: State = {username: null}
     if (Cookies.has()) {
         const id = Cookies.get('id')
         if (typeof id !== 'undefined') {

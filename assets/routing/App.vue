@@ -6,6 +6,7 @@
 </script>
 
 <template>
+    <AppModalError id="modal-error"/>
     <AppTopNavbar/>
     <AppContainer>
         <RouterView/>
