@@ -1,11 +1,5 @@
-import type {Component} from '@vue/runtime-core'
+import type {Component} from 'vue'
 import {defineAsyncComponent} from 'vue'
 
-type AppNavbarComputed = {navClass: () => string}
-type AppNavbarProps = {variant?: string}
-type AppNavbarComponent = Component<AppNavbarProps, never, never, AppNavbarComputed>
-export const AppNavbar = defineAsyncComponent<AppNavbarComponent>(async () => import('./AppNavbar.vue'))
-
-type AppNavbarBrandProps = {href: string, title: string}
-type AppNavbarBrandComponent = Component<AppNavbarBrandProps>
-export const AppNavbarBrand = defineAsyncComponent<AppNavbarBrandComponent>(async () => import('./AppNavbarBrand.vue'))
+export const AppNavbar = defineAsyncComponent<Component>(async () => import('./AppNavbar.vue'))
+export const AppNavbarBrand = defineAsyncComponent<Component>(async () => import('./AppNavbarBrand.vue'))
