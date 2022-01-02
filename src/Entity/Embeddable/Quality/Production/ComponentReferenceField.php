@@ -9,7 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class ComponentReferenceField {
-
     #[
         ApiProperty(description: 'Requis', example: false),
         ORM\Column(options: ['default' => false], type: 'boolean'),
@@ -72,5 +71,4 @@ class ComponentReferenceField {
         $this->value = $value;
         return $this;
     }
-
 }
