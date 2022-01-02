@@ -13,6 +13,7 @@ use App\Entity\Family as AbstractFamily;
 use App\Entity\Traits\CodeTrait;
 use App\Filter\OldRelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -65,11 +66,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:code', 'write:customs-code', 'write:family', 'write:file', 'write:name'],
+            'groups' => ['write:code', 'write:customs-code', 'write:family', 'write:file', 'write:name', 'write:attribute'],
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:code', 'read:customs-code', 'read:family', 'read:file', 'read:id', 'read:name'],
+            'groups' => ['read:code', 'read:customs-code', 'read:family', 'read:file', 'read:id', 'read:name', 'read:attribute'],
             'openapi_definition_name' => 'ComponentFamily-read'
         ],
         paginationEnabled: false
@@ -111,12 +112,43 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
+    /**
+     * @var Collection<int, Attribute>
+     */
+    #[
+        ApiProperty(description: 'Attributs', readableLink: false, example: ['/api/attributes/2', '/api/attributes/18']),
+        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Attribute::class, mappedBy: 'families'),
+        Serializer\Groups(['read:attributes', 'write:attributes'])
+    ]
+    private Collection $attributes;
+
     #[
         ApiProperty(description: 'Cuivré ', example: true),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private bool $copperable = false;
+
+    public function __construct() {
+        parent::__construct();
+        $this->attributes = new ArrayCollection();
+    }
+
+    public function addAttribute(Attribute $attribute): self {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes[] = $attribute;
+            $attribute->addFamily($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Attribute>
+     */
+    public function getAttributes(): Collection {
+        return $this->attributes;
+    }
 
     final public function getCopperable(): ?bool {
         return $this->copperable;
@@ -128,6 +160,14 @@ class Family extends AbstractFamily {
     ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
+    }
+
+    public function removeAttribute(Attribute $attribute): self {
+        if ($this->attributes->removeElement($attribute)) {
+            $attribute->removeFamily($this);
+        }
+
+        return $this;
     }
 
     final public function setCopperable(bool $copperable): self {

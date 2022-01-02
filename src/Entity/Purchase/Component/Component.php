@@ -23,7 +23,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Purchase\Component\Equivalents;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
@@ -57,7 +56,7 @@ use App\Entity\Purchase\Component\Equivalents;
                     'description' => 'Créer un composant',
                     'summary' => 'Créer un composant'
                 ],
-                // 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -101,7 +100,7 @@ use App\Entity\Purchase\Component\Equivalents;
                 'denormalization_context' => [
                     'groups' => ['write:component:clone']
                 ],
-                // 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ],
             'upgrade' => [
                 'method' => 'POST',
@@ -114,7 +113,7 @@ use App\Entity\Purchase\Component\Equivalents;
                 'denormalization_context' => [
                     'groups' => ['write:component:upgrade']
                 ],
-                // 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ],
             'promote' => [
                 'method' => 'PATCH',
@@ -127,11 +126,11 @@ use App\Entity\Purchase\Component\Equivalents;
                 'denormalization_context' => [
                     'groups' => ['write:component:promote']
                 ],
-                // 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         attributes: [
-            // 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:code', 'write:create', 'write:name', 'write:measure', 'writer:current_place', 'write:component', 'write:ref', 'write:equivalents', 'write:unit'],
@@ -381,9 +380,6 @@ class Component extends Entity {
         return $this->endOfLife;
     }
 
-    /**
-     * @return Collection<int, Equivalents>
-     */
     final public function getEquivalents(): ?Equivalents {
         return $this->equivalents;
     }

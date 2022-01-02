@@ -11,7 +11,7 @@ trait AddressTrait {
         Assert\Valid,
         ORM\Embedded(Address::class),
     ]
-    protected $address;
+    protected Address $address;
 
     public function __construct() {
         $this->address = new Address();

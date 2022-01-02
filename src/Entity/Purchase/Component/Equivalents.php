@@ -4,6 +4,7 @@ namespace App\Entity\Purchase\Component;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -22,34 +23,34 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer une',
-                    'summary' => 'Créer une'
+                    'description' => 'Créer une équivalence',
+                    'summary' => 'Créer une équivalence'
                 ],
-                // 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime une',
-                    'summary' => 'Supprime une'
+                    'description' => 'Supprime une équivalence',
+                    'summary' => 'Supprime une équivalence'
                 ]
             ],
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère une',
-                    'summary' => 'Récupère une',
+                    'description' => 'Récupère une équivalence',
+                    'summary' => 'Récupère une équivalence',
                 ]
             ],
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifier une',
-                    'summary' => 'Modifier une',
+                    'description' => 'Modifier une équivalence',
+                    'summary' => 'Modifier une équivalence',
                 ]
             ]
         ],
         attributes: [
-            // 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         normalizationContext: [
             'groups' => ['read:component'],
@@ -96,18 +97,10 @@ class Equivalents extends Entity {
     }
 
     /**
-     * @return Collection|Component[]
+     * @return Collection<int, Component>
      */
     final public function getComponents(): Collection {
         return $this->components;
-    }
-
-    final public function merge(self $equivalents): self {
-        foreach ($equivalents->getComponents() as $component) {
-            $equivalents->removeComponent($component);
-            $this->addComponent($component);
-        }
-        return $this;
     }
 
     final public function removeComponent(Component $component): self {
@@ -116,6 +109,14 @@ class Equivalents extends Entity {
             if ($component->getEquivalents() === $this) {
                 $component->setEquivalents(null);
             }
+        }
+        return $this;
+    }
+
+    final protected function merge(self $equivalents): self {
+        foreach ($equivalents->getComponents() as $component) {
+            $equivalents->removeComponent($component);
+            $this->addComponent($component);
         }
         return $this;
     }

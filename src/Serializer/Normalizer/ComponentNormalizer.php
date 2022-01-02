@@ -9,8 +9,6 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class ComponentNormalizer implements CacheableSupportsMethodInterface, NormalizerInterface {
-    // private $normalizer;
-
     public function __construct(private ObjectNormalizer $normalizer, private RequestStack $requestStack) {
     }
 
@@ -19,7 +17,7 @@ class ComponentNormalizer implements CacheableSupportsMethodInterface, Normalize
     }
 
     /**
-     * @return array<string, string>
+     * @return mixed[]
      */
     public function normalize($object, $format = null, array $context = []): array {
         $data = $this->normalizer->normalize($object, $format, $context);
@@ -27,10 +25,10 @@ class ComponentNormalizer implements CacheableSupportsMethodInterface, Normalize
         $request = $this->requestStack->getCurrentRequest();
         $process = null;
 
-        if(null !== $request) {
+        if (null !== $request) {
             $process = $request->attributes->get('process');
 
-            if($process && $data) {
+            if ($process && $data) {
                 $returnedData = [];
 
                 switch ($process) {
@@ -74,7 +72,7 @@ class ComponentNormalizer implements CacheableSupportsMethodInterface, Normalize
                 return $returnedData;
             }
         }
-        
+
         return $data;
     }
 
