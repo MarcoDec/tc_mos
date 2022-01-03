@@ -58,14 +58,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Color-read'
         ],
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class Color extends Entity {
     use NameTrait;
 
     #[
-        ApiProperty(description: 'nom', required: true, example: 'Gris'),
+        ApiProperty(description: 'Nom', required: true, example: 'Gris'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
         Serializer\Groups(['read:name', 'write:name'])
@@ -73,15 +72,17 @@ class Color extends Entity {
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'ral', example: '17122018'),
-        ORM\Column(nullable: true),
+        ApiProperty(description: 'RAL', example: '17122018'),
+        Assert\Length(max: 8),
+        ORM\Column(length: 8, nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $ral = null;
 
     #[
-        ApiProperty(description: 'rgb', example: '#848484'),
-        ORM\Column(nullable: true),
+        ApiProperty(description: 'RGB', example: '#848484'),
+        Assert\Length(max: 7),
+        ORM\Column(length: 7, nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $rgb = null;

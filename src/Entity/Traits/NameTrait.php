@@ -16,7 +16,7 @@ trait NameTrait {
     ]
     protected ?string $name = null;
 
-    final public function getName(): ?string {
+    public function getName(): ?string {
         return $this->name;
     }
 

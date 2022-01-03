@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Interfaces\FileEntity;
+use App\Entity\Traits\CustomsCodeTrait;
 use App\Entity\Traits\FileTrait;
 use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -15,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
 abstract class Family extends Entity implements FileEntity {
+    use CustomsCodeTrait;
     use FileTrait;
     use NameTrait;
 
@@ -36,16 +38,17 @@ abstract class Family extends Entity implements FileEntity {
     ]
     protected $parent;
 
-    #[
-        ApiProperty(description: 'Code douanier', example: '8544300089'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:family', 'write:family'])
-    ]
-    private ?string $customsCode = null;
-
     #[Pure]
     public function __construct() {
         $this->children = new ArrayCollection();
+    }
+
+    final public function addChild(self $child): self {
+        if (!$this->children->contains($child)) {
+            $this->children->add($child);
+            $child->setParent($this);
+        }
+        return $this;
     }
 
     final public function addChildren(self $children): self {
@@ -63,8 +66,15 @@ abstract class Family extends Entity implements FileEntity {
         return $this->children;
     }
 
-    final public function getCustomsCode(): ?string {
-        return $this->customsCode;
+    /**
+     * @return Collection<int, self>
+     */
+    final public function getChildrenWithSelf(): Collection {
+        $array = collect([$this]);
+        foreach ($this->getChildren() as $child) {
+            $array = $array->merge($child->getChildrenWithSelf());
+        }
+        return new ArrayCollection($array->values()->all());
     }
 
     final public function getName(): ?string {
@@ -75,6 +85,20 @@ abstract class Family extends Entity implements FileEntity {
         return $this->parent;
     }
 
+    final public function hasParent(): bool {
+        return !empty($this->parent);
+    }
+
+    final public function removeChild(self $child): self {
+        if ($this->children->contains($child)) {
+            $this->children->removeElement($child);
+            if ($child->getParent() === $this) {
+                $child->setParent(null);
+            }
+        }
+        return $this;
+    }
+
     final public function removeChildren(self $children): self {
         if ($this->children->contains($children)) {
             $this->children->removeElement($children);
@@ -82,11 +106,6 @@ abstract class Family extends Entity implements FileEntity {
                 $children->setParent(null);
             }
         }
-        return $this;
-    }
-
-    final public function setCustomsCode(?string $customsCode): self {
-        $this->customsCode = $customsCode;
         return $this;
     }
 

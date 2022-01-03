@@ -1,0 +1,10 @@
+imports:
+  - { resource: workflows/ }
+
+parameters:
+  wf_audit_trail:
+    enabled: true
+  wf_marking_store:
+    property: currentPlaceName
+    type: method
+  wf_type: state_machine

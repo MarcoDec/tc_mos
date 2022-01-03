@@ -9,7 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
-use App\Filter\RelationFilter;
+use App\Filter\OldRelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
+    ApiFilter(filterClass: OldRelationFilter::class, properties: ['parent']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Famille de produit',
@@ -62,11 +62,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:file', 'write:name'],
+            'groups' => ['write:customs-code', 'write:family', 'write:file', 'write:name'],
             'openapi_definition_name' => 'ProductFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
+            'groups' => ['read:customs-code', 'read:family', 'read:file', 'read:id', 'read:name'],
             'openapi_definition_name' => 'ProductFamily-read'
         ],
         paginationEnabled: false

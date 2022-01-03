@@ -10,8 +10,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
-use App\Filter\RelationFilter;
+use App\Entity\Traits\CodeTrait;
+use App\Filter\OldRelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -19,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['copperable']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
+    ApiFilter(filterClass: OldRelationFilter::class, properties: ['parent']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Famille de composant',
@@ -64,11 +66,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:file', 'write:name'],
+            'groups' => ['write:code', 'write:customs-code', 'write:family', 'write:file', 'write:name', 'write:attribute'],
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
+            'groups' => ['read:code', 'read:customs-code', 'read:family', 'read:file', 'read:id', 'read:name', 'read:attribute'],
             'openapi_definition_name' => 'ComponentFamily-read'
         ],
         paginationEnabled: false
@@ -78,9 +80,19 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['name', 'parent'])
 ]
 class Family extends AbstractFamily {
+    use CodeTrait;
+
     /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     protected Collection $children;
+
+    #[
+        ApiProperty(description: 'Code', example: 'CAB'),
+        Assert\Length(max: 3),
+        ORM\Column(length: 3),
+        Serializer\Groups(['read:code', 'write:code'])
+    ]
+    protected ?string $code = null;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
@@ -100,12 +112,15 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
+    /**
+     * @var Collection<int, Attribute>
+     */
     #[
-        ApiProperty(description: 'Code ', example: 'CAB'),
-        ORM\Column,
-        Serializer\Groups(['read:family', 'write:family'])
+        ApiProperty(description: 'Attributs', readableLink: false, example: ['/api/attributes/2', '/api/attributes/18']),
+        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Attribute::class, mappedBy: 'families'),
+        Serializer\Groups(['read:attributes', 'write:attributes'])
     ]
-    private ?string $code = null;
+    private Collection $attributes;
 
     #[
         ApiProperty(description: 'Cuivré ', example: true),
@@ -114,8 +129,25 @@ class Family extends AbstractFamily {
     ]
     private bool $copperable = false;
 
-    final public function getCode(): ?string {
-        return $this->code;
+    public function __construct() {
+        parent::__construct();
+        $this->attributes = new ArrayCollection();
+    }
+
+    public function addAttribute(Attribute $attribute): self {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes[] = $attribute;
+            $attribute->addFamily($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Attribute>
+     */
+    public function getAttributes(): Collection {
+        return $this->attributes;
     }
 
     final public function getCopperable(): ?bool {
@@ -130,8 +162,11 @@ class Family extends AbstractFamily {
         return parent::getFilepath();
     }
 
-    final public function setCode(?string $code): self {
-        $this->code = $code;
+    public function removeAttribute(Attribute $attribute): self {
+        if ($this->attributes->removeElement($attribute)) {
+            $attribute->removeFamily($this);
+        }
+
         return $this;
     }
 

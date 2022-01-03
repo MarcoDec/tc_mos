@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\CodeTrait;
 use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -50,19 +51,28 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:incoterms', 'write:name'],
+            'groups' => ['write:code', 'write:name'],
             'openapi_definition_name' => 'Incoterms-write'
         ],
         normalizationContext: [
-            'groups' => ['read:incoterms', 'read:id', 'read:name'],
+            'groups' => ['read:code', 'read:id', 'read:name'],
             'openapi_definition_name' => 'Incoterms-read'
         ],
     ),
-    ORM\Entity,
-    ORM\Table(name: 'incoterms')
+    ORM\Entity
 ]
 class Incoterms extends Entity {
+    use CodeTrait;
     use NameTrait;
+
+    #[
+        ApiProperty(description: 'Code', required: true, example: 'DDP'),
+        Assert\Length(max: 11),
+        Assert\NotBlank,
+        ORM\Column(length: 11),
+        Serializer\Groups(['read:code', 'write:code'])
+    ]
+    protected ?string $code = null;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Delivered Duty Paid'),
@@ -71,21 +81,4 @@ class Incoterms extends Entity {
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Code ', required: true, example: 'DDP'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
-    ]
-    private ?string $code = null;
-
-    final public function getCode(): ?string {
-        return $this->code;
-    }
-
-    final public function setCode(?string $code): self {
-        $this->code = $code;
-        return $this;
-    }
 }

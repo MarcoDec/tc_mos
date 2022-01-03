@@ -53,6 +53,7 @@
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "doctrine/orm": "^2.10",
     "dragonmantank/cron-expression": "^3.1",
+    "gollumsf/doctrine-tinyint": "^1.0",
     "nelmio/cors-bundle": "^2.1",
     "pentatrion/vite-bundle": "^0.1.5",
     "phpdocumentor/reflection-docblock": "^5.3",
@@ -75,6 +76,7 @@
     "symfony/serializer": "5.3.*",
     "symfony/twig-bundle": "5.3.*",
     "symfony/validator": "5.3.*",
+    "symfony/workflow": "5.3.*",
     "symfony/yaml": "5.3.*",
     "tightenco/collect": "^8.34"
   },

@@ -1,0 +1,52 @@
+parameters:
+  product_state_agreed: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_PLACE_AGREED
+  product_state_blocked: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_PLACE_BLOCKED
+  product_state_disabled: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_PLACE_DISABLED
+  product_state_draft: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_PLACE_DRAFT
+  product_state_to_validate: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_PLACE_TO_VALIDATE
+  product_state_under_exemption: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_PLACE_UNDER_EXEMPTION
+  product_tr_block: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_TR_BLOCK
+  product_tr_disable: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_TR_DISABLE
+  product_tr_partial_unlock: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_TR_PARTIAL_UNLOCK
+  product_tr_partial_validation: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_TR_PARTIAL_VALIDATION
+  product_tr_unlock: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_TR_UNLOCK
+  product_tr_validate: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_TR_VALIDATE
+  product_tr_validation: !php/const App\Entity\Embeddable\Project\Product\CurrentPlace::WF_TR_SUBMIT_VALIDATION
+
+framework:
+  workflows:
+    product:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%product_state_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%product_state_agreed%'           # Accepté
+        - '%product_state_blocked%'          # Bloqué
+        - '%product_state_disabled%'         # Inactif
+        - '%product_state_draft%'            # Brouillon
+        - '%product_state_to_validate%'      # Non validé
+        - '%product_state_under_exemption%'  # Sous-dérogation
+      supports:
+        - App\Entity\Project\Product\Product
+      transitions:
+        '%product_tr_block%':
+          from: [ '%product_state_agreed%', '%product_state_under_exemption%' ]
+          to: '%product_state_blocked%'
+        '%product_tr_validation%':
+          from: '%product_state_draft%'
+          to: '%product_state_to_validate%'
+        '%product_tr_validate%':
+          from: [ '%product_state_to_validate%', '%product_state_under_exemption%' ]
+          to: '%product_state_agreed%'
+        '%product_tr_partial_validation%':
+          from: [ '%product_state_agreed%', '%product_state_to_validate%' ]
+          to: '%product_state_under_exemption%'
+        '%product_tr_unlock%':
+          from: '%product_state_blocked%'
+          to: '%product_state_agreed%'
+        '%product_tr_partial_unlock%':
+          from: '%product_state_blocked%'
+          to: '%product_state_under_exemption%'
+        '%product_tr_disable%':
+          from: [ '%product_state_agreed%', '%product_state_under_exemption%' ]
+          to: '%product_state_disabled%'
