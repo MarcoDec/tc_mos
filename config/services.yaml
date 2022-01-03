@@ -41,6 +41,13 @@ services:
       - event: kernel.request
         name: kernel.event_listener
 
+  App\EventListener\Embeddable\MeasureListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Interfaces\EmbeddedInterface
+        event: postLoad
+        name: doctrine.orm.entity_listener
+
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'
@@ -52,17 +59,11 @@ services:
 
   App\EventListener\Project\Product\FamilyListener:
     autoconfigure: false
-    arguments: ['@doctrine.orm.entity_manager']
+    arguments: [ '@doctrine.orm.entity_manager' ]
     tags:
       - entity: App\Entity\Project\Product\Family
         event: postLoad
         name: doctrine.orm.entity_listener
-
-  App\EventListener\Embeddable\MeasureListener:
-    autoconfigure: false
-    tags:
-        - event: postLoad
-          name: doctrine.event_listener
 
   App\EventListener\Security\LogoutListener:
     autoconfigure: false

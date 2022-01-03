@@ -57,7 +57,7 @@ final class Configurations {
         return $this->countries[$id] ?? null;
     }
 
-    public function getId(string $name, string $id): ?int {
+    public function getId(string $name, int $id): ?int {
         return $this->configurations[$name]->getId($id);
     }
 

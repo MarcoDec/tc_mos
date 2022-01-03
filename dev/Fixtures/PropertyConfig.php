@@ -10,9 +10,9 @@ final class PropertyConfig {
     private ?string $oldRef;
 
     /**
-     * @param array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string} $config
+     * @param array{country?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string} $config
      */
-    public function __construct(private string $name, array $config) {
+    public function __construct(array $config) {
         $this->country = $config['country'] ?? false;
         $this->forceValue = $config['force_value'] ?? null;
         $this->new = $config['new'] ?? false;

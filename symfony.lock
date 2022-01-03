@@ -1,4 +1,7 @@
 {
+    "composer/pcre": {
+        "version": "1.0.0"
+    },
     "dragonmantank/cron-expression": {
         "version": "v3.1.0"
     },
@@ -16,6 +19,15 @@
             "version": "0.1",
             "ref": "bbc1dbabe95240a0988959e1ded978725692bcfa"
         }
+    },
+    "phpstan/extension-installer": {
+        "version": "1.1.0"
+    },
+    "phpstan/phpstan": {
+        "version": "1.3.0"
+    },
+    "phpstan/phpstan-symfony": {
+        "version": "1.0.4"
     },
     "ronanguilloux/isocodes": {
         "version": "2.3.5"

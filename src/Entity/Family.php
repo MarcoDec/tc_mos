@@ -18,7 +18,7 @@ abstract class Family extends Entity implements FileEntity {
     use FileTrait;
     use NameTrait;
 
-    /** @var Collection<int, self> */
+    /** @var Collection<int, mixed> */
     protected Collection $children;
 
     #[

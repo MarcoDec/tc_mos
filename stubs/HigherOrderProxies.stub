@@ -1,0 +1,10 @@
+<?php
+
+namespace Tightenco\Collect\Support;
+
+/**
+ * @template T
+ * @template TValue
+ */
+class HigherOrderCollectionProxy
+{}

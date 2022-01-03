@@ -98,7 +98,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'denormalization_context' => [
                     'groups' => ['write:product:clone']
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PROJECT__WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
             ],
             'upgrade' => [
                 'method' => 'POST',

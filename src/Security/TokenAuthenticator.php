@@ -113,11 +113,9 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     }
 
     private function createPassport(UserBadge $userBadge, CustomCredentials $credentials): Passport {
-        if (!empty($user = $userBadge->getUser())) {
-            $credentials->executeCustomChecker($user);
-            if (!$credentials->isResolved()) {
-                throw new CustomUserMessageAuthenticationException('Credentials check failed');
-            }
+        $credentials->executeCustomChecker($userBadge->getUser());
+        if (!$credentials->isResolved()) {
+            throw new CustomUserMessageAuthenticationException('Credentials check failed');
         }
         return new Passport($userBadge, $credentials);
     }

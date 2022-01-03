@@ -13,16 +13,15 @@ use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Tightenco\Collect\Support\Collection as LaravelCollection;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial',
-        'code' => 'partial'
-    ]),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
-        description: 'Unité',
+        description: 'Unit',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -44,12 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Supprime une unité',
                 ]
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère une unité',
-                    'summary' => 'Récupère une unité',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une unité',
@@ -61,11 +55,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:unit', 'write:measure'],
+            'groups' => ['write:name', 'write:unit'],
             'openapi_definition_name' => 'Unit-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:unit', 'read:measure'],
+            'groups' => ['read:id', 'read:name', 'read:unit'],
             'openapi_definition_name' => 'Unit-read'
         ]
     ),
@@ -79,62 +73,57 @@ class Unit extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
         Assert\NotBlank,
-        ORM\Column(type: 'string'),
+        ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Base', required: true, example: '0.845'),
+        ApiProperty(description: 'Base', required: true, example: 1),
         Assert\NotBlank,
-        ORM\Column(options: ['default' => 0], type: 'float'),
+        Assert\Positive,
+        ORM\Column(options: ['default' => 1]),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
-    private ?float $base = 0;
+    private float $base = 1;
 
     /** @var Collection<int, self> */
     #[
-        ApiProperty(description: 'Unités enfant', readableLink: false, example: ['/api/units/3', '/api/units/4']),
-        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove']),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        ApiProperty(description: 'Enfants ', readableLink: false, example: ['/api/units/2', '/api/units/3']),
+        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
+        Serializer\Groups(['read:unit'])
     ]
     private Collection $children;
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'g'),
-        ORM\Column(type: 'string'),
+        Assert\NotBlank,
+        ORM\Column,
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Dénominateur', readableLink: false, example: '/api/units/3'),
-        ORM\OneToOne(targetEntity: self::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
-    ]
-    private ?Unit $denominator = null;
-
-    #[
-        ApiProperty(description: 'Unité parente', readableLink: false, example: '/api/units/1'),
+        ApiProperty(description: 'Parent ', readableLink: false, example: '/api/units/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private ?self $parent = null;
 
+    #[Pure]
     public function __construct() {
         $this->children = new ArrayCollection();
     }
 
-    final public function addChild(self $child): self {
-        if (!$this->children->contains($child)) {
-            $this->children[] = $child;
-            $child->setParent($this);
+    final public function addChildren(self $children): self {
+        if (!$this->children->contains($children)) {
+            $this->children->add($children);
+            $children->setParent($this);
         }
-
         return $this;
     }
 
-    final public function getBase(): ?float {
+    final public function getBase(): float {
         return $this->base;
     }
 
@@ -149,61 +138,35 @@ class Unit extends Entity {
         return $this->code;
     }
 
-    final public function getDenominator(): ?self {
-        return $this->denominator;
-    }
-
-    /**
-     * Returns the multiplicator from the upper parent Unit.
-     *
-     * @return float
-     */
-    final public function getMultiplicatorFromBase(): ?float {
-        if (null === $this->parent) {
-            return 1;
-        }
-
-        $multiplicator = $this->base == 0 ? 1 : $this->base;
-        $parent = $this->parent;
-
-        for ($parent; null !== $parent->parent; $parent = $parent->parent) {
-            $multiplicator *= $parent->base == 0 ? 1 : $parent->base;
-        }
-
-        return $multiplicator;
+    #[Pure]
+    final public function getDistance(self $unit): float {
+        return $this->getDistanceBase() * $unit->getDistanceBase();
     }
 
     final public function getParent(): ?self {
         return $this->parent;
     }
 
-    /**
-     * Returns the smallest unit in the tree.
-     */
-    final public function getTopUnit(): self {
-        $parent = $this->getParent();
-
-        if (null === $parent) {
-            return $this;
-        }
-
-        for ($parent; null !== $parent->getParent(); $parent = $parent->getParent());
-
-        return $parent;
+    final public function has(?self $unit): bool {
+        return $unit !== null && $this->getFamily()->contains(static fn (self $member): bool => $member->getId() === $unit->getId());
     }
 
-    final public function removeChild(self $child): self {
-        if ($this->children->removeElement($child)) {
-            // set the owning side to null (unless already changed)
-            if ($child->getParent() === $this) {
-                $child->setParent(null);
+    #[Pure]
+    final public function isLessThan(self $unit): bool {
+        return $this->getLess($unit) === $this;
+    }
+
+    final public function removeChildren(self $children): self {
+        if ($this->children->contains($children)) {
+            $this->children->removeElement($children);
+            if ($children->getParent() === $this) {
+                $children->setParent(null);
             }
         }
-
         return $this;
     }
 
-    final public function setBase(?float $base): self {
+    final public function setBase(float $base): self {
         $this->base = $base;
         return $this;
     }
@@ -213,16 +176,43 @@ class Unit extends Entity {
         return $this;
     }
 
-    final public function setDenominator(self $denominator): self {
-        $this->denominator = $denominator;
-        $this->code = $this->code.'/'.$denominator->getCode();
-
+    final public function setParent(?self $parent): self {
+        $this->parent = $parent;
         return $this;
     }
 
-    final public function setParent(?self $parent): self {
-        $this->parent = $parent;
+    /**
+     * @return LaravelCollection<int, self>
+     */
+    private function getDepthChildren(): LaravelCollection {
+        /** @phpstan-ignore-next-line */
+        return collect($this->children->getValues())
+            ->map(static fn (self $child): array => $child->getDepthChildren()->push($child)->values()->all())
+            ->flatten()
+            ->unique->getId()
+            ->values();
+    }
 
-        return $this;
+    private function getDistanceBase(): float {
+        return $this->base > 1 ? $this->base : 1 / $this->base;
+    }
+
+    /**
+     * @return LaravelCollection<int, self>
+     */
+    private function getFamily(): LaravelCollection {
+        return $this->getRoot()->getDepthChildren();
+    }
+
+    private function getLess(self $unit): self {
+        return $this->base < $unit->base ? $this : $unit;
+    }
+
+    private function getRoot(): self {
+        $root = $this;
+        while ($root->parent !== null) {
+            $root = $root->parent;
+        }
+        return $root;
     }
 }

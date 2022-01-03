@@ -17,12 +17,12 @@ abstract class Type extends DoctrineType {
 
     final public function convertToDatabaseValue($value, AbstractPlatform $platform) {
         if (!empty($value) && !in_array($value, static::TYPES, true)) {
-            throw new InvalidArgumentException(sprintf("Invalid value. Get \"$value\", but valid values are [%s].", static::getStrTypes()));
+            throw new InvalidArgumentException(sprintf("Invalid value. Get \"$value\", but valid values are [%s].", self::getStrTypes()));
         }
         return parent::convertToDatabaseValue($value, $platform);
     }
 
     final public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
-        return sprintf('ENUM(%s)', static::getStrTypes());
+        return sprintf('ENUM(%s)', self::getStrTypes());
     }
 }

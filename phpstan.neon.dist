@@ -5,9 +5,30 @@ parameters:
         - lib
         - src
         - utils
-    # If you're using PHP config files for Symfony 5.3+, you also need this for auto-loading of `Symfony\Config`:
     scanDirectories:
         - var/cache/dev/Symfony/Config
+    stubFiles:
+        - stubs/Collection.stub
+        - stubs/Enumerable.stub
+        - stubs/EnumeratesValues.stub
+        - stubs/HigherOrderProxies.stub
+        - stubs/Support.stub
     symfony:
-        # container_xml_path Symfony 5+
         container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
+services:
+    - class: App\PhpStan\Methods\HigherOrderCollectionProxyExtension
+      tags:
+          - phpstan.broker.methodsClassReflectionExtension
+    - class: App\PhpStan\Properties\HigherOrderCollectionProxyPropertyExtension
+      tags:
+          - phpstan.broker.propertiesClassReflectionExtension
+    - class: App\PhpStan\ReturnTypes\Helpers\CollectExtension
+      tags:
+          - phpstan.broker.dynamicFunctionReturnTypeExtension
+    - class: App\PhpStan\ReturnTypes\CollectionFilterDynamicReturnTypeExtension
+      tags:
+          - phpstan.broker.dynamicMethodReturnTypeExtension
+    - class: App\PhpStan\ReturnTypes\CollectionMakeDynamicStaticMethodReturnTypeExtension
+      tags:
+          - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    - class: App\PhpStan\Support\CollectionHelper

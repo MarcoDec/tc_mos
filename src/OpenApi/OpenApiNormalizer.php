@@ -35,7 +35,9 @@ final class OpenApiNormalizer implements NormalizerInterface {
             if (!$sorted->offsetExists($tag)) {
                 $sorted->put($tag, collect());
             }
-            $sorted->get($tag)->put($path, $item);
+            if (!empty($sortedItem = $sorted->get($tag))) {
+                $sortedItem->put($path, $item);
+            }
         }
         return $sorted
             ->map(static fn (Collection $paths): array => $paths->sortKeys()->all())
