@@ -3,7 +3,9 @@
     import {defineEmits, defineProps, withDefaults} from 'vue'
     import clone from 'clone'
 
+    // const form = ref<HTMLFormElement>()
     const emit = defineEmits<{(e: 'update:modelValue', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
+
     const props = withDefaults(
         defineProps<{fields: FormField[], id: string, modelValue?: FormValues}>(),
         {modelValue: () => ({})}
@@ -25,8 +27,9 @@
             :form="id"
             :model-value="modelValue[field.name]"
             @input="input"/>
-        <AppBtn class="float-end" type="submit">
+        <slot name="buttons"/>
+        <!-- <AppBtn class="float-end" type="submit">
             Connexion
-        </AppBtn>
+        </AppBtn> -->
     </form>
 </template>

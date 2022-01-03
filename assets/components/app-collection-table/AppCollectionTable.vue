@@ -1,8 +1,9 @@
 <script lang="ts" setup>
     import type {TableField, TableItem} from '../../types/app-collection-table'
-    import {computed, defineProps, provide} from 'vue'
+    import {computed, defineEmits, defineProps, provide} from 'vue'
     import type {PropType} from 'vue'
 
+    const emit = defineEmits<(e: 'update', item: TableItem) => void>()
     const props = defineProps({
         create: {required: false, type: Boolean},
         currentPage: {default: 1, type: Number},
@@ -15,12 +16,15 @@
     provide('create', props.create)
     provide('fields', props.fields)
     provide('table-id', props.id)
+    function update(item: TableItem): void {
+        emit('update', item)
+    }
 </script>
 
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
         <AppCollectionTableHeaders/>
-        <AppCollectionTableItems :items="items"/>
+        <AppCollectionTableItems :items="items" @update="update"/>
     </table>
     <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/>
 </template>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
     import type {TableField, TableItem} from '../../../types/app-collection-table'
-    import {computed, defineProps, inject, ref} from 'vue'
+    import {computed, defineEmits, defineProps, inject, ref} from 'vue'
 
     const ONE = 1
 
@@ -10,8 +10,12 @@
     const show = ref(true)
     const td = computed(() => (show.value ? 'AppCollectionTableItemField' : 'AppCollectionTableItemInput'))
 
+    const emit = defineEmits<(e: 'update', item: TableItem) => void>()
     function toggle(): void {
         show.value = !show.value
+    }
+    function update(): void {
+        emit('update', props.item)
     }
 </script>
 
@@ -22,6 +26,7 @@
         </td>
         <td v-if="show" class="text-center">
             <AppBtn v-if="item.update" icon="pencil-alt" variant="primary" @click="toggle"/>
+            <AppBtn v-if="item.update2" icon="eye" variant="secondary" @click="update"/>
             <AppBtn v-if="item['delete']" icon="trash" variant="danger"/>
         </td>
         <td v-else class="text-center">

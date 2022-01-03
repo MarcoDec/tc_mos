@@ -29,7 +29,13 @@
             {{ msgError }}
         </div>
         <AppCard class="bg-blue col">
-            <AppForm id="login" v-model="formData" :fields="fields" @submit="handleClick"/>
+            <AppForm id="login" v-model="formData" :fields="fields" @submit="handleClick">
+                <template #buttons>
+                    <AppBtn class="float-end" type="submit">
+                        Connexion
+                    </AppBtn>
+                </template>
+            </AppForm>
         </AppCard>
     </AppRow>
 </template>
