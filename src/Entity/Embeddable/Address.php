@@ -135,4 +135,12 @@ class Address {
         $this->zipCode = $zipCode;
         return $this;
     }
+
+    final public function isEmpty(): bool {
+        return empty($this->address)
+            && empty($this->city)
+            && empty($this->country)
+            && empty($this->phone)
+            && empty($this->zip);
+    }
 }
