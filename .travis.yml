@@ -12,7 +12,7 @@ script:
   - docker exec tconcept_gpao_php ./vendor/bin/phpstan analyse --memory-limit=1G
   - docker exec tconcept_gpao_php php bin/phpunit
   - docker exec tconcept_gpao_php yarn
-  - docker exec tconcept_gpao_php yarn eslint ./assets/
+  - docker exec tconcept_gpao_php yarn eslint
 
 services:
   - docker

@@ -1,14 +1,8 @@
 <script lang="ts" setup>
-    import type {PropType} from 'vue'
     import {defineProps} from 'vue'
+    import {colValidator as validator} from '../../../composition/bootstrap-5'
 
-    defineProps({
-        cols: {
-            default: 2,
-            type: Number as PropType<number | null>,
-            validator: (value: number): boolean => value >= 1 && value <= 12
-        }
-    })
+    defineProps({cols: {default: 2, type: Number, validator}})
 </script>
 
 <template>

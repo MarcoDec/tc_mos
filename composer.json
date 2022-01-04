@@ -77,7 +77,7 @@
     "symfony/validator": "5.3.*",
     "symfony/workflow": "5.3.*",
     "symfony/yaml": "5.3.*",
-    "tightenco/collect": "^8.76"
+    "tightenco/collect": "^8.77"
   },
   "require-dev": {
     "doctrine/doctrine-fixtures-bundle": "^3.4",

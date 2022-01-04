@@ -26,6 +26,7 @@ export default defineConfig({
     ],
     root: './assets',
     server: {
+        force: true,
         fs: {
             allow: ['..'],
             strict: false

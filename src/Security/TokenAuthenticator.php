@@ -7,6 +7,7 @@ use App\Entity\Hr\Employee\Employee;
 use App\Repository\Hr\Employee\EmployeeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
@@ -14,6 +15,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\LogicException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CustomCredentials;
@@ -33,7 +35,7 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response {
-        return null;
+        return new JsonResponse($exception->getMessage(), Response::HTTP_UNAUTHORIZED);
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response {
@@ -60,7 +62,12 @@ final class TokenAuthenticator extends AbstractAuthenticator {
         if ($request->hasCredentials()) {
             $credentials = $request->getCredentials();
             return $this->createPassport(
-                userBadge: new UserBadge($credentials['username'], fn (string $username): ?Employee => $this->getEmployeeRepo()->findOneBy(['username' => $username])),
+                userBadge: new UserBadge($credentials['username'], function (string $username): Employee {
+                    if (!empty($employee = $this->getEmployeeRepo()->findOneBy(['username' => $username]))) {
+                        return $employee;
+                    }
+                    throw new UserNotFoundException();
+                }),
                 credentials: new CustomCredentials(function (array $credentials, Employee $user): bool {
                     return !empty($user->getPassword())
                         && $this->hasherFactory->getPasswordHasher($user)->verify($user->getPassword(), $credentials['password']);
@@ -86,7 +93,12 @@ final class TokenAuthenticator extends AbstractAuthenticator {
             $this->logger->info(__METHOD__.': hasAuthorization');
             $credentials = $request->getToken();
             return $this->createPassport(
-                userBadge: new UserBadge($credentials['token'], fn (string $token): ?Employee => $this->getEmployeeRepo()->findByToken($token)),
+                userBadge: new UserBadge($credentials['token'], function (string $token): Employee {
+                    if (!empty($employee = $this->getEmployeeRepo()->findByToken($token))) {
+                        return $employee;
+                    }
+                    throw new UserNotFoundException();
+                }),
                 credentials: new CustomCredentials(function (array $credentials, Employee $user): bool {
                     $token = $this->em->getRepository(Token::class)->findOneBy(['token' => $credentials['token']]);
                     if (empty($token)) {
