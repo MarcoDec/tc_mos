@@ -11,7 +11,7 @@ trait CompanyTrait {
     #[
         ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company', 'write:incotcompanyerms'])
+        Serializer\Groups(['read:company', 'write:company'])
     ]
     protected ?Company $company;
 
