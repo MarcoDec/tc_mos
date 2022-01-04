@@ -10,6 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
+use App\Entity\Quality\Reception\ComponentReference;
 use App\Entity\Traits\CodeTrait;
 use App\Filter\OldRelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -129,12 +130,23 @@ class Family extends AbstractFamily {
     ]
     private bool $copperable = false;
 
+    /**
+     * @var Collection<int, ComponentReference>
+     */
+    #[
+        ApiProperty(description: 'References'),
+        ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'families'),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
+    private Collection $references;
+
     public function __construct() {
         parent::__construct();
         $this->attributes = new ArrayCollection();
+        $this->references = new ArrayCollection();
     }
 
-    public function addAttribute(Attribute $attribute): self {
+    final public function addAttribute(Attribute $attribute): self {
         if (!$this->attributes->contains($attribute)) {
             $this->attributes[] = $attribute;
             $attribute->addFamily($this);
@@ -143,10 +155,19 @@ class Family extends AbstractFamily {
         return $this;
     }
 
+    final public function addReference(ComponentReference $references): self {
+        if (!$this->references->contains($references)) {
+            $this->references[] = $references;
+            $references->addFamily($this);
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Attribute>
      */
-    public function getAttributes(): Collection {
+    final public function getAttributes(): Collection {
         return $this->attributes;
     }
 
@@ -162,9 +183,24 @@ class Family extends AbstractFamily {
         return parent::getFilepath();
     }
 
-    public function removeAttribute(Attribute $attribute): self {
+    /**
+     * @return Collection<int, ComponentReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
+    final public function removeAttribute(Attribute $attribute): self {
         if ($this->attributes->removeElement($attribute)) {
             $attribute->removeFamily($this);
+        }
+
+        return $this;
+    }
+
+    final public function removeReference(ComponentReference $references): self {
+        if ($this->references->removeElement($references)) {
+            $references->removeFamily($this);
         }
 
         return $this;

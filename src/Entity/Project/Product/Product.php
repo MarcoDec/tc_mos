@@ -16,6 +16,7 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\EmbeddedInterface;
 use App\Entity\Logistics\Incoterms;
+use App\Entity\Quality\Reception\ProductReference;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\NameTrait;
 use App\Entity\Traits\RefTrait;
@@ -376,6 +377,16 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
     ]
     private int $productionDelay = 0;
 
+    /**
+     * @var Collection<int, ProductReference>
+     */
+    #[
+        ApiProperty(description: 'References'),
+        ORM\ManyToMany(targetEntity: ProductReference::class, mappedBy: 'items'),
+        Serializer\Groups(['read:product'])
+    ]
+    private Collection $references;
+
     #[
         ApiProperty(description: 'Prix de cession des composants', required: true, example: '1.2'),
         Assert\NotNull,
@@ -400,13 +411,14 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         $this->weight = new Measure();
         $this->forecastVolume = new Measure();
         $this->autoDuration = new Measure();
+        $this->references = new ArrayCollection();
     }
 
-    public static function getBarCodeTableNumber(): string {
+    final public static function getBarCodeTableNumber(): string {
         return self::PRODUCT_BAR_CODE_TABLE_NUMBER;
     }
 
-    public function addChild(self $child): self {
+    final public function addChild(self $child): self {
         if (!$this->children->contains($child)) {
             $this->children[] = $child;
             $child->setParent($this);
@@ -415,26 +427,35 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this;
     }
 
+    final public function addReference(ProductReference $references): self {
+        if (!$this->references->contains($references)) {
+            $this->references[] = $references;
+            $references->addItem($this);
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, self>
      */
-    public function getChildren(): Collection {
+    final public function getChildren(): Collection {
         return $this->children;
     }
 
-    public function getCurrentPlace(): CurrentPlace {
+    final public function getCurrentPlace(): CurrentPlace {
         return $this->currentPlace;
     }
 
-    public function getCurrentPlaceName(): ?string {
+    final public function getCurrentPlaceName(): ?string {
         return $this->currentPlace->getName() ?? null;
     }
 
-    public function getCustomsCode(): ?string {
+    final public function getCustomsCode(): ?string {
         return $this->customsCode;
     }
 
-    public function getEmbeddedMeasures(): array {
+    final public function getEmbeddedMeasures(): array {
         $measures = [];
 
         /** @phpstan-ignore-next-line */
@@ -447,99 +468,106 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $measures;
     }
 
-    public function getExpirationDate(): ?DateTimeInterface {
+    final public function getExpirationDate(): ?DateTimeInterface {
         return $this->expirationDate;
     }
 
-    public function getFamily(): ?Family {
+    final public function getFamily(): ?Family {
         return $this->family;
     }
 
-    public function getForecastVolume(): Measure {
+    final public function getForecastVolume(): Measure {
         return $this->forecastVolume;
     }
 
-    public function getIncoterms(): ?Incoterms {
+    final public function getIncoterms(): ?Incoterms {
         return $this->incoterms;
     }
 
-    public function getIndex(): ?string {
+    final public function getIndex(): ?string {
         return $this->index;
     }
 
-    public function getInternalIndex(): ?int {
+    final public function getInternalIndex(): ?int {
         return $this->internalIndex;
     }
 
-    public function getKind(): ?string {
+    final public function getKind(): ?string {
         return $this->kind;
     }
 
-    public function getManagedCopper(): ?bool {
+    final public function getManagedCopper(): ?bool {
         return $this->managedCopper;
     }
 
-    public function getMaxProto(): ?int {
+    final public function getMaxProto(): ?int {
         return $this->maxProto;
     }
 
-    public function getMinDelivery(): ?int {
+    final public function getMinDelivery(): ?int {
         return $this->minDelivery;
     }
 
-    public function getMinProd(): ?int {
+    final public function getMinProd(): ?int {
         return $this->minProd;
     }
 
-    public function getMinStock(): ?int {
+    final public function getMinStock(): ?int {
         return $this->minStock;
     }
 
-    public function getNotes(): ?string {
+    final public function getNotes(): ?string {
         return $this->notes;
     }
 
-    public function getPackaging(): ?int {
+    final public function getPackaging(): ?int {
         return $this->packaging;
     }
 
-    public function getPackagingKind(): ?string {
+    final public function getPackagingKind(): ?string {
         return $this->packagingKind;
     }
 
-    public function getParent(): ?self {
+    final public function getParent(): ?self {
         return $this->parent;
     }
 
-    public function getPlace(): ?string {
+    final public function getPlace(): ?string {
         return $this->place;
     }
 
-    public function getPrice(): ?float {
+    final public function getPrice(): ?float {
         return $this->price;
     }
 
-    public function getPriceWithoutCopper(): ?float {
+    final public function getPriceWithoutCopper(): ?float {
         return $this->priceWithoutCopper;
     }
 
-    public function getProductionDelay(): ?int {
+    final public function getProductionDelay(): ?int {
         return $this->productionDelay;
     }
 
-    public function getTransfertPriceSupplies(): ?float {
+    /**
+     * @return Collection<int, ProductReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
+    final public function getTransfertPriceSupplies(): ?float {
         return $this->transfertPriceSupplies;
     }
 
-    public function getTransfertPriceWork(): ?float {
+    final public function getTransfertPriceWork(): ?float {
         return $this->transfertPriceWork;
     }
 
-    public function getWeight(): Measure {
+    final public function getWeight(): Measure {
         return $this->weight;
     }
 
-    public function removeChild(self $child): self {
+    final public function removeChild(self $child): self {
         if ($this->children->removeElement($child)) {
             // set the owning side to null (unless already changed)
             if ($child->getParent() === $this) {
@@ -550,13 +578,21 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this;
     }
 
-    public function setCurrentPlace(CurrentPlace $currentPlace): self {
+    final public function removeReference(ProductReference $references): self {
+        if ($this->references->removeElement($references)) {
+            $references->removeItem($this);
+        }
+
+        return $this;
+    }
+
+    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
 
         return $this;
     }
 
-    public function setCurrentPlaceName(string $currentPlaceName): self {
+    final public function setCurrentPlaceName(string $currentPlaceName): self {
         $currentPlace = new CurrentPlace();
         $currentPlace->setName($currentPlaceName);
 
@@ -566,145 +602,145 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this;
     }
 
-    public function setCustomsCode(?string $customsCode): self {
+    final public function setCustomsCode(?string $customsCode): self {
         $this->customsCode = $customsCode;
 
         return $this;
     }
 
-    public function setExpirationDate(?DateTimeInterface $expirationDate): self {
+    final public function setExpirationDate(?DateTimeInterface $expirationDate): self {
         $this->expirationDate = $expirationDate;
 
         return $this;
     }
 
-    public function setFamily(?Family $family): self {
+    final public function setFamily(?Family $family): self {
         $this->family = $family;
 
         return $this;
     }
 
-    public function setForecastVolume(Measure $forecastVolume): self {
+    final public function setForecastVolume(Measure $forecastVolume): self {
         $this->forecastVolume = $forecastVolume;
 
         return $this;
     }
 
-    public function setIncoterms(?Incoterms $incoterms): self {
+    final public function setIncoterms(?Incoterms $incoterms): self {
         $this->incoterms = $incoterms;
 
         return $this;
     }
 
-    public function setIndex(string $index): self {
+    final public function setIndex(string $index): self {
         $this->index = $index;
 
         return $this;
     }
 
-    public function setInternalIndex(int $internalIndex): self {
+    final public function setInternalIndex(int $internalIndex): self {
         $this->internalIndex = $internalIndex;
 
         return $this;
     }
 
-    public function setKind(string $kind): self {
+    final public function setKind(string $kind): self {
         $this->kind = $kind;
 
         return $this;
     }
 
-    public function setManagedCopper(bool $managedCopper): self {
+    final public function setManagedCopper(bool $managedCopper): self {
         $this->managedCopper = $managedCopper;
 
         return $this;
     }
 
-    public function setMaxProto(int $maxProto): self {
+    final public function setMaxProto(int $maxProto): self {
         $this->maxProto = $maxProto;
 
         return $this;
     }
 
-    public function setMinDelivery(int $minDelivery): self {
+    final public function setMinDelivery(int $minDelivery): self {
         $this->minDelivery = $minDelivery;
 
         return $this;
     }
 
-    public function setMinProd(int $minProd): self {
+    final public function setMinProd(int $minProd): self {
         $this->minProd = $minProd;
 
         return $this;
     }
 
-    public function setMinStock(int $minStock): self {
+    final public function setMinStock(int $minStock): self {
         $this->minStock = $minStock;
 
         return $this;
     }
 
-    public function setNotes(?string $notes): self {
+    final public function setNotes(?string $notes): self {
         $this->notes = $notes;
 
         return $this;
     }
 
-    public function setPackaging(int $packaging): self {
+    final public function setPackaging(int $packaging): self {
         $this->packaging = $packaging;
 
         return $this;
     }
 
-    public function setPackagingKind(?string $packagingKind): self {
+    final public function setPackagingKind(?string $packagingKind): self {
         $this->packagingKind = $packagingKind;
 
         return $this;
     }
 
-    public function setParent(?self $parent): self {
+    final public function setParent(?self $parent): self {
         $this->parent = $parent;
 
         return $this;
     }
 
-    public function setPlace(?string $place): self {
+    final public function setPlace(?string $place): self {
         $this->place = $place;
 
         return $this;
     }
 
-    public function setPrice(float $price): self {
+    final public function setPrice(float $price): self {
         $this->price = $price;
 
         return $this;
     }
 
-    public function setPriceWithoutCopper(float $priceWithoutCopper): self {
+    final public function setPriceWithoutCopper(float $priceWithoutCopper): self {
         $this->priceWithoutCopper = $priceWithoutCopper;
 
         return $this;
     }
 
-    public function setProductionDelay(int $productionDelay): self {
+    final public function setProductionDelay(int $productionDelay): self {
         $this->productionDelay = $productionDelay;
 
         return $this;
     }
 
-    public function setTransfertPriceSupplies(float $transfertPriceSupplies): self {
+    final public function setTransfertPriceSupplies(float $transfertPriceSupplies): self {
         $this->transfertPriceSupplies = $transfertPriceSupplies;
 
         return $this;
     }
 
-    public function setTransfertPriceWork(float $transfertPriceWork): self {
+    final public function setTransfertPriceWork(float $transfertPriceWork): self {
         $this->transfertPriceWork = $transfertPriceWork;
 
         return $this;
     }
 
-    public function setWeight(Measure $weight): self {
+    final public function setWeight(Measure $weight): self {
         $this->weight = $weight;
 
         return $this;

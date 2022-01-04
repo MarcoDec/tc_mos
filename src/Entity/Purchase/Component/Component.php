@@ -13,6 +13,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Purchase\Component\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Management\Unit;
+use App\Entity\Quality\Reception\ComponentReference;
 use App\Entity\Traits\CodeTrait;
 use App\Entity\Traits\NameTrait;
 use App\Entity\Traits\RefTrait;
@@ -325,6 +326,14 @@ class Component extends Entity {
     ]
     private ?int $quality = null;
 
+    /** @var Collection<int, ComponentReference> */
+    #[
+        ApiProperty(description: 'References'),
+        ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items'),
+        Serializer\Groups(['read:component'])
+    ]
+    private Collection $references;
+
     #[
         ApiProperty(description: 'Unité', readableLink: false, example: '/api/units/1'),
         ORM\ManyToOne(targetEntity: Unit::class),
@@ -346,12 +355,22 @@ class Component extends Entity {
         $this->copperWeight = new Measure();
         $this->children = new ArrayCollection();
         $this->currentPlace = new CurrentPlace();
+        $this->references = new ArrayCollection();
     }
 
-    public function addChild(self $child): self {
+    final public function addChild(self $child): self {
         if (!$this->children->contains($child)) {
             $this->children[] = $child;
             $child->setParent($this);
+        }
+
+        return $this;
+    }
+
+    final public function addReference(ComponentReference $references): self {
+        if (!$this->references->contains($references)) {
+            $this->references[] = $references;
+            $references->addItem($this);
         }
 
         return $this;
@@ -432,6 +451,13 @@ class Component extends Entity {
         return $this->quality;
     }
 
+    /**
+     * @return Collection<int, ComponentReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
     final public function getUnit(): ?Unit {
         return $this->unit;
     }
@@ -446,6 +472,14 @@ class Component extends Entity {
 
     final public function isNeedGasket(): bool {
         return $this->needGasket;
+    }
+
+    final public function removeReference(ComponentReference $references): self {
+        if ($this->references->removeElement($references)) {
+            $references->removeItem($this);
+        }
+
+        return $this;
     }
 
     final public function setCopperWeight(Measure $copperWeight): self {

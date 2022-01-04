@@ -9,8 +9,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
+use App\Entity\Quality\Reception\ProductReference;
 use App\Filter\OldRelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -96,11 +98,48 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
+    /** @var Collection<int, ProductReference> */
+    #[
+        ApiProperty(description: 'References'),
+        ORM\ManyToMany(targetEntity: ProductReference::class, mappedBy: 'families'),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
+    private Collection $references;
+
+    public function __construct() {
+        parent::__construct();
+        $this->references = new ArrayCollection();
+    }
+
+    final public function addReference(ProductReference $references): self {
+        if (!$this->references->contains($references)) {
+            $this->references[] = $references;
+            $references->addFamily($this);
+        }
+
+        return $this;
+    }
+
     #[
         ApiProperty(description: 'Icône', example: '/uploads/product-families/1.jpg'),
         Serializer\Groups(['read:file'])
     ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
+    }
+
+    /**
+     * @return Collection<int, ProductReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
+    final public function removeReference(ProductReference $references): self {
+        if ($this->references->removeElement($references)) {
+            $references->removeFamily($this);
+        }
+
+        return $this;
     }
 }
