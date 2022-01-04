@@ -2,6 +2,7 @@ doctrine:
   dbal:
     types:
       employee_current_place: App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType
+      type: App\Doctrine\Type\Type
     url: '%env(resolve:DATABASE_URL)%'
     wrapper_class: App\Doctrine\DBAL\Connection
   orm:
