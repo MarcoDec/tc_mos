@@ -19,10 +19,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial'
+        'name' => 'partial',
+        'ip' => 'partial'
     ]),
     ApiFilter(filterClass: OrderFilter::class, properties: [
-        'name',
+        'name', 'ip'
     ]),
     ApiFilter(filterClass: RelationFilter::class, properties: [
         'company' => 'name',
