@@ -115,7 +115,7 @@ class Unit extends Entity {
         $this->children = new ArrayCollection();
     }
 
-    final public function addChildren(self $children): self {
+    final public function addChild(self $children): self {
         if (!$this->children->contains($children)) {
             $this->children->add($children);
             $children->setParent($this);
@@ -139,8 +139,9 @@ class Unit extends Entity {
     }
 
     #[Pure]
-    final public function getDistance(self $unit): float {
-        return $this->getDistanceBase() * $unit->getDistanceBase();
+    final public function getConvertorDistance(self $unit): float {
+        $distance = $this->getDistance($unit);
+        return $this->isLessThan($unit) ? 1 / $distance : $distance;
     }
 
     final public function getParent(): ?self {
@@ -156,7 +157,7 @@ class Unit extends Entity {
         return $this->getLess($unit) === $this;
     }
 
-    final public function removeChildren(self $children): self {
+    final public function removeChild(self $children): self {
         if ($this->children->contains($children)) {
             $this->children->removeElement($children);
             if ($children->getParent() === $this) {
@@ -191,6 +192,11 @@ class Unit extends Entity {
             ->flatten()
             ->unique->getId()
             ->values();
+    }
+
+    #[Pure]
+    private function getDistance(self $unit): float {
+        return $this->getDistanceBase() * $unit->getDistanceBase();
     }
 
     private function getDistanceBase(): float {

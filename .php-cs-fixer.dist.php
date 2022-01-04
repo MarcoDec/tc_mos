@@ -4,11 +4,14 @@ return (new PhpCsFixer\Config())
     ->setFinder(
         PhpCsFixer\Finder::create()
             ->exclude([
+                '.git',
+                '.idea',
                 'assets',
                 'docker',
                 'node_modules',
                 'public/build',
                 'public/bundles',
+                'public/uploads',
                 'templates',
                 'var',
                 'vendor',

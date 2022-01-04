@@ -4,6 +4,7 @@ parameters:
         - dev
         - lib
         - src
+        - tests
         - utils
     scanDirectories:
         - var/cache/dev/Symfony/Config

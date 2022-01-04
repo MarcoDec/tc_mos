@@ -79,23 +79,40 @@ class Measure {
             $this->value = $this->value + $measure->convert($this->unit)->value;
         } else {
             $measure->add($this);
+            $this->code = $measure->code;
+            $this->denominator = $measure->denominator;
+            $this->denominatorUnit = $measure->denominatorUnit;
+            $this->unit = $measure->unit;
+            $this->value = $measure->value;
         }
         return $this;
     }
 
-    final public function convert(Unit $unit): self {
+    final public function convert(Unit $unit, ?Unit $denominator = null): self {
         if ($this->unit === null) {
             throw new LogicException('Unit not loaded.');
         }
         if (!$this->unit->has($unit)) {
             throw new LogicException("Units {$this->unit->getCode()} and {$unit->getCode()} aren't on the same family.");
         }
-        if ($this->denominator !== null && $this->denominatorUnit === null) {
-            throw new LogicException('Unit not loaded.');
-        }
+        $this->value *= $this->unit->getConvertorDistance($unit);
         $this->code = $unit->getCode();
         $this->unit = $unit;
-        $this->value *= $this->unit->getDistance($unit);
+
+        if ($denominator !== null) {
+            if ($this->denominator === null) {
+                throw new LogicException('No denominator.');
+            }
+            if ($this->denominatorUnit === null) {
+                throw new LogicException('Unit not loaded.');
+            }
+            if (!$this->denominatorUnit->has($denominator)) {
+                throw new LogicException("Units {$this->denominatorUnit->getCode()} and {$denominator->getCode()} aren't on the same family.");
+            }
+            $this->value *= 1 / $this->denominatorUnit->getConvertorDistance($denominator);
+            $this->denominator = $denominator->getCode();
+            $this->denominatorUnit = $denominator;
+        }
         return $this;
     }
 
