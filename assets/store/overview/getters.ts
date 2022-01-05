@@ -1,8 +1,8 @@
 /*eslint linebreak-style: ["error", "windows"]*/
 import type {State} from '.'
-const month = 0
+const x = 0
 export const getters = {
     all: (state: State): [string, number][] => Object.entries(state),
-    count: (state: State): number => Object.values(state).reduce((sum, current) => current + sum, month)
+    count: (state: State): number => Object.values(state).reduce((sum, current) => current + sum, x)
 }
 export type Getters = typeof getters
