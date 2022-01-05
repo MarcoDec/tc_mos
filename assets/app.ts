@@ -29,7 +29,7 @@ async function mount(): Promise<void> {
                 security.username = user.username
         }
     }
-    const store = generateStore(security)
+    const store = generateStore(security, {accepted: 30, blocked: 10, draft: 20})
     app.use(store)
 
     // eslint-disable-next-line consistent-return
