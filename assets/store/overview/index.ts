@@ -1,4 +1,3 @@
-/*eslint linebreak-style: ["error", "windows"]*/
 import type {Actions} from './actions'
 import type {Getters} from './getters'
 import type {Module} from 'vuex'

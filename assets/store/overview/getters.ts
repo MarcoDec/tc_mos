@@ -1,4 +1,3 @@
-/*eslint linebreak-style: ["error", "windows"]*/
 import type {State} from '.'
 const x = 0
 export const getters = {
