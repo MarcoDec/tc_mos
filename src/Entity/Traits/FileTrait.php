@@ -9,15 +9,15 @@ trait FileTrait {
     #[Serializer\Groups(['write:file'])]
     private ?File $file = null;
 
-    final public function getFile(): ?File {
+    public function getFile(): ?File {
         return $this->file;
     }
 
-    public function getFilepath(): ?string {
+    function getFilepath(): ?string {
         return $this->file?->getPathname();
     }
 
-    final public function setFile(?File $file): self {
+    public function setFile(?File $file): self {
         $this->file = $file;
         return $this;
     }

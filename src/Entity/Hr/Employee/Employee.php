@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Hr\Employee\Attachment\EmployeeAttachment;
 use App\Entity\Traits\NameTrait;
 use App\Repository\Hr\Employee\EmployeeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -43,6 +44,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     use NameTrait;
 
+    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: EmployeeAttachment::class)]
+    private Collection $attachments;
+
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Super'),
         Assert\NotBlank,
@@ -74,6 +78,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     final public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
+        $this->attachments = new ArrayCollection();
     }
 
     final public function addApiToken(Token $apiToken): self {
@@ -192,4 +197,32 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         $this->username = $username;
         return $this;
     }
+
+   /**
+    * @return ArrayCollection|Collection
+    */
+   public function getAttachments(): ArrayCollection|Collection
+   {
+      return $this->attachments;
+   }
+
+   /**
+    * @param ArrayCollection|Collection $attachments
+    */
+   public function setAttachments(ArrayCollection|Collection $attachments): void
+   {
+      $this->attachments = $attachments;
+   }
+
+   /**
+    * @param EmployeeAttachment $attachment
+    * @return $this
+    */
+   public function addAttachment(EmployeeAttachment $attachment): self {
+      if (!$this->attachments->contains($attachment)) {
+         $this->attachments->add($attachment);
+      }
+      return $this;
+   }
+
 }

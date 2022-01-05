@@ -2,10 +2,14 @@
 
 namespace App\Entity\Hr;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Management\Parameter as BaseParameter;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[
+   ORM\Entity,
+   ApiResource
+]
 class Parameter extends BaseParameter {
     public const EMPLOYEE_DIRECTORIES = 'EMPLOYEE_DIRECTORIES';
     public const EMPLOYEE_EXPIRATION_DIRECTORIES = 'EMPLOYEE_EXPIRATION_DIRECTORIES';
