@@ -105,7 +105,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableComponentReferenceValue.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'ComponentReferenceValue-list',
             path: '/ComponentReferenceValue/list',
             props: {
@@ -216,7 +216,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableAttribut.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'attribute-list',
             path: '/Attribute/list',
             props: {
@@ -265,7 +265,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableColor.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'color-list',
             path: '/color/list',
             props: {
@@ -303,7 +303,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectinTableInvoiceTimeDue.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'invoiceTimeDue-list',
             path: '/InvoiceTimeDue/list',
             props: {
@@ -350,7 +350,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePrinter.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'Printer-list',
             path: '/Printer/list',
             props: {
@@ -388,7 +388,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableUnit.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'Unit-list',
             path: '/Unit/list',
             props: {
@@ -417,7 +417,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableVatMessage.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'VatMessage-list',
             path: '/VatMessage/list',
             props: {
@@ -446,7 +446,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableCarrier.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'Carrier-list',
             path: '/Carrier/list',
             props: {
@@ -530,7 +530,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableIncoterms.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'Incoterms-list',
             path: '/Incoterms/list',
             props: {
@@ -568,7 +568,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableZone.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'Zone-list',
             path: '/Zone/list',
             props: {
@@ -588,7 +588,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableGroup.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'Group-list',
             path: '/Group/list',
             props: {
@@ -636,7 +636,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableRejectType.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'RejectType-list',
             path: '/RejectType/list',
             props: {
@@ -665,7 +665,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableQualityType.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'QualityType-list',
             path: '/QualityType/list',
             props: {
@@ -694,7 +694,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableOutTrainer.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'OutTrainer-list',
             path: '/OutTrainer/list',
             props: {
@@ -787,7 +787,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableEmployeeEventType.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'EmployeeEventType-list',
             path: '/EmployeeEventType/list',
             props: {
@@ -816,7 +816,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableTimeSlot.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'TimeSlot-list',
             path: '/TimeSlot/list',
             props: {
@@ -872,7 +872,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableEngineEvent.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'EngineEvent-list',
             path: '/EngineEvent/list',
             props: {
@@ -940,7 +940,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableITRequest.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'ITRequest-list',
             path: '/ITRequest/list',
             props: {
@@ -1006,7 +1006,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTableOperationType.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
             name: 'OperationType-list',
             path: '/OperationType/list',
             props: {

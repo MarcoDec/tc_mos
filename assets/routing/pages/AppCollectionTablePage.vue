@@ -16,12 +16,12 @@
             prix: null,
             temps: null,
             type: null,
-            update: false
+            update: true
         },
         {
             cadence: 100,
             code: 'AS 02',
-            delete: false,
+            delete: true,
             limite: 'Mise En Bornier',
             name: 'Mise en bornnier',
             prix: null,
