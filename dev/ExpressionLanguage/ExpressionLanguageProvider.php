@@ -29,7 +29,8 @@ final class ExpressionLanguageProvider implements ExpressionFunctionProviderInte
                 name: 'engine_group',
                 compiler: static fn (int $id): string => sprintf('%1$d == 1 ? \'workstation\' : \'tool\'', $id),
                 evaluator: static fn (array $args, int $id): string => $id == 1 ? 'workstation' : 'tool'
-            )
+            ),
+            ExpressionFunction::fromPhp('floatval')
         ];
     }
 }

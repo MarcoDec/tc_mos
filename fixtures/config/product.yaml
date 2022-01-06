@@ -1,8 +1,9 @@
 App\Entity\Project\Product\Product:
   deleted: statut
   properties:
-#    conditionnement:
-#      new_name: packaging_value
+    conditionnement:
+      force_value: 'floatval(conditionnement)'
+      new_name: packaging_value
     designation:
       new_name: name
     gestion_cu:
