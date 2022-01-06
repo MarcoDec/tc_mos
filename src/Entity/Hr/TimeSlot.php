@@ -30,7 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer une plage horaire',
                     'summary' => 'Créer une plage horaire',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -38,18 +39,25 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une plage horaire',
                     'summary' => 'Supprime une plage horaire',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une plage horaire',
+                    'summary' => 'Récupère une plage horaire',
+                ],
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une plage horaire',
                     'summary' => 'Modifie une plage horaire',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:time-slot', 'write:name'],
