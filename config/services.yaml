@@ -59,7 +59,6 @@ services:
 
   App\EventListener\Project\Product\FamilyListener:
     autoconfigure: false
-    arguments: [ '@doctrine.orm.entity_manager' ]
     tags:
       - entity: App\Entity\Project\Product\Family
         event: postLoad
@@ -76,6 +75,7 @@ services:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
       $dir: '%kernel.project_dir%/public'
+    autoconfigure: false
 
   App\OpenApi\OpenApiFactory:
     arguments:

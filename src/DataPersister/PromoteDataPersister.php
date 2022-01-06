@@ -6,10 +6,17 @@ use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Entity;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Workflow\Registry;
 
 final class PromoteDataPersister implements ContextAwareDataPersisterInterface {
-    public function __construct(private EntityManagerInterface $em, private Registry $registry) {
+    public function __construct(
+        private EntityManagerInterface $em,
+        private Registry $registry,
+        private RequestStack $stack
+    ) {
     }
 
     /**
@@ -17,23 +24,15 @@ final class PromoteDataPersister implements ContextAwareDataPersisterInterface {
      * @param mixed[] $context
      */
     public function persist($data, array $context = []): Entity {
-        $this->em->detach($data);
-        /** @var class-string $className */
-        $className = $context['identifiers']['id'][0];
-        /** @var mixed $returnObject */
-        $returnObject = $this->em->getRepository($className)->findOneBy(['id' => $data->getId()]);
-
-        if (null !== $returnObject) {
-            $workflow = $this->registry->get($returnObject);
-
-            if ($workflow->can($returnObject, $data->getPlace())) {
-                $workflow->apply($returnObject, $data->getPlace());
-
-                $this->em->persist($returnObject);
-                $this->em->flush();
-            } else {
-                throw new Exception("This entity cannot be promoted to '{$data->getPlace()}'");
-            }
+        if (empty($transition = $this->getCurrentRequest()->attributes->get('transition'))) {
+            throw new BadRequestException('Missing "transition" parameter.');
+        }
+        $workflow = $this->registry->get($data);
+        if ($workflow->can($data, $transition)) {
+            $workflow->apply($data, $transition);
+            $this->em->flush();
+        } else {
+            throw new BadRequestException("Transition \"$transition\" can't be applied.");
         }
         return $data;
     }
@@ -54,5 +53,12 @@ final class PromoteDataPersister implements ContextAwareDataPersisterInterface {
             && isset($context['item_operation_name'])
             && $context['item_operation_name'] === 'promote'
             && $this->registry->has($data);
+    }
+
+    private function getCurrentRequest(): Request {
+        if (empty($request = $this->stack->getCurrentRequest())) {
+            throw new Exception('Can\'t access to current request.');
+        }
+        return $request;
     }
 }

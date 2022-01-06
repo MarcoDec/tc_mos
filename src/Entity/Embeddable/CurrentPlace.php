@@ -4,20 +4,28 @@ namespace App\Entity\Embeddable;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Traits\NameTrait;
-use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
-abstract class AbstractCurrentPlace {
+abstract class CurrentPlace {
     use NameTrait;
 
+    public const TR_BLOCK = 'block';
+    public const TR_DISABLE = 'disable';
+    public const TR_PARTIALLY_UNLOCK = 'partially_unlock';
+    public const TR_PARTIALLY_VALIDATE = 'partially_validate';
+    public const TR_SUBMIT_VALIDATION = 'submit_validation';
+    public const TR_UNLOCK = 'unlock';
+    public const TR_VALIDATE = 'validate';
+
     #[
-        ORM\Column(type: 'datetime', nullable: false),
-        Serializer\Groups(['read:current_place', 'write:current_place'])
+        ORM\Column(type: 'datetime_immutable', nullable: false),
+        Serializer\Groups(['read:current-place'])
     ]
-    protected ?DateTime $date;
+    protected ?DateTimeImmutable $date;
 
     #[
         ApiProperty(description: 'Nom', required: true),
@@ -28,7 +36,7 @@ abstract class AbstractCurrentPlace {
     protected ?string $name = null;
 
     public function __construct(?string $name = null) {
-        $this->date = new DateTime();
+        $this->date = new DateTimeImmutable();
         $this->name = $name;
     }
 
@@ -38,12 +46,12 @@ abstract class AbstractCurrentPlace {
 
     abstract public function getTrafficLight(): int;
 
-    final public function getDate(): ?DateTime {
+    final public function getDate(): ?DateTimeImmutable {
         return $this->date;
     }
 
-    final public function setDate(?DateTime $date): self {
-        $this->date = $date;
-        return $this;
+    final public function setName(?string $name): void {
+        $this->name = $name;
+        $this->date = new DateTimeImmutable();
     }
 }

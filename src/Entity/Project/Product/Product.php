@@ -19,6 +19,7 @@ use App\Entity\Logistics\Incoterms;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\NameTrait;
 use App\Entity\Traits\RefTrait;
+use App\Entity\Traits\WorkflowTrait;
 use App\Filter\RelationFilter;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -52,7 +53,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les produits',
                 ],
                 'normalization_context' => [
-                    'groups' => ['read:product:collection', 'read:current_place']
+                    'groups' => ['read:product:collection', 'read:current-place']
                 ]
             ],
             'post' => [
@@ -115,14 +116,21 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
             'promote' => [
                 'method' => 'PATCH',
-                'path' => '/products/{id}/promote',
+                'path' => '/products/{id}/promote/{transition}',
                 'controller' => PlaceholderAction::class,
                 'openapi_context' => [
                     'description' => 'Passer un produit à un nouveau statut',
+                    'requestBody' => ['content' => ['application/merge-patch+json' => []]],
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
                     'summary' => 'Passer un produit à un nouveau statut',
-                ],
-                'denormalization_context' => [
-                    'groups' => ['write:product:promote']
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
             ]
@@ -131,11 +139,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:product', 'write:name', 'write:family', 'write:incoterms', 'write:measure', 'write:current_place', 'write:ref'],
+            'groups' => ['write:product', 'write:name', 'write:family', 'write:incoterms', 'write:measure', 'write:ref'],
             'openapi_definition_name' => 'Product-write'
         ],
         normalizationContext: [
-            'groups' => ['read:product', 'read:id', 'read:name', 'read:family', 'read:incoterms', 'read:measure', 'read:current_place', 'read:ref'],
+            'groups' => ['read:product', 'read:id', 'read:name', 'read:family', 'read:incoterms', 'read:measure', 'read:current-place', 'read:ref'],
             'openapi_definition_name' => 'Product-read'
         ],
     ),
@@ -146,6 +154,7 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
     use NameTrait, RefTrait {
         RefTrait::__toString insteadof NameTrait;
     }
+    use WorkflowTrait;
 
     public const KIND_EI = 'EI';
     public const KIND_PROTOTYPE = 'Prototype';
@@ -164,17 +173,13 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
     ]
     protected Measure $autoDuration;
 
+    /** @var CurrentPlace */
     #[
         ApiProperty(description: 'Statut'),
         ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'read:product:collection'])
+        Serializer\Groups(['read:current-place', 'read:product:collection'])
     ]
-    protected CurrentPlace $currentPlace;
-
-    #[
-        ApiProperty(description: 'Place', required: true, example: 'disabled'),
-    ]
-    protected ?string $currentPlaceName = null;
+    protected $currentPlace;
 
     #[
         ApiProperty(description: 'Volume prévisionnel', example: '2000'),
@@ -422,14 +427,6 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this->children;
     }
 
-    public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
-    public function getCurrentPlaceName(): ?string {
-        return $this->currentPlace->getName() ?? null;
-    }
-
     public function getCustomsCode(): ?string {
         return $this->customsCode;
     }
@@ -546,22 +543,6 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
                 $child->setParent(null);
             }
         }
-
-        return $this;
-    }
-
-    public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
-
-        return $this;
-    }
-
-    public function setCurrentPlaceName(string $currentPlaceName): self {
-        $currentPlace = new CurrentPlace();
-        $currentPlace->setName($currentPlaceName);
-
-        $this->currentPlaceName = $currentPlaceName;
-        $this->currentPlace = $currentPlace;
 
         return $this;
     }
