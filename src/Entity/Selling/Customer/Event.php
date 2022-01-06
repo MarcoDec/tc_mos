@@ -2,16 +2,16 @@
 
 namespace App\Entity\Selling\Customer;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Event as AbstractEvent;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiProperty;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use ApiPlatform\Core\Annotation\ApiResource;
 
 #[ApiResource(
-        description: 'Evenement',
-        shortName: 'CustomerEvent' 
-    ),
+    description: 'Evenement',
+    shortName: 'CustomerEvent'
+),
     ORM\Entity
 ]
 class Event extends AbstractEvent {

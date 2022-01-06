@@ -4,7 +4,6 @@ namespace App\Entity\Embeddable\Selling\Customer;
 
 use App\Entity\Embeddable\AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
-use DateTime;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {

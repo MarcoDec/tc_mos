@@ -2,7 +2,6 @@
 
 namespace App\Serializer\Normalizer;
 
-
 use App\Entity\Selling\Customer\Customer;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
