@@ -3,15 +3,16 @@
 namespace App\Entity\Hr\Employee;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\TimeSlot;
+use App\Entity\Management\Society\Company;
 use App\Entity\Traits\CompanyTrait;
 use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Embeddable\Hr\Employee\Roles;
 
 #[
     ApiResource(
@@ -25,8 +26,8 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer événement',
-                    'summary' => 'Créer événement',
+                    'description' => 'Créer une équipe',
+                    'summary' => 'Créer une équipe',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
@@ -34,34 +35,38 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime événement',
-                    'summary' => 'Supprime événement',
+                    'description' => 'Supprime une équipe',
+                    'summary' => 'Supprime une équipe',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une équipe',
+                    'summary' => 'Récupère une équipe',
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie événement',
-                    'summary' => 'Modifie événement',
+                    'description' => 'Modifie une équipe',
+                    'summary' => 'Modifie une équipe',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
-        shortName: 'CompanyEvent',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:company', 'write:event', ' write:company-event', 'write:name', 'write:event_date', 'write:company-event'],
-            'openapi_definition_name' => 'CompanyEvent-write'
+            'groups' => ['write:company', 'write:team', 'write:name', 'write:time-slot'],
+            'openapi_definition_name' => 'Team-write'
         ],
         normalizationContext: [
-            'groups' => ['read:event', 'read:id', 'read:company-event', 'read:company', 'read:name', ' write:company-event', 'read:event_date'],
-            'openapi_definition_name' => 'CompanyEvent-read'
+            'groups' => ['read:company', 'read:id', 'read:name', 'read:time-slot', 'read:team'],
+            'openapi_definition_name' => 'Team-read'
         ],
     ),
-    ORM\Entity,
-    ORM\Table('company_event')
+    ORM\Entity
 ]
 class Team extends Entity {
     use CompanyTrait;
@@ -75,7 +80,7 @@ class Team extends Entity {
     protected ?Company $company;
 
     #[
-        ApiProperty(description: 'Nom', required: true),
+        ApiProperty(description: 'Nom', required: true, example: 'Groupe 1'),
         Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
@@ -85,7 +90,7 @@ class Team extends Entity {
     #[
         ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/time-slots/2'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: TimeSlot::class),
-        Serializer\Groups(['read:team', 'write:team'])
+        Serializer\Groups(['read:time-slot', 'write:time-slot'])
     ]
     private ?TimeSlot $timeSlot;
 

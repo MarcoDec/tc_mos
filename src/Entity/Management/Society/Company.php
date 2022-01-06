@@ -43,7 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Supprime une compagnie',
                     'summary' => 'Supprime une compagnie',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
@@ -67,11 +67,11 @@ use Symfony\Component\Validator\Constraints as Assert;
                         ]
                     ]]
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
             ],
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:company', 'write:name', 'write:society', 'write:currency', 'write:event'],
