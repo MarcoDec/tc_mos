@@ -31,7 +31,7 @@ abstract class CurrentPlace {
         ApiProperty(description: 'Nom', required: true),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:current-place'])
     ]
     protected ?string $name = null;
 

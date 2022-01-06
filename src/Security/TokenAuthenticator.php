@@ -20,7 +20,6 @@ use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CustomCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
-use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 
 final class TokenAuthenticator extends AbstractAuthenticator {
     public function __construct(
@@ -30,7 +29,7 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     ) {
     }
 
-    public function authenticate(Request $request): PassportInterface {
+    public function authenticate(Request $request): Passport {
         return $this->apiAuthenticate(new ApiRequest($request));
     }
 
@@ -46,7 +45,7 @@ final class TokenAuthenticator extends AbstractAuthenticator {
         return $this->apiSupports(new ApiRequest($request));
     }
 
-    private function apiAuthenticate(ApiRequest $request): PassportInterface {
+    private function apiAuthenticate(ApiRequest $request): Passport {
         $this->logger->info(__METHOD__);
         if (!empty($passport = $this->apiTokenAuthenticate($request))) {
             return $passport;
@@ -57,7 +56,7 @@ final class TokenAuthenticator extends AbstractAuthenticator {
         throw new CustomUserMessageAuthenticationException('Authentification hors API');
     }
 
-    private function apiCredentialsAuthenticate(ApiRequest $request): ?PassportInterface {
+    private function apiCredentialsAuthenticate(ApiRequest $request): ?Passport {
         $this->logger->info(__METHOD__);
         if ($request->hasCredentials()) {
             $credentials = $request->getCredentials();
@@ -87,7 +86,7 @@ final class TokenAuthenticator extends AbstractAuthenticator {
         return $request->hasCredentials();
     }
 
-    private function apiTokenAuthenticate(ApiRequest $request): ?PassportInterface {
+    private function apiTokenAuthenticate(ApiRequest $request): ?Passport {
         $this->logger->info(__METHOD__);
         if ($request->hasAuthorization()) {
             $this->logger->info(__METHOD__.': hasAuthorization');
