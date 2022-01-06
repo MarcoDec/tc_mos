@@ -1,0 +1,43 @@
+App\Entity\Project\Product\Product:
+  deleted: statut
+  properties:
+#    conditionnement:
+#      new_name: packaging_value
+    designation:
+      new_name: name
+    gestion_cu:
+      new_name: managed_copper
+    indice:
+      new_name: index
+    indice_interne:
+      new_name: internal_index
+    info_public:
+      new_name: notes
+    livraison_minimum:
+      new_name: min_delivery_value
+    min_prod_quantity:
+      new_name: min_prod_value
+    price:
+      new_name: price_value
+    price_without_cu:
+      new_name: price_without_copper_value
+    production_delay:
+      new_name: production_delay_value
+    ref:
+      new_name: ref
+    stock_minimum:
+      new_name: min_stock_value
+    temps_auto:
+      new_name: auto_duration_value
+    temps_manu:
+      new_name: manual_duration_value
+    transfert_price_supplies:
+      new_name: transfert_price_supplies_value
+    transfert_price_work:
+      new_name: transfert_price_work_value
+    typeconditionnement:
+      new_name: packaging_kind
+    volume_previsionnel:
+      new_name: forecast_volume_value
+    weight:
+      new_name: weight_value

@@ -29,7 +29,7 @@ class Measure {
 
     #[
         ApiProperty(description: 'Valeur', example: '2.66'),
-        ORM\Column,
+        ORM\Column(options: ['default' => 0]),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private float $value = 0;

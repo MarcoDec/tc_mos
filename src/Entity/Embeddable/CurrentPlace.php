@@ -22,7 +22,7 @@ abstract class CurrentPlace {
     public const TR_VALIDATE = 'validate';
 
     #[
-        ORM\Column(type: 'datetime_immutable', nullable: false),
+        ORM\Column(type: 'datetime_immutable', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP']),
         Serializer\Groups(['read:current-place'])
     ]
     protected ?DateTimeImmutable $date;
