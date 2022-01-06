@@ -2,14 +2,13 @@
 
 namespace App\Serializer\Normalizer;
 
-
-use App\Entity\Selling\Customer\Customer;
+use App\Entity\Management\Society\Company;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class CompanyNormalmizer implements CacheableSupportsMethodInterface, NormalizerInterface {
+class CustomerNormalizer implements CacheableSupportsMethodInterface, NormalizerInterface {
     public function __construct(private ObjectNormalizer $normalizer, private RequestStack $requestStack) {
     }
 
@@ -40,36 +39,21 @@ class CompanyNormalmizer implements CacheableSupportsMethodInterface, Normalizer
                         break;
                     case 'main':
                         $returnedData = [
-                            'notes' => $data['notes'] ?? null,
+                            'address' => $data['address'] ?? null,
                         ];
                         break;
-                    case 'quality':
+                    case 'selling':
                         $returnedData = [
-                            'ppmRate' => $data['ppmRate'] ?? null,
-                            'qualityPortal' => $data['qualityPortal'] ?? null
-                        ];
-                        break;
-                    case 'logistics':
-                        $returnedData = [
-                            'nbDelivery' => $data['nbDelivery'] ?? null,
-                            'incoterms' => $data['incoterms'] ?? null,
-                            'conveyanceDuration' => $data['conveyanceDuration'] ?? null,
-                            'outstandingMax' => $data['outstandingMax'] ?? null,
-                            'orderMin' => $data['orderMin'] ?? null,
-                            'logisticsPortal' => $data['logisticsPortal'] ?? null,
+                            'engineHourRate' => $data['engineHourRate'] ?? null,
+                            'handlingHourRate' => $data['handlingHourRate'] ?? null,
+                            'managementFees' => $data['managementFees'] ?? null,
+                            'generalMargin' => $data['generalMargin'] ?? null,
                         ];
                         break;
                     case 'logistics':
                         $returnedData = [
-                            'accountingAccount' => $data['accountingAccount'] ?? null,
-                            'paymentTerms' => $data['paymentTerms'] ?? null,
-                            'forceVat' => $data['forceVat'] ?? null,
-                            'vat' => $data['vat'] ?? null,
-                            'vatMessage' => $data['vatMessage'] ?? null,
-                            'nbInvoices' => $data['nbInvoices'] ?? null,
-                            'invoiceMin' => $data['invoiceMin'] ?? null,
-                            'accountingPortal' => $data['accountingPortal'] ?? null,
-                            'invoiceByEmail' => $data['invoiceByEmail'] ?? null,
+                            'deliveryTime' => $data['deliveryTime'] ?? null,
+                            'deliveryTimeOpenDays' => $data['deliveryTimeOpenDays'] ?? null,
                         ];
                         break;
                     default:
@@ -84,6 +68,6 @@ class CompanyNormalmizer implements CacheableSupportsMethodInterface, Normalizer
     }
 
     public function supportsNormalization($data, $format = null): bool {
-        return $data instanceof Customer;
+        return $data instanceof Company;
     }
 }

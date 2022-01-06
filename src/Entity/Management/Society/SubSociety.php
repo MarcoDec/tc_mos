@@ -39,7 +39,7 @@ abstract class SubSociety extends Entity {
         ApiProperty(description: 'Société', required: true, readableLink: false, example: '/api/societies/2'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Society::class),
         Assert\NotBlank,
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['read:subsociety', 'write:subsociety', 'read:society', 'write:society', 'write:customer_society'])
     ]
     private ?Society $society;
 

@@ -72,7 +72,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:society', 'write:name', 'write:address', 'write:incoterms', 'write:copper'],
+            'groups' => ['write:society', 'write:name', 'write:address', 'write:incoterms', 'write:copper', 'write:customer_society'],
             'openapi_definition_name' => 'Society-write'
         ],
         normalizationContext: [
@@ -105,7 +105,7 @@ class Society extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['read:society', 'write:society', 'write:customer_society'])
     ]
     private Address $address;
 
@@ -133,7 +133,7 @@ class Society extends Entity {
     #[
         ApiProperty(description: 'Incoterms', required: false),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms', 'write:customer_society'])
     ]
     private ?Incoterms $incoterms;
 
@@ -163,7 +163,7 @@ class Society extends Entity {
         Assert\NotNull,
         Assert\PositiveOrZero,
         ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint'),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['read:society', 'write:society', 'write:customer_society'])
     ]
     private ?int $ppmRate = 10;
 
@@ -178,7 +178,7 @@ class Society extends Entity {
         ApiProperty(description: 'TVA', required: false, example: 'FR'),
         Assert\Length(max: 255),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['read:society', 'write:society', 'write:customer_society'])
     ]
     private ?string $vat = null;
 
@@ -186,7 +186,7 @@ class Society extends Entity {
         ApiProperty(description: 'Site internet', required: false, example: 'https://www.societe.fr'),
         Assert\Url,
         ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['read:society', 'write:society', 'write:customer_society'])
     ]
     private ?string $web;
 
