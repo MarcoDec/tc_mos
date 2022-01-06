@@ -33,7 +33,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un délai de paiement des factures',
                     'summary' => 'Créer un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -41,7 +42,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un délai de paiement des factures',
                     'summary' => 'Supprime un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
@@ -53,11 +55,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Modifie un délai de paiement des factures',
                     'summary' => 'Modifie un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:invoice-time-due', 'write:name'],
