@@ -60,6 +60,14 @@ final class EntityConfig {
         return $this->metadata->getName();
     }
 
+    /**
+     * @return string[]
+     */
+    public function getDependencies(): array {
+        /** @phpstan-ignore-next-line */
+        return collect($this->properties)->map->getOldRef()->filter()->unique()->values()->all();
+    }
+
     public function getId(int $id): ?int {
         return $this->ids[$id] ?? null;
     }
@@ -77,6 +85,9 @@ final class EntityConfig {
             $this->ids[(int) ($entity['id'])] = $id;
             foreach ($this->properties as $property => $config) {
                 $value = !$config->isNew() ? $entity[$property] : null;
+                if (is_string($value)) {
+                    $value = trim($value);
+                }
                 if ($config->isCountry()) {
                     $value = $this->configurations->getCountry($value);
                 }
@@ -94,12 +105,11 @@ final class EntityConfig {
 
     public function toSQL(Connection $connection): string {
         $columns = $this->getColumns();
-        $sql = "INSERT INTO {$this->metadata->getTableName()} ({$columns->implode(', ')})";
         $sqlEntities = collect();
         foreach ($this->entities as $entity) {
             $sqlEntity = collect();
             foreach ($columns as $column) {
-                $sqlEntity[] = $connection->quote($entity[$column]);
+                $sqlEntity[] = $entity[$column] === null || $entity[$column] === '' ? 'NULL' : $connection->quote($entity[$column]);
             }
             $sqlEntities->push("({$sqlEntity->implode(', ')})");
         }

@@ -5,6 +5,7 @@ namespace App\Fixtures;
 use App\ExpressionLanguage\ExpressionLanguageProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Tightenco\Collect\Support\Collection;
 
 final class Configurations {
     /** @var array<string, EntityConfig> */
@@ -57,13 +58,26 @@ final class Configurations {
         return $this->countries[$id] ?? null;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getDependencies(string $name): array {
+        return $this->configurations[$name]->getDependencies();
+    }
+
     public function getId(string $name, int $id): ?int {
         return $this->configurations[$name]->getId($id);
     }
 
     public function persist(): void {
-        foreach ($this->configurations as $config) {
-            $this->em->getConnection()->executeStatement($config->toSQL($this->em->getConnection()));
+        $processed = collect();
+        $configurations = collect($this->configurations);
+        while ($configurations->isNotEmpty()) {
+            foreach ($configurations as $current => $config) {
+                $this->persistEntities($config, $current, $processed);
+            }
+
+            $configurations = $configurations->filter(static fn (EntityConfig $config, string $name): bool => $processed->doesntContain($name));
         }
     }
 
@@ -87,5 +101,19 @@ final class Configurations {
             data: $data,
             count: $this->count($this->configurations[$name]->getClassName())
         );
+    }
+
+    /**
+     * @param Collection<int, string> $processed
+     */
+    private function persistEntities(EntityConfig $config, string $current, Collection $processed): void {
+        $dependencies = $config->getDependencies();
+        foreach ($dependencies as $dependency) {
+            if (!$processed->contains($dependency) && $dependency !== $current) {
+                return;
+            }
+        }
+        $this->em->getConnection()->executeStatement($config->toSQL($this->em->getConnection()));
+        $processed->push($current);
     }
 }
