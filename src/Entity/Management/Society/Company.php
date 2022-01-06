@@ -9,6 +9,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Management\Currency;
+use App\Entity\Management\Society\Company\Event;
 use App\Entity\Quality\Reception\Reference;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -73,11 +74,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:company', 'write:name', 'write:society', 'write:currency'],
+            'groups' => ['write:company', 'write:name', 'write:society', 'write:currency', 'write:event'],
             'openapi_definition_name' => 'Company-write'
         ],
         normalizationContext: [
-            'groups' => ['read:company', 'read:name', 'read:society', 'read:currency'],
+            'groups' => ['read:company', 'read:name', 'read:society', 'read:currency', 'read:event'],
             'openapi_definition_name' => 'Company-read'
         ],
     ),
@@ -128,6 +129,14 @@ class Company extends SubSociety {
         Serializer\Groups(['read:company', 'write:company'])
     ]
     private float $engineHourRate = 0;
+
+    /** @var Collection<int, Event> */
+    #[
+        ApiProperty(description: 'Evénements', readableLink: false, example: ['/api/events/3', '/api/events/4']),
+        ORM\OneToMany(mappedBy: 'company', targetEntity: Event::class),
+        Serializer\Groups(['read:event', 'write:event'])
+    ]
+    private Collection $events;
 
     #[
         ApiProperty(description: 'Marge générale', required: true, example: 2),
@@ -197,6 +206,16 @@ class Company extends SubSociety {
     public function __construct() {
         parent::__construct();
         $this->references = new ArrayCollection();
+        $this->events = new ArrayCollection();
+    }
+
+    public function addEvent(Event $event): self {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->setCompany($this);
+        }
+
+        return $this;
     }
 
     final public function addReference(Reference $reference): self {
@@ -217,6 +236,13 @@ class Company extends SubSociety {
 
     final public function getEngineHourRate(): ?float {
         return $this->engineHourRate;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection {
+        return $this->events;
     }
 
     final public function getGeneralMargin(): ?float {
@@ -252,6 +278,17 @@ class Company extends SubSociety {
 
     final public function getWorkTimetable(): ?string {
         return $this->workTimetable;
+    }
+
+    public function removeEvent(Event $event): self {
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
+            if ($event->getCompany() === $this) {
+                $event->setCompany(null);
+            }
+        }
+
+        return $this;
     }
 
     final public function removeReference(Reference $reference): self {
