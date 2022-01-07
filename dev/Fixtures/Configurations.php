@@ -15,6 +15,9 @@ final class Configurations {
     /** @var array<int, string> */
     private array $countries = [];
 
+    /** @var array<int, string> */
+    private array $customscode = [];
+
     private ExpressionLanguage $exprLang;
 
     public function __construct(private EntityManagerInterface $em) {
@@ -64,6 +67,10 @@ final class Configurations {
         return $this->countries[$id] ?? null;
     }
 
+    public function getCustomscode(int $id): ?string {
+        return $this->customscode[$id] ?? null;
+    }
+
     /**
      * @return string[]
      */
@@ -95,6 +102,18 @@ final class Configurations {
             ->mapWithKeys(static function (array $country): array {
                 /** @var array{code: string, id: string, statut: string} $country */
                 return empty($country['statut']) || $country['statut'] === '0' ? [(int) $country['id'] => $country['code']] : [];
+            })
+            ->all();
+    }
+
+    /**
+     * @param array{code: string, id: string, statut: string}[] $customscode
+     */
+    public function setCustomscode(array $customscode): void {
+        $this->customscode = collect($customscode)
+            ->mapWithKeys(static function (array $code): array {
+                /** @var array{code: string, id: string, statut: string} $code */
+                return empty($code['statut']) || $code['statut'] === '0' ? [(int) $code['id'] => $code['code']] : [];
             })
             ->all();
     }

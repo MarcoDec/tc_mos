@@ -103,6 +103,9 @@ final class EntityConfig {
                 if ($config->isCountry()) {
                     $value = $this->configurations->getCountry($value);
                 }
+                if ($config->isCustomscode()) {
+                    $value = $this->configurations->getCustomscode($value);
+                }
                 if (!empty($forceValue = $config->getForceValue())) {
                     $value = $this->exprLang->evaluate($forceValue, $entity);
                 }

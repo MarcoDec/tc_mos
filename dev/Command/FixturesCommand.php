@@ -103,15 +103,24 @@ final class FixturesCommand extends AbstractCommand {
         $this->configurations->setCountries(json_decode($json, true));
     }
 
+    private function loadCustomscode(): void {
+        if (empty($json = file_get_contents("$this->jsonDir/{$this->jsonPrefix}customcode.json"))) {
+            throw new RuntimeException("Invalid $json.");
+        }
+
+        $this->configurations->setCustomscode(json_decode($json, true));
+    }
+
     private function loadJSON(): void {
         $this->loadCountries();
+        $this->loadCustomscode();
 
         if (empty($jsonDir = scandir($this->jsonDir))) {
             throw new RuntimeException("Invalid or empty dir $this->jsonDir.");
         }
 
         $jsonDir = collect($jsonDir);
-        $excludes = ["{$this->jsonPrefix}country.json"];
+        $excludes = ["{$this->jsonPrefix}country.json", "{$this->jsonPrefix}customcode.json"];
         $processed = collect();
         while ($jsonDir->isNotEmpty()) {
             foreach ($jsonDir as $file) {

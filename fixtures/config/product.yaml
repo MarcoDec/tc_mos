@@ -18,6 +18,9 @@ App\Entity\Project\Product\Product:
       new_name: internal_index
     info_public:
       new_name: notes
+    id_customcode:
+      customscode: true
+      new_name: customs_code
     id_incoterms:
       new_name: incoterms_id
       new_ref: App\Entity\Logistics\Incoterms
