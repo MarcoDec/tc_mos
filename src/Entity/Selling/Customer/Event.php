@@ -20,7 +20,7 @@ class Event extends AbstractEvent {
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Customer::class, inversedBy: 'events'),
         Serializer\Groups(['read:event', 'write:event'])
     ]
-    private $customer;
+    private Customer $customer;
 
     public function getCustomer(): Customer {
         return $this->customer;

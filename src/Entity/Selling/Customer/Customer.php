@@ -290,11 +290,11 @@ class Customer extends SubSociety {
         return $this->accountingPortal;
     }
 
-    final public function getAdministeredBy(): ?Company {
+    final public function getAdministeredBy(): Company {
         return $this->administeredBy;
     }
 
-    final public function getConveyanceDuration() {
+    final public function getConveyanceDuration(): int {
         return $this->conveyanceDuration;
     }
 
@@ -307,7 +307,7 @@ class Customer extends SubSociety {
     }
 
     /**
-     * @return Collection|DeliveryAddress[]
+     * @return Collection<int, DeliveryAddress>
      */
     final public function getDeliveryAddress(): Collection {
         return $this->deliveryAddress;
@@ -318,7 +318,7 @@ class Customer extends SubSociety {
     }
 
     /**
-     * @return Collection|Event[]
+     * @return Collection<int, Event>
      */
     final public function getEvents(): Collection {
         return $this->events;
@@ -336,11 +336,11 @@ class Customer extends SubSociety {
         return $this->monthlyOutstanding;
     }
 
-    final public function getNbDeliveries() {
+    final public function getNbDeliveries(): int {
         return $this->nbDeliveries;
     }
 
-    final public function getNbInvoices() {
+    final public function getNbInvoices(): int {
         return $this->nbInvoices;
     }
 
@@ -380,15 +380,8 @@ class Customer extends SubSociety {
     }
 
     final public function removeEvent(Event $event): self {
-        // if ($this->events->removeElement($event)) {
-        //     // set the owning side to null (unless already changed)
-        //     if ($event->getCustomer() === $this) {
-        //         $event->setCustomer(null);
-        //     }
-        // }
-
-        if ($this->events->contains($event)) {
-            $this->events->removeElement($event);
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
             if ($event->getCustomer() === $this) {
                 $event->setCustomer(null);
             }
@@ -403,13 +396,13 @@ class Customer extends SubSociety {
         return $this;
     }
 
-    final public function setAdministeredBy(?Company $administeredBy): self {
+    final public function setAdministeredBy(Company $administeredBy): self {
         $this->administeredBy = $administeredBy;
 
         return $this;
     }
 
-    final public function setConveyanceDuration($conveyanceDuration): self {
+    final public function setConveyanceDuration(int $conveyanceDuration): self {
         $this->conveyanceDuration = $conveyanceDuration;
 
         return $this;
@@ -451,13 +444,13 @@ class Customer extends SubSociety {
         return $this;
     }
 
-    final public function setNbDeliveries($nbDeliveries): self {
+    final public function setNbDeliveries(int $nbDeliveries): self {
         $this->nbDeliveries = $nbDeliveries;
 
         return $this;
     }
 
-    final public function setNbInvoices($nbInvoices): self {
+    final public function setNbInvoices(int $nbInvoices): self {
         $this->nbInvoices = $nbInvoices;
 
         return $this;

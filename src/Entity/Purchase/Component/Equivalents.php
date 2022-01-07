@@ -83,7 +83,7 @@ class Equivalents extends Entity {
             $b->getEquivalents()->addComponent($a);
         } elseif ($a->getEquivalents() !== null && $b->getEquivalents() === null) {
             $a->getEquivalents()->addComponent($b);
-        } else {
+        } elseif ($a->getEquivalents() !== null && $b->getEquivalents() !== null) {
             $a->getEquivalents()->merge($b->getEquivalents());
         }
     }
