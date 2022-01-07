@@ -28,7 +28,7 @@ class CompanyNormalmizer implements CacheableSupportsMethodInterface, Normalizer
         if (null !== $request) {
             $process = $request->attributes->get('process');
 
-            if ($process && $data) {
+            if ($process && is_array($data)) {
                 $returnedData = [];
 
                 switch ($process) {
@@ -64,7 +64,7 @@ class CompanyNormalmizer implements CacheableSupportsMethodInterface, Normalizer
             }
         }
 
-        return $data;
+        return is_array($data) ? $data : [];
     }
 
     public function supportsNormalization($data, $format = null): bool {
