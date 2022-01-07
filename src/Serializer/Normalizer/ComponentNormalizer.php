@@ -28,7 +28,7 @@ class ComponentNormalizer implements CacheableSupportsMethodInterface, Normalize
         if (null !== $request) {
             $process = $request->attributes->get('process');
 
-            if ($process && $data) {
+            if ($process && is_array($data)) {
                 $returnedData = [];
 
                 switch ($process) {
@@ -73,7 +73,7 @@ class ComponentNormalizer implements CacheableSupportsMethodInterface, Normalize
             }
         }
 
-        return $data;
+        return is_array($data) ? $data : [];
     }
 
     public function supportsNormalization($data, $format = null): bool {
