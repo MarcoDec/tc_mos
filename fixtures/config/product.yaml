@@ -25,6 +25,9 @@ App\Entity\Project\Product\Product:
       new_name: incoterms_id
       new_ref: App\Entity\Logistics\Incoterms
       old_ref: incoterms
+    id_productstatus:
+      force_value: 'product_workflow(id_productstatus)'
+      new_name: current_place_name
     id_product_child:
       force_value: 'product_parent(id)'
       new_name: parent_id
