@@ -34,6 +34,9 @@ App\Entity\Project\Product\Product:
       new_name: family_id
       new_ref: App\Entity\Project\Product\Family
       old_ref: product_subfamily
+    is_prototype:
+      force_value: "is_prototype == null or is_prototype == 0 ? 'Série': (is_prototype == 1 ? 'PROTOTYPE' : 'EI')"
+      new_name: kind
     livraison_minimum:
       new_name: min_delivery_value
     livraison_minimum_unit:
