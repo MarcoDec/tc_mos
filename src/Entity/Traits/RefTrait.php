@@ -4,6 +4,7 @@ namespace App\Entity\Traits;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 trait RefTrait {
@@ -14,6 +15,7 @@ trait RefTrait {
     ]
     protected ?string $ref = null;
 
+    #[Pure]
     final public function __toString(): string {
         return $this->getRef() ?? '';
     }

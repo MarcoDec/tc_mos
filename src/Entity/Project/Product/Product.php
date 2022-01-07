@@ -14,13 +14,15 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
-use App\Entity\Interfaces\EmbeddedInterface;
+use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
+use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\NameTrait;
 use App\Entity\Traits\RefTrait;
 use App\Entity\Traits\WorkflowTrait;
 use App\Filter\RelationFilter;
+use App\Validator as AppAssert;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -156,7 +158,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
+class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
     use NameTrait, RefTrait {
         RefTrait::__toString insteadof NameTrait;
@@ -243,6 +245,7 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
 
     #[
         ApiProperty(description: 'Volume prévisionnel'),
+        AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['create:product', 'read:product'])
     ]
@@ -295,6 +298,7 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
 
     #[
         ApiProperty(description: 'Nombre max de prototypes', required: true),
+        AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['read:product'])
     ]
@@ -309,6 +313,7 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
 
     #[
         ApiProperty(description: 'Production minimum', required: true),
+        AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['read:product'])
     ]
@@ -316,6 +321,7 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
 
     #[
         ApiProperty(description: 'Stock minimum', required: true),
+        AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['read:product'])
     ]
@@ -330,6 +336,7 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
 
     #[
         ApiProperty(description: 'Conditionnement', required: true),
+        AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['create:product', 'read:product'])
     ]
@@ -384,6 +391,13 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         Serializer\Groups(['read:product'])
     ]
     private Measure $transfertPriceWork;
+
+    #[
+        ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['create:product', 'read:product'])
+    ]
+    private ?Unit $unit;
 
     #[
         ApiProperty(description: 'Poids'),
@@ -448,27 +462,6 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this->customsCode;
     }
 
-    final public function getEmbeddedMeasures(): array {
-        return [
-            $this->autoDuration,
-            $this->costingAutoDuration,
-            $this->costingManualDuration,
-            $this->forecastVolume,
-            $this->manualDuration,
-            $this->maxProto,
-            $this->minDelivery,
-            $this->minProd,
-            $this->minStock,
-            $this->packaging,
-            $this->price,
-            $this->priceWithoutCopper,
-            $this->productionDelay,
-            $this->transfertPriceSupplies,
-            $this->transfertPriceWork,
-            $this->weight
-        ];
-    }
-
     final public function getExpirationDate(): ?DateTimeImmutable {
         return $this->expirationDate;
     }
@@ -503,6 +496,27 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
 
     final public function getMaxProto(): Measure {
         return $this->maxProto;
+    }
+
+    final public function getMeasures(): array {
+        return [
+            $this->autoDuration,
+            $this->costingAutoDuration,
+            $this->costingManualDuration,
+            $this->forecastVolume,
+            $this->manualDuration,
+            $this->maxProto,
+            $this->minDelivery,
+            $this->minProd,
+            $this->minStock,
+            $this->packaging,
+            $this->price,
+            $this->priceWithoutCopper,
+            $this->productionDelay,
+            $this->transfertPriceSupplies,
+            $this->transfertPriceWork,
+            $this->weight
+        ];
     }
 
     final public function getMinDelivery(): Measure {
@@ -551,6 +565,10 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
 
     final public function getTransfertPriceWork(): Measure {
         return $this->transfertPriceWork;
+    }
+
+    final public function getUnit(): ?Unit {
+        return $this->unit;
     }
 
     final public function getWeight(): Measure {
@@ -698,6 +716,11 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
 
     final public function setTransfertPriceWork(Measure $transfertPriceWork): self {
         $this->transfertPriceWork = $transfertPriceWork;
+        return $this;
+    }
+
+    final public function setUnit(?Unit $unit): self {
+        $this->unit = $unit;
         return $this;
     }
 
