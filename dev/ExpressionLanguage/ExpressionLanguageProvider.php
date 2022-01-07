@@ -30,7 +30,15 @@ final class ExpressionLanguageProvider implements ExpressionFunctionProviderInte
                 compiler: static fn (int $id): string => sprintf('%1$d == 1 ? \'workstation\' : \'tool\'', $id),
                 evaluator: static fn (array $args, int $id): string => $id == 1 ? 'workstation' : 'tool'
             ),
-            ExpressionFunction::fromPhp('floatval')
+            ExpressionFunction::fromPhp('floatval'),
+            new ExpressionFunction(
+                name: 'product_parent',
+                compiler: static fn (int $id): string => sprintf(<<<'FUNCTION'
+$this->configurations->findEntities('product')->first(static fn (Collection $entity): bool => $entity['id_product_child'] == %s)
+FUNCTION, $id),
+                evaluator: fn (array $args, int $id): int => collect($this->configurations->findEntities('product'))
+                    ->first(static fn (array $entity): bool => $entity['id_product_child'] == $id, ['id' => 0])['id']
+            )
         ];
     }
 }

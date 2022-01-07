@@ -4,6 +4,7 @@ namespace App\Fixtures;
 
 use App\ExpressionLanguage\ExpressionLanguageProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Tightenco\Collect\Support\Collection;
 
@@ -47,11 +48,16 @@ final class Configurations {
         return $count;
     }
 
-    /**
-     * @return mixed
-     */
-    public function findData(string $name, int $id) {
+    public function findData(string $name, int $id): mixed {
         return $this->configurations[$name]->findData($id);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    #[Pure]
+    public function findEntities(string $name): array {
+        return $this->configurations[$name]->getData();
     }
 
     public function getCountry(int $id): ?string {

@@ -22,10 +22,15 @@ App\Entity\Project\Product\Product:
       new_name: incoterms_id
       new_ref: App\Entity\Logistics\Incoterms
       old_ref: incoterms
+    id_product_child:
+      force_value: 'product_parent(id)'
+      new_name: parent_id
+      new_ref: App\Entity\Project\Product\Product
+      old_ref: product
     id_product_subfamily:
       new_name: family_id
-      old_ref: product_subfamily
       new_ref: App\Entity\Project\Product\Family
+      old_ref: product_subfamily
     livraison_minimum:
       new_name: min_delivery_value
     livraison_minimum_unit:

@@ -9,6 +9,9 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Tightenco\Collect\Support\Collection;
 
 final class EntityConfig {
+    /** @var mixed[] */
+    private array $data = [];
+
     private ?string $deleted;
 
     /** @var Collection<int, mixed> */
@@ -61,6 +64,13 @@ final class EntityConfig {
     }
 
     /**
+     * @return mixed[]
+     */
+    public function getData(): array {
+        return $this->data;
+    }
+
+    /**
      * @return string[]
      */
     public function getDependencies(): array {
@@ -76,6 +86,8 @@ final class EntityConfig {
      * @param mixed[] $data
      */
     public function setData(array $data, int $count): void {
+        $this->data = $data;
+
         foreach ($data as $entity) {
             if (!empty($this->deleted) && $entity[$this->deleted] !== '0') {
                 continue;
