@@ -26,14 +26,14 @@ abstract class Event extends Entity {
         ApiProperty(description: 'Date', example: '2021-01-12 10:39:37'),
         Assert\DateTime,
         ORM\Column(type: 'datetime', nullable: true),
-        Serializer\Groups(['read:event', 'write:event'])
+        Serializer\Groups(['read:event_date', 'write:event_date'])
     ]
     private ?DateTimeInterface $date;
 
     #[
         ApiProperty(description: 'Fini ?', required: true, example: false),
         ORM\Column(type: 'boolean', options: ['default' => false]),
-        Serializer\Groups(['read:event_date', 'write:event_date'])
+        Serializer\Groups(['read:event', 'write:event'])
     ]
     private bool $done = false;
 
