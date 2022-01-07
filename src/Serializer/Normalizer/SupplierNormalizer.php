@@ -17,6 +17,8 @@ class SupplierNormalizer implements CacheableSupportsMethodInterface, Normalizer
     }
 
     /**
+     * @param Supplier $object
+     *
      * @return mixed[]
      */
     public function normalize($object, $format = null, array $context = []): array {
@@ -28,7 +30,7 @@ class SupplierNormalizer implements CacheableSupportsMethodInterface, Normalizer
         if (null !== $request) {
             $process = $request->attributes->get('process');
 
-            if ($process && $data) {
+            if ($process && is_array($data)) {
                 $returnedData = [];
 
                 switch ($process) {
@@ -77,7 +79,7 @@ class SupplierNormalizer implements CacheableSupportsMethodInterface, Normalizer
             }
         }
 
-        return $data;
+        return is_array($data) ? $data : [];
     }
 
     public function supportsNormalization($data, $format = null): bool {
