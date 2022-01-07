@@ -381,8 +381,7 @@ class Customer extends SubSociety {
     }
 
     final public function removeEvent(?Event $event): self {
-
-          if ($this->events->contains($event)) {
+        if ($this->events->contains($event)) {
             $this->events->removeElement($event);
             if ($event->getCustomer() === $this) {
                 $event->setCustomer(null);
