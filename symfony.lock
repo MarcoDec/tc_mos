@@ -144,6 +144,9 @@
     "giggsey/locale": {
         "version": "2.1"
     },
+    "jawira/case-converter": {
+        "version": "v3.4.6"
+    },
     "jetbrains/phpstorm-attributes": {
         "version": "1.0"
     },

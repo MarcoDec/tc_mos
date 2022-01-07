@@ -86,3 +86,7 @@ services:
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
+
+  App\Serializer\ContextBuilderInterface:
+    autoconfigure: false
+    decorates: api_platform.serializer.context_builder
