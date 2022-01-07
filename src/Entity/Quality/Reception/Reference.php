@@ -9,6 +9,7 @@ use App\Entity\Project\Product\Family as ProductFamily;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Component\Family as ComponentFamily;
+use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -65,10 +66,21 @@ abstract class Reference extends Entity {
     ]
     private string $kind = self::KIND_QTE;
 
+    /**
+     * @var Collection<int, Supplier>
+     */
+    #[
+        ApiProperty(description: 'Références', readableLink: false, example: ['/api/suppliers/2', '/api/suppliers/15']),
+        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Supplier::class, mappedBy: 'references'),
+        Serializer\Groups(['read:references', 'write:references'])
+    ]
+    private Collection $suppliers;
+
     public function __construct() {
         $this->companies = new ArrayCollection();
         $this->families = new ArrayCollection();
         $this->items = new ArrayCollection();
+        $this->suppliers = new ArrayCollection();
     }
 
     abstract public function addFamily(object $family): self;
@@ -88,6 +100,15 @@ abstract class Reference extends Entity {
         return $this;
     }
 
+    public function addSupplier(Supplier $supplier): self {
+        if (!$this->suppliers->contains($supplier)) {
+            $this->suppliers[] = $supplier;
+            $supplier->addReference($this);
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Company>
      */
@@ -102,6 +123,10 @@ abstract class Reference extends Entity {
         return $this->families;
     }
 
+    public function getGlobal(): ?bool {
+        return $this->global;
+    }
+
     /**
      * @return Collection<int, Component|Product>
      */
@@ -113,6 +138,13 @@ abstract class Reference extends Entity {
         return $this->kind;
     }
 
+    /**
+     * @return Collection|Supplier[]
+     */
+    public function getSuppliers(): Collection {
+        return $this->suppliers;
+    }
+
     public function isGlobal(): bool {
         return $this->global;
     }
@@ -121,6 +153,14 @@ abstract class Reference extends Entity {
         if ($this->companies->contains($company)) {
             $this->companies->removeElement($company);
         }
+        return $this;
+    }
+
+    public function removeSupplier(Supplier $supplier): self {
+        if ($this->suppliers->removeElement($supplier)) {
+            $supplier->removeReference($this);
+        }
+
         return $this;
     }
 
