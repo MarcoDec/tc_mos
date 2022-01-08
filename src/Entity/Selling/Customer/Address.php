@@ -22,11 +22,11 @@ abstract class Address extends Entity {
     ]
     private ?Customer $customer;
 
-    final public function getCustomer(): ?Customer {
+    public function getCustomer(): ?Customer {
         return $this->customer;
     }
 
-    final public function setCustomer(?Customer $customer): self {
+    public function setCustomer(?Customer $customer): self {
         $this->customer = $customer;
         return $this;
     }
