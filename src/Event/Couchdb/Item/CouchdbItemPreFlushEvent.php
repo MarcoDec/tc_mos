@@ -13,10 +13,10 @@ class CouchdbItemPreFlushEvent extends Event {
     }
 
     #[Pure]
- public function __toString(): string {
-     /** @phpstan-ignore-next-line  */
-     return 'Entity ('.get_class($this->entity).') ID: '.$this->entity->getId();
- }
+    public function __toString(): string {
+        /** @phpstan-ignore-next-line */
+        return 'Entity ('.get_class($this->entity).') ID: '.$this->entity->getId();
+    }
 
     public function getEntity(): object {
         return $this->entity;

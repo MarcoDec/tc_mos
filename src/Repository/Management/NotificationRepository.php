@@ -9,7 +9,7 @@ use JetBrains\PhpStorm\Pure;
 
 class NotificationRepository extends AbstractRepository {
     #[Pure]
- public function __construct(CouchDBManager $manager) {
-     parent::__construct($manager, Notification::class);
- }
+    public function __construct(CouchDBManager $manager) {
+        parent::__construct($manager, Notification::class);
+    }
 }

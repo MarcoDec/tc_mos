@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\Couchdb\Document;
 use App\Service\CouchDBManager;
 use Exception;
 use Symfony\Component\Console\Input\InputInterface;

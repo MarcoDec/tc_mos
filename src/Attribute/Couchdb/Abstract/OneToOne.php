@@ -31,9 +31,9 @@ abstract class OneToOne {
      * @phpstan-ignore-next-line
      */
     #[ArrayShape(['targetEntity' => 'mixed', 'mappedBy' => 'mixed', 'fetch' => 'mixed', 'type' => 'string'])]
-   public static function getPropertyData(ReflectionAttribute $property): array {
-       $instance = $property->newInstance();
-       /** @phpstan-ignore-next-line  */
-       return ['targetEntity' => $instance->targetEntity, 'mappedBy' => $instance->mappedBy, 'fetch' => $instance->fetch, 'type' => self::class];
-   }
+    public static function getPropertyData(ReflectionAttribute $property): array {
+        $instance = $property->newInstance();
+        /** @phpstan-ignore-next-line */
+        return ['targetEntity' => $instance->targetEntity, 'mappedBy' => $instance->mappedBy, 'fetch' => $instance->fetch, 'type' => self::class];
+    }
 }

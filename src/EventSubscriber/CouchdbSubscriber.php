@@ -30,14 +30,14 @@ class CouchdbSubscriber implements EventSubscriberInterface {
         Events::preUpdate => 'string',
         Events::preRemove => 'string'
     ])]
-   public static function getSubscribedEvents() {
-       return [
-           Events::prePersist => 'onPrePersist',
-           Events::postPersist => 'onPostPersist',
-           Events::preUpdate => 'onPreUpdate',
-           Events::preRemove => 'onPreRemove'
-       ];
-   }
+    public static function getSubscribedEvents() {
+        return [
+            Events::prePersist => 'onPrePersist',
+            Events::postPersist => 'onPostPersist',
+            Events::preUpdate => 'onPreUpdate',
+            Events::preRemove => 'onPreRemove'
+        ];
+    }
 
     public function onPostPersist(CouchdbItemPostPersistEvent $event): void {
         $this->logger->info(__METHOD__);

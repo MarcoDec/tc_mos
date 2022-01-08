@@ -39,10 +39,7 @@ final class ApiRequest {
     #[ArrayShape(['password' => 'string', 'username' => 'string'])]
     public function getCredentials(): array {
         $content = $this->getContent();
-        if (
-            isset($content['username']) && !empty($content['username'])
-            && isset($content['password']) && !empty($content['password'])
-        ) {
+        if (isset($content['username'], $content['password'])) {
             return ['password' => $content['password'], 'username' => $content['username']];
         }
         throw new LogicException('No username or password found. Did you call hasCredentials before?');
@@ -69,8 +66,8 @@ final class ApiRequest {
 
     public function hasCredentials(): bool {
         $content = $this->getContent();
-        return isset($content['username']) && !empty($content['username'])
-            && isset($content['password']) && !empty($content['password']);
+        return isset($content['username'])
+            && isset($content['password']);
     }
 
     public function isApiUri(): bool {

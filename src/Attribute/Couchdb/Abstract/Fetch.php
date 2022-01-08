@@ -17,7 +17,7 @@ abstract class Fetch {
     }
 
     #[Pure]
-   public static function isValidFetch(string $value): bool {
-       return in_array($value, self::getAllFetchValues());
-   }
+    public static function isValidFetch(string $value): bool {
+        return in_array($value, self::getAllFetchValues());
+    }
 }

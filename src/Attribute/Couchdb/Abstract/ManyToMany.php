@@ -33,7 +33,7 @@ abstract class ManyToMany {
     #[ArrayShape(['targetEntity' => 'mixed', 'owned' => 'mixed', 'fetch' => 'mixed', 'type' => 'string'])]
     public static function getPropertyData(ReflectionAttribute $reflectionAttribute): array {
         $instance = $reflectionAttribute->newInstance();
-        /** @phpstan-ignore-next-line  */
+        /** @phpstan-ignore-next-line */
         return ['targetEntity' => $instance->targetEntity, 'owned' => $instance->owned, 'fetch' => $instance->fetch, 'type' => self::class];
     }
 }
