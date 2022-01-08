@@ -30,9 +30,11 @@ Depuis la racine du projet, exécutez la commande `docker:recreate`.
 Exécutez la commande `docker:php` pour entrer dans le conteneur `tconcept_gpao_php`. Une fois dans le conteneur,
 exécutez la commande `composer install` pour installer les différentes dépendances.
 
-### Base de données
+### Bases de données
 
-Pour charger la base de données, exécutez la commande `gpao:database:load`.
+#### MySQL
+
+Pour charger la base de données SQL, exécutez la commande `gpao:database:load`.
 
 La commande ci-dessus est un raccourci pour les deux commandes ci-dessous&nbsp;:
 
@@ -40,6 +42,14 @@ La commande ci-dessus est un raccourci pour les deux commandes ci-dessous&nbsp;:
 gpao:schema:update # Charge les tables en fonction du schéma défini sur les entités
 gpao:fixtures:load # Transfère les anciennes données au format JSON dans le nouveau modèle
 ```
+#### CouchDB
+
+Pour initialiser la base de données NOSQL, il faudra executer les deux commandes ci-dessous&nbsp;:
+
+````shell
+php bin/console gpao:couchdb:create
+php bin/console gpao:couchdb:schema:update
+````
 
 ### Vite & Vue
 
@@ -70,6 +80,9 @@ Différents conteneurs Docker sont utilisés pour les différents services du pr
   différentes commandes Symfony&nbsp;;
 - `tconcept_gpao_phpmyadmin`&nbsp;: conteneur responsable de phpMyAdmin, pour avoir une interface de la base de données,
   accessible grâce à [http://localhost:8080](http://localhost:8080).
+- `tconcept-gpao_couchdb-server-0_1`&nbsp;: conteneur responsable de CouchDB le système de gestion de données NoSQL. L'URI principale de connexion se trouve [http://localhost:5984/_utils](http://localhost:5984/_utils)
+
+
 
 ## Cron
 

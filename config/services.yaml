@@ -78,3 +78,15 @@ services:
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
+
+  App\Service\CouchDBManager:
+    arguments:
+      - '%env(COUCH_URL)%'
+      - '%env(COUCH_DBNAME)%'
+
+  App\DataCollector\CouchdbCollector:
+    tags:
+      -
+        name: data_collector
+        template: 'data_collector/couchdb_collector.html.twig'
+        id: App\DataCollector\CouchdbCollector

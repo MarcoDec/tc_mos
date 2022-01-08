@@ -1,0 +1,19 @@
+[couchdb]
+single_node=true
+database_dir = /opt/couchdb/data
+uuid = ae4e9ac9ba2266c50086ebb5d322d430
+
+[admins]
+marc = -pbkdf2-232c63be1ba059bb2a71b2bba65de22cbe6a9045,9e86ff8f41f333b40cd1805bd3117389,10
+
+[couch_httpd_auth]
+secret = 010d969b783eafef81ba6550e04e39c4
+
+[httpd]
+enable_cors = true
+
+[cors]
+credentials = true
+headers = accept, authorization, content-type, origin, referer
+methods = GET, PUT, POST, HEAD, DELETE
+origins = 
