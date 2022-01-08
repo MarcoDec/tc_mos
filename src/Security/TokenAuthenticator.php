@@ -63,8 +63,9 @@ final class TokenAuthenticator extends AbstractAuthenticator {
             $credentials = $request->getCredentials();
             return $this->createPassport(
                 userBadge: new UserBadge($credentials['username'], function (string $username): Employee {
-                    if(!empty($employee =$this->getEmployeeRepo()->findOneBy(['username' => $username]) ))
-                        return  $employee;
+                    if (!empty($employee = $this->getEmployeeRepo()->findOneBy(['username' => $username]))) {
+                        return $employee;
+                    }
                     throw new UserNotFoundException();
                 }),
                 credentials: new CustomCredentials(function (array $credentials, Employee $user): bool {
@@ -93,8 +94,9 @@ final class TokenAuthenticator extends AbstractAuthenticator {
             $credentials = $request->getToken();
             return $this->createPassport(
                 userBadge: new UserBadge($credentials['token'], function (string $token): Employee {
-                    if(!empty($employee =$this->getEmployeeRepo()->findByToken($token) ))
-                        return  $employee;
+                    if (!empty($employee = $this->getEmployeeRepo()->findByToken($token))) {
+                        return $employee;
+                    }
                     throw new UserNotFoundException();
                 }),
                 credentials: new CustomCredentials(function (array $credentials, Employee $user): bool {

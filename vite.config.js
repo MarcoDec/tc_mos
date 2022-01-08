@@ -4,9 +4,6 @@ import {resolve} from 'path'
 import checker from 'vite-plugin-checker'
 import vue from '@vitejs/plugin-vue'
 
-/* if you're using React */
-// import reactRefresh from "@vitejs/plugin-react-refresh";
-
 const symfonyPlugin = {
     configResolved(config) {
         if (config.env.DEV && config.build.manifest) {
@@ -44,7 +41,6 @@ export default defineConfig({
         }
     },
     plugins: [
-        /* reactRefresh(), // if you're using React */
         symfonyPlugin,
         vue(),
         checker({
@@ -53,7 +49,7 @@ export default defineConfig({
             vueTsc: true
         })
     ],
-    root: './assets',
+    root: './assets/',
     server: {
         fs: {
             allow: ['..'],

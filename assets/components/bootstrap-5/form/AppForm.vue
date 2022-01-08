@@ -6,17 +6,17 @@
     const form = ref<HTMLFormElement>()
     const emit = defineEmits<{
         (e: 'submit', data: FormData): void
-        (e: 'update:values', values: FormValues): void
+        (e: 'update:modelValue', values: FormValues): void
     }>()
     const props = withDefaults(
-        defineProps<{fields: FormField[], values?: FormValues}>(),
-        {values: () => ({})}
+        defineProps<{fields: FormField[], modelValue?: FormValues}>(),
+        {modelValue: () => ({})}
     )
 
     function input({name, value}: {value: FormValue, name: string}): void {
-        const cloned = clone(props.values)
+        const cloned = clone(props.modelValue)
         cloned[name] = value
-        emit('update:values', cloned)
+        emit('update:modelValue', cloned)
     }
 
     function submit(): void {
@@ -31,8 +31,10 @@
             v-for="field in fields"
             :key="field.name"
             :field="field"
-            :value="values[field.name]"
+            :model-value="modelValue[field.name]"
             @input="input"/>
-        <slot name="buttons"/>
+        <div class="float-end">
+            <slot/>
+        </div>
     </form>
 </template>

@@ -1,4 +1,3 @@
-import * as Cookies from '../cookie'
 import {createRouter, createWebHistory} from 'vue-router'
 import type {RouteComponent} from 'vue-router'
 
@@ -24,12 +23,6 @@ const router = createRouter({
             path: '/login'
         }
     ]
-})
-
-// eslint-disable-next-line consistent-return
-router.beforeEach(async to => {
-    if (to.matched.some(record => record.meta.requiresAuth && record.name !== 'login') && !Cookies.has())
-        return {name: 'login'}
 })
 
 export default router

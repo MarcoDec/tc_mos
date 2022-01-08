@@ -3,14 +3,14 @@
     import {defineEmits, defineProps} from 'vue'
 
     const emit = defineEmits<{
-        (e: 'update:value', value: FormValue): void
-        (e: 'input', payload: Readonly<{value: FormValue, name: string}>): void
+        (e: 'input', payload: Readonly<{name: string, value: FormValue}>): void
+        (e: 'update:modelValue', value: FormValue): void
     }>()
-    const props = defineProps<{field: FormField, value?: FormValue}>()
+    const props = defineProps<{field: FormField, modelValue?: FormValue}>()
 
     function input(value: FormValue): void {
-        emit('update:value', value)
         emit('input', {name: props.field.name, value})
+        emit('update:modelValue', value)
     }
 </script>
 
@@ -20,7 +20,7 @@
             {{ field.label }}
         </AppLabel>
         <AppCol>
-            <AppInput :field="field" :value="value" @update:value="input"/>
+            <AppInput :field="field" :model-value="modelValue" @update:model-value="input"/>
         </AppCol>
     </AppRow>
 </template>

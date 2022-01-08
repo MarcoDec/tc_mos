@@ -33,6 +33,6 @@ export type FormInput =
     | 'text'
     | 'time'
 
-export type FormValue = boolean | number | string
+export type FormValue = boolean | number | string | null
 
 export type FormValues = Record<string, FormValue>

@@ -1,6 +1,6 @@
 import * as Cookies from '../../../cookie'
 import {MutationTypes} from '.'
-import type {RootState} from '../../index'
+import type {State as RootState} from '../../index'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import {fetchApi} from '../../../api'
