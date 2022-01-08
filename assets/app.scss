@@ -1,5 +1,4 @@
 @use 'bootstrap/scss/bootstrap';
-@use 'vue3-loading-overlay/dist/vue3-loading-overlay';
 
 
 .bg-blue {
@@ -189,3 +188,13 @@ body {
   background-color: #222;
 }
 
+.overlay {
+  background-color: #EFEFEF;
+  height: 100%;
+  left: 0;
+  opacity: .5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}

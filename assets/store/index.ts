@@ -1,15 +1,23 @@
-import type {State as NotifState} from './notifications'
-import type {State as UserState} from './security'
+import type {Actions} from './actions'
+import type {Mutations} from './mutation'
+import type {State as Security} from './security'
+import type {State} from './state'
+import type {Store} from 'vuex'
+import {actions} from './actions'
 import {createStore} from 'vuex'
-import {module as notifications} from './notifications'
+import {generateSecurity} from './security'
+import {mutations} from './mutation'
+import {notifications} from './notifications'
+import {state} from './state'
 
-import {module as users} from './security'
+export type {Actions, State, Mutations}
 
-export type RootState = {
-    user: UserState;
-    notifications: NotifState;
+export function generateStore(security: Security): Store<State> {
+    return createStore<State>({
+        actions,
+        modules: {notifications, security: generateSecurity(security)},
+        mutations,
+        state,
+        strict: process.env.NODE_ENV !== 'production'
+    })
 }
-
-const store = createStore<RootState>({modules: {notifications, users}, strict: process.env.NODE_ENV !== 'production'})
-
-export default store

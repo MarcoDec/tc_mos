@@ -3,19 +3,18 @@
     import {defineEmits, defineProps, withDefaults} from 'vue'
     import clone from 'clone'
 
-    const emit = defineEmits<{(e: 'update:values', values: FormValues): void, (e: 'submit'): void}>()
+    const emit = defineEmits<{(e: 'update:modelValue', modelValue: Readonly<FormValues>): void, (e: 'submit'): void}>()
     const props = withDefaults(
-        defineProps<{fields: FormField[], values?: FormValues}>(),
-        {values: () => ({})}
+        defineProps<{fields: FormField[], modelValue?: FormValues}>(),
+        {modelValue: () => ({})}
     )
 
-    function input({name, value}: {value: FormValue, name: string}): void {
-        const cloned = clone(props.values)
-        cloned[name] = value
-        emit('update:values', cloned)
+    function input(value: Readonly<{value: FormValue, name: string}>): void {
+        const cloned = clone(props.modelValue)
+        cloned[value.name] = value.value
+        emit('update:modelValue', cloned)
     }
 </script>
-
 
 <template>
     <form autocomplete="off" @submit.prevent="emit('submit')">
@@ -23,17 +22,10 @@
             v-for="field in fields"
             :key="field.name"
             :field="field"
-            :value="values[field.name]"
+            :model-value="modelValue[field.name]"
             @input="input"/>
-        <AppBtn class="float-end" type="submit">
-            Connexion
-        </AppBtn>
+        <div class="float-end">
+            <slot/>
+        </div>
     </form>
 </template>
-
-<style lang="scss" scoped>
-.float-end.disabled{
-  pointer-events: none;
-  cursor: default;
-}
-</style>

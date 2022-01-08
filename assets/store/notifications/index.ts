@@ -2,10 +2,11 @@ import {ActionTypes, actions} from './actions'
 import type {Actions} from './actions'
 import type {Getters} from './getters'
 import type {Module} from 'vuex'
-import type {RootState} from '../index'
+import type {State as RootState} from '..'
 import type {State} from './state'
 import {getters} from './getters'
 
-export {ActionTypes, Actions, Getters, State}
+export type {Actions, Getters, State}
+export {ActionTypes}
 
-export const module: Module<State, RootState> = {actions, getters, namespaced: true}
+export const notifications: Module<State, RootState> = {actions, getters, namespaced: true}

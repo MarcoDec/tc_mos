@@ -1,20 +1,17 @@
 <script lang="ts" setup>
-    import {onMounted, ref} from 'vue'
-    import {ActionTypes} from '../store/security'
-    import type {Actions} from '../store/security'
-    import {useNamespacedActions} from 'vuex-composition-helpers'
+    import type {State as RootState} from '../store'
+    import {useState} from 'vuex-composition-helpers'
 
-    const connected = ref(false)
-
-    onMounted(async () => {
-        await useNamespacedActions<Actions>('users', [ActionTypes.CONNECT])[ActionTypes.CONNECT]()
-        connected.value = true
-    })
+    const spinner = useState<RootState>(['spinner']).spinner
 </script>
 
 <template>
+    <AppModalError id="modal-error"/>
     <AppTopNavbar/>
     <AppContainer>
-        <RouterView v-if="connected"/>
+        <RouterView/>
     </AppContainer>
+    <div v-if="spinner" class="overlay">
+        <div class="position-relative spinner-border start-50 top-50" role="status"/>
+    </div>
 </template>
