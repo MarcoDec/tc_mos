@@ -2,28 +2,65 @@
 
 namespace App\Entity\Hr\Employee\Attachment;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\AbstractAttachment;
 use App\Entity\Hr\Employee\Employee;
+use App\Entity\Traits\AttachmentTrait;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[
+   ORM\Entity,
+   ApiResource(
+      collectionOperations: //self::API_DEFAULT_COLLECTIONS_OPERATIONS,
+      [
+         'upload' => [
+            'input_formats'=>[
+               'multipart'=>[ 'multipart/form-data' ]
+            ],
+            'read' => true,
+            'write' => true,
+            //'output' => true,
+            //'input' => true,
+            'deserialize'=>false,
+            'method' => 'POST',
+            'path' => '/employee-attachments',
+            'controller' => self::API_DEFAULT_CONTROLLER,
+            'openapi_context' => //self::API_DEFAULT_OPENAPI_CONTEXT,
+               [
+               'description' => "Créer un fichier associé à un employé",
+               'summary' => "Créer un fichier associé à un employé"
+               ],
+            'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
+            'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+         ]
+      ],
+      itemOperations: [
+
+      ]
+   )
+]
 class EmployeeAttachment extends AbstractAttachment
 {
-   #[ ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'attachments') ]
-   private Employee $employee;
-   /**
-    * @return Employee
-    */
-   public function getEmployee(): Employee
-   {
-      return $this->employee;
-   }
-   /**
-    * @param Employee $employee
-    */
-   public function setEmployee(Employee $employee): void
-   {
-      $this->employee = $employee;
-   }
+   use AttachmentTrait;
+
+//   #[
+//      ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'attachments'),
+//
+//   ]
+//   private Employee $employee;
+//   /**
+//    * @return Employee
+//    */
+//   public function getEmployee(): Employee
+//   {
+//      return $this->employee;
+//   }
+//   /**
+//    * @param Employee $employee
+//    */
+//   public function setEmployee(Employee $employee): void
+//   {
+//      $this->employee = $employee;
+//   }
 
 }

@@ -2,73 +2,46 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Interfaces\FileEntity;
-use App\Entity\Traits\FileTrait;
-use Doctrine\ORM\Mapping as ORM;
+use App\Controller\File\FileController;
 
-#[
-   ORM\MappedSuperclass,
-   ApiResource
-]
-abstract class AbstractAttachment extends Entity implements FileEntity
+abstract class AbstractAttachment extends Entity
 {
-   use FileTrait;
    /** @var string Photo*/
    public const IS_PIC = 'IS_PIC';
+
    public const OTHERS = 'OTHERS';
-   #[ ORM\Column]
-   private string $category = self::OTHERS;
-   #[ ORM\Column(type: "date", nullable: true)]
-   private \DateTimeInterface|null $expirationDate;
-   #[ ORM\Column]
-   private string $url='';
 
-   /**
-    * @return string
-    */
-   public function getCategory(): string
-   {
-      return $this->category;
-   }
+   public const API_GROUPS_URL=['attachment:read'];
+   public const API_GROUPS_CATEGORY=['attachment:read','attachment:write','attachment:write'];
+   public const API_GROUPS_EXPIRATION_DATE=['attachment:read'];
 
-   /**
-    * @param string $category
-    */
-   public function setCategory(string $category): void
-   {
-      $this->category = $category;
-   }
+   public const API_DEFAULT_PATH = '/attachments';
+   public const API_DEFAULT_CONTROLLER = FileController::class;
+   public const API_DEFAULT_OPENAPI_CONTEXT = [
+      'description' => "Créer un fichier",
+      'summary' => "Créer un fichier"
+   ];
+   public const API_DEFAULT_DENORMALIZATION_CONTEXT = ['groups' => [self::API_GROUP_WRITE]];
+   public const API_DEFAULT_NORMALIZATION_CONTEXT = ['groups'=> [self::API_GROUP_READ]];
+   public const API_GROUP_WRITE = 'attachment:write';
+   public const API_GROUP_READ = 'attachment:read';
+   public const API_DEFAULT_COLLECTIONS_OPERATIONS = [
+      'upload' => [
+         'input_formats'=>[
+            'multipart'=>[ 'multipart/form-data' ]
+         ],
+         'read' => true,
+         'write' => true,
+         //'output' => true,
+         //'input' => true,
+         'deserialize'=>false,
+         'method' => 'POST',
+         'path' => self::API_DEFAULT_PATH,
+         'controller' => self::API_DEFAULT_CONTROLLER,
+         'openapi_context' => self::API_DEFAULT_OPENAPI_CONTEXT,
+         'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
+         'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+      ]
+   ];
 
-   /**
-    * @return \DateTimeInterface|null
-    */
-   public function getExpirationDate(): ?\DateTimeInterface
-   {
-      return $this->expirationDate;
-   }
-
-   /**
-    * @param \DateTimeInterface|null $expirationDate
-    */
-   public function setExpirationDate(?\DateTimeInterface $expirationDate): void
-   {
-      $this->expirationDate = $expirationDate;
-   }
-
-   /**
-    * @return string
-    */
-   public function getUrl(): string
-   {
-      return $this->url;
-   }
-
-   /**
-    * @param string $url
-    */
-   public function setUrl(string $url): void
-   {
-      $this->url = $url;
-   }
 }
