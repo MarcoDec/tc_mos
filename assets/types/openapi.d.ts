@@ -4,3511 +4,4807 @@
  */
 
 export interface paths {
-  "/api/login": {
+  readonly "/api/login": {
     /** Connexion */
-    post: operations["login"];
-    parameters: {};
+    readonly post: operations["login"];
   };
-  "/api/logout": {
+  readonly "/api/logout": {
     /** Déconnexion */
-    post: operations["logout"];
-    parameters: {};
+    readonly post: operations["logout"];
   };
-  "/api/carriers": {
+  readonly "/api/carriers": {
     /** Récupère les transporteurs */
-    get: operations["getCarrierCollection"];
+    readonly get: operations["getCarrierCollection"];
     /** Créer un transporteur */
-    post: operations["postCarrierCollection"];
-    parameters: {};
+    readonly post: operations["postCarrierCollection"];
   };
-  "/api/carriers/{id}": {
+  readonly "/api/carriers/{id}": {
     /** Supprime un transporteur */
-    delete: operations["deleteCarrierItem"];
+    readonly delete: operations["deleteCarrierItem"];
     /** Modifie un transporteur */
-    patch: operations["patchCarrierItem"];
-    parameters: {};
+    readonly patch: operations["patchCarrierItem"];
   };
-  "/api/colors": {
+  readonly "/api/colors": {
     /** Récupère les couleurs */
-    get: operations["getColorCollection"];
+    readonly get: operations["getColorCollection"];
     /** Créer une couleur */
-    post: operations["postColorCollection"];
-    parameters: {};
+    readonly post: operations["postColorCollection"];
   };
-  "/api/colors/{id}": {
+  readonly "/api/colors/{id}": {
     /** Supprime une couleur */
-    delete: operations["deleteColorItem"];
+    readonly delete: operations["deleteColorItem"];
     /** Modifie une couleur */
-    patch: operations["patchColorItem"];
-    parameters: {};
+    readonly patch: operations["patchColorItem"];
   };
-  "/api/component-families": {
+  readonly "/api/component-families": {
     /** Récupère les familles de composant */
-    get: operations["getComponentFamilyCollection"];
+    readonly get: operations["getComponentFamilyCollection"];
     /** Créer une famille de composant */
-    post: operations["postComponentFamilyCollection"];
-    parameters: {};
+    readonly post: operations["postComponentFamilyCollection"];
   };
-  "/api/component-families/{id}": {
+  readonly "/api/component-families/{id}": {
     /** Modifie une famille de composant */
-    post: operations["postComponentFamilyItem"];
+    readonly post: operations["postComponentFamilyItem"];
     /** Supprime une famille de composant */
-    delete: operations["deleteComponentFamilyItem"];
-    parameters: {};
+    readonly delete: operations["deleteComponentFamilyItem"];
   };
-  "/api/currencies": {
+  readonly "/api/currencies": {
     /** Récupère les devises */
-    get: operations["getCurrencyCollection"];
-    parameters: {};
+    readonly get: operations["getCurrencyCollection"];
   };
-  "/api/currencies/{id}": {
+  readonly "/api/currencies/{id}": {
     /** Modifie une devise */
-    patch: operations["patchCurrencyItem"];
-    parameters: {};
+    readonly patch: operations["patchCurrencyItem"];
   };
-  "/api/employees/{id}": {
+  readonly "/api/employees/{id}": {
     /** Récupère un employé */
-    get: operations["getEmployeeItem"];
-    parameters: {};
+    readonly get: operations["getEmployeeItem"];
   };
-  "/api/event-types": {
+  readonly "/api/counter-part-groups": {
+    /** créer un groupe de contrepartie de test */
+    readonly post: operations["postCounterPartGroupCollection"];
+  };
+  readonly "/api/engine-groups": {
+    /** Récupère les groupes d'équipement */
+    readonly get: operations["getEngineGroupCollection"];
+  };
+  readonly "/api/engine-groups/{id}": {
+    /** Supprime un groupe d'équipement */
+    readonly delete: operations["deleteEngineGroupItem"];
+    /** Modifie un groupe d'équipement */
+    readonly patch: operations["patchEngineGroupItem"];
+  };
+  readonly "/api/tool-groups": {
+    /** Créer un groupe d'outil */
+    readonly post: operations["postToolGroupCollection"];
+  };
+  readonly "/api/workstation-groups": {
+    /** Créer un groupe de poste de travail */
+    readonly post: operations["postWorkstationGroupCollection"];
+  };
+  readonly "/api/event-types": {
     /** Récupère les types d'événements */
-    get: operations["getEventTypeCollection"];
+    readonly get: operations["getEventTypeCollection"];
     /** Créer un type d'événements */
-    post: operations["postEventTypeCollection"];
-    parameters: {};
+    readonly post: operations["postEventTypeCollection"];
   };
-  "/api/event-types/{id}": {
+  readonly "/api/event-types/{id}": {
     /** Supprime un type d'événements */
-    delete: operations["deleteEventTypeItem"];
+    readonly delete: operations["deleteEventTypeItem"];
     /** Modifie un type d'événements */
-    patch: operations["patchEventTypeItem"];
-    parameters: {};
+    readonly patch: operations["patchEventTypeItem"];
   };
-  "/api/incoterms": {
+  readonly "/api/incoterms": {
     /** Récupère les incoterms */
-    get: operations["getIncotermsCollection"];
+    readonly get: operations["getIncotermsCollection"];
     /** Créer un incoterms */
-    post: operations["postIncotermsCollection"];
-    parameters: {};
+    readonly post: operations["postIncotermsCollection"];
   };
-  "/api/incoterms/{id}": {
+  readonly "/api/incoterms/{id}": {
     /** Supprime un incoterms */
-    delete: operations["deleteIncotermsItem"];
+    readonly delete: operations["deleteIncotermsItem"];
     /** Modifie un incoterms */
-    patch: operations["patchIncotermsItem"];
-    parameters: {};
+    readonly patch: operations["patchIncotermsItem"];
   };
-  "/api/invoice-time-dues": {
+  readonly "/api/invoice-time-dues": {
     /** Récupère les délais de paiement des factures */
-    get: operations["getInvoiceTimeDueCollection"];
+    readonly get: operations["getInvoiceTimeDueCollection"];
     /** Créer un délai de paiement des factures */
-    post: operations["postInvoiceTimeDueCollection"];
-    parameters: {};
+    readonly post: operations["postInvoiceTimeDueCollection"];
   };
-  "/api/invoice-time-dues/{id}": {
+  readonly "/api/invoice-time-dues/{id}": {
     /** Supprime un délai de paiement des factures */
-    delete: operations["deleteInvoiceTimeDueItem"];
+    readonly delete: operations["deleteInvoiceTimeDueItem"];
     /** Modifie un délai de paiement des factures */
-    patch: operations["patchInvoiceTimeDueItem"];
-    parameters: {};
+    readonly patch: operations["patchInvoiceTimeDueItem"];
   };
-  "/api/out-trainers": {
+  readonly "/api/out-trainers": {
     /** Récupère les formateurs extérieurs */
-    get: operations["getOutTrainerCollection"];
+    readonly get: operations["getOutTrainerCollection"];
     /** Créer un formateur extérieur */
-    post: operations["postOutTrainerCollection"];
-    parameters: {};
+    readonly post: operations["postOutTrainerCollection"];
   };
-  "/api/out-trainers/{id}": {
+  readonly "/api/out-trainers/{id}": {
     /** Supprime un formateur extérieur */
-    delete: operations["deleteOutTrainerItem"];
+    readonly delete: operations["deleteOutTrainerItem"];
     /** Modifie un formateur extérieur */
-    patch: operations["patchOutTrainerItem"];
-    parameters: {};
+    readonly patch: operations["patchOutTrainerItem"];
   };
-  "/api/product-families": {
+  readonly "/api/product-families": {
     /** Récupère les familles de produit */
-    get: operations["getProductFamilyCollection"];
+    readonly get: operations["getProductFamilyCollection"];
     /** Créer une famille de produit */
-    post: operations["postProductFamilyCollection"];
-    parameters: {};
+    readonly post: operations["postProductFamilyCollection"];
   };
-  "/api/product-families/{id}": {
+  readonly "/api/product-families/{id}": {
     /** Modifie une famille de produit */
-    post: operations["postProductFamilyItem"];
+    readonly post: operations["postProductFamilyItem"];
     /** Supprime une famille de produit */
-    delete: operations["deleteProductFamilyItem"];
-    parameters: {};
+    readonly delete: operations["deleteProductFamilyItem"];
   };
-  "/api/quality-types": {
+  readonly "/api/quality-types": {
     /** Récupère les types qualités */
-    get: operations["getQualityTypeCollection"];
+    readonly get: operations["getQualityTypeCollection"];
     /** Créer un type qualité */
-    post: operations["postQualityTypeCollection"];
-    parameters: {};
+    readonly post: operations["postQualityTypeCollection"];
   };
-  "/api/quality-types/{id}": {
+  readonly "/api/quality-types/{id}": {
     /** Supprime un type qualité */
-    delete: operations["deleteQualityTypeItem"];
+    readonly delete: operations["deleteQualityTypeItem"];
     /** Modifie un type qualité */
-    patch: operations["patchQualityTypeItem"];
-    parameters: {};
+    readonly patch: operations["patchQualityTypeItem"];
   };
-  "/api/reject-types": {
+  readonly "/api/reject-types": {
     /** Récupère les type de rebus */
-    get: operations["getRejectTypeCollection"];
+    readonly get: operations["getRejectTypeCollection"];
     /** Créer un type de rebus */
-    post: operations["postRejectTypeCollection"];
-    parameters: {};
+    readonly post: operations["postRejectTypeCollection"];
   };
-  "/api/reject-types/{id}": {
+  readonly "/api/reject-types/{id}": {
     /** Supprime un type de rebus */
-    delete: operations["deleteRejectTypeItem"];
+    readonly delete: operations["deleteRejectTypeItem"];
     /** Modifie un type de rebus */
-    patch: operations["patchRejectTypeItem"];
-    parameters: {};
+    readonly patch: operations["patchRejectTypeItem"];
   };
-  "/api/skill-types": {
+  readonly "/api/skill-types": {
     /** Récupère les types de compétence */
-    get: operations["getSkillTypeCollection"];
+    readonly get: operations["getSkillTypeCollection"];
     /** Créer les types de compétence */
-    post: operations["postSkillTypeCollection"];
-    parameters: {};
+    readonly post: operations["postSkillTypeCollection"];
   };
-  "/api/skill-types/{id}": {
+  readonly "/api/skill-types/{id}": {
     /** Supprime les types de compétence */
-    delete: operations["deleteSkillTypeItem"];
+    readonly delete: operations["deleteSkillTypeItem"];
     /** Modifie les types de compétence */
-    patch: operations["patchSkillTypeItem"];
-    parameters: {};
+    readonly patch: operations["patchSkillTypeItem"];
   };
-  "/api/time-slots": {
+  readonly "/api/time-slots": {
     /** Récupère les plages horaires */
-    get: operations["getTimeSlotCollection"];
+    readonly get: operations["getTimeSlotCollection"];
     /** Créer une plage horaire */
-    post: operations["postTimeSlotCollection"];
-    parameters: {};
+    readonly post: operations["postTimeSlotCollection"];
   };
-  "/api/time-slots/{id}": {
+  readonly "/api/time-slots/{id}": {
     /** Supprime une plage horaire */
-    delete: operations["deleteTimeSlotItem"];
+    readonly delete: operations["deleteTimeSlotItem"];
     /** Modifie une plage horaire */
-    patch: operations["patchTimeSlotItem"];
-    parameters: {};
+    readonly patch: operations["patchTimeSlotItem"];
   };
-  "/api/units": {
+  readonly "/api/units": {
     /** Récupère les unités */
-    get: operations["getUnitCollection"];
+    readonly get: operations["getUnitCollection"];
     /** Créer une unité */
-    post: operations["postUnitCollection"];
-    parameters: {};
+    readonly post: operations["postUnitCollection"];
   };
-  "/api/units/{id}": {
+  readonly "/api/units/{id}": {
     /** Supprime une unité */
-    delete: operations["deleteUnitItem"];
+    readonly delete: operations["deleteUnitItem"];
     /** Modifie une unité */
-    patch: operations["patchUnitItem"];
-    parameters: {};
+    readonly patch: operations["patchUnitItem"];
   };
-  "/api/vat-messages": {
+  readonly "/api/vat-messages": {
     /** Récupère les messages TVA */
-    get: operations["getVatMessageCollection"];
+    readonly get: operations["getVatMessageCollection"];
     /** Créer un message TVA */
-    post: operations["postVatMessageCollection"];
-    parameters: {};
+    readonly post: operations["postVatMessageCollection"];
   };
-  "/api/vat-messages/{id}": {
+  readonly "/api/vat-messages/{id}": {
     /** Supprime un message TVA */
-    delete: operations["deleteVatMessageItem"];
+    readonly delete: operations["deleteVatMessageItem"];
     /** Modifie un message TVA */
-    patch: operations["patchVatMessageItem"];
-    parameters: {};
+    readonly patch: operations["patchVatMessageItem"];
+  };
+  readonly "/api/counter-part-groups/{id}": {
+  };
+  readonly "/api/tool-groups/{id}": {
+  };
+  readonly "/api/workstation-groups/{id}": {
   };
 }
 
 export interface components {
-  schemas: {
-    "Address-Carrier-read": {
-      /** Adresse */
-      address?: string | null;
-      /** Complément d'adresse */
-      address2?: string | null;
-      /** Ville */
-      city?: string | null;
-      /** Pays */
-      country?: string | null;
-      /** E-mail */
-      email?: string | null;
-      /** Numéro de téléphone */
-      phoneNumber?: string | null;
-      /** Code postal */
-      zipCode?: string | null;
+  readonly schemas: {
+    readonly "Address-Carrier-read": {
+      /**
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
+      readonly address?: string | null;
+      /**
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
+      readonly address2?: string | null;
+      /**
+       * @description Ville
+       * @example Rioz
+       */
+      readonly city?: string | null;
+      /**
+       * @description Pays
+       * @example FR
+       */
+      readonly country?: string | null;
+      /**
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
+      readonly email?: string | null;
+      /**
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
+      readonly phoneNumber?: string | null;
+      /**
+       * @description Code postal
+       * @example 70190
+       */
+      readonly zipCode?: string | null;
     };
-    "Address-Carrier-write": {
-      /** Adresse */
-      address?: string | null;
-      /** Complément d'adresse */
-      address2?: string | null;
-      /** Ville */
-      city?: string | null;
-      /** Pays */
-      country?: string | null;
-      /** E-mail */
-      email?: string | null;
-      /** Numéro de téléphone */
-      phoneNumber?: string | null;
-      /** Code postal */
-      zipCode?: string | null;
+    readonly "Address-Carrier-write": {
+      /**
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
+      readonly address?: string | null;
+      /**
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
+      readonly address2?: string | null;
+      /**
+       * @description Ville
+       * @example Rioz
+       */
+      readonly city?: string | null;
+      /**
+       * @description Pays
+       * @example FR
+       */
+      readonly country?: string | null;
+      /**
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
+      readonly email?: string | null;
+      /**
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
+      readonly phoneNumber?: string | null;
+      /**
+       * @description Code postal
+       * @example 70190
+       */
+      readonly zipCode?: string | null;
     };
-    "Address-OutTrainer-read": {
-      /** Adresse */
-      address?: string | null;
-      /** Complément d'adresse */
-      address2?: string | null;
-      /** Ville */
-      city?: string | null;
-      /** Pays */
-      country?: string | null;
-      /** E-mail */
-      email?: string | null;
-      /** Numéro de téléphone */
-      phoneNumber?: string | null;
-      /** Code postal */
-      zipCode?: string | null;
+    readonly "Address-OutTrainer-read": {
+      /**
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
+      readonly address?: string | null;
+      /**
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
+      readonly address2?: string | null;
+      /**
+       * @description Ville
+       * @example Rioz
+       */
+      readonly city?: string | null;
+      /**
+       * @description Pays
+       * @example FR
+       */
+      readonly country?: string | null;
+      /**
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
+      readonly email?: string | null;
+      /**
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
+      readonly phoneNumber?: string | null;
+      /**
+       * @description Code postal
+       * @example 70190
+       */
+      readonly zipCode?: string | null;
     };
-    "Address-OutTrainer-write": {
-      /** Adresse */
-      address?: string | null;
-      /** Complément d'adresse */
-      address2?: string | null;
-      /** Ville */
-      city?: string | null;
-      /** Pays */
-      country?: string | null;
-      /** E-mail */
-      email?: string | null;
-      /** Numéro de téléphone */
-      phoneNumber?: string | null;
-      /** Code postal */
-      zipCode?: string | null;
+    readonly "Address-OutTrainer-write": {
+      /**
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
+      readonly address?: string | null;
+      /**
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
+      readonly address2?: string | null;
+      /**
+       * @description Ville
+       * @example Rioz
+       */
+      readonly city?: string | null;
+      /**
+       * @description Pays
+       * @example FR
+       */
+      readonly country?: string | null;
+      /**
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
+      readonly email?: string | null;
+      /**
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
+      readonly phoneNumber?: string | null;
+      /**
+       * @description Code postal
+       * @example 70190
+       */
+      readonly zipCode?: string | null;
     };
-    "Address.jsonld-Carrier-read": {
-      "@context"?:
+    readonly "Address.jsonld-Carrier-read": {
+      /** @example /api/contexts/Address */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Adresse */
-      address?: string | null;
-      /** Complément d'adresse */
-      address2?: string | null;
-      /** Ville */
-      city?: string | null;
-      /** Pays */
-      country?: string | null;
-      /** E-mail */
-      email?: string | null;
-      /** Numéro de téléphone */
-      phoneNumber?: string | null;
-      /** Code postal */
-      zipCode?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/addresses/1 */
+      readonly "@id"?: string;
+      /** @example Address */
+      readonly "@type"?: string;
+      /**
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
+      readonly address?: string | null;
+      /**
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
+      readonly address2?: string | null;
+      /**
+       * @description Ville
+       * @example Rioz
+       */
+      readonly city?: string | null;
+      /**
+       * @description Pays
+       * @example FR
+       */
+      readonly country?: string | null;
+      /**
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
+      readonly email?: string | null;
+      /**
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
+      readonly phoneNumber?: string | null;
+      /**
+       * @description Code postal
+       * @example 70190
+       */
+      readonly zipCode?: string | null;
     };
-    "Address.jsonld-Carrier-write": {
-      "@context"?:
+    readonly "Address.jsonld-Carrier-write": {
+      /** @example /api/contexts/Address */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Adresse */
-      address?: string | null;
-      /** Complément d'adresse */
-      address2?: string | null;
-      /** Ville */
-      city?: string | null;
-      /** Pays */
-      country?: string | null;
-      /** E-mail */
-      email?: string | null;
-      /** Numéro de téléphone */
-      phoneNumber?: string | null;
-      /** Code postal */
-      zipCode?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/addresses/1 */
+      readonly "@id"?: string;
+      /** @example Address */
+      readonly "@type"?: string;
+      /**
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
+      readonly address?: string | null;
+      /**
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
+      readonly address2?: string | null;
+      /**
+       * @description Ville
+       * @example Rioz
+       */
+      readonly city?: string | null;
+      /**
+       * @description Pays
+       * @example FR
+       */
+      readonly country?: string | null;
+      /**
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
+      readonly email?: string | null;
+      /**
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
+      readonly phoneNumber?: string | null;
+      /**
+       * @description Code postal
+       * @example 70190
+       */
+      readonly zipCode?: string | null;
     };
-    "Address.jsonld-OutTrainer-read": {
-      "@context"?:
+    readonly "Address.jsonld-OutTrainer-read": {
+      /** @example /api/contexts/Address */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Adresse */
-      address?: string | null;
-      /** Complément d'adresse */
-      address2?: string | null;
-      /** Ville */
-      city?: string | null;
-      /** Pays */
-      country?: string | null;
-      /** E-mail */
-      email?: string | null;
-      /** Numéro de téléphone */
-      phoneNumber?: string | null;
-      /** Code postal */
-      zipCode?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/addresses/1 */
+      readonly "@id"?: string;
+      /** @example Address */
+      readonly "@type"?: string;
+      /**
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
+      readonly address?: string | null;
+      /**
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
+      readonly address2?: string | null;
+      /**
+       * @description Ville
+       * @example Rioz
+       */
+      readonly city?: string | null;
+      /**
+       * @description Pays
+       * @example FR
+       */
+      readonly country?: string | null;
+      /**
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
+      readonly email?: string | null;
+      /**
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
+      readonly phoneNumber?: string | null;
+      /**
+       * @description Code postal
+       * @example 70190
+       */
+      readonly zipCode?: string | null;
     };
-    "Address.jsonld-OutTrainer-write": {
-      "@context"?:
+    readonly "Address.jsonld-OutTrainer-write": {
+      /** @example /api/contexts/Address */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Adresse */
-      address?: string | null;
-      /** Complément d'adresse */
-      address2?: string | null;
-      /** Ville */
-      city?: string | null;
-      /** Pays */
-      country?: string | null;
-      /** E-mail */
-      email?: string | null;
-      /** Numéro de téléphone */
-      phoneNumber?: string | null;
-      /** Code postal */
-      zipCode?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/addresses/1 */
+      readonly "@id"?: string;
+      /** @example Address */
+      readonly "@type"?: string;
+      /**
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
+      readonly address?: string | null;
+      /**
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
+      readonly address2?: string | null;
+      /**
+       * @description Ville
+       * @example Rioz
+       */
+      readonly city?: string | null;
+      /**
+       * @description Pays
+       * @example FR
+       */
+      readonly country?: string | null;
+      /**
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
+      readonly email?: string | null;
+      /**
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
+      readonly phoneNumber?: string | null;
+      /**
+       * @description Code postal
+       * @example 70190
+       */
+      readonly zipCode?: string | null;
     };
-    Auth: {
-      /** mot de passe */
-      password?: string;
-      /** identifiant */
-      username?: string;
+    readonly Auth: {
+      /**
+       * @description mot de passe
+       * @example super
+       */
+      readonly password?: string;
+      /**
+       * @description identifiant
+       * @example super
+       */
+      readonly username?: string;
     };
-    /** Transporteur */
-    "Carrier-Carrier-read": {
-      /** Nom */
-      name: string;
-      /** Adresse */
-      address?: components["schemas"]["Address-Carrier-read"];
-      /** id */
-      id?: number;
+    /** @description Transporteur */
+    readonly "Carrier-Carrier-read": {
+      /**
+       * @description Nom
+       * @example DHL
+       */
+      readonly name: string;
+      /** @description Adresse */
+      readonly address?: components["schemas"]["Address-Carrier-read"];
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Transporteur */
-    "Carrier-Carrier-write": {
-      /** Nom */
-      name: string;
-      /** Adresse */
-      address?: components["schemas"]["Address-Carrier-write"];
+    /** @description Transporteur */
+    readonly "Carrier-Carrier-write": {
+      /**
+       * @description Nom
+       * @example DHL
+       */
+      readonly name: string;
+      /** @description Adresse */
+      readonly address?: components["schemas"]["Address-Carrier-write"];
     };
-    /** Transporteur */
-    "Carrier.jsonld-Carrier-read": {
-      "@context"?:
+    /** @description Transporteur */
+    readonly "Carrier.jsonld-Carrier-read": {
+      /** @example /api/contexts/Carrier */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Adresse */
-      address?: components["schemas"]["Address.jsonld-Carrier-read"];
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/carriers/1 */
+      readonly "@id"?: string;
+      /** @example Carrier */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example DHL
+       */
+      readonly name: string;
+      /** @description Adresse */
+      readonly address?: components["schemas"]["Address.jsonld-Carrier-read"];
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Transporteur */
-    "Carrier.jsonld-Carrier-write": {
-      "@context"?:
+    /** @description Transporteur */
+    readonly "Carrier.jsonld-Carrier-write": {
+      /** @example /api/contexts/Carrier */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Adresse */
-      address?: components["schemas"]["Address.jsonld-Carrier-write"];
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/carriers/1 */
+      readonly "@id"?: string;
+      /** @example Carrier */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example DHL
+       */
+      readonly name: string;
+      /** @description Adresse */
+      readonly address?: components["schemas"]["Address.jsonld-Carrier-write"];
     };
-    /** Couleur */
-    "Color-Color-read": {
-      /** nom */
-      name: string | null;
-      /** ral */
-      ral?: string | null;
-      /** rgb */
-      rgb?: string | null;
-      /** id */
-      id?: number;
+    /** @description Couleur */
+    readonly "Color-Color-read": {
+      /**
+       * @description nom
+       * @example Gris
+       */
+      readonly name: string | null;
+      /**
+       * @description ral
+       * @example 17122018
+       */
+      readonly ral?: string | null;
+      /**
+       * @description rgb
+       * @example #848484
+       */
+      readonly rgb?: string | null;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Couleur */
-    "Color-Color-write": {
-      /** nom */
-      name: string | null;
-      /** ral */
-      ral?: string | null;
-      /** rgb */
-      rgb?: string | null;
+    /** @description Couleur */
+    readonly "Color-Color-write": {
+      /**
+       * @description nom
+       * @example Gris
+       */
+      readonly name: string | null;
+      /**
+       * @description ral
+       * @example 17122018
+       */
+      readonly ral?: string | null;
+      /**
+       * @description rgb
+       * @example #848484
+       */
+      readonly rgb?: string | null;
     };
-    /** Couleur */
-    "Color.jsonld-Color-read": {
-      "@context"?:
+    /** @description Couleur */
+    readonly "Color.jsonld-Color-read": {
+      /** @example /api/contexts/Color */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** nom */
-      name: string | null;
-      /** ral */
-      ral?: string | null;
-      /** rgb */
-      rgb?: string | null;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/colors/1 */
+      readonly "@id"?: string;
+      /** @example Color */
+      readonly "@type"?: string;
+      /**
+       * @description nom
+       * @example Gris
+       */
+      readonly name: string | null;
+      /**
+       * @description ral
+       * @example 17122018
+       */
+      readonly ral?: string | null;
+      /**
+       * @description rgb
+       * @example #848484
+       */
+      readonly rgb?: string | null;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Couleur */
-    "Color.jsonld-Color-write": {
-      "@context"?:
+    /** @description Couleur */
+    readonly "Color.jsonld-Color-write": {
+      /** @example /api/contexts/Color */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** nom */
-      name: string | null;
-      /** ral */
-      ral?: string | null;
-      /** rgb */
-      rgb?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/colors/1 */
+      readonly "@id"?: string;
+      /** @example Color */
+      readonly "@type"?: string;
+      /**
+       * @description nom
+       * @example Gris
+       */
+      readonly name: string | null;
+      /**
+       * @description ral
+       * @example 17122018
+       */
+      readonly ral?: string | null;
+      /**
+       * @description rgb
+       * @example #848484
+       */
+      readonly rgb?: string | null;
     };
-    /** Famille de composant */
-    "ComponentFamily-ComponentFamily-read": {
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** Code */
-      code?: string;
-      /** Cuivré */
-      copperable?: boolean;
-      /** id */
-      id?: number;
-      /** Icône */
-      filepath?: string | null;
-      customsCode?: string | null;
+    /** @description Famille de composant */
+    readonly "ComponentFamily-ComponentFamily-read": {
+      /**
+       * @description Nom
+       * @example Câbles
+       */
+      readonly name: string;
+      /**
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/component-families/2
+       */
+      readonly parent?: string | null;
+      /**
+       * @description Code
+       * @example CAB
+       */
+      readonly code?: string;
+      /**
+       * @description Cuivré
+       * @example true
+       */
+      readonly copperable?: boolean;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      /**
+       * @description Icône
+       * @example /uploads/component-families/1.jpg
+       */
+      readonly filepath?: string | null;
+      readonly customsCode?: string | null;
     };
-    /** Famille de composant */
-    "ComponentFamily-ComponentFamily-write": {
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** Code */
-      code?: string;
-      /** Cuivré */
-      copperable?: boolean;
-      customsCode?: string | null;
-      file?: string | null;
+    /** @description Famille de composant */
+    readonly "ComponentFamily-ComponentFamily-write": {
+      /**
+       * @description Nom
+       * @example Câbles
+       */
+      readonly name: string;
+      /**
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/component-families/2
+       */
+      readonly parent?: string | null;
+      /**
+       * @description Code
+       * @example CAB
+       */
+      readonly code?: string;
+      /**
+       * @description Cuivré
+       * @example true
+       */
+      readonly copperable?: boolean;
+      readonly customsCode?: string | null;
+      /** Format: binary */
+      readonly file?: string | null;
     };
-    /** Famille de composant */
-    "ComponentFamily.jsonld-ComponentFamily-read": {
-      "@context"?:
+    /** @description Famille de composant */
+    readonly "ComponentFamily.jsonld-ComponentFamily-read": {
+      /** @example /api/contexts/ComponentFamily */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** Code */
-      code?: string;
-      /** Cuivré */
-      copperable?: boolean;
-      /** id */
-      id?: number;
-      /** Icône */
-      filepath?: string | null;
-      customsCode?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/component-families/1 */
+      readonly "@id"?: string;
+      /** @example ComponentFamily */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Câbles
+       */
+      readonly name: string;
+      /**
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/component-families/2
+       */
+      readonly parent?: string | null;
+      /**
+       * @description Code
+       * @example CAB
+       */
+      readonly code?: string;
+      /**
+       * @description Cuivré
+       * @example true
+       */
+      readonly copperable?: boolean;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      /**
+       * @description Icône
+       * @example /uploads/component-families/1.jpg
+       */
+      readonly filepath?: string | null;
+      readonly customsCode?: string | null;
     };
-    /** Devises */
-    "Currency-Currency-read": {
-      /** Active */
-      active?: boolean;
-      /** Code */
-      code: string;
-      /** Taux (€) */
-      rate: number;
-      /** id */
-      id?: number;
-      /** Nom */
-      name?: string | null;
-      /** Symbole */
-      symbol?: string | null;
+    /** @description Groupe de contrepartie de test */
+    readonly CounterPartGroup: {
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      readonly type?: string;
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+      readonly deleted?: boolean;
     };
-    /** Devises */
-    "Currency-Currency-write": {
-      /** Active */
-      active?: boolean;
-    };
-    /** Devises */
-    "Currency.jsonld-Currency-read": {
-      "@id"?: string;
-      "@type"?: string;
-      "@context"?:
+    /** @description Groupe de contrepartie de test */
+    readonly "CounterPartGroup.jsonld": {
+      /** @example /api/contexts/CounterPartGroup */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      /** Active */
-      active?: boolean;
-      /** Code */
-      code: string;
-      /** Taux (€) */
-      rate: number;
-      /** id */
-      id?: number;
-      /** Nom */
-      name?: string | null;
-      /** Symbole */
-      symbol?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/counter-part-groups/1 */
+      readonly "@id"?: string;
+      /** @example CounterPartGroup */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      readonly type?: string;
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+      readonly deleted?: boolean;
     };
-    /** Employé */
-    "Employee-Employee-read": {
-      /** Nom */
-      name: string;
-      /** identifiant */
-      username?: string;
-      /** id */
-      id?: number;
-      /** Rôles */
-      roles?: string[];
-      /** Token */
-      token?: string | null;
+    /** @description Devises */
+    readonly "Currency-Currency-read": {
+      /**
+       * @description Active
+       * @example true
+       */
+      readonly active?: boolean;
+      /**
+       * @description Code
+       * @example EUR
+       */
+      readonly code: string;
+      /**
+       * @description Taux (€)
+       * @default 1
+       * @example 1
+       */
+      readonly rate: number;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      /**
+       * @description Nom
+       * @example Euro
+       */
+      readonly name?: string | null;
+      /**
+       * @description Symbole
+       * @example €
+       */
+      readonly symbol?: string | null;
     };
-    /** Employé */
-    "Employee.jsonld-Employee-read": {
-      "@context"?:
+    /** @description Devises */
+    readonly "Currency-Currency-write": {
+      /**
+       * @description Active
+       * @example true
+       */
+      readonly active?: boolean;
+    };
+    /** @description Devises */
+    readonly "Currency.jsonld-Currency-read": {
+      /** @example /api/currencies/1 */
+      readonly "@id"?: string;
+      /** @example Currency */
+      readonly "@type"?: string;
+      /** @example /api/contexts/Currency */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** identifiant */
-      username?: string;
-      /** id */
-      id?: number;
-      /** Rôles */
-      roles?: string[];
-      /** Token */
-      token?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /**
+       * @description Active
+       * @example true
+       */
+      readonly active?: boolean;
+      /**
+       * @description Code
+       * @example EUR
+       */
+      readonly code: string;
+      /**
+       * @description Taux (€)
+       * @default 1
+       * @example 1
+       */
+      readonly rate: number;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      /**
+       * @description Nom
+       * @example Euro
+       */
+      readonly name?: string | null;
+      /**
+       * @description Symbole
+       * @example €
+       */
+      readonly symbol?: string | null;
     };
-    /** Type d'événements */
-    "EventType-EventType-read": {
-      /** Nom */
-      name: string;
-      /** Status */
-      toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
-      /** id */
-      id?: number;
+    /** @description Employé */
+    readonly "Employee-Employee-read": {
+      /**
+       * @description Nom
+       * @example Super
+       */
+      readonly name: string;
+      /**
+       * @description identifiant
+       * @example super
+       */
+      readonly username?: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      /**
+       * @description Rôles
+       * @example ROLE_USER
+       */
+      readonly roles?: readonly string[];
+      /**
+       * @description Token
+       * @example 47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707
+       */
+      readonly token?: string | null;
     };
-    /** Type d'événements */
-    "EventType-EventType-write": {
-      /** Nom */
-      name: string;
-      /** Status */
-      toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
-    };
-    /** Type d'événements */
-    "EventType.jsonld-EventType-read": {
-      "@context"?:
+    /** @description Employé */
+    readonly "Employee.jsonld-Employee-read": {
+      /** @example /api/contexts/Employee */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Status */
-      toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/employees/1 */
+      readonly "@id"?: string;
+      /** @example Employee */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Super
+       */
+      readonly name: string;
+      /**
+       * @description identifiant
+       * @example super
+       */
+      readonly username?: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      /**
+       * @description Rôles
+       * @example ROLE_USER
+       */
+      readonly roles?: readonly string[];
+      /**
+       * @description Token
+       * @example 47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707
+       */
+      readonly token?: string | null;
     };
-    /** Type d'événements */
-    "EventType.jsonld-EventType-write": {
-      "@context"?:
+    /** @description Groupe d'équipement */
+    readonly "EngineGroup-EngineGroup-read": {
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example TA
+       */
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+    };
+    /** @description Groupe d'équipement */
+    readonly "EngineGroup-EngineGroup-write": {
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example TA
+       */
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+    };
+    /** @description Groupe d'équipement */
+    readonly "EngineGroup.jsonld-EngineGroup-read": {
+      /** @example /api/engine-groups/1 */
+      readonly "@id"?: string;
+      /** @example EngineGroup */
+      readonly "@type"?: string;
+      /** @example /api/contexts/EngineGroup */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Status */
-      toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example TA
+       */
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Incoterms */
-    "Incoterms-Incoterms-read": {
-      /** Nom */
-      name: string;
-      /** Code */
-      code: string;
-      /** id */
-      id?: number;
+    /** @description Type d'événements */
+    readonly "EventType-EventType-read": {
+      /**
+       * @description Nom
+       * @example ABSENCE
+       */
+      readonly name: string;
+      /**
+       * @description Status
+       * @example blocked
+       */
+      readonly toStatus?:
+        | ("blocked" | "disabled" | "enabled" | "warning")
+        | null;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Incoterms */
-    "Incoterms-Incoterms-write": {
-      /** Nom */
-      name: string;
-      /** Code */
-      code: string;
+    /** @description Type d'événements */
+    readonly "EventType-EventType-write": {
+      /**
+       * @description Nom
+       * @example ABSENCE
+       */
+      readonly name: string;
+      /**
+       * @description Status
+       * @example blocked
+       */
+      readonly toStatus?:
+        | ("blocked" | "disabled" | "enabled" | "warning")
+        | null;
     };
-    /** Incoterms */
-    "Incoterms.jsonld-Incoterms-read": {
-      "@context"?:
+    /** @description Type d'événements */
+    readonly "EventType.jsonld-EventType-read": {
+      /** @example /api/contexts/EventType */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Code */
-      code: string;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/event-types/1 */
+      readonly "@id"?: string;
+      /** @example EventType */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example ABSENCE
+       */
+      readonly name: string;
+      /**
+       * @description Status
+       * @example blocked
+       */
+      readonly toStatus?:
+        | ("blocked" | "disabled" | "enabled" | "warning")
+        | null;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Incoterms */
-    "Incoterms.jsonld-Incoterms-write": {
-      "@context"?:
+    /** @description Type d'événements */
+    readonly "EventType.jsonld-EventType-write": {
+      /** @example /api/contexts/EventType */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Code */
-      code: string;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/event-types/1 */
+      readonly "@id"?: string;
+      /** @example EventType */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example ABSENCE
+       */
+      readonly name: string;
+      /**
+       * @description Status
+       * @example blocked
+       */
+      readonly toStatus?:
+        | ("blocked" | "disabled" | "enabled" | "warning")
+        | null;
     };
-    /** Délai de paiement des factures */
-    "InvoiceTimeDue-InvoiceTimeDue-read": {
-      /** Nom */
-      name: string;
-      /** Jours */
-      days?: number;
-      /** Jours après la fin du mois */
-      daysAfterEndOfMonth?: number;
-      /** Fin du mois */
-      endOfMonth?: boolean;
-      /** id */
-      id?: number;
+    /** @description Incoterms */
+    readonly "Incoterms-Incoterms-read": {
+      /**
+       * @description Nom
+       * @example Delivered Duty Paid
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example DDP
+       */
+      readonly code: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Délai de paiement des factures */
-    "InvoiceTimeDue-InvoiceTimeDue-write": {
-      /** Nom */
-      name: string;
-      /** Jours */
-      days?: number;
-      /** Jours après la fin du mois */
-      daysAfterEndOfMonth?: number;
-      /** Fin du mois */
-      endOfMonth?: boolean;
+    /** @description Incoterms */
+    readonly "Incoterms-Incoterms-write": {
+      /**
+       * @description Nom
+       * @example Delivered Duty Paid
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example DDP
+       */
+      readonly code: string;
     };
-    /** Délai de paiement des factures */
-    "InvoiceTimeDue.jsonld-InvoiceTimeDue-read": {
-      "@context"?:
+    /** @description Incoterms */
+    readonly "Incoterms.jsonld-Incoterms-read": {
+      /** @example /api/contexts/Incoterms */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Jours */
-      days?: number;
-      /** Jours après la fin du mois */
-      daysAfterEndOfMonth?: number;
-      /** Fin du mois */
-      endOfMonth?: boolean;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/incoterms/1 */
+      readonly "@id"?: string;
+      /** @example Incoterms */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Delivered Duty Paid
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example DDP
+       */
+      readonly code: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Délai de paiement des factures */
-    "InvoiceTimeDue.jsonld-InvoiceTimeDue-write": {
-      "@context"?:
+    /** @description Incoterms */
+    readonly "Incoterms.jsonld-Incoterms-write": {
+      /** @example /api/contexts/Incoterms */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Jours */
-      days?: number;
-      /** Jours après la fin du mois */
-      daysAfterEndOfMonth?: number;
-      /** Fin du mois */
-      endOfMonth?: boolean;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/incoterms/1 */
+      readonly "@id"?: string;
+      /** @example Incoterms */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Delivered Duty Paid
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example DDP
+       */
+      readonly code: string;
     };
-    /** Formateur extérieur */
-    "OutTrainer-OutTrainer-read": {
-      /** Prénom */
-      name: string;
-      /** Adresse */
-      address?: components["schemas"]["Address-OutTrainer-read"];
-      /** Nom */
-      surname: string;
-      /** id */
-      id?: number;
+    /** @description Délai de paiement des factures */
+    readonly "InvoiceTimeDue-InvoiceTimeDue-read": {
+      /**
+       * @description Nom
+       * @example 30 jours fin de mois
+       */
+      readonly name: string;
+      /**
+       * @description Jours
+       * @example 30
+       */
+      readonly days?: number;
+      /** @description Jours après la fin du mois */
+      readonly daysAfterEndOfMonth?: number;
+      /**
+       * @description Fin du mois
+       * @example true
+       */
+      readonly endOfMonth?: boolean;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Formateur extérieur */
-    "OutTrainer-OutTrainer-write": {
-      /** Prénom */
-      name: string;
-      /** Adresse */
-      address?: components["schemas"]["Address-OutTrainer-write"];
-      /** Nom */
-      surname: string;
+    /** @description Délai de paiement des factures */
+    readonly "InvoiceTimeDue-InvoiceTimeDue-write": {
+      /**
+       * @description Nom
+       * @example 30 jours fin de mois
+       */
+      readonly name: string;
+      /**
+       * @description Jours
+       * @example 30
+       */
+      readonly days?: number;
+      /** @description Jours après la fin du mois */
+      readonly daysAfterEndOfMonth?: number;
+      /**
+       * @description Fin du mois
+       * @example true
+       */
+      readonly endOfMonth?: boolean;
     };
-    /** Formateur extérieur */
-    "OutTrainer.jsonld-OutTrainer-read": {
-      "@context"?:
+    /** @description Délai de paiement des factures */
+    readonly "InvoiceTimeDue.jsonld-InvoiceTimeDue-read": {
+      /** @example /api/contexts/InvoiceTimeDue */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Prénom */
-      name: string;
-      /** Adresse */
-      address?: components["schemas"]["Address.jsonld-OutTrainer-read"];
-      /** Nom */
-      surname: string;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/invoice-time-dues/1 */
+      readonly "@id"?: string;
+      /** @example InvoiceTimeDue */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example 30 jours fin de mois
+       */
+      readonly name: string;
+      /**
+       * @description Jours
+       * @example 30
+       */
+      readonly days?: number;
+      /** @description Jours après la fin du mois */
+      readonly daysAfterEndOfMonth?: number;
+      /**
+       * @description Fin du mois
+       * @example true
+       */
+      readonly endOfMonth?: boolean;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Formateur extérieur */
-    "OutTrainer.jsonld-OutTrainer-write": {
-      "@context"?:
+    /** @description Délai de paiement des factures */
+    readonly "InvoiceTimeDue.jsonld-InvoiceTimeDue-write": {
+      /** @example /api/contexts/InvoiceTimeDue */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Prénom */
-      name: string;
-      /** Adresse */
-      address?: components["schemas"]["Address.jsonld-OutTrainer-write"];
-      /** Nom */
-      surname: string;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/invoice-time-dues/1 */
+      readonly "@id"?: string;
+      /** @example InvoiceTimeDue */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example 30 jours fin de mois
+       */
+      readonly name: string;
+      /**
+       * @description Jours
+       * @example 30
+       */
+      readonly days?: number;
+      /** @description Jours après la fin du mois */
+      readonly daysAfterEndOfMonth?: number;
+      /**
+       * @description Fin du mois
+       * @example true
+       */
+      readonly endOfMonth?: boolean;
     };
-    /** Famille de produit */
-    "ProductFamily-ProductFamily-read": {
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** id */
-      id?: number;
-      /** Icône */
-      filepath?: string | null;
-      customsCode?: string | null;
+    /** @description Formateur extérieur */
+    readonly "OutTrainer-OutTrainer-read": {
+      /**
+       * @description Prénom
+       * @example Rawaa
+       */
+      readonly name: string;
+      /** @description Adresse */
+      readonly address?: components["schemas"]["Address-OutTrainer-read"];
+      /**
+       * @description Nom
+       * @example CHRAIET
+       */
+      readonly surname: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Famille de produit */
-    "ProductFamily-ProductFamily-write": {
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      customsCode?: string | null;
-      file?: string | null;
+    /** @description Formateur extérieur */
+    readonly "OutTrainer-OutTrainer-write": {
+      /**
+       * @description Prénom
+       * @example Rawaa
+       */
+      readonly name: string;
+      /** @description Adresse */
+      readonly address?: components["schemas"]["Address-OutTrainer-write"];
+      /**
+       * @description Nom
+       * @example CHRAIET
+       */
+      readonly surname: string;
     };
-    /** Famille de produit */
-    "ProductFamily.jsonld-ProductFamily-read": {
-      "@context"?:
+    /** @description Formateur extérieur */
+    readonly "OutTrainer.jsonld-OutTrainer-read": {
+      /** @example /api/contexts/OutTrainer */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** id */
-      id?: number;
-      /** Icône */
-      filepath?: string | null;
-      customsCode?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/out-trainers/1 */
+      readonly "@id"?: string;
+      /** @example OutTrainer */
+      readonly "@type"?: string;
+      /**
+       * @description Prénom
+       * @example Rawaa
+       */
+      readonly name: string;
+      /** @description Adresse */
+      readonly address?: components["schemas"]["Address.jsonld-OutTrainer-read"];
+      /**
+       * @description Nom
+       * @example CHRAIET
+       */
+      readonly surname: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Type qualité */
-    "QualityType-QualityType-read": {
-      /** Nom */
-      name: string;
-      /** id */
-      id?: number;
-    };
-    /** Type qualité */
-    "QualityType-QualityType-write": {
-      /** Nom */
-      name: string;
-    };
-    /** Type qualité */
-    "QualityType.jsonld-QualityType-read": {
-      "@context"?:
+    /** @description Formateur extérieur */
+    readonly "OutTrainer.jsonld-OutTrainer-write": {
+      /** @example /api/contexts/OutTrainer */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/out-trainers/1 */
+      readonly "@id"?: string;
+      /** @example OutTrainer */
+      readonly "@type"?: string;
+      /**
+       * @description Prénom
+       * @example Rawaa
+       */
+      readonly name: string;
+      /** @description Adresse */
+      readonly address?: components["schemas"]["Address.jsonld-OutTrainer-write"];
+      /**
+       * @description Nom
+       * @example CHRAIET
+       */
+      readonly surname: string;
     };
-    /** Type qualité */
-    "QualityType.jsonld-QualityType-write": {
-      "@context"?:
+    /** @description Famille de produit */
+    readonly "ProductFamily-ProductFamily-read": {
+      /**
+       * @description Nom
+       * @example Faisceaux
+       */
+      readonly name: string;
+      /**
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/product-families/1
+       */
+      readonly parent?: string | null;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      /**
+       * @description Icône
+       * @example /uploads/product-families/1.jpg
+       */
+      readonly filepath?: string | null;
+      readonly customsCode?: string | null;
+    };
+    /** @description Famille de produit */
+    readonly "ProductFamily-ProductFamily-write": {
+      /**
+       * @description Nom
+       * @example Faisceaux
+       */
+      readonly name: string;
+      /**
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/product-families/1
+       */
+      readonly parent?: string | null;
+      readonly customsCode?: string | null;
+      /** Format: binary */
+      readonly file?: string | null;
+    };
+    /** @description Famille de produit */
+    readonly "ProductFamily.jsonld-ProductFamily-read": {
+      /** @example /api/contexts/ProductFamily */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/product-families/1 */
+      readonly "@id"?: string;
+      /** @example ProductFamily */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Faisceaux
+       */
+      readonly name: string;
+      /**
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/product-families/1
+       */
+      readonly parent?: string | null;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      /**
+       * @description Icône
+       * @example /uploads/product-families/1.jpg
+       */
+      readonly filepath?: string | null;
+      readonly customsCode?: string | null;
     };
-    /** Type de rebus */
-    "RejectType-RejectType-read": {
-      /** Nom */
-      name: string;
-      /** id */
-      id?: number;
+    /** @description Type qualité */
+    readonly "QualityType-QualityType-read": {
+      /**
+       * @description Nom
+       * @example Dimensions
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Type de rebus */
-    "RejectType-RejectType-write": {
-      /** Nom */
-      name: string;
+    /** @description Type qualité */
+    readonly "QualityType-QualityType-write": {
+      /**
+       * @description Nom
+       * @example Dimensions
+       */
+      readonly name: string;
     };
-    /** Type de rebus */
-    "RejectType.jsonld-RejectType-read": {
-      "@context"?:
+    /** @description Type qualité */
+    readonly "QualityType.jsonld-QualityType-read": {
+      /** @example /api/contexts/QualityType */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/quality-types/1 */
+      readonly "@id"?: string;
+      /** @example QualityType */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Dimensions
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Type de rebus */
-    "RejectType.jsonld-RejectType-write": {
-      "@context"?:
+    /** @description Type qualité */
+    readonly "QualityType.jsonld-QualityType-write": {
+      /** @example /api/contexts/QualityType */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/quality-types/1 */
+      readonly "@id"?: string;
+      /** @example QualityType */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Dimensions
+       */
+      readonly name: string;
     };
-    /** Type de compétence */
-    "SkillType-SkillType-read": {
-      /** Nom */
-      name: string;
-      /** id */
-      id?: number;
+    /** @description Type de rebus */
+    readonly "RejectType-RejectType-read": {
+      /**
+       * @description Nom
+       * @example sertissage dimensionnelle
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Type de compétence */
-    "SkillType-SkillType-write": {
-      /** Nom */
-      name: string;
+    /** @description Type de rebus */
+    readonly "RejectType-RejectType-write": {
+      /**
+       * @description Nom
+       * @example sertissage dimensionnelle
+       */
+      readonly name: string;
     };
-    /** Type de compétence */
-    "SkillType.jsonld-SkillType-read": {
-      "@context"?:
+    /** @description Type de rebus */
+    readonly "RejectType.jsonld-RejectType-read": {
+      /** @example /api/contexts/RejectType */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/reject-types/1 */
+      readonly "@id"?: string;
+      /** @example RejectType */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example sertissage dimensionnelle
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Type de compétence */
-    "SkillType.jsonld-SkillType-write": {
-      "@context"?:
+    /** @description Type de rebus */
+    readonly "RejectType.jsonld-RejectType-write": {
+      /** @example /api/contexts/RejectType */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/reject-types/1 */
+      readonly "@id"?: string;
+      /** @example RejectType */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example sertissage dimensionnelle
+       */
+      readonly name: string;
     };
-    /** Plages horaires */
-    "TimeSlot-TimeSlot-read": {
-      /** Nom */
-      name: string;
-      /** Fin */
-      end?: string | null;
-      /** Fin pause */
-      endBreak?: string | null;
-      /** Début */
-      start?: string | null;
-      /** Début pause */
-      startBreak?: string | null;
-      /** id */
-      id?: number;
+    /** @description Type de compétence */
+    readonly "SkillType-SkillType-read": {
+      /**
+       * @description Nom
+       * @example Assemblage
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Plages horaires */
-    "TimeSlot-TimeSlot-write": {
-      /** Nom */
-      name: string;
-      /** Fin */
-      end?: string | null;
-      /** Fin pause */
-      endBreak?: string | null;
-      /** Début */
-      start?: string | null;
-      /** Début pause */
-      startBreak?: string | null;
+    /** @description Type de compétence */
+    readonly "SkillType-SkillType-write": {
+      /**
+       * @description Nom
+       * @example Assemblage
+       */
+      readonly name: string;
     };
-    /** Plages horaires */
-    "TimeSlot.jsonld-TimeSlot-read": {
-      "@context"?:
+    /** @description Type de compétence */
+    readonly "SkillType.jsonld-SkillType-read": {
+      /** @example /api/contexts/SkillType */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Fin */
-      end?: string | null;
-      /** Fin pause */
-      endBreak?: string | null;
-      /** Début */
-      start?: string | null;
-      /** Début pause */
-      startBreak?: string | null;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/skill-types/1 */
+      readonly "@id"?: string;
+      /** @example SkillType */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Assemblage
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Plages horaires */
-    "TimeSlot.jsonld-TimeSlot-write": {
-      "@context"?:
+    /** @description Type de compétence */
+    readonly "SkillType.jsonld-SkillType-write": {
+      /** @example /api/contexts/SkillType */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Fin */
-      end?: string | null;
-      /** Fin pause */
-      endBreak?: string | null;
-      /** Début */
-      start?: string | null;
-      /** Début pause */
-      startBreak?: string | null;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/skill-types/1 */
+      readonly "@id"?: string;
+      /** @example SkillType */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Assemblage
+       */
+      readonly name: string;
     };
-    /** Unit */
-    "Unit-Unit-read": {
-      /** Nom */
-      name: string;
-      /** Code */
-      code: string;
-      /** id */
-      id?: number;
+    /** @description Plages horaires */
+    readonly "TimeSlot-TimeSlot-read": {
+      /**
+       * @description Nom
+       * @example Journée
+       */
+      readonly name: string;
+      /**
+       * Format: date-time
+       * @description Fin
+       * @example 17:30:00
+       */
+      readonly end?: string | null;
+      /**
+       * Format: date-time
+       * @description Fin pause
+       * @example 13:30:00
+       */
+      readonly endBreak?: string | null;
+      /**
+       * Format: date-time
+       * @description Début
+       * @example 07:30:00
+       */
+      readonly start?: string | null;
+      /**
+       * Format: date-time
+       * @description Début pause
+       * @example 12:30:00
+       */
+      readonly startBreak?: string | null;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Unit */
-    "Unit-Unit-write": {
-      /** Nom */
-      name: string;
-      /** Code */
-      code: string;
+    /** @description Plages horaires */
+    readonly "TimeSlot-TimeSlot-write": {
+      /**
+       * @description Nom
+       * @example Journée
+       */
+      readonly name: string;
+      /**
+       * Format: date-time
+       * @description Fin
+       * @example 17:30:00
+       */
+      readonly end?: string | null;
+      /**
+       * Format: date-time
+       * @description Fin pause
+       * @example 13:30:00
+       */
+      readonly endBreak?: string | null;
+      /**
+       * Format: date-time
+       * @description Début
+       * @example 07:30:00
+       */
+      readonly start?: string | null;
+      /**
+       * Format: date-time
+       * @description Début pause
+       * @example 12:30:00
+       */
+      readonly startBreak?: string | null;
     };
-    /** Unit */
-    "Unit.jsonld-Unit-read": {
-      "@context"?:
+    /** @description Plages horaires */
+    readonly "TimeSlot.jsonld-TimeSlot-read": {
+      /** @example /api/contexts/TimeSlot */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Code */
-      code: string;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/time-slots/1 */
+      readonly "@id"?: string;
+      /** @example TimeSlot */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Journée
+       */
+      readonly name: string;
+      /**
+       * Format: date-time
+       * @description Fin
+       * @example 17:30:00
+       */
+      readonly end?: string | null;
+      /**
+       * Format: date-time
+       * @description Fin pause
+       * @example 13:30:00
+       */
+      readonly endBreak?: string | null;
+      /**
+       * Format: date-time
+       * @description Début
+       * @example 07:30:00
+       */
+      readonly start?: string | null;
+      /**
+       * Format: date-time
+       * @description Début pause
+       * @example 12:30:00
+       */
+      readonly startBreak?: string | null;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
     };
-    /** Unit */
-    "Unit.jsonld-Unit-write": {
-      "@context"?:
+    /** @description Plages horaires */
+    readonly "TimeSlot.jsonld-TimeSlot-write": {
+      /** @example /api/contexts/TimeSlot */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Code */
-      code: string;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/time-slots/1 */
+      readonly "@id"?: string;
+      /** @example TimeSlot */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Journée
+       */
+      readonly name: string;
+      /**
+       * Format: date-time
+       * @description Fin
+       * @example 17:30:00
+       */
+      readonly end?: string | null;
+      /**
+       * Format: date-time
+       * @description Fin pause
+       * @example 13:30:00
+       */
+      readonly endBreak?: string | null;
+      /**
+       * Format: date-time
+       * @description Début
+       * @example 07:30:00
+       */
+      readonly start?: string | null;
+      /**
+       * Format: date-time
+       * @description Début pause
+       * @example 12:30:00
+       */
+      readonly startBreak?: string | null;
     };
-    /** Message TVA */
-    "VatMessage-VatMessage-read": {
-      /** Message */
-      name: string;
-      /** id */
-      id?: number;
+    /** @description Groupe d'outil */
+    readonly ToolGroup: {
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+      readonly deleted?: boolean;
     };
-    /** Message TVA */
-    "VatMessage-VatMessage-write": {
-      /** Message */
-      name: string;
-    };
-    /** Message TVA */
-    "VatMessage.jsonld-VatMessage-read": {
-      "@context"?:
+    /** @description Groupe d'outil */
+    readonly "ToolGroup.jsonld": {
+      /** @example /api/contexts/ToolGroup */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Message */
-      name: string;
-      /** id */
-      id?: number;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/tool-groups/1 */
+      readonly "@id"?: string;
+      /** @example ToolGroup */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+      readonly deleted?: boolean;
     };
-    /** Message TVA */
-    "VatMessage.jsonld-VatMessage-write": {
-      "@context"?:
+    /** @description Unit */
+    readonly "Unit-Unit-read": {
+      /**
+       * @description Nom
+       * @example Gramme
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example g
+       */
+      readonly code: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+    };
+    /** @description Unit */
+    readonly "Unit-Unit-write": {
+      /**
+       * @description Nom
+       * @example Gramme
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example g
+       */
+      readonly code: string;
+    };
+    /** @description Unit */
+    readonly "Unit.jsonld-Unit-read": {
+      /** @example /api/contexts/Unit */
+      readonly "@context"?:
         | string
         | ({
-            "@vocab": string;
-            hydra: "http://www.w3.org/ns/hydra/core#";
-          } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Message */
-      name: string;
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/units/1 */
+      readonly "@id"?: string;
+      /** @example Unit */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Gramme
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example g
+       */
+      readonly code: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+    };
+    /** @description Unit */
+    readonly "Unit.jsonld-Unit-write": {
+      /** @example /api/contexts/Unit */
+      readonly "@context"?:
+        | string
+        | ({
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/units/1 */
+      readonly "@id"?: string;
+      /** @example Unit */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Gramme
+       */
+      readonly name: string;
+      /**
+       * @description Code
+       * @example g
+       */
+      readonly code: string;
+    };
+    /** @description Message TVA */
+    readonly "VatMessage-VatMessage-read": {
+      /**
+       * @description Message
+       * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+    };
+    /** @description Message TVA */
+    readonly "VatMessage-VatMessage-write": {
+      /**
+       * @description Message
+       * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+       */
+      readonly name: string;
+    };
+    /** @description Message TVA */
+    readonly "VatMessage.jsonld-VatMessage-read": {
+      /** @example /api/contexts/VatMessage */
+      readonly "@context"?:
+        | string
+        | ({
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/vat-messages/1 */
+      readonly "@id"?: string;
+      /** @example VatMessage */
+      readonly "@type"?: string;
+      /**
+       * @description Message
+       * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+    };
+    /** @description Message TVA */
+    readonly "VatMessage.jsonld-VatMessage-write": {
+      /** @example /api/contexts/VatMessage */
+      readonly "@context"?:
+        | string
+        | ({
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/vat-messages/1 */
+      readonly "@id"?: string;
+      /** @example VatMessage */
+      readonly "@type"?: string;
+      /**
+       * @description Message
+       * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+       */
+      readonly name: string;
+    };
+    /** @description WorkstationGroup */
+    readonly WorkstationGroup: {
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+      readonly deleted?: boolean;
+    };
+    /** @description WorkstationGroup */
+    readonly "WorkstationGroup.jsonld": {
+      /** @example /api/contexts/WorkstationGroup */
+      readonly "@context"?:
+        | string
+        | ({
+            readonly "@vocab": string;
+            readonly hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { readonly [key: string]: unknown });
+      /** @example /api/workstation-groups/1 */
+      readonly "@id"?: string;
+      /** @example WorkstationGroup */
+      readonly "@type"?: string;
+      /**
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      readonly name: string;
+      /**
+       * @description id
+       * @example 1
+       */
+      readonly id?: number;
+      readonly code: string;
+      readonly safetyDevice?: boolean;
+      readonly deleted?: boolean;
     };
   };
-  responses: {};
-  parameters: {};
-  requestBodies: {};
-  headers: {};
+  readonly responses: {};
+  readonly parameters: {};
+  readonly requestBodies: {};
+  readonly headers: {};
 }
 
 export interface operations {
   /** Connexion */
-  login: {
-    parameters: {};
-    responses: {
+  readonly login: {
+    readonly responses: {
       /** Utilisateur connecté */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["Employee.jsonld-Employee-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Employee.jsonld-Employee-read"];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** Identifiants */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Auth"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["Auth"];
       };
     };
   };
   /** Déconnexion */
-  logout: {
-    parameters: {};
-    responses: {
+  readonly logout: {
+    readonly responses: {
       /** Déconnexion réussie */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Récupère les transporteurs */
-  getCarrierCollection: {
-    parameters: {
-      query: {
-        "address.address"?: string;
-        "address.address2"?: string;
-        "address.city"?: string;
-        "address.country"?: string;
-        "address.email"?: string;
-        name?: string;
+  readonly getCarrierCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly "address.address"?: string;
+        readonly "address.address2"?: string;
+        readonly "address.city"?: string;
+        readonly "address.country"?: string;
+        readonly "address.email"?: string;
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
+        readonly page?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** Carrier collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["Carrier.jsonld-Carrier-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["Carrier.jsonld-Carrier-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["Carrier-Carrier-read"][];
-          "multipart/form-data": components["schemas"]["Carrier-Carrier-read"][];
-          "text/html": components["schemas"]["Carrier-Carrier-read"][];
+          readonly "application/json": readonly components["schemas"]["Carrier-Carrier-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["Carrier-Carrier-read"][];
+          readonly "text/html": readonly components["schemas"]["Carrier-Carrier-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer un transporteur */
-  postCarrierCollection: {
-    parameters: {};
-    responses: {
+  readonly postCarrierCollection: {
+    readonly responses: {
       /** Carrier resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["Carrier.jsonld-Carrier-read"];
-          "application/json": components["schemas"]["Carrier-Carrier-read"];
-          "multipart/form-data": components["schemas"]["Carrier-Carrier-read"];
-          "text/html": components["schemas"]["Carrier-Carrier-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Carrier.jsonld-Carrier-read"];
+          readonly "application/json": components["schemas"]["Carrier-Carrier-read"];
+          readonly "multipart/form-data": components["schemas"]["Carrier-Carrier-read"];
+          readonly "text/html": components["schemas"]["Carrier-Carrier-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new Carrier resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["Carrier.jsonld-Carrier-write"];
-        "application/json": components["schemas"]["Carrier-Carrier-write"];
-        "multipart/form-data": components["schemas"]["Carrier-Carrier-write"];
-        "text/html": components["schemas"]["Carrier-Carrier-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["Carrier.jsonld-Carrier-write"];
+        readonly "application/json": components["schemas"]["Carrier-Carrier-write"];
+        readonly "multipart/form-data": components["schemas"]["Carrier-Carrier-write"];
+        readonly "text/html": components["schemas"]["Carrier-Carrier-write"];
       };
     };
   };
   /** Supprime un transporteur */
-  deleteCarrierItem: {
-    parameters: {
-      path: {
+  readonly deleteCarrierItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Carrier resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie un transporteur */
-  patchCarrierItem: {
-    parameters: {
-      path: {
+  readonly patchCarrierItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Carrier resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["Carrier.jsonld-Carrier-read"];
-          "application/json": components["schemas"]["Carrier-Carrier-read"];
-          "multipart/form-data": components["schemas"]["Carrier-Carrier-read"];
-          "text/html": components["schemas"]["Carrier-Carrier-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Carrier.jsonld-Carrier-read"];
+          readonly "application/json": components["schemas"]["Carrier-Carrier-read"];
+          readonly "multipart/form-data": components["schemas"]["Carrier-Carrier-read"];
+          readonly "text/html": components["schemas"]["Carrier-Carrier-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated Carrier resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["Carrier-Carrier-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["Carrier-Carrier-write"];
       };
     };
   };
   /** Récupère les couleurs */
-  getColorCollection: {
-    parameters: {
-      query: {
-        name?: string;
+  readonly getColorCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
-        ral?: string;
-        rgb?: string;
+        readonly page?: number;
+        readonly ral?: string;
+        readonly rgb?: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Color collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["Color.jsonld-Color-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["Color.jsonld-Color-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["Color-Color-read"][];
-          "multipart/form-data": components["schemas"]["Color-Color-read"][];
-          "text/html": components["schemas"]["Color-Color-read"][];
+          readonly "application/json": readonly components["schemas"]["Color-Color-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["Color-Color-read"][];
+          readonly "text/html": readonly components["schemas"]["Color-Color-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer une couleur */
-  postColorCollection: {
-    parameters: {};
-    responses: {
+  readonly postColorCollection: {
+    readonly responses: {
       /** Color resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["Color.jsonld-Color-read"];
-          "application/json": components["schemas"]["Color-Color-read"];
-          "multipart/form-data": components["schemas"]["Color-Color-read"];
-          "text/html": components["schemas"]["Color-Color-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Color.jsonld-Color-read"];
+          readonly "application/json": components["schemas"]["Color-Color-read"];
+          readonly "multipart/form-data": components["schemas"]["Color-Color-read"];
+          readonly "text/html": components["schemas"]["Color-Color-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new Color resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["Color.jsonld-Color-write"];
-        "application/json": components["schemas"]["Color-Color-write"];
-        "multipart/form-data": components["schemas"]["Color-Color-write"];
-        "text/html": components["schemas"]["Color-Color-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["Color.jsonld-Color-write"];
+        readonly "application/json": components["schemas"]["Color-Color-write"];
+        readonly "multipart/form-data": components["schemas"]["Color-Color-write"];
+        readonly "text/html": components["schemas"]["Color-Color-write"];
       };
     };
   };
   /** Supprime une couleur */
-  deleteColorItem: {
-    parameters: {
-      path: {
+  readonly deleteColorItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Color resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie une couleur */
-  patchColorItem: {
-    parameters: {
-      path: {
+  readonly patchColorItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Color resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["Color.jsonld-Color-read"];
-          "application/json": components["schemas"]["Color-Color-read"];
-          "multipart/form-data": components["schemas"]["Color-Color-read"];
-          "text/html": components["schemas"]["Color-Color-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Color.jsonld-Color-read"];
+          readonly "application/json": components["schemas"]["Color-Color-read"];
+          readonly "multipart/form-data": components["schemas"]["Color-Color-read"];
+          readonly "text/html": components["schemas"]["Color-Color-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated Color resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["Color-Color-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["Color-Color-write"];
       };
     };
   };
   /** Récupère les familles de composant */
-  getComponentFamilyCollection: {
-    parameters: {
-      query: {
-        code?: string;
-        copperable?: boolean;
-        customsCode?: string;
-        name?: string;
-        parent?: number;
+  readonly getComponentFamilyCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly code?: string;
+        readonly copperable?: boolean;
+        readonly customsCode?: string;
+        readonly name?: string;
+        readonly parent?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** ComponentFamily collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["ComponentFamily.jsonld-ComponentFamily-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["ComponentFamily.jsonld-ComponentFamily-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["ComponentFamily-ComponentFamily-read"][];
-          "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-read"][];
-          "text/html": components["schemas"]["ComponentFamily-ComponentFamily-read"][];
+          readonly "application/json": readonly components["schemas"]["ComponentFamily-ComponentFamily-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["ComponentFamily-ComponentFamily-read"][];
+          readonly "text/html": readonly components["schemas"]["ComponentFamily-ComponentFamily-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer une famille de composant */
-  postComponentFamilyCollection: {
-    parameters: {};
-    responses: {
+  readonly postComponentFamilyCollection: {
+    readonly responses: {
       /** ComponentFamily resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["ComponentFamily.jsonld-ComponentFamily-read"];
-          "application/json": components["schemas"]["ComponentFamily-ComponentFamily-read"];
-          "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-read"];
-          "text/html": components["schemas"]["ComponentFamily-ComponentFamily-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["ComponentFamily.jsonld-ComponentFamily-read"];
+          readonly "application/json": components["schemas"]["ComponentFamily-ComponentFamily-read"];
+          readonly "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-read"];
+          readonly "text/html": components["schemas"]["ComponentFamily-ComponentFamily-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new ComponentFamily resource */
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-write"];
       };
     };
   };
   /** Modifie une famille de composant */
-  postComponentFamilyItem: {
-    parameters: {
-      path: {
+  readonly postComponentFamilyItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** ComponentFamily resource created */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["ComponentFamily.jsonld-ComponentFamily-read"];
-          "application/json": components["schemas"]["ComponentFamily-ComponentFamily-read"];
-          "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-read"];
-          "text/html": components["schemas"]["ComponentFamily-ComponentFamily-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["ComponentFamily.jsonld-ComponentFamily-read"];
+          readonly "application/json": components["schemas"]["ComponentFamily-ComponentFamily-read"];
+          readonly "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-read"];
+          readonly "text/html": components["schemas"]["ComponentFamily-ComponentFamily-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new ComponentFamily resource */
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "multipart/form-data": components["schemas"]["ComponentFamily-ComponentFamily-write"];
       };
     };
   };
   /** Supprime une famille de composant */
-  deleteComponentFamilyItem: {
-    parameters: {
-      path: {
+  readonly deleteComponentFamilyItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** ComponentFamily resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Récupère les devises */
-  getCurrencyCollection: {
-    parameters: {};
-    responses: {
+  readonly getCurrencyCollection: {
+    readonly responses: {
       /** Currency collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["Currency.jsonld-Currency-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["Currency.jsonld-Currency-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["Currency-Currency-read"][];
-          "multipart/form-data": components["schemas"]["Currency-Currency-read"][];
-          "text/html": components["schemas"]["Currency-Currency-read"][];
+          readonly "application/json": readonly components["schemas"]["Currency-Currency-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["Currency-Currency-read"][];
+          readonly "text/html": readonly components["schemas"]["Currency-Currency-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie une devise */
-  patchCurrencyItem: {
-    parameters: {
-      path: {
+  readonly patchCurrencyItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Currency resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["Currency.jsonld-Currency-read"];
-          "application/json": components["schemas"]["Currency-Currency-read"];
-          "multipart/form-data": components["schemas"]["Currency-Currency-read"];
-          "text/html": components["schemas"]["Currency-Currency-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Currency.jsonld-Currency-read"];
+          readonly "application/json": components["schemas"]["Currency-Currency-read"];
+          readonly "multipart/form-data": components["schemas"]["Currency-Currency-read"];
+          readonly "text/html": components["schemas"]["Currency-Currency-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated Currency resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["Currency-Currency-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["Currency-Currency-write"];
       };
     };
   };
   /** Récupère un employé */
-  getEmployeeItem: {
-    parameters: {
-      path: {
+  readonly getEmployeeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Employee resource */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["Employee.jsonld-Employee-read"];
-          "application/json": components["schemas"]["Employee-Employee-read"];
-          "multipart/form-data": components["schemas"]["Employee-Employee-read"];
-          "text/html": components["schemas"]["Employee-Employee-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Employee.jsonld-Employee-read"];
+          readonly "application/json": components["schemas"]["Employee-Employee-read"];
+          readonly "multipart/form-data": components["schemas"]["Employee-Employee-read"];
+          readonly "text/html": components["schemas"]["Employee-Employee-read"];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
-  /** Récupère les types d'événements */
-  getEventTypeCollection: {
-    parameters: {
-      query: {
-        name?: string;
-        /** The collection page number */
-        page?: number;
-        toStatus?: "blocked" | "disabled" | "enabled" | "warning";
-      };
-    };
-    responses: {
-      /** EventType collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["EventType.jsonld-EventType-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
-            };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
-              }[];
-            };
-          };
-          "application/json": components["schemas"]["EventType-EventType-read"][];
-          "multipart/form-data": components["schemas"]["EventType-EventType-read"][];
-          "text/html": components["schemas"]["EventType-EventType-read"][];
-        };
-      };
-      /** Bad request */
-      400: unknown;
-      /** Unauthorized */
-      401: unknown;
-      /** Forbidden */
-      403: unknown;
-      /** Method Not Allowed */
-      405: unknown;
-      /** Internal Server Error */
-      500: unknown;
-    };
-  };
-  /** Créer un type d'événements */
-  postEventTypeCollection: {
-    parameters: {};
-    responses: {
-      /** EventType resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["EventType.jsonld-EventType-read"];
-          "application/json": components["schemas"]["EventType-EventType-read"];
-          "multipart/form-data": components["schemas"]["EventType-EventType-read"];
-          "text/html": components["schemas"]["EventType-EventType-read"];
+  /** créer un groupe de contrepartie de test */
+  readonly postCounterPartGroupCollection: {
+    readonly responses: {
+      /** CounterPartGroup resource created */
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["CounterPartGroup.jsonld"];
+          readonly "application/json": components["schemas"]["CounterPartGroup"];
+          readonly "multipart/form-data": components["schemas"]["CounterPartGroup"];
+          readonly "text/html": components["schemas"]["CounterPartGroup"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
+    };
+    /** The new CounterPartGroup resource */
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["CounterPartGroup.jsonld"];
+        readonly "application/json": components["schemas"]["CounterPartGroup"];
+        readonly "multipart/form-data": components["schemas"]["CounterPartGroup"];
+        readonly "text/html": components["schemas"]["CounterPartGroup"];
+      };
+    };
+  };
+  /** Récupère les groupes d'équipement */
+  readonly getEngineGroupCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly code?: string;
+        readonly name?: string;
+        /** The collection page number */
+        readonly page?: number;
+        readonly safetyDevice?: boolean;
+      };
+    };
+    readonly responses: {
+      /** EngineGroup collection */
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["EngineGroup.jsonld-EngineGroup-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
+            };
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
+              }[];
+            };
+          };
+          readonly "application/json": readonly components["schemas"]["EngineGroup-EngineGroup-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["EngineGroup-EngineGroup-read"][];
+          readonly "text/html": readonly components["schemas"]["EngineGroup-EngineGroup-read"][];
+        };
+      };
+      /** Bad request */
+      readonly 400: unknown;
+      /** Unauthorized */
+      readonly 401: unknown;
+      /** Forbidden */
+      readonly 403: unknown;
+      /** Method Not Allowed */
+      readonly 405: unknown;
+      /** Internal Server Error */
+      readonly 500: unknown;
+    };
+  };
+  /** Supprime un groupe d'équipement */
+  readonly deleteEngineGroupItem: {
+    readonly parameters: {
+      readonly path: {
+        /** Resource identifier */
+        readonly id: string;
+      };
+    };
+    readonly responses: {
+      /** EngineGroup resource deleted */
+      readonly 204: never;
+      /** Bad request */
+      readonly 400: unknown;
+      /** Unauthorized */
+      readonly 401: unknown;
+      /** Forbidden */
+      readonly 403: unknown;
+      /** Resource not found */
+      readonly 404: unknown;
+      /** Method Not Allowed */
+      readonly 405: unknown;
+      /** Internal Server Error */
+      readonly 500: unknown;
+    };
+  };
+  /** Modifie un groupe d'équipement */
+  readonly patchEngineGroupItem: {
+    readonly parameters: {
+      readonly path: {
+        /** Resource identifier */
+        readonly id: string;
+      };
+    };
+    readonly responses: {
+      /** EngineGroup resource updated */
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["EngineGroup.jsonld-EngineGroup-read"];
+          readonly "application/json": components["schemas"]["EngineGroup-EngineGroup-read"];
+          readonly "multipart/form-data": components["schemas"]["EngineGroup-EngineGroup-read"];
+          readonly "text/html": components["schemas"]["EngineGroup-EngineGroup-read"];
+        };
+      };
+      /** Invalid input */
+      readonly 400: unknown;
+      /** Unauthorized */
+      readonly 401: unknown;
+      /** Forbidden */
+      readonly 403: unknown;
+      /** Resource not found */
+      readonly 404: unknown;
+      /** Method Not Allowed */
+      readonly 405: unknown;
+      /** Unprocessable entity */
+      readonly 422: unknown;
+      /** Internal Server Error */
+      readonly 500: unknown;
+    };
+    /** The updated EngineGroup resource */
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["EngineGroup-EngineGroup-write"];
+      };
+    };
+  };
+  /** Créer un groupe d'outil */
+  readonly postToolGroupCollection: {
+    readonly responses: {
+      /** ToolGroup resource created */
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["ToolGroup.jsonld"];
+          readonly "application/json": components["schemas"]["ToolGroup"];
+          readonly "multipart/form-data": components["schemas"]["ToolGroup"];
+          readonly "text/html": components["schemas"]["ToolGroup"];
+        };
+      };
+      /** Invalid input */
+      readonly 400: unknown;
+      /** Unauthorized */
+      readonly 401: unknown;
+      /** Forbidden */
+      readonly 403: unknown;
+      /** Method Not Allowed */
+      readonly 405: unknown;
+      /** Unprocessable entity */
+      readonly 422: unknown;
+      /** Internal Server Error */
+      readonly 500: unknown;
+    };
+    /** The new ToolGroup resource */
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["ToolGroup.jsonld"];
+        readonly "application/json": components["schemas"]["ToolGroup"];
+        readonly "multipart/form-data": components["schemas"]["ToolGroup"];
+        readonly "text/html": components["schemas"]["ToolGroup"];
+      };
+    };
+  };
+  /** Créer un groupe de poste de travail */
+  readonly postWorkstationGroupCollection: {
+    readonly responses: {
+      /** WorkstationGroup resource created */
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["WorkstationGroup.jsonld"];
+          readonly "application/json": components["schemas"]["WorkstationGroup"];
+          readonly "multipart/form-data": components["schemas"]["WorkstationGroup"];
+          readonly "text/html": components["schemas"]["WorkstationGroup"];
+        };
+      };
+      /** Invalid input */
+      readonly 400: unknown;
+      /** Unauthorized */
+      readonly 401: unknown;
+      /** Forbidden */
+      readonly 403: unknown;
+      /** Method Not Allowed */
+      readonly 405: unknown;
+      /** Unprocessable entity */
+      readonly 422: unknown;
+      /** Internal Server Error */
+      readonly 500: unknown;
+    };
+    /** The new WorkstationGroup resource */
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["WorkstationGroup.jsonld"];
+        readonly "application/json": components["schemas"]["WorkstationGroup"];
+        readonly "multipart/form-data": components["schemas"]["WorkstationGroup"];
+        readonly "text/html": components["schemas"]["WorkstationGroup"];
+      };
+    };
+  };
+  /** Récupère les types d'événements */
+  readonly getEventTypeCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly name?: string;
+        /** The collection page number */
+        readonly page?: number;
+        readonly toStatus?: "blocked" | "disabled" | "enabled" | "warning";
+      };
+    };
+    readonly responses: {
+      /** EventType collection */
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["EventType.jsonld-EventType-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
+            };
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
+              }[];
+            };
+          };
+          readonly "application/json": readonly components["schemas"]["EventType-EventType-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["EventType-EventType-read"][];
+          readonly "text/html": readonly components["schemas"]["EventType-EventType-read"][];
+        };
+      };
+      /** Bad request */
+      readonly 400: unknown;
+      /** Unauthorized */
+      readonly 401: unknown;
+      /** Forbidden */
+      readonly 403: unknown;
+      /** Method Not Allowed */
+      readonly 405: unknown;
+      /** Internal Server Error */
+      readonly 500: unknown;
+    };
+  };
+  /** Créer un type d'événements */
+  readonly postEventTypeCollection: {
+    readonly responses: {
+      /** EventType resource created */
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["EventType.jsonld-EventType-read"];
+          readonly "application/json": components["schemas"]["EventType-EventType-read"];
+          readonly "multipart/form-data": components["schemas"]["EventType-EventType-read"];
+          readonly "text/html": components["schemas"]["EventType-EventType-read"];
+        };
+      };
+      /** Invalid input */
+      readonly 400: unknown;
+      /** Unauthorized */
+      readonly 401: unknown;
+      /** Forbidden */
+      readonly 403: unknown;
+      /** Method Not Allowed */
+      readonly 405: unknown;
+      /** Unprocessable entity */
+      readonly 422: unknown;
+      /** Internal Server Error */
+      readonly 500: unknown;
     };
     /** The new EventType resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["EventType.jsonld-EventType-write"];
-        "application/json": components["schemas"]["EventType-EventType-write"];
-        "multipart/form-data": components["schemas"]["EventType-EventType-write"];
-        "text/html": components["schemas"]["EventType-EventType-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["EventType.jsonld-EventType-write"];
+        readonly "application/json": components["schemas"]["EventType-EventType-write"];
+        readonly "multipart/form-data": components["schemas"]["EventType-EventType-write"];
+        readonly "text/html": components["schemas"]["EventType-EventType-write"];
       };
     };
   };
   /** Supprime un type d'événements */
-  deleteEventTypeItem: {
-    parameters: {
-      path: {
+  readonly deleteEventTypeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** EventType resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie un type d'événements */
-  patchEventTypeItem: {
-    parameters: {
-      path: {
+  readonly patchEventTypeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** EventType resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["EventType.jsonld-EventType-read"];
-          "application/json": components["schemas"]["EventType-EventType-read"];
-          "multipart/form-data": components["schemas"]["EventType-EventType-read"];
-          "text/html": components["schemas"]["EventType-EventType-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["EventType.jsonld-EventType-read"];
+          readonly "application/json": components["schemas"]["EventType-EventType-read"];
+          readonly "multipart/form-data": components["schemas"]["EventType-EventType-read"];
+          readonly "text/html": components["schemas"]["EventType-EventType-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated EventType resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["EventType-EventType-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["EventType-EventType-write"];
       };
     };
   };
   /** Récupère les incoterms */
-  getIncotermsCollection: {
-    parameters: {
-      query: {
-        code?: string;
-        name?: string;
+  readonly getIncotermsCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly code?: string;
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
+        readonly page?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** Incoterms collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["Incoterms.jsonld-Incoterms-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["Incoterms.jsonld-Incoterms-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["Incoterms-Incoterms-read"][];
-          "multipart/form-data": components["schemas"]["Incoterms-Incoterms-read"][];
-          "text/html": components["schemas"]["Incoterms-Incoterms-read"][];
+          readonly "application/json": readonly components["schemas"]["Incoterms-Incoterms-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["Incoterms-Incoterms-read"][];
+          readonly "text/html": readonly components["schemas"]["Incoterms-Incoterms-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer un incoterms */
-  postIncotermsCollection: {
-    parameters: {};
-    responses: {
+  readonly postIncotermsCollection: {
+    readonly responses: {
       /** Incoterms resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["Incoterms.jsonld-Incoterms-read"];
-          "application/json": components["schemas"]["Incoterms-Incoterms-read"];
-          "multipart/form-data": components["schemas"]["Incoterms-Incoterms-read"];
-          "text/html": components["schemas"]["Incoterms-Incoterms-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Incoterms.jsonld-Incoterms-read"];
+          readonly "application/json": components["schemas"]["Incoterms-Incoterms-read"];
+          readonly "multipart/form-data": components["schemas"]["Incoterms-Incoterms-read"];
+          readonly "text/html": components["schemas"]["Incoterms-Incoterms-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new Incoterms resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["Incoterms.jsonld-Incoterms-write"];
-        "application/json": components["schemas"]["Incoterms-Incoterms-write"];
-        "multipart/form-data": components["schemas"]["Incoterms-Incoterms-write"];
-        "text/html": components["schemas"]["Incoterms-Incoterms-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["Incoterms.jsonld-Incoterms-write"];
+        readonly "application/json": components["schemas"]["Incoterms-Incoterms-write"];
+        readonly "multipart/form-data": components["schemas"]["Incoterms-Incoterms-write"];
+        readonly "text/html": components["schemas"]["Incoterms-Incoterms-write"];
       };
     };
   };
   /** Supprime un incoterms */
-  deleteIncotermsItem: {
-    parameters: {
-      path: {
+  readonly deleteIncotermsItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Incoterms resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie un incoterms */
-  patchIncotermsItem: {
-    parameters: {
-      path: {
+  readonly patchIncotermsItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Incoterms resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["Incoterms.jsonld-Incoterms-read"];
-          "application/json": components["schemas"]["Incoterms-Incoterms-read"];
-          "multipart/form-data": components["schemas"]["Incoterms-Incoterms-read"];
-          "text/html": components["schemas"]["Incoterms-Incoterms-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Incoterms.jsonld-Incoterms-read"];
+          readonly "application/json": components["schemas"]["Incoterms-Incoterms-read"];
+          readonly "multipart/form-data": components["schemas"]["Incoterms-Incoterms-read"];
+          readonly "text/html": components["schemas"]["Incoterms-Incoterms-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated Incoterms resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["Incoterms-Incoterms-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["Incoterms-Incoterms-write"];
       };
     };
   };
   /** Récupère les délais de paiement des factures */
-  getInvoiceTimeDueCollection: {
-    parameters: {
-      query: {
-        days?: number;
-        daysAfterEndOfMonth?: number;
-        endOfMonth?: boolean;
-        name?: string;
+  readonly getInvoiceTimeDueCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly days?: number;
+        readonly daysAfterEndOfMonth?: number;
+        readonly endOfMonth?: boolean;
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
+        readonly page?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** InvoiceTimeDue collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"][];
-          "multipart/form-data": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"][];
-          "text/html": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"][];
+          readonly "application/json": readonly components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"][];
+          readonly "text/html": readonly components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer un délai de paiement des factures */
-  postInvoiceTimeDueCollection: {
-    parameters: {};
-    responses: {
+  readonly postInvoiceTimeDueCollection: {
+    readonly responses: {
       /** InvoiceTimeDue resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-read"];
-          "application/json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
-          "multipart/form-data": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
-          "text/html": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-read"];
+          readonly "application/json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
+          readonly "multipart/form-data": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
+          readonly "text/html": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new InvoiceTimeDue resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-write"];
-        "application/json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-write"];
-        "multipart/form-data": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-write"];
-        "text/html": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-write"];
+        readonly "application/json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-write"];
+        readonly "multipart/form-data": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-write"];
+        readonly "text/html": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-write"];
       };
     };
   };
   /** Supprime un délai de paiement des factures */
-  deleteInvoiceTimeDueItem: {
-    parameters: {
-      path: {
+  readonly deleteInvoiceTimeDueItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** InvoiceTimeDue resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie un délai de paiement des factures */
-  patchInvoiceTimeDueItem: {
-    parameters: {
-      path: {
+  readonly patchInvoiceTimeDueItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** InvoiceTimeDue resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-read"];
-          "application/json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
-          "multipart/form-data": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
-          "text/html": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-read"];
+          readonly "application/json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
+          readonly "multipart/form-data": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
+          readonly "text/html": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated InvoiceTimeDue resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["InvoiceTimeDue-InvoiceTimeDue-write"];
       };
     };
   };
   /** Récupère les formateurs extérieurs */
-  getOutTrainerCollection: {
-    parameters: {
-      query: {
-        "address.address"?: string;
-        "address.address2"?: string;
-        "address.city"?: string;
-        "address.country"?: string;
-        "address.email"?: string;
-        name?: string;
+  readonly getOutTrainerCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly "address.address"?: string;
+        readonly "address.address2"?: string;
+        readonly "address.city"?: string;
+        readonly "address.country"?: string;
+        readonly "address.email"?: string;
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
-        surname?: string;
+        readonly page?: number;
+        readonly surname?: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** OutTrainer collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["OutTrainer.jsonld-OutTrainer-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["OutTrainer.jsonld-OutTrainer-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["OutTrainer-OutTrainer-read"][];
-          "multipart/form-data": components["schemas"]["OutTrainer-OutTrainer-read"][];
-          "text/html": components["schemas"]["OutTrainer-OutTrainer-read"][];
+          readonly "application/json": readonly components["schemas"]["OutTrainer-OutTrainer-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["OutTrainer-OutTrainer-read"][];
+          readonly "text/html": readonly components["schemas"]["OutTrainer-OutTrainer-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer un formateur extérieur */
-  postOutTrainerCollection: {
-    parameters: {};
-    responses: {
+  readonly postOutTrainerCollection: {
+    readonly responses: {
       /** OutTrainer resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["OutTrainer.jsonld-OutTrainer-read"];
-          "application/json": components["schemas"]["OutTrainer-OutTrainer-read"];
-          "multipart/form-data": components["schemas"]["OutTrainer-OutTrainer-read"];
-          "text/html": components["schemas"]["OutTrainer-OutTrainer-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["OutTrainer.jsonld-OutTrainer-read"];
+          readonly "application/json": components["schemas"]["OutTrainer-OutTrainer-read"];
+          readonly "multipart/form-data": components["schemas"]["OutTrainer-OutTrainer-read"];
+          readonly "text/html": components["schemas"]["OutTrainer-OutTrainer-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new OutTrainer resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["OutTrainer.jsonld-OutTrainer-write"];
-        "application/json": components["schemas"]["OutTrainer-OutTrainer-write"];
-        "multipart/form-data": components["schemas"]["OutTrainer-OutTrainer-write"];
-        "text/html": components["schemas"]["OutTrainer-OutTrainer-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["OutTrainer.jsonld-OutTrainer-write"];
+        readonly "application/json": components["schemas"]["OutTrainer-OutTrainer-write"];
+        readonly "multipart/form-data": components["schemas"]["OutTrainer-OutTrainer-write"];
+        readonly "text/html": components["schemas"]["OutTrainer-OutTrainer-write"];
       };
     };
   };
   /** Supprime un formateur extérieur */
-  deleteOutTrainerItem: {
-    parameters: {
-      path: {
+  readonly deleteOutTrainerItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** OutTrainer resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie un formateur extérieur */
-  patchOutTrainerItem: {
-    parameters: {
-      path: {
+  readonly patchOutTrainerItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** OutTrainer resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["OutTrainer.jsonld-OutTrainer-read"];
-          "application/json": components["schemas"]["OutTrainer-OutTrainer-read"];
-          "multipart/form-data": components["schemas"]["OutTrainer-OutTrainer-read"];
-          "text/html": components["schemas"]["OutTrainer-OutTrainer-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["OutTrainer.jsonld-OutTrainer-read"];
+          readonly "application/json": components["schemas"]["OutTrainer-OutTrainer-read"];
+          readonly "multipart/form-data": components["schemas"]["OutTrainer-OutTrainer-read"];
+          readonly "text/html": components["schemas"]["OutTrainer-OutTrainer-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated OutTrainer resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["OutTrainer-OutTrainer-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["OutTrainer-OutTrainer-write"];
       };
     };
   };
   /** Récupère les familles de produit */
-  getProductFamilyCollection: {
-    parameters: {
-      query: {
-        customsCode?: string;
-        name?: string;
-        parent?: number;
+  readonly getProductFamilyCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly customsCode?: string;
+        readonly name?: string;
+        readonly parent?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** ProductFamily collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["ProductFamily.jsonld-ProductFamily-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["ProductFamily.jsonld-ProductFamily-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["ProductFamily-ProductFamily-read"][];
-          "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-read"][];
-          "text/html": components["schemas"]["ProductFamily-ProductFamily-read"][];
+          readonly "application/json": readonly components["schemas"]["ProductFamily-ProductFamily-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["ProductFamily-ProductFamily-read"][];
+          readonly "text/html": readonly components["schemas"]["ProductFamily-ProductFamily-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer une famille de produit */
-  postProductFamilyCollection: {
-    parameters: {};
-    responses: {
+  readonly postProductFamilyCollection: {
+    readonly responses: {
       /** ProductFamily resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["ProductFamily.jsonld-ProductFamily-read"];
-          "application/json": components["schemas"]["ProductFamily-ProductFamily-read"];
-          "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-read"];
-          "text/html": components["schemas"]["ProductFamily-ProductFamily-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["ProductFamily.jsonld-ProductFamily-read"];
+          readonly "application/json": components["schemas"]["ProductFamily-ProductFamily-read"];
+          readonly "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-read"];
+          readonly "text/html": components["schemas"]["ProductFamily-ProductFamily-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new ProductFamily resource */
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-write"];
       };
     };
   };
   /** Modifie une famille de produit */
-  postProductFamilyItem: {
-    parameters: {
-      path: {
+  readonly postProductFamilyItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** ProductFamily resource created */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["ProductFamily.jsonld-ProductFamily-read"];
-          "application/json": components["schemas"]["ProductFamily-ProductFamily-read"];
-          "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-read"];
-          "text/html": components["schemas"]["ProductFamily-ProductFamily-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["ProductFamily.jsonld-ProductFamily-read"];
+          readonly "application/json": components["schemas"]["ProductFamily-ProductFamily-read"];
+          readonly "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-read"];
+          readonly "text/html": components["schemas"]["ProductFamily-ProductFamily-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new ProductFamily resource */
-    requestBody: {
-      content: {
-        "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "multipart/form-data": components["schemas"]["ProductFamily-ProductFamily-write"];
       };
     };
   };
   /** Supprime une famille de produit */
-  deleteProductFamilyItem: {
-    parameters: {
-      path: {
+  readonly deleteProductFamilyItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** ProductFamily resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Récupère les types qualités */
-  getQualityTypeCollection: {
-    parameters: {
-      query: {
-        name?: string;
+  readonly getQualityTypeCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
+        readonly page?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** QualityType collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["QualityType.jsonld-QualityType-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["QualityType.jsonld-QualityType-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["QualityType-QualityType-read"][];
-          "multipart/form-data": components["schemas"]["QualityType-QualityType-read"][];
-          "text/html": components["schemas"]["QualityType-QualityType-read"][];
+          readonly "application/json": readonly components["schemas"]["QualityType-QualityType-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["QualityType-QualityType-read"][];
+          readonly "text/html": readonly components["schemas"]["QualityType-QualityType-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer un type qualité */
-  postQualityTypeCollection: {
-    parameters: {};
-    responses: {
+  readonly postQualityTypeCollection: {
+    readonly responses: {
       /** QualityType resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-read"];
-          "application/json": components["schemas"]["QualityType-QualityType-read"];
-          "multipart/form-data": components["schemas"]["QualityType-QualityType-read"];
-          "text/html": components["schemas"]["QualityType-QualityType-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-read"];
+          readonly "application/json": components["schemas"]["QualityType-QualityType-read"];
+          readonly "multipart/form-data": components["schemas"]["QualityType-QualityType-read"];
+          readonly "text/html": components["schemas"]["QualityType-QualityType-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new QualityType resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-write"];
-        "application/json": components["schemas"]["QualityType-QualityType-write"];
-        "multipart/form-data": components["schemas"]["QualityType-QualityType-write"];
-        "text/html": components["schemas"]["QualityType-QualityType-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-write"];
+        readonly "application/json": components["schemas"]["QualityType-QualityType-write"];
+        readonly "multipart/form-data": components["schemas"]["QualityType-QualityType-write"];
+        readonly "text/html": components["schemas"]["QualityType-QualityType-write"];
       };
     };
   };
   /** Supprime un type qualité */
-  deleteQualityTypeItem: {
-    parameters: {
-      path: {
+  readonly deleteQualityTypeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** QualityType resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie un type qualité */
-  patchQualityTypeItem: {
-    parameters: {
-      path: {
+  readonly patchQualityTypeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** QualityType resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-read"];
-          "application/json": components["schemas"]["QualityType-QualityType-read"];
-          "multipart/form-data": components["schemas"]["QualityType-QualityType-read"];
-          "text/html": components["schemas"]["QualityType-QualityType-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["QualityType.jsonld-QualityType-read"];
+          readonly "application/json": components["schemas"]["QualityType-QualityType-read"];
+          readonly "multipart/form-data": components["schemas"]["QualityType-QualityType-read"];
+          readonly "text/html": components["schemas"]["QualityType-QualityType-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated QualityType resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["QualityType-QualityType-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["QualityType-QualityType-write"];
       };
     };
   };
   /** Récupère les type de rebus */
-  getRejectTypeCollection: {
-    parameters: {
-      query: {
-        name?: string;
+  readonly getRejectTypeCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
+        readonly page?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** RejectType collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["RejectType.jsonld-RejectType-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["RejectType.jsonld-RejectType-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["RejectType-RejectType-read"][];
-          "multipart/form-data": components["schemas"]["RejectType-RejectType-read"][];
-          "text/html": components["schemas"]["RejectType-RejectType-read"][];
+          readonly "application/json": readonly components["schemas"]["RejectType-RejectType-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["RejectType-RejectType-read"][];
+          readonly "text/html": readonly components["schemas"]["RejectType-RejectType-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer un type de rebus */
-  postRejectTypeCollection: {
-    parameters: {};
-    responses: {
+  readonly postRejectTypeCollection: {
+    readonly responses: {
       /** RejectType resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-read"];
-          "application/json": components["schemas"]["RejectType-RejectType-read"];
-          "multipart/form-data": components["schemas"]["RejectType-RejectType-read"];
-          "text/html": components["schemas"]["RejectType-RejectType-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-read"];
+          readonly "application/json": components["schemas"]["RejectType-RejectType-read"];
+          readonly "multipart/form-data": components["schemas"]["RejectType-RejectType-read"];
+          readonly "text/html": components["schemas"]["RejectType-RejectType-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new RejectType resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-write"];
-        "application/json": components["schemas"]["RejectType-RejectType-write"];
-        "multipart/form-data": components["schemas"]["RejectType-RejectType-write"];
-        "text/html": components["schemas"]["RejectType-RejectType-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-write"];
+        readonly "application/json": components["schemas"]["RejectType-RejectType-write"];
+        readonly "multipart/form-data": components["schemas"]["RejectType-RejectType-write"];
+        readonly "text/html": components["schemas"]["RejectType-RejectType-write"];
       };
     };
   };
   /** Supprime un type de rebus */
-  deleteRejectTypeItem: {
-    parameters: {
-      path: {
+  readonly deleteRejectTypeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** RejectType resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie un type de rebus */
-  patchRejectTypeItem: {
-    parameters: {
-      path: {
+  readonly patchRejectTypeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** RejectType resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-read"];
-          "application/json": components["schemas"]["RejectType-RejectType-read"];
-          "multipart/form-data": components["schemas"]["RejectType-RejectType-read"];
-          "text/html": components["schemas"]["RejectType-RejectType-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["RejectType.jsonld-RejectType-read"];
+          readonly "application/json": components["schemas"]["RejectType-RejectType-read"];
+          readonly "multipart/form-data": components["schemas"]["RejectType-RejectType-read"];
+          readonly "text/html": components["schemas"]["RejectType-RejectType-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated RejectType resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["RejectType-RejectType-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["RejectType-RejectType-write"];
       };
     };
   };
   /** Récupère les types de compétence */
-  getSkillTypeCollection: {
-    parameters: {
-      query: {
-        name?: string;
+  readonly getSkillTypeCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
+        readonly page?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** SkillType collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["SkillType.jsonld-SkillType-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["SkillType.jsonld-SkillType-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["SkillType-SkillType-read"][];
-          "multipart/form-data": components["schemas"]["SkillType-SkillType-read"][];
-          "text/html": components["schemas"]["SkillType-SkillType-read"][];
+          readonly "application/json": readonly components["schemas"]["SkillType-SkillType-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["SkillType-SkillType-read"][];
+          readonly "text/html": readonly components["schemas"]["SkillType-SkillType-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer les types de compétence */
-  postSkillTypeCollection: {
-    parameters: {};
-    responses: {
+  readonly postSkillTypeCollection: {
+    readonly responses: {
       /** SkillType resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["SkillType.jsonld-SkillType-read"];
-          "application/json": components["schemas"]["SkillType-SkillType-read"];
-          "multipart/form-data": components["schemas"]["SkillType-SkillType-read"];
-          "text/html": components["schemas"]["SkillType-SkillType-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["SkillType.jsonld-SkillType-read"];
+          readonly "application/json": components["schemas"]["SkillType-SkillType-read"];
+          readonly "multipart/form-data": components["schemas"]["SkillType-SkillType-read"];
+          readonly "text/html": components["schemas"]["SkillType-SkillType-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new SkillType resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["SkillType.jsonld-SkillType-write"];
-        "application/json": components["schemas"]["SkillType-SkillType-write"];
-        "multipart/form-data": components["schemas"]["SkillType-SkillType-write"];
-        "text/html": components["schemas"]["SkillType-SkillType-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["SkillType.jsonld-SkillType-write"];
+        readonly "application/json": components["schemas"]["SkillType-SkillType-write"];
+        readonly "multipart/form-data": components["schemas"]["SkillType-SkillType-write"];
+        readonly "text/html": components["schemas"]["SkillType-SkillType-write"];
       };
     };
   };
   /** Supprime les types de compétence */
-  deleteSkillTypeItem: {
-    parameters: {
-      path: {
+  readonly deleteSkillTypeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** SkillType resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie les types de compétence */
-  patchSkillTypeItem: {
-    parameters: {
-      path: {
+  readonly patchSkillTypeItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** SkillType resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["SkillType.jsonld-SkillType-read"];
-          "application/json": components["schemas"]["SkillType-SkillType-read"];
-          "multipart/form-data": components["schemas"]["SkillType-SkillType-read"];
-          "text/html": components["schemas"]["SkillType-SkillType-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["SkillType.jsonld-SkillType-read"];
+          readonly "application/json": components["schemas"]["SkillType-SkillType-read"];
+          readonly "multipart/form-data": components["schemas"]["SkillType-SkillType-read"];
+          readonly "text/html": components["schemas"]["SkillType-SkillType-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated SkillType resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["SkillType-SkillType-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["SkillType-SkillType-write"];
       };
     };
   };
   /** Récupère les plages horaires */
-  getTimeSlotCollection: {
-    parameters: {
-      query: {
-        end?: string;
-        endBreak?: string;
-        name?: string;
+  readonly getTimeSlotCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly end?: string;
+        readonly endBreak?: string;
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
-        start?: string;
-        startBreak?: string;
+        readonly page?: number;
+        readonly start?: string;
+        readonly startBreak?: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** TimeSlot collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["TimeSlot.jsonld-TimeSlot-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["TimeSlot.jsonld-TimeSlot-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["TimeSlot-TimeSlot-read"][];
-          "multipart/form-data": components["schemas"]["TimeSlot-TimeSlot-read"][];
-          "text/html": components["schemas"]["TimeSlot-TimeSlot-read"][];
+          readonly "application/json": readonly components["schemas"]["TimeSlot-TimeSlot-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["TimeSlot-TimeSlot-read"][];
+          readonly "text/html": readonly components["schemas"]["TimeSlot-TimeSlot-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer une plage horaire */
-  postTimeSlotCollection: {
-    parameters: {};
-    responses: {
+  readonly postTimeSlotCollection: {
+    readonly responses: {
       /** TimeSlot resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["TimeSlot.jsonld-TimeSlot-read"];
-          "application/json": components["schemas"]["TimeSlot-TimeSlot-read"];
-          "multipart/form-data": components["schemas"]["TimeSlot-TimeSlot-read"];
-          "text/html": components["schemas"]["TimeSlot-TimeSlot-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["TimeSlot.jsonld-TimeSlot-read"];
+          readonly "application/json": components["schemas"]["TimeSlot-TimeSlot-read"];
+          readonly "multipart/form-data": components["schemas"]["TimeSlot-TimeSlot-read"];
+          readonly "text/html": components["schemas"]["TimeSlot-TimeSlot-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new TimeSlot resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["TimeSlot.jsonld-TimeSlot-write"];
-        "application/json": components["schemas"]["TimeSlot-TimeSlot-write"];
-        "multipart/form-data": components["schemas"]["TimeSlot-TimeSlot-write"];
-        "text/html": components["schemas"]["TimeSlot-TimeSlot-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["TimeSlot.jsonld-TimeSlot-write"];
+        readonly "application/json": components["schemas"]["TimeSlot-TimeSlot-write"];
+        readonly "multipart/form-data": components["schemas"]["TimeSlot-TimeSlot-write"];
+        readonly "text/html": components["schemas"]["TimeSlot-TimeSlot-write"];
       };
     };
   };
   /** Supprime une plage horaire */
-  deleteTimeSlotItem: {
-    parameters: {
-      path: {
+  readonly deleteTimeSlotItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** TimeSlot resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie une plage horaire */
-  patchTimeSlotItem: {
-    parameters: {
-      path: {
+  readonly patchTimeSlotItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** TimeSlot resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["TimeSlot.jsonld-TimeSlot-read"];
-          "application/json": components["schemas"]["TimeSlot-TimeSlot-read"];
-          "multipart/form-data": components["schemas"]["TimeSlot-TimeSlot-read"];
-          "text/html": components["schemas"]["TimeSlot-TimeSlot-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["TimeSlot.jsonld-TimeSlot-read"];
+          readonly "application/json": components["schemas"]["TimeSlot-TimeSlot-read"];
+          readonly "multipart/form-data": components["schemas"]["TimeSlot-TimeSlot-read"];
+          readonly "text/html": components["schemas"]["TimeSlot-TimeSlot-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated TimeSlot resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["TimeSlot-TimeSlot-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["TimeSlot-TimeSlot-write"];
       };
     };
   };
   /** Récupère les unités */
-  getUnitCollection: {
-    parameters: {
-      query: {
-        code?: string;
-        name?: string;
+  readonly getUnitCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly code?: string;
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
+        readonly page?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** Unit collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["Unit.jsonld-Unit-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["Unit.jsonld-Unit-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["Unit-Unit-read"][];
-          "multipart/form-data": components["schemas"]["Unit-Unit-read"][];
-          "text/html": components["schemas"]["Unit-Unit-read"][];
+          readonly "application/json": readonly components["schemas"]["Unit-Unit-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["Unit-Unit-read"][];
+          readonly "text/html": readonly components["schemas"]["Unit-Unit-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer une unité */
-  postUnitCollection: {
-    parameters: {};
-    responses: {
+  readonly postUnitCollection: {
+    readonly responses: {
       /** Unit resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["Unit.jsonld-Unit-read"];
-          "application/json": components["schemas"]["Unit-Unit-read"];
-          "multipart/form-data": components["schemas"]["Unit-Unit-read"];
-          "text/html": components["schemas"]["Unit-Unit-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Unit.jsonld-Unit-read"];
+          readonly "application/json": components["schemas"]["Unit-Unit-read"];
+          readonly "multipart/form-data": components["schemas"]["Unit-Unit-read"];
+          readonly "text/html": components["schemas"]["Unit-Unit-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new Unit resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["Unit.jsonld-Unit-write"];
-        "application/json": components["schemas"]["Unit-Unit-write"];
-        "multipart/form-data": components["schemas"]["Unit-Unit-write"];
-        "text/html": components["schemas"]["Unit-Unit-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["Unit.jsonld-Unit-write"];
+        readonly "application/json": components["schemas"]["Unit-Unit-write"];
+        readonly "multipart/form-data": components["schemas"]["Unit-Unit-write"];
+        readonly "text/html": components["schemas"]["Unit-Unit-write"];
       };
     };
   };
   /** Supprime une unité */
-  deleteUnitItem: {
-    parameters: {
-      path: {
+  readonly deleteUnitItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Unit resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie une unité */
-  patchUnitItem: {
-    parameters: {
-      path: {
+  readonly patchUnitItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** Unit resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["Unit.jsonld-Unit-read"];
-          "application/json": components["schemas"]["Unit-Unit-read"];
-          "multipart/form-data": components["schemas"]["Unit-Unit-read"];
-          "text/html": components["schemas"]["Unit-Unit-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Unit.jsonld-Unit-read"];
+          readonly "application/json": components["schemas"]["Unit-Unit-read"];
+          readonly "multipart/form-data": components["schemas"]["Unit-Unit-read"];
+          readonly "text/html": components["schemas"]["Unit-Unit-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated Unit resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["Unit-Unit-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["Unit-Unit-write"];
       };
     };
   };
   /** Récupère les messages TVA */
-  getVatMessageCollection: {
-    parameters: {
-      query: {
-        name?: string;
+  readonly getVatMessageCollection: {
+    readonly parameters: {
+      readonly query: {
+        readonly name?: string;
         /** The collection page number */
-        page?: number;
+        readonly page?: number;
       };
     };
-    responses: {
+    readonly responses: {
       /** VatMessage collection */
-      200: {
-        content: {
-          "application/ld+json": {
-            "hydra:member": components["schemas"]["VatMessage.jsonld-VatMessage-read"][];
-            "hydra:totalItems"?: number;
-            "hydra:view"?: {
-              "@id"?: string;
-              "@type"?: string;
-              "hydra:first"?: string;
-              "hydra:last"?: string;
-              "hydra:previous"?: string;
-              "hydra:next"?: string;
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": {
+            readonly "hydra:member": readonly components["schemas"]["VatMessage.jsonld-VatMessage-read"][];
+            readonly "hydra:totalItems"?: number;
+            readonly "hydra:view"?: {
+              /** Format: iri-reference */
+              readonly "@id"?: string;
+              readonly "@type"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:first"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:last"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:previous"?: string;
+              /** Format: iri-reference */
+              readonly "hydra:next"?: string;
             };
-            "hydra:search"?: {
-              "@type"?: string;
-              "hydra:template"?: string;
-              "hydra:variableRepresentation"?: string;
-              "hydra:mapping"?: {
-                "@type"?: string;
-                variable?: string;
-                property?: string | null;
-                required?: boolean;
+            readonly "hydra:search"?: {
+              readonly "@type"?: string;
+              readonly "hydra:template"?: string;
+              readonly "hydra:variableRepresentation"?: string;
+              readonly "hydra:mapping"?: readonly {
+                readonly "@type"?: string;
+                readonly variable?: string;
+                readonly property?: string | null;
+                readonly required?: boolean;
               }[];
             };
           };
-          "application/json": components["schemas"]["VatMessage-VatMessage-read"][];
-          "multipart/form-data": components["schemas"]["VatMessage-VatMessage-read"][];
-          "text/html": components["schemas"]["VatMessage-VatMessage-read"][];
+          readonly "application/json": readonly components["schemas"]["VatMessage-VatMessage-read"][];
+          readonly "multipart/form-data": readonly components["schemas"]["VatMessage-VatMessage-read"][];
+          readonly "text/html": readonly components["schemas"]["VatMessage-VatMessage-read"][];
         };
       };
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Créer un message TVA */
-  postVatMessageCollection: {
-    parameters: {};
-    responses: {
+  readonly postVatMessageCollection: {
+    readonly responses: {
       /** VatMessage resource created */
-      201: {
-        content: {
-          "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-read"];
-          "application/json": components["schemas"]["VatMessage-VatMessage-read"];
-          "multipart/form-data": components["schemas"]["VatMessage-VatMessage-read"];
-          "text/html": components["schemas"]["VatMessage-VatMessage-read"];
+      readonly 201: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-read"];
+          readonly "application/json": components["schemas"]["VatMessage-VatMessage-read"];
+          readonly "multipart/form-data": components["schemas"]["VatMessage-VatMessage-read"];
+          readonly "text/html": components["schemas"]["VatMessage-VatMessage-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The new VatMessage resource */
-    requestBody: {
-      content: {
-        "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-write"];
-        "application/json": components["schemas"]["VatMessage-VatMessage-write"];
-        "multipart/form-data": components["schemas"]["VatMessage-VatMessage-write"];
-        "text/html": components["schemas"]["VatMessage-VatMessage-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-write"];
+        readonly "application/json": components["schemas"]["VatMessage-VatMessage-write"];
+        readonly "multipart/form-data": components["schemas"]["VatMessage-VatMessage-write"];
+        readonly "text/html": components["schemas"]["VatMessage-VatMessage-write"];
       };
     };
   };
   /** Supprime un message TVA */
-  deleteVatMessageItem: {
-    parameters: {
-      path: {
+  readonly deleteVatMessageItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** VatMessage resource deleted */
-      204: never;
+      readonly 204: never;
       /** Bad request */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
   };
   /** Modifie un message TVA */
-  patchVatMessageItem: {
-    parameters: {
-      path: {
+  readonly patchVatMessageItem: {
+    readonly parameters: {
+      readonly path: {
         /** Resource identifier */
-        id: string;
+        readonly id: string;
       };
     };
-    responses: {
+    readonly responses: {
       /** VatMessage resource updated */
-      200: {
-        content: {
-          "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-read"];
-          "application/json": components["schemas"]["VatMessage-VatMessage-read"];
-          "multipart/form-data": components["schemas"]["VatMessage-VatMessage-read"];
-          "text/html": components["schemas"]["VatMessage-VatMessage-read"];
+      readonly 200: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["VatMessage.jsonld-VatMessage-read"];
+          readonly "application/json": components["schemas"]["VatMessage-VatMessage-read"];
+          readonly "multipart/form-data": components["schemas"]["VatMessage-VatMessage-read"];
+          readonly "text/html": components["schemas"]["VatMessage-VatMessage-read"];
         };
       };
       /** Invalid input */
-      400: unknown;
+      readonly 400: unknown;
       /** Unauthorized */
-      401: unknown;
+      readonly 401: unknown;
       /** Forbidden */
-      403: unknown;
+      readonly 403: unknown;
       /** Resource not found */
-      404: unknown;
+      readonly 404: unknown;
       /** Method Not Allowed */
-      405: unknown;
+      readonly 405: unknown;
       /** Unprocessable entity */
-      422: unknown;
+      readonly 422: unknown;
       /** Internal Server Error */
-      500: unknown;
+      readonly 500: unknown;
     };
     /** The updated VatMessage resource */
-    requestBody: {
-      content: {
-        "application/merge-patch+json": components["schemas"]["VatMessage-VatMessage-write"];
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/merge-patch+json": components["schemas"]["VatMessage-VatMessage-write"];
       };
     };
   };

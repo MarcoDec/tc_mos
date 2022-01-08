@@ -7,6 +7,7 @@
     "clone": "^2.1.2",
     "js-cookie": "^3.0.1",
     "mitt": "^3.0.0",
+    "openapi-typescript-fetch": "^1.1.1",
     "vue": "^3.2.26",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2",
@@ -38,7 +39,7 @@
     "dev": "vite",
     "eslint": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js assets",
     "eslint-fix": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js --fix assets",
-    "openapi": "php bin/console api:openapi:export -o openapi.json && npx openapi-typescript openapi.json --output assets/types/openapi.d.ts && rm openapi.json",
+    "openapi": "php bin/console api:openapi:export -o openapi.json && npx openapi-typescript openapi.json --immutable-types --output assets/types/openapi.d.ts && rm openapi.json",
     "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
     "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"
   }

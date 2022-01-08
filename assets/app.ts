@@ -5,9 +5,9 @@ import {createApp, defineAsyncComponent} from 'vue'
 import App from './routing/App.vue'
 import type {Component} from 'vue'
 import type {State} from './store/security'
+import api from './api'
 import emitter from './emitter'
 import {fas} from '@fortawesome/free-solid-svg-icons'
-import {fetchApi} from './api'
 import {generateStore} from './store'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import router from './routing/router'
@@ -24,7 +24,8 @@ async function mount(): Promise<void> {
     if (Cookies.has()) {
         const id = Cookies.get('id')
         if (typeof id !== 'undefined') {
-            const user = await fetchApi('/api/employees/{id}', {params: {id}})
+            const response = await api.path('/api/employees/{id}').method('get').create()({id})
+            const user = response.data
             if (typeof user.username !== 'undefined')
                 security.username = user.username
         }

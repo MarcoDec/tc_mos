@@ -7,7 +7,7 @@ module.exports = {
     env: {
         browser: true, es2021: true, node: true
     },
-    ignorePatterns: ['assets/api.ts', 'assets/types/openapi.d.ts'],
+    ignorePatterns: ['assets/types/openapi.d.ts'],
     overrides: [{files: ['*.vue'], rules: {'@typescript-eslint/indent': 'off'}}],
     parser: require.resolve('vue-eslint-parser'),
     parserOptions: {
@@ -71,7 +71,7 @@ module.exports = {
         '@typescript-eslint/no-invalid-void-type': 'error',
         '@typescript-eslint/no-loop-func': 'error',
         '@typescript-eslint/no-loss-of-precision': 'error',
-        '@typescript-eslint/no-magic-numbers': 'error',
+        '@typescript-eslint/no-magic-numbers': ['error', {ignoreNumericLiteralTypes: true}],
         '@typescript-eslint/no-meaningless-void-operator': 'error',
         '@typescript-eslint/no-misused-new': 'error',
         '@typescript-eslint/no-misused-promises': 'error',

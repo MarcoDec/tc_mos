@@ -3,7 +3,7 @@ import {MutationTypes} from '.'
 import type {State as RootState} from '../../index'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
-import {fetchApi} from '../../../api'
+import api from '../../../api'
 
 export enum ActionTypes {
     LOAD_FAMILIES = 'LOAD_FAMILIES',
@@ -16,11 +16,10 @@ const FIRST = 0
 
 export const actions = {
     async [ActionTypes.LOAD_FAMILIES]({commit}: ActionContext): Promise<void> {
-        const response = await fetchApi('/api/component-families', {
-            headers: {Authorization: `Bearer ${String(Cookies.get('token'))}`, 'Content-Type': 'application/json'},
-            method: 'get'
+        const response = await api.path('/api/component-families').method('get').create()({}, {
+            headers: {Authorization: `Bearer ${String(Cookies.get('token'))}`}
         })
-        const apiFamilies = response['hydra:member']
+        const apiFamilies = response.data['hydra:member']
         type ComponentFamily = typeof apiFamilies[typeof FIRST]
         type ComponentFamilyInstance = ComponentFamily & {children: ComponentFamilyInstance[]}
         type ComponentFamilyInstances = Record<string, ComponentFamilyInstance>
