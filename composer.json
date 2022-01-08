@@ -53,6 +53,7 @@
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "doctrine/orm": "^2.10",
     "dragonmantank/cron-expression": "^3.1",
+    "gollumsf/doctrine-tinyint": "^1.0",
     "nelmio/cors-bundle": "^2.2",
     "pentatrion/vite-bundle": "^1.1",
     "phpdocumentor/reflection-docblock": "^5.3",
