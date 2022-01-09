@@ -59,10 +59,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     private Collection $apiTokens;
 
    /**
-    * @var ArrayCollection<int,EmployeeAttachment>
+    * @var Collection<int,EmployeeAttachment>
     */
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: EmployeeAttachment::class)]
-    private ArrayCollection $attachments;
+    private Collection $attachments;
 
     #[ORM\Embedded]
     private Roles $embRoles;
@@ -122,9 +122,9 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     }
 
    /**
-    * @return ArrayCollection<int,EmployeeAttachment>
+    * @return Collection<int,EmployeeAttachment>
     */
-    public function getAttachments(): ArrayCollection {
+    public function getAttachments(): Collection {
         return $this->attachments;
     }
 
@@ -209,10 +209,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     }
 
    /**
-    * @param ArrayCollection<int,EmployeeAttachment> $attachments
+    * @param Collection<int,EmployeeAttachment> $attachments
     * @return void
     */
-    public function setAttachments(ArrayCollection $attachments): void {
+    public function setAttachments(Collection $attachments): void {
         $this->attachments = $attachments;
     }
 
