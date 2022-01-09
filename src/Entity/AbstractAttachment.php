@@ -5,11 +5,7 @@ namespace App\Entity;
 use App\Controller\File\FileUploadController;
 use DateTimeInterface;
 use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @Vich\Uploadable()
- */
 abstract class AbstractAttachment extends Entity
 {
    /** @var string Photo*/
@@ -38,8 +34,6 @@ abstract class AbstractAttachment extends Entity
          ],
          'read' => true,
          'write' => true,
-         //'output' => true,
-         //'input' => true,
          'deserialize'=>false,
          'method' => 'POST',
          'path' => self::API_DEFAULT_PATH,
@@ -47,6 +41,24 @@ abstract class AbstractAttachment extends Entity
          'openapi_context' => self::API_DEFAULT_OPENAPI_CONTEXT,
          'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
          'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+      ]
+   ];
+
+   public const API_DEFAULT_ITEM_OPERATIONS = [
+      'get'=> [
+         'openapi_context' =>
+            [
+               'description' => "Récupère un fichier",
+               'summary' => "Récupère un fichier"
+            ],
+         'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+      ],
+      'delete'=> [
+         'openapi_context' =>
+            [
+               'description' => "Supprime un fichier",
+               'summary' => "Supprime un fichier"
+            ]
       ]
    ];
 

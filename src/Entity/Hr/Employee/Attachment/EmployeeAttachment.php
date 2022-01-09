@@ -20,7 +20,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
          'get' => [
             'method' => 'GET',
             'path' => '/employee-attachments',
-            //'requirements'=> ["id"=> '\d+'],
             'openapi_context' => //self::API_DEFAULT_OPENAPI_CONTEXT,
                [
                   'description' => "Récupère la collection de fichier associé à un employé",
@@ -35,8 +34,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
             'read' => true,
             'write' => false,
-            //'output' => true,
-            //'input' => true,
             'deserialize'=>false,
             'method' => 'POST',
             'path' => '/employee-attachments',
@@ -50,7 +47,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
          ]
       ],
-      itemOperations: //self::API_DEFAULT_COLLECTIONS_OPERATIONS,
+      itemOperations:
       [
          'get'=> [
             'openapi_context' =>
@@ -63,8 +60,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
          'delete'=> [
             'openapi_context' =>
             [
-               'description' => "Supprime une pièce jointe",
-               'summary' => "Supprime une pièce jointe"
+               'description' => "Supprime un fichier",
+               'summary' => "Supprime un fichier"
             ]
          ]
       ],
@@ -82,7 +79,7 @@ class EmployeeAttachment extends AbstractAttachment
       ] ),
       Groups(AbstractAttachment::API_GROUPS_CATEGORY)
    ]
-   private string $category = AbstractAttachment::OTHERS;
+   private string $category = 'doc';
 
    #[
       ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'attachments'),

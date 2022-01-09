@@ -8,16 +8,15 @@ use DateTimeInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 trait AttachmentTrait
 {
    #[
       ORM\Column,
-      ApiProperty( description: 'Catégorie de fichier', required:true, example: 'PIC' ),
+      ApiProperty( description: 'Catégorie de fichier', required:true, example: 'doc' ),
       Groups(AbstractAttachment::API_GROUPS_CATEGORY)
    ]
-   private string $category = AbstractAttachment::OTHERS;
+   private string $category = 'doc';
    #[
       ORM\Column(type: "date", nullable: true),
       ApiProperty( description: "Date d'expiration du fichier", example: '12/12/2023' ),
@@ -32,7 +31,6 @@ trait AttachmentTrait
    private string $url='';
    /**
     * @var File|null
-    * @Vich\UploadableField(mapping="attachment", fileNameProperty="filePath")
     */
    #[
       ApiProperty( description: "Fichier à uploader", required:true, example: '12/12/2023' ),
