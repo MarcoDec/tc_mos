@@ -5,15 +5,15 @@ namespace App\Entity\Purchase\Supplier;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Logistics\Incoterms;
-use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Entity;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
+use App\Entity\Entity;
+use App\Entity\Logistics\Incoterms;
 use App\Entity\Purchase\Component\Component as TechnicalSheet;
 use App\Entity\Traits\RefTrait;
 use App\Filter\RelationFilter;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: [
@@ -51,7 +51,7 @@ use App\Filter\RelationFilter;
                 ]
             ],
         ],
-        shortName: "SupplierComponent",
+        shortName: 'SupplierComponent',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
@@ -65,14 +65,13 @@ use App\Filter\RelationFilter;
         ]
     ),
     ORM\Entity,
-    ORM\Table(name: "component_supplier")
+    ORM\Table(name: 'component_supplier')
 ]
-class Component extends Entity
-{
+class Component extends Entity {
     use RefTrait;
 
     #[
-        ApiProperty(description: 'Référence', example: "DH544G"),
+        ApiProperty(description: 'Référence', example: 'DH544G'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:ref', 'write:ref'])
     ]
@@ -153,124 +152,103 @@ class Component extends Entity
         $this->deliveryTime = new Measure();
     }
 
-    public function getCopperWeight(): Measure
-    {
-        return $this->copperWeight;
-    }
-
-    public function setCopperWeight(Measure $copperWeight): self
-    {
-        $this->copperWeight = $copperWeight;
-
-        return $this;
-    }
-
-    public function getDeliveryTime(): Measure
-    {
-        return $this->deliveryTime;
-    }
-
-    public function setDeliveryTime(Measure $deliveryTime): self
-    {
-        $this->deliveryTime = $deliveryTime;
-
-        return $this;
-    }
-
-    public function getIndex(): ?string
-    {
-        return $this->index;
-    }
-
-    public function setIndex(string $index): self
-    {
-        $this->index = $index;
-
-        return $this;
-    }
-
-    public function getMoq(): ?float
-    {
-        return $this->moq;
-    }
-
-    public function setMoq(float $moq): self
-    {
-        $this->moq = $moq;
-
-        return $this;
-    }
-
-    public function getPackaging(): ?int
-    {
-        return $this->packaging;
-    }
-
-    public function setPackaging(int $packaging): self
-    {
-        $this->packaging = $packaging;
-
-        return $this;
-    }
-
-    public function getPackagingKind(): ?string
-    {
-        return $this->packagingKind;
-    }
-
-    public function setPackagingKind(?string $packagingKind): self
-    {
-        $this->packagingKind = $packagingKind;
-
-        return $this;
-    }
-
-    public function getProportion(): ?float
-    {
-        return $this->proportion;
-    }
-
-    public function setProportion(float $proportion): self
-    {
-        $this->proportion = $proportion;
-
-        return $this;
-    }
-
-    public function getComponent(): ?TechnicalSheet
-    {
+    public function getComponent(): ?TechnicalSheet {
         return $this->component;
     }
 
-    public function setComponent(?TechnicalSheet $component): self
-    {
+    public function getCopperWeight(): Measure {
+        return $this->copperWeight;
+    }
+
+    public function getDeliveryTime(): Measure {
+        return $this->deliveryTime;
+    }
+
+    public function getIncoterms(): ?Incoterms {
+        return $this->incoterms;
+    }
+
+    public function getIndex(): ?string {
+        return $this->index;
+    }
+
+    public function getMoq(): ?float {
+        return $this->moq;
+    }
+
+    public function getPackaging(): ?int {
+        return $this->packaging;
+    }
+
+    public function getPackagingKind(): ?string {
+        return $this->packagingKind;
+    }
+
+    public function getProportion(): ?float {
+        return $this->proportion;
+    }
+
+    public function getSupplier(): ?Supplier {
+        return $this->supplier;
+    }
+
+    public function setComponent(?TechnicalSheet $component): self {
         $this->component = $component;
 
         return $this;
     }
 
-    public function getIncoterms(): ?Incoterms
-    {
-        return $this->incoterms;
+    public function setCopperWeight(Measure $copperWeight): self {
+        $this->copperWeight = $copperWeight;
+
+        return $this;
     }
 
-    public function setIncoterms(?Incoterms $incoterms): self
-    {
+    public function setDeliveryTime(Measure $deliveryTime): self {
+        $this->deliveryTime = $deliveryTime;
+
+        return $this;
+    }
+
+    public function setIncoterms(?Incoterms $incoterms): self {
         $this->incoterms = $incoterms;
 
         return $this;
     }
 
-    public function getSupplier(): ?Supplier
-    {
-        return $this->supplier;
+    public function setIndex(string $index): self {
+        $this->index = $index;
+
+        return $this;
     }
 
-    public function setSupplier(?Supplier $supplier): self
-    {
+    public function setMoq(float $moq): self {
+        $this->moq = $moq;
+
+        return $this;
+    }
+
+    public function setPackaging(int $packaging): self {
+        $this->packaging = $packaging;
+
+        return $this;
+    }
+
+    public function setPackagingKind(?string $packagingKind): self {
+        $this->packagingKind = $packagingKind;
+
+        return $this;
+    }
+
+    public function setProportion(float $proportion): self {
+        $this->proportion = $proportion;
+
+        return $this;
+    }
+
+    public function setSupplier(?Supplier $supplier): self {
         $this->supplier = $supplier;
 
         return $this;
     }
-   
 }
