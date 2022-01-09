@@ -32,10 +32,14 @@ class FileUploadController
       $expirationDirectoriesParameter = $entity->getExpirationDirectoriesParameter();
       $parameterClass = $entity->getParameterClass();
       $expirationDirectories = $this->parameterManager->getParameter($parameterClass,$expirationDirectoriesParameter);
-      if (in_array($entity->getCategory(), $expirationDirectories->getTypedValue())) {
-         $entity->setExpirationDate(new \DateTime('now + 1 day'));
-      } else {
-         $entity->setExpirationDate(null);
+      foreach ($expirationDirectories->getTypedValue() as $directory) {
+         if (str_contains($entity->getCategory(),$directory)) {
+            $nbMonthParameter = $entity->getExpirationDurationParameter();
+            $nbMonth = intval($this->parameterManager->getParameter($parameterClass,$nbMonthParameter)->getValue());
+            $entity->setExpirationDate(new \DateTime("now + $nbMonth month"));
+         } else {
+            $entity->setExpirationDate(null);
+         }
       }
       $this->entityManager->persist($entity);
       $this->entityManager->flush(); // pour récupération id utilisé par default dans getBaseFolder

@@ -23,7 +23,7 @@ trait AttachmentTrait
       ApiProperty( description: "Date d'expiration du fichier", example: '12/12/2023' ),
       Groups(AbstractAttachment::API_GROUPS_EXPIRATION_DATE)
    ]
-   private DateTimeInterface|null $expirationDate;
+   private DateTimeInterface|null $expirationDate = null;
    #[
       ORM\Column,
       ApiProperty( description: "Url d'accès au fichier", example: 'http://localhost:8000/uploads/Employee/22/contrat/20211105.docx' ),

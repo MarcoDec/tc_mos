@@ -69,7 +69,9 @@ abstract class AbstractAttachment extends Entity
    public abstract function setFile(?File $file): self;
 
    public abstract function getExpirationDirectoriesParameter():string;
+   public abstract function getExpirationDurationParameter():string;
    public abstract function getParameterClass():string;
+
 
    public function getBaseFolder():string {
       $path = explode('\\', get_class($this));

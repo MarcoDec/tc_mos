@@ -88,4 +88,9 @@ class EmployeeAttachment extends AbstractAttachment
    {
       return Parameter::class;
    }
+
+   public function getExpirationDurationParameter(): string
+   {
+      return Parameter::EMPLOYEE_EXPIRATION_DURATION;
+   }
 }
