@@ -44,9 +44,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     use NameTrait;
 
-    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: EmployeeAttachment::class)]
-    private Collection $attachments;
-
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Super'),
         Assert\NotBlank,
@@ -60,6 +57,9 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      */
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
     private Collection $apiTokens;
+
+    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: EmployeeAttachment::class)]
+    private Collection $attachments;
 
     #[ORM\Embedded]
     private Roles $embRoles;
@@ -88,6 +88,16 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         return $this;
     }
 
+    /**
+     * @return $this
+     */
+    public function addAttachment(EmployeeAttachment $attachment): self {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
+        }
+        return $this;
+    }
+
     final public function addRole(string $role): self {
         $this->embRoles->addRole($role);
         return $this;
@@ -106,6 +116,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      */
     final public function getApiTokens(): Collection {
         return $this->apiTokens;
+    }
+
+    public function getAttachments(): ArrayCollection|Collection {
+        return $this->attachments;
     }
 
     final public function getCurrentApiToken(): ?Token {
@@ -188,6 +202,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         return $this;
     }
 
+    public function setAttachments(ArrayCollection|Collection $attachments): void {
+        $this->attachments = $attachments;
+    }
+
     final public function setPassword(?string $password): self {
         $this->password = $password;
         return $this;
@@ -197,32 +215,4 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         $this->username = $username;
         return $this;
     }
-
-   /**
-    * @return ArrayCollection|Collection
-    */
-   public function getAttachments(): ArrayCollection|Collection
-   {
-      return $this->attachments;
-   }
-
-   /**
-    * @param ArrayCollection|Collection $attachments
-    */
-   public function setAttachments(ArrayCollection|Collection $attachments): void
-   {
-      $this->attachments = $attachments;
-   }
-
-   /**
-    * @param EmployeeAttachment $attachment
-    * @return $this
-    */
-   public function addAttachment(EmployeeAttachment $attachment): self {
-      if (!$this->attachments->contains($attachment)) {
-         $this->attachments->add($attachment);
-      }
-      return $this;
-   }
-
 }

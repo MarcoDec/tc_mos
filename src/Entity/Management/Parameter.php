@@ -12,22 +12,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
    ORM\MappedSuperclass,
-   ORM\DiscriminatorColumn("process","string"),
+   ORM\DiscriminatorColumn('process', 'string'),
    ORM\DiscriminatorMap(Parameter::PROCESSES),
    ORM\Entity,
-   ORM\InheritanceType("SINGLE_TABLE")
+   ORM\InheritanceType('SINGLE_TABLE')
 ]
 class Parameter extends Entity {
     use NameTrait;
 
     public const PROCESSES = [
         'hr' => HrParam::class,
-        'management' => Parameter::class,
+        'management' => self::class,
     ];
 
     #[
-       ORM\JoinColumn("link"),
-       ORM\ManyToOne(Parameter::class,null,"EAGER")
+       ORM\JoinColumn('link'),
+       ORM\ManyToOne(self::class, null, 'EAGER')
     ]
     private Parameter|null $link;
 
@@ -37,12 +37,13 @@ class Parameter extends Entity {
     private string|null $target;
 
     #[
-       ORM\Column(type: "type")
+       ORM\Column(type: 'type')
        ]
     private string|null $type;
+
     /**
      * AppAssert\Directories(parameters={PurchaseParam::SUPPLIER_DIRECTORIES})
-     * AppAssert\ExpirationDir(parameters={PurchaseParam::SUPPLIER_EXPIRATION_DIRECTORIES})
+     * AppAssert\ExpirationDir(parameters={PurchaseParam::SUPPLIER_EXPIRATION_DIRECTORIES}).
      */
     #[
        Assert\NotBlank,
@@ -50,7 +51,7 @@ class Parameter extends Entity {
        ]
     private string|null $value;
 
-    final public function getLink(): ?Parameter {
+    final public function getLink(): ?self {
         return $this->link;
     }
 
@@ -68,7 +69,7 @@ class Parameter extends Entity {
             case Type::TYPE_ARRAY:
                 return !empty($this->value) ? explode(',', $this->value) : [];
             default:
-                return null;
+                return;
         }
     }
 
@@ -80,7 +81,7 @@ class Parameter extends Entity {
         return in_array($this->name, $names);
     }
 
-    final public function setLink(?Parameter $link): Parameter {
+    final public function setLink(?self $link): self {
         $this->link = $link;
 
         return $this;
@@ -92,13 +93,13 @@ class Parameter extends Entity {
         return $this;
     }
 
-    final public function setType(?string $type): Parameter {
+    final public function setType(?string $type): self {
         $this->type = $type;
 
         return $this;
     }
 
-    final public function setValue(?string $value): Parameter {
+    final public function setValue(?string $value): self {
         $this->value = $value;
 
         return $this;

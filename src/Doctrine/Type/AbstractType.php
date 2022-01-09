@@ -11,9 +11,7 @@ abstract class AbstractType extends Type {
     protected const SQL = 'ENUM';
 
     final protected static function getStrTypes(): string {
-        return collect(static::TYPES)->map(function (string $type): string {
-            return "'$type'";
-        })->implode(', ');
+        return collect(static::TYPES)->map(static fn (string $type): string => "'$type'")->implode(', ');
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform) {

@@ -15,14 +15,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 final class FileManager {
     private string $uploadsDir;
 
-   /**
-    * @return string
-    */
-   public function getUploadsDir(): string
-   {
-      return $this->uploadsDir;
-   }
-
     public function __construct(
         private ResourceMetadataFactoryInterface $apiMetadatas,
         private DashPathSegmentNameGenerator $dashGenerator,
@@ -30,6 +22,10 @@ final class FileManager {
         private Filesystem $fs
     ) {
         $this->uploadsDir = "$this->dir/uploads";
+    }
+
+    public function getUploadsDir(): string {
+        return $this->uploadsDir;
     }
 
     public function loadFamilyIcon(Family $family): void {
@@ -47,6 +43,15 @@ final class FileManager {
 
     public function normalizePath(?string $path): ?string {
         return !empty($path) ? removeStart($path, $this->dir) : $path;
+    }
+
+    public function persistFile($uploadSubFolder, File $file): void {
+        $basePath = $this->getUploadsDir();
+        $targetFolder = $uploadSubFolder;
+        $completeTargetPath = $basePath.$targetFolder.'/'.$file->getClientOriginalName();
+        //Check if Folder Exist
+        $this->checkFolderAndCreateIfNeeded($basePath.$targetFolder);
+        move_uploaded_file($file->getPathname(), $completeTargetPath);
     }
 
     public function uploadFamilyIcon(Family $family): void {
@@ -69,6 +74,12 @@ final class FileManager {
         $family->setFile($file->move($dir, "{$family->getId()}.{$extension}"));
     }
 
+    private function checkFolderAndCreateIfNeeded(string $folder): void {
+        if (!file_exists($folder)) {
+            mkdir($folder, 0777, true);
+        }
+    }
+
     private function getDashedName(FileEntity $entity): ?string {
         return ($shortName = $this->getShortName($entity))
             ? $this->dashGenerator->getSegmentName($shortName)
@@ -85,19 +96,5 @@ final class FileManager {
 
     private function scandir(string $dir): Directory {
         return new Directory("$this->uploadsDir/$dir");
-    }
-    public function persistFile($uploadSubFolder, File $file): void {
-       $basePath = $this->getUploadsDir();
-       $targetFolder = $uploadSubFolder;
-       $completeTargetPath = $basePath.$targetFolder."/".$file->getClientOriginalName();
-       //Check if Folder Exist
-       $this->checkFolderAndCreateIfNeeded($basePath . $targetFolder);
-       move_uploaded_file($file->getPathname(),$completeTargetPath);
-    }
-
-    private function checkFolderAndCreateIfNeeded(string $folder) {
-       if (!file_exists($folder)) {
-          mkdir($folder,0777, true);
-       }
     }
 }
