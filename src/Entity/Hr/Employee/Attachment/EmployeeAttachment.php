@@ -59,6 +59,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
                   'summary' => "Récupère un fichier associé à un employé"
                ],
             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+         ],
+         'delete'=> [
+            'openapi_context' =>
+            [
+               'description' => "Supprime une pièce jointe",
+               'summary' => "Supprime une pièce jointe"
+            ]
          ]
       ],
       paginationItemsPerPage: 2
