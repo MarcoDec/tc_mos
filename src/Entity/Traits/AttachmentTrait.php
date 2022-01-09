@@ -14,7 +14,7 @@ trait AttachmentTrait
 {
    #[
       ORM\Column,
-      ApiProperty( description: 'Catégorie de fichier', example: 'PIC' ),
+      ApiProperty( description: 'Catégorie de fichier', required:true, example: 'PIC' ),
       Groups(AbstractAttachment::API_GROUPS_CATEGORY)
    ]
    private string $category = AbstractAttachment::OTHERS;
@@ -35,7 +35,7 @@ trait AttachmentTrait
     * @Vich\UploadableField(mapping="attachment", fileNameProperty="filePath")
     */
    #[
-      ApiProperty( description: "Fichier à uploader", example: '12/12/2023' ),
+      ApiProperty( description: "Fichier à uploader", required:true, example: '12/12/2023' ),
       Groups(['attachment:write'])
    ]
    private ?File $file = null;

@@ -54,7 +54,7 @@ class EmployeeAttachment extends AbstractAttachment
    use AttachmentTrait;
    #[
       ORM\Column,
-      ApiProperty( description: 'Catégorie de fichier', example: 'PIC', openapiContext: [
+      ApiProperty( description: 'Catégorie de fichier', required:true, example: 'PIC', openapiContext: [
          'enum' =>[ 'contrats', 'doc_a_date', 'doc_a_date/formations', 'doc', 'qualité']
       ] ),
       Groups(AbstractAttachment::API_GROUPS_CATEGORY)
@@ -63,7 +63,7 @@ class EmployeeAttachment extends AbstractAttachment
 
    #[
       ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'attachments'),
-      ApiProperty( description: 'Employée auquel doit se rattacher le fichier', example: '/api/employees/1'),
+      ApiProperty( description: 'Employée auquel doit se rattacher le fichier', required: true, example: '/api/employees/1'),
       Groups([self::API_GROUP_READ, self::API_GROUP_WRITE])
    ]
    private Employee $employee;
@@ -95,5 +95,10 @@ class EmployeeAttachment extends AbstractAttachment
    public function getExpirationDurationParameter(): string
    {
       return Parameter::EMPLOYEE_EXPIRATION_DURATION;
+   }
+
+   public function getBaseFolder():string {
+      $path = explode('\\', Employee::class);
+      return "/".array_pop($path)."/".$this->getEmployee()->getId();
    }
 }
