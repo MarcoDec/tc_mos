@@ -18,7 +18,7 @@ abstract class AbstractAttachment extends Entity
    public const OTHERS = 'OTHERS';
 
    public const API_GROUPS_URL=['attachment:read'];
-   public const API_GROUPS_CATEGORY=['attachment:read','attachment:write','attachment:write'];
+   public const API_GROUPS_CATEGORY=['attachment:read','attachment:write'];
    public const API_GROUPS_EXPIRATION_DATE=['attachment:read'];
 
    public const API_DEFAULT_PATH = '/attachments';

@@ -5,6 +5,7 @@ namespace App\Entity\Hr\Employee\Attachment;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\AbstractAttachment;
+use App\Entity\Hr\Employee\Employee;
 use App\Entity\Hr\Parameter;
 use App\Entity\Traits\AttachmentTrait;
 use Doctrine\ORM\Mapping as ORM;
@@ -59,25 +60,27 @@ class EmployeeAttachment extends AbstractAttachment
       Groups(AbstractAttachment::API_GROUPS_CATEGORY)
    ]
    private string $category = AbstractAttachment::OTHERS;
-//   #[
-//      ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'attachments'),
-//
-//   ]
-//   private Employee $employee;
-//   /**
-//    * @return Employee
-//    */
-//   public function getEmployee(): Employee
-//   {
-//      return $this->employee;
-//   }
-//   /**
-//    * @param Employee $employee
-//    */
-//   public function setEmployee(Employee $employee): void
-//   {
-//      $this->employee = $employee;
-//   }
+
+   #[
+      ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'attachments'),
+      ApiProperty( description: 'Employée auquel doit se rattacher le fichier', example: '/api/employees/1'),
+      Groups([self::API_GROUP_READ, self::API_GROUP_WRITE])
+   ]
+   private Employee $employee;
+   /**
+    * @return Employee
+    */
+   public function getEmployee(): Employee
+   {
+      return $this->employee;
+   }
+   /**
+    * @param Employee $employee
+    */
+   public function setEmployee(Employee $employee): void
+   {
+      $this->employee = $employee;
+   }
 
    public function getExpirationDirectoriesParameter(): string
    {
