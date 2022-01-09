@@ -63,13 +63,16 @@ class Parameter extends Entity {
         return $this->type;
     }
 
-    final public function getTypedValue() {
+   /**
+    * @return array<mixed>
+    */
+    final public function getTypedValue():array {
         switch ($this->type) {
             case Type::TYPE_SELECT_MULTIPLE_LINK:
             case Type::TYPE_ARRAY:
                 return !empty($this->value) ? explode(',', $this->value) : [];
             default:
-                return;
+                return [];
         }
     }
 
@@ -77,6 +80,10 @@ class Parameter extends Entity {
         return $this->value;
     }
 
+   /**
+    * @param array<null|string> $names
+    * @return bool
+    */
     final public function isIn(array $names): bool {
         return in_array($this->name, $names);
     }

@@ -45,9 +45,10 @@ final class FileManager {
         return !empty($path) ? removeStart($path, $this->dir) : $path;
     }
 
-    public function persistFile($uploadSubFolder, File $file): void {
+    public function persistFile(string $uploadSubFolder, File $file): void {
         $basePath = $this->getUploadsDir();
         $targetFolder = $uploadSubFolder;
+        /* @phpstan-ignore-next-line */
         $completeTargetPath = $basePath.$targetFolder.'/'.$file->getClientOriginalName();
         //Check if Folder Exist
         $this->checkFolderAndCreateIfNeeded($basePath.$targetFolder);

@@ -28,7 +28,7 @@ class HrParametersFixtures extends Fixture {
             'name' => Parameter::EMPLOYEE_EXPIRATION_DURATION,
             'description' => 'Durée par défault des fichiers périssables des employés en mois',
             'process' => 'HR',
-            'value' => 120,
+            'value' => "120",
             'type' => Type::TYPE_INTEGER
         ],
         [

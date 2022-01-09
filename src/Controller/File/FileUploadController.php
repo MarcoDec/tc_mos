@@ -18,7 +18,7 @@ class FileUploadController {
     /**
      * @throws Exception
      */
-    public function __invoke(Request $request) {
+    public function __invoke(Request $request):AbstractAttachment {
         $host = $request->getSchemeAndHttpHost();
         /** @var UploadedFile $file */
         $file = $request->files->get('file');
