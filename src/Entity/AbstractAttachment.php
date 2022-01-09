@@ -3,7 +3,13 @@
 namespace App\Entity;
 
 use App\Controller\File\FileController;
+use DateTimeInterface;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+/**
+ * @Vich\Uploadable()
+ */
 abstract class AbstractAttachment extends Entity
 {
    /** @var string Photo*/
@@ -44,4 +50,30 @@ abstract class AbstractAttachment extends Entity
       ]
    ];
 
+   public abstract function getCategory(): string;
+
+   public abstract function setCategory(string $category): void;
+
+   public abstract function getExpirationDate(): ?DateTimeInterface;
+
+   public abstract function setExpirationDate(?DateTimeInterface $expirationDate): void;
+
+   public abstract function getUrl(): string;
+
+   public abstract function setUrl(string $url): void;
+
+   public abstract function getFile(): ?File;
+
+   public abstract function getFilepath(): ?string;
+
+   public abstract function setFile(?File $file): self;
+
+   public abstract function getTargetFolder(): string;
+
+   public abstract function setTargetFolder(string $targetFolder): void;
+
+   public function getBaseFolder():string {
+      $path = explode('\\', get_class($this));
+      return "/".array_pop($path)."/".$this->getId();
+   }
 }

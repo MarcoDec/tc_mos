@@ -15,6 +15,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 final class FileManager {
     private string $uploadsDir;
 
+   /**
+    * @return string
+    */
+   public function getUploadsDir(): string
+   {
+      return $this->uploadsDir;
+   }
+
     public function __construct(
         private ResourceMetadataFactoryInterface $apiMetadatas,
         private DashPathSegmentNameGenerator $dashGenerator,
@@ -77,5 +85,19 @@ final class FileManager {
 
     private function scandir(string $dir): Directory {
         return new Directory("$this->uploadsDir/$dir");
+    }
+    public function persistFile($uploadSubFolder, File $file): void {
+       $basePath = $this->getUploadsDir();
+       $targetFolder = $uploadSubFolder;
+       $completeTargetPath = $basePath.$targetFolder."/".$file->getClientOriginalName();
+       //Check if Folder Exist
+       $this->checkFolderAndCreateIfNeeded($basePath . $targetFolder);
+       move_uploaded_file($file->getPathname(),$completeTargetPath);
+    }
+
+    private function checkFolderAndCreateIfNeeded(string $folder) {
+       if (!file_exists($folder)) {
+          mkdir($folder,0777, true);
+       }
     }
 }

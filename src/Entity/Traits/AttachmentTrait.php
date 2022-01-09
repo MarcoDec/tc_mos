@@ -32,7 +32,7 @@ trait AttachmentTrait
    private string $url='';
    /**
     * @var File|null
-    * @Vich\UploadableField(mapping="attachment",fileNameProperty="filePath")
+    * @Vich\UploadableField(mapping="attachment", fileNameProperty="filePath")
     */
    #[
       ApiProperty( description: "Fichier à uploader", example: '12/12/2023' ),
@@ -40,6 +40,11 @@ trait AttachmentTrait
    ]
    private ?File $file = null;
 
+   #[
+      ApiProperty( description: "Répertoire cible de stockage du fichier", example: "/contrats"),
+      Groups(['attachment:write'])
+      ]
+   private string $targetFolder ='';
 
    /**
     * @return string
@@ -102,4 +107,22 @@ trait AttachmentTrait
       $this->file = $file;
       return $this;
    }
+
+   /**
+    * @return string
+    */
+   public function getTargetFolder(): string
+   {
+      return $this->targetFolder;
+   }
+
+   /**
+    * @param string $targetFolder
+    */
+   public function setTargetFolder(string $targetFolder): void
+   {
+      $this->targetFolder = $targetFolder;
+   }
+
+
 }

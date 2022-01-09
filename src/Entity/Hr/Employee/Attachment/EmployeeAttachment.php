@@ -4,7 +4,6 @@ namespace App\Entity\Hr\Employee\Attachment;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\AbstractAttachment;
-use App\Entity\Hr\Employee\Employee;
 use App\Entity\Traits\AttachmentTrait;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -18,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
                'multipart'=>[ 'multipart/form-data' ]
             ],
             'read' => true,
-            'write' => true,
+            'write' => false,
             //'output' => true,
             //'input' => true,
             'deserialize'=>false,
@@ -35,7 +34,14 @@ use Doctrine\ORM\Mapping as ORM;
          ]
       ],
       itemOperations: [
-
+         'get'=> [
+            'openapi_context' =>
+               [
+                  'description' => "Récupère un fichier associé à un employé",
+                  'summary' => "Récupère un fichier associé à un employé"
+               ],
+            'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+         ]
       ]
    )
 ]
