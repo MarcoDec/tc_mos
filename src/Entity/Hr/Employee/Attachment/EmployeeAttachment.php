@@ -2,8 +2,10 @@
 
 namespace App\Entity\Hr\Employee\Attachment;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\AbstractAttachment;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Hr\Parameter;
@@ -14,8 +16,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[
    ORM\Entity,
    ApiResource(
-      collectionOperations: //self::API_DEFAULT_COLLECTIONS_OPERATIONS,
-      [
+      collectionOperations: [
+         'get' => [
+            'method' => 'GET',
+            'path' => '/employee-attachments',
+            //'requirements'=> ["id"=> '\d+'],
+            'openapi_context' => //self::API_DEFAULT_OPENAPI_CONTEXT,
+               [
+                  'description' => "Récupère la collection de fichier associé à un employé",
+                  'summary' => "Récupère la collection de fichier associé à un employé"
+               ],
+            'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
+            'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+         ],
          'upload' => [
             'input_formats'=>[
                'multipart'=>[ 'multipart/form-data' ]
@@ -37,7 +50,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
          ]
       ],
-      itemOperations: [
+      itemOperations: //self::API_DEFAULT_COLLECTIONS_OPERATIONS,
+      [
          'get'=> [
             'openapi_context' =>
                [
@@ -46,8 +60,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
                ],
             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
          ]
-      ]
-   )
+      ],
+      paginationItemsPerPage: 2
+   ),
+   ApiFilter(SearchFilter::class, properties: ['employee'=>'exact', 'category'=> 'partial'])
 ]
 class EmployeeAttachment extends AbstractAttachment
 {
