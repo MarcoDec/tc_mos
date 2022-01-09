@@ -2,10 +2,13 @@
 
 namespace App\Entity\Hr\Employee\Attachment;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\AbstractAttachment;
+use App\Entity\Hr\Parameter;
 use App\Entity\Traits\AttachmentTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[
    ORM\Entity,
@@ -23,7 +26,7 @@ use Doctrine\ORM\Mapping as ORM;
             'deserialize'=>false,
             'method' => 'POST',
             'path' => '/employee-attachments',
-            'controller' => self::API_DEFAULT_CONTROLLER,
+            'controller' => self::API_DEFAULT_UPLOAD_CONTROLLER,
             'openapi_context' => //self::API_DEFAULT_OPENAPI_CONTEXT,
                [
                'description' => "Créer un fichier associé à un employé",
@@ -48,7 +51,14 @@ use Doctrine\ORM\Mapping as ORM;
 class EmployeeAttachment extends AbstractAttachment
 {
    use AttachmentTrait;
-
+   #[
+      ORM\Column,
+      ApiProperty( description: 'Catégorie de fichier', example: 'PIC', openapiContext: [
+         'enum' =>[ 'contrats', 'doc_a_date', 'doc_a_date/formations', 'doc', 'qualité']
+      ] ),
+      Groups(AbstractAttachment::API_GROUPS_CATEGORY)
+   ]
+   private string $category = AbstractAttachment::OTHERS;
 //   #[
 //      ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'attachments'),
 //
@@ -69,4 +79,13 @@ class EmployeeAttachment extends AbstractAttachment
 //      $this->employee = $employee;
 //   }
 
+   public function getExpirationDirectoriesParameter(): string
+   {
+      return Parameter::EMPLOYEE_EXPIRATION_DIRECTORIES;
+   }
+
+   public function getParameterClass(): string
+   {
+      return Parameter::class;
+   }
 }

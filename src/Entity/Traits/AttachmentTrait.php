@@ -26,7 +26,7 @@ trait AttachmentTrait
    private DateTimeInterface|null $expirationDate;
    #[
       ORM\Column,
-      ApiProperty( description: "Url d'accès au fichier", example: '/employees/cv.docx' ),
+      ApiProperty( description: "Url d'accès au fichier", example: 'http://localhost:8000/uploads/Employee/22/contrat/20211105.docx' ),
       Groups(AbstractAttachment::API_GROUPS_URL)
    ]
    private string $url='';
@@ -39,12 +39,6 @@ trait AttachmentTrait
       Groups(['attachment:write'])
    ]
    private ?File $file = null;
-
-   #[
-      ApiProperty( description: "Répertoire cible de stockage du fichier", example: "/contrats"),
-      Groups(['attachment:write'])
-      ]
-   private string $targetFolder ='';
 
    /**
     * @return string
@@ -107,22 +101,4 @@ trait AttachmentTrait
       $this->file = $file;
       return $this;
    }
-
-   /**
-    * @return string
-    */
-   public function getTargetFolder(): string
-   {
-      return $this->targetFolder;
-   }
-
-   /**
-    * @param string $targetFolder
-    */
-   public function setTargetFolder(string $targetFolder): void
-   {
-      $this->targetFolder = $targetFolder;
-   }
-
-
 }

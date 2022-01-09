@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Controller\File\FileController;
+use App\Controller\File\FileUploadController;
 use DateTimeInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -22,7 +22,7 @@ abstract class AbstractAttachment extends Entity
    public const API_GROUPS_EXPIRATION_DATE=['attachment:read'];
 
    public const API_DEFAULT_PATH = '/attachments';
-   public const API_DEFAULT_CONTROLLER = FileController::class;
+   public const API_DEFAULT_UPLOAD_CONTROLLER = FileUploadController::class;
    public const API_DEFAULT_OPENAPI_CONTEXT = [
       'description' => "Créer un fichier",
       'summary' => "Créer un fichier"
@@ -43,7 +43,7 @@ abstract class AbstractAttachment extends Entity
          'deserialize'=>false,
          'method' => 'POST',
          'path' => self::API_DEFAULT_PATH,
-         'controller' => self::API_DEFAULT_CONTROLLER,
+         'controller' => self::API_DEFAULT_UPLOAD_CONTROLLER,
          'openapi_context' => self::API_DEFAULT_OPENAPI_CONTEXT,
          'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
          'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
@@ -68,9 +68,8 @@ abstract class AbstractAttachment extends Entity
 
    public abstract function setFile(?File $file): self;
 
-   public abstract function getTargetFolder(): string;
-
-   public abstract function setTargetFolder(string $targetFolder): void;
+   public abstract function getExpirationDirectoriesParameter():string;
+   public abstract function getParameterClass():string;
 
    public function getBaseFolder():string {
       $path = explode('\\', get_class($this));
