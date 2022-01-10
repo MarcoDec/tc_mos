@@ -14,6 +14,7 @@ use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\CurrentPlace;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Hr\Employee\Skill\Skill;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company;
 use App\Entity\Traits\AddressTrait;
@@ -279,6 +280,16 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private ?string $situation = null;
 
+    /**
+     * @var Collection<int, Skill>
+     */
+    #[
+        ApiProperty(description: 'Composants', required: false, readableLink: false, example: ['/api/skills/5', '/api/skills/14']),
+        ORM\OneToMany(mappedBy: 'employee', targetEntity: Skill::class),
+        Serializer\Groups(['read:component']),
+    ]
+    private Collection $skills;
+
     #[
         ApiProperty(description: 'Numéro de sécurité sociale', required: false, example: '1 80 12 75 200 200 36'),
         ORM\Column(type: 'string', length: 255, nullable: true),
@@ -312,6 +323,8 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
         $this->currentPlace = new CurrentPlace();
+        $this->address = new Address();
+        $this->skills = new ArrayCollection();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -330,12 +343,25 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
+    public function addSkill(Skill $skill): self {
+        if (!$this->skills->contains($skill)) {
+            $this->skills[] = $skill;
+            $skill->setEmployee($this);
+        }
+
+        return $this;
+    }
+
     /**
      * @see UserInterface
      */
     final public function eraseCredentials(): void {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getAddress(): Address {
+        return $this->address;
     }
 
     /**
@@ -445,6 +471,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->situation;
     }
 
+    /**
+     * @return Collection<int, Skill>
+     */
+    public function getSkills(): Collection {
+        return $this->skills;
+    }
+
     public function getSocialSecurityNumber(): ?string {
         return $this->socialSecurityNumber;
     }
@@ -497,6 +530,23 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
+    public function removeSkill(Skill $skill): self {
+        if ($this->skills->removeElement($skill)) {
+            // set the owning side to null (unless already changed)
+            if ($skill->getEmployee() === $this) {
+                $skill->setEmployee(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function setAddress(Address $address): self {
+        $this->address = $address;
+
+        return $this;
+    }
+
     public function setBirthCity(?string $birthCity): self {
         $this->birthCity = $birthCity;
 
@@ -511,6 +561,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     final public function setCurrentPlace(CurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
+
+        return $this;
+    }
+
+    public function setEmbRoles(Roles $embRoles): self {
+        $this->embRoles = $embRoles;
 
         return $this;
     }
