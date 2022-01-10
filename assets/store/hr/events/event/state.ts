@@ -3,6 +3,7 @@ export type State = {
     id: number
     name: string | null
     relationId: string | null
-    type: string[]
+    relation: string | null
+    type: string | null
+    '@type': string | null
 }
-

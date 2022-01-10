@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:employee', 'read:name', 'read:user'],
+            'groups' => ['read:id', 'read:employees', 'read:name', 'read:user'],
             'openapi_definition_name' => 'Employee-read'
         ]
     ),
@@ -54,7 +54,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     /**
      * @var Collection<int, Token>
      */
-    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
+    #[ORM\OneToMany(mappedBy: 'employees', targetEntity: Token::class)]
     private Collection $apiTokens;
 
     #[ORM\Embedded]
@@ -66,7 +66,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 180),
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['read:employees'])
     ]
     private ?string $username = null;
 
@@ -131,7 +131,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[
         ApiProperty(description: 'Rôles', example: [Roles::ROLE_USER]),
         Pure,
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['read:employees'])
     ]
     final public function getRoles(): array {
         return $this->embRoles->getRoles();
@@ -149,7 +149,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
 
     #[
         ApiProperty(description: 'Token', example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['read:employees'])
     ]
     final public function getToken(): ?string {
         return $this->getCurrentApiToken()?->getToken();

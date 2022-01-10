@@ -8,4 +8,4 @@ import {getters} from './getters'
 
 export {ActionTypes, Actions, Getters, State}
 
-export const module: Module<State, RootState> = {actions, getters, namespaced: true}
+export const component: Module<State, RootState> = {actions, getters, namespaced: true}

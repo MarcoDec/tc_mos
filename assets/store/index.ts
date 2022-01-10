@@ -5,6 +5,7 @@ import {state} from './state'
 import {users} from './security'
 
 export type {RootState}
-
 const store = createStore<RootState>({modules: {users}, mutations, state, strict: process.env.NODE_ENV !== 'production'})
+export type RootGetters = typeof store.getters
+
 export default store
