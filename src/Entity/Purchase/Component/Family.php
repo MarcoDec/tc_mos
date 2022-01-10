@@ -37,7 +37,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer une famille de composant',
                     'summary' => 'Créer une famille de composant',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -45,9 +46,15 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une famille de composant',
                     'summary' => 'Supprime une famille de composant',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+            ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une famille de composant',
+                    'summary' => 'Récupère une famille de composant',
                 ]
             ],
-            'get' => NO_ITEM_GET_OPERATION,
             'post' => [
                 'controller' => PlaceholderAction::class,
                 'input_formats' => ['multipart'],
@@ -57,12 +64,13 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une famille de composant',
                 ],
                 'path' => '/component-families/{id}',
-                'status' => 200
+                'status' => 200,
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         shortName: 'ComponentFamily',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:code', 'write:customs-code', 'write:family', 'write:file', 'write:name'],
