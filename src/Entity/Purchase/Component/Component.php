@@ -32,7 +32,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un composant',
                     'summary' => 'Créer un composant'
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -40,7 +41,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un composant',
                     'summary' => 'Supprime un composant'
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
@@ -52,7 +54,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Modifier un composant',
                     'summary' => 'Modifier un composant',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         attributes: [
@@ -78,7 +81,7 @@ class Component extends Entity {
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
         Assert\Length(max: 10, groups: ['write:create']),
         Assert\NotBlank(groups: ['write:create']),
-        ORM\Column(length: 10),
+        ORM\Column(type: 'string', length: 10, nullable: true),
         Serializer\Groups(['read:code', 'write:code'])
     ]
     protected ?string $code = null;
@@ -86,24 +89,24 @@ class Component extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Poids cuivre', example: 0),
+        ApiProperty(description: 'Poids cuivre', required: true, example: 0),
         Assert\PositiveOrZero(groups: ['write:create']),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
+        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private float $copperWeight = 0;
 
     #[
-        ApiProperty(description: 'Date de fin de vie', required: true, example: '2021-11-18'),
+        ApiProperty(description: 'Date de fin de vie', required: false, example: '2021-11-18'),
         Assert\Date(groups: ['write:create']),
         Assert\NotBlank(groups: ['write:create']),
-        ORM\Column(type: 'date_immutable'),
+        ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:component-details', 'write:create'])
     ]
     private ?DateTimeImmutable $endOfLife = null;
@@ -111,15 +114,15 @@ class Component extends Entity {
     #[
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['write:create']),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: Family::class),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private ?Family $family = null;
 
     #[
-        ApiProperty(description: 'Volume prévisionnel', example: 2_229_116),
+        ApiProperty(description: 'Volume prévisionnel', required: true, example: 2_229_116),
         Assert\PositiveOrZero(groups: ['write:create']),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
+        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private float $forecastVolume = 0;
@@ -128,72 +131,72 @@ class Component extends Entity {
         ApiProperty(description: 'Indice', required: true, example: '1'),
         Assert\Length(max: 5),
         Assert\NotBlank(groups: ['write:create']),
-        ORM\Column(length: 5),
+        ORM\Column(type: 'string', length: 5, nullable: false),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private string $index = '0';
 
     #[
-        ApiProperty(description: 'Gestion en stock', example: true),
-        ORM\Column(options: ['default' => false]),
+        ApiProperty(description: 'Gestion en stock', required: true, example: true),
+        ORM\Column(type: 'boolean', options: ['default' => false]),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private bool $managedStock = false;
 
     #[
-        ApiProperty(description: 'Fabricant', required: true, example: 'scapa'),
+        ApiProperty(description: 'Fabricant', required: false, example: 'scapa'),
         Assert\NotBlank(groups: ['write:create']),
-        ORM\Column,
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private ?string $manufacturer = null;
 
     #[
-        ApiProperty(description: 'Référence fabricant', required: true, example: '103078'),
+        ApiProperty(description: 'Référence fabricant', required: false, example: '103078'),
         Assert\NotBlank(groups: ['write:create']),
-        ORM\Column,
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private ?string $manufacturerCode = null;
 
     #[
-        ApiProperty(description: 'Stock minimum', example: 221_492),
+        ApiProperty(description: 'Stock minimum', required: true, example: 221_492),
         Assert\PositiveOrZero(groups: ['write:create']),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
+        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true], nullable: false),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private float $minStock = 0;
 
     #[
-        ApiProperty(description: 'Besoin de join', example: false),
-        ORM\Column(options: ['default' => false]),
+        ApiProperty(description: 'Besoin de join', required: true, example: false),
+        ORM\Column(type: 'boolean', options: ['default' => false]),
         Serializer\Groups(['read:component-details'])
     ]
     private bool $needGasket = false;
 
     #[
-        ApiProperty(description: 'Notes'),
-        ORM\Column(type: 'text'),
+        ApiProperty(description: 'Notes', required: false, example: 'Lorem Ipsum'),
+        ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:component-details', 'write:create'])
     ]
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Info commande'),
-        ORM\Column(type: 'text'),
+        ApiProperty(description: 'Info commande', required: false, example: 'Ipsum Lorem id est'),
+        ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:component-details', 'write:create'])
     ]
     private ?string $orderInfo = null;
 
     #[
-        ApiProperty(description: 'Parent', readableLink: false, example: '/api/components/1'),
+        ApiProperty(description: 'Parent', required: false, readableLink: false, example: '/api/components/1'),
         ORM\ManyToOne(targetEntity: self::class),
         Serializer\Groups(['read:component'])
     ]
     private ?self $parent = null;
 
     #[
-        ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
+        ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['write:create']),
         ORM\ManyToOne,
         Serializer\Groups(['read:component', 'write:create'])
@@ -201,9 +204,9 @@ class Component extends Entity {
     private ?Unit $unit = null;
 
     #[
-        ApiProperty(description: 'Poids', example: 3.0378),
+        ApiProperty(description: 'Poids', required: true, example: 3.0378),
         Assert\PositiveOrZero(groups: ['write:create']),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
+        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true], nullable: false),
         Serializer\Groups(['read:component', 'write:create'])
     ]
     private float $weight = 0;
