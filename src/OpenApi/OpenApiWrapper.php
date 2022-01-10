@@ -2,6 +2,7 @@
 
 namespace App\OpenApi;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\OpenApi\Model\Operation;
 use ApiPlatform\Core\OpenApi\Model\PathItem;
 use ApiPlatform\Core\OpenApi\Model\Paths;
@@ -10,10 +11,17 @@ use ApiPlatform\Core\OpenApi\Model\Response;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use ArrayObject;
+use Error;
+use Exception;
 use JetBrains\PhpStorm\Pure;
+use ReflectionClass;
 
 final class OpenApiWrapper {
-    public function __construct(private OpenApi $api, private DashPathSegmentNameGenerator $dashGenerator) {
+    public function __construct(
+        private OpenApi $api,
+        private DashPathSegmentNameGenerator $dashGenerator,
+        private OpenApiFactory $factory
+    ) {
     }
 
     #[Pure]
@@ -212,18 +220,45 @@ final class OpenApiWrapper {
         /** @var ArrayObject<string, mixed[]> $schema */
         foreach ($apiSchemas as $schemaName => $schema) {
             $resourceName = explode('.', $schemaName)[0];
-            /** @var mixed[] $properties */
-            $properties = $schema['properties'];
-            if (isset($properties['@context'])) {
-                $properties['@context']['example'] = "/api/contexts/$resourceName";
+            if (isset($schema['properties'])) {
+                /** @var mixed[] $properties */
+                $properties = $schema['properties'];
+                if (isset($properties['@context'])) {
+                    $properties['@context']['example'] = "/api/contexts/$resourceName";
+                }
+                if (isset($properties['@id'])) {
+                    $properties['@id']['example'] = "/api/{$this->dashGenerator->getSegmentName($resourceName)}/1";
+                }
+                if (isset($properties['@type'])) {
+                    $properties['@type']['example'] = $resourceName;
+                }
+                $schema['properties'] = $properties;
+
+                try {
+                    $refl = (new ReflectionClass($this->factory->getResourceClass($resourceName)));
+                    $required = collect($schema['required'] ?? []);
+                    // ->push('@context')
+                    // ->push('@id')
+                    // ->push('@type');
+                    foreach (array_keys($schema['properties']) as $property) {
+                        if ($refl->hasProperty($property)) {
+                            foreach ($refl->getProperty($property)->getAttributes(ApiProperty::class) as $attribute) {
+                                /** @var ApiProperty $instance */
+                                $instance = $attribute->newInstance();
+                                if ($instance->required) {
+                                    $required->push($property);
+                                }
+                            }
+                        }
+                    }
+                    if ($required->isEmpty() && isset($schema['required'])) {
+                        unset($schema['required']);
+                    } else {
+                        $schema['required'] = $required->unique()->sort()->values()->all();
+                    }
+                } catch (Exception|Error $e) {
+                }
             }
-            if (isset($properties['@id'])) {
-                $properties['@id']['example'] = "/api/{$this->dashGenerator->getSegmentName($resourceName)}/1";
-            }
-            if (isset($properties['@type'])) {
-                $properties['@type']['example'] = $resourceName;
-            }
-            $schema['properties'] = $properties;
             $schemas->put($schemaName, $schema);
         }
         $this->api = $this->api->withComponents(

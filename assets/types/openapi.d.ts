@@ -378,16 +378,16 @@ export interface components {
     };
     readonly "Address.jsonld-Carrier-read": {
       /** @example /api/contexts/Address */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/addresses/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Address */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Adresse
        * @example 5 rue Alfred Nobel
@@ -427,16 +427,16 @@ export interface components {
     };
     readonly "Address.jsonld-Carrier-write": {
       /** @example /api/contexts/Address */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/addresses/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Address */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Adresse
        * @example 5 rue Alfred Nobel
@@ -476,16 +476,16 @@ export interface components {
     };
     readonly "Address.jsonld-OutTrainer-read": {
       /** @example /api/contexts/Address */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/addresses/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Address */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Adresse
        * @example 5 rue Alfred Nobel
@@ -525,16 +525,16 @@ export interface components {
     };
     readonly "Address.jsonld-OutTrainer-write": {
       /** @example /api/contexts/Address */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/addresses/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Address */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Adresse
        * @example 5 rue Alfred Nobel
@@ -612,16 +612,16 @@ export interface components {
     /** @description Transporteur */
     readonly "Carrier.jsonld-Carrier-read": {
       /** @example /api/contexts/Carrier */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/carriers/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Carrier */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example DHL
@@ -633,21 +633,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Transporteur */
     readonly "Carrier.jsonld-Carrier-write": {
       /** @example /api/contexts/Carrier */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/carriers/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Carrier */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example DHL
@@ -700,16 +700,16 @@ export interface components {
     /** @description Couleur */
     readonly "Color.jsonld-Color-read": {
       /** @example /api/contexts/Color */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/colors/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Color */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description nom
        * @example Gris
@@ -729,21 +729,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Couleur */
     readonly "Color.jsonld-Color-write": {
       /** @example /api/contexts/Color */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/colors/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Color */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description nom
        * @example Gris
@@ -825,16 +825,16 @@ export interface components {
     /** @description Famille de composant */
     readonly "ComponentFamily.jsonld-ComponentFamily-read": {
       /** @example /api/contexts/ComponentFamily */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/component-families/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example ComponentFamily */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Câbles
@@ -860,7 +860,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       /**
        * @description Icône
        * @example /uploads/component-families/1.jpg
@@ -879,7 +879,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       readonly type?: string;
       readonly code: string;
       readonly safetyDevice?: boolean;
@@ -888,16 +888,16 @@ export interface components {
     /** @description Groupe de contrepartie de test */
     readonly "CounterPartGroup.jsonld": {
       /** @example /api/contexts/CounterPartGroup */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/counter-part-groups/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example CounterPartGroup */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Table d'assemblage
@@ -907,7 +907,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       readonly type?: string;
       readonly code: string;
       readonly safetyDevice?: boolean;
@@ -958,11 +958,11 @@ export interface components {
     /** @description Devises */
     readonly "Currency.jsonld-Currency-read": {
       /** @example /api/currencies/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Currency */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /** @example /api/contexts/Currency */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
@@ -988,7 +988,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       /**
        * @description Nom
        * @example Euro
@@ -1031,16 +1031,16 @@ export interface components {
     /** @description Employé */
     readonly "Employee.jsonld-Employee-read": {
       /** @example /api/contexts/Employee */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/employees/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Employee */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Super
@@ -1055,7 +1055,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       /**
        * @description Rôles
        * @example ROLE_USER
@@ -1103,11 +1103,11 @@ export interface components {
     /** @description Groupe d'équipement */
     readonly "EngineGroup.jsonld-EngineGroup-read": {
       /** @example /api/engine-groups/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example EngineGroup */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /** @example /api/contexts/EngineGroup */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
@@ -1128,7 +1128,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Type d'événements */
     readonly "EventType-EventType-read": {
@@ -1168,16 +1168,16 @@ export interface components {
     /** @description Type d'événements */
     readonly "EventType.jsonld-EventType-read": {
       /** @example /api/contexts/EventType */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/event-types/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example EventType */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example ABSENCE
@@ -1194,21 +1194,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Type d'événements */
     readonly "EventType.jsonld-EventType-write": {
       /** @example /api/contexts/EventType */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/event-types/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example EventType */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example ABSENCE
@@ -1256,16 +1256,16 @@ export interface components {
     /** @description Incoterms */
     readonly "Incoterms.jsonld-Incoterms-read": {
       /** @example /api/contexts/Incoterms */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/incoterms/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Incoterms */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Delivered Duty Paid
@@ -1280,21 +1280,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Incoterms */
     readonly "Incoterms.jsonld-Incoterms-write": {
       /** @example /api/contexts/Incoterms */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/incoterms/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Incoterms */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Delivered Duty Paid
@@ -1354,16 +1354,16 @@ export interface components {
     /** @description Délai de paiement des factures */
     readonly "InvoiceTimeDue.jsonld-InvoiceTimeDue-read": {
       /** @example /api/contexts/InvoiceTimeDue */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/invoice-time-dues/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example InvoiceTimeDue */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example 30 jours fin de mois
@@ -1385,21 +1385,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Délai de paiement des factures */
     readonly "InvoiceTimeDue.jsonld-InvoiceTimeDue-write": {
       /** @example /api/contexts/InvoiceTimeDue */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/invoice-time-dues/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example InvoiceTimeDue */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example 30 jours fin de mois
@@ -1456,16 +1456,16 @@ export interface components {
     /** @description Formateur extérieur */
     readonly "OutTrainer.jsonld-OutTrainer-read": {
       /** @example /api/contexts/OutTrainer */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/out-trainers/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example OutTrainer */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Prénom
        * @example Rawaa
@@ -1482,21 +1482,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Formateur extérieur */
     readonly "OutTrainer.jsonld-OutTrainer-write": {
       /** @example /api/contexts/OutTrainer */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/out-trainers/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example OutTrainer */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Prénom
        * @example Rawaa
@@ -1555,16 +1555,16 @@ export interface components {
     /** @description Famille de produit */
     readonly "ProductFamily.jsonld-ProductFamily-read": {
       /** @example /api/contexts/ProductFamily */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/product-families/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example ProductFamily */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Faisceaux
@@ -1580,7 +1580,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       /**
        * @description Icône
        * @example /uploads/product-families/1.jpg
@@ -1612,16 +1612,16 @@ export interface components {
     /** @description Type qualité */
     readonly "QualityType.jsonld-QualityType-read": {
       /** @example /api/contexts/QualityType */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/quality-types/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example QualityType */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Dimensions
@@ -1631,21 +1631,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Type qualité */
     readonly "QualityType.jsonld-QualityType-write": {
       /** @example /api/contexts/QualityType */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/quality-types/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example QualityType */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Dimensions
@@ -1676,16 +1676,16 @@ export interface components {
     /** @description Type de rebus */
     readonly "RejectType.jsonld-RejectType-read": {
       /** @example /api/contexts/RejectType */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/reject-types/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example RejectType */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example sertissage dimensionnelle
@@ -1695,21 +1695,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Type de rebus */
     readonly "RejectType.jsonld-RejectType-write": {
       /** @example /api/contexts/RejectType */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/reject-types/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example RejectType */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example sertissage dimensionnelle
@@ -1740,16 +1740,16 @@ export interface components {
     /** @description Type de compétence */
     readonly "SkillType.jsonld-SkillType-read": {
       /** @example /api/contexts/SkillType */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/skill-types/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example SkillType */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Assemblage
@@ -1759,21 +1759,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Type de compétence */
     readonly "SkillType.jsonld-SkillType-write": {
       /** @example /api/contexts/SkillType */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/skill-types/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example SkillType */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Assemblage
@@ -1852,16 +1852,16 @@ export interface components {
     /** @description Plages horaires */
     readonly "TimeSlot.jsonld-TimeSlot-read": {
       /** @example /api/contexts/TimeSlot */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/time-slots/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example TimeSlot */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Journée
@@ -1895,21 +1895,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Plages horaires */
     readonly "TimeSlot.jsonld-TimeSlot-write": {
       /** @example /api/contexts/TimeSlot */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/time-slots/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example TimeSlot */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Journée
@@ -1951,7 +1951,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       readonly code: string;
       readonly safetyDevice?: boolean;
       readonly deleted?: boolean;
@@ -1959,16 +1959,16 @@ export interface components {
     /** @description Groupe d'outil */
     readonly "ToolGroup.jsonld": {
       /** @example /api/contexts/ToolGroup */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/tool-groups/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example ToolGroup */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Table d'assemblage
@@ -1978,7 +1978,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       readonly code: string;
       readonly safetyDevice?: boolean;
       readonly deleted?: boolean;
@@ -2017,16 +2017,16 @@ export interface components {
     /** @description Unit */
     readonly "Unit.jsonld-Unit-read": {
       /** @example /api/contexts/Unit */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/units/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Unit */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Gramme
@@ -2041,21 +2041,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Unit */
     readonly "Unit.jsonld-Unit-write": {
       /** @example /api/contexts/Unit */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/units/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example Unit */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Gramme
@@ -2091,16 +2091,16 @@ export interface components {
     /** @description Message TVA */
     readonly "VatMessage.jsonld-VatMessage-read": {
       /** @example /api/contexts/VatMessage */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/vat-messages/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example VatMessage */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Message
        * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
@@ -2110,21 +2110,21 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
     };
     /** @description Message TVA */
     readonly "VatMessage.jsonld-VatMessage-write": {
       /** @example /api/contexts/VatMessage */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/vat-messages/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example VatMessage */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Message
        * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
@@ -2142,7 +2142,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       readonly code: string;
       readonly safetyDevice?: boolean;
       readonly deleted?: boolean;
@@ -2150,16 +2150,16 @@ export interface components {
     /** @description WorkstationGroup */
     readonly "WorkstationGroup.jsonld": {
       /** @example /api/contexts/WorkstationGroup */
-      readonly "@context"?:
+      readonly "@context":
         | string
         | ({
             readonly "@vocab": string;
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/workstation-groups/1 */
-      readonly "@id"?: string;
+      readonly "@id": string;
       /** @example WorkstationGroup */
-      readonly "@type"?: string;
+      readonly "@type": string;
       /**
        * @description Nom
        * @example Table d'assemblage
@@ -2169,7 +2169,7 @@ export interface components {
        * @description id
        * @example 1
        */
-      readonly id?: number;
+      readonly id: number;
       readonly code: string;
       readonly safetyDevice?: boolean;
       readonly deleted?: boolean;
@@ -2247,8 +2247,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -2259,11 +2259,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -2407,8 +2407,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -2419,11 +2419,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -2567,8 +2567,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -2579,11 +2579,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -2715,8 +2715,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -2727,11 +2727,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -2882,8 +2882,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -2894,11 +2894,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -3076,8 +3076,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -3088,11 +3088,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -3235,8 +3235,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -3247,11 +3247,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -3396,8 +3396,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -3408,11 +3408,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -3560,8 +3560,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -3572,11 +3572,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -3718,8 +3718,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -3730,11 +3730,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -3873,8 +3873,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -3885,11 +3885,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -4031,8 +4031,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -4043,11 +4043,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -4189,8 +4189,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -4201,11 +4201,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -4351,8 +4351,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -4363,11 +4363,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -4510,8 +4510,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -4522,11 +4522,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;
@@ -4668,8 +4668,8 @@ export interface operations {
             readonly "hydra:totalItems"?: number;
             readonly "hydra:view"?: {
               /** Format: iri-reference */
-              readonly "@id"?: string;
-              readonly "@type"?: string;
+              readonly "@id": string;
+              readonly "@type": string;
               /** Format: iri-reference */
               readonly "hydra:first"?: string;
               /** Format: iri-reference */
@@ -4680,11 +4680,11 @@ export interface operations {
               readonly "hydra:next"?: string;
             };
             readonly "hydra:search"?: {
-              readonly "@type"?: string;
+              readonly "@type": string;
               readonly "hydra:template"?: string;
               readonly "hydra:variableRepresentation"?: string;
               readonly "hydra:mapping"?: readonly {
-                readonly "@type"?: string;
+                readonly "@type": string;
                 readonly variable?: string;
                 readonly property?: string | null;
                 readonly required?: boolean;

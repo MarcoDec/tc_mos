@@ -2,17 +2,28 @@
 
 namespace App\OpenApi;
 
+use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
+use ApiPlatform\Core\Metadata\Resource\Factory\ResourceNameCollectionFactoryInterface;
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class OpenApiFactory implements OpenApiFactoryInterface {
+    /** @var array<string, class-string> */
+    private array $resources = [];
+
     public function __construct(
         private DashPathSegmentNameGenerator $dashGenerator,
         private OpenApiFactoryInterface $decorated,
+        ResourceMetadataFactoryInterface $metadataFactory,
+        ResourceNameCollectionFactoryInterface $resources,
         private UrlGeneratorInterface $urlGenerator
     ) {
+        foreach ($resources->create() as $resource) {
+            /** @var class-string $resource */
+            $this->resources[$metadataFactory->create($resource)->getShortName()] = $resource;
+        }
     }
 
     /**
@@ -20,7 +31,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      */
     public function __invoke(array $context = []): OpenApi {
         $securitySchema = 'cookieAuth';
-        return (new OpenApiWrapper($this->decorated->__invoke($context), $this->dashGenerator))
+        return (new OpenApiWrapper($this->decorated->__invoke($context), $this->dashGenerator, $this))
             ->createSecuritySchema($securitySchema, ['in' => 'cookie', 'name' => 'PHPSESSID', 'type' => 'apiKey'])
             ->createSchema('Auth', [
                 'properties' => [
@@ -63,6 +74,13 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             ->securize($this->getLogin(), $securitySchema)
             ->setJsonLdDoc()
             ->getApi();
+    }
+
+    /**
+     * @return class-string
+     */
+    public function getResourceClass(string $resource): string {
+        return $this->resources[$resource];
     }
 
     private function getLogin(): string {

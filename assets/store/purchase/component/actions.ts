@@ -4,6 +4,7 @@ import type {State as RootState} from '../../index'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import api from '../../../api'
+import {useStore} from 'vuex'
 
 export enum ActionTypes {
     LOAD_FAMILIES = 'LOAD_FAMILIES',
@@ -15,7 +16,10 @@ type ActionContext = VuexActionContext<State, RootState>
 const FIRST = 0
 
 export const actions = {
-    async [ActionTypes.LOAD_FAMILIES]({commit}: ActionContext): Promise<void> {
+    async [ActionTypes.LOAD_FAMILIES](context: ActionContext): Promise<void> {
+        console.debug('useStore', useStore())
+        console.debug('context', context)
+
         const response = await api.path('/api/component-families').method('get').create()({}, {
             headers: {Authorization: `Bearer ${String(Cookies.get('token'))}`}
         })
@@ -29,7 +33,7 @@ export const actions = {
             if (typeof family['@id'] !== 'undefined')
                 familyInstances[family['@id']] = {...family, children: []}
         }
-        commit(MutationTypes.SET_FamilyInstance, familyInstances)
+        context.commit(MutationTypes.SET_FamilyInstance, familyInstances)
     },
     async [ActionTypes.ADD_FAMILIES](context: ActionContext, payload: {parent: string, code: string, name: string, copperable: boolean, customsCode: string, file: string}): Promise<void> {
         await fetch('http://localhost:8000/api/component-families', {

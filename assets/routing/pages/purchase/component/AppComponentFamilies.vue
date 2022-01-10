@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-    /* eslint-disable @typescript-eslint/ban-ts-comment */
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/ban-ts-comment */
     import {onMounted, ref} from 'vue'
     import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
-    import {ActionTypes} from '../../../../store/purchase/component'
-    import type {Actions} from '../../../../store/purchase/component'
+    import type {Actions} from '../../../../store/purchase/component/families'
     import type {FormField} from '../../../../types/bootstrap-5'
     import type {TreeItem} from '../../../../types/tree'
 
+    const families = useNamespacedGetters('families', ['treeFamilies']).treeFamilies
     const fields: FormField[] = [
         {label: 'Parent', name: 'parent', type: 'select'},
         {label: 'Code', name: 'code', type: 'text'},
@@ -16,16 +16,11 @@
         {label: 'file', name: 'file', type: 'file'}
     ]
     const formData = ref({code: null, copperable: false, customsCode: null, file: '', name: null, parent: null})
-    const addFamilies = useNamespacedActions<Actions>('component', [ActionTypes.ADD_FAMILIES])[ActionTypes.ADD_FAMILIES]
-
-    onMounted(async () => {
-        await useNamespacedActions<Actions>('component', [ActionTypes.LOAD_FAMILIES])[ActionTypes.LOAD_FAMILIES]()
-    })
-    const families = useNamespacedGetters('component', ['treeFamilies']).treeFamilies
+    const {create, load} = useNamespacedActions<Actions>('families', ['create', 'load'])
 
     async function addFamily(): Promise<void> {
         // @ts-ignore
-        await addFamilies(formData.value)
+        await create(formData.value)
     }
 
     function selected(item: TreeItem): void {
@@ -38,7 +33,6 @@
             id: item.id,
             name: item.name,
             // @ts-ignore
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             parent: item.parent['@id'],
             pathid: item['@id'],
             type: item['@type']
@@ -46,6 +40,8 @@
         // @ts-ignore
         formData.value = items
     }
+
+    onMounted(load)
 </script>
 
 <template>
@@ -56,6 +52,10 @@
         </h1>
     </AppRow>
     <AppTreeRow
-        v-model:formData="formData" :fields="fields" :item="families" label="code" @ajout="addFamily"
+        v-model:formData="formData"
+        :fields="fields"
+        :item="families"
+        label="code"
+        @ajout="addFamily"
         @selected="selected"/>
 </template>
