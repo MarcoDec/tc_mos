@@ -13,6 +13,7 @@ use App\Entity\Quality\Reception\Reference;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -94,7 +95,7 @@ class Company extends SubSociety {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
         Assert\NotBlank,
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:name', 'write:name', 'read:company:collection'])
     ]
     protected ?string $name = null;
@@ -194,6 +195,7 @@ class Company extends SubSociety {
     ]
     private ?string $workTimetable;
 
+    #[Pure]
     public function __construct() {
         parent::__construct();
         $this->references = new ArrayCollection();

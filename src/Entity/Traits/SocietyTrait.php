@@ -14,14 +14,14 @@ trait SocietyTrait {
     #[
         ApiProperty(description: 'Compte de comptabilité', required: false, example: 'D554DZ5'),
         Assert\Length(max: 50),
-        ORM\Column(length: 50, nullable: true),
+        ORM\Column(type: 'string', length: 50, nullable: true),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?string $accountingAccount;
 
     #[
-        ApiProperty(description: 'Accusé de récéption', required: false),
-        ORM\Column(options: ['default' => false]),
+        ApiProperty(description: 'Accusé de récéption', required: false, example: false),
+        ORM\Column(type: 'boolean', options: ['default' => false]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?bool $ar = false;
@@ -50,7 +50,7 @@ trait SocietyTrait {
     private ?float $invoiceMin = 0;
 
     #[
-        ApiProperty(description: 'Délai de paiement des facture', required: false),
+        ApiProperty(description: 'Délai de paiement des facture', required: false, example: '/api/invoice-times-dues/4'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: InvoiceTimeDue::class),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
@@ -77,13 +77,13 @@ trait SocietyTrait {
     #[
         ApiProperty(description: 'TVA', required: false, example: 'FR'),
         Assert\Length(max: 255),
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?string $vat = null;
 
     #[
-        ApiProperty(description: 'Message TVA', required: false),
+        ApiProperty(description: 'Message TVA', required: false, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: VatMessage::class),
         Serializer\Groups(['read:name', 'write:name'])
     ]

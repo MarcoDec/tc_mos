@@ -22,7 +22,7 @@ abstract class SubSociety extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
         Assert\NotBlank,
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
@@ -47,7 +47,7 @@ abstract class SubSociety extends Entity {
         return $this->address->isEmpty() && $this->society ? $this->society->getAddress() : $this->address;
     }
 
-    public function getCurrency(): ?Currency {
+    final public function getCurrency(): ?Currency {
         return $this->currency;
     }
 
@@ -55,17 +55,17 @@ abstract class SubSociety extends Entity {
         return $this->name ?? ($this->society ? $this->society->getName() : null);
     }
 
-    public function getSociety(): ?Society {
+    final public function getSociety(): ?Society {
         return $this->society;
     }
 
-    public function setCurrency(?Currency $currency): self {
+    final public function setCurrency(?Currency $currency): self {
         $this->currency = $currency;
 
         return $this;
     }
 
-    public function setSociety(?Society $society): self {
+    final public function setSociety(?Society $society): self {
         $this->society = $society;
 
         return $this;
