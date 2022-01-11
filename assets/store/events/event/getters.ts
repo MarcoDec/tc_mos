@@ -1,4 +1,4 @@
-import type {RootGetters, RootState} from '../../../index'
+import type {RootGetters, RootState} from '../../index'
 import type {State} from './state'
 
 export type CalendarEvent = {title:string|null, date: string|null, extendedProps:{id:number, name:string|null,date:string|null}}

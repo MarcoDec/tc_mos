@@ -18,7 +18,6 @@ export const actions = {
         for (const employee of response)
             store.registerModule(['employees', employee.id.toString()], generateModule(employee))
     }
-
 }
 
 export type Actions = typeof actions

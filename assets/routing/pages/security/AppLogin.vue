@@ -7,7 +7,6 @@
         useNamespacedMutations,
         useNamespacedState
     } from 'vuex-composition-helpers'
-    import AppModalError from '../../../components/bootstrap-5/modal/AppModalError.vue'
     import type {FormField} from '../../../types/bootstrap-5'
     import {MutationTypes as MutationTypesSpinner} from '../../../store/mutation'
     import {ref} from 'vue'

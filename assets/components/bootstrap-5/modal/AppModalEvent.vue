@@ -1,32 +1,31 @@
 <script lang="ts" setup>
-import {defineProps} from 'vue'
+    import {defineProps} from 'vue'
 
-const props = defineProps<{id: number,name:string,date:string}>()
-
-console.log('props',props)
+    const props = defineProps<{id: number, name: string, date: string}>()
 </script>
+
 <template>
-  <div class="modal-mask">
-    <div class="modal-wrapper">
-      <div class="modal-container">
-        <div class="modal-header">
-          <slot name="header">
-            <Fa class="iconErr" icon="calendar-week"/>
-          </slot>
+    <div class="modal-mask">
+        <div class="modal-wrapper">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <slot name="header">
+                        <Fa class="iconErr" icon="calendar-week"/>
+                    </slot>
+                </div>
+                <div class="modal-body">
+                    <span>Id d'évenement :{{ props.id }}</span><br/>
+                    <span>Title d'évenement :{{ props.name }}</span><br/>
+                    <span>Date d'évenement :{{ props.date }}</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" @click="$emit('close')">
+                        OK
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          <span>Id d'évenement :{{props.id}}</span><br>
-          <span>Title d'évenement :{{props.name}}</span><br>
-          <span>Date d'évenement :{{props.date}}</span>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-warning" @click="$emit('close')">
-            OK
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <style scoped>

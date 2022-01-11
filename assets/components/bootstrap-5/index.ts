@@ -6,5 +6,6 @@ export * from './form'
 export * from './layout'
 export * from './navbar'
 export * from './tab'
+export * from './modal'
 
 export const AppBtn = defineAsyncComponent<Component>(async () => import('./AppBtn.vue'))

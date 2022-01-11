@@ -1,4 +1,4 @@
-import {RootGetters, RootState} from "../../index"
+import {RootGetters, RootState} from "../index"
 import type {State} from './state'
 import type  {CalendarEvent} from './event/getters'
 

@@ -8,4 +8,4 @@ import {getters} from './getters'
 
 export {ActionTypes, Actions, Getters, State}
 
-export const events: Module<State, RootState> = {actions, getters, namespaced: true}
+export const supplier: Module<State, RootState> = {actions, getters, namespaced: true}
