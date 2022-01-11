@@ -1,8 +1,10 @@
-import type {FormValues} from './bootstrap-5'
+import type {DeepReadonly} from './types'
 
-export type TreeItem = FormValues & {
-    children?: TreeItem[]
+export type TreeItem = {
+    children: TreeItem[]
     icon?: string
     id: number
     label: string
 }
+
+export type ReadTreeItem = DeepReadonly<TreeItem>

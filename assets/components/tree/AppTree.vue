@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+    import type {ReadTreeItem, TreeItem} from '../../types/tree'
     import {computed, defineEmits, defineProps, ref} from 'vue'
-    import type {TreeItem} from '../../types/tree'
 
-    const emit = defineEmits<(e: 'click', item: TreeItem) => void>()
+    const emit = defineEmits<(e: 'click', item: ReadTreeItem) => void>()
     const props = defineProps<{item: TreeItem}>()
 
     const EMPTY = 0
@@ -18,7 +18,7 @@
         emit('click', props.item)
     }
 
-    function childClick(item: TreeItem): void {
+    function childClick(item: ReadTreeItem): void {
         emit('click', item)
     }
 </script>

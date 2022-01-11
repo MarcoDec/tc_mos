@@ -1,4 +1,5 @@
+import type {DeepReadonly} from './types'
 import type {SetupContext} from 'vue'
 
-export type FunContext = Omit<SetupContext, 'expose'>
-export type FunProps = Record<string, unknown>
+export type FunContext = DeepReadonly<Omit<SetupContext, 'expose'>>
+export type FunProps = Readonly<Record<string, unknown>>

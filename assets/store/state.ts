@@ -9,3 +9,5 @@ export const state: State = {
     status: 0,
     text: null
 }
+
+export type ReadState = Readonly<State>

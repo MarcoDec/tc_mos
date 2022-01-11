@@ -185,7 +185,7 @@ module.exports = {
         'no-compare-neg-zero': 'error',
         'no-cond-assign': ['error', 'always'],
         'no-confusing-arrow': 'error',
-        'no-console': 'off',
+        'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
         'no-const-assign': 'error',
         'no-constant-condition': 'error',
         'no-constructor-return': 'error',

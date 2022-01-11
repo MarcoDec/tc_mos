@@ -1,12 +1,14 @@
+import type {AppStore, State} from '.'
 import type {Module, ActionContext as VuexActionContext} from 'vuex'
 import type {DeepReadonly} from '../types/types'
-import type {State} from '.'
+import app from '../app'
 import emitter from '../emitter'
-import {useStore} from 'vuex'
 
-type ActionContext = DeepReadonly<VuexActionContext<State, State>>
+export type StoreActionContext<S> = VuexActionContext<S, State>
 
-type ModulePayload = {module: Module<unknown, State>, path: string[] | string}
+type ActionContext = StoreActionContext<State>
+
+type ModulePayload = DeepReadonly<{module: Module<unknown, State>, path: string[] | string}>
 
 export const actions = {
     async fetchApi({commit}: ActionContext, action: () => Promise<unknown>): Promise<void> {
@@ -24,7 +26,8 @@ export const actions = {
         }
     },
     async registerModule(context: ActionContext, payload: ModulePayload): Promise<void> {
-        useStore().registerModule(payload.path as string, payload.module)
+        (app.config.globalProperties.$store as AppStore)
+            .registerModule(payload.path as string, payload.module as Module<unknown, State>)
     }
 }
 

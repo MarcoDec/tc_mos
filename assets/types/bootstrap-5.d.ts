@@ -34,5 +34,7 @@ export type FormInput =
     | 'time'
 
 export type FormValue = boolean | number | string | null
+export type InputValue = Readonly<{name: string, value: FormValue}>
 
 export type FormValues = Record<string, FormValue>
+export type ReadFormValues = Readonly<Record<string, FormValue>>

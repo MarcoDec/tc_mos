@@ -1,19 +1,19 @@
 <script lang="ts" setup>
-    import type {FormField, FormValue, FormValues} from '../../../types/bootstrap-5'
+    import type {FormField, FormValues, InputValue, ReadFormValues} from '../../../types/bootstrap-5'
     import {defineEmits, defineProps, ref, withDefaults} from 'vue'
     import clone from 'clone'
 
     const form = ref<HTMLFormElement>()
     const emit = defineEmits<{
-        (e: 'submit', data: FormData): void
-        (e: 'update:modelValue', values: FormValues): void
+        (e: 'submit', data: Readonly<FormData>): void
+        (e: 'update:modelValue', values: ReadFormValues): void
     }>()
     const props = withDefaults(
         defineProps<{fields: FormField[], modelValue?: FormValues}>(),
         {modelValue: () => ({})}
     )
 
-    function input({name, value}: {value: FormValue, name: string}): void {
+    function input({name, value}: InputValue): void {
         const cloned = clone(props.modelValue)
         cloned[name] = value
         emit('update:modelValue', cloned)

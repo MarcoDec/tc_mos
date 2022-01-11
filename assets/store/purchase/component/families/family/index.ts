@@ -1,3 +1,11 @@
-import type {State} from './state'
+import type {ReadState, State} from './state'
+import type {Getters} from './getters'
+import type {Module} from 'vuex'
+import type {State as RootState} from '../../../..'
+import {getters} from './getters'
 
-export type {State}
+export type {Getters, ReadState, State}
+
+export function generateFamily(state: ReadState): Module<State, RootState> {
+    return {getters, namespaced: true, state}
+}

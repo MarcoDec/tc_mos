@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-    import type {FormField, FormValues} from '../../types/bootstrap-5'
+    import type {FormField, FormValues, ReadFormValues} from '../../types/bootstrap-5'
+    import type {ReadTreeItem, TreeItem} from '../../types/tree'
     import {defineEmits, defineProps, ref} from 'vue'
-    import type {TreeItem} from '../../types/tree'
 
     const emit = defineEmits<{
         (e: 'ajout'): void
-        (e: 'update:formData', formData: FormValues): void
-        (e: 'selected', item: TreeItem): void
+        (e: 'update:formData', formData: ReadFormValues): void
+        (e: 'selected', item: ReadTreeItem): void
     }>()
     defineProps<{item: TreeItem, fields: FormField, formData: FormValues}>()
     const selected = ref<TreeItem | null>(null)
@@ -26,7 +26,7 @@
         }
     }
 
-    function update(formData: FormValues): void {
+    function update(formData: ReadFormValues): void {
         emit('update:formData', formData)
     }
 </script>
@@ -40,7 +40,7 @@
                     <Fa id="lefticon" icon="angle-double-left"/>
                 </AppBtn>
                 <h2 class="col">
-                    {{ selected?.code }}-{{ selected?.name }}
+                    {{ selected?.label }}
                 </h2>
             </div>
 

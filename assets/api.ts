@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type {ApiError, ApiResponse, OpErrorType} from 'openapi-typescript-fetch/dist/esm/types'
+import type {ApiError, ApiResponse, CustomRequestInit, OpErrorType} from 'openapi-typescript-fetch/dist/esm/types'
+import type {DeepReadonly} from './types/types'
 import {Fetcher} from 'openapi-typescript-fetch'
 import type {paths} from './types/openapi'
 
@@ -7,9 +8,9 @@ const api = Fetcher['for']<paths>()
 
 api.configure({
     use: [
-        async (url, init, next): Promise<ApiResponse> => {
+        async (url, init: DeepReadonly<CustomRequestInit>, next): Promise<ApiResponse> => {
             init.headers.set('Accept', 'application/ld+json')
-            const response = await next(url, init)
+            const response = await next(url, init as CustomRequestInit)
             return response
         }
     ]

@@ -1,12 +1,10 @@
 <script lang="ts" setup>
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/ban-ts-comment */
-    import {onMounted, ref} from 'vue'
+    import type {Actions, Getters} from '../../../../store/purchase/component/families'
     import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
-    import type {Actions} from '../../../../store/purchase/component/families'
     import type {FormField} from '../../../../types/bootstrap-5'
-    import type {TreeItem} from '../../../../types/tree'
+    import {onMounted} from 'vue'
 
-    const families = useNamespacedGetters('families', ['treeFamilies']).treeFamilies
+    const families = useNamespacedGetters<Getters>('families', ['tree']).tree
     const fields: FormField[] = [
         {label: 'Parent', name: 'parent', type: 'select'},
         {label: 'Code', name: 'code', type: 'text'},
@@ -15,31 +13,7 @@
         {label: 'Customs Code', name: 'customsCode', type: 'text'},
         {label: 'file', name: 'file', type: 'file'}
     ]
-    const formData = ref({code: null, copperable: false, customsCode: null, file: '', name: null, parent: null})
-    const {create, load} = useNamespacedActions<Actions>('families', ['create', 'load'])
-
-    async function addFamily(): Promise<void> {
-        // @ts-ignore
-        await create(formData.value)
-    }
-
-    function selected(item: TreeItem): void {
-        const items = {
-            children: item.children,
-            code: item.code,
-            copperable: item.copperable,
-            customsCode: item.customsCode,
-            filepath: item.filepath,
-            id: item.id,
-            name: item.name,
-            // @ts-ignore
-            parent: item.parent['@id'],
-            pathid: item['@id'],
-            type: item['@type']
-        }
-        // @ts-ignore
-        formData.value = items
-    }
+    const {load} = useNamespacedActions<Actions>('families', ['create', 'load'])
 
     onMounted(load)
 </script>
@@ -51,11 +25,5 @@
             Familles
         </h1>
     </AppRow>
-    <AppTreeRow
-        v-model:formData="formData"
-        :fields="fields"
-        :item="families"
-        label="code"
-        @ajout="addFamily"
-        @selected="selected"/>
+    <AppTreeRow :fields="fields" :item="families"/>
 </template>

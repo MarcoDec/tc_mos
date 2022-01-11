@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-    import type {FormField, FormValue} from '../../../types/bootstrap-5'
+    import type {FormField, FormValue, InputValue} from '../../../types/bootstrap-5'
     import {defineEmits, defineProps} from 'vue'
 
     const emit = defineEmits<{
-        (e: 'input', payload: Readonly<{name: string, value: FormValue}>): void
+        (e: 'input', payload: InputValue): void
         (e: 'update:modelValue', value: FormValue): void
     }>()
     const props = defineProps<{field: FormField, modelValue?: FormValue}>()

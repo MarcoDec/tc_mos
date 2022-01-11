@@ -1,9 +1,11 @@
+import type {ReadState, State} from './state'
 import type {Actions} from './actions'
+import type {Getters} from './getters'
 import type {Module} from 'vuex'
 import type {State as RootState} from '../../..'
-import type {State} from './state'
 import {actions} from './actions'
+import {getters} from './getters'
 
-export type {Actions, State}
+export type {Actions, Getters, ReadState, State}
 
-export const families: Module<State, RootState> = {actions, namespaced: true}
+export const families: Module<State, RootState> = {actions, getters, namespaced: true}
