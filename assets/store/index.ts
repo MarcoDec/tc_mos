@@ -21,3 +21,4 @@ export function generateStore(security: Security): Store<State> {
         strict: process.env.NODE_ENV !== 'production'
     })
 }
+ export type AppStore= ReturnType<typeof generateStore>

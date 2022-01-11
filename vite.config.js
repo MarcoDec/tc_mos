@@ -37,7 +37,7 @@ export default defineConfig({
         manifest: true,
         outDir: '../public/build/',
         rollupOptions: {
-            input: ['./app.ts']
+            input: ['./index.ts']
         }
     },
     plugins: [
