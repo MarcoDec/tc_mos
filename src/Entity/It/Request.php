@@ -4,12 +4,13 @@ namespace App\Entity\It;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Entity;
+use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\It\CurrentPlace;
+use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Traits\NameTrait;
+use DatetimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Embeddable\Hr\Employee\Roles;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -73,6 +74,13 @@ class Request extends Entity {
     public const WF_TR_REFUSE = 'refuse';
 
     #[
+        ApiProperty(description: 'Statut', required: true, example: 'locked'),
+        ORM\Embedded(CurrentPlace::class),
+        Serializer\Groups(['read:current_place', 'write:current_place'])
+    ]
+    protected CurrentPlace $currentPlace;
+
+    #[
         ApiProperty(description: 'Nom', required: true),
         Assert\NotBlank,
         ORM\Column,
@@ -86,7 +94,7 @@ class Request extends Entity {
         ORM\Column(type: 'date', nullable: true),
         Serializer\Groups(['read:request', 'write:request'])
     ]
-    private ?\DatetimeInterface $askedAt = null;
+    private ?DatetimeInterface $askedAt = null;
 
     #[
         ApiProperty(description: 'Employé demandeur', required: false, readableLink: false, example: '/api/employees/1'),
@@ -96,19 +104,12 @@ class Request extends Entity {
     private ?Employee $askedBy = null;
 
     #[
-        ApiProperty(description: 'Statut', required: true, example: 'locked'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'write:current_place'])
-    ]
-    protected CurrentPlace $currentPlace;
-
-    #[
         ApiProperty(description: 'Delai', required: false, example: '2022-24-03'),
         Assert\Date,
         ORM\Column(type: 'date', nullable: true),
         Serializer\Groups(['read:request', 'write:request'])
     ]
-    private ?\DatetimeInterface $delay = null;
+    private ?DatetimeInterface $delay = null;
 
     #[
         ApiProperty(description: 'Description', required: false, example: 'Mise à jour'),
@@ -116,7 +117,7 @@ class Request extends Entity {
         Serializer\Groups(['read:request', 'write:request', 'write:post'])
     ]
     private ?string $description = null;
-    
+
     #[
         ApiProperty(description: 'Version', required: false, example: '16.3.6'),
         ORM\Column(type: 'string', nullable: true),
@@ -128,7 +129,7 @@ class Request extends Entity {
         $this->currentPlace = new CurrentPlace();
     }
 
-    final public function getAskedAt(): ?\DateTimeInterface {
+    final public function getAskedAt(): ?DateTimeInterface {
         return $this->askedAt;
     }
 
@@ -140,7 +141,7 @@ class Request extends Entity {
         return $this->currentPlace;
     }
 
-    final public function getDelay(): ?\DateTimeInterface {
+    final public function getDelay(): ?DateTimeInterface {
         return $this->delay;
     }
 
@@ -156,7 +157,7 @@ class Request extends Entity {
         return $this->version;
     }
 
-    final public function setAskedAt(?\DateTimeInterface $askedAt): self {
+    final public function setAskedAt(?DateTimeInterface $askedAt): self {
         $this->askedAt = $askedAt;
         return $this;
     }
@@ -171,7 +172,7 @@ class Request extends Entity {
         return $this;
     }
 
-    final public function setDelay(?\DateTimeInterface $delay): self {
+    final public function setDelay(?DateTimeInterface $delay): self {
         $this->delay = $delay;
         return $this;
     }
