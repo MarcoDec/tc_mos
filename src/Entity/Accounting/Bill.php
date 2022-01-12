@@ -59,11 +59,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         denormalizationContext: [
             'groups' => ['write:ref', 'write:company', 'write:notes', 'write:bill', 'write:customer-contact', 'write:name'],
-            'openapi_definition_name' => 'Skill-write'
+            'openapi_definition_name' => 'Bill-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:ref', 'read:company', 'read:notes', 'read:bill', 'read:customer-contact', 'read:name'],
-            'openapi_definition_name' => 'Skill-read'
+            'openapi_definition_name' => 'Bill-read'
         ],
     ),
     ORM\Entity
