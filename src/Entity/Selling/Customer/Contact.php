@@ -61,7 +61,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'CustomerContact-read'
         ],
     ),
-    ORM\Entity
+    ORM\Entity(),
+   ORM\Table(name: "customer_contact")
 ]
 class Contact extends SocietyContact {
     #[
