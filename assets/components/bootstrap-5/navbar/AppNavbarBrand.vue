@@ -8,5 +8,3 @@
         <slot/>
     </AppRouterLink>
 </template>
-
-
