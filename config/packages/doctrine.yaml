@@ -3,6 +3,7 @@ doctrine:
     types:
       employee_current_place: App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType
       tinyint: GollumSF\Doctrine\TinyInt
+      warehouse_families: App\Doctrine\DBAL\Types\Logistics\Warehouse\WarehouseFamilyType
     mapping_types: 
       enum: string
     url: '%env(resolve:DATABASE_URL)%'
