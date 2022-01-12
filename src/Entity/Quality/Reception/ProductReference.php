@@ -4,23 +4,28 @@ namespace App\Entity\Quality\Reception;
 
 use App\Entity\Project\Product\Family;
 use App\Entity\Project\Product\Product;
+use App\Entity\Traits\ReferenceTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 class ProductReference extends Reference {
+   use ReferenceTrait {
+      ReferenceTrait::__construct as private __tConstruct;
+   }
+
     /** @var Collection<int, object> */
     #[ORM\ManyToMany(targetEntity: Family::class, inversedBy: 'references')]
-    protected $families;
+    protected ArrayCollection $families;
 
     /** @var Collection<int, object> */
     #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'references')]
-    protected $items;
+    protected ArrayCollection $items;
 
     public function __construct() {
-        $this->families = new ArrayCollection();
-        $this->items = new ArrayCollection();
+       parent::__construct();
+       $this->__tConstruct();
     }
 
     final public function addFamily(object $family): self {
