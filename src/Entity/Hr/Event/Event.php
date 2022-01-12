@@ -2,15 +2,15 @@
 
 namespace App\Entity\Hr\Event;
 
-use App\Entity\Event as AbstractEvent;
-use App\Entity\Hr\Employee\Employee;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Event as AbstractEvent;
+use App\Entity\Hr\Employee\Employee;
 use App\Filter\RelationFilter;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: [
@@ -66,7 +66,6 @@ use App\Filter\RelationFilter;
 ]
 
 class Event extends AbstractEvent {
-
     #[
         ApiProperty(description: 'Employé', required: false, example: '/api/employees/1'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Employee::class),
