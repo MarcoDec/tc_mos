@@ -1043,6 +1043,54 @@ const router = createRouter({
                 icon: 'elementor',
                 title: 'Type d opération'
             }
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/supplier/AppSupplierShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'supplierShow',
+            path: '/supplier/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/component/AppcomponentShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'componentShow',
+            path: '/component/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/customer/AppCustomerShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'customerShow',
+            path: '/customer/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/product/AppProductShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'productShow',
+            path: '/product/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/employee/AppEmployeeShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'employeeShow',
+            path: '/employee/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/equipment/AppWorkstationShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'workstationShow',
+            path: '/workstation/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/equipment/AppToolShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'toolShow',
+            path: '/tool/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/equipment/AppTestCounterPartShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'testCounterPartShow',
+            path: '/testcounterpart/show'
         }
     ]
 })

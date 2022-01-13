@@ -3,12 +3,13 @@ import * as components from './components'
 import {createApp, defineAsyncComponent} from 'vue'
 import App from './routing/App.vue'
 import type {Component} from 'vue'
+import {fab} from '@fortawesome/free-brands-svg-icons'
 import {fas} from '@fortawesome/free-solid-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import router from './routing/router'
 import store from './store/index'
 
-library.add(fas)
+library.add(fas, fab)
 const app = createApp(App as Component)
     .use(router)
     .use(store)
