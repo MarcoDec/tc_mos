@@ -165,14 +165,14 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Super'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:name', 'write:name', 'write:employee:post'])
     ]
     protected ?string $name = null;
 
     #[
         ApiProperty(description: 'Nom de famille', required: true, example: 'Roosevelt'),
-        ORM\Column,
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post', 'read:employee:collection'])
     ]
     protected ?string $surname = null;
