@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 class ProductReference extends Reference {
-   use ReferenceTrait {
+    use ReferenceTrait {
       ReferenceTrait::__construct as private __tConstruct;
    }
 
@@ -24,8 +24,8 @@ class ProductReference extends Reference {
     protected ArrayCollection $items;
 
     public function __construct() {
-       parent::__construct();
-       $this->__tConstruct();
+        parent::__construct();
+        $this->__tConstruct();
     }
 
     final public function addFamily(object $family): self {

@@ -11,9 +11,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 class ComponentReference extends Reference {
-   use ReferenceTrait {
+    use ReferenceTrait {
       ReferenceTrait::__construct as private __tConstruct;
    }
+
     /** @var Collection<int, object> */
     #[ORM\ManyToMany(targetEntity: Family::class, inversedBy: 'references')]
     protected ArrayCollection $families;
@@ -23,8 +24,8 @@ class ComponentReference extends Reference {
     protected ArrayCollection $items;
 
     public function __construct() {
-       parent::__construct();
-       $this->__tConstruct();
+        parent::__construct();
+        $this->__tConstruct();
     }
 
     final public function addFamily(object $family): self {

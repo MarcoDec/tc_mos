@@ -62,7 +62,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
     ),
     ORM\Entity,
-   ORM\Table(name: "supplier_contact")
+   ORM\Table(name: 'supplier_contact')
 ]
 class Contact extends SocietyContact {
     #[

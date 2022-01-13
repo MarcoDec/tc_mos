@@ -2,19 +2,15 @@
 
 namespace App\Entity\Quality\Reception;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Entity;
 use App\Entity\Project\Product\Family as ProductFamily;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Component\Family as ComponentFamily;
-use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
 abstract class Reference extends Entity {
@@ -69,6 +65,4 @@ abstract class Reference extends Entity {
     public function getItems(): Collection {
         return $this->items;
     }
-
-
 }
