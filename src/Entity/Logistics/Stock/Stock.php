@@ -56,7 +56,6 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ]
-
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
