@@ -1,8 +1,10 @@
+import {components} from "../../../types/openapi";
+
 export type State = {
-    details: string | null
-    date: string | null
-    vu: boolean
-    title: string | null
+    subject: string | null
+    creationDatetime: string | null
+    read: boolean
+    category: string | null
     id: number
 }
 

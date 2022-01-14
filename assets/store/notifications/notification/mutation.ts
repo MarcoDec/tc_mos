@@ -1,17 +1,13 @@
 import type {State} from '.'
 
 export enum MutationTypes {
-    VU = 'VU'
-
-
+    VU = 'VU' ,
 }
 
 export const mutations = {
     [MutationTypes.VU](state: State): void {
-        state.vu = !state.vu
-    }
-
-
+        state.read = !state.read
+    },
 }
 
 export type Mutations = typeof mutations

@@ -1,6 +1,18 @@
 @use 'bootstrap/scss/bootstrap';
 
-
+.badgeNotif{
+  display: inline-block;
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  color: red;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  background: white;
+}
 .bg-blue {
   background-color: #8ac2f1;
 }
@@ -10,8 +22,11 @@
 .form-switch {
   padding-left: 3.5em;
 }
-
-
+.text-white{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 .navbar-expand-lg .navbar-collapse {
   display: flex !important;
   flex-basis: auto;
@@ -65,14 +80,16 @@ body {
   box-shadow: 0 5px 20px -3px rgba(0, 0, 0, 0.16);
   border: 0;
   max-width: 400px;
+  right: 90px;
+  top: 40px;
 }
 
 @media (min-width: 700px) {
   .notification-ui_dd {
     min-width: 400px;
     position: absolute;
-    right: 50px;
-    top: 10px;
+    right: 90px;
+    top: 40px;
   }
 }
 
@@ -166,6 +183,8 @@ body {
   background-color: #f9f9f9;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  left: 65px;
+  top: 0px;
 }
 
 .dropdown-content a {
@@ -198,3 +217,16 @@ body {
   width: 100%;
   z-index: 1000;
 }
+@media only screen and  (min-width: 900px) {
+  .dropdown-content {
+    left: 85px;
+    top: 0px;
+  }
+}
+@media (min-width: 700px){
+  .navbar-expand-lg .navbar-nav .dropdown-menu {
+    position: absolute;
+  }
+}
+
+

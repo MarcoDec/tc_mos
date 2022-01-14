@@ -1,5 +1,4 @@
 import app from "../app";
-import type {DeepReadonly} from '../types/types'
 import type {AppStore, State} from '.'
 import type {ActionContext as VuexActionContext, Module} from 'vuex'
 import emitter from '../emitter'

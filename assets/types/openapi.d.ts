@@ -225,6 +225,11 @@ export interface paths {
     patch: operations["patchVatMessageItem"];
     parameters: {};
   };
+  "/api/notifications": {
+    /** Récupère les notifications */
+    get: operations["getCurrencyCollection"];
+    parameters: {};
+  };
 }
 
 export interface components {

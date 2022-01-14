@@ -1,15 +1,17 @@
 <script lang="ts" setup>
     import type {Actions, Getters} from '../../../store/notifications'
     import {onMounted, ref} from 'vue'
-    import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
+    import {
+      useNamespacedActions,
+      useNamespacedGetters
+    } from 'vuex-composition-helpers'
     import {ActionTypes} from '../../../store/notifications'
     import AppNotification from './AppNotification.vue'
 
     const hide = ref(false)
 
-    const {count, ids: notifs} = useNamespacedGetters<Getters>('notifications', ['count', 'ids'])
+    const {count, ids: notifs,cat} = useNamespacedGetters<Getters>('notifications', ['count', 'ids','cat'])
     const fetchNotif = useNamespacedActions<Actions>('notifications', [ActionTypes.FETCH_NOTIF])[ActionTypes.FETCH_NOTIF]
-
     function openModal(): void {
         hide.value = true
     }

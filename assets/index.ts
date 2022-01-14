@@ -2,8 +2,6 @@ import './app.scss'
 import * as Cookies from './cookie'
 import * as components from './components'
 import {createApp, defineAsyncComponent} from 'vue'
-import App from './routing/App.vue'
-import type {Component} from 'vue'
 import type {State} from './store/security'
 import emitter from './emitter'
 import {fas} from '@fortawesome/free-solid-svg-icons'
@@ -11,10 +9,10 @@ import {fetchApi} from './api'
 import {generateStore} from './store'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import router from './routing/router'
-import app from'./app'
+import app from './app'
 
 library.add(fas)
- app
+app
     .provide('emitter', emitter)
     .component('Fa', defineAsyncComponent(async () => import('@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon')))
 for (const [name, component] of Object.entries(components))
