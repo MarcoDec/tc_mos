@@ -17,6 +17,7 @@ use App\Entity\Entity;
 use App\Entity\Hr\Employee\Skill\Skill;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company;
+use App\Entity\Production\Manufacturing\Operation;
 use App\Entity\Traits\AddressTrait;
 use App\Entity\Traits\BarCodeTrait;
 use App\Entity\Traits\CompanyTrait;
@@ -252,9 +253,18 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private ?string $notes = null;
 
+    /**
+     * @var Collection<int, Operation>
+     */
+    #[
+        ApiProperty(description: 'Opérations', required: false, example: ['/api/operations/1', '/api/operations/6']),
+        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Operation::class, mappedBy: 'operators'),
+    ]
+    private Collection $operations;
+
     #[
         ORM\Column
-]
+    ]
     private ?string $password = null;
 
     #[
@@ -325,9 +335,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->currentPlace = new CurrentPlace();
         $this->address = new Address();
         $this->skills = new ArrayCollection();
+        $this->operations = new ArrayCollection();
     }
 
-    public static function getBarCodeTableNumber(): string {
+    final public static function getBarCodeTableNumber(): string {
         return self::EMPLOYEE_BAR_CODE_TABLE_NUMBER;
     }
 
@@ -338,12 +349,20 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
+    final public function addOperation(Operation $operation): self {
+        if (!$this->operations->contains($operation)) {
+            $this->operations->add($operation);
+            $operation->addOperator($this);
+        }
+        return $this;
+    }
+
     final public function addRole(string $role): self {
         $this->embRoles->addRole($role);
         return $this;
     }
 
-    public function addSkill(Skill $skill): self {
+    final public function addSkill(Skill $skill): self {
         if (!$this->skills->contains($skill)) {
             $this->skills[] = $skill;
             $skill->setEmployee($this);
@@ -360,7 +379,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         // $this->plainPassword = null;
     }
 
-    public function getAddress(): Address {
+    final public function getAddress(): Address {
         return $this->address;
     }
 
@@ -371,11 +390,11 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->apiTokens;
     }
 
-    public function getBirthCity(): ?string {
+    final public function getBirthCity(): ?string {
         return $this->birthCity;
     }
 
-    public function getBirthday(): ?DateTimeInterface {
+    final public function getBirthday(): ?DateTimeInterface {
         return $this->birthday;
     }
 
@@ -396,32 +415,39 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->embRoles;
     }
 
-    public function getEntryDate(): ?DateTimeInterface {
+    final public function getEntryDate(): ?DateTimeInterface {
         return $this->entryDate;
     }
 
-    public function getFirstname(): ?string {
+    final public function getFirstname(): ?string {
         return $this->firstname;
     }
 
-    public function getGender(): ?string {
+    final public function getGender(): ?string {
         return $this->gender;
     }
 
-    public function getInitials(): ?string {
+    final public function getInitials(): ?string {
         return $this->initials;
     }
 
-    public function getLevelOfStudy(): ?string {
+    final public function getLevelOfStudy(): ?string {
         return $this->levelOfStudy;
     }
 
-    public function getManager(): ?self {
+    final public function getManager(): ?self {
         return $this->manager;
     }
 
-    public function getNotes(): ?string {
+    final public function getNotes(): ?string {
         return $this->notes;
+    }
+
+    /**
+     * @return Collection<int, Operation>
+     */
+    final public function getOperations(): Collection {
+        return $this->operations;
     }
 
     /**
@@ -435,7 +461,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->place;
     }
 
-    public function getPlainPassword(): ?string {
+    final public function getPlainPassword(): ?string {
         return $this->plainPassword;
     }
 
@@ -467,18 +493,18 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->sessionCompany ?? $this->company;
     }
 
-    public function getSituation(): ?string {
+    final public function getSituation(): ?string {
         return $this->situation;
     }
 
     /**
      * @return Collection<int, Skill>
      */
-    public function getSkills(): Collection {
+    final public function getSkills(): Collection {
         return $this->skills;
     }
 
-    public function getSocialSecurityNumber(): ?string {
+    final public function getSocialSecurityNumber(): ?string {
         return $this->socialSecurityNumber;
     }
 
@@ -486,7 +512,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->surname;
     }
 
-    public function getTimeCard(): ?string {
+    final public function getTimeCard(): ?string {
         return $this->timeCard;
     }
 
@@ -498,7 +524,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->getCurrentApiToken()?->getToken();
     }
 
-    public function getUserEnabled(): ?bool {
+    final public function getUserEnabled(): ?bool {
         return $this->userEnabled;
     }
 
@@ -525,12 +551,20 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
+    final public function removeOperation(Operation $operation): self {
+        if ($this->operations->contains($operation)) {
+            $this->operations->removeElement($operation);
+            $operation->removeOperator($this);
+        }
+        return $this;
+    }
+
     final public function removeRole(string $role): self {
         $this->embRoles->removeRole($role);
         return $this;
     }
 
-    public function removeSkill(Skill $skill): self {
+    final public function removeSkill(Skill $skill): self {
         if ($this->skills->removeElement($skill)) {
             // set the owning side to null (unless already changed)
             if ($skill->getEmployee() === $this) {
@@ -541,19 +575,19 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    public function setAddress(Address $address): self {
+    final public function setAddress(Address $address): self {
         $this->address = $address;
 
         return $this;
     }
 
-    public function setBirthCity(?string $birthCity): self {
+    final public function setBirthCity(?string $birthCity): self {
         $this->birthCity = $birthCity;
 
         return $this;
     }
 
-    public function setBirthday(?DateTimeInterface $birthday): self {
+    final public function setBirthday(?DateTimeInterface $birthday): self {
         $this->birthday = $birthday;
 
         return $this;
@@ -565,49 +599,49 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    public function setEmbRoles(Roles $embRoles): self {
+    final public function setEmbRoles(Roles $embRoles): self {
         $this->embRoles = $embRoles;
 
         return $this;
     }
 
-    public function setEntryDate(?DateTimeInterface $entryDate): self {
+    final public function setEntryDate(?DateTimeInterface $entryDate): self {
         $this->entryDate = $entryDate;
 
         return $this;
     }
 
-    public function setFirstname(?string $firstname): self {
+    final public function setFirstname(?string $firstname): self {
         $this->firstname = $firstname;
 
         return $this;
     }
 
-    public function setGender(?string $gender): self {
+    final public function setGender(?string $gender): self {
         $this->gender = $gender;
 
         return $this;
     }
 
-    public function setInitials(?string $initials): self {
+    final public function setInitials(?string $initials): self {
         $this->initials = $initials;
 
         return $this;
     }
 
-    public function setLevelOfStudy(?string $levelOfStudy): self {
+    final public function setLevelOfStudy(?string $levelOfStudy): self {
         $this->levelOfStudy = $levelOfStudy;
 
         return $this;
     }
 
-    public function setManager(?self $manager): self {
+    final public function setManager(?self $manager): self {
         $this->manager = $manager;
 
         return $this;
     }
 
-    public function setNotes(?string $notes): self {
+    final public function setNotes(?string $notes): self {
         $this->notes = $notes;
 
         return $this;
@@ -624,7 +658,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    public function setPlainPassword(?string $plainPassword): self {
+    final public function setPlainPassword(?string $plainPassword): self {
         $this->plainPassword = $plainPassword;
 
         return $this;
@@ -635,31 +669,31 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    public function setSituation(?string $situation): self {
+    final public function setSituation(?string $situation): self {
         $this->situation = $situation;
 
         return $this;
     }
 
-    public function setSocialSecurityNumber(?string $socialSecurityNumber): self {
+    final public function setSocialSecurityNumber(?string $socialSecurityNumber): self {
         $this->socialSecurityNumber = $socialSecurityNumber;
 
         return $this;
     }
 
-    public function setSurname(?string $surname): self {
+    final public function setSurname(?string $surname): self {
         $this->surname = $surname;
 
         return $this;
     }
 
-    public function setTimeCard(?string $timeCard): self {
+    final public function setTimeCard(?string $timeCard): self {
         $this->timeCard = $timeCard;
 
         return $this;
     }
 
-    public function setUserEnabled(bool $userEnabled): self {
+    final public function setUserEnabled(bool $userEnabled): self {
         $this->userEnabled = $userEnabled;
 
         return $this;

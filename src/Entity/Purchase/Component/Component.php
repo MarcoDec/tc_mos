@@ -146,7 +146,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Component extends Entity {
     use CodeTrait;
-    use NameTrait;
     use NameTrait, RefTrait {
         RefTrait::__toString insteadof NameTrait;
     }

@@ -10,6 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
+use App\Entity\Project\Operation\Type;
 use App\Entity\Quality\Reception\ComponentReference;
 use App\Entity\Traits\CodeTrait;
 use App\Filter\OldRelationFilter;
@@ -140,10 +141,21 @@ class Family extends AbstractFamily {
     ]
     private Collection $references;
 
+    /**
+     * @var Collection<int, Type>
+     */
+    #[
+        ApiProperty(description: 'Type d\'opération', readableLink: false, example: ['/api/operation-types/5', '/api/operation-types/6']),
+        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Type::class, mappedBy: 'families'),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
+    private Collection $types;
+
     public function __construct() {
         parent::__construct();
         $this->attributes = new ArrayCollection();
         $this->references = new ArrayCollection();
+        $this->types = new ArrayCollection();
     }
 
     final public function addAttribute(Attribute $attribute): self {
@@ -161,6 +173,14 @@ class Family extends AbstractFamily {
             $references->addFamily($this);
         }
 
+        return $this;
+    }
+
+    final public function addType(Type $type): self {
+        if (!$this->types->contains($type)) {
+            $this->types->add($type);
+            $type->addFamily($this);
+        }
         return $this;
     }
 
@@ -190,6 +210,13 @@ class Family extends AbstractFamily {
         return $this->references;
     }
 
+    /**
+     * @return Collection<int, Type>
+     */
+    final public function getTypes(): Collection {
+        return $this->types;
+    }
+
     final public function removeAttribute(Attribute $attribute): self {
         if ($this->attributes->removeElement($attribute)) {
             $attribute->removeFamily($this);
@@ -203,6 +230,14 @@ class Family extends AbstractFamily {
             $references->removeFamily($this);
         }
 
+        return $this;
+    }
+
+    final public function removeType(Type $type): self {
+        if ($this->types->contains($type)) {
+            $this->types->removeElement($type);
+            $type->removeFamily($this);
+        }
         return $this;
     }
 
