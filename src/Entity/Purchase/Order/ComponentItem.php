@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Selling\Order;
+namespace App\Entity\Purchase\Order;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -23,16 +23,16 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         itemOperations: [
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
         ],
-        shortName: 'SellingOrderComponent',
+        shortName: 'PurchaseOrderComponent',
         denormalizationContext: [
             'groups' => ['write:item', 'write:order', 'write:current_place', 'write:notes', 'write:ref', 'write:name', 'write:component'],
-            'openapi_definition_name' => 'SellingOrderItem-write'
+            'openapi_definition_name' => 'PurchaseOrderComponent-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:item', 'read:order', 'read:current_place', 'read:notes', 'read:ref', 'read:name', 'read:component'],
-            'openapi_definition_name' => 'SellingOrderItem-read'
+            'openapi_definition_name' => 'PurchaseOrderComponent-read'
         ],
     ),
     ORM\Entity
@@ -44,4 +44,8 @@ class ComponentItem extends Item {
         Serializer\Groups(['read:component', 'write:component'])
     ]
     protected $item;
+
+    public function getStockType(): string {
+        return 'ComponentStock';
+    }
 }

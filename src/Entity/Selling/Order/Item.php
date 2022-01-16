@@ -33,12 +33,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Supprime un item',
                     'summary' => 'Supprime un item',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ]
 
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         shortName: 'SellingOrderItem',
         denormalizationContext: [

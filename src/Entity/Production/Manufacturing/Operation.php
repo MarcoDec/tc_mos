@@ -165,7 +165,7 @@ class Operation extends Entity {
     }
 
     /**
-     * @return Collection<Int, Employee>
+     * @return Collection<int, Employee>
      */
     final public function getOperators(): Collection {
         return $this->operators;
