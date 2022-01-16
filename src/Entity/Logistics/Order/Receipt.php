@@ -3,6 +3,8 @@
 namespace App\Entity\Logistics\Order;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Purchase\Order\Item;
 use DateTimeInterface;
@@ -11,13 +13,61 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiResource(
+        description: 'Reçu',
+        collectionOperations: [
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère les reçus',
+                    'summary' => 'Récupère les reçus',
+                ]
+            ],
+            'post' => [
+                'openapi_context' => [
+                    'description' => 'Créer un reçu',
+                    'summary' => 'Créer un reçu',
+                ]
+            ]
+        ],
+        itemOperations: [
+            'delete' => [
+                'openapi_context' => [
+                    'description' => 'Supprime un reçu',
+                    'summary' => 'Supprime un reçu',
+                ]
+            ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère un reçu',
+                    'summary' => 'Récupère un reçu',
+                ],
+            ],
+            'patch' => [
+                'openapi_context' => [
+                    'description' => 'Modifie un reçu',
+                    'summary' => 'Modifie un reçu',
+                ]
+            ]
+        ],
+        attributes: [
+            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
+        ],
+        denormalizationContext: [
+            'groups' => ['write:receipt'],
+            'openapi_definition_name' => 'Receipt-write'
+        ],
+        normalizationContext: [
+            'groups' => ['read:receipt', 'read:id'],
+            'openapi_definition_name' => 'Receipt-read'
+        ]
+    ),
     ORM\Entity(readOnly: true)
 ]
 class Receipt extends Entity {
     #[
-        ApiProperty(description: 'Companie', required: false, example: '/api/purchase-order-items/1'),
+        ApiProperty(description: 'Item', required: false, example: '/api/purchase-order-items/1'),
         ORM\ManyToOne(fetch: 'EAGER', targetEntity: Item::class, inversedBy: 'receipts'),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
     protected ?Item $item = null;
 
@@ -32,7 +82,7 @@ class Receipt extends Entity {
         ApiProperty(description: 'Quantité', required: true, example: 0),
         ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:item', 'write:item'])
+        Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
     private float $quantity = 0;
 

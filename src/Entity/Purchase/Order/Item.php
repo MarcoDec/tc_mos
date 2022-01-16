@@ -47,11 +47,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         shortName: 'PurchaseOrderItem',
         denormalizationContext: [
-            'groups' => ['write:item', 'write:order', 'write:current_place', 'write:notes', 'write:ref', 'write:name'],
+            'groups' => ['write:item', 'write:order', 'write:current_place', 'write:notes', 'write:ref', 'write:name', 'write:receipt'],
             'openapi_definition_name' => 'PurchaseOrderItem-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:order', 'read:current_place', 'read:notes', 'read:ref', 'read:name'],
+            'groups' => ['read:id', 'read:item', 'read:order', 'read:current_place', 'read:notes', 'read:ref', 'read:name', 'read:receipt'],
             'openapi_definition_name' => 'PurchaseOrderItem-read'
         ],
     ),
@@ -82,9 +82,9 @@ abstract class Item extends BaseItem {
      * @var Collection<int, Receipt>
      */
     #[
-        ApiProperty(description: 'Companie', required: false, example: '/api/purchase-order-items/1'),
+        ApiProperty(description: 'Reçus', required: false, example: ['/api/receipts/1', '/api/receipts/6']),
         ORM\OneToMany(fetch: 'EAGER', targetEntity: Receipt::class, mappedBy: 'item'),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
     protected Collection $receipts;
 
