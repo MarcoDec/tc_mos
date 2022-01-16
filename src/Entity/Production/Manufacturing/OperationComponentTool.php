@@ -25,7 +25,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Crée une opération de production d\'un composant et outil',
                     'summary' => 'Crée une opération de production d\'un composant et outil',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ],
         ],
         itemOperations: [
@@ -33,7 +34,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Modifie une opération de production d\'un composant et outil',
                     'summary' => 'Modifie une opération de production d\'un composant et outil',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ],
             'delete' => [
                 'openapi_context' => [
