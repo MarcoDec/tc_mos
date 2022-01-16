@@ -72,6 +72,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ),
     ORM\Entity,
+   ORM\Table(name: 'manufacturing_operation')
 ]
 class Operation extends Entity {
     use NotesTrait;
