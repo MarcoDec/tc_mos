@@ -11,13 +11,15 @@ final class DatabaseLoadCommand extends AbstractCommand {
     protected static $defaultName = 'gpao:database:load';
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
-        $run = function (string $cmd) use ($output): void {
+        $run = function (string $cmd, array $options = []) use ($output): void {
+           $options['command'] = $cmd;
             $this
                 ->getApplication()
                 ->find($cmd)
-                ->run(new ArrayInput(['command' => $cmd]), $output);
+                ->run(new ArrayInput($options), $output);
         };
-
+        $run('doctrine:database:drop', ['--force' => true]);
+        $run('doctrine:database:create');
         $run(SchemaUpdateCommand::getDefaultName());
         $run(FixturesCommand::getDefaultName());
         return self::SUCCESS;
