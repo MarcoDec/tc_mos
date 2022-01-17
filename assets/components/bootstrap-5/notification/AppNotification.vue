@@ -10,11 +10,10 @@
     } from 'vuex-composition-helpers'
     import {MutationTypes} from '../../../store/notifications/notification/mutation'
     import type {Mutations} from '../../../store/notifications/notification/mutation'
-    import {defineProps, onMounted} from 'vue'
+    import {defineProps} from 'vue'
 
     const props = defineProps<{index: string}>()
     const spaced = `notifications/${props.index}`
-
     const {category, subject, creationDatetime} = useNamespacedState<State>(spaced, ['category', 'subject', 'creationDatetime'])
     const color = useNamespacedGetters<Getters>(spaced, ['color']).color
     const vu = useNamespacedMutations<Mutations>(spaced, [MutationTypes.VU])[MutationTypes.VU]
@@ -23,14 +22,13 @@
     const readNotif = useNamespacedActions<Actions>('notifications', [ActionTypes.NOTIF_READ])[ActionTypes.NOTIF_READ]
     const deleteNotif = useNamespacedActions<Actions>('notifications', [ActionTypes.DELETE_NOTIF])[ActionTypes.DELETE_NOTIF]
 
-    console.log('aaaa',spaced)
-    async function click(value:string): void{
+    async function click(value:string):Promise<void>{
       Cookies.set('idNotif',value)
-     await readNotif({id:value})
+      await readNotif({id:value})
         if (!state.value)
             vu()
     }
-    async function supprimer(value:string):void {
+    async function supprimer(value:string):Promise<void> {
       await deleteNotif()
     }
 </script>

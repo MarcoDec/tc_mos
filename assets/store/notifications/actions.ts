@@ -17,16 +17,12 @@ export const actions = {
         const response = await fetchApi('/api/notifications',
             {method: 'get'},
         )
-        console.log('lis--->', response['hydra:member'])
-        const list: any = {}
-
+       /* const list: any = {}
         for (const li of response['hydra:member']) {
             if (typeof li['category'] !== 'undefined')
                 list[li['category']] = {...li}
             console.log('sss--->', list[li['category']])
-
-        }
-        console.log('cccccc--->', list)
+        }*/
 
         const notifications = []
         for (const notification of response['hydra:member'])
@@ -37,6 +33,8 @@ export const actions = {
                 ),
             )
         await Promise.all(notifications)
+        console.log('get notif ---->',response['hydra:member'])
+        commit(MutationTypes.LIST,response['hydra:member'])
     },
     async [ActionTypes.NOTIF_READ]({commit, dispatch}: ActionContext, payload: { id: string }): Promise<void> {
         const id = Cookies.get('idNotif')
@@ -48,7 +46,7 @@ export const actions = {
             method: 'patch',
             headers: {'Content-Type': 'application/json', "Authorization": 'Bearer ' + Cookies.get('token')}
         })
-        console.log('readupatchaction--->', response)
+
     },
     async [ActionTypes.DELETE_NOTIF]({commit, dispatch}: ActionContext): Promise<void> {
         const id = Cookies.get('idNotif')
@@ -57,7 +55,6 @@ export const actions = {
             method: 'delete',
             headers: {'Content-Type': 'application/json', "Authorization": 'Bearer ' + Cookies.get('token')}
         })
-        console.log('deleteaction--->', response)
     }
 }
 export type Actions = typeof actions

@@ -3,19 +3,21 @@
     import {onMounted, ref} from 'vue'
     import {
       useNamespacedActions,
-      useNamespacedGetters
+      useNamespacedGetters, useNamespacedMutations
     } from 'vuex-composition-helpers'
     import {ActionTypes} from '../../../store/notifications'
+    import {Mutations , MutationTypes} from "../../../store/notifications";
     import AppNotification from './AppNotification.vue'
 
     const hide = ref(false)
 
-    const {count, ids: notifs,cat} = useNamespacedGetters<Getters>('notifications', ['count', 'ids','cat'])
+    const {count, ids: notifs, cat} = useNamespacedGetters<Getters>('notifications', ['count', 'ids','cat'])
     const fetchNotif = useNamespacedActions<Actions>('notifications', [ActionTypes.FETCH_NOTIF])[ActionTypes.FETCH_NOTIF]
+    const list = useNamespacedMutations<Mutations>('notifications', [MutationTypes.LIST])[MutationTypes.LIST]
+
     function openModal(): void {
         hide.value = true
     }
-
     onMounted(async () => {
         await fetchNotif()
     })

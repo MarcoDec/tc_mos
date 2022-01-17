@@ -2,6 +2,7 @@ import type {State} from '.'
 
 export enum MutationTypes {
     VU = 'VU' ,
+    LIST = 'LIST' ,
 }
 
 export const mutations = {

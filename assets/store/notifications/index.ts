@@ -3,12 +3,13 @@ import type {Actions} from './actions'
 import type {Getters} from './getters'
 import type {Module} from 'vuex'
 import type {Mutations} from './mutation'
-import type {State as RootState} from '..'
+import type {RootState} from '../index'
 import type {State} from './state'
 import {getters} from './getters'
-import {mutations,MutationTypes} from './mutation'
+import {mutations, MutationTypes} from './mutation'
 
-export type {Actions, Getters, Mutations, State}
-export {ActionTypes,MutationTypes}
+export {ActionTypes, Actions, Getters, Mutations, MutationTypes, State}
 
-export const notifications: Module<State, RootState> = {actions, getters, mutations, namespaced: true}
+export function generateNotifications(state: State): Module<State, RootState> {
+    return {actions, getters, mutations, namespaced: true, state}
+}
