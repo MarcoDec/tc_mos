@@ -13,25 +13,19 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
+export type FormInput = 'boolean' | 'date' | 'file' | 'number' | 'password' | 'radio' | 'search-boolean' | 'select' | 'text'
+
+export type FormOption = {text: string, value: FormValue}
+export type FormOptions = FormOption[]
+
 export type FormField = {
+    btn?: boolean
+    id?: string
     label: string
     name: string
-    options?: {text: string, value: FormValue}[]
+    options?: FormOptions
     type?: FormInput
 }
-
-export type FormInput =
-    'boolean'
-    | 'button'
-    | 'date'
-    | 'file'
-    | 'grpbutton'
-    | 'number'
-    | 'password'
-    | 'select'
-    | 'switch'
-    | 'text'
-    | 'time'
 
 export type FormValue = boolean | number | string | null
 export type InputValue = Readonly<{name: string, value: FormValue}>

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
     import type {FormField, FormValues} from '../../types/bootstrap-5'
-    import {defineProps} from 'vue'
+    import {computed, defineProps} from 'vue'
 
-    defineProps<{fields: FormField[], values?: FormValues}>()
+    const props = defineProps<{fields: FormField[], id: string, values?: FormValues}>()
+    const formId = computed(() => `${props.id}-form`)
 </script>
 
 <template>
-    <AppCard class="bg-blue">
-        <AppForm :fields="fields" :model-value="values"/>
+    <AppCard :id="id" class="bg-blue">
+        <AppForm :id="formId" :fields="fields" :model-value="values"/>
     </AppCard>
 </template>

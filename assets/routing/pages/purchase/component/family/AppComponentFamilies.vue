@@ -1,18 +1,18 @@
 <script lang="ts" setup>
     import type {Actions, Getters} from '../../../../../store/purchase/component/families'
+    import {computed, onMounted} from 'vue'
     import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
     import type {FormField} from '../../../../../types/bootstrap-5'
-    import {onMounted} from 'vue'
 
-    const families = useNamespacedGetters<Getters>('families', ['tree']).tree
-    const fields: FormField[] = [
-        {label: 'Parent', name: 'parent', type: 'select'},
+    const {options, tree} = useNamespacedGetters<Getters>('families', ['options', 'tree'])
+    const fields = computed<FormField[]>(() => [
+        {label: 'Parent', name: 'parent', options: options.value, type: 'select'},
         {label: 'Code', name: 'code', type: 'text'},
         {label: 'Nom', name: 'name', type: 'text'},
-        {label: 'Copperable', name: 'copperable', type: 'switch'},
+        {label: 'Copperable', name: 'copperable', type: 'boolean'},
         {label: 'Customs Code', name: 'customsCode', type: 'text'},
         {label: 'file', name: 'file', type: 'file'}
-    ]
+    ])
     const {load} = useNamespacedActions<Actions>('families', ['create', 'load'])
 
     onMounted(load)
@@ -25,5 +25,5 @@
             Familles
         </h1>
     </AppRow>
-    <AppTreeRow :fields="fields" :item="families"/>
+    <AppTreeRow id="component-families" :fields="fields" :item="tree"/>
 </template>
