@@ -1,11 +1,13 @@
 import type {ReadGetters as RootGetters, ReadState as RootState} from '../../..'
 import type {DeepReadonly} from '../../../../types/types'
+import type {State as Family} from './family'
 import type {ReadState} from '.'
 import type {TreeItem} from '../../../../types/tree'
 
 export type Getters = {
     children: (state: ReadState) => (id: string) => number[]
     families: (state: ReadState, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => number[]
+    find: (state: ReadState) => (id: string) => Family
     tree: (state: ReadState, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => TreeItem
 }
 
@@ -26,6 +28,7 @@ export const getters: Getters = {
                 families.push(family.id)
         return families
     },
+    find: state => (id: string): Family => state[id],
     tree: (state, computed, rootState, rootGetters) => ({
         children: computed.families.map(family => rootGetters[`families/${family}/tree`] as TreeItem),
         id: 0,

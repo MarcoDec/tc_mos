@@ -5,10 +5,10 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            component: async (): Promise<RouteComponent> => import('./pages/purchase/component/AppComponentFamilies.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/purchase/component/family/AppComponentFamilies.vue'),
             meta: {requiresAuth: true},
             name: 'families',
-            path: '/component/families'
+            path: '/component-families'
         },
         {
             component: async (): Promise<RouteComponent> => import('./pages/AppHome'),

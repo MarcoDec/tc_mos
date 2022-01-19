@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-    import type {Actions, Getters} from '../../../../store/purchase/component/families'
+    import type {Actions, Getters} from '../../../../../store/purchase/component/families'
     import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
-    import type {FormField} from '../../../../types/bootstrap-5'
+    import type {FormField} from '../../../../../types/bootstrap-5'
     import {onMounted} from 'vue'
 
     const families = useNamespacedGetters<Getters>('families', ['tree']).tree

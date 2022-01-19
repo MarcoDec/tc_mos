@@ -1,85 +1,23 @@
 <script lang="ts" setup>
-    import type {FormField, FormValues, ReadFormValues} from '../../types/bootstrap-5'
     import type {ReadTreeItem, TreeItem} from '../../types/tree'
-    import {defineEmits, defineProps, ref} from 'vue'
+    import {computed, defineProps, ref} from 'vue'
+    import type {FormField} from '../../types/bootstrap-5'
 
-    const emit = defineEmits<{
-        (e: 'ajout'): void
-        (e: 'update:formData', formData: ReadFormValues): void
-        (e: 'selected', item: ReadTreeItem): void
-    }>()
-    defineProps<{item: TreeItem, fields: FormField, formData: FormValues}>()
-    const selected = ref<TreeItem | null>(null)
+    defineProps<{fields: FormField[], item: TreeItem}>()
 
-    function addFamily(): void {
-        emit('ajout')
-    }
+    const selected = ref<ReadTreeItem | null>(null)
+    const NO_FAMILY = 0
+    const hasSelected = computed(() => selected.value !== null && selected.value.id > NO_FAMILY)
 
-    function bascule(): void {
-        selected.value = null
-    }
-
-    function input(item: PointerEvent | TreeItem): void {
-        if (!(item instanceof PointerEvent)) {
-            selected.value = item
-            emit('selected', item)
-        }
-    }
-
-    function update(formData: ReadFormValues): void {
-        emit('update:formData', formData)
+    function click(item: ReadTreeItem): void {
+        selected.value = item
     }
 </script>
 
 <template>
     <AppRow>
-        <AppTree :item="item" class="col" @click="input"/>
-        <AppCard class="bg-blue col">
-            <div v-if="selected !== null" class="row">
-                <AppBtn id="btnbascule" class="col-2 mb-2" variant="danger" @click="bascule">
-                    <Fa id="lefticon" icon="angle-double-left"/>
-                </AppBtn>
-                <h2 class="col">
-                    {{ selected?.label }}
-                </h2>
-            </div>
-
-            <AppForm :fields="fields" :values="formData" @submit="addFamily" @update:values="update">
-                <template v-if="selected === null" #buttons>
-                    <AppBtn id="btn" variant="success" @click="addFamily">
-                        <Fa icon="plus"/>
-                        Ajouter
-                    </AppBtn>
-                </template>
-                <template v-else #buttons>
-                    <AppBtn id="btn" variant="danger">
-                        <Fa icon="trash"/>
-                        Supprimer
-                    </AppBtn>
-                    <AppBtn id="btn" variant="success">
-                        <Fa icon="pencil-alt"/>
-                        Modifier
-                    </AppBtn>
-                </template>
-            </AppForm>
-        </AppCard>
+        <AppTree :item="item" class="col" @click="click"/>
+        <AppTreeStoredForm v-if="hasSelected" :key="selected?.id" :family="selected?.id" :fields="fields" class="col"/>
+        <AppTreeForm v-else :fields="fields" class="col"/>
     </AppRow>
 </template>
-
-<style>
-    #btn {
-        float: right;
-        margin-right: 4px;
-    }
-
-    #btnbascule {
-        width: 25px;
-        height: 25px;
-        margin-top: 10px;
-    }
-
-    #lefticon {
-        margin-bottom: 3px;
-        margin-left: -3px;
-    }
-</style>
