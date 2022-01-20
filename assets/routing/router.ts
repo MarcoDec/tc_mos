@@ -10,12 +10,17 @@ const router = createRouter({
             name: 'home',
             path: '/'
         },
-
         {
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
             meta: {requiresAuth: false},
             name: 'login',
             path: '/login'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/setting/AppSetting.vue'),
+            meta: {requiresAuth: false},
+            name: 'setting',
+            path: '/setting'
         }
     ]
 })

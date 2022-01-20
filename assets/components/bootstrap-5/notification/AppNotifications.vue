@@ -37,7 +37,7 @@
                         <span class="unread-notification">{{ count }}</span>
                     </a>
                     <div v-if="hide" class="dropdown-content">
-                        <div class="dropdown-menu notification-ui_dd show" aria-labelledby="navbarDropdown">
+                        <div class="dropdown-menu notification-ui_dd show">
                             <div class="notification-ui_dd-header">
                                 <h3 class="text-center">
                                     Notification
@@ -56,5 +56,9 @@
 <style scoped>
 .icon-notif {
   color: white;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 </style>
