@@ -5,3 +5,4 @@ export const AppForm = defineAsyncComponent<Component>(async () => import('./App
 export const AppFormGroup = defineAsyncComponent<Component>(async () => import('./AppFormGroup.vue'))
 export const AppInput = defineAsyncComponent<Component>(async () => import('./AppInput.vue'))
 export const AppLabel = defineAsyncComponent<Component>(async () => import('./AppLabel.vue'))
+export const AppInputGuesser = defineAsyncComponent<Component>(async () => import('./AppInputGuesser.vue'))

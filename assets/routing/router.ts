@@ -18,10 +18,34 @@ const router = createRouter({
         },
         {
             component: async (): Promise<RouteComponent> => import('./pages/setting/AppSetting.vue'),
-            meta: {requiresAuth: false},
             name: 'setting',
-            path: '/setting'
-        }
+            path: '/setting',
+            props: {
+                fields: [
+                    {
+                        create: false,
+                        filter: true,
+                        label: 'Nom',
+                        name: 'name',
+                        sort: true,
+                        type: 'text',
+                        update: true
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Valeur',
+                        name: 'valeur',
+                        sort: true,
+                        type: 'text',
+                        update: false
+                    },
+                ],
+                icon: 'cogs',
+                title: 'Paramètres'
+            }
+        },
+
     ]
 })
 
