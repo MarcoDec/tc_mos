@@ -7,218 +7,259 @@ export interface paths {
   readonly "/api/login": {
     /** Connexion */
     readonly post: operations["login"];
+    readonly parameters: {};
   };
   readonly "/api/logout": {
     /** Déconnexion */
     readonly post: operations["logout"];
+    readonly parameters: {};
   };
   readonly "/api/carriers": {
     /** Récupère les transporteurs */
     readonly get: operations["getCarrierCollection"];
     /** Créer un transporteur */
     readonly post: operations["postCarrierCollection"];
+    readonly parameters: {};
   };
   readonly "/api/carriers/{id}": {
     /** Supprime un transporteur */
     readonly delete: operations["deleteCarrierItem"];
     /** Modifie un transporteur */
     readonly patch: operations["patchCarrierItem"];
+    readonly parameters: {};
   };
   readonly "/api/colors": {
     /** Récupère les couleurs */
     readonly get: operations["getColorCollection"];
     /** Créer une couleur */
     readonly post: operations["postColorCollection"];
+    readonly parameters: {};
   };
   readonly "/api/colors/{id}": {
     /** Supprime une couleur */
     readonly delete: operations["deleteColorItem"];
     /** Modifie une couleur */
     readonly patch: operations["patchColorItem"];
+    readonly parameters: {};
   };
   readonly "/api/component-families": {
     /** Récupère les familles de composant */
     readonly get: operations["getComponentFamilyCollection"];
     /** Créer une famille de composant */
     readonly post: operations["postComponentFamilyCollection"];
+    readonly parameters: {};
   };
   readonly "/api/component-families/{id}": {
     /** Modifie une famille de composant */
     readonly post: operations["postComponentFamilyItem"];
     /** Supprime une famille de composant */
     readonly delete: operations["deleteComponentFamilyItem"];
+    readonly parameters: {};
   };
   readonly "/api/currencies": {
     /** Récupère les devises */
     readonly get: operations["getCurrencyCollection"];
+    readonly parameters: {};
   };
   readonly "/api/currencies/{id}": {
     /** Modifie une devise */
     readonly patch: operations["patchCurrencyItem"];
+    readonly parameters: {};
   };
   readonly "/api/employees/{id}": {
     /** Récupère un employé */
     readonly get: operations["getEmployeeItem"];
+    readonly parameters: {};
   };
   readonly "/api/counter-part-groups": {
     /** créer un groupe de contrepartie de test */
     readonly post: operations["postCounterPartGroupCollection"];
+    readonly parameters: {};
   };
   readonly "/api/engine-groups": {
     /** Récupère les groupes d'équipement */
     readonly get: operations["getEngineGroupCollection"];
+    readonly parameters: {};
   };
   readonly "/api/engine-groups/{id}": {
     /** Supprime un groupe d'équipement */
     readonly delete: operations["deleteEngineGroupItem"];
     /** Modifie un groupe d'équipement */
     readonly patch: operations["patchEngineGroupItem"];
+    readonly parameters: {};
   };
   readonly "/api/tool-groups": {
     /** Créer un groupe d'outil */
     readonly post: operations["postToolGroupCollection"];
+    readonly parameters: {};
   };
   readonly "/api/workstation-groups": {
     /** Créer un groupe de poste de travail */
     readonly post: operations["postWorkstationGroupCollection"];
+    readonly parameters: {};
   };
   readonly "/api/event-types": {
     /** Récupère les types d'événements */
     readonly get: operations["getEventTypeCollection"];
     /** Créer un type d'événements */
     readonly post: operations["postEventTypeCollection"];
+    readonly parameters: {};
   };
   readonly "/api/event-types/{id}": {
     /** Supprime un type d'événements */
     readonly delete: operations["deleteEventTypeItem"];
     /** Modifie un type d'événements */
     readonly patch: operations["patchEventTypeItem"];
+    readonly parameters: {};
   };
   readonly "/api/incoterms": {
     /** Récupère les incoterms */
     readonly get: operations["getIncotermsCollection"];
     /** Créer un incoterms */
     readonly post: operations["postIncotermsCollection"];
+    readonly parameters: {};
   };
   readonly "/api/incoterms/{id}": {
     /** Supprime un incoterms */
     readonly delete: operations["deleteIncotermsItem"];
     /** Modifie un incoterms */
     readonly patch: operations["patchIncotermsItem"];
+    readonly parameters: {};
   };
   readonly "/api/invoice-time-dues": {
     /** Récupère les délais de paiement des factures */
     readonly get: operations["getInvoiceTimeDueCollection"];
     /** Créer un délai de paiement des factures */
     readonly post: operations["postInvoiceTimeDueCollection"];
+    readonly parameters: {};
   };
   readonly "/api/invoice-time-dues/{id}": {
     /** Supprime un délai de paiement des factures */
     readonly delete: operations["deleteInvoiceTimeDueItem"];
     /** Modifie un délai de paiement des factures */
     readonly patch: operations["patchInvoiceTimeDueItem"];
+    readonly parameters: {};
   };
   readonly "/api/out-trainers": {
     /** Récupère les formateurs extérieurs */
     readonly get: operations["getOutTrainerCollection"];
     /** Créer un formateur extérieur */
     readonly post: operations["postOutTrainerCollection"];
+    readonly parameters: {};
   };
   readonly "/api/out-trainers/{id}": {
     /** Supprime un formateur extérieur */
     readonly delete: operations["deleteOutTrainerItem"];
     /** Modifie un formateur extérieur */
     readonly patch: operations["patchOutTrainerItem"];
+    readonly parameters: {};
   };
   readonly "/api/product-families": {
     /** Récupère les familles de produit */
     readonly get: operations["getProductFamilyCollection"];
     /** Créer une famille de produit */
     readonly post: operations["postProductFamilyCollection"];
+    readonly parameters: {};
   };
   readonly "/api/product-families/{id}": {
     /** Modifie une famille de produit */
     readonly post: operations["postProductFamilyItem"];
     /** Supprime une famille de produit */
     readonly delete: operations["deleteProductFamilyItem"];
+    readonly parameters: {};
   };
   readonly "/api/quality-types": {
     /** Récupère les types qualités */
     readonly get: operations["getQualityTypeCollection"];
     /** Créer un type qualité */
     readonly post: operations["postQualityTypeCollection"];
+    readonly parameters: {};
   };
   readonly "/api/quality-types/{id}": {
     /** Supprime un type qualité */
     readonly delete: operations["deleteQualityTypeItem"];
     /** Modifie un type qualité */
     readonly patch: operations["patchQualityTypeItem"];
+    readonly parameters: {};
   };
   readonly "/api/reject-types": {
     /** Récupère les type de rebus */
     readonly get: operations["getRejectTypeCollection"];
     /** Créer un type de rebus */
     readonly post: operations["postRejectTypeCollection"];
+    readonly parameters: {};
   };
   readonly "/api/reject-types/{id}": {
     /** Supprime un type de rebus */
     readonly delete: operations["deleteRejectTypeItem"];
     /** Modifie un type de rebus */
     readonly patch: operations["patchRejectTypeItem"];
+    readonly parameters: {};
   };
   readonly "/api/skill-types": {
     /** Récupère les types de compétence */
     readonly get: operations["getSkillTypeCollection"];
     /** Créer les types de compétence */
     readonly post: operations["postSkillTypeCollection"];
+    readonly parameters: {};
   };
   readonly "/api/skill-types/{id}": {
     /** Supprime les types de compétence */
     readonly delete: operations["deleteSkillTypeItem"];
     /** Modifie les types de compétence */
     readonly patch: operations["patchSkillTypeItem"];
+    readonly parameters: {};
   };
   readonly "/api/time-slots": {
     /** Récupère les plages horaires */
     readonly get: operations["getTimeSlotCollection"];
     /** Créer une plage horaire */
     readonly post: operations["postTimeSlotCollection"];
+    readonly parameters: {};
   };
   readonly "/api/time-slots/{id}": {
     /** Supprime une plage horaire */
     readonly delete: operations["deleteTimeSlotItem"];
     /** Modifie une plage horaire */
     readonly patch: operations["patchTimeSlotItem"];
+    readonly parameters: {};
   };
   readonly "/api/units": {
     /** Récupère les unités */
     readonly get: operations["getUnitCollection"];
     /** Créer une unité */
     readonly post: operations["postUnitCollection"];
+    readonly parameters: {};
   };
   readonly "/api/units/{id}": {
     /** Supprime une unité */
     readonly delete: operations["deleteUnitItem"];
     /** Modifie une unité */
     readonly patch: operations["patchUnitItem"];
+    readonly parameters: {};
   };
   readonly "/api/vat-messages": {
     /** Récupère les messages TVA */
     readonly get: operations["getVatMessageCollection"];
     /** Créer un message TVA */
     readonly post: operations["postVatMessageCollection"];
+    readonly parameters: {};
   };
   readonly "/api/vat-messages/{id}": {
     /** Supprime un message TVA */
     readonly delete: operations["deleteVatMessageItem"];
     /** Modifie un message TVA */
     readonly patch: operations["patchVatMessageItem"];
+    readonly parameters: {};
   };
   readonly "/api/counter-part-groups/{id}": {
+    readonly parameters: {};
   };
   readonly "/api/tool-groups/{id}": {
+    readonly parameters: {};
   };
   readonly "/api/workstation-groups/{id}": {
+    readonly parameters: {};
   };
 }
 
@@ -382,6 +423,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/addresses/1 */
@@ -431,6 +473,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/addresses/1 */
@@ -480,6 +523,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/addresses/1 */
@@ -529,6 +573,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/addresses/1 */
@@ -616,6 +661,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/carriers/1 */
@@ -642,6 +688,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/carriers/1 */
@@ -704,6 +751,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/colors/1 */
@@ -738,6 +786,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/colors/1 */
@@ -829,6 +878,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/component-families/1 */
@@ -892,6 +942,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/counter-part-groups/1 */
@@ -966,6 +1017,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /**
@@ -1035,6 +1087,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/employees/1 */
@@ -1111,6 +1164,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /**
@@ -1140,6 +1194,7 @@ export interface components {
       /**
        * @description Status
        * @example blocked
+       * @enum {string|null}
        */
       readonly toStatus?:
         | ("blocked" | "disabled" | "enabled" | "warning")
@@ -1160,6 +1215,7 @@ export interface components {
       /**
        * @description Status
        * @example blocked
+       * @enum {string|null}
        */
       readonly toStatus?:
         | ("blocked" | "disabled" | "enabled" | "warning")
@@ -1172,6 +1228,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/event-types/1 */
@@ -1186,6 +1243,7 @@ export interface components {
       /**
        * @description Status
        * @example blocked
+       * @enum {string|null}
        */
       readonly toStatus?:
         | ("blocked" | "disabled" | "enabled" | "warning")
@@ -1203,6 +1261,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/event-types/1 */
@@ -1217,6 +1276,7 @@ export interface components {
       /**
        * @description Status
        * @example blocked
+       * @enum {string|null}
        */
       readonly toStatus?:
         | ("blocked" | "disabled" | "enabled" | "warning")
@@ -1260,6 +1320,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/incoterms/1 */
@@ -1289,6 +1350,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/incoterms/1 */
@@ -1358,6 +1420,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/invoice-time-dues/1 */
@@ -1394,6 +1457,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/invoice-time-dues/1 */
@@ -1460,6 +1524,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/out-trainers/1 */
@@ -1491,6 +1556,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/out-trainers/1 */
@@ -1559,6 +1625,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/product-families/1 */
@@ -1616,6 +1683,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/quality-types/1 */
@@ -1640,6 +1708,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/quality-types/1 */
@@ -1680,6 +1749,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/reject-types/1 */
@@ -1704,6 +1774,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/reject-types/1 */
@@ -1744,6 +1815,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/skill-types/1 */
@@ -1768,6 +1840,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/skill-types/1 */
@@ -1856,6 +1929,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/time-slots/1 */
@@ -1904,6 +1978,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/time-slots/1 */
@@ -1963,6 +2038,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/tool-groups/1 */
@@ -2021,6 +2097,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/units/1 */
@@ -2050,6 +2127,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/units/1 */
@@ -2095,6 +2173,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/vat-messages/1 */
@@ -2119,6 +2198,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/vat-messages/1 */
@@ -2154,6 +2234,7 @@ export interface components {
         | string
         | ({
             readonly "@vocab": string;
+            /** @enum {string} */
             readonly hydra: "http://www.w3.org/ns/hydra/core#";
           } & { readonly [key: string]: unknown });
       /** @example /api/workstation-groups/1 */
@@ -2184,6 +2265,7 @@ export interface components {
 export interface operations {
   /** Connexion */
   readonly login: {
+    readonly parameters: {};
     readonly responses: {
       /** Utilisateur connecté */
       readonly 200: {
@@ -2209,6 +2291,7 @@ export interface operations {
   };
   /** Déconnexion */
   readonly logout: {
+    readonly parameters: {};
     readonly responses: {
       /** Déconnexion réussie */
       readonly 204: never;
@@ -2289,6 +2372,7 @@ export interface operations {
   };
   /** Créer un transporteur */
   readonly postCarrierCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** Carrier resource created */
       readonly 201: {
@@ -2449,6 +2533,7 @@ export interface operations {
   };
   /** Créer une couleur */
   readonly postColorCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** Color resource created */
       readonly 201: {
@@ -2609,6 +2694,7 @@ export interface operations {
   };
   /** Créer une famille de composant */
   readonly postComponentFamilyCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** ComponentFamily resource created */
       readonly 201: {
@@ -2706,6 +2792,7 @@ export interface operations {
   };
   /** Récupère les devises */
   readonly getCurrencyCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** Currency collection */
       readonly 200: {
@@ -2829,6 +2916,7 @@ export interface operations {
   };
   /** créer un groupe de contrepartie de test */
   readonly postCounterPartGroupCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** CounterPartGroup resource created */
       readonly 201: {
@@ -2989,6 +3077,7 @@ export interface operations {
   };
   /** Créer un groupe d'outil */
   readonly postToolGroupCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** ToolGroup resource created */
       readonly 201: {
@@ -3024,6 +3113,7 @@ export interface operations {
   };
   /** Créer un groupe de poste de travail */
   readonly postWorkstationGroupCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** WorkstationGroup resource created */
       readonly 201: {
@@ -3118,6 +3208,7 @@ export interface operations {
   };
   /** Créer un type d'événements */
   readonly postEventTypeCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** EventType resource created */
       readonly 201: {
@@ -3277,6 +3368,7 @@ export interface operations {
   };
   /** Créer un incoterms */
   readonly postIncotermsCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** Incoterms resource created */
       readonly 201: {
@@ -3438,6 +3530,7 @@ export interface operations {
   };
   /** Créer un délai de paiement des factures */
   readonly postInvoiceTimeDueCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** InvoiceTimeDue resource created */
       readonly 201: {
@@ -3602,6 +3695,7 @@ export interface operations {
   };
   /** Créer un formateur extérieur */
   readonly postOutTrainerCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** OutTrainer resource created */
       readonly 201: {
@@ -3760,6 +3854,7 @@ export interface operations {
   };
   /** Créer une famille de produit */
   readonly postProductFamilyCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** ProductFamily resource created */
       readonly 201: {
@@ -3915,6 +4010,7 @@ export interface operations {
   };
   /** Créer un type qualité */
   readonly postQualityTypeCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** QualityType resource created */
       readonly 201: {
@@ -4073,6 +4169,7 @@ export interface operations {
   };
   /** Créer un type de rebus */
   readonly postRejectTypeCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** RejectType resource created */
       readonly 201: {
@@ -4231,6 +4328,7 @@ export interface operations {
   };
   /** Créer les types de compétence */
   readonly postSkillTypeCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** SkillType resource created */
       readonly 201: {
@@ -4393,6 +4491,7 @@ export interface operations {
   };
   /** Créer une plage horaire */
   readonly postTimeSlotCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** TimeSlot resource created */
       readonly 201: {
@@ -4552,6 +4651,7 @@ export interface operations {
   };
   /** Créer une unité */
   readonly postUnitCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** Unit resource created */
       readonly 201: {
@@ -4710,6 +4810,7 @@ export interface operations {
   };
   /** Créer un message TVA */
   readonly postVatMessageCollection: {
+    readonly parameters: {};
     readonly responses: {
       /** VatMessage resource created */
       readonly 201: {

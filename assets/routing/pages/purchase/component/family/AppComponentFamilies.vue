@@ -13,7 +13,7 @@
         {label: 'Customs Code', name: 'customsCode', type: 'text'},
         {label: 'file', name: 'file', type: 'file'}
     ])
-    const {load} = useNamespacedActions<Actions>('families', ['create', 'load'])
+    const {create, load} = useNamespacedActions<Actions>('families', ['create', 'load'])
 
     onMounted(load)
 </script>
@@ -25,5 +25,5 @@
             Familles
         </h1>
     </AppRow>
-    <AppTreeRow id="component-families" :fields="fields" :item="tree"/>
+    <AppTreeRow id="component-families" :fields="fields" :item="tree" @create="create"/>
 </template>

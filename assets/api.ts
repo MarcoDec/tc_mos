@@ -1,85 +1,51 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import type {ApiError, ApiResponse, CustomRequestInit, OpErrorType} from 'openapi-typescript-fetch/dist/esm/types'
-import type {DeepReadonly} from './types/types'
-import {Fetcher} from 'openapi-typescript-fetch'
+/* eslint-disable @typescript-eslint/ban-types,@typescript-eslint/no-magic-numbers */
+import type {Merge} from './types/types'
 import type {paths} from './types/openapi'
 
-const api = Fetcher['for']<paths>()
+type Content<T> = T extends {requestBody: {content: infer A}} ? A : {}
+type Responses<T> = T extends {responses: infer A} ? A : {}
 
-api.configure({
-    use: [
-        async (url, init: DeepReadonly<CustomRequestInit>, next): Promise<ApiResponse> => {
-            init.headers.set('Accept', 'application/ld+json')
-            const response = await next(url, init as CustomRequestInit)
-            return response
-        }
-    ]
-})
+export type Urls = keyof paths
+type Operations<U extends Urls> = paths[U]
+export type Methods<U extends Urls> = keyof Operations<U>
+type Operation<U extends Urls, M extends Methods<U>> = Operations<U>[M]
+type Parameters<U extends Urls, M extends Methods<U>> = Operation<U, M> extends {parameters: {path: infer A}} ? A : {}
+type BodyContent<U extends Urls, M extends Methods<U>> =
+    Content<Operation<U, M>> extends {'multipart/form-data': Record<string, unknown>}
+        ? FormData
+        : Content<Operation<U, M>> extends {'application/json': infer A}
+            ? A
+            : {}
+export type ApiBody<U extends Urls, M extends Methods<U>> = Merge<Parameters<U, M>, BodyContent<U, M>>
+export type Response<U extends Urls, M extends Methods<U>> =
+    Responses<Operation<U, M>> extends {201: {content: {'application/ld+json': infer A}}}
+        ? A
+        : Responses<Operation<U, M>> extends {200: {content: {'application/ld+json': infer A}}}
+            ? A
+            : never
 
-type Mapped<B> = B extends Record<string, unknown> ? B[keyof B] : unknown
-
-type ApiParameters<C> = C extends {
-    parameters?: {
-        path?: infer P
-        query?: infer Q
-        body?: infer B
+export default async function fetchApi<U extends Urls, M extends Methods<U>>(
+    url: U,
+    method: M,
+    body: ApiBody<U, M>,
+    multipart = false
+): Promise<Response<U, M>> {
+    const init: RequestInit = {
+        headers: {
+            Accept: 'application/ld+json',
+            'Content-Type': multipart
+                ? `multipart/form-data; charset=utf-8; boundary=${Math.random().toString().substr(2)}`
+                : 'application/json'
+        },
+        method: (method as string).toUpperCase()
     }
-} ? Mapped<B> & P & Q : {}
-
-type ApiApplicationContent<C> = C extends {'multipart/form-data': infer MFD}
-    ? MFD
-    : C extends {'application/merge-patch+json': infer MPJ}
-        ? MPJ
-        : C extends {'application/json': infer RB}
-            ? RB
-            : Record<string, never>
-
-type ApiContent<C> = C extends {content: infer Body} ? ApiApplicationContent<Body> : {}
-
-type ApiBody<OP> = OP extends {requestBody: infer C} ? ApiContent<C> : {}
-
-type ApiOpArgType<OP> = ApiBody<OP> & ApiParameters<OP>
-
-type ApiOpResponseTypes<OP> = OP extends {responses: infer R} ? {
-    [S in keyof R]: R[S] extends {schema?: infer Schema}
-        ? Schema
-        : R[S] extends {content: {'application/ld+json': infer C}}
-            ? C
-            : S extends 'default'
-                ? R[S]
-                : unknown;
-} : never
-
-type HTTP_OK = 200
-type HTTP_CREATED = 200
-
-type _ApiOpReturnType<T> = HTTP_OK extends keyof T ? T[HTTP_OK] : HTTP_CREATED extends keyof T ? T[HTTP_CREATED] : 'default' extends keyof T ? T['default'] : unknown
-
-type ApiOpReturnType<OP> = _ApiOpReturnType<ApiOpResponseTypes<OP>>
-
-type _ApiTypedFetch<OP> = (arg: ApiOpArgType<OP>, init?: RequestInit) => Promise<ApiResponse<ApiOpReturnType<OP>>>
-
-type ApiTypedFetch<OP> = _ApiTypedFetch<OP> & {
-    Error: new (error: ApiError) => ApiError & {
-        getActualType: () => OpErrorType<OP>
-    }
+    if (method !== 'get')
+        init.body = body instanceof FormData ? body : JSON.stringify(body)
+    let generatedUrl: string = url
+    for (const key in body)
+        if (generatedUrl.includes(`{${key}}`))
+            generatedUrl = generatedUrl.replace(`{${key}}`, body[key] as string)
+    const response = await fetch(generatedUrl, init)
+    const json = await response.json() as Response<U, M>
+    return json
 }
-
-type _ApiCreateFetch<OP, Q = never> = [Q] extends [never] ? () => ApiTypedFetch<OP> : (query: Q) => ApiTypedFetch<OP>
-
-type OK = 1
-type ApiCreateFetch<M, OP> = M extends 'delete' | 'patch' | 'post' | 'put' ? OP extends {
-    parameters: {
-        query: infer Q
-    }
-} ? _ApiCreateFetch<OP, {[K in keyof Q]: OK | true;}> : _ApiCreateFetch<OP> : _ApiCreateFetch<OP>
-
-type Api = Omit<typeof api, 'path'> & {
-    path: <P extends keyof paths>(path: P) => {
-        method: <M extends keyof paths[P]>(method: M) => {
-            create: ApiCreateFetch<M, paths[P][M]>
-        }
-    }
-}
-
-export default api as Api

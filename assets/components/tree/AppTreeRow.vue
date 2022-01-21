@@ -1,8 +1,9 @@
 <script lang="ts" setup>
     import type {ReadTreeItem, TreeItem} from '../../types/tree'
-    import {computed, defineProps, ref} from 'vue'
+    import {computed, defineEmits, defineProps, ref} from 'vue'
     import type {FormField} from '../../types/bootstrap-5'
 
+    const emit = defineEmits<(e: 'create', data: FormData) => void>()
     const props = defineProps<{fields: FormField[], id: string, item: TreeItem}>()
 
     const cardId = computed(() => `${props.id}-card`)
@@ -12,6 +13,10 @@
 
     function click(item: ReadTreeItem): void {
         selected.value = item
+    }
+
+    function create(data: FormData): void {
+        emit('create', data)
     }
 </script>
 
@@ -25,6 +30,6 @@
             :family="selected?.id"
             :fields="fields"
             class="col"/>
-        <AppTreeForm v-else :id="cardId" :fields="fields" class="col"/>
+        <AppTreeForm v-else :id="cardId" :fields="fields" class="col" @create="create"/>
     </AppRow>
 </template>

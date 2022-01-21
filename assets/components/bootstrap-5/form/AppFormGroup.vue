@@ -24,7 +24,7 @@
             {{ field.label }}
         </AppLabel>
         <AppCol>
-            <AppInputGuesser :field="inputFields" :model-value="modelValue" @update:model-value="input"/>
+            <AppInputGuesser :field="inputFields" :model-value="modelValue" no-label @update:model-value="input"/>
         </AppCol>
     </AppRow>
 </template>

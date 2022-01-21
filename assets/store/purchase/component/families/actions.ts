@@ -1,19 +1,35 @@
 import type {State} from '.'
 import type {StoreActionContext} from '../../..'
-import api from '../../../../api'
-import type {components} from '../../../../types/openapi'
 import {generateFamily} from './family'
 
 type ActionContext = StoreActionContext<State>
 
 export const actions = {
-    async create(context: ActionContext, family: components['schemas']['ComponentFamily-ComponentFamily-write']): Promise<void> {
-        await api.path('/api/component-families').method('post').create()(family)
+    async create({dispatch}: ActionContext, body: FormData): Promise<void> {
+        await dispatch(
+            'fetchApi',
+            {
+                body,
+                method: 'post',
+                multipart: true,
+                url: '/api/component-families'
+            },
+            {root: true}
+        )
     },
     async load({dispatch}: ActionContext): Promise<void> {
-        const response = await api.path('/api/component-families').method('get').create()({})
+        const response = await dispatch(
+            'fetchApi',
+            {
+                body: {},
+                method: 'get',
+                multipart: false,
+                url: '/api/component-families'
+            },
+            {root: true}
+        )
         const families = []
-        for (const family of response.data['hydra:member'])
+        for (const family of response['hydra:member'])
             families.push(dispatch(
                 'registerModule',
                 {module: generateFamily(family), path: ['families', family.id.toString()]},
