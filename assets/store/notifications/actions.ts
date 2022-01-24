@@ -13,6 +13,7 @@ export enum ActionTypes {
 }
 
 export const actions = {
+
     async [ActionTypes.FETCH_NOTIF]({commit, dispatch}: ActionContext): Promise<void> {
         const response = await fetchApi('/api/notifications',
             {method: 'get'},

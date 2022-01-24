@@ -17,7 +17,7 @@ const router = createRouter({
             path: '/login'
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/setting/AppSetting.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/achat/setting/AppSetting.vue'),
             name: 'setting',
             path: '/setting',
             props: {
@@ -38,7 +38,7 @@ const router = createRouter({
                         name: 'valeur',
                         sort: true,
                         type: 'text',
-                        update: false
+                        update: true
                     },
                 ],
                 icon: 'cogs',

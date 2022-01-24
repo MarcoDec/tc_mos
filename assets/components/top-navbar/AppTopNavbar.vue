@@ -23,7 +23,7 @@
     </AppNavbarBrand>
     <div v-if="hasUser" class="text-white">
       <div>
-        <Dropdown title="Direction"/>
+        <Dropdown title="Achat"/>
       </div>
 
       <AppNotifications/>
