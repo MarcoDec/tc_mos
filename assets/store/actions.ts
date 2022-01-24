@@ -26,6 +26,8 @@ type ActionContext = StoreActionContext<State>
 
 type ModulePayload = DeepReadonly<{module: Module<unknown, State>, path: string[] | string}>
 
+const UNPROCESSABLE_ENTITY = 422
+
 export const actions = {
     async fetchApi<U extends Urls, M extends Methods<U>>({commit}: ActionContext, payload: ApiPayload<U, M>): Promise<ApiResponse<U, M>> {
         commit('spin')
@@ -34,11 +36,14 @@ export const actions = {
             return response
         } catch (e) {
             if (e instanceof Response) {
-                commit('responseError', {status: e.status, text: await e.json() as string})
-            } else
+                if (e.status !== UNPROCESSABLE_ENTITY) {
+                    commit('responseError', {status: e.status, text: await e.json() as string})
+                }
+            } else {
                 commit('error')
-            emitter.emit('error')
-            throw new Error('Erreur de communication avec l\'API')
+                emitter.emit('error')
+            }
+            throw e
         } finally {
             commit('spin')
         }

@@ -2211,6 +2211,28 @@ export interface components {
        */
       readonly name: string;
     };
+    readonly Violation: {
+      /** @example c1051bb4-d103-4f74-8988-acbcafc7fdc3 */
+      readonly code: string;
+      /** @example This value should not be blank. */
+      readonly message: string;
+      /** @example name */
+      readonly propertyPath: string;
+    };
+    readonly Violations: {
+      /** @example /api/contexts/Violations */
+      readonly "@context": string;
+      /** @example Violations */
+      readonly "@type": string;
+      /** @example An error occurred */
+      readonly "hydra:title"?: string;
+      /**
+       * @example name: This value should not be blank.
+       * name: This value should not be blank.
+       */
+      readonly "hydra:description"?: string;
+      readonly violations: readonly components["schemas"]["Violation"][];
+    };
     /** @description WorkstationGroup */
     readonly WorkstationGroup: {
       /**
@@ -2279,6 +2301,12 @@ export interface operations {
       readonly 401: unknown;
       /** Method Not Allowed */
       readonly 405: unknown;
+      /** Unprocessable entity */
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2303,6 +2331,12 @@ export interface operations {
       readonly 403: unknown;
       /** Method Not Allowed */
       readonly 405: unknown;
+      /** Unprocessable entity */
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2392,7 +2426,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2460,7 +2498,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2553,7 +2595,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2621,7 +2667,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2714,7 +2764,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2754,7 +2808,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2871,7 +2929,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -2936,7 +2998,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3064,7 +3130,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3097,7 +3167,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3133,7 +3207,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3228,7 +3306,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3296,7 +3378,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3388,7 +3474,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3456,7 +3546,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3550,7 +3644,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3618,7 +3716,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3715,7 +3817,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3783,7 +3889,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3874,7 +3984,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -3914,7 +4028,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4030,7 +4148,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4098,7 +4220,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4189,7 +4315,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4257,7 +4387,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4348,7 +4482,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4416,7 +4554,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4511,7 +4653,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4579,7 +4725,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4671,7 +4821,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4739,7 +4893,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4830,7 +4988,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };
@@ -4898,7 +5060,11 @@ export interface operations {
       /** Method Not Allowed */
       readonly 405: unknown;
       /** Unprocessable entity */
-      readonly 422: unknown;
+      readonly 422: {
+        readonly content: {
+          readonly "application/ld+json": components["schemas"]["Violations"];
+        };
+      };
       /** Internal Server Error */
       readonly 500: unknown;
     };

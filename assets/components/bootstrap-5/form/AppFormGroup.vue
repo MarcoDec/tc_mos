@@ -1,6 +1,8 @@
 <script lang="ts" setup>
     import type {FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps} from 'vue'
+    import {computed, defineEmits, defineProps, inject, ref} from 'vue'
+    import type {Ref} from 'vue'
+    import type {Violation} from '../../../types/types'
 
     const emit = defineEmits<{
         (e: 'update:modelValue', value: FormValue): void
@@ -11,6 +13,9 @@
         ...props.field,
         id: props.field.id ?? `${props.form}-${props.field.name}`
     }))
+    const violations = inject<Ref<Violation[]>>('violations', ref([]))
+    const violation = computed(() => violations.value.find(({propertyPath}) => propertyPath === props.field.name) ?? null)
+    const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
 
     function input(value: FormValue): void {
         emit('update:modelValue', value)
@@ -24,7 +29,15 @@
             {{ field.label }}
         </AppLabel>
         <AppCol>
-            <AppInputGuesser :field="inputFields" :model-value="modelValue" no-label @update:model-value="input"/>
+            <AppInputGuesser
+                :class="isInvalid"
+                :field="inputFields"
+                :model-value="modelValue"
+                no-label
+                @update:model-value="input"/>
+            <AppInvalidFeedback v-if="violation !== null">
+                {{ violation.message }}
+            </AppInvalidFeedback>
         </AppCol>
     </AppRow>
 </template>

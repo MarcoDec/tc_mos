@@ -15,6 +15,7 @@ use Error;
 use Exception;
 use JetBrains\PhpStorm\Pure;
 use ReflectionClass;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 final class OpenApiWrapper {
     public function __construct(
@@ -29,41 +30,57 @@ final class OpenApiWrapper {
         return $operation->withSecurity([[$schema => []]]);
     }
 
-    private static function setDefaultOperationResponses(Operation $operation): Operation {
+    private static function setDefaultOperationResponses(string $method, Operation $operation): Operation {
         $responses = collect($operation->getResponses());
-        if (!$responses->offsetExists(400)) {
+        if (!$responses->offsetExists(HttpResponse::HTTP_BAD_REQUEST)) {
             $operation
                 ->addResponse(
-                    response: new Response(description: 'Bad request'),
-                    status: 400
+                    response: new Response('Bad request'),
+                    status: HttpResponse::HTTP_BAD_REQUEST
                 );
         }
-        if (!$responses->offsetExists(401)) {
+        if (!$responses->offsetExists(HttpResponse::HTTP_UNAUTHORIZED)) {
             $operation
                 ->addResponse(
-                    response: new Response(description: 'Unauthorized'),
-                    status: 401
+                    response: new Response('Unauthorized'),
+                    status: HttpResponse::HTTP_UNAUTHORIZED
                 );
         }
-        if (!$responses->offsetExists(403)) {
+        if (!$responses->offsetExists(HttpResponse::HTTP_FORBIDDEN)) {
             $operation
                 ->addResponse(
-                    response: new Response(description: 'Forbidden'),
-                    status: 403
+                    response: new Response('Forbidden'),
+                    status: HttpResponse::HTTP_FORBIDDEN
                 );
         }
-        if (!$responses->offsetExists(405)) {
+        if (!$responses->offsetExists(HttpResponse::HTTP_METHOD_NOT_ALLOWED)) {
             $operation
                 ->addResponse(
-                    response: new Response(description: 'Method Not Allowed'),
-                    status: 405
+                    response: new Response('Method Not Allowed'),
+                    status: HttpResponse::HTTP_METHOD_NOT_ALLOWED
                 );
         }
-        if (!$responses->offsetExists(500)) {
+        if (in_array($method, ['patch', 'post'])) {
             $operation
                 ->addResponse(
-                    response: new Response(description: 'Internal Server Error'),
-                    status: 500
+                    response: new Response(
+                        description: 'Unprocessable entity',
+                        content: new ArrayObject([
+                            'application/ld+json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/Violations'
+                                ]
+                            ]
+                        ])
+                    ),
+                    status: HttpResponse::HTTP_UNPROCESSABLE_ENTITY
+                );
+        }
+        if (!$responses->offsetExists(HttpResponse::HTTP_INTERNAL_SERVER_ERROR)) {
+            $operation
+                ->addResponse(
+                    response: new Response('Internal Server Error'),
+                    status: HttpResponse::HTTP_INTERNAL_SERVER_ERROR
                 );
         }
         return $operation->withResponses(
@@ -181,28 +198,28 @@ final class OpenApiWrapper {
         $paths = new Paths();
         foreach ($this->api->getPaths()->getPaths() as $path => $item) {
             if (!empty($delete = $item->getDelete())) {
-                $item = $item->withDelete(self::setDefaultOperationResponses($delete));
+                $item = $item->withDelete(self::setDefaultOperationResponses('delete', $delete));
             }
             if (!empty($get = $item->getGet())) {
-                $item = $item->withGet(self::setDefaultOperationResponses($get));
+                $item = $item->withGet(self::setDefaultOperationResponses('get', $get));
             }
             if (!empty($head = $item->getHead())) {
-                $item = $item->withHead(self::setDefaultOperationResponses($head));
+                $item = $item->withHead(self::setDefaultOperationResponses('head', $head));
             }
             if (!empty($option = $item->getOptions())) {
-                $item = $item->withOptions(self::setDefaultOperationResponses($option));
+                $item = $item->withOptions(self::setDefaultOperationResponses('option', $option));
             }
             if (!empty($patch = $item->getPatch())) {
-                $item = $item->withPatch(self::setDefaultOperationResponses($patch));
+                $item = $item->withPatch(self::setDefaultOperationResponses('patch', $patch));
             }
             if (!empty($post = $item->getPost())) {
-                $item = $item->withPost(self::setDefaultOperationResponses($post));
+                $item = $item->withPost(self::setDefaultOperationResponses('post', $post));
             }
             if (!empty($put = $item->getPut())) {
-                $item = $item->withPut(self::setDefaultOperationResponses($put));
+                $item = $item->withPut(self::setDefaultOperationResponses('put', $put));
             }
             if (!empty($trace = $item->getTrace())) {
-                $item = $item->withTrace(self::setDefaultOperationResponses($trace));
+                $item = $item->withTrace(self::setDefaultOperationResponses('trace', $trace));
             }
             $paths->addPath($path, $item);
         }

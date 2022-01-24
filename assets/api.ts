@@ -46,6 +46,8 @@ export default async function fetchApi<U extends Urls, M extends Methods<U>>(
         if (generatedUrl.includes(`{${key}}`))
             generatedUrl = generatedUrl.replace(`{${key}}`, body[key] as string)
     const response = await fetch(generatedUrl, init)
+    if (response.status === 422)
+        throw response
     const json = await response.json() as Response<U, M>
     return json
 }

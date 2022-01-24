@@ -48,6 +48,51 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 'type' => 'object',
             ])
+            ->createSchema('Violation', [
+                'properties' => [
+                    'code' => [
+                        'example' => 'c1051bb4-d103-4f74-8988-acbcafc7fdc3',
+                        'type' => 'string'
+                    ],
+                    'message' => [
+                        'example' => 'This value should not be blank.',
+                        'type' => 'string'
+                    ],
+                    'propertyPath' => [
+                        'example' => 'name',
+                        'type' => 'string'
+                    ]
+                ],
+                'required' => ['code', 'message', 'propertyPath']
+            ])
+            ->createSchema('Violations', [
+                'properties' => [
+                    '@context' => [
+                        'example' => '/api/contexts/ConstraintViolationList',
+                        'type' => 'string'
+                    ],
+                    '@type' => [
+                        'example' => 'ConstraintViolationList',
+                        'type' => 'string'
+                    ],
+                    'hydra:title' => [
+                        'example' => 'An error occurred',
+                        'type' => 'string'
+                    ],
+                    'hydra:description' => [
+                        'example' => "name: This value should not be blank.\nname: This value should not be blank.",
+                        'type' => 'string'
+                    ],
+                    'violations' => [
+                        'items' => [
+                            '$ref' => '#/components/schemas/Violation'
+                        ],
+                        'type' => 'array'
+                    ]
+                ],
+                'required' => ['violations'],
+                'type' => 'object'
+            ])
             ->addPath(
                 id: 'login',
                 path: $this->getLogin(),

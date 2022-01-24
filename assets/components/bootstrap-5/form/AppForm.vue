@@ -8,7 +8,6 @@
         (e: 'submit', values: Readonly<FormData>): void
         (e: 'update:modelValue', values: Readonly<FormValues>): void
     }>()
-
     const props = withDefaults(
         defineProps<{fields: FormField[], id: string, modelValue?: FormValues}>(),
         {modelValue: () => ({})}
