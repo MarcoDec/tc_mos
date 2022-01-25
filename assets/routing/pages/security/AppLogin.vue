@@ -11,20 +11,23 @@
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
     const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
-    const fetchUsers = useNamespacedActions<Actions>('users', [ActionTypes.FETCH_USERS])[ActionTypes.FETCH_USERS]
-    const {code, error: showError, msgError}
-        = useNamespacedState<State>('users', ['code', 'error', 'msgError'])
+    const login = useNamespacedActions<Actions>('security', ['login']).login
+
 
     async function handleClick(): Promise<void> {
-        await fetchUsers(formData.value)
+        await login(formData.value)
         await router.push({name: 'home'})
     }
 </script>
 
 <template>
     <AppRow>
-        <AppCard class="bg-blue col">
-            <AppForm id="login" v-model="formData" :fields="fields" @submit="handleClick"/>
-        </AppCard>
+      <AppCard class="bg-blue col">
+        <AppForm v-model="formData" :fields="fields" @submit="handleClick">
+          <AppBtn type="submit">
+            Connexion
+          </AppBtn>
+        </AppForm>
+      </AppCard>
     </AppRow>
 </template>

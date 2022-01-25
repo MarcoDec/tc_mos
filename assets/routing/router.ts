@@ -100,35 +100,29 @@ const router = createRouter({
                 title: 'Opération'
             }
         },
+
         {
             component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
-            name: 'setting',
-            path: '/setting',
+            name: 'settings',
+            path: '/settings',
             props: {
                 fields: [
                     {
                         create: true,
                         filter: true,
-                        label: 'Nom',
-                        name: 'nom',
+                        label: 'Code',
+                        name: 'code',
                         sort: true,
                         type: 'text',
                         update: true
                     },
-                    {
-                        create: true,
-                        filter: true,
-                        label: 'Valeur',
-                        name: 'valeur',
-                        sort: true,
-                        type: 'text',
-                        update: true
-                    }
+                  
                 ],
                 icon: 'atom',
                 title: 'Opération'
             }
-        }
+        },
+       
     ]
 })
 
