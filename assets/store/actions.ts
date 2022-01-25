@@ -9,7 +9,6 @@ import fetchApi from '../api'
 type ApiPayload<U extends Urls, M extends Methods<U>> = {
     body: ApiBody<U, M>
     method: M
-    multipart: boolean
     url: U
 }
 
@@ -32,7 +31,7 @@ export const actions = {
     async fetchApi<U extends Urls, M extends Methods<U>>({commit}: ActionContext, payload: ApiPayload<U, M>): Promise<ApiResponse<U, M>> {
         commit('spin')
         try {
-            const response = await fetchApi(payload.url, payload.method, payload.body, payload.multipart)
+            const response = await fetchApi(payload.url, payload.method, payload.body)
             return response
         } catch (e) {
             if (e instanceof Response) {

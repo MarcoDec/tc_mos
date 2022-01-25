@@ -27,20 +27,21 @@ export type Response<U extends Urls, M extends Methods<U>> =
 export default async function fetchApi<U extends Urls, M extends Methods<U>>(
     url: U,
     method: M,
-    body: ApiBody<U, M>,
-    multipart = false
+    body: ApiBody<U, M>
 ): Promise<Response<U, M>> {
-    const init: RequestInit = {
-        headers: {
-            Accept: 'application/ld+json',
-            'Content-Type': multipart
-                ? `multipart/form-data; charset=utf-8; boundary=${Math.random().toString().substr(2)}`
-                : 'application/json'
-        },
-        method: (method as string).toUpperCase()
+    const init: Omit<RequestInit, 'headers'> & {
+        headers: HeadersInit & {'Content-Type'?: string}
+    } = {
+        headers: {Accept: 'application/ld+json'},
+        method: method as string
     }
-    if (method !== 'get')
-        init.body = body instanceof FormData ? body : JSON.stringify(body)
+    if (body instanceof FormData)
+        init.body = body
+    else {
+        init.headers['Content-Type'] = 'application/json'
+        if (method !== 'get')
+            init.body = JSON.stringify(body)
+    }
     let generatedUrl: string = url
     for (const key in body)
         if (generatedUrl.includes(`{${key}}`))

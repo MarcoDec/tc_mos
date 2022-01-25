@@ -26,7 +26,7 @@
 </script>
 
 <template>
-    <form :id="id" ref="form" autocomplete="off" enctype="multipart/form-data" @submit.prevent="submit">
+    <form :id="id" ref="form" autocomplete="off" @submit.prevent="submit">
         <AppFormGroup
             v-for="field in fields"
             :key="field.name"

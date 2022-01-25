@@ -16,7 +16,6 @@ export const actions = {
                     username: username ?? ''
                 },
                 method: 'post',
-                multipart: false,
                 url: '/api/login'
             },
             {root: true}
@@ -37,7 +36,6 @@ export const actions = {
             {
                 body: {},
                 method: 'post',
-                multipart: false,
                 url: '/api/logout'
             },
             {root: true}

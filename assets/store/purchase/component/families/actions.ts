@@ -11,7 +11,6 @@ export const actions = {
             {
                 body,
                 method: 'post',
-                multipart: true,
                 url: '/api/component-families'
             },
             {root: true}
@@ -23,7 +22,6 @@ export const actions = {
             {
                 body: {},
                 method: 'get',
-                multipart: false,
                 url: '/api/component-families'
             },
             {root: true}
