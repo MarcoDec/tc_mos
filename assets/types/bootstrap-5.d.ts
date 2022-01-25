@@ -13,14 +13,19 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
+export type FormInput = 'boolean' | 'date' | 'number' | 'password' | 'radio' | 'search-boolean' | 'select' | 'text'
+
+export type FormValue = boolean | number | string | null
+
+export type FormOption = {text: string, value: FormValue}
+
 export type FormField = {
+    btn?: boolean
+    id?: string
     label: string
     name: string
+    options?: FormOption[]
     type?: FormInput
 }
-
-export type FormInput = 'password' | 'text'
-
-export type FormValue = number | string | null
 
 export type FormValues = Record<string, FormValue>
