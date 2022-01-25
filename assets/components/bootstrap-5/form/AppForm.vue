@@ -3,9 +3,9 @@
     import {defineEmits, defineProps, withDefaults} from 'vue'
     import clone from 'clone'
 
-    const emit = defineEmits<{(e: 'update:modelValue', modelValue: Readonly<FormValues>): void, (e: 'submit'): void}>()
+    const emit = defineEmits<{(e: 'update:modelValue', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
     const props = withDefaults(
-        defineProps<{fields: FormField[], modelValue?: FormValues}>(),
+        defineProps<{fields: FormField[], id: string, modelValue?: FormValues}>(),
         {modelValue: () => ({})}
     )
 
@@ -17,15 +17,16 @@
 </script>
 
 <template>
-    <form autocomplete="off" @submit.prevent="emit('submit')">
+    <form :id="id" autocomplete="off" @submit.prevent="emit('submit')">
         <AppFormGroup
             v-for="field in fields"
             :key="field.name"
             :field="field"
+            :form="id"
             :model-value="modelValue[field.name]"
             @input="input"/>
-        <div class="float-end">
-            <slot/>
-        </div>
+        <AppBtn class="float-end" type="submit">
+            Connexion
+        </AppBtn>
     </form>
 </template>

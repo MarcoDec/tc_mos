@@ -20,6 +20,9 @@
             T-Concept
         </AppNavbarBrand>
         <div v-if="hasUser" class="text-white">
+          <div>
+            <Dropdown title="Achat"/>
+          </div>
             <Fa icon="user-circle"/>
             {{ name }}
             <AppBtn variant="danger" @click="handleLogout">
