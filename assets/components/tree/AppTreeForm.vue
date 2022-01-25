@@ -14,10 +14,15 @@
 <template>
     <AppCard :id="id" class="bg-blue">
         <AppForm :id="formId" :fields="fields" :model-value="values" @submit="submit">
-            <AppBtn type="submit" variant="success">
-                <Fa icon="plus"/>
-                Créer
-            </AppBtn>
+            <template #start>
+                <slot name="start"/>
+            </template>
+            <slot>
+                <AppBtn type="submit" variant="success">
+                    <Fa icon="plus"/>
+                    Créer
+                </AppBtn>
+            </slot>
         </AppForm>
     </AppCard>
-</template>+
+</template>

@@ -11,6 +11,10 @@
     const NO_FAMILY = 0
     const hasSelected = computed(() => selected.value !== null && selected.value.id > NO_FAMILY)
 
+    function back(): void {
+        selected.value = null
+    }
+
     function click(item: ReadTreeItem): void {
         selected.value = item
     }
@@ -29,7 +33,8 @@
             :key="selected?.id"
             :family="selected?.id"
             :fields="fields"
-            class="col"/>
+            class="col"
+            @back="back"/>
         <AppTreeForm v-else :id="cardId" :fields="fields" class="col" @create="create"/>
     </AppRow>
 </template>

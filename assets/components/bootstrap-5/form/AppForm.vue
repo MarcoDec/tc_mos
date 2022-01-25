@@ -34,6 +34,9 @@
             :form="id"
             :model-value="modelValue[field.name]"
             @input="input"/>
+        <div class="float-start">
+            <slot name="start"/>
+        </div>
         <div class="float-end">
             <slot/>
         </div>
