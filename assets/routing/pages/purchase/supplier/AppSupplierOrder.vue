@@ -8,28 +8,37 @@ const route = useRoute()
 
 const items: TableItem[] = [
   {
-    cadence: 100,
-    code: 'AS 01',
     delete: true,
-    limite: 'Mise En Bornier',
-    name: 'Mise en bornnier',
-    prix: null,
-    temps: null,
+    composant: 'composant',
+    produit: 'produit',
+    type: 'type',
+    ref: 'ref',
+    quantiteS: 'quantiteS',
+    date: 'date',
+    quantite: 'quantite',
+    etat: 'etat',
+    texte: 'texte',
+    compagnie: 'compagnie',
     type: null,
     update: false
   },
   {
-    cadence: 100,
-    code: 'AS 02',
-    delete: false,
-    limite: 'Mise En Bornier',
-    name: 'Mise en bornnier',
-    prix: null,
-    temps: null,
+    delete: true,
+    composant: 'composant',
+    produit: 'produit',
+    type: 'type',
+    ref: 'ref',
+    quantiteS: 'quantiteS',
+    date: 'date',
+    quantite: 'quantite',
+    etat: 'etat',
+    texte: 'texte',
+    compagnie: 'compagnie',
     type: null,
-    update: true
-  }
+    update: false
+  },
 ]
+
 </script>
 
 <template>

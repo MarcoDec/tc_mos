@@ -50,7 +50,7 @@ const router = createRouter({
                         create: true,
                         filter: true,
                         label: 'Référence Fournisseur',
-                        name: 'type',
+                        name: 'ref',
                         sort: true,
                         type: 'text',
                         update: false
@@ -59,7 +59,7 @@ const router = createRouter({
                         create: true,
                         filter: true,
                         label: 'Quantité Souhaitée',
-                        name: 'type',
+                        name: 'quantiteS',
                         sort: true,
                         type: 'text',
                         update: false
@@ -77,7 +77,7 @@ const router = createRouter({
                         create: true,
                         filter: true,
                         label: 'Quantité',
-                        name: 'type',
+                        name: 'quantite',
                         sort: true,
                         type: 'text',
                         update: false
