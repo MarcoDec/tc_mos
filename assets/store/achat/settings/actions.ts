@@ -7,7 +7,7 @@ import {generateSetting} from './setting'
 type ActionContext = DeepReadonly<VuexActionContext<State, State>>
 
 export const actions = {
-    async load({dispatch}: ActionContext): Promise<void> {
+    async getsetting({dispatch}: ActionContext): Promise<void> {
         const response = [
             {
                 delete: true,
@@ -22,14 +22,8 @@ export const actions = {
                 update: true
             },
         ]
-        const list = []
-        for (const setting of response)
-            list.push(dispatch(
-                'registerModule',
-                {module: generateSetting(setting), path: ['settings', setting.id.toString()]},
-                {root: true}
-            ))
-        await Promise.all(list)
+
+
     }
 }
 

@@ -102,7 +102,7 @@ const router = createRouter({
         },
 
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppCollectionTablePage.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/achat/setings/AppSettings.vue'),
             name: 'settings',
             path: '/settings',
             props: {
@@ -110,19 +110,28 @@ const router = createRouter({
                     {
                         create: true,
                         filter: true,
-                        label: 'Code',
-                        name: 'code',
+                        label: 'Nom',
+                        name: 'nom',
                         sort: true,
                         type: 'text',
                         update: true
                     },
-                  
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Valeur',
+                        name: 'valeur',
+                        sort: true,
+                        type: 'text',
+                        update: true
+                    },
+
                 ],
-                icon: 'atom',
-                title: 'Opération'
+                icon: 'cogs',
+                title: 'Paramètres'
             }
         },
-       
+
     ]
 })
 

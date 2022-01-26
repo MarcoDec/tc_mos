@@ -3,12 +3,11 @@ import type {TableField, TableItem} from '../../../../types/app-collection-table
 import {defineProps,onMounted} from 'vue'
 import {useRoute} from 'vue-router'
 import {useNamespacedActions,useNamespacedGetters} from 'vuex-composition-helpers'
-import { ActionTypes} from "../../../../store/achat/settings";
 import type {Actions, Getters} from '../../../../store/achat/settings'
 defineProps<{ fields: TableField[], icon: string, title: string }>()
 const route = useRoute()
 const {ids: it} = useNamespacedGetters<Getters>('settings', ['ids'])
-const fetch = useNamespacedActions<Actions>('settings', [ActionTypes.FETCH_SETTING])[ActionTypes.FETCH_SETTING]
+const fetch = useNamespacedActions<Actions>('settings', ['getsetting'])['getsetting']
 const items: TableItem[] =
     [
       {
@@ -24,7 +23,8 @@ const items: TableItem[] =
         update: true
       }
     ]
-console.log('iiii',items.value)
+console.log('iiii',items)
+console.log('xxxxx',it)
 onMounted(async () => {
   await fetch()
 })
