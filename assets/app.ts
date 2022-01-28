@@ -5,6 +5,7 @@ import {createApp, defineAsyncComponent} from 'vue'
 import App from './routing/App.vue'
 import type {Component} from 'vue'
 import type {State} from './store/security'
+// import VueStarRating from 'vue-star-rating'
 import emitter from './emitter'
 import {fas} from '@fortawesome/free-solid-svg-icons'
 import {fetchApi} from './api'
@@ -16,6 +17,7 @@ library.add(fas)
 const app = createApp(App as Component)
     .provide('emitter', emitter)
     .component('Fa', defineAsyncComponent(async () => import('@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon')))
+    // .component('star-rating', VueStarRating.default)
 for (const [name, component] of Object.entries(components))
     app.component(name, component)
 
