@@ -1,25 +1,27 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\OpenApi\Factory;
 
-use ApiPlatform\Core\Api\IdentifiersExtractorInterface;
+use ApiPlatform\Core\DataProvider\PaginationOptions;
 use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
+use ApiPlatform\Core\JsonSchema\TypeFactoryInterface;
 use ApiPlatform\Core\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Property\Factory\PropertyNameCollectionFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use ApiPlatform\Core\PathResolver\OperationPathResolverInterface;
 use JetBrains\PhpStorm\Pure;
+use Psr\Container\ContainerInterface;
 
-final class ItemPaths extends Paths {
+final class CollectionPaths extends Paths {
     #[Pure]
     public function __construct(
+        private ContainerInterface $filterLocator,
         array $formats,
-        private IdentifiersExtractorInterface $identifiersExtractor,
         SchemaFactoryInterface $jsonSchemaFactory,
+        private TypeFactoryInterface $jsonSchemaTypeFactory,
         Links $links,
         OperationPathResolverInterface $operationPathResolver,
+        private PaginationOptions $paginationOptions,
         PropertyMetadataFactoryInterface $propertyMetadataFactory,
         PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory,
         string $resourceClass,
@@ -38,14 +40,16 @@ final class ItemPaths extends Paths {
     }
 
     protected function createOperation(array $operation, string $operationName): Operation {
-        return new ItemOperation(
+        return new CollectionOperation(
+            filterLocator: $this->filterLocator,
             formats: $this->formats,
-            identifiersExtractor: $this->identifiersExtractor,
             jsonSchemaFactory: $this->jsonSchemaFactory,
+            jsonSchemaTypeFactory: $this->jsonSchemaTypeFactory,
             links: $this->links,
             operation: $operation,
             operationName: $operationName,
             operationPathResolver: $this->operationPathResolver,
+            paginationOptions: $this->paginationOptions,
             propertyMetadataFactory: $this->propertyMetadataFactory,
             propertyNameCollectionFactory: $this->propertyNameCollectionFactory,
             resourceClass: $this->resourceClass,
@@ -55,6 +59,6 @@ final class ItemPaths extends Paths {
 
     #[Pure]
     protected function getOperations(): array {
-        return $this->resourceMetadata->getItemOperations() ?? [];
+        return $this->resourceMetadata->getCollectionOperations() ?? [];
     }
 }

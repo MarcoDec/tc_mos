@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\OpenApi;
 
 use ApiPlatform\Core\Api\IdentifiersExtractorInterface;
+use ApiPlatform\Core\DataProvider\PaginationOptions;
 use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
+use ApiPlatform\Core\JsonSchema\TypeFactoryInterface;
 use ApiPlatform\Core\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Property\Factory\PropertyNameCollectionFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
@@ -20,10 +22,12 @@ use ApiPlatform\Core\OpenApi\Model\Server;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\OpenApi\Options;
 use ApiPlatform\Core\PathResolver\OperationPathResolverInterface;
+use App\OpenApi\Factory\CollectionPaths;
 use App\OpenApi\Factory\ItemPaths;
 use App\OpenApi\Factory\Links;
 use ArrayObject;
 use JetBrains\PhpStorm\Pure;
+use Psr\Container\ContainerInterface;
 
 final class OpenApiFactory implements OpenApiFactoryInterface {
     public const BASE_URL = 'base_url';
@@ -33,10 +37,13 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      */
     #[Pure]
     public function __construct(
+        private ContainerInterface $filterLocator,
         private array $formats,
         private IdentifiersExtractorInterface $identifiersExtractor,
         private SchemaFactoryInterface $jsonSchemaFactory,
+        private TypeFactoryInterface $jsonSchemaTypeFactory,
         protected OperationPathResolverInterface $operationPathResolver,
+        private PaginationOptions $paginationOptions,
         private PropertyMetadataFactoryInterface $propertyMetadataFactory,
         private PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory,
         private ResourceMetadataFactoryInterface $resourceMetadataFactory,
@@ -56,7 +63,8 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         $servers = [new Server(empty($baseUrl) ? '/' : $baseUrl)];
 
         foreach ($this->resourceNameCollectionFactory->create() as $resourceClass) {
-            $itemPaths = new ItemPaths(
+            $metadata = $this->resourceMetadataFactory->create($resourceClass);
+            (new ItemPaths(
                 formats: $this->formats,
                 identifiersExtractor: $this->identifiersExtractor,
                 jsonSchemaFactory: $this->jsonSchemaFactory,
@@ -65,9 +73,21 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 propertyMetadataFactory: $this->propertyMetadataFactory,
                 propertyNameCollectionFactory: $this->propertyNameCollectionFactory,
                 resourceClass: $resourceClass,
-                resourceMetadata: $this->resourceMetadataFactory->create($resourceClass)
-            );
-            $itemPaths->collect($paths, $schemas);
+                resourceMetadata: $metadata
+            ))->collect($paths, $schemas);
+            (new CollectionPaths(
+                filterLocator: $this->filterLocator,
+                formats: $this->formats,
+                jsonSchemaFactory: $this->jsonSchemaFactory,
+                jsonSchemaTypeFactory: $this->jsonSchemaTypeFactory,
+                links: $links,
+                operationPathResolver: $this->operationPathResolver,
+                paginationOptions: $this->paginationOptions,
+                propertyMetadataFactory: $this->propertyMetadataFactory,
+                propertyNameCollectionFactory: $this->propertyNameCollectionFactory,
+                resourceClass: $resourceClass,
+                resourceMetadata: $metadata
+            ))->collect($paths, $schemas);
         }
 
         return new OpenApi(
