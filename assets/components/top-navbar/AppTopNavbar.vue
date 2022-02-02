@@ -5,7 +5,7 @@
 
     const hasUser = useNamespacedGetters<Getters>('security', ['hasUser']).hasUser
     const logout = useNamespacedActions<Actions>('security', ['logout']).logout
-    const name = useNamespacedState<State>('security', ['username']).username
+    const username = useNamespacedState<State>('security', ['username']).username
     const router = useRouter()
 
     async function handleLogout(): Promise<void> {
@@ -24,7 +24,7 @@
             <Dropdown title="Achat"/>
           </div>
             <Fa icon="user-circle"/>
-            {{ name }}
+            {{ username }}
             <AppBtn variant="danger" @click="handleLogout">
                 <Fa icon="sign-out-alt"/>
             </AppBtn>

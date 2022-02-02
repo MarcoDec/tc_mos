@@ -13,6 +13,10 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
+export type Tabs = {
+    name: string
+    isActive: boolean
+}
 export type FormInput = 'boolean' | 'date' | 'number' | 'password' | 'radio' | 'search-boolean' | 'select' | 'text'
 
 export type FormValue = boolean | number | string | null
@@ -29,3 +33,12 @@ export type FormField = {
 }
 
 export type FormValues = Record<string, FormValue>
+
+export type Tab = {
+    active: {active: boolean}
+    icon: string
+    id: string
+    labelledby: string
+    target: string
+    title: string
+}

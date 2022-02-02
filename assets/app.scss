@@ -40,3 +40,63 @@ th {
   flex-direction: row;
   align-items: center;
 }
+
+.card-body {
+  padding: 0 0 !important;
+}
+
+.container {
+  min-width: 100%;
+}
+
+.gui-container {
+  background-color: #cecdcd;
+  border-radius: 15px;
+}
+
+.h-10 {
+  height: 10% !important;
+}
+
+.h-90 {
+  height: 90% !important;
+}
+
+.resizer {
+  background-color: black;
+  cursor: row-resize;
+  margin: 0;
+  padding: 2px;
+}
+
+.w-10 {
+  width: 10% !important;
+}
+
+.w-90 {
+  width: 90% !important;
+}
+
+@media (max-width: 1140px) {
+  .gui-left {
+    display: block;
+  }
+
+  .gui-top {
+    display: block;
+  }
+}
+
+@media (min-width: 1140px) {
+  .gui {
+    overflow: hidden;
+  }
+
+  .gui-left {
+    display: inline;
+  }
+
+  .gui-top {
+    display: flex;
+  }
+}

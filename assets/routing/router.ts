@@ -16,112 +16,16 @@ const router = createRouter({
             name: 'login',
             path: '/login'
         },
+
+
         {
-            component: async (): Promise<RouteComponent> => import('./pages/purchase/supplier/AppSupplierOrder.vue'),
+            component: async (): Promise<RouteComponent> => import('./pages/purchase/supplier/order/AppSupplierOrder.vue'),
             meta: {requiresAuth: true},
             name: 'orderSupplier',
             path: '/orderSupplier',
             props: {
-                fields: [
-                    {
-                        label: 'N',
-                    },
-                    {
-                        create: false,
-                        filter: true,
-                        label: 'Composant',
-                        name: 'composant',
-                        options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}],
-                        sort: false,
-                        type: 'select',
-                        update: true
-                    },
-                    {
-                        create: false,
-                        filter: true,
-                        label: 'Produit',
-                        name: 'produit',
-                        options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}],
-                        sort: false,
-                        type: 'select',
-                        update: true
-                    },
-                    {
-                        create: true,
-                        filter: true,
-                        label: 'Référence Fournisseur',
-                        name: 'ref',
-                        sort: true,
-                        type: 'text',
-                        update: false
-                    },
-                    {
-                        create: true,
-                        filter: true,
-                        label: 'Quantité Souhaitée',
-                        name: 'quantiteS',
-                        sort: true,
-                        type: 'text',
-                        update: false
-                    },
-                    {
-                        create: true,
-                        filter: true,
-                        label: 'Date Souhaitée',
-                        name: 'date',
-                        sort: false,
-                        type: 'date',
-                        update: false
-                    },
-                    {
-                        create: true,
-                        filter: true,
-                        label: 'Quantité',
-                        name: 'quantite',
-                        sort: true,
-                        type: 'text',
-                        update: false
-                    },
-                    {
-                        create: true,
-                        filter: true,
-                        label: 'Date de confirmation',
-                        name: 'date',
-                        sort: false,
-                        type: 'date',
-                        update: false
-                    },
-                    {
-                        create: true,
-                        filter: true,
-                        label: 'Etat',
-                        name: 'etat',
-                        sort: true,
-                        type: 'text',
-                        update: false
-                    },
-                    {
-                        create: true,
-                        filter: true,
-                        label: 'Texte',
-                        name: 'texte',
-                        sort: true,
-                        type: 'text',
-                        update: false
-                    },
-                    {
-                        create: false,
-                        filter: true,
-                        label: 'Compagnie destinataire',
-                        name: 'compagnie',
-                        options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}],
-                        sort: false,
-                        type: 'select',
-                        update: true
-                    },
-                ],
-                icon: 'shopping-cart',
-                title: 'OrderSupplier'
+                icon: 'cogs',
+                title: 'Paramétres'
             }
         },
         {

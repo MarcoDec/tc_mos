@@ -20,12 +20,14 @@
 
 <template>
     <AppRow>
-        <AppCard class="bg-blue col">
-            <AppForm v-model="formData" :fields="fields" @submit="handleClick">
+        <AppCol>
+            <AppCard class="bg-blue">
+                <AppForm v-model="formData" :fields="fields" @submit="handleClick">
                 <AppBtn type="submit">
                     Connexion
                 </AppBtn>
             </AppForm>
-        </AppCard>
+            </AppCard>
+        </AppCol>
     </AppRow>
 </template>
