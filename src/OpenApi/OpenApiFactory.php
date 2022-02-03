@@ -19,7 +19,11 @@ use ApiPlatform\Core\OpenApi\Model\Info;
 use ApiPlatform\Core\OpenApi\Model\License;
 use ApiPlatform\Core\OpenApi\Model\OAuthFlow;
 use ApiPlatform\Core\OpenApi\Model\OAuthFlows;
+use ApiPlatform\Core\OpenApi\Model\Operation;
+use ApiPlatform\Core\OpenApi\Model\PathItem;
 use ApiPlatform\Core\OpenApi\Model\Paths;
+use ApiPlatform\Core\OpenApi\Model\RequestBody;
+use ApiPlatform\Core\OpenApi\Model\Response;
 use ApiPlatform\Core\OpenApi\Model\SecurityScheme;
 use ApiPlatform\Core\OpenApi\Model\Server;
 use ApiPlatform\Core\OpenApi\OpenApi;
@@ -32,14 +36,19 @@ use ArrayObject;
 use JetBrains\PhpStorm\Pure;
 use LogicException;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class OpenApiFactory implements OpenApiFactoryInterface {
     public const BASE_URL = 'base_url';
 
+    private Paths $paths;
+
+    /** @var ArrayObject<string, mixed> */
+    private ArrayObject $schemas;
+
     /**
      * @param array<string, string[]> $formats
      */
-    #[Pure]
     public function __construct(
         private ContainerInterface $filterLocator,
         private array $formats,
@@ -52,8 +61,11 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         private PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory,
         private ResourceMetadataFactoryInterface $resourceMetadataFactory,
         private ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
-        private Options $openApiOptions
+        private Options $openApiOptions,
+        private UrlGeneratorInterface $urlGenerator
     ) {
+        $this->paths = new Paths();
+        $this->schemas = new ArrayObject();
     }
 
     /**
@@ -62,8 +74,6 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     public function __invoke(array $context = []): OpenApi {
         $baseUrl = $context[self::BASE_URL] ?? '/';
         $links = new Links();
-        $paths = new Paths();
-        $schemas = new ArrayObject();
         $servers = [new Server(empty($baseUrl) ? '/' : $baseUrl)];
 
         foreach ($this->resourceNameCollectionFactory->create() as $resourceClass) {
@@ -78,7 +88,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 propertyNameCollectionFactory: $this->propertyNameCollectionFactory,
                 resourceClass: $resourceClass,
                 resourceMetadata: $metadata
-            ))->collect($paths, $schemas);
+            ))->collect($this->paths, $this->schemas);
             (new CollectionPaths(
                 filterLocator: $this->filterLocator,
                 formats: $this->formats,
@@ -91,7 +101,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 propertyNameCollectionFactory: $this->propertyNameCollectionFactory,
                 resourceClass: $resourceClass,
                 resourceMetadata: $metadata
-            ))->collect($paths, $schemas);
+            ))->collect($this->paths, $this->schemas);
         }
 
         $securitySchemes = $this->getSecuritySchemes();
@@ -99,14 +109,61 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         foreach (array_keys($securitySchemes) as $key) {
             $securityRequirements[] = [$key => []];
         }
+        $this->setSecurityPaths();
 
         return new OpenApi(
             info: $this->getInfo(),
             servers: $servers,
-            paths: $paths,
-            components: new Components(schemas: $schemas, securitySchemes: new ArrayObject($securitySchemes)),
+            paths: $this->paths,
+            components: new Components(schemas: $this->schemas, securitySchemes: new ArrayObject($securitySchemes)),
             security: $securityRequirements
         );
+    }
+
+    /**
+     * @param mixed[]                                         $responses
+     * @param array{description: string, schema: string}|null $requestBody
+     */
+    private function addPath(string $id, string $path, string $tag, array $responses, string $description, ?array $requestBody = null): self {
+        $apiResponses = collect($responses)
+            ->map(static fn (array $response): Response => new Response(
+                description: $response['description'],
+                content: isset($response['schema']) ? new ArrayObject([
+                    'application/ld+json' => [
+                        'schema' => [
+                            '$ref' => "#/components/schemas/{$response['schema']['tag']}.jsonld-{$response['schema']['value']}"
+                        ]
+                    ]
+                ]) : null
+            ))
+            ->put(400, new Response('Bad request'))
+            ->put(405, new Response('Method Not Allowed'))
+            ->put(500, new Response('Internal Server Error'));
+        if (str_contains($path, 'logout')) {
+            $apiResponses
+                ->put(401, new Response('Unauthorized'))
+                ->put(403, new Response('Forbidden'));
+        }
+        $this->paths->addPath($path, new PathItem(
+            post: new Operation(
+                operationId: $id,
+                tags: [$tag],
+                responses: $apiResponses->all(),
+                summary: $description,
+                description: $description,
+                requestBody: !empty($requestBody) ? new RequestBody(
+                    description: $requestBody['description'],
+                    content: new ArrayObject([
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => "#/components/schemas/{$requestBody['schema']}"
+                            ]
+                        ]
+                    ])
+                ) : null
+            )
+        ));
+        return $this;
     }
 
     #[Pure]
@@ -137,6 +194,10 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         return $this->openApiOptions->getLicenseName() === null
             ? null
             : new License($this->openApiOptions->getLicenseName(), $this->openApiOptions->getLicenseUrl());
+    }
+
+    private function getLogin(): string {
+        return $this->urlGenerator->generate('login');
     }
 
     private function getOauthSecurityScheme(): SecurityScheme {
@@ -194,5 +255,44 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             $securitySchemes[$key] = new SecurityScheme('apiKey', $description, $apiKey['name'], $apiKey['type']);
         }
         return $securitySchemes;
+    }
+
+    private function setSecurityPaths(): void {
+        $this->schemas['Auth'] = new ArrayObject([
+            'properties' => [
+                'password' => [
+                    'description' => 'mot de passe',
+                    'example' => 'super',
+                    'type' => 'string',
+                ],
+                'username' => [
+                    'description' => 'identifiant',
+                    'example' => 'super',
+                    'type' => 'string',
+                ],
+            ],
+            'type' => 'object'
+        ]);
+        $this
+            ->addPath(
+                id: 'login',
+                path: $this->getLogin(),
+                tag: 'Auth',
+                responses: [
+                    200 => [
+                        'description' => 'Utilisateur connecté',
+                        'schema' => ['tag' => 'Employee', 'value' => 'Employee-read']
+                    ]
+                ],
+                description: 'Connexion',
+                requestBody: ['description' => 'Identifiants', 'schema' => 'Auth']
+            )
+            ->addPath(
+                id: 'logout',
+                path: '/api/logout',
+                tag: 'Auth',
+                responses: [204 => ['description' => 'Déconnexion réussie']],
+                description: 'Déconnexion'
+            );
     }
 }
