@@ -11,5 +11,5 @@ export type State = {
     update: boolean | null
     quantiteS: number | null
     quantite: number | null
-    id: number | null
+    id: number
 }

@@ -10,20 +10,19 @@ export type Items = {
     texte: string | null
     compagnie: string | null
     date: string | null
-    delete: boolean| null
-    update: boolean | null
     quantiteS: number | null
     quantite: number | null
-    id: number | null
 }
 
 export type Getters = {
-    items: (state: State) => Items|any
+    items: (state: State) => Items[] | null,
+
 }
 export type GettersValues = {
     readonly [key in keyof Getters]: ReturnType<Getters[key]>
 }
-export const getters: Getters= {
+export const getters: Getters = {
     items: state => Object.values(state),
+
 }
 

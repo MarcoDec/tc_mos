@@ -2,6 +2,7 @@ import * as Cookies from '../../cookie'
 import type {DeepReadonly} from '../../types/types'
 import type {State as RootState} from '..'
 import type {State} from '.'
+import type {State as Items} from './supplierItem'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import {fetchApi} from '../../api'
 import {generateItem} from './supplierItem'
@@ -12,7 +13,7 @@ type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
 
 export const actions = {
     async fetchItem({commit,dispatch}: ActionContext): Promise<void> {
-        const response : State= [
+        const response : Items[]= [
             {
                 delete: true,
                 composant: 'composant',

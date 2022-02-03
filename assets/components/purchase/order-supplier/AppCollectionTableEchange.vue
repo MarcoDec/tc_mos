@@ -66,10 +66,12 @@ const items = [
         <span class="input-group-text">Objet:</span>
         <input type="text" class="form-control" aria-describedby="basic-addon1">
       </div>
-      <div class="input-group"></div>
-      <textarea id="form10" class="md-textarea form-control" rows="15"></textarea>
+      <div class="input-group">
+        <AppIframe />
+      </div>
+
     </div>
-    <div class="divBtnDow mb-3">
+    <div class="divBtnDow">
       <AppBtn variant="success" class="btnsend"> <Fa icon="paper-plane"/></AppBtn>
 
       <AppBtn> <Fa icon="download"/></AppBtn>

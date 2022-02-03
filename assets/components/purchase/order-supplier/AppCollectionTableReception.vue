@@ -2,11 +2,12 @@
 
 import {
   useNamespacedActions,
-  useNamespacedGetters
+  useNamespacedGetters,useNamespacedState
 } from 'vuex-composition-helpers'
 import {useRoute} from 'vue-router'
 import {onMounted} from 'vue'
 import type {Actions,Getters} from '../../../store/supplierItems'
+import type {State} from '../../../store/supplierItems/supplierItem'
 
 const route = useRoute()
 const fields: FormField[] =
@@ -34,6 +35,8 @@ const fields: FormField[] =
 
 const fetchItem = useNamespacedActions<Actions>('supplierItems', ['fetchItem'])['fetchItem']
 const {items} = useNamespacedGetters<Getters>('supplierItems', ['items'])
+//const items = useNamespacedState<State>('supplierItems', ['list']).list
+
 onMounted(async () => {
   await fetchItem()
 })

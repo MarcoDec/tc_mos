@@ -6,3 +6,4 @@ export const AppCollectionTableGestion = defineAsyncComponent<Component>(async (
 export const AppCollectionTableQte = defineAsyncComponent<Component>(async () => import('./AppCollectionTableQte.vue'))
 export const AppCollectionTableReception = defineAsyncComponent<Component>(async () => import('./AppCollectionTableReception.vue'))
 export const AppCollectionTableEchange = defineAsyncComponent<Component>(async () => import('./AppCollectionTableEchange.vue'))
+export const AppIframe = defineAsyncComponent<Component>(async () => import('./AppIframe.vue'))
