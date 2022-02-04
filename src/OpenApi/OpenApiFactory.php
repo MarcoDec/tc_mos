@@ -17,10 +17,7 @@ use ApiPlatform\Core\OpenApi\Model\Components;
 use ApiPlatform\Core\OpenApi\Model\Contact;
 use ApiPlatform\Core\OpenApi\Model\Info;
 use ApiPlatform\Core\OpenApi\Model\License;
-use ApiPlatform\Core\OpenApi\Model\OAuthFlow;
-use ApiPlatform\Core\OpenApi\Model\OAuthFlows;
 use ApiPlatform\Core\OpenApi\Model\Paths;
-use ApiPlatform\Core\OpenApi\Model\SecurityScheme;
 use ApiPlatform\Core\OpenApi\Model\Server;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\OpenApi\Options;
@@ -30,7 +27,6 @@ use App\OpenApi\Factory\ItemPaths;
 use App\OpenApi\Factory\Links;
 use ArrayObject;
 use JetBrains\PhpStorm\Pure;
-use LogicException;
 use Psr\Container\ContainerInterface;
 
 final class OpenApiFactory implements OpenApiFactoryInterface {
@@ -94,18 +90,11 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             ))->collect($paths, $schemas);
         }
 
-        $securitySchemes = $this->getSecuritySchemes();
-        $securityRequirements = [];
-        foreach (array_keys($securitySchemes) as $key) {
-            $securityRequirements[] = [$key => []];
-        }
-
         return new OpenApi(
             info: $this->getInfo(),
             servers: $servers,
             paths: $paths,
-            components: new Components(schemas: $schemas, securitySchemes: new ArrayObject($securitySchemes)),
-            security: $securityRequirements
+            components: new Components($schemas)
         );
     }
 
@@ -137,62 +126,5 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         return $this->openApiOptions->getLicenseName() === null
             ? null
             : new License($this->openApiOptions->getLicenseName(), $this->openApiOptions->getLicenseUrl());
-    }
-
-    private function getOauthSecurityScheme(): SecurityScheme {
-        $oauthFlow = new OAuthFlow(
-            authorizationUrl: $this->openApiOptions->getOAuthAuthorizationUrl(),
-            tokenUrl: $this->openApiOptions->getOAuthTokenUrl(),
-            refreshUrl: $this->openApiOptions->getOAuthRefreshUrl(),
-            scopes: new ArrayObject($this->openApiOptions->getOAuthScopes())
-        );
-        $description = sprintf(
-            'OAuth 2.0 %s Grant',
-            strtolower(preg_replace('/[A-Z]/', ' \\0', lcfirst($this->openApiOptions->getOAuthFlow() ?? '')) ?? '')
-        );
-        $implicit = $password = $clientCredentials = $authorizationCode = null;
-        switch ($this->openApiOptions->getOAuthFlow()) {
-            case 'implicit':
-                $implicit = $oauthFlow;
-                break;
-            case 'password':
-                $password = $oauthFlow;
-                break;
-            case 'application':
-            case 'clientCredentials':
-                $clientCredentials = $oauthFlow;
-                break;
-            case 'accessCode':
-            case 'authorizationCode':
-                $authorizationCode = $oauthFlow;
-                break;
-            default:
-                throw new LogicException('OAuth flow must be one of: implicit, password, clientCredentials, authorizationCode');
-        }
-        return new SecurityScheme(
-            type: $this->openApiOptions->getOAuthType(),
-            description: $description,
-            name: null,
-            in: null,
-            scheme: null,
-            bearerFormat: null,
-            flows: new OAuthFlows($implicit, $password, $clientCredentials, $authorizationCode),
-            openIdConnectUrl: null
-        );
-    }
-
-    /**
-     * @return array<string, SecurityScheme>
-     */
-    private function getSecuritySchemes(): array {
-        $securitySchemes = ['cookieAuth' => new SecurityScheme(type: 'apiKey', name: 'PHPSESSID', in: 'cookie')];
-        if ($this->openApiOptions->getOAuthEnabled()) {
-            $securitySchemes['oauth'] = $this->getOauthSecurityScheme();
-        }
-        foreach ($this->openApiOptions->getApiKeys() as $key => $apiKey) {
-            $description = sprintf('Value for the %s %s parameter.', $apiKey['name'], $apiKey['type']);
-            $securitySchemes[$key] = new SecurityScheme('apiKey', $description, $apiKey['name'], $apiKey['type']);
-        }
-        return $securitySchemes;
     }
 }

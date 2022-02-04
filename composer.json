@@ -43,7 +43,7 @@
     "symfony/polyfill-php72": "*"
   },
   "require": {
-    "php": "8.0.*",
+    "php": "^8.0",
     "ext-ctype": "*",
     "ext-iconv": "*",
     "api-platform/core": "^2.6",
