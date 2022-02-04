@@ -84,9 +84,6 @@ services:
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
 
-  App\OpenApi\Factory\SchemaFactory:
-    decorates: api_platform.json_schema.schema_factory
-
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
