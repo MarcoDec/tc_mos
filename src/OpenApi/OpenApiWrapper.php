@@ -1,5 +1,7 @@
 <?php
 
+namespace App\OpenApi;
+
 use ApiPlatform\Core\OpenApi\Model\Operation;
 use ApiPlatform\Core\OpenApi\Model\PathItem;
 use ApiPlatform\Core\OpenApi\Model\Paths;
@@ -7,6 +9,7 @@ use ApiPlatform\Core\OpenApi\Model\RequestBody;
 use ApiPlatform\Core\OpenApi\Model\Response;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
+use ArrayObject;
 use JetBrains\PhpStorm\Pure;
 
 final class OpenApiWrapper {
