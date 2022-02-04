@@ -13,6 +13,7 @@ use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use ApiPlatform\Core\OpenApi\Model\Parameter;
 use ApiPlatform\Core\OpenApi\Model\Response;
 use ApiPlatform\Core\PathResolver\OperationPathResolverInterface;
+use JetBrains\PhpStorm\Pure;
 
 final class ItemOperation extends Operation {
     public function __construct(
@@ -40,6 +41,19 @@ final class ItemOperation extends Operation {
             resourceClass: $resourceClass,
             resourceMetadata: $resourceMetadata
         );
+    }
+
+    /**
+     * @param Parameter[] $parameters
+     */
+    #[Pure]
+    private static function notHasParameter(Parameter $parameter, array $parameters): bool {
+        foreach ($parameters as $existed) {
+            if ($existed->getName() === $parameter->getName() && $existed->getIn() === $parameter->getIn()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected function getIdentifiers(): array {

@@ -23,7 +23,6 @@ abstract class Paths {
         protected OperationPathResolverInterface $operationPathResolver,
         protected PropertyMetadataFactoryInterface $propertyMetadataFactory,
         protected PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory,
-        protected string $resourceClass,
         protected ResourceMetadata $resourceMetadata
     ) {
     }

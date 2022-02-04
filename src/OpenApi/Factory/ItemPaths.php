@@ -22,7 +22,7 @@ final class ItemPaths extends Paths {
         OperationPathResolverInterface $operationPathResolver,
         PropertyMetadataFactoryInterface $propertyMetadataFactory,
         PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory,
-        string $resourceClass,
+        private string $resourceClass,
         ResourceMetadata $resourceMetadata
     ) {
         parent::__construct(
@@ -32,7 +32,6 @@ final class ItemPaths extends Paths {
             operationPathResolver: $operationPathResolver,
             propertyMetadataFactory: $propertyMetadataFactory,
             propertyNameCollectionFactory: $propertyNameCollectionFactory,
-            resourceClass: $resourceClass,
             resourceMetadata: $resourceMetadata
         );
     }

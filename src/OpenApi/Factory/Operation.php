@@ -11,7 +11,6 @@ use ApiPlatform\Core\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Property\Factory\PropertyNameCollectionFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use ApiPlatform\Core\OpenApi\Model;
-use ApiPlatform\Core\OpenApi\Model\Parameter;
 use ApiPlatform\Core\PathResolver\OperationPathResolverInterface;
 use ArrayObject;
 use JetBrains\PhpStorm\ArrayShape;
@@ -33,7 +32,7 @@ abstract class Operation {
         private SchemaFactoryInterface $jsonSchemaFactory,
         private Links $links,
         protected array $operation,
-        protected string $operationName,
+        private string $operationName,
         private OperationPathResolverInterface $operationPathResolver,
         private PropertyMetadataFactoryInterface $propertyMetadataFactory,
         private PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory,
@@ -41,18 +40,6 @@ abstract class Operation {
         protected ResourceMetadata $resourceMetadata
     ) {
         $this->schema = new Schema('openapi');
-    }
-
-    /**
-     * @param mixed[] $parameters
-     */
-    protected static function notHasParameter(Parameter $parameter, array $parameters): bool {
-        foreach ($parameters as $existed) {
-            if ($existed->getName() === $parameter->getName() && $existed->getIn() === $parameter->getIn()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
