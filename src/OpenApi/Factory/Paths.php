@@ -44,10 +44,9 @@ abstract class Paths {
         $item = new Model\PathItem();
         $path = null;
         foreach ($this->getOperations() as $operationName => $operation) {
-            if (($model = $this->createOperation($operation, $operationName))->isNotHidden()) {
-                $item = $item->{'with'.ucfirst($model->getMethod())}($model->create($schemas));
-                $path = $model->getPath();
-            }
+            $model = $this->createOperation($operation, $operationName);
+            $item = $item->{'with'.ucfirst($model->getMethod())}($model->create($schemas));
+            $path = $model->getPath();
         }
         if (!empty($path)) {
             $paths->addPath($path, $item);

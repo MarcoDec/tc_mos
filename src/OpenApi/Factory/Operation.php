@@ -112,10 +112,6 @@ abstract class Operation {
         return str_starts_with($path, '/') ? $path : "/$path";
     }
 
-    public function isNotHidden(): bool {
-        return $this->getSummary() !== 'hidden';
-    }
-
     /**
      * @return Model\Response[]
      */
