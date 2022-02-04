@@ -244,7 +244,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     private ?Family $family;
 
     #[
-        ApiProperty(description: 'Volume prévisionnel'),
+        ApiProperty(description: 'Volume prévisionnel', example: ['code' => 'h', 'value' => .5]),
         AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['create:product', 'read:product'])
