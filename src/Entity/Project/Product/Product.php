@@ -27,6 +27,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -406,7 +407,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private Measure $weight;
 
-    final public function __construct() {
+    public function __construct() {
         $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
         $this->currentPlace = new CurrentPlace();
@@ -573,6 +574,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getWeight(): Measure {
         return $this->weight;
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
     }
 
     final public function isManagedCopper(): bool {

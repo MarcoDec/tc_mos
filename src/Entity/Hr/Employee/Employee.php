@@ -71,7 +71,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     private ?string $username = null;
 
     #[Pure]
-    final public function __construct() {
+    public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
     }

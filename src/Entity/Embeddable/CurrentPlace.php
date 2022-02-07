@@ -46,6 +46,8 @@ abstract class CurrentPlace {
 
     abstract public function getTrafficLight(): int;
 
+    abstract public function isDeletable(): bool;
+
     final public function getDate(): ?DateTimeImmutable {
         return $this->date;
     }
