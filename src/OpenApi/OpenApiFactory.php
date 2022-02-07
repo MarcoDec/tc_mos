@@ -71,7 +71,24 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         $servers = '/' === $baseUrl || '' === $baseUrl ? [new Model\Server('/')] : [new Model\Server($baseUrl)];
         $paths = new Model\Paths();
         $links = [];
-        $schemas = new ArrayObject();
+        /** @var ArrayObject<string, ArrayObject<string, mixed>> $schemas */
+        $schemas = new ArrayObject([
+            'Auth' => new ArrayObject([
+                'properties' => [
+                    'password' => [
+                        'description' => 'mot de passe',
+                        'example' => 'super',
+                        'type' => 'string'
+                    ],
+                    'username' => [
+                        'description' => 'identifiant',
+                        'example' => 'super',
+                        'type' => 'string'
+                    ]
+                ],
+                'type' => 'object'
+            ])
+        ]);
 
         foreach ($this->resourceNameCollectionFactory->create() as $resourceClass) {
             $resourceMetadata = $this->resourceMetadataFactory->create($resourceClass);
