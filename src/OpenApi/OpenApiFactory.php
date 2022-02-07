@@ -473,7 +473,11 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     private function getSecuritySchemes(): array {
         $securitySchemes = [];
 
-        foreach ($this->openApiOptions->getApiKeys() as $key => $apiKey) {
+        $apiKeys = array_merge(
+            $this->openApiOptions->getApiKeys(),
+            [['name' => 'PHPSESSID', 'type' => 'cookie']]
+        );
+        foreach ($apiKeys as $key => $apiKey) {
             $description = sprintf('Value for the %s %s parameter.', $apiKey['name'], $apiKey['type']);
             $securitySchemes[$key] = new Model\SecurityScheme('apiKey', $description, $apiKey['name'], $apiKey['type']);
         }
