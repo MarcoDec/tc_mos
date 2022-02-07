@@ -119,7 +119,8 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     500 => new Model\Response(description: 'Internal Server Error')
                 ],
                 summary: 'Déconnexion',
-                description: 'Déconnexion'
+                description: 'Déconnexion',
+                security: [['cookieAuth' => []]]
             )
         ));
         $links = [];
@@ -153,26 +154,15 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         }
 
         $securitySchemes = $this->getSecuritySchemes();
-        $securityRequirements = [];
-
-        foreach (array_keys($securitySchemes) as $key) {
-            $securityRequirements[] = [$key => []];
-        }
 
         return new OpenApi(
-            $info,
-            $servers,
-            $paths,
-            new Model\Components(
-                $schemas,
-                new ArrayObject(),
-                new ArrayObject(),
-                new ArrayObject(),
-                new ArrayObject(),
-                new ArrayObject(),
-                new ArrayObject($securitySchemes)
-            ),
-            $securityRequirements
+            info: $info,
+            servers: $servers,
+            paths: $paths,
+            components: new Model\Components(
+                schemas: $schemas,
+                securitySchemes: new ArrayObject($securitySchemes)
+            )
         );
     }
 
@@ -370,7 +360,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 $requestBody = new Model\RequestBody(sprintf('The %s %s resource', 'POST' === $method ? 'new' : 'updated', $resourceShortName), $this->buildContent($requestMimeTypes, $operationInputSchemas), true);
             }
 
-            $pathItem = $pathItem->{'with'.ucfirst($method)}(new Model\Operation(
+            $modelOperation = new Model\Operation(
                 $operationId,
                 $operation['openapi_context']['tags'] ?? (OperationType::SUBRESOURCE === $operationType ? $operation['shortNames'] : [$resourceShortName]),
                 $responses,
@@ -384,7 +374,9 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 $operation['openapi_context']['security'] ?? null,
                 $operation['openapi_context']['servers'] ?? null,
                 array_filter($operation['openapi_context'] ?? [], static fn ($item) => preg_match('/^x-.*$/i', $item), ARRAY_FILTER_USE_KEY)
-            ));
+            );
+
+            $pathItem = $pathItem->{'with'.ucfirst($method)}($modelOperation->withSecurity([['cookieAuth' => []]]));
 
             $paths->addPath($path, $pathItem);
         }
@@ -562,7 +554,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
 
         $apiKeys = array_merge(
             $this->openApiOptions->getApiKeys(),
-            [['name' => 'PHPSESSID', 'type' => 'cookie']]
+            ['cookieAuth' => ['name' => 'PHPSESSID', 'type' => 'cookie']]
         );
         foreach ($apiKeys as $key => $apiKey) {
             $description = sprintf('Value for the %s %s parameter.', $apiKey['name'], $apiKey['type']);
