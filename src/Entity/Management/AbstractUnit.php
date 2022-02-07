@@ -158,7 +158,9 @@ abstract class AbstractUnit extends Entity {
      * @return LaravelCollection<int, self>
      */
     private function getFamily(): LaravelCollection {
-        return $this->getRoot()->getDepthChildren();
+        $root = $this->getRoot();
+        /** @phpstan-ignore-next-line */
+        return $root->getDepthChildren()->push($root)->unique->getId()->values();
     }
 
     private function getLess(self $unit): self {
