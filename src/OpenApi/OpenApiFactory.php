@@ -32,6 +32,7 @@ use function is_string;
 use JetBrains\PhpStorm\Pure;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\PropertyInfo\Type;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use UnexpectedValueException;
 
 final class OpenApiFactory implements OpenApiFactoryInterface {
@@ -55,7 +56,8 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         private PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory,
         private ResourceMetadataFactoryInterface $resourceMetadataFactory,
         private ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
-        private SubresourceOperationFactoryInterface $subresourceOperationFactory
+        private SubresourceOperationFactoryInterface $subresourceOperationFactory,
+        private UrlGeneratorInterface $urlGenerator
     ) {
         $this->setFilterLocator($filterLocator, true);
     }
@@ -70,6 +72,47 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         $info = new Model\Info($this->openApiOptions->getTitle(), $this->openApiOptions->getVersion(), trim($this->openApiOptions->getDescription()), $this->openApiOptions->getTermsOfService(), $contact, $license);
         $servers = '/' === $baseUrl || '' === $baseUrl ? [new Model\Server('/')] : [new Model\Server($baseUrl)];
         $paths = new Model\Paths();
+        $paths->addPath($this->getLogin(), new PathItem(
+            post: new Model\Operation(
+                operationId: 'login',
+                tags: ['Auth'],
+                responses: [
+                    200 => new Model\Response(
+                        description: 'Utilisateur connecté',
+                        content: new ArrayObject([
+                            'application/ld+json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/Employee.jsonld-Employee-read'
+                                ]
+                            ]
+                        ])
+                    )
+                ],
+                summary: 'Connexion',
+                description: 'Connexion',
+                requestBody: new Model\RequestBody(
+                    description: 'Identifiants',
+                    content: new ArrayObject([
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/Auth'
+                            ]
+                        ]
+                    ])
+                )
+            )
+        ));
+        $paths->addPath($this->getLogout(), new PathItem(
+            post: new Model\Operation(
+                operationId: 'logout',
+                tags: ['Auth'],
+                responses: [
+                    204 => new Model\Response(description: 'Déconnexion réussie')
+                ],
+                summary: 'Déconnexion',
+                description: 'Déconnexion'
+            )
+        ));
         $links = [];
         /** @var ArrayObject<string, ArrayObject<string, mixed>> $schemas */
         $schemas = new ArrayObject([
@@ -401,6 +444,14 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             null,
             1 === count($parameters) ? sprintf('The `%1$s` value returned in the response can be used as the `%1$s` parameter in `GET %2$s`.', key($parameters), $path) : sprintf('The values returned in the response can be used in `GET %s`.', $path)
         );
+    }
+
+    private function getLogin(): string {
+        return $this->urlGenerator->generate('login');
+    }
+
+    private function getLogout(): string {
+        return $this->urlGenerator->generate('logout');
     }
 
     /**
