@@ -210,6 +210,10 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
 
         $rootResourceClass = $resourceClass;
         foreach ($operations as $operationName => $operation) {
+            if (isset($operation['openapi_context']['summary']) && $operation['openapi_context']['summary'] === 'hidden') {
+                continue;
+            }
+
             if (OperationType::COLLECTION === $operationType && !$resourceMetadata->getItemOperations()) {
                 $identifiers = [];
             } else {
