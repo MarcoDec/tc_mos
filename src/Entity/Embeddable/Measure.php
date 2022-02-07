@@ -2,7 +2,6 @@
 
 namespace App\Entity\Embeddable;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Management\Unit;
 use Doctrine\ORM\Mapping as ORM;
 use LogicException;
@@ -11,14 +10,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[ORM\Embeddable]
 class Measure {
     #[
-        ApiProperty(description: 'Code ', example: 'g'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Dénominateur ', example: 'm'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
@@ -28,7 +25,6 @@ class Measure {
     private ?Unit $unit = null;
 
     #[
-        ApiProperty(description: 'Valeur', example: '2.66'),
         ORM\Column(options: ['default' => 0]),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]

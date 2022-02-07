@@ -127,16 +127,81 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         /** @var ArrayObject<string, ArrayObject<string, mixed>> $schemas */
         $schemas = new ArrayObject([
             'Auth' => new ArrayObject([
+                'description' => 'Authentification',
                 'properties' => [
                     'password' => [
-                        'description' => 'mot de passe',
+                        'description' => 'Mot de passe',
                         'example' => 'super',
                         'type' => 'string'
                     ],
                     'username' => [
-                        'description' => 'identifiant',
+                        'description' => 'Identifiant',
                         'example' => 'super',
                         'type' => 'string'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-duration' => new ArrayObject([
+                'description' => 'Temps',
+                'properties' => [
+                    'code' => [
+                        'description' => 'Code',
+                        'example' => 's',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-mass' => new ArrayObject([
+                'description' => 'Masse',
+                'properties' => [
+                    'code' => [
+                        'description' => 'Code',
+                        'example' => 'kg',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-price' => new ArrayObject([
+                'description' => 'Prix',
+                'properties' => [
+                    'code' => [
+                        'description' => 'Code',
+                        'example' => '€',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-unitary' => new ArrayObject([
+                'description' => 'Unitaire',
+                'properties' => [
+                    'code' => [
+                        'description' => 'Code',
+                        'example' => 'U',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
                     ]
                 ],
                 'type' => 'object'
