@@ -61,7 +61,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Créer un produit',
                     'summary' => 'Créer un produit'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validation_groups' => ['Product-create']
             ]
         ],
         itemOperations: [
@@ -186,7 +187,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
-        Assert\NotBlank,
+        Assert\NotBlank(groups: ['Product-create']),
         ORM\Column,
         Serializer\Groups(['create:product', 'read:product', 'write:product', 'write:product:admin'])
     ]
@@ -230,7 +231,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
-        Assert\DateTime,
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection'])
     ]
@@ -245,7 +245,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Volume prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        AppAssert\Measure,
+        AppAssert\Measure(groups: ['Product-create']),
         ORM\Embedded,
         Serializer\Groups(['create:product', 'read:product'])
     ]
@@ -260,7 +260,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
-        Assert\Length(max: 255),
+        Assert\Length(max: 255, groups: ['Product-create']),
         ORM\Column(name: '`index`'),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
@@ -277,7 +277,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Type', example: self::KIND_PROTOTYPE, openapiContext: ['enum' => self::PRODUCT_KINDS]),
-        Assert\Choice(choices: self::PRODUCT_KINDS),
+        Assert\Choice(choices: self::PRODUCT_KINDS, groups: ['Product-create']),
         ORM\Column(options: ['default' => self::KIND_PROTOTYPE]),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
     ]
@@ -336,7 +336,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Conditionnement', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        AppAssert\Measure,
+        AppAssert\Measure(groups: ['Product-create']),
         ORM\Embedded,
         Serializer\Groups(['create:product', 'read:product'])
     ]
@@ -344,7 +344,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Type de packaging'),
-        Assert\Length(max: 255),
+        Assert\Length(max: 255, groups: ['Product-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:product', 'read:product'])
     ]
