@@ -39,6 +39,7 @@ services:
     class: App\OpenApi\OpenApiFactory
 
   App\Doctrine\ORM\Decorator\EntityManagerDecorator:
+    autoconfigure: false
     decorates: doctrine.orm.default_entity_manager
 
   App\EventListener\DeserializeListener:
@@ -83,6 +84,12 @@ services:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
+
+  App\OpenApi\SchemaFactory:
+    arguments:
+      $dashGenerator: '@api_platform.path_segment_name_generator.dash'
+    autoconfigure: false
+    decorates: api_platform.hydra.json_schema.schema_factory
 
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
