@@ -583,7 +583,8 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      */
     private function getPath(string $resourceShortName, array $operation, string $operationType): string {
         $path = removeEnd($this->operationPathResolver->resolveOperationPath($resourceShortName, $operation, $operationType), '.{_format}');
-        return str_starts_with($path, '/') ? $path : '/'.$path;
+        $path = str_starts_with($path, '/') ? $path : "/$path";
+        return str_starts_with($path, '/api') ? $path : "/api$path";
     }
 
     private function getPathDescription(string $resourceShortName, string $method, string $operationType): string {
