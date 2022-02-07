@@ -86,7 +86,11 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                                 ]
                             ]
                         ])
-                    )
+                    ),
+                    400 => new Model\Response(description: 'Bad request'),
+                    401 => new Model\Response(description: 'Unauthorized'),
+                    405 => new Model\Response(description: 'Method Not Allowed'),
+                    500 => new Model\Response(description: 'Internal Server Error')
                 ],
                 summary: 'Connexion',
                 description: 'Connexion',
@@ -107,7 +111,12 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 operationId: 'logout',
                 tags: ['Auth'],
                 responses: [
-                    204 => new Model\Response(description: 'Déconnexion réussie')
+                    204 => new Model\Response(description: 'Déconnexion réussie'),
+                    400 => new Model\Response(description: 'Bad request'),
+                    401 => new Model\Response(description: 'Unauthorized'),
+                    403 => new Model\Response(description: 'Forbidden'),
+                    405 => new Model\Response(description: 'Method Not Allowed'),
+                    500 => new Model\Response(description: 'Internal Server Error')
                 ],
                 summary: 'Déconnexion',
                 description: 'Déconnexion'
@@ -247,7 +256,13 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             }
 
             $parameters = [];
-            $responses = [];
+            $responses = [
+                400 => new Model\Response(description: 'Bad request'),
+                401 => new Model\Response(description: 'Unauthorized'),
+                403 => new Model\Response(description: 'Forbidden'),
+                405 => new Model\Response(description: 'Method Not Allowed'),
+                500 => new Model\Response(description: 'Internal Server Error')
+            ];
 
             if ($operation['openapi_context']['parameters'] ?? false) {
                 foreach ($operation['openapi_context']['parameters'] as $parameter) {
