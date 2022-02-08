@@ -130,7 +130,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
                 'path' => '/products/{id}/promote/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validate' => false
             ],
             'upgrade' => [
                 'controller' => PlaceholderAction::class,
