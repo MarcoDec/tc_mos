@@ -145,7 +145,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Évolue le produit au prochain indice'
                 ],
                 'path' => '/products/{id}/upgrade',
-                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validate' => false
             ]
         ],
         attributes: [
