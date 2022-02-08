@@ -308,6 +308,9 @@
     "sebastian/version": {
         "version": "3.0.2"
     },
+    "sidus/doctrine-debug-bundle": {
+        "version": "v1.0.2"
+    },
     "symfony/asset": {
         "version": "v5.3.11"
     },

@@ -79,7 +79,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Clone un produit',
                 ],
                 'path' => '/products/{id}/clone',
-                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validate' => false
             ],
             'delete' => [
                 'openapi_context' => [
@@ -426,6 +427,12 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->transfertPriceSupplies = new Measure();
         $this->transfertPriceWork = new Measure();
         $this->weight = new Measure();
+    }
+
+    public function __clone() {
+        parent::__clone();
+        $this->children = new ArrayCollection();
+        $this->parent = null;
     }
 
     final public static function getBarCodeTableNumber(): string {
