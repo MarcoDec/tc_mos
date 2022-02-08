@@ -4,10 +4,9 @@
 
     const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
     const props = withDefaults(
-        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize}>(),
+        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize, disabled: boolean}>(),
         {modelValue: null, size: 'sm'}
     )
-
     const sizeClass = computed(() => `form-control-${props.size}`)
     const type = computed(() => props.field.type ?? 'text')
 
@@ -17,5 +16,15 @@
 </script>
 
 <template>
-    <input :class="sizeClass" :name="field.name" :type="type" :value="modelValue" class="form-control" @input="input"/>
+    <input
+        :id="field.id"
+        :class="sizeClass"
+        :name="field.name"
+        :placeholder="field.label"
+        :type="type"
+        :value="modelValue"
+        :disabled="disabled"
+        autocomplete="off"
+        class="form-control"
+        @input="input"/>
 </template>
