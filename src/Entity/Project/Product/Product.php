@@ -110,7 +110,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie un produit'
                 ],
                 'path' => '/products/{id}/{process}',
-                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
                 'controller' => PlaceholderAction::class,
@@ -191,7 +192,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
-        Assert\NotBlank(groups: ['Product-create']),
+        Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
         ORM\Column,
         Serializer\Groups(['create:product', 'read:product', 'write:product', 'write:product:admin'])
     ]
@@ -264,7 +265,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
-        Assert\Length(max: 255, groups: ['Product-create']),
+        Assert\Length(max: 255, groups: ['Product-admin', 'Product-create']),
         ORM\Column(name: '`index`'),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
@@ -281,7 +282,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Type', example: self::KIND_PROTOTYPE, openapiContext: ['enum' => self::PRODUCT_KINDS]),
-        Assert\Choice(choices: self::PRODUCT_KINDS, groups: ['Product-create']),
+        Assert\Choice(choices: self::PRODUCT_KINDS, groups: ['Product-admin', 'Product-create']),
         ORM\Column(options: ['default' => self::KIND_PROTOTYPE]),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
     ]
