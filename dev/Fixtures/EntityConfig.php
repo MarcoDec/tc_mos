@@ -21,8 +21,8 @@ final class EntityConfig {
     private array $properties;
 
     /**
-     * @param ClassMetadata<object>                                                                                                                    $metadata
-     * @param array{deleted?: string, properties: array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}} $config
+     * @param ClassMetadata<object>                                                                                                                                    $metadata
+     * @param array{deleted?: string, properties: array{country?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}} $config
      */
     public function __construct(
         private Configurations $configurations,
@@ -33,9 +33,9 @@ final class EntityConfig {
         $this->deleted = $config['deleted'] ?? null;
         $this->entities = collect();
         $this->properties = collect($config['properties'])
-            ->map(static function (array $config, string $property): PropertyConfig {
+            ->map(static function (array $config): PropertyConfig {
                 /** @var array{new_name: string, new_ref?: class-string, old_ref?: string} $config */
-                return new PropertyConfig($property, $config);
+                return new PropertyConfig($config);
             })
             ->all();
     }
@@ -60,7 +60,7 @@ final class EntityConfig {
         return $this->metadata->getName();
     }
 
-    public function getId(string $id): ?int {
+    public function getId(int $id): ?int {
         return $this->ids[$id] ?? null;
     }
 

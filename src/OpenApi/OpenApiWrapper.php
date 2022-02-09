@@ -129,7 +129,7 @@ final class OpenApiWrapper {
     }
 
     /**
-     * @param array{properties: mixed[], type: string} $params
+     * @param array{properties: mixed[], required?: string[], type: string} $params
      */
     public function createSchema(string $name, array $params): self {
         $this->api->getComponents()->getSchemas()[$name] = new ArrayObject($params);

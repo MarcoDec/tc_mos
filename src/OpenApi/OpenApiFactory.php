@@ -63,7 +63,8 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         'type' => 'string'
                     ]
                 ],
-                'required' => ['code', 'message', 'propertyPath']
+                'required' => ['code', 'message', 'propertyPath'],
+                'type' => 'object',
             ])
             ->createSchema('Violations', [
                 'properties' => [

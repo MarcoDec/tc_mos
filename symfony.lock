@@ -20,6 +20,15 @@
             "ref": "bbc1dbabe95240a0988959e1ded978725692bcfa"
         }
     },
+    "phpstan/extension-installer": {
+        "version": "1.1.0"
+    },
+    "phpstan/phpstan": {
+        "version": "1.4.6"
+    },
+    "phpstan/phpstan-symfony": {
+        "version": "1.1.5"
+    },
     "ronanguilloux/isocodes": {
         "version": "2.3.5"
     },

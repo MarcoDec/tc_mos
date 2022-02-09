@@ -21,8 +21,8 @@ final class Configurations {
     }
 
     /**
-     * @param class-string                                                                                                                             $entity
-     * @param array{deleted?: string, properties: array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}} $config
+     * @param class-string                                                                                                                                             $entity
+     * @param array{deleted?: string, properties: array{country?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}} $config
      */
     public function addConfig(string $name, string $entity, array $config): void {
         $this->configurations[$name] = new EntityConfig(
@@ -57,7 +57,7 @@ final class Configurations {
         return $this->countries[$id] ?? null;
     }
 
-    public function getId(string $name, string $id): ?int {
+    public function getId(string $name, int $id): ?int {
         return $this->configurations[$name]->getId($id);
     }
 
