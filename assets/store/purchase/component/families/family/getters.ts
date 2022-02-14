@@ -1,31 +1,34 @@
-import type {ReadGetters as RootGetters, ReadState as RootState} from '../../../..'
-import type {DeepReadonly} from '../../../../../types/types'
+import type {RootComputedGetters, State as RootState, ComputedGetters as VueComputedGetters} from '../../../..'
+import type {FormOption} from '../../../../../types/bootstrap-5'
 import type {State} from '.'
-import type {TreeItem} from '../../../../../types/tree'
+import {get} from 'lodash'
 
-export type Getters = {
-    children: (state: State, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => number[]
-    childrenTree: (state: State, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => TreeItem[]
-    fullName: (state: State, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => string
-    root: (state: State) => boolean
-    tree: (state: State, computed: GettersValues) => TreeItem
+export declare type Getters = {
+    children: (state: State, computed: ComputedGetters, rootState: RootState, rootGetters: RootComputedGetters) => string[]
+    fullName: (state: State, computed: ComputedGetters, rootState: RootState, rootGetters: RootComputedGetters) => string
+    hasChildren: (state: State, computed: ComputedGetters) => boolean
+    label: (state: State) => string
+    option: (state: State, computed: ComputedGetters) => FormOption
 }
 
-type GettersValues = DeepReadonly<{[key in keyof Getters]: ReturnType<Getters[key]>}>
+export declare type ComputedGetters = VueComputedGetters<Getters, State>
 
 export const getters: Getters = {
-    children: (state, computed, rootState, rootGetters) =>
-        (rootGetters['families/children'] as (id: string) => number[])(state['@id']),
-    childrenTree: (state, computed, rootState, rootGetters) =>
-        computed.children.map(child => rootGetters[`families/${child}/tree`] as TreeItem),
+    children(state, computed, rootState, rootGetters) {
+        const children: string[] = []
+        for (const family of (rootGetters[`${state.parentModuleName}/families`] as string[]))
+            if (state['@id'] === (get(rootState, `${family}/parent`.split('/')) as string))
+                children.push(get(rootState, `${family}/moduleName`.split('/')) as string)
+        return children
+    },
     fullName(state, computed, rootState, rootGetters) {
-        if (typeof state.parent !== 'undefined' && state.parent !== null) {
-            const parentFamily = (rootGetters['families/fullName'] as (id: string) => string | null)(state.parent)
-            if (parentFamily !== null)
-                return `${parentFamily}/${state.name}`
-        }
+        if (typeof state.parent === 'string' && state.parent !== '0')
+            for (const family of (rootGetters[`${state.parentModuleName}/families`] as string[]))
+                if (state.parent === (get(rootState, `${family}/@id`.split('/')) as string))
+                    return `${rootGetters[`${family}/fullName`] as string}/${state.name}`
         return state.name
     },
-    root: state => typeof state.parent === 'undefined' || state.parent === null,
-    tree: (state, computed) => ({children: computed.childrenTree as TreeItem[], id: state.id, label: state.name})
+    hasChildren: (state, computed) => computed.children.length > 0,
+    label: state => state.name,
+    option: (state, computed) => ({text: computed.fullName, value: state['@id']})
 }

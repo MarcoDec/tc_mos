@@ -1,10 +1,10 @@
 import * as Cookies from '../../cookie'
-import type {State} from '.'
+import type {ComputedGetters, State} from '.'
 import type {StoreActionContext} from '..'
 
-type ActionContext = StoreActionContext<State>
+declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
-type Login = Readonly<{username: string | null, password: string | null}>
+declare type Login = {username: string | null, password: string | null}
 
 export const actions = {
     async login({commit, dispatch}: ActionContext, {password, username}: Login): Promise<void> {
@@ -45,4 +45,4 @@ export const actions = {
     }
 }
 
-export type Actions = typeof actions
+export declare type Actions = typeof actions

@@ -1,28 +1,29 @@
 import type {Actions, StoreActionContext} from './actions'
-import type {ReadState, State} from './state'
-import type {DeepReadonly} from '../types/types'
+import type {GetterTree, Store, Module as VuexModule} from 'vuex'
 import type {Mutations} from './mutation'
 import type {State as Security} from './security'
-import type {Store} from 'vuex'
+import type {State} from './state'
+import type {ComputedGetters as VueComputedGetters} from '../types/vue'
 import {actions} from './actions'
 import {createStore} from 'vuex'
-import {families} from './purchase/component/families'
 import {generateSecurity} from './security'
 import {mutations} from './mutation'
 import {state} from './state'
 
-export type {Actions, ReadState, Mutations, State, StoreActionContext}
+export type {Actions, Mutations, State, StoreActionContext}
 
-export function generateStore(security: Readonly<Security>): Store<State> {
+export function generateStore(security: Security): Store<State> {
     return createStore<State>({
         actions,
-        modules: {families, security: generateSecurity(security)},
+        modules: {security: generateSecurity(security)},
         mutations,
         state,
         strict: process.env.NODE_ENV !== 'production'
     })
 }
 
-export type AppStore = ReturnType<typeof generateStore>
-export type Getters = AppStore['getters']
-export type ReadGetters = DeepReadonly<Getters>
+export declare type AppStore = ReturnType<typeof generateStore>
+export declare type Getters = GetterTree<State, State>
+export declare type ComputedGetters<G extends GetterTree<S, State>, S> = VueComputedGetters<G, S, State>
+export declare type RootComputedGetters = ComputedGetters<Getters, State>
+export declare type Module<S> = VuexModule<S, State>

@@ -5,15 +5,15 @@
 
     const form = ref<HTMLFormElement>()
     const emit = defineEmits<{
-        (e: 'submit', values: Readonly<FormData>): void
-        (e: 'update:modelValue', values: Readonly<FormValues>): void
+        (e: 'submit', values: FormData): void
+        (e: 'update:modelValue', values: FormValues): void
     }>()
     const props = withDefaults(
         defineProps<{fields: FormField[], id: string, modelValue?: FormValues}>(),
         {modelValue: () => ({})}
     )
 
-    function input(value: Readonly<{value: FormValue, name: string}>): void {
+    function input(value: {value: FormValue, name: string}): void {
         const cloned = clone(props.modelValue)
         cloned[value.name] = value.value
         emit('update:modelValue', cloned)

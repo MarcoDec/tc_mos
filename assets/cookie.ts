@@ -1,10 +1,8 @@
 import Cookies from 'js-cookie'
 
-const ONE_HOUR = 1
-
 function setExpirableCookie(name: string, value: string): void {
     const expires = new Date()
-    expires.setHours(expires.getHours() + ONE_HOUR)
+    expires.setHours(expires.getHours() + 1)
     Cookies.set(name, value, {expires})
 }
 

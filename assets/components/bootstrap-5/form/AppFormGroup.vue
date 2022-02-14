@@ -6,7 +6,7 @@
 
     const emit = defineEmits<{
         (e: 'update:modelValue', value: FormValue): void
-        (e: 'input', payload: Readonly<{value: FormValue, name: string}>): void
+        (e: 'input', payload: {value: FormValue, name: string}): void
     }>()
     const props = defineProps<{field: FormField, form: string, modelValue?: FormValue}>()
     const inputFields = computed<FormField>(() => ({

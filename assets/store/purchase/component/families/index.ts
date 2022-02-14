@@ -1,11 +1,12 @@
-import type {ReadState, State} from './state'
+import type {ComputedGetters, Getters} from './getters'
 import type {Actions} from './actions'
-import type {Getters} from './getters'
-import type {Module} from 'vuex'
-import type {State as RootState} from '../../..'
+import type {Module} from '../../../index'
+import type {State} from './state'
 import {actions} from './actions'
 import {getters} from './getters'
 
-export type {Actions, Getters, ReadState, State}
+export type {Actions, ComputedGetters, Getters, State}
 
-export const families: Module<State, RootState> = {actions, getters, namespaced: true}
+export function generateFamilies(moduleName: [string, ...string[]]): Module<State> {
+    return {actions, getters, namespaced: true, state: {moduleName: moduleName.join('/')}}
+}

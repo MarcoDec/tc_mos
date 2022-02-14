@@ -1,5 +1,3 @@
-export type State = {
+export declare type State = {
     username: string | null
 }
-
-export type ReadState = Readonly<State>

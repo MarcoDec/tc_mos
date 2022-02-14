@@ -1,20 +1,16 @@
 <script lang="ts" setup>
-    import {computed, defineEmits, defineProps, ref} from 'vue'
-    import type {TreeItem} from '../../types/tree'
+    import {computed, defineProps} from 'vue'
+    import {useNamespacedMutations, useNamespacedState} from 'vuex-composition-helpers'
+    import type {Ref} from 'vue'
 
-    const emit = defineEmits<(e: 'click', opened: boolean) => void>()
-    defineProps<{item: TreeItem}>()
-
-    const opened = ref(false)
+    const props = defineProps<{modulePath: string}>()
+    const opened = useNamespacedState(props.modulePath, ['opened']).opened as Ref<boolean>
+    const toggle = useNamespacedMutations(props.modulePath, ['toggle']).toggle
     const chevron = computed(() => `chevron-${opened.value ? 'up' : 'down'}`)
-
-    function click(): void {
-        emit('click', opened.value = !opened.value)
-    }
 </script>
 
 <template>
-    <AppTreeItem :item="item" class="pointer" @click="click">
+    <AppTreeItem :module-path="modulePath" class="pointer" @click="toggle">
         <Fa :icon="chevron" class="me-2"/>
     </AppTreeItem>
 </template>

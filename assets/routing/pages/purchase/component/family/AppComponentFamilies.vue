@@ -1,20 +1,21 @@
 <script lang="ts" setup>
     import type {Actions, Getters} from '../../../../../store/purchase/component/families'
     import type {Violation, Violations} from '../../../../../types/types'
-    import {computed, onMounted, provide, ref} from 'vue'
+    import {onMounted, provide, ref} from 'vue'
     import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
     import type {FormField} from '../../../../../types/bootstrap-5'
 
     const {create, load} = useNamespacedActions<Actions>('families', ['create', 'load'])
-    const {options, tree} = useNamespacedGetters<Getters>('families', ['options', 'tree'])
-    const fields = computed<FormField[]>(() => [
+    const {options} = useNamespacedGetters<Getters>('families', ['options'])
+    const fields: FormField[] = [
         {label: 'Parent', name: 'parent', options: options.value, type: 'select'},
         {label: 'Code', name: 'code', type: 'text'},
         {label: 'Nom', name: 'name', type: 'text'},
         {label: 'Copperable', name: 'copperable', type: 'boolean'},
         {label: 'Customs Code', name: 'customsCode', type: 'text'},
         {label: 'file', name: 'file', type: 'file'}
-    ])
+    ]
+    const loaded = ref(false)
     const violations = ref<Violation[]>([])
 
     async function createHandler(body: FormData): Promise<void> {
@@ -29,8 +30,12 @@
         }
     }
 
+    provide('fields', fields)
     provide('violations', violations)
-    onMounted(load)
+    onMounted(async () => {
+        await load()
+        loaded.value = true
+    })
 </script>
 
 <template>
@@ -40,5 +45,5 @@
             Familles
         </h1>
     </AppRow>
-    <AppTreeRow id="component-families" :fields="fields" :item="tree" @create="createHandler"/>
+    <AppTreeRow v-if="loaded" id="component-families" @create="createHandler"/>
 </template>

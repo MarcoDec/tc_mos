@@ -11,7 +11,7 @@
     })
     const checkClass = computed(() => ({'form-check': !props.noLabel}))
 
-    function input(e: Readonly<Event>): void {
+    function input(e: Event): void {
         emit('update:modelValue', (e.target as HTMLInputElement).value)
     }
 </script>

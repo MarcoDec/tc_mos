@@ -1,48 +1,34 @@
-import type {ReadGetters as RootGetters, ReadState as RootState} from '../../..'
-import type {DeepReadonly} from '../../../../types/types'
-import type {State as Family} from './family'
-import type {FormOptions} from '../../../../types/bootstrap-5'
-import type {ReadState} from '.'
-import type {TreeItem} from '../../../../types/tree'
+import type {FormOption, FormOptions} from '../../../../types/bootstrap-5'
+import type {RootComputedGetters, State as RootState, ComputedGetters as VueComputedGetters} from '../../..'
+import type {State} from '.'
+import {get} from 'lodash'
 
-export type Getters = {
-    children: (state: ReadState) => (id: string) => number[]
-    families: (state: ReadState, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => number[]
-    find: (state: ReadState) => (id: string) => Family
-    fullName: (state: ReadState, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => (id: string) => string | null
-    options: (state: ReadState, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => FormOptions
-    tree: (state: ReadState, computed: GettersValues, rootState: RootState, rootGetters: RootGetters) => TreeItem
+export declare type Getters = {
+    families: (state: State) => string[]
+    options: (state: State, computed: ComputedGetters, rootState: RootState, rootGetters: RootComputedGetters) => FormOptions
+    selected: (state: State, computed: ComputedGetters, rootState: RootState) => string | null
 }
 
-type GettersValues = DeepReadonly<{[key in keyof Getters]: ReturnType<Getters[key]>}>
+export declare type ComputedGetters = VueComputedGetters<Getters, State>
 
 export const getters: Getters = {
-    children: state => (id: string): number[] => {
-        const children: number[] = []
+    families(state) {
+        const families = []
         for (const family of Object.values(state))
-            if (family.parent === id)
-                children.push(family.id)
-        return children
-    },
-    families: (state, computed, rootState, rootGetters) => {
-        const families: number[] = []
-        for (const family of Object.values(state))
-            if (rootGetters[`families/${family.id}/root`] as boolean)
-                families.push(family.id)
+            if (typeof family === 'object')
+                families.push(family.moduleName)
         return families
     },
-    find: state => (id: string): Family => state[id],
-    fullName: (state, computed, rootState, rootGetters) => (id: string): string | null => {
-        const parentFamily = Object.values(state).find(family => family['@id'] === id)
-        return parentFamily ? rootGetters[`families/${parentFamily.id}/fullName`] as string : null
+    options(state, computed, rootState, rootGetters) {
+        const options = []
+        for (const family of computed.families)
+            options.push(rootGetters[`${family}/option`] as FormOption)
+        return options.sort((a, b) => a.text.localeCompare(b.text))
     },
-    options: (state, computed, rootState, rootGetters) => Object.values(state).map(family => ({
-        text: rootGetters[`families/${family.id}/fullName`] as string,
-        value: family['@id']
-    })),
-    tree: (state, computed, rootState, rootGetters) => ({
-        children: computed.families.map(family => rootGetters[`families/${family}/tree`] as TreeItem),
-        id: 0,
-        label: 'Familles'
-    })
+    selected(state, computed, rootState) {
+        for (const family of computed.families)
+            if (get(rootState, `${family}/selected`.split('/')) as boolean)
+                return family
+        return null
+    }
 }

@@ -1,8 +1,8 @@
-import type {State} from '.'
+import type {ComputedGetters, State} from '.'
 import type {StoreActionContext} from '../../..'
 import {generateFamily} from './family'
 
-type ActionContext = StoreActionContext<State>
+declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
 export const actions = {
     async create({dispatch}: ActionContext, body: FormData): Promise<void> {
@@ -16,7 +16,7 @@ export const actions = {
             {root: true}
         )
     },
-    async load({dispatch}: ActionContext): Promise<void> {
+    async load({dispatch, state}: ActionContext): Promise<void> {
         const response = await dispatch(
             'fetchApi',
             {
@@ -26,15 +26,50 @@ export const actions = {
             },
             {root: true}
         )
-        const families = []
-        for (const family of response['hydra:member'])
+        const families: Promise<unknown>[] = [
+            dispatch(
+                'registerModule',
+                {
+                    module: generateFamily(
+                        `${state.moduleName}/0`,
+                        state.moduleName,
+                        {
+                            '@context': '',
+                            '@id': '0',
+                            '@type': '',
+                            id: 0,
+                            name: 'Familles'
+                        },
+                        {opened: true, selected: false}
+                    ),
+                    path: [state.moduleName, '0']
+                },
+                {root: true}
+            )
+        ]
+        for (const family of response['hydra:member']) {
+            const stateFamily = {...family}
+            if (typeof stateFamily.parent !== 'string')
+                stateFamily.parent = '0'
             families.push(dispatch(
                 'registerModule',
-                {module: generateFamily(family), path: ['families', family.id.toString()]},
+                {
+                    module: generateFamily(
+                        `${state.moduleName}/${stateFamily.id.toString()}`,
+                        state.moduleName,
+                        stateFamily
+                    ),
+                    path: [state.moduleName, stateFamily.id.toString()]
+                },
                 {root: true}
             ))
+        }
         await Promise.all(families)
+    },
+    async unselect({commit, getters}: ActionContext): Promise<void> {
+        for (const family of getters.families)
+            commit(`${family}/select`, false, {root: true})
     }
 }
 
-export type Actions = typeof actions
+export declare type Actions = typeof actions

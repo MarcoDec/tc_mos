@@ -1,4 +1,5 @@
-export type State = {
+export declare type State = {
+    [key: string]: unknown
     spinner: boolean
     status: number
     text: string | null
@@ -9,5 +10,3 @@ export const state: State = {
     status: 0,
     text: null
 }
-
-export type ReadState = Readonly<State>

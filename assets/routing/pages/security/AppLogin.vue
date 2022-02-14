@@ -20,7 +20,7 @@
 
 <template>
     <AppRow>
-        <AppCard class="bg-blue col">
+        <AppCard class="bg-blue col" title="Connexion">
             <AppForm id="login" v-model="formData" :fields="fields" @submit="handleClick">
                 <AppBtn type="submit">
                     Connexion

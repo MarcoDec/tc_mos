@@ -1,11 +1,19 @@
-import type {ReadState, State} from './state'
-import type {Getters} from './getters'
-import type {Module} from 'vuex'
-import type {State as RootState} from '../../../..'
+import type {ComputedGetters, Getters} from './getters'
+import type {Family, State, TreeItemAction} from './state'
+import type {Actions} from './actions'
+import type {Module} from '../../../../index'
+import type {Mutations} from './mutations'
+import {actions} from './actions'
 import {getters} from './getters'
+import {mutations} from './mutations'
 
-export type {Getters, ReadState, State}
+export type {Actions, ComputedGetters, Getters, Mutations, State}
 
-export function generateFamily(state: ReadState): Module<State, RootState> {
-    return {getters, namespaced: true, state}
+export function generateFamily(
+    moduleName: string,
+    parentModuleName: string,
+    family: Family,
+    state: TreeItemAction = {opened: false, selected: false}
+): Module<State> {
+    return {actions, getters, mutations, namespaced: true, state: {moduleName, parentModuleName, ...family, ...state}}
 }
