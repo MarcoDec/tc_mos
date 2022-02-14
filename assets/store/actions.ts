@@ -35,6 +35,7 @@ export const actions = {
             if (e instanceof Response) {
                 if (e.status !== 422) {
                     commit('responseError', {status: e.status, text: await e.json() as string})
+                    emitter.emit('error')
                 }
             } else {
                 commit('error')

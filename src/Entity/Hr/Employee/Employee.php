@@ -8,7 +8,6 @@ use App\Entity\Api\Token;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
-use App\Repository\Hr\Employee\EmployeeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -38,7 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Employee-read'
         ]
     ),
-    ORM\Entity(repositoryClass: EmployeeRepository::class)
+    ORM\Entity
 ]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     use NameTrait;
