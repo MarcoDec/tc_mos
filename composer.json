@@ -76,7 +76,7 @@
     "symfony/twig-bundle": "5.4.*",
     "symfony/validator": "5.4.*",
     "symfony/yaml": "5.4.*",
-    "tightenco/collect": "^8.81"
+    "tightenco/collect": "^8.83"
   },
   "require-dev": {
     "doctrine/doctrine-fixtures-bundle": "^3.4",
