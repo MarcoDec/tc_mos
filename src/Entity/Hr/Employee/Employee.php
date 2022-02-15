@@ -160,15 +160,8 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      *
      * @see UserInterface
      */
-    final public function getUserIdentifier(): ?string {
-        return $this->username;
-    }
-
-    /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
-    final public function getUsername(): ?string {
-        return $this->username;
+    final public function getUserIdentifier(): string {
+        return (string) $this->username;
     }
 
     final public function removeApiToken(Token $apiToken): self {

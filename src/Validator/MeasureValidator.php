@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 final class MeasureValidator extends ConstraintValidator {
-    public function validate($value, Constraint $constraint): void {
+    public function validate(mixed $value, Constraint $constraint): void {
         if (!($constraint instanceof MeasureAttribute)) {
             throw new UnexpectedTypeException($constraint, MeasureAttribute::class);
         }
