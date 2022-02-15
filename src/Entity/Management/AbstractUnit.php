@@ -8,10 +8,10 @@ use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use Tightenco\Collect\Support\Collection as LaravelCollection;
 
 #[ORM\MappedSuperclass]
 abstract class AbstractUnit extends Entity {
@@ -137,7 +137,6 @@ abstract class AbstractUnit extends Entity {
      * @return LaravelCollection<int, self>
      */
     private function getDepthChildren(): LaravelCollection {
-        /** @phpstan-ignore-next-line */
         return collect($this->children->getValues())
             ->map(static fn (self $child): array => $child->getDepthChildren()->push($child)->values()->all())
             ->flatten()
@@ -159,7 +158,6 @@ abstract class AbstractUnit extends Entity {
      */
     private function getFamily(): LaravelCollection {
         $root = $this->getRoot();
-        /** @phpstan-ignore-next-line */
         return $root->getDepthChildren()->push($root)->unique->getId()->values();
     }
 

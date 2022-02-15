@@ -4,13 +4,13 @@ namespace App\Command;
 
 use App\Fixtures\Configurations;
 use Doctrine\ORM\EntityManagerInterface;
+use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * @method static string getDefaultName()
@@ -121,7 +121,8 @@ final class FixturesCommand extends AbstractCommand {
 
         $jsonDir = collect($jsonDir);
         $excludes = ["{$this->jsonPrefix}country.json", "{$this->jsonPrefix}customcode.json"];
-        $processed = collect();
+        /** @var Collection<int, string> $processed */
+        $processed = new Collection();
         while ($jsonDir->isNotEmpty()) {
             foreach ($jsonDir as $file) {
                 $this->loadJSONFile($excludes, $file, $processed);

@@ -4,9 +4,9 @@ namespace App\Fixtures;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Tightenco\Collect\Support\Collection;
 
 final class EntityConfig {
     /** @var mixed[] */
@@ -34,7 +34,9 @@ final class EntityConfig {
         array $config
     ) {
         $this->deleted = $config['deleted'] ?? null;
-        $this->entities = collect();
+        /** @var mixed[] entities */
+        $entities = [];
+        $this->entities = collect($entities);
         $this->properties = collect($config['properties'])
             ->map(static function (array $config): PropertyConfig {
                 /** @var array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string} $config */
@@ -74,7 +76,6 @@ final class EntityConfig {
      * @return string[]
      */
     public function getDependencies(): array {
-        /** @phpstan-ignore-next-line */
         return collect($this->properties)->map->getOldRef()->filter()->unique()->values()->all();
     }
 
@@ -120,9 +121,11 @@ final class EntityConfig {
 
     public function toSQL(Connection $connection): string {
         $columns = $this->getColumns();
-        $sqlEntities = collect();
+        /** @var Collection<int, string> $sqlEntities */
+        $sqlEntities = new Collection();
         foreach ($this->entities as $entity) {
-            $sqlEntity = collect();
+            /** @var Collection<int, string> $sqlEntity */
+            $sqlEntity = new Collection();
             foreach ($columns as $column) {
                 $sqlEntity[] = $entity[$column] === null || $entity[$column] === '' ? 'NULL' : $connection->quote($entity[$column]);
             }
@@ -139,11 +142,9 @@ final class EntityConfig {
      */
     private function getColumns(): Collection {
         $max = $this->getMaxColumns();
-        return collect(
-            $this->entities
-                ->first(static fn (Collection $entity): bool => $entity->keys()->count() === $max)
-                ->keys()
-        )->sort();
+        /** @var Collection<string, mixed>|null $columns */
+        $columns = $this->entities->first(static fn (Collection $entity): bool => $entity->keys()->count() === $max);
+        return (new Collection($columns))->keys()->sort();
     }
 
     private function getMaxColumns(): int {

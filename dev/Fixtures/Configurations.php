@@ -4,9 +4,9 @@ namespace App\Fixtures;
 
 use App\ExpressionLanguage\ExpressionLanguageProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Tightenco\Collect\Support\Collection;
 
 final class Configurations {
     /** @var array<string, EntityConfig> */
@@ -83,7 +83,8 @@ final class Configurations {
     }
 
     public function persist(): void {
-        $processed = collect();
+        /** @var Collection<int, string> $processed */
+        $processed = new Collection();
         $configurations = collect($this->configurations);
         while ($configurations->isNotEmpty()) {
             foreach ($configurations as $current => $config) {

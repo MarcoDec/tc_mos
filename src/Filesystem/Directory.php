@@ -2,7 +2,7 @@
 
 namespace App\Filesystem;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 final class Directory {
     /** @var Collection<int, string> */
