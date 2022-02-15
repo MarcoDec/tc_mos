@@ -314,9 +314,6 @@
     "symfony/asset": {
         "version": "v5.3.11"
     },
-    "symfony/browser-kit": {
-        "version": "v5.3.4"
-    },
     "symfony/cache": {
         "version": "v5.4.2"
     },
@@ -337,9 +334,6 @@
         "files": [
             "bin/console"
         ]
-    },
-    "symfony/css-selector": {
-        "version": "v5.3.4"
     },
     "symfony/debug-bundle": {
         "version": "5.3",
@@ -362,9 +356,6 @@
     "symfony/doctrine-bridge": {
         "version": "v5.4.2"
     },
-    "symfony/dom-crawler": {
-        "version": "v5.4.2"
-    },
     "symfony/dotenv": {
         "version": "v5.3.13"
     },
@@ -378,7 +369,7 @@
         "version": "v3.0.0"
     },
     "symfony/expression-language": {
-        "version": "v5.3.11"
+        "version": "v5.4.3"
     },
     "symfony/filesystem": {
         "version": "v5.4.0"
@@ -432,18 +423,6 @@
     "symfony/intl": {
         "version": "v5.3.13"
     },
-    "symfony/maker-bundle": {
-        "version": "1.36",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.0",
-            "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
-        }
-    },
-    "symfony/mime": {
-        "version": "v5.3.13"
-    },
     "symfony/monolog-bridge": {
         "version": "v5.4.0"
     },
@@ -484,9 +463,6 @@
         ]
     },
     "symfony/polyfill-intl-grapheme": {
-        "version": "v1.24.0"
-    },
-    "symfony/polyfill-intl-idn": {
         "version": "v1.24.0"
     },
     "symfony/polyfill-intl-normalizer": {

@@ -32,6 +32,7 @@ services:
 
   api_platform.openapi.factory:
     arguments:
+      $filterLocator: '@api_platform.filter_locator'
       $formats: '%api_platform.formats%'
       $operationPathResolver: '@api_platform.operation_path_resolver'
       $subresourceOperationFactory: '@api_platform.subresource_operation_factory'
