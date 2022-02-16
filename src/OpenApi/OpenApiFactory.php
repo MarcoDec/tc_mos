@@ -115,7 +115,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 summary: 'Déconnexion',
                 description: 'Déconnexion',
-                security: [['cookieAuth' => []]]
+                security: [['bearerAuth' => []]]
             )
         ));
         /** @var ArrayObject<string, ArrayObject<string, mixed>> $schemas */
@@ -435,7 +435,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 array_filter($operation['openapi_context'] ?? [], static fn ($item) => preg_match('/^x-.*$/i', $item), ARRAY_FILTER_USE_KEY)
             );
 
-            $pathItem = $pathItem->{'with'.ucfirst($method)}($modelOperation->withSecurity([['cookieAuth' => []]]));
+            $pathItem = $pathItem->{'with'.ucfirst($method)}($modelOperation->withSecurity([['bearerAuth' => []]]));
 
             $paths->addPath($path, $pathItem);
         }
@@ -591,16 +591,11 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     #[Pure]
     private function getSecuritySchemes(): array {
         $securitySchemes = [];
-
-        $apiKeys = array_merge(
-            $this->openApiOptions->getApiKeys(),
-            ['cookieAuth' => ['name' => 'PHPSESSID', 'type' => 'cookie']]
-        );
-        foreach ($apiKeys as $key => $apiKey) {
+        foreach ($this->openApiOptions->getApiKeys() as $key => $apiKey) {
             $description = sprintf('Value for the %s %s parameter.', $apiKey['name'], $apiKey['type']);
             $securitySchemes[$key] = new Model\SecurityScheme('apiKey', $description, $apiKey['name'], $apiKey['type']);
         }
-
+        $securitySchemes['bearerAuth'] = new Model\SecurityScheme(type: 'http', scheme: 'bearer');
         return $securitySchemes;
     }
 

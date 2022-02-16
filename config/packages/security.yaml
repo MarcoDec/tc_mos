@@ -75,6 +75,7 @@ security:
     main:
       custom_authenticators:
         - App\Security\EmployeeAuthenticator
+        - App\Security\TokenAuthenticator
       lazy: true
       logout:
         path: logout

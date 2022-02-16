@@ -468,7 +468,7 @@
         "version": "v3.0.0"
     },
     "symfony/expression-language": {
-        "version": "v5.4.3"
+        "version": "v6.0.3"
     },
     "symfony/filesystem": {
         "version": "v5.4.0"
