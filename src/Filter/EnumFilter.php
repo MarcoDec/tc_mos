@@ -8,6 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\QueryBuilder;
+use Illuminate\Support\Collection;
 use ReflectionProperty;
 
 final class EnumFilter extends AbstractFilter {
@@ -49,7 +50,8 @@ final class EnumFilter extends AbstractFilter {
      * @return mixed[]
      */
     private function getEnum(ReflectionProperty $property): array {
-        $enum = collect();
+        /** @var Collection<int, mixed> $enum */
+        $enum = new Collection();
         foreach ($property->getAttributes(ApiProperty::class) as $attribute) {
             /** @var ApiProperty $apiProperty */
             $apiProperty = $attribute->newInstance();

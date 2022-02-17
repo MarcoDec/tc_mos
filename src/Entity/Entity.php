@@ -20,6 +20,10 @@ abstract class Entity {
     #[ORM\Column(options: ['default' => false])]
     private bool $deleted = false;
 
+    public function __clone() {
+        $this->id = null;
+    }
+
     final public function getId(): ?int {
         return $this->id;
     }

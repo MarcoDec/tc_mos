@@ -41,7 +41,7 @@
     "dev": "vite",
     "eslint": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js assets",
     "eslint-fix": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js --fix assets",
-    "openapi": "php bin/console api:openapi:export -o openapi.json && npx openapi-typescript openapi.json --immutable-types --output assets/types/openapi.d.ts && rm openapi.json",
+    "openapi": "php bin/console api:openapi:export -y -o openapi.yaml && npx openapi-typescript openapi.yaml --immutable-types --output assets/types/openapi.d.ts && rm openapi.yaml",
     "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
     "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"
   }

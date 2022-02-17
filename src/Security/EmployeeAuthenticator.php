@@ -2,6 +2,8 @@
 
 namespace App\Security;
 
+use App\Entity\Hr\Employee\Employee;
+use App\Repository\Api\TokenRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +18,11 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
-    public function __construct(private NormalizerInterface $normalizer, private UrlGeneratorInterface $urlGenerator) {
+    public function __construct(
+        private NormalizerInterface $normalizer,
+        private TokenRepository $tokenRepo,
+        private UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     public function authenticate(Request $request): Passport {
@@ -41,7 +47,10 @@ final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response {
-        return new JsonResponse($this->normalizer->normalize($token->getUser(), null, ['jsonld_has_context' => false]));
+        /** @var Employee $user */
+        $user = $token->getUser();
+        $this->tokenRepo->connect($user);
+        return new JsonResponse($this->normalizer->normalize($user, null, ['jsonld_has_context' => false]));
     }
 
     protected function getLoginUrl(Request $request): string {

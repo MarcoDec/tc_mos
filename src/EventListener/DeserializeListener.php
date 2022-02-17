@@ -21,7 +21,11 @@ final class DeserializeListener {
 
     public function __invoke(RequestEvent $event): void {
         $request = $event->getRequest();
-        if ($request->isMethodCacheable() || $request->isMethod(Request::METHOD_DELETE)) {
+        if (
+            $request->isMethodCacheable()
+            || $request->isMethod(Request::METHOD_DELETE)
+            || empty($event->getRequest()->getContent())
+        ) {
             return;
         }
 

@@ -7,6 +7,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DoctrineType;
 
 abstract class Type extends DoctrineType {
+    /** @var string[] */
     public const TYPES = [];
 
     private static function getStrTypes(): string {

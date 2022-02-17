@@ -68,7 +68,7 @@ final class FileManager {
     }
 
     private function getMetadata(FileEntity $entity): ResourceMetadata {
-        return $this->apiMetadatas->create(get_class($entity));
+        return $this->apiMetadatas->create(removeStart(get_class($entity), 'Proxies\\__CG__\\'));
     }
 
     private function getShortName(FileEntity $entity): ?string {

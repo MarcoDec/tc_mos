@@ -4,6 +4,7 @@ namespace App\Entity\Traits;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -16,7 +17,12 @@ trait NameTrait {
     ]
     protected ?string $name = null;
 
-    final public function getName(): ?string {
+    #[Pure]
+    final public function __toString(): string {
+        return $this->getName() ?? '';
+    }
+
+    public function getName(): ?string {
         return $this->name;
     }
 
