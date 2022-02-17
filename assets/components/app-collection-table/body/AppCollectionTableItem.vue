@@ -28,6 +28,10 @@
             <AppBtn icon="check" variant="success"/>
             <AppBtn icon="times" variant="danger" @click="toggle"/>
         </td>
-        <component :is="td" v-for="field in fields" :key="field.name" :field="field" :item="item"/>
+       <template v-for="field in fields">
+         <slot :name="field.name" :field="field" :item="item">
+           <component :is="td" :field="field" :item="item"/>
+         </slot>
+       </template>
     </tr>
 </template>

@@ -17,7 +17,7 @@ export type Tabs = {
     name: string
     isActive: boolean
 }
-export type FormInput = 'boolean' | 'date' | 'number' | 'password' | 'radio' | 'search-boolean' | 'select' | 'text'
+export type FormInput = 'boolean' | 'date' | 'number' | 'password' | 'radio' | 'search-boolean' | 'select' | 'text' | 'button'
 
 export type FormValue = boolean | number | string | null
 

@@ -20,7 +20,11 @@
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
         <AppCollectionTableHeaders/>
-        <AppCollectionTableItems :items="items"/>
+      <AppCollectionTableItems :items="items">
+        <template v-for="field in fields" v-slot:[field.name]="params">
+          <slot :name="field.name" v-bind="params"/>
+        </template>
+      </AppCollectionTableItems>
     </table>
     <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/>
 </template>

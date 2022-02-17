@@ -1,101 +1,119 @@
 <script lang="ts" setup>
-import {useRoute} from 'vue-router'
-const route = useRoute()
-const fields =
-    [
-      {
-        label: 'Date',
-        name: 'date',
-        create: false,
-        filter: false,
-        delete: false
-      },
-      {
-        label: 'Emetteur',
-        name: 'date',
-        create: false,
-        filter: false,
-        delete: false
+    import {useRoute} from 'vue-router'
 
-      },
-      {
-        label: 'Destinataire',
-        name: 'date',
-        create: false,
-        filter: false,
-        delete: false
+    const route = useRoute()
+    const fields = [
+        {
+            create: false,
+            delete: false,
+            filter: false,
+            label: 'Date',
+            name: 'date'
 
-      },
-      {
-        label: 'Copie',
-        name: 'date',
-        create: false,
-        filter: false,
-        delete: false
+        },
+        {
+            create: false,
+            delete: false,
+            filter: false,
+            label: 'Emetteur',
+            name: 'emmetteur'
 
-      },
-      {
-        label: 'Commande jointe',
-        name: 'date',
-        create: false,
-        filter: false,
-        delete: false
+        },
+        {
+            create: false,
+            delete: false,
+            filter: false,
+            label: 'Destinataire',
+            name: 'des'
 
-      }
+        },
+        {
+            create: false,
+            delete: false,
+            filter: false,
+            label: 'Copie',
+            name: 'copie'
+
+        },
+        {
+            create: false,
+            delete: false,
+            filter: false,
+            label: 'Commande jointe',
+            name: 'cmd'
+
+        }
     ]
 
-const items = [
-]
+    const items = [
+        {}
+    ]
 </script>
+
 <template>
-  <div class="divEchange">
-    <div class="divEmail">
-      <div class="input-group">
-        <span class="input-group-text">De:</span>
-        <input type="text" class="form-control" aria-describedby="basic-addon1">
-      </div>
-      <div class="input-group">
-        <span class="input-group-text">A:</span>
-        <input type="text" class="form-control" aria-describedby="basic-addon1">
-      </div>
-      <div class="input-group">
-        <span class="input-group-text">CC:</span>
-        <input type="text" class="form-control" aria-describedby="basic-addon1">
-      </div>
-      <div class="input-group">
-        <span class="input-group-text">Objet:</span>
-        <input type="text" class="form-control" aria-describedby="basic-addon1">
-      </div>
-      <div class="input-group">
-        <AppIframe />
-      </div>
+    <div class="divEchange">
+        <div class="divEmail">
+            <div class="input-group">
+                <span class="input-group-text">De:</span>
+                <input type="text" class="form-control" aria-describedby="basic-addon1"/>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text">A:</span>
+                <input type="text" class="form-control" aria-describedby="basic-addon1"/>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text">CC:</span>
+                <input type="text" class="form-control" aria-describedby="basic-addon1"/>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text">Objet:</span>
+                <input type="text" class="form-control" aria-describedby="basic-addon1"/>
+            </div>
+            <div class="input-group">
+                <iframe
+                    class="iframe"
+                    src="http://localhost:8000/supplierOrder/previewPDF"
+                    title="prévisualisation commande"
+                    width="110%"
+                    height="100%"/>
+            </div>
+        </div>
+        <div class="divBtnDow">
+            <AppBtn variant="success" class="btnsend">
+                <Fa icon="paper-plane"/>
+            </AppBtn>
 
+            <AppBtn>
+                <Fa icon="download"/>
+            </AppBtn>
+        </div>
+        <div class="divtableEmail">
+            <AppCollectionTable :id="route.name" :fields="fields" :items="items" create pagination/>
+        </div>
     </div>
-    <div class="divBtnDow">
-      <AppBtn variant="success" class="btnsend"> <Fa icon="paper-plane"/></AppBtn>
-
-      <AppBtn> <Fa icon="download"/></AppBtn>
-    </div>
-    <div class="divtableEmail">
-      <AppCollectionTable :id="route.name" :fields="fields" :items="items" create pagination/>
-    </div>
-  </div>
 </template>
+
 <style scoped>
-.divEchange{
-display: flex;
+.divEchange {
+  display: flex;
   flex-direction: row;
 }
-.divEmail{
+
+.divEmail {
   width: 45%;
   margin-right: 20px;
 }
-.divBtnDow{
+
+.divBtnDow {
   width: 5%;
 }
-.btnsend{
-}
-.divtableEmail{
+
+.divtableEmail {
   width: 60%;
+}
+.iframe{
+  height: 80vh;
+  transform: scale(0.75);
+  transform-origin:  0 0;
 }
 </style>

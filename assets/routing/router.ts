@@ -17,13 +17,6 @@ const router = createRouter({
             path: '/login'
         },
         {
-            component: async (): Promise<RouteComponent> => import('../components/purchase/order-supplier/AppIframe.vue'),
-            meta: {requiresAuth: true},
-            name: 'previewPDF',
-            path: '/orderSupplier/previewPDF'
-        },
-
-        {
             component: async (): Promise<RouteComponent> => import('./pages/purchase/supplier/order/AppSupplierOrder.vue'),
             meta: {requiresAuth: true},
             name: 'orderSupplier',

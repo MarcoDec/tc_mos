@@ -23,10 +23,10 @@
         <AppCol>
             <AppCard class="bg-blue">
                 <AppForm v-model="formData" :fields="fields" @submit="handleClick">
-                <AppBtn type="submit">
-                    Connexion
-                </AppBtn>
-            </AppForm>
+                    <AppBtn type="submit">
+                        Connexion
+                    </AppBtn>
+                </AppForm>
             </AppCard>
         </AppCol>
     </AppRow>

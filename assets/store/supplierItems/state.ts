@@ -1,3 +1,3 @@
-import type {State as Items} from './supplierItem'
+import type {State as Item} from './supplierItem'
 
-export type  State = Record<string, Items>
+export type  State = Record<string, Item>

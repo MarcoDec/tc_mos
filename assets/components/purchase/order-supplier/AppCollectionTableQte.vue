@@ -1,47 +1,44 @@
 <script lang="ts" setup>
-import {
-  useNamespacedActions,
-  useNamespacedGetters,useNamespacedState
-} from 'vuex-composition-helpers'
-import {useRoute} from 'vue-router'
-import {onMounted} from 'vue'
-import type {Actions,Getters} from '../../../store/supplierItems'
-import type {State} from '../../../store/supplierItems/supplierItem'
+    import type {Actions, Getters} from '../../../store/supplierItems'
+    import {
+        useNamespacedActions,
+        useNamespacedGetters
+    } from 'vuex-composition-helpers'
+    import {onMounted} from 'vue'
+    import {useRoute} from 'vue-router'
 
-const route = useRoute()
-const fields: FormField[] =
-    [
-      {
-        label: 'Composant',
-      },
-      {
-        label: 'Date Récéption',
-      },
-      {
-        label: 'Status',
-      },
-      {
-        label: 'Commentaire',
-      },
-      {
-        label: 'Controle',
-      },
-      {
-        label: 'Valeur',
-      },
-    ]
+    const route = useRoute()
+    const fields
+        = [
+            {
+                label: 'Composant'
+            },
+            {
+                label: 'Date Récéption'
+            },
+            {
+                label: 'Status'
+            },
+            {
+                label: 'Commentaire'
+            },
+            {
+                label: 'Controle'
+            },
+            {
+                label: 'Valeur'
+            }
+        ]
 
-const fetchItem = useNamespacedActions<Actions>('supplierItems', ['fetchItem'])['fetchItem']
-const {items} = useNamespacedGetters<Getters>('supplierItems', ['items'])
-//const items = useNamespacedState<State>('supplierItems', ['list']).list
+    const fetchItem = useNamespacedActions<Actions>('supplierItems', ['fetchItem']).fetchItem
+    const {items} = useNamespacedGetters<Getters>('supplierItems', ['items'])
 
-onMounted(async () => {
-  await fetchItem()
-})
-
+    onMounted(async () => {
+        await fetchItem()
+    })
 </script>
 
 <template>
-  <AppCollectionTable :id="route.name" :fields="fields" :items="items" create pagination/>
+    <AppCollectionTable :id="route.name" :fields="fields" :items="items" create pagination/>
 </template>
 

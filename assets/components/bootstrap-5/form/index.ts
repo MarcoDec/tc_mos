@@ -12,3 +12,4 @@ export const AppSearchBool = defineAsyncComponent<Component>(async () => import(
 export const AppSelect = defineAsyncComponent<Component>(async () => import('./AppSelect.vue'))
 export const AppSelectOption = defineAsyncComponent<Component>(async () => import('./AppSelectOption.vue'))
 export const AppSwitch = defineAsyncComponent<Component>(async () => import('./AppSwitch.vue'))
+export const AppBtnSplit = defineAsyncComponent<Component>(async () => import('./AppBtnSplit.vue'))

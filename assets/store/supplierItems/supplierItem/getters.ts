@@ -12,6 +12,7 @@ export type Items = {
     date: string | null
     quantiteS: number | null
     quantite: number | null
+    id: number
 }
 
 export type Getters = {
@@ -32,6 +33,7 @@ export const getters: Getters = {
         date:state.date,
         quantiteS:state.quantiteS,
         quantite:state.quantite,
+        id:state.id,
     })
 }
 

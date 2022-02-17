@@ -1,12 +1,9 @@
-import * as Cookies from '../../cookie'
 import type {DeepReadonly} from '../../types/types'
 import type {State as RootState} from '..'
 import type {State} from '.'
 import type {State as Items} from './supplierItem'
 import type {ActionContext as VuexActionContext} from 'vuex'
-import {fetchApi} from '../../api'
 import {generateItem} from './supplierItem'
-import type {TableItem} from '../../types/app-collection-table'
 
 type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
 
@@ -18,15 +15,15 @@ export const actions = {
                 delete: true,
                 composant: 'composant',
                 produit: 'produit',
-                type: 'type',
+                type: 'radio',
                 ref: 'ref',
                 quantiteS: 14,
-                date: 'date',
+                date: '22/03/2022',
                 quantite: 11,
                 etat: 'etat',
                 texte: 'texte',
                 compagnie: 'compagnie',
-                update: false,
+                update: true,
                 id: 1
             },
             {
@@ -36,12 +33,12 @@ export const actions = {
                 type: 'type',
                 ref: 'ref',
                 quantiteS: 55,
-                date: 'date',
+                date: '11/02/2022',
                 quantite: 20,
                 etat: 'etat',
                 texte: 'texte',
                 compagnie: 'compagnie',
-                update: false,
+                update: true,
                 id: 2
             },
         ]
