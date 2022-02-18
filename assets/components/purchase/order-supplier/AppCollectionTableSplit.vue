@@ -7,9 +7,6 @@
   const fields
       = [
     {
-      label: 'N'
-    },
-    {
       label: 'Quantité confirmée',
       name: 'quantite',
       sort: false,
@@ -38,15 +35,13 @@
     <AppRow>
       <AppCol>
         <AppCard>
-          <span>Quantité souhaitée: 500</span>
-          <span>Quantité souhaitée: 500</span>
+          <span>Quantité souhaitée: {{item.quantite}}</span>
+          <span>Date souhaitée: {{item.date}}</span>
         </AppCard>
       </AppCol>
     </AppRow>
-
-
  <div>
-   <AppCollectionTable :fields="fields" :items="items"/>
+   <AppTableSplit :fields="fields" :items="items"/>
  </div>
 
   </div>

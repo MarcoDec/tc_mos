@@ -1,4 +1,5 @@
 export * from './app-collection-table'
+export * from './app-collection-table-split'
 export * from './bootstrap-5'
 export * from './modal'
 export * from './top-navbar'

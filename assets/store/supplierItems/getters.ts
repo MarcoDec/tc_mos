@@ -23,6 +23,5 @@ export type GettersValues = {
 }
 export const getters: Getters = {
     items: state => Object.values(state),
-
 }
 
