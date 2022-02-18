@@ -37,8 +37,9 @@ export const actions = {
                             '@context': '',
                             '@id': '0',
                             '@type': '',
+                            code: 'Familles',
                             id: 0,
-                            name: 'Familles'
+                            name: 'Composants'
                         },
                         {opened: true, selected: false}
                     ),

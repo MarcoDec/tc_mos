@@ -1,14 +1,17 @@
 <script lang="ts" setup>
-    import {computed, defineProps, inject} from 'vue'
-    import type {FormField} from '../../types/bootstrap-5'
+    import type {FormField, FormValues} from '../../types/bootstrap-5'
+    import {computed, defineProps, inject, withDefaults} from 'vue'
 
-    const props = defineProps<{id: string}>()
+    const props = withDefaults(
+        defineProps<{id: string, state?: FormValues, title?: string}>(),
+        {state: () => ({}), title: 'Créer une famille'}
+    )
     const fields = inject<FormField[]>('fields', [])
     const formdId = computed(() => `${props.id}-form`)
 </script>
 
 <template>
-    <AppCard :id="id" class="bg-blue" title="Créer une famille">
-        <AppForm :id="formdId" :fields="fields"/>
+    <AppCard :id="id" :title="title" class="bg-blue">
+        <AppForm :id="formdId" :fields="fields" :model-value="state"/>
     </AppCard>
 </template>

@@ -10,7 +10,7 @@
 </script>
 
 <template>
-    <AppTreeItem :module-path="modulePath" class="pointer" @click="toggle">
+    <AppTreeItem :module-path="modulePath" @click="toggle">
         <Fa :icon="chevron" class="me-2"/>
     </AppTreeItem>
 </template>

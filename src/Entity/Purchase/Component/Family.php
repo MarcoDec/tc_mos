@@ -101,7 +101,7 @@ class Family extends AbstractFamily {
     protected $parent;
 
     #[
-        ApiProperty(description: 'Code ', example: 'CAB'),
+        ApiProperty(description: 'Code ', required: true, example: 'CAB'),
         ORM\Column,
         Serializer\Groups(['read:family', 'write:family'])
     ]

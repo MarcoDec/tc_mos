@@ -29,6 +29,6 @@ export const getters: Getters = {
         return state.name
     },
     hasChildren: (state, computed) => computed.children.length > 0,
-    label: state => state.name,
+    label: state => `${state.code} — ${state.name}`,
     option: (state, computed) => ({text: computed.fullName, value: state['@id']})
 }

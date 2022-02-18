@@ -840,7 +840,7 @@ export interface components {
              * @description Code
              * @example CAB
              */
-            readonly code?: string;
+            readonly code: string;
             /**
              * @description Cuivré
              * @example true
@@ -875,7 +875,7 @@ export interface components {
              * @description Code
              * @example CAB
              */
-            readonly code?: string;
+            readonly code: string;
             /**
              * @description Cuivré
              * @example true
@@ -914,7 +914,7 @@ export interface components {
              * @description Code
              * @example CAB
              */
-            readonly code?: string;
+            readonly code: string;
             /**
              * @description Cuivré
              * @example true

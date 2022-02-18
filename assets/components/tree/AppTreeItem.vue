@@ -17,7 +17,7 @@
 </script>
 
 <template>
-    <span :class="bg" @click="click">
+    <span :class="bg" class="pointer" @click="click">
         <slot>
             <span class="pe-4"/>
         </slot>
