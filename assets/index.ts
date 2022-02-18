@@ -22,9 +22,9 @@ async function mount(): Promise<void> {
     const security: State = {username: null}
     if (Cookies.has()) {
         const id = Cookies.get('id')
-        if (typeof id !== 'undefined') {
+        if (typeof id === 'string') {
             const user = await fetchApi('/api/employees/{id}', 'get', {id})
-            if (typeof user.username !== 'undefined')
+            if (typeof user.username === 'string')
                 security.username = user.username
         }
     }

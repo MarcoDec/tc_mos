@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import * as Cookies from './cookie'
 import type {Merge} from './types/types'
 import type {paths} from './types/openapi'
 
@@ -24,17 +25,18 @@ export declare type Response<U extends Urls, M extends Methods<U>> =
             ? A
             : never
 
+declare type ApiHeaders = HeadersInit & {'Content-Type'?: string}
+
 export default async function fetchApi<U extends Urls, M extends Methods<U>>(
     url: U,
     method: M,
     body: ApiBody<U, M>
 ): Promise<Response<U, M>> {
-    const init: Omit<RequestInit, 'headers'> & {
-        headers: HeadersInit & {'Content-Type'?: string}
-    } = {
-        headers: {Accept: 'application/ld+json'},
-        method: method as string
-    }
+    const headers: ApiHeaders = {Accept: 'application/ld+json'}
+    const token = Cookies.get('token')
+    if (typeof token === 'string')
+        headers.Authorization = `Bearer ${token}`
+    const init: Omit<RequestInit, 'headers'> & {headers: ApiHeaders} = {headers, method: method as string}
     if (body instanceof FormData)
         init.body = body
     else {

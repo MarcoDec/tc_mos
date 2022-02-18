@@ -134,6 +134,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         'type' => 'string'
                     ]
                 ],
+                'required' => ['password', 'username'],
                 'type' => 'object'
             ]),
             'Measure-duration' => new ArrayObject([

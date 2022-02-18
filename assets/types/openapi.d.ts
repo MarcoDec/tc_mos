@@ -443,15 +443,15 @@ export interface components {
             readonly zipCode?: string | null;
         };
         readonly 'Address.jsonld-Carrier-read': {
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
                 /** @enum {string} */
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
-            readonly '@id': string;
-            readonly '@type': string;
+            readonly '@id'?: string;
+            readonly '@type'?: string;
             /**
              * @description Adresse
              * @example 5 rue Alfred Nobel
@@ -490,15 +490,15 @@ export interface components {
             readonly zipCode?: string | null;
         };
         readonly 'Address.jsonld-Carrier-write': {
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
                 /** @enum {string} */
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
-            readonly '@id': string;
-            readonly '@type': string;
+            readonly '@id'?: string;
+            readonly '@type'?: string;
             /**
              * @description Adresse
              * @example 5 rue Alfred Nobel
@@ -537,15 +537,15 @@ export interface components {
             readonly zipCode?: string | null;
         };
         readonly 'Address.jsonld-OutTrainer-read': {
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
                 /** @enum {string} */
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
-            readonly '@id': string;
-            readonly '@type': string;
+            readonly '@id'?: string;
+            readonly '@type'?: string;
             /**
              * @description Adresse
              * @example 5 rue Alfred Nobel
@@ -584,15 +584,15 @@ export interface components {
             readonly zipCode?: string | null;
         };
         readonly 'Address.jsonld-OutTrainer-write': {
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
                 /** @enum {string} */
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
-            readonly '@id': string;
-            readonly '@type': string;
+            readonly '@id'?: string;
+            readonly '@type'?: string;
             /**
              * @description Adresse
              * @example 5 rue Alfred Nobel
@@ -636,12 +636,12 @@ export interface components {
              * @description Mot de passe
              * @example super
              */
-            readonly password?: string;
+            readonly password: string;
             /**
              * @description Identifiant
              * @example super
              */
-            readonly username?: string;
+            readonly username: string;
         };
         /** @description Transporteur */
         readonly 'Carrier-Carrier-read': {
@@ -698,7 +698,7 @@ export interface components {
         /** @description Transporteur */
         readonly 'Carrier.jsonld-Carrier-write': {
             /** @example /api/contexts/Carrier */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -706,9 +706,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/carriers/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example Carrier */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example DHL
@@ -776,7 +776,7 @@ export interface components {
              * @description nom
              * @example Gris
              */
-            readonly name: string | null;
+            readonly name: string;
             /**
              * @description ral
              * @example 17122018
@@ -796,7 +796,7 @@ export interface components {
         /** @description Couleur */
         readonly 'Color.jsonld-Color-write': {
             /** @example /api/contexts/Color */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -804,14 +804,14 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/colors/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example Color */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description nom
              * @example Gris
              */
-            readonly name: string | null;
+            readonly name: string;
             /**
              * @description ral
              * @example 17122018
@@ -1083,30 +1083,30 @@ export interface components {
             readonly date?: string;
         };
         readonly 'CurrentPlace.jsonld-Product-collection': {
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
                 /** @enum {string} */
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
-            readonly '@id': string;
-            readonly '@type': string;
+            readonly '@id'?: string;
+            readonly '@type'?: string;
             /** @description Nom */
             readonly name: string | null;
             /** Format: date-time */
             readonly date?: string;
         };
         readonly 'CurrentPlace.jsonld-Product-read': {
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
                 /** @enum {string} */
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
-            readonly '@id': string;
-            readonly '@type': string;
+            readonly '@id'?: string;
+            readonly '@type'?: string;
             /** @description Nom */
             readonly name: string | null;
             /** Format: date-time */
@@ -1178,7 +1178,7 @@ export interface components {
              * @description Token
              * @example 47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707
              */
-            readonly token?: string | null;
+            readonly token: string;
         };
         /** @description Groupe d'équipement */
         readonly 'EngineGroup-EngineGroup-read': {
@@ -1315,7 +1315,7 @@ export interface components {
         /** @description Type d'événements */
         readonly 'EventType.jsonld-EventType-write': {
             /** @example /api/contexts/EventType */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -1323,9 +1323,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/event-types/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example EventType */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example ABSENCE
@@ -1404,7 +1404,7 @@ export interface components {
         /** @description Incoterms */
         readonly 'Incoterms.jsonld-Incoterms-write': {
             /** @example /api/contexts/Incoterms */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -1412,9 +1412,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/incoterms/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example Incoterms */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example Delivered Duty Paid
@@ -1511,7 +1511,7 @@ export interface components {
         /** @description Délai de paiement des factures */
         readonly 'InvoiceTimeDue.jsonld-InvoiceTimeDue-write': {
             /** @example /api/contexts/InvoiceTimeDue */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -1519,9 +1519,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/invoice-time-dues/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example InvoiceTimeDue */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example 30 jours fin de mois
@@ -1666,7 +1666,7 @@ export interface components {
         /** @description Formateur extérieur */
         readonly 'OutTrainer.jsonld-OutTrainer-write': {
             /** @example /api/contexts/OutTrainer */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -1674,9 +1674,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/out-trainers/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example OutTrainer */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Prénom
              * @example Rawaa
@@ -1942,7 +1942,7 @@ export interface components {
         /** @description Produit */
         readonly 'Product.jsonld-Product-clone': {
             /** @example /api/contexts/Product */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -1950,9 +1950,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/products/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example Product */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Référence
              * @example 54587F
@@ -1966,8 +1966,8 @@ export interface components {
         };
         /** @description Produit */
         readonly 'Product.jsonld-Product-collection': {
-            readonly '@id': string;
-            readonly '@type': string;
+            readonly '@id'?: string;
+            readonly '@type'?: string;
             /** @description Statut */
             readonly currentPlace?: components['schemas']['CurrentPlace.jsonld-Product-collection'];
             /**
@@ -2003,7 +2003,7 @@ export interface components {
         /** @description Produit */
         readonly 'Product.jsonld-Product-create': {
             /** @example /api/contexts/Product */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -2011,9 +2011,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/products/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example Product */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example HEATING WIRE (HSR25304)
@@ -2067,7 +2067,7 @@ export interface components {
              * @description Unité
              * @example /api/units/1
              */
-            readonly unit: string | null;
+            readonly unit: string;
         };
         /** @description Produit */
         readonly 'Product.jsonld-Product-read': {
@@ -2119,7 +2119,7 @@ export interface components {
              * @description Incoterms
              * @example /api/incoterms/1
              */
-            readonly incoterms: string | null;
+            readonly incoterms: string;
             /**
              * @description Indice
              * @example 02
@@ -2184,14 +2184,14 @@ export interface components {
              * @description Unité
              * @example /api/units/1
              */
-            readonly unit: string | null;
+            readonly unit: string;
             /** @description Poids */
             readonly weight?: components['schemas']['Measure-mass'];
         };
         /** @description Produit */
         readonly 'Product.jsonld-Product-upgrade': {
             /** @example /api/contexts/Product */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -2199,9 +2199,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/products/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example Product */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Référence
              * @example 54587F
@@ -2341,7 +2341,7 @@ export interface components {
         /** @description Type qualité */
         readonly 'QualityType.jsonld-QualityType-write': {
             /** @example /api/contexts/QualityType */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -2349,9 +2349,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/quality-types/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example QualityType */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example Dimensions
@@ -2407,7 +2407,7 @@ export interface components {
         /** @description Type de rebus */
         readonly 'RejectType.jsonld-RejectType-write': {
             /** @example /api/contexts/RejectType */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -2415,9 +2415,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/reject-types/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example RejectType */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example sertissage dimensionnelle
@@ -2473,7 +2473,7 @@ export interface components {
         /** @description Type de compétence */
         readonly 'SkillType.jsonld-SkillType-write': {
             /** @example /api/contexts/SkillType */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -2481,9 +2481,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/skill-types/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example SkillType */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example Assemblage
@@ -2611,7 +2611,7 @@ export interface components {
         /** @description Plages horaires */
         readonly 'TimeSlot.jsonld-TimeSlot-write': {
             /** @example /api/contexts/TimeSlot */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -2619,9 +2619,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/time-slots/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example TimeSlot */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Nom
              * @example Journée
@@ -2791,7 +2791,7 @@ export interface components {
         /** @description Unit */
         readonly 'Unit.jsonld-Unit-write': {
             /** @example /api/contexts/Unit */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -2799,9 +2799,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/units/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example Unit */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * Format: iri-reference
              * @description Parent
@@ -2869,7 +2869,7 @@ export interface components {
         /** @description Message TVA */
         readonly 'VatMessage.jsonld-VatMessage-write': {
             /** @example /api/contexts/VatMessage */
-            readonly '@context':
+            readonly '@context'?:
                 | string
                 | ({
                 readonly '@vocab': string;
@@ -2877,9 +2877,9 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /** @example /api/vat-messages/1 */
-            readonly '@id': string;
+            readonly '@id'?: string;
             /** @example VatMessage */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /**
              * @description Message
              * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
@@ -2896,9 +2896,9 @@ export interface components {
         };
         readonly Violations: {
             /** @example /api/contexts/ConstraintViolationList */
-            readonly '@context': string;
+            readonly '@context'?: string;
             /** @example ConstraintViolationList */
-            readonly '@type': string;
+            readonly '@type'?: string;
             /** @example An error occurred */
             readonly 'hydra:title'?: string;
             /**
@@ -3023,8 +3023,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -3035,11 +3035,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -3184,8 +3184,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -3196,11 +3196,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -3345,8 +3345,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -3357,11 +3357,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -3495,8 +3495,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -3507,11 +3507,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -3663,8 +3663,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -3675,11 +3675,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -3859,8 +3859,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -3871,11 +3871,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -4019,8 +4019,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -4031,11 +4031,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -4181,8 +4181,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -4193,11 +4193,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -4346,8 +4346,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -4358,11 +4358,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -4516,8 +4516,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -4528,11 +4528,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -4841,8 +4841,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -4853,11 +4853,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -4997,8 +4997,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -5009,11 +5009,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -5156,8 +5156,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -5168,11 +5168,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -5315,8 +5315,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -5327,11 +5327,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -5478,8 +5478,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -5490,11 +5490,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -5638,8 +5638,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -5650,11 +5650,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;
@@ -5797,8 +5797,8 @@ export interface operations {
                         readonly 'hydra:totalItems'?: number;
                         readonly 'hydra:view'?: {
                             /** Format: iri-reference */
-                            readonly '@id': string;
-                            readonly '@type': string;
+                            readonly '@id'?: string;
+                            readonly '@type'?: string;
                             /** Format: iri-reference */
                             readonly 'hydra:first'?: string;
                             /** Format: iri-reference */
@@ -5809,11 +5809,11 @@ export interface operations {
                             readonly 'hydra:next'?: string;
                         };
                         readonly 'hydra:search'?: {
-                            readonly '@type': string;
+                            readonly '@type'?: string;
                             readonly 'hydra:template'?: string;
                             readonly 'hydra:variableRepresentation'?: string;
                             readonly 'hydra:mapping'?: readonly {
-                                readonly '@type': string;
+                                readonly '@type'?: string;
                                 readonly variable?: string;
                                 readonly property?: string | null;
                                 readonly required?: boolean;

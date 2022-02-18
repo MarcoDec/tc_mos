@@ -20,15 +20,8 @@ export const actions = {
             },
             {root: true}
         )
-        if (
-            typeof user.id !== 'undefined'
-            && typeof user.token !== 'undefined'
-            && user.token !== null
-            && typeof user.username !== 'undefined'
-        ) {
-            Cookies.set(user.id, user.token)
-            commit('user', user.username)
-        }
+        Cookies.set(user.id, user.token)
+        commit('user', user.username)
     },
     async logout({commit, dispatch}: ActionContext): Promise<void> {
         await dispatch(
