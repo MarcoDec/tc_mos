@@ -1,6 +1,6 @@
 import type {ApiBody, Response as ApiResponse, Methods, Urls} from '../api'
 import type {AppStore, Module, RootComputedGetters, State} from '.'
-import type {DispatchOptions, ActionContext as VuexActionContext} from 'vuex'
+import type {ActionContext as VuexActionContext} from 'vuex'
 import app from '../app'
 import emitter from '../emitter'
 import fetchApi from '../api'
@@ -14,7 +14,7 @@ declare type ApiPayload<U extends Urls, M extends Methods<U>> = {
 declare module 'vuex' {
     export interface Dispatch {
         // eslint-disable-next-line @typescript-eslint/prefer-function-type
-        <U extends Urls, M extends Methods<U>>(action: 'fetchApi', payload?: ApiPayload<U, M>, options?: DispatchOptions): Promise<ApiResponse<U, M>>
+        <U extends Urls, M extends Methods<U>>(action: 'fetchApi', payload?: ApiPayload<U, M>, options?: {root: true}): Promise<ApiResponse<U, M>>
     }
 }
 

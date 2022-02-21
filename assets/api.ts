@@ -37,17 +37,21 @@ export default async function fetchApi<U extends Urls, M extends Methods<U>>(
     if (typeof token === 'string')
         headers.Authorization = `Bearer ${token}`
     const init: Omit<RequestInit, 'headers'> & {headers: ApiHeaders} = {headers, method: method as string}
-    if (body instanceof FormData)
+    let generatedUrl: string = url
+    if (body instanceof FormData) {
         init.body = body
-    else {
+        body.forEach((value, key) => {
+            if (generatedUrl.includes(`{${key}}`))
+                generatedUrl = generatedUrl.replace(`{${key}}`, value as string)
+        })
+    } else {
         init.headers['Content-Type'] = 'application/json'
         if (method !== 'get')
             init.body = JSON.stringify(body)
+        for (const key in body)
+            if (generatedUrl.includes(`{${key}}`))
+                generatedUrl = generatedUrl.replace(`{${key}}`, body[key] as string)
     }
-    let generatedUrl: string = url
-    for (const key in body)
-        if (generatedUrl.includes(`{${key}}`))
-            generatedUrl = generatedUrl.replace(`{${key}}`, body[key] as string)
     const response = await fetch(generatedUrl, init)
     if ([401, 422].includes(response.status))
         throw response
