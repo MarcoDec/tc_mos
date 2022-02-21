@@ -1,4 +1,5 @@
 import type {ComputedGetters, State} from '.'
+import {generateFamily} from '.'
 import type {StoreActionContext} from '../../../..'
 
 declare type ActionContext = StoreActionContext<State, ComputedGetters>
@@ -12,12 +13,30 @@ export const actions = {
         body.append('id', state.id.toString())
         if (body.has('parent') && body.get('parent') === '0')
             body['delete']('parent')
-        await dispatch(
+        const updated = await dispatch(
             'fetchApi',
             {
                 body,
                 method: 'post',
                 url: '/api/component-families/{id}'
+            },
+            {root: true}
+        )
+        if (typeof updated.parent !== 'string')
+            updated.parent = '0'
+        const moduleName = state.moduleName
+        const path = moduleName.split('/')
+        const parentPath = state.parentModuleName
+        await dispatch('unregisterModule', path, {root: true})
+        await dispatch(
+            'registerModule',
+            {
+                module: generateFamily(
+                    moduleName,
+                    parentPath,
+                    updated
+                ),
+                path
             },
             {root: true}
         )

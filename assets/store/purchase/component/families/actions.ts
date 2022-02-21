@@ -5,13 +5,28 @@ import {generateFamily} from './family'
 declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
 export const actions = {
-    async create({dispatch}: ActionContext, body: FormData): Promise<void> {
-        await dispatch(
+    async create({dispatch, state}: ActionContext, body: FormData): Promise<void> {
+        const response = await dispatch(
             'fetchApi',
             {
                 body,
                 method: 'post',
                 url: '/api/component-families'
+            },
+            {root: true}
+        )
+        const created = {...response}
+        if (typeof created.parent !== 'string')
+            created.parent = '0'
+        await dispatch(
+            'registerModule',
+            {
+                module: generateFamily(
+                    `${state.moduleName}/${created.id.toString()}`,
+                    state.moduleName,
+                    created
+                ),
+                path: [state.moduleName, created.id.toString()]
             },
             {root: true}
         )
