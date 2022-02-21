@@ -13,6 +13,7 @@
         ...props.field,
         id: props.field.id ?? `${props.form}-${props.field.name}`
     }))
+    const labelCols = computed(() => props.field.labelCols ?? 2)
     const violations = inject<Ref<Violation[]>>('violations', ref([]))
     const violation = computed(() => violations.value.find(({propertyPath}) => propertyPath === props.field.name) ?? null)
     const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
@@ -25,7 +26,7 @@
 
 <template>
     <AppRow class="mb-3">
-        <AppLabel>
+        <AppLabel :cols="labelCols">
             {{ field.label }}
         </AppLabel>
         <AppCol>

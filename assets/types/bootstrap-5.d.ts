@@ -31,6 +31,7 @@ export declare type FormField = {
     btn?: boolean
     id?: string
     label: string
+    labelCols?: number
     name: string
     options?: FormOptions
     type?: FormInput

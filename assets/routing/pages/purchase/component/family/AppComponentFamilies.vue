@@ -1,20 +1,20 @@
 <script lang="ts" setup>
     import type {Actions, Getters} from '../../../../../store/purchase/component/families'
     import type {Violation, Violations} from '../../../../../types/types'
-    import {onMounted, provide, ref} from 'vue'
+    import {computed, onMounted, provide, ref} from 'vue'
     import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
     import type {FormField} from '../../../../../types/bootstrap-5'
 
     const {create, load} = useNamespacedActions<Actions>('families', ['create', 'load'])
     const {options} = useNamespacedGetters<Getters>('families', ['options'])
-    const fields: FormField[] = [
+    const fields = computed<FormField[]>(() => [
         {label: 'Parent', name: 'parent', options: options.value, type: 'select'},
         {label: 'Code', name: 'code', type: 'text'},
         {label: 'Nom', name: 'name', type: 'text'},
-        {label: 'Copperable', name: 'copperable', type: 'boolean'},
-        {label: 'Customs Code', name: 'customsCode', type: 'text'},
-        {label: 'file', name: 'file', type: 'file'}
-    ]
+        {label: 'Cuivre', name: 'copperable', type: 'boolean'},
+        {label: 'Code douanier', name: 'customsCode', type: 'text'},
+        {label: 'Icône', name: 'file', type: 'file'}
+    ])
     const loaded = ref(false)
     const violations = ref<Violation[]>([])
 
