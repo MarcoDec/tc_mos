@@ -8,7 +8,6 @@ use App\Entity\Api\Token;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Traits\NameTrait;
-use App\Repository\Hr\Employee\EmployeeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -38,7 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Employee-read'
         ]
     ),
-    ORM\Entity(repositoryClass: EmployeeRepository::class)
+    ORM\Entity
 ]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     use NameTrait;
@@ -71,7 +70,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     private ?string $username = null;
 
     #[Pure]
-    final public function __construct() {
+    public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
     }
@@ -160,15 +159,8 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      *
      * @see UserInterface
      */
-    final public function getUserIdentifier(): ?string {
-        return $this->username;
-    }
-
-    /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
-    final public function getUsername(): ?string {
-        return $this->username;
+    final public function getUserIdentifier(): string {
+        return (string) $this->username;
     }
 
     final public function removeApiToken(Token $apiToken): self {

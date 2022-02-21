@@ -4,14 +4,17 @@ namespace App\Fixtures;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Tightenco\Collect\Support\Collection;
 
 final class EntityConfig {
+    /** @var mixed[] */
+    private array $data = [];
+
     private ?string $deleted;
 
-    /** @var Collection<mixed> */
+    /** @var Collection<int, mixed> */
     private Collection $entities;
 
     /** @var array<int, int> */
@@ -21,8 +24,8 @@ final class EntityConfig {
     private array $properties;
 
     /**
-     * @param ClassMetadata<object>                                                                                                                    $metadata
-     * @param array{deleted?: string, properties: array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}} $config
+     * @param ClassMetadata<object>                             $metadata
+     * @param array{deleted?: string, properties: array<mixed>} $config
      */
     public function __construct(
         private Configurations $configurations,
@@ -31,11 +34,13 @@ final class EntityConfig {
         array $config
     ) {
         $this->deleted = $config['deleted'] ?? null;
-        $this->entities = collect();
+        /** @var mixed[] entities */
+        $entities = [];
+        $this->entities = collect($entities);
         $this->properties = collect($config['properties'])
-            ->map(static function (array $config, string $property): PropertyConfig {
-                /** @var array{new_name: string, new_ref?: class-string, old_ref?: string} $config */
-                return new PropertyConfig($property, $config);
+            ->map(static function (array $config): PropertyConfig {
+                /** @var array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string} $config */
+                return new PropertyConfig($config);
             })
             ->all();
     }
@@ -60,7 +65,21 @@ final class EntityConfig {
         return $this->metadata->getName();
     }
 
-    public function getId(string $id): ?int {
+    /**
+     * @return mixed[]
+     */
+    public function getData(): array {
+        return $this->data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDependencies(): array {
+        return collect($this->properties)->map->getOldRef()->filter()->unique()->values()->all();
+    }
+
+    public function getId(int $id): ?int {
         return $this->ids[$id] ?? null;
     }
 
@@ -68,6 +87,8 @@ final class EntityConfig {
      * @param mixed[] $data
      */
     public function setData(array $data, int $count): void {
+        $this->data = $data;
+
         foreach ($data as $entity) {
             if (!empty($this->deleted) && $entity[$this->deleted] !== '0') {
                 continue;
@@ -77,8 +98,14 @@ final class EntityConfig {
             $this->ids[(int) ($entity['id'])] = $id;
             foreach ($this->properties as $property => $config) {
                 $value = !$config->isNew() ? $entity[$property] : null;
+                if (is_string($value)) {
+                    $value = trim($value);
+                }
                 if ($config->isCountry()) {
                     $value = $this->configurations->getCountry($value);
+                }
+                if ($config->isCustomscode()) {
+                    $value = $this->configurations->getCustomscode($value);
                 }
                 if (!empty($forceValue = $config->getForceValue())) {
                     $value = $this->exprLang->evaluate($forceValue, $entity);
@@ -94,12 +121,13 @@ final class EntityConfig {
 
     public function toSQL(Connection $connection): string {
         $columns = $this->getColumns();
-        $sql = "INSERT INTO {$this->metadata->getTableName()} ({$columns->implode(', ')})";
-        $sqlEntities = collect();
+        /** @var Collection<int, string> $sqlEntities */
+        $sqlEntities = new Collection();
         foreach ($this->entities as $entity) {
-            $sqlEntity = collect();
+            /** @var Collection<int, string> $sqlEntity */
+            $sqlEntity = new Collection();
             foreach ($columns as $column) {
-                $sqlEntity[] = $connection->quote($entity[$column]);
+                $sqlEntity[] = $entity[$column] === null || $entity[$column] === '' ? 'NULL' : $connection->quote($entity[$column]);
             }
             $sqlEntities->push("({$sqlEntity->implode(', ')})");
         }
@@ -110,15 +138,13 @@ final class EntityConfig {
     }
 
     /**
-     * @return Collection<string>
+     * @return Collection<int, string>
      */
     private function getColumns(): Collection {
         $max = $this->getMaxColumns();
-        return collect(
-            $this->entities
-                ->first(static fn (Collection $entity): bool => $entity->keys()->count() === $max)
-                ->keys()
-        )->sort();
+        /** @var Collection<string, mixed>|null $columns */
+        $columns = $this->entities->first(static fn (Collection $entity): bool => $entity->keys()->count() === $max);
+        return (new Collection($columns))->keys()->sort();
     }
 
     private function getMaxColumns(): int {

@@ -27,6 +27,14 @@ class CronJob extends Entity {
         $this->setNext();
     }
 
+    final public function getCommand(): string {
+        return $this->command;
+    }
+
+    final public function getLast(): ?DateTimeImmutable {
+        return $this->last;
+    }
+
     final public function getNext(): DateTimeImmutable {
         return $this->next;
     }

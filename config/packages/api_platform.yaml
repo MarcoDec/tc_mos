@@ -1,7 +1,6 @@
 api_platform:
-  collection:
-    pagination:
-      items_per_page: 15
+  defaults:
+    pagination_items_per_page: 15
   enable_re_doc: false
   formats:
     jsonld: [ application/ld+json ]

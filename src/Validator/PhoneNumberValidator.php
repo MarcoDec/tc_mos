@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 final class PhoneNumberValidator extends CountryValidator {
-    public function validate($value, Constraint $constraint): void {
+    public function validate(mixed $value, Constraint $constraint): void {
         if (!$constraint instanceof PhoneNumberAttribute) {
             throw new UnexpectedTypeException($constraint, PhoneNumberAttribute::class);
         }
