@@ -20,7 +20,7 @@ export const getters: Getters = {
         return families
     },
     options(state, computed, rootState, rootGetters) {
-        const options = []
+        const options: FormOption[] = [{text: '', value: null}]
         for (const family of computed.families)
             options.push(rootGetters[`${family}/option`] as FormOption)
         return options.sort((a, b) => a.text.localeCompare(b.text))

@@ -28,6 +28,9 @@
 <template>
     <AppCard :id="id" :title="title" class="bg-blue">
         <AppForm :id="formdId" :fields="fields" :model-value="state" @submit="submit">
+            <template #start>
+                <slot name="start"/>
+            </template>
             <slot>
                 <AppBtn type="submit" variant="success">
                     <Fa icon="plus"/>

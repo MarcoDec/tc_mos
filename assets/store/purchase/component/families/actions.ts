@@ -6,6 +6,8 @@ declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
 export const actions = {
     async create({dispatch, state}: ActionContext, body: FormData): Promise<void> {
+        if (body.has('parent') && [null, '', '0', 'null'].includes(body.get('parent') as string))
+            body['delete']('parent')
         const response = await dispatch(
             'fetchApi',
             {

@@ -1,6 +1,6 @@
 import type {ComputedGetters, State} from '.'
-import {generateFamily} from '.'
 import type {StoreActionContext} from '../../../..'
+import {generateFamily} from '.'
 
 declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
@@ -11,7 +11,7 @@ export const actions = {
     },
     async update({dispatch, state}: ActionContext, body: FormData): Promise<void> {
         body.append('id', state.id.toString())
-        if (body.has('parent') && body.get('parent') === '0')
+        if (body.has('parent') && [null, '', '0', 'null'].includes(body.get('parent') as string))
             body['delete']('parent')
         const updated = await dispatch(
             'fetchApi',
