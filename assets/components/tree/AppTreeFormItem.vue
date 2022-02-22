@@ -1,7 +1,7 @@
 <script lang="ts" setup>
     import type {ComputedRef, Ref} from 'vue'
     import type {FormField, FormValues} from '../../types/bootstrap-5'
-    import {computed, defineProps, inject} from 'vue'
+    import {computed, defineProps, inject, provide} from 'vue'
     import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
 
     const props = defineProps<{id: string, selected: string}>()
@@ -16,8 +16,11 @@
             values[property] = state[property].value
         return values
     })
+    const violations = useNamespacedState(props.selected, ['violations']).violations
     const unselect = useNamespacedActions(parentModuleName.value, ['unselect']).unselect
     const update = useNamespacedActions(props.selected, ['update']).update as (body: FormData) => Promise<void>
+
+    provide('violations', violations)
 </script>
 
 <template>

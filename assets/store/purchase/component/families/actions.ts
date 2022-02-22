@@ -1,22 +1,32 @@
 import type {ComputedGetters, State} from '.'
 import type {StoreActionContext} from '../../..'
+import type {Violations} from '../../../../types/types'
 import {generateFamily} from './family'
 
 declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
 export const actions = {
-    async create({dispatch, state}: ActionContext, body: FormData): Promise<void> {
+    async create({commit, dispatch, state}: ActionContext, body: FormData): Promise<void> {
         if (body.has('parent') && [null, '', '0', 'null'].includes(body.get('parent') as string))
             body['delete']('parent')
-        const response = await dispatch(
-            'fetchApi',
-            {
-                body,
-                method: 'post',
-                url: '/api/component-families'
-            },
-            {root: true}
-        )
+        let response = null
+        try {
+            response = await dispatch(
+                'fetchApi',
+                {
+                    body,
+                    method: 'post',
+                    url: '/api/component-families'
+                },
+                {root: true}
+            )
+        } catch (e) {
+            if (e instanceof Response && e.status === 422) {
+                const violations = await e.json() as Violations
+                commit('violate', violations.violations)
+            }
+            return
+        }
         const created = {...response}
         if (typeof created.parent !== 'string')
             created.parent = '0'

@@ -15,5 +15,11 @@ export function generateFamily(
     family: Family,
     state: TreeItemAction = {opened: false, selected: false}
 ): Module<State> {
-    return {actions, getters, mutations, namespaced: true, state: {moduleName, parentModuleName, ...family, ...state}}
+    return {
+        actions,
+        getters,
+        mutations,
+        namespaced: true,
+        state: {moduleName, parentModuleName, violations: [], ...family, ...state}
+    }
 }

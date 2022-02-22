@@ -15,7 +15,7 @@ export const getters: Getters = {
     families(state) {
         const families = []
         for (const family of Object.values(state))
-            if (typeof family === 'object')
+            if (typeof family === 'object' && !Array.isArray(family))
                 families.push(family.moduleName)
         return families
     },

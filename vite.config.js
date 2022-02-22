@@ -18,7 +18,7 @@ export default defineConfig({
         symfonyPlugin(),
         vue(),
         checker({
-            eslint: {lintCommand: './assets/**/*.{ts,vue}'},
+            eslint: {lintCommand: 'eslint -c .eslintrc.js ./assets/**/*.{ts,vue}'},
             typescript: true,
             vueTsc: true
         })

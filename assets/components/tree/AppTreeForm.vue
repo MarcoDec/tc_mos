@@ -1,7 +1,7 @@
 <script lang="ts" setup>
     import type {ComputedRef, PropType, Ref} from 'vue'
     import type {FormField, FormValues} from '../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps, inject} from 'vue'
+    import {computed, defineEmits, defineProps, inject, provide} from 'vue'
     import {useNamespacedActions, useNamespacedState} from 'vuex-composition-helpers'
 
     const emit = defineEmits<(e: 'submit', data: FormData) => void>()
@@ -16,6 +16,7 @@
         update: {required: false, type: Boolean}
     })
     const formdId = computed(() => `${props.id}-form`)
+    const violations = useNamespacedState(parentModuleName.value, ['violations']).violations
 
     async function submit(data: FormData): Promise<void> {
         if (props.update)
@@ -23,6 +24,9 @@
         else
             await create(data)
     }
+
+    if (!props.update)
+        provide('violations', violations)
 </script>
 
 <template>
