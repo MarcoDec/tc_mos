@@ -18,7 +18,7 @@
     })
     const violations = useNamespacedState(props.selected, ['violations']).violations
     const unselect = useNamespacedActions(parentModuleName.value, ['unselect']).unselect
-    const update = useNamespacedActions(props.selected, ['update']).update as (body: FormData) => Promise<void>
+    const {remove, update} = useNamespacedActions(props.selected, ['remove', 'update'])
 
     provide('violations', violations)
 </script>
@@ -34,7 +34,7 @@
             <Fa icon="pencil-alt"/>
             Modifier
         </AppBtn>
-        <AppBtn variant="danger">
+        <AppBtn variant="danger" @click="remove">
             <Fa icon="trash"/>
             Supprimer
         </AppBtn>

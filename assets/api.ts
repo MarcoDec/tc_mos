@@ -46,13 +46,15 @@ export default async function fetchApi<U extends Urls, M extends Methods<U>>(
         })
     } else {
         init.headers['Content-Type'] = 'application/json'
-        if (method !== 'get')
+        if (!['delete', 'get'].includes(method as string))
             init.body = JSON.stringify(body)
         for (const key in body)
             if (generatedUrl.includes(`{${key}}`))
                 generatedUrl = generatedUrl.replace(`{${key}}`, body[key] as string)
     }
     const response = await fetch(generatedUrl, init)
+    if (method === 'delete')
+        return null as Response<U, M>
     if ([401, 422].includes(response.status))
         throw response
     const json = await response.json() as Response<U, M>

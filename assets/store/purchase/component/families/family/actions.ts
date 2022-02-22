@@ -7,6 +7,18 @@ import {generateFamily} from '.'
 declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
 export const actions = {
+    async remove({dispatch, state}: ActionContext): Promise<void> {
+        await dispatch(
+            'fetchApi',
+            {
+                body: {id: state.id},
+                method: 'delete',
+                url: '/api/component-families/{id}'
+            },
+            {root: true}
+        )
+        await dispatch('unregisterModule', state.moduleName.split('/'), {root: true})
+    },
     async select({commit, dispatch, state}: ActionContext): Promise<void> {
         await dispatch(`${state.parentModuleName}/unselect`, null, {root: true})
         commit('select', true)
