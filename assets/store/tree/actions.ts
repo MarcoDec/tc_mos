@@ -1,9 +1,15 @@
 import type {ComputedGetters, State} from '.'
-import type {StoreActionContext} from '../../..'
-import type {Violations} from '../../../../types/types'
-import {generateFamily} from './family'
+import type {Item} from './item'
+import type {StoreActionContext} from '..'
+import type {Violations} from '../../types/types'
+import {generateItem} from './item'
+import type {operations} from '../../types/openapi'
 
 declare type ActionContext = StoreActionContext<State, ComputedGetters>
+
+declare type ResponseLoad =
+    operations['getComponentFamilyCollection']['responses'][200]['content']['application/ld+json']
+    & operations['getProductFamilyCollection']['responses'][200]['content']['application/ld+json']
 
 export const actions = {
     async create({commit, dispatch, state}: ActionContext, body: FormData): Promise<void> {
@@ -16,10 +22,10 @@ export const actions = {
                 {
                     body,
                     method: 'post',
-                    url: '/api/component-families'
+                    url: state.url
                 },
                 {root: true}
-            )
+            ) as Item
         } catch (e) {
             if (e instanceof Response && e.status === 422) {
                 const violations = await e.json() as Violations
@@ -33,10 +39,11 @@ export const actions = {
         await dispatch(
             'registerModule',
             {
-                module: generateFamily(
+                module: generateItem(
                     `${state.moduleName}/${created.id.toString()}`,
                     state.moduleName,
-                    created
+                    created,
+                    state.url
                 ),
                 path: [state.moduleName, created.id.toString()]
             },
@@ -49,54 +56,34 @@ export const actions = {
             {
                 body: {},
                 method: 'get',
-                url: '/api/component-families'
+                url: state.url
             },
             {root: true}
-        )
-        const families: Promise<unknown>[] = [
-            dispatch(
+        ) as ResponseLoad
+        const items: Promise<unknown>[] = []
+        for (const item of response['hydra:member']) {
+            const stateItem = {...item}
+            if (typeof stateItem.parent !== 'string')
+                stateItem.parent = '0'
+            items.push(dispatch(
                 'registerModule',
                 {
-                    module: generateFamily(
-                        `${state.moduleName}/0`,
+                    module: generateItem(
+                        `${state.moduleName}/${stateItem.id.toString()}`,
                         state.moduleName,
-                        {
-                            '@context': '',
-                            '@id': '0',
-                            '@type': '',
-                            code: 'Familles',
-                            id: 0,
-                            name: 'Composants'
-                        },
-                        {opened: true, selected: false}
+                        stateItem,
+                        state.url
                     ),
-                    path: [state.moduleName, '0']
-                },
-                {root: true}
-            )
-        ]
-        for (const family of response['hydra:member']) {
-            const stateFamily = {...family}
-            if (typeof stateFamily.parent !== 'string')
-                stateFamily.parent = '0'
-            families.push(dispatch(
-                'registerModule',
-                {
-                    module: generateFamily(
-                        `${state.moduleName}/${stateFamily.id.toString()}`,
-                        state.moduleName,
-                        stateFamily
-                    ),
-                    path: [state.moduleName, stateFamily.id.toString()]
+                    path: [state.moduleName, stateItem.id.toString()]
                 },
                 {root: true}
             ))
         }
-        await Promise.all(families)
+        await Promise.all(items)
     },
     async unselect({commit, getters}: ActionContext): Promise<void> {
-        for (const family of getters.families)
-            commit(`${family}/select`, false, {root: true})
+        for (const item of getters.items)
+            commit(`${item}/select`, false, {root: true})
     }
 }
 

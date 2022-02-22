@@ -1,19 +1,19 @@
 <script lang="ts" setup>
     import {computed, defineProps, inject} from 'vue'
-    import {useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
-    import type {Ref} from 'vue'
+    import type {Getters} from '../../store/tree'
+    import {useNamespacedGetters} from 'vuex-composition-helpers'
 
+    const firstItem = inject('firstItem', '')
+    const moduleName = inject('moduleName', '')
     const props = defineProps<{id: string}>()
     const cardId = computed(() => `${props.id}-card`)
-    const modulePath = inject<string>('modulePath')
-    const parentModuleName = useNamespacedState(modulePath, ['parentModuleName']).parentModuleName as Ref<string>
-    const selected = useNamespacedGetters(parentModuleName.value, ['selected']).selected as Ref<boolean>
-    const formTag = computed(() => (selected.value ? 'AppTreeFormItem' : 'AppTreeForm'))
+    const selected = useNamespacedGetters<Getters>(moduleName, ['selected']).selected
+    const formTag = computed(() => (selected.value === null ? 'AppTreeForm' : 'AppTreeFormItem'))
 </script>
 
 <template>
     <AppRow :id="id">
-        <AppTree :module-path="modulePath" class="col"/>
+        <AppTree :module-path="firstItem" class="col"/>
         <component :is="formTag" :id="cardId" :selected="selected" class="col"/>
     </AppRow>
 </template>

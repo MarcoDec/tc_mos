@@ -21,8 +21,13 @@
         </AppNavbarBrand>
         <AppNavbarCollapse>
             <AppNavbarItem id="nav-purchase" icon="shopping-bag" title="Achats">
-                <AppNavbarLink icon="layer-group" to="families">
-                    Familles
+                <AppNavbarLink icon="layer-group" to="component-families">
+                    Familles de composants
+                </AppNavbarLink>
+            </AppNavbarItem>
+            <AppNavbarItem id="nav-purchase" icon="industry" title="Production">
+                <AppNavbarLink icon="layer-group" to="product-families">
+                    Familles de produits
                 </AppNavbarLink>
             </AppNavbarItem>
         </AppNavbarCollapse>

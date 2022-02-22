@@ -1,8 +1,8 @@
 import type {ComputedGetters, State} from '.'
-import type {StoreActionContext} from '../../../..'
-import type {Violations} from '../../../../../types/types'
-import type {components} from '../../../../../types/openapi'
-import {generateFamily} from '.'
+import type {StoreActionContext} from '../..'
+import type {Violations} from '../../../types/types'
+import type {components} from '../../../types/openapi'
+import {generateItem} from '.'
 
 declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
@@ -13,7 +13,7 @@ export const actions = {
             {
                 body: {id: state.id},
                 method: 'delete',
-                url: '/api/component-families/{id}'
+                url: state.url
             },
             {root: true}
         )
@@ -34,7 +34,7 @@ export const actions = {
                 {
                     body,
                     method: 'post',
-                    url: '/api/component-families/{id}'
+                    url: state.url
                 },
                 {root: true}
             ) as components['schemas']['ComponentFamily.jsonld-ComponentFamily-read']
@@ -51,15 +51,12 @@ export const actions = {
         const moduleName = state.moduleName
         const path = moduleName.split('/')
         const parentPath = state.parentModuleName
+        const url = state.baseUrl
         await dispatch('unregisterModule', path, {root: true})
         await dispatch(
             'registerModule',
             {
-                module: generateFamily(
-                    moduleName,
-                    parentPath,
-                    updated
-                ),
+                module: generateItem(moduleName, parentPath, updated, url),
                 path
             },
             {root: true}

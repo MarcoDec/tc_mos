@@ -1,5 +1,5 @@
 import type {State} from '.'
-import type {Violation} from '../../../../types/types'
+import type {Violation} from '../../types/types'
 
 export const mutations = {
     violate(state: State, violations: Violation[] = []): void {
