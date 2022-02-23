@@ -19,12 +19,21 @@
         <AppNavbarBrand to="home">
             T-Concept
         </AppNavbarBrand>
-        <div v-if="hasUser" class="text-white">
-            <Fa icon="user-circle"/>
-            {{ name }}
-            <AppBtn variant="danger" @click="handleLogout">
-                <Fa icon="sign-out-alt"/>
-            </AppBtn>
+        <AppNavbarCollapse v-if="hasUser">
+            <AppNavbarItem id="nav-purchase" icon="industry" title="Production">
+                <AppNavbarLink to="warehouse-list">
+                    Entrepots
+                </AppNavbarLink>
+            </AppNavbarItem>
+        </AppNavbarCollapse>
+        <div v-if="hasUser">
+            <div class="text-white">
+                <Fa icon="user-circle"/>
+                {{ name }}
+                <AppBtn variant="danger" @click="handleLogout">
+                    <Fa icon="sign-out-alt"/>
+                </AppBtn>
+            </div>
         </div>
     </AppNavbar>
 </template>

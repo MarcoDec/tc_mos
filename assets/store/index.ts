@@ -8,15 +8,17 @@ import {createStore} from 'vuex'
 import {generateSecurity} from './security'
 import {mutations} from './mutation'
 import {state} from './state'
+import {warehouseListItems} from './warehouseListItems'
+import {warehouseStocksItems} from './warehouseStocksItems'
 
 export type {Actions, State, Mutations}
-
 export function generateStore(security: Security): Store<State> {
     return createStore<State>({
         actions,
-        modules: {security: generateSecurity(security)},
+        modules: {security: generateSecurity(security), warehouseListItems, warehouseStocksItems},
         mutations,
         state,
         strict: process.env.NODE_ENV !== 'production'
     })
 }
+export type AppStore = ReturnType<typeof generateStore>

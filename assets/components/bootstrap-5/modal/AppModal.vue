@@ -44,6 +44,7 @@
                     <AppBtn data-bs-dismiss="modal" variant="danger">
                         Fermer
                     </AppBtn>
+                    <slot name="buttons"/>
                 </div>
             </div>
         </div>
