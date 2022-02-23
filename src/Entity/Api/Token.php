@@ -6,6 +6,7 @@ use App\Entity\Hr\Employee\Employee;
 use App\Repository\Api\TokenRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 
 #[ORM\Entity(repositoryClass: TokenRepository::class)]
 class Token {
@@ -49,6 +50,11 @@ class Token {
 
     final public function getToken(): string {
         return $this->token;
+    }
+
+    #[Pure]
+    final public function getUserIdentifier(): string {
+        return $this->employee->getUserIdentifier();
     }
 
     final public function isExpired(): bool {

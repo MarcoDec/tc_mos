@@ -8,7 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Throwable;
 
-// DataCollector dans debug bar pour CouchDB
+/**
+ * DataCollector dans debug bar pour CouchDB.
+ */
 class CouchdbCollector extends DataCollector {
     public function __construct(private CouchDBManager $manager) {
     }
@@ -73,8 +75,8 @@ class CouchdbCollector extends DataCollector {
      * @return array<string,int>
      */
     public function getIndicator(string $requestType): array {
-        $nbOk = collect($this->data['actions'])->filter(static fn (CouchdbLogItem $item) => !$item->isErrors() && $item->getRequestType() == $requestType)->count();
-        $nbKo = collect($this->data['actions'])->filter(static fn ($item) => $item->isErrors() && $item->getRequestType() == $requestType)->count();
+        $nbOk = collect($this->getActions())->filter(static fn (CouchdbLogItem $item) => !$item->isErrors() && $item->getRequestType() == $requestType)->count();
+        $nbKo = collect($this->getActions())->filter(static fn ($item) => $item->isErrors() && $item->getRequestType() == $requestType)->count();
         return ['ok' => $nbOk, 'ko' => $nbKo];
     }
 

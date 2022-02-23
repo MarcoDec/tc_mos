@@ -17,6 +17,7 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface {
      * @throws Exception
      */
     public function persist(mixed $data, array $context = []): void {
+        /** @var class-string $className */
         $className = get_class($data);
         $repoClassName = CouchDBManager::getRepositoryFromEntityClass($className);
         /** @var AbstractRepository $repo */
@@ -30,6 +31,7 @@ class CouchdbDataPersister implements ContextAwareDataPersisterInterface {
      * @throws Exception
      */
     public function remove(mixed $data, array $context = []): void {
+        /** @var class-string $className */
         $className = get_class($data);
         $repoClassName = CouchDBManager::getRepositoryFromEntityClass($className);
         /** @var AbstractRepository $repo */

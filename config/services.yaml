@@ -19,19 +19,30 @@ services:
       - ../src/Entity/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
-      - ../src/OpenApi/OpenApiWrapper.php
       - ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
 
-  App\Controller\:
-    resource: ../src/Controller
-    tags: [ controller.service_arguments ]
-
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
+  api_platform.openapi.factory:
+    arguments:
+      $filterLocator: '@api_platform.filter_locator'
+      $formats: '%api_platform.formats%'
+      $operationPathResolver: '@api_platform.operation_path_resolver'
+      $subresourceOperationFactory: '@api_platform.subresource_operation_factory'
+    autoconfigure: false
+    class: App\OpenApi\OpenApiFactory
+
+  App\DataCollector\CouchdbCollector:
+    tags:
+      - id: App\DataCollector\CouchdbCollector
+        name: data_collector
+        template: data_collector/couchdb_collector.html.twig
+
   App\Doctrine\ORM\Decorator\EntityManagerDecorator:
+    autoconfigure: false
     decorates: doctrine.orm.default_entity_manager
 
   App\EventListener\DeserializeListener:
@@ -40,6 +51,13 @@ services:
     tags:
       - event: kernel.request
         name: kernel.event_listener
+
+  App\EventListener\Embeddable\MeasureListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Interfaces\EmbeddedInterface
+        event: postLoad
+        name: doctrine.orm.entity_listener
 
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
@@ -68,25 +86,27 @@ services:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
       $dir: '%kernel.project_dir%/public'
-
-  App\OpenApi\OpenApiFactory:
-    arguments:
-      $dashGenerator: '@api_platform.path_segment_name_generator.dash'
     autoconfigure: false
-    decorates: api_platform.openapi.factory
 
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
 
+  App\OpenApi\SchemaFactory:
+    arguments:
+      $dashGenerator: '@api_platform.path_segment_name_generator.dash'
+    autoconfigure: false
+    decorates: api_platform.hydra.json_schema.schema_factory
+
+  App\Security\TokenAuthenticator:
+    arguments:
+      $map: '@security.access_map'
+
+  App\Serializer\ContextBuilderInterface:
+    autoconfigure: false
+    decorates: api_platform.serializer.context_builder
+
   App\Service\CouchDBManager:
     arguments:
       - '%env(COUCH_URL)%'
       - '%env(COUCH_DBNAME)%'
-
-  App\DataCollector\CouchdbCollector:
-    tags:
-      -
-        name: data_collector
-        template: 'data_collector/couchdb_collector.html.twig'
-        id: App\DataCollector\CouchdbCollector

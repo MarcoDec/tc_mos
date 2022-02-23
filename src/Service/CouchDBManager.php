@@ -199,8 +199,8 @@ class CouchDBManager {
     }
 
     /**
-     * @throws Exception
      * @throws ReflectionException
+     * @throws Exception
      *
      * @return array<mixed>
      */
@@ -325,8 +325,6 @@ class CouchDBManager {
         }
     }
 
-    //region CRUD document
-
     /**
      * Charge un document existant.
      */
@@ -351,6 +349,8 @@ class CouchDBManager {
         }
     }
 
+    //region CRUD document
+
     /**
      * Met à jour un document, cela incrémente sa révision.
      *
@@ -363,7 +363,10 @@ class CouchDBManager {
         try {
             //Suppression du cache
             $this->cache->delete(CouchdbDocumentEntity::getName($couchdbDocument->getId()));
-            [$id, $rev] = $this->client->putDocument(['content' => $couchdbDocument->getContent()], $couchdbDocument->getId(), $couchdbDocument->getRev());
+            /** @var array{0: int|string} $response */
+            $response = $this->client->putDocument(['content' => $couchdbDocument->getContent()], $couchdbDocument->getId(), $couchdbDocument->getRev());
+            /** @var int|string $id */
+            $id = $response[0];
             $couchLog->setDetail('Document '.$id.' updated');
             $this->actions[$time] = $couchLog;
             //Mise à jour du cache
@@ -375,7 +378,6 @@ class CouchDBManager {
             return null;
         }
     }
-    //endregion
 
     /**
      * Retourne la liste des Entités qui ont l'attribut Couchdb\Document.
@@ -386,6 +388,7 @@ class CouchDBManager {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
         $couchLog = new CouchdbLogItem('Entity CouchdbDocument documents', 'getCouchdbDocuments (List)', __METHOD__);
         try {
+            /** @var class-string[] $allClasses */
             $allClasses = ClassFinder::getClassesInNamespace('App\Entity', ClassFinder::RECURSIVE_MODE);
             $filteredClass = collect($allClasses)->filter(static function ($class) {
                 $reflexionClass = new ReflectionClass($class);
@@ -414,6 +417,7 @@ class CouchDBManager {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
         $couchLog = new CouchdbLogItem('all documents', 'getDocList', __METHOD__);
         try {
+            /** @var array{id: string}[] $rows */
             $rows = $this->allDocs()->body['rows'];
             $couchLog->setDetail(count($rows).' document(s) found');
             $this->actions[$time] = $couchLog;
@@ -425,6 +429,7 @@ class CouchDBManager {
             throw new Exception('La base '.$this->couchDBName.' n\'existe pas', 0);
         }
     }
+    //endregion
 
     /**
      * @return ArrayCollection<int,CouchdbDocumentEntity>
@@ -438,7 +443,7 @@ class CouchDBManager {
      *
      * @throws ReflectionException
      *
-     * @return array<string,array>
+     * @return array<string,mixed[]>
      */
     public function getLinkedORMProperties(object $document): array {
         $class = get_class($document);
@@ -566,6 +571,7 @@ class CouchDBManager {
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');
         $this->logger->info(__CLASS__.'/'.__METHOD__);
         $first = collect($entities)->first();
+        /** @var class-string $class */
         $class = get_class($first);
         $couchLog = new CouchdbLogItem($class, CouchdbLogItem::METHOD_DELETE, __METHOD__);
         if ($couchdbDoc = $this->documentRead($class)) {
@@ -608,6 +614,7 @@ class CouchDBManager {
     public function itemsUpdate(array $entities): void {
         $this->logger->info(__CLASS__.'/'.__METHOD__);
         $first = collect($entities)->first();
+        /** @var class-string $class */
         $class = get_class($first);
 
         $time = date_format(new DateTime('now'), 'Y/m/d - H:i:s:u');

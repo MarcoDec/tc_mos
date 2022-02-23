@@ -58,7 +58,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'string'),
-    ORM\DiscriminatorMap(Group::TYPES),
+    ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'engine_group')
@@ -66,7 +66,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class Group extends Entity {
     use NameTrait;
 
-    private const TYPES = [
+    public const TYPES = [
         'counter-part' => CounterPartGroup::class,
         'tool' => ToolGroup::class,
         'workstation' => WorkstationGroup::class

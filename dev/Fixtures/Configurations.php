@@ -4,6 +4,8 @@ namespace App\Fixtures;
 
 use App\ExpressionLanguage\ExpressionLanguageProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Illuminate\Support\Collection;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 final class Configurations {
@@ -12,6 +14,9 @@ final class Configurations {
 
     /** @var array<int, string> */
     private array $countries = [];
+
+    /** @var array<int, string> */
+    private array $customscode = [];
 
     private ExpressionLanguage $exprLang;
 
@@ -46,24 +51,47 @@ final class Configurations {
         return $count;
     }
 
-    /**
-     * @return mixed
-     */
-    public function findData(string $name, int $id) {
+    public function findData(string $name, int $id): mixed {
         return $this->configurations[$name]->findData($id);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    #[Pure]
+    public function findEntities(string $name): array {
+        return $this->configurations[$name]->getData();
     }
 
     public function getCountry(int $id): ?string {
         return $this->countries[$id] ?? null;
     }
 
-    public function getId(string $name, string $id): ?int {
+    public function getCustomscode(int $id): ?string {
+        return $this->customscode[$id] ?? null;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDependencies(string $name): array {
+        return $this->configurations[$name]->getDependencies();
+    }
+
+    public function getId(string $name, int $id): ?int {
         return $this->configurations[$name]->getId($id);
     }
 
     public function persist(): void {
-        foreach ($this->configurations as $config) {
-            $this->em->getConnection()->executeStatement($config->toSQL($this->em->getConnection()));
+        /** @var Collection<int, string> $processed */
+        $processed = new Collection();
+        $configurations = collect($this->configurations);
+        while ($configurations->isNotEmpty()) {
+            foreach ($configurations as $current => $config) {
+                $this->persistEntities($config, $current, $processed);
+            }
+
+            $configurations = $configurations->filter(static fn (EntityConfig $config, string $name): bool => $processed->doesntContain($name));
         }
     }
 
@@ -80,6 +108,18 @@ final class Configurations {
     }
 
     /**
+     * @param array{code: string, id: string, statut: string}[] $customscode
+     */
+    public function setCustomscode(array $customscode): void {
+        $this->customscode = collect($customscode)
+            ->mapWithKeys(static function (array $code): array {
+                /** @var array{code: string, id: string, statut: string} $code */
+                return empty($code['statut']) || $code['statut'] === '0' ? [(int) $code['id'] => $code['code']] : [];
+            })
+            ->all();
+    }
+
+    /**
      * @param mixed[] $data
      */
     public function setData(string $name, array $data): void {
@@ -87,5 +127,19 @@ final class Configurations {
             data: $data,
             count: $this->count($this->configurations[$name]->getClassName())
         );
+    }
+
+    /**
+     * @param Collection<int, string> $processed
+     */
+    private function persistEntities(EntityConfig $config, string $current, Collection $processed): void {
+        $dependencies = $config->getDependencies();
+        foreach ($dependencies as $dependency) {
+            if (!$processed->contains($dependency) && $dependency !== $current) {
+                return;
+            }
+        }
+        $this->em->getConnection()->executeStatement($config->toSQL($this->em->getConnection()));
+        $processed->push($current);
     }
 }
