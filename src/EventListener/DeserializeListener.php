@@ -5,7 +5,6 @@ namespace App\EventListener;
 use ApiPlatform\Core\EventListener\DeserializeListener as ApiDeserializeListener;
 use ApiPlatform\Core\Serializer\SerializerContextBuilderInterface;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
-use App\Service\CouchDBManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -16,8 +15,7 @@ final class DeserializeListener {
         private ApiDeserializeListener $decorated,
         private DenormalizerInterface $denormalizer,
         private EntityManagerInterface $em,
-        private SerializerContextBuilderInterface $serializer,
-        private CouchDBManager $couchDBManager
+        private SerializerContextBuilderInterface $serializer
     ) {
     }
 
@@ -61,17 +59,13 @@ final class DeserializeListener {
      * @return mixed[]
      */
     private function getData(array $context, Request $request): array {
-        if (!$this->couchDBManager->isCouchdbDocument(new $context['resource_class']())) {
-            $metadata = $this->em->getClassMetadata($context['resource_class']);
-            return collect(array_merge($request->request->all(), $request->files->all()))
-                ->map(static function ($value, string $name) use ($metadata) {
-                    return $metadata->getTypeOfField($name) === 'boolean'
-                        ? is_string($value) && $value === 'true' || $value
-                        : $value;
-                })
-                ->all();
-        } else {
-            return collect(array_merge($request->request->all(), $request->files->all()))->all();
-        }
+        $metadata = $this->em->getClassMetadata($context['resource_class']);
+        return collect(array_merge($request->request->all(), $request->files->all()))
+            ->map(static function ($value, string $name) use ($metadata) {
+                return $metadata->getTypeOfField($name) === 'boolean'
+                    ? is_string($value) && $value === 'true' || $value
+                    : $value;
+            })
+            ->all();
     }
 }

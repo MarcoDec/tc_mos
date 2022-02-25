@@ -20,10 +20,10 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     container_name: tconcept_gpao_mysql
     environment:
-      MYSQL_DATABASE: ${DATABASE_DBNAME}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: sf4
+      MYSQL_PASSWORD: sf4
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_USER: sf4
     restart: always
     volumes:
       - ./docker/mysql/db:/var/lib/mysql:delegated
@@ -38,7 +38,6 @@ services:
     container_name: tconcept_gpao_php
     depends_on:
       - mysql
-      - couchdb
     ports:
       - '8001:8001'
     restart: always
@@ -64,19 +63,4 @@ services:
     restart: always
     volumes:
       - /sessions
-
-  couchdb:
-    container_name: tconcept_gpao_couchdb
-    environment:
-      COUCHDB_PASSWORD: ${COUCH_PASSWORD}
-      COUCHDB_SECRET: ${APP_SECRET}
-      COUCHDB_USER: ${COUCH_USER}
-      NODENAME: couchdb-0
-    image: couchdb:3.2.0
-    restart: always
-    ports:
-      - "5984:5984"
-      #- "5986:5986"
-    volumes:
-      - ./docker/couchdb/db:/opt/couchdb/data:delegated
-version: "3.5"
+version: '3.1'
