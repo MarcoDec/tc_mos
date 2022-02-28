@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-    import type {Actions, Getters} from '../../../store/supplierItems'
-    import {
-        useNamespacedActions,
-        useNamespacedGetters
-    } from 'vuex-composition-helpers'
-    import {onMounted} from 'vue'
+    import {defineProps} from 'vue'
     import {useRoute} from 'vue-router'
+    import {Items} from "../../../store/supplierItems/supplierItem/getters";
+
+    const props = defineProps<{items:Items}>()
 
     const route = useRoute()
     const fields = [
@@ -30,12 +28,7 @@
 
     ]
 
-    const fetchItem = useNamespacedActions<Actions>('supplierItems', ['fetchItem']).fetchItem
-    const {items} = useNamespacedGetters<Getters>('supplierItems', ['items'])
 
-    onMounted(async () => {
-        await fetchItem()
-    })
 </script>
 
 <template>

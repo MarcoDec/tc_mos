@@ -52,7 +52,6 @@ export const actions = {
                 ),
             )
         await Promise.all(supplierItems)
-        commit('listItem',response)
     },
 }
 

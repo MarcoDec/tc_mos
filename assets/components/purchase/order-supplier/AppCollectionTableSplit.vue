@@ -41,7 +41,7 @@
       </AppCol>
     </AppRow>
  <div>
-   <AppTableSplit :fields="fields" :items="items"/>
+   <AppTableSplit :fields="fields" :item="item"/>
  </div>
 
   </div>
