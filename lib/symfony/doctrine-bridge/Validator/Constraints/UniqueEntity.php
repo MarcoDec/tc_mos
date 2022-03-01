@@ -15,6 +15,6 @@ final class UniqueEntity extends DoctrineUniqueEntity {
             $fields = [$fields];
         }
         $fields[] = 'deleted';
-        parent::__construct($fields);
+        parent::__construct(fields: $fields, ignoreNull: false);
     }
 }

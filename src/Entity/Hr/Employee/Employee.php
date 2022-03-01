@@ -147,7 +147,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     }
 
     #[
-        ApiProperty(description: 'Token', example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
+        ApiProperty(description: 'Token', required: true, example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
         Serializer\Groups(['read:employee'])
     ]
     final public function getToken(): ?string {
@@ -161,6 +161,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      */
     final public function getUserIdentifier(): string {
         return (string) $this->username;
+    }
+
+    final public function getUsername(): ?string {
+        return $this->username;
     }
 
     final public function removeApiToken(Token $apiToken): self {

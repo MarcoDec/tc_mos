@@ -26,8 +26,8 @@ final class Configurations {
     }
 
     /**
-     * @param class-string                                                                                                                             $entity
-     * @param array{deleted?: string, properties: array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}} $config
+     * @param class-string $entity
+     * @param array{deleted?: string, properties: array{country?: bool, customscode?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}[]} $config
      */
     public function addConfig(string $name, string $entity, array $config): void {
         $this->configurations[$name] = new EntityConfig(

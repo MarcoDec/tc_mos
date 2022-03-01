@@ -24,8 +24,8 @@ final class EntityConfig {
     private array $properties;
 
     /**
-     * @param ClassMetadata<object>                             $metadata
-     * @param array{deleted?: string, properties: array<mixed>} $config
+     * @param ClassMetadata<object> $metadata
+     * @param array{deleted?: string, properties: array{country?: bool, customscode?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}[]} $config
      */
     public function __construct(
         private Configurations $configurations,
@@ -39,7 +39,7 @@ final class EntityConfig {
         $this->entities = collect($entities);
         $this->properties = collect($config['properties'])
             ->map(static function (array $config): PropertyConfig {
-                /** @var array{force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string} $config */
+                /** @var array{country?: bool, customscode?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string} $config */
                 return new PropertyConfig($config);
             })
             ->all();

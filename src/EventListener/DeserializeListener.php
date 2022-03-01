@@ -21,15 +21,11 @@ final class DeserializeListener {
 
     public function __invoke(RequestEvent $event): void {
         $request = $event->getRequest();
-        if (
-            $request->isMethodCacheable()
-            || $request->isMethod(Request::METHOD_DELETE)
-            || empty($event->getRequest()->getContent())
-        ) {
+        if ($request->isMethodCacheable() || $request->isMethod(Request::METHOD_DELETE)) {
             return;
         }
 
-        if ($request->getContentType() !== 'multipart') {
+        if (!in_array($request->getContentType(), ['form', 'multipart'])) {
             $this->decorated->onKernelRequest($event);
         }
 

@@ -134,6 +134,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         'type' => 'string'
                     ]
                 ],
+                'required' => ['password', 'username'],
                 'type' => 'object'
             ]),
             'Measure-duration' => new ArrayObject([
@@ -202,6 +203,52 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         'type' => 'number'
                     ]
                 ],
+                'type' => 'object'
+            ]),
+            'Violation' => new ArrayObject([
+                'properties' => [
+                    'code' => [
+                        'example' => 'c1051bb4-d103-4f74-8988-acbcafc7fdc3',
+                        'type' => 'string'
+                    ],
+                    'message' => [
+                        'example' => 'This value should not be blank.',
+                        'type' => 'string'
+                    ],
+                    'propertyPath' => [
+                        'example' => 'name',
+                        'type' => 'string'
+                    ]
+                ],
+                'required' => ['code', 'message', 'propertyPath'],
+                'type' => 'object'
+            ]),
+            'Violations' => new ArrayObject([
+                'properties' => [
+                    '@context' => [
+                        'example' => '/api/contexts/ConstraintViolationList',
+                        'type' => 'string'
+                    ],
+                    '@type' => [
+                        'example' => 'ConstraintViolationList',
+                        'type' => 'string'
+                    ],
+                    'hydra:title' => [
+                        'example' => 'An error occurred',
+                        'type' => 'string'
+                    ],
+                    'hydra:description' => [
+                        'example' => "name: This value should not be blank.\nname: This value should not be blank.",
+                        'type' => 'string'
+                    ],
+                    'violations' => [
+                        'items' => [
+                            '$ref' => '#/components/schemas/Violation'
+                        ],
+                        'type' => 'array'
+                    ]
+                ],
+                'required' => ['violations'],
                 'type' => 'object'
             ])
         ]);

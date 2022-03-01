@@ -2,12 +2,17 @@
 
 namespace App\OpenApi;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Core\JsonSchema\Schema;
 use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use App\Entity\Embeddable\Measure;
+use Illuminate\Support\Collection;
+use ReflectionAttribute;
+use ReflectionClass;
+use ReflectionException;
 
 final class SchemaFactory implements SchemaFactoryInterface {
     public function __construct(
@@ -18,6 +23,32 @@ final class SchemaFactory implements SchemaFactoryInterface {
     }
 
     /**
+     * @param class-string $className
+     */
+    private static function isRequired(string $className, string $propertyName): bool {
+        $refl = new ReflectionClass($className);
+        /** @var Collection<int, ReflectionAttribute<ApiProperty>> $attrs */
+        $attrs = new Collection();
+        try {
+            $attrs = $attrs->merge($refl->getProperty($propertyName)->getAttributes(ApiProperty::class));
+        } catch (ReflectionException $e) {
+        }
+        try {
+            $attrs = $attrs->merge($refl->getMethod('get'.ucfirst($propertyName))->getAttributes(ApiProperty::class));
+        } catch (ReflectionException $e) {
+        }
+        foreach ($attrs as $attr) {
+            /** @var ApiProperty $apiProperty */
+            $apiProperty = $attr->newInstance();
+            if ($apiProperty->required) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param class-string               $className
      * @param null|Schema<string, mixed> $schema
      * @param mixed[]|null               $serializerContext
      *
@@ -66,6 +97,32 @@ final class SchemaFactory implements SchemaFactoryInterface {
                 $definitions[$key]['properties']['@context']['example'] = "/api/contexts/$resourceName";
                 $definitions[$key]['properties']['@id']['example'] = "/api/{$this->dashGenerator->getSegmentName($resourceName)}/1";
                 $definitions[$key]['properties']['@type']['example'] = $resourceName;
+                if ($type === Schema::TYPE_OUTPUT) {
+                    if (!isset($definitions[$key]['required'])) {
+                        $definitions[$key]['required'] = [];
+                    }
+                    $jsonldRequired = ['@context', '@id', '@type'];
+                    foreach ($jsonldRequired as $property) {
+                        if (!in_array($property, $definitions[$key]['required'])) {
+                            $definitions[$key]['required'][] = $property;
+                        }
+                    }
+                    if (isset($definitions[$key]['properties']['id']) && !in_array('id', $definitions[$key]['required'])) {
+                        $definitions[$key]['required'][] = 'id';
+                    }
+                }
+                foreach (array_keys($definitions[$key]['properties']) as $property) {
+                    /** @var string $property */
+                    if (self::isRequired($className, $property)) {
+                        if (!isset($definitions[$key]['required'])) {
+                            $definitions[$key]['required'] = [];
+                        }
+                        if (!in_array($property, $definitions[$key]['required'])) {
+                            $definitions[$key]['required'][] = $property;
+                        }
+                        $definitions[$key]['properties'][$property]['nullable'] = false;
+                    }
+                }
             }
         }
 

@@ -2,13 +2,13 @@
 
 namespace App\Entity\Project\Product;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\PlaceholderAction;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\CurrentPlace;
@@ -115,6 +115,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
             'promote' => [
                 'controller' => PlaceholderAction::class,
+                'deserialize' => false,
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite le produit à son prochain statut de workflow',
@@ -127,7 +128,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                             'type' => 'string'
                         ]
                     ]],
-                    'requestBody' => ['content' => ['application/merge-patch+json' => []]],
+                    'requestBody' => [
+                        'content' => [],
+                        'required' => false
+                    ],
                     'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
                 'path' => '/products/{id}/promote/{transition}',
