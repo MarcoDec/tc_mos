@@ -1,5 +1,4 @@
 import {defineConfig} from 'vite'
-import {resolve} from 'path'
 import checker from 'vite-plugin-checker'
 import vue from '@vitejs/plugin-vue'
 import symfonyPlugin from 'vite-plugin-symfony'
@@ -10,21 +9,21 @@ export default defineConfig({
         assetsDir: '',
         emptyOutDir: true,
         manifest: true,
-        outDir: '../public/build/',
+        outDir: './public/build/',
         rollupOptions: {
-            input: {app: './app.ts'}
+            input: {index: './assets/index.ts'}
         }
     },
     plugins: [
         symfonyPlugin(),
         vue(),
         checker({
-            eslint: {extensions: ['.ts', '.vue'], files: [resolve('assets')]},
+            eslint: {lintCommand: 'eslint -c .eslintrc.js ./assets/**/*.{ts,vue}'},
             typescript: true,
             vueTsc: true
         })
     ],
-    root: './assets',
+    root: './',
     server: {
         force: true,
         fs: {

@@ -1,111 +1,65 @@
-/* eslint-disable @typescript-eslint/no-unused-vars,@typescript-eslint/no-shadow,no-undefined,@typescript-eslint/no-unsafe-argument,no-return-assign,@typescript-eslint/ban-ts-comment,@typescript-eslint/no-explicit-any */
-/**
- * https://grafikart.fr/tutoriels/typescript-openapi-types-1926
- */
+/* eslint-disable @typescript-eslint/ban-types,@typescript-eslint/ban-ts-comment,consistent-return */
+import * as Cookies from './cookie'
+import type {Merge} from './types/types'
 import type {paths} from './types/openapi'
 
-/**
- * Utility types
- */
-// Filtre un objet en retirant les clefs qui ne satisfont pas la condition C
-type Filter<T, C> = Pick<T, {
-    [Key in keyof T]: T[Key] extends C ? Key : never;
-}[keyof T]>
-// Trouve les valeurs qui sont dans tous les ensembles T
-type KeysOfUnion<T> = T extends T ? keyof T : never
-// Trouve le type d'une valeur en profondeur dans un object Get<obj, ["player", "firstname"]>
-type Get<T, K extends any[], D = never> = K extends []
-    ? T
-    : K extends [infer A, ...infer B]
-        ? A extends keyof T
-            ? Get<T[A], B>
-            : D
-        : D
-// Extrait la liste des clefs requises
-type RequiredKeys<T> = {
-    [K in keyof T]-?: T extends Record<K, T[K]> ? K : never;
-}[keyof T]
-// Vérifie si toutes les sous clef sont requise dans T, renvoie never si ce n'est pas le cas
-type AllRequiredKey<T> = {
-    [K in keyof T]: RequiredKeys<T[K]> extends never ? K : never;
-}[keyof T]
-// Rend certaines clefs optionnelles
-type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
-// Rend les clefs, qui n'ont que des valeurs optionnelles, optionnelles
-type OptionalDeep<T> = Optional<T, AllRequiredKey<T>>
-// Retire les valeur "never" des clefs d'un objet
-type PickDefined<T> = Pick<T,
-{[K in keyof T]: T[K] extends never ? never : K}[keyof T]>
+declare type Content<T> = T extends {requestBody: {content: infer A}} ? A : {}
+declare type Responses<T> = T extends {responses: infer A} ? A : {}
 
-/*
- * API Related types
- */
-export type Paths = keyof paths
-type PathMethods<Path extends Paths> = keyof paths[Path]
-type HTTPSuccess = 200 | 201 | 204
-export type Methods = KeysOfUnion<paths[keyof paths]>
-export type ApiResponse<Path, Method, Type = 'application/ld+json'> = Get<paths,
-[Path, Method, 'responses', HTTPSuccess, 'content', Type]>
-type ApiParam<Path, Method, Parameter> = Get<paths,
-[Path, Method, 'parameters', Parameter]>
-type ApiRequestBody<Path, Method, Type = 'application/json'> = Get<paths,
-[Path, Method, 'requestBody', 'content', Type]>
-export type FetchOptions<Path, Method> = OptionalDeep<PickDefined<{
-    query: ApiParam<Path, Method, 'query'>;
-    params: ApiParam<Path, Method, 'path'>;
-    json: ApiRequestBody<Path, Method>;
-}>> & RequestInit & {
-    method?: Method;
-    headers?: Record<string, string>;
-}
+export declare type Urls = keyof paths
+declare type Operations<U extends Urls> = paths[U]
+export declare type Methods<U extends Urls> = keyof Operations<U>
+declare type Operation<U extends Urls, M extends Methods<U>> = Operations<U>[M]
+declare type Parameters<U extends Urls, M extends Methods<U>> = Operation<U, M> extends {parameters: {path: infer A}} ? A : {}
+declare type BodyContent<U extends Urls, M extends Methods<U>> =
+    Content<Operation<U, M>> extends {'multipart/form-data': Record<string, unknown>}
+        ? FormData
+        : Content<Operation<U, M>> extends {'application/json': infer A}
+            ? A
+            : {}
+export declare type ApiBody<U extends Urls, M extends Methods<U>> = Merge<Parameters<U, M>, BodyContent<U, M>>
+export declare type Response<U extends Urls, M extends Methods<U>> =
+    Responses<Operation<U, M>> extends {201: {content: {'application/ld+json': infer A}}}
+        ? A
+        : Responses<Operation<U, M>> extends {200: {content: {'application/ld+json': infer A}}}
+            ? A
+            : never
 
-export async function fetchApi<Path extends Paths, Method extends Methods = 'get'>(
-    path: Path,
-    options?: FetchOptions<Path, Method>
-): Promise<ApiResponse<Path, Method>> {
-    const o = {
-        headers: {},
-        ...options
-    } as RequestInit & {
-        json?: object;
-        headers: Record<string, string>;
-        query?: Record<string, any>;
-        params?: Record<string, any>;
-    }
-    const query = o.query
-    const params = o.params
-    let url = path
-    o.headers.Accept = 'application/ld+json'
-    // Si on a une clef json, alors la requête aura un body json
-    if (o.json) {
-        o.body = JSON.stringify(o.json)
-        o.headers['Content-Type'] = 'application/json'
-    }
-    // On ajoute les query parameters à l'URL
-    if (query) {
-        const params = new URLSearchParams()
-        Object.keys(query).forEach((k: string) => {
-            if (query[k] !== undefined) {
-                params.set(k, query[k])
-            }
+declare type ApiHeaders = HeadersInit & {'Content-Type'?: string}
+
+export default async function fetchApi<U extends Urls, M extends Methods<U>>(
+    url: U,
+    method: M,
+    body: ApiBody<U, M>
+    // @ts-ignore
+): Promise<Response<U, M>> {
+    const headers: ApiHeaders = {Accept: 'application/ld+json'}
+    const token = Cookies.get('token')
+    if (typeof token === 'string')
+        headers.Authorization = `Bearer ${token}`
+    const init: Omit<RequestInit, 'headers'> & {headers: ApiHeaders} = {headers, method: method as string}
+    let generatedUrl: string = url
+    if (body instanceof FormData) {
+        init.body = body
+        body.forEach((value, key) => {
+            if (generatedUrl.includes(`{${key}}`))
+                generatedUrl = generatedUrl.replace(`{${key}}`, value as string)
         })
-        // @ts-ignore
-        url += `?${params.toString()}`
+    } else {
+        init.headers['Content-Type'] = 'application/json'
+        if (!['delete', 'get'].includes(method as string))
+            init.body = JSON.stringify(body)
+        for (const key in body)
+            if (generatedUrl.includes(`{${key}}`))
+                generatedUrl = generatedUrl.replace(`{${key}}`, body[key] as string)
     }
-    // On remplace les paramètres dans l'url ("/path/{id}" par exemple)
-    if (params) {
-        Object.keys(params).forEach(
-            // @ts-ignore
-            k => url = url.replace(`{${k}}`, params[k])
-        )
+    const response = await fetch(generatedUrl, init)
+    if (method === 'delete')
+        return null as Response<U, M>
+    if ([401, 422].includes(response.status))
+        throw response
+    if (response.status !== 204) {
+        const json = await response.json() as Response<U, M>
+        return json
     }
-    return fetch(url, o).then(r => {
-        if (r.status === 204) {
-            return null
-        }
-        if (r.status >= 200 && r.status < 300) {
-            return r.json()
-        }
-        throw r
-    })
 }
