@@ -8,13 +8,13 @@ parameters:
   place_draft: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DRAFT
   place_to_validate: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_TO_VALIDATE
   place_under_exemption: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_UNDER_EXEMPTION
-  tr_block: !php/const App\Entity\Embeddable\CurrentPlace::TR_BLOCK
-  tr_disable: !php/const App\Entity\Embeddable\CurrentPlace::TR_DISABLE
-  tr_partially_unlock: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_UNLOCK
-  tr_partially_validate: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_VALIDATE
-  tr_submit_validation: !php/const App\Entity\Embeddable\CurrentPlace::TR_SUBMIT_VALIDATION
-  tr_unlock: !php/const App\Entity\Embeddable\CurrentPlace::TR_UNLOCK
-  tr_validate: !php/const App\Entity\Embeddable\CurrentPlace::TR_VALIDATE
+  tr_block: !php/const App\Doctrine\Entity\Embeddable\CurrentPlace::TR_BLOCK
+  tr_disable: !php/const App\Doctrine\Entity\Embeddable\CurrentPlace::TR_DISABLE
+  tr_partially_unlock: !php/const App\Doctrine\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_UNLOCK
+  tr_partially_validate: !php/const App\Doctrine\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_VALIDATE
+  tr_submit_validation: !php/const App\Doctrine\Entity\Embeddable\CurrentPlace::TR_SUBMIT_VALIDATION
+  tr_unlock: !php/const App\Doctrine\Entity\Embeddable\CurrentPlace::TR_UNLOCK
+  tr_validate: !php/const App\Doctrine\Entity\Embeddable\CurrentPlace::TR_VALIDATE
   wf_audit_trail:
     enabled: true
   wf_marking_store:

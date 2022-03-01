@@ -6,7 +6,7 @@ use JetBrains\PhpStorm\Pure;
 use ReflectionClass;
 
 /**
- * @template T of \App\Document\Document
+ * @template T of \App\CouchDB\Document\Document
  */
 final class Metadata {
     /**

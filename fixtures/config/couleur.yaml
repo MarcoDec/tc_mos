@@ -1,4 +1,4 @@
-App\Entity\Management\Color:
+App\Doctrine\Entity\Management\Color:
   properties:
     name:
       new_name: name

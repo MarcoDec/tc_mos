@@ -1,4 +1,4 @@
-App\Entity\Project\Product\Family:
+App\Doctrine\Entity\Project\Product\Family:
   deleted: statut
   properties:
     family_name:

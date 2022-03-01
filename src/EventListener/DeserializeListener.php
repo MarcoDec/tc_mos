@@ -5,9 +5,9 @@ namespace App\EventListener;
 use ApiPlatform\Core\EventListener\DeserializeListener as ApiDeserializeListener;
 use ApiPlatform\Core\Serializer\SerializerContextBuilderInterface;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
+use App\CouchDB\Document\Document;
 use App\CouchDB\DocumentManager;
-use App\Document\Document;
-use App\Entity\Entity;
+use App\Doctrine\Entity\Entity;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,7 +56,7 @@ final class DeserializeListener {
     }
 
     /**
-     * @template T of \App\Document\Document|\App\Entity\Entity
+     * @template T of \App\CouchDB\Document\Document|\App\Doctrine\Entity\Entity
      *
      * @param array{resource_class: class-string<T>} $context
      *

@@ -2,8 +2,8 @@
 
 namespace App\Doctrine\DBAL;
 
+use App\Doctrine\Entity\Entity;
 use App\Doctrine\ORM\Decorator\EntityManagerDecorator;
-use App\Entity\Entity;
 use Doctrine\DBAL\Connection as DoctrineConnection;
 
 final class Connection extends DoctrineConnection {

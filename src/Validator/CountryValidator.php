@@ -2,7 +2,7 @@
 
 namespace App\Validator;
 
-use App\Entity\Embeddable\Address;
+use App\Doctrine\Entity\Embeddable\Address;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 

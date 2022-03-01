@@ -2,13 +2,13 @@
 
 namespace App\CouchDB\Metadata;
 
-use App\Document\Document;
+use App\CouchDB\Document\Document;
 use InvalidArgumentException;
 use ReflectionClass;
 
 final class MetadataFactory {
     /**
-     * @template T of \App\Document\Document
+     * @template T of \App\CouchDB\Document\Document
      *
      * @param class-string<T> $class
      *

@@ -5,7 +5,7 @@ namespace App\Doctrine;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
-use App\Entity\Entity;
+use App\Doctrine\Entity\Entity;
 use Doctrine\ORM\QueryBuilder;
 
 final class EntityExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface {

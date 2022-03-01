@@ -2,21 +2,34 @@
 
 namespace App\CouchDB;
 
+use App\CouchDB\Document\Document;
 use App\CouchDB\Metadata\Metadata;
 use App\CouchDB\Metadata\MetadataFactory;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\CouchDB\Repository\DocumentRepository;
+use Exception;
 
 final class DocumentManager {
     public function __construct(
-        private HttpClientInterface $couchdbClient,
+        private CouchDBClient $couchdbClient,
         private MetadataFactory $factory,
-        private SerializerInterface $serializer
+        private DocumentRepository $repo
     ) {
     }
 
     /**
-     * @template T of \App\Document\Document
+     * @template T of \App\CouchDB\Document\Document
+     *
+     * @param class-string<T>      $class
+     * @param array<string, mixed> $criteria
+     *
+     * @return T[]
+     */
+    public function findBy(string $class, array $criteria = []): array {
+        return $this->repo->findBy($class, $criteria);
+    }
+
+    /**
+     * @template T of \App\CouchDB\Document\Document
      *
      * @param class-string<T> $class
      *
@@ -26,11 +39,17 @@ final class DocumentManager {
         return $this->factory->getMetadata($class);
     }
 
-    public function persist(object $entity): void {
-        $this->couchdbClient->request(
-            method: 'POST',
-            url: '_bulk_docs',
-            options: ['body' => $this->serializer->serialize(['docs' => [$entity]], 'jsonld', ['groups' => 'couchdb'])]
-        );
+    public function isDocument(string $class): bool {
+        try {
+            /** @phpstan-ignore-next-line */
+            $this->getMetadata($class);
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function persist(Document $entity): void {
+        $this->couchdbClient->persist($entity);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Tests\Entity\Embeddable;
 
-use App\Entity\Embeddable\Measure;
-use App\Entity\Management\Unit;
+use App\Doctrine\Entity\Embeddable\Measure;
+use App\Doctrine\Entity\Management\Unit;
 use PHPUnit\Framework\TestCase;
 
 final class MeasureTest extends TestCase {

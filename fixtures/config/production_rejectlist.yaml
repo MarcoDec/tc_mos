@@ -1,4 +1,4 @@
-App\Entity\Quality\Reject\Type:
+App\Doctrine\Entity\Quality\Reject\Type:
   deleted: statut
   properties:
     libelle:

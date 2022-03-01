@@ -1,4 +1,4 @@
-App\Entity\Management\InvoiceTimeDue:
+App\Doctrine\Entity\Management\InvoiceTimeDue:
   deleted: statut
   properties:
     days:

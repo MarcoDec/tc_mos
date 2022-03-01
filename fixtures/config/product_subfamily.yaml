@@ -1,8 +1,8 @@
-App\Entity\Project\Product\Family:
+App\Doctrine\Entity\Project\Product\Family:
   properties:
     id_family:
       new_name: parent_id
-      new_ref: App\Entity\Project\Product\Family
+      new_ref: App\Doctrine\Entity\Project\Product\Family
       old_ref: product_family
     subfamily_name:
       new_name: name

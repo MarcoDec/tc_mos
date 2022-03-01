@@ -1,4 +1,4 @@
-App\Entity\Production\Engine\Group:
+App\Doctrine\Entity\Production\Engine\Group:
   properties:
     code:
       new_name: code

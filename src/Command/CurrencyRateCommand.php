@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Attributes\CronJob;
-use App\Repository\CurrencyRepository;
+use App\Doctrine\Repository\CurrencyRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

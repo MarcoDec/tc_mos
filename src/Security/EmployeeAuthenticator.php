@@ -2,8 +2,8 @@
 
 namespace App\Security;
 
-use App\Entity\Hr\Employee\Employee;
-use App\Repository\Api\TokenRepository;
+use App\Doctrine\Entity\Hr\Employee\Employee;
+use App\Doctrine\Repository\Api\TokenRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

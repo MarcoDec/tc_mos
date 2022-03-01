@@ -1,4 +1,4 @@
-App\Entity\Hr\Event\Type:
+App\Doctrine\Entity\Hr\Event\Type:
   properties:
     motif:
       new_name: name

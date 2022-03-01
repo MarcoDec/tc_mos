@@ -15,10 +15,13 @@ services:
   # this creates a service per class whose id is the fully-qualified class name
   App\:
     exclude:
+      - ../src/Attributes/
       - ../src/Controller/
+      - ../src/CouchDB/Document/
       - ../src/CouchDB/Metadata/Metadata.php
       - ../src/DependencyInjection/
-      - ../src/Entity/
+      - ../src/Doctrine/Entity/
+      - ../src/Doctrine/Repository/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
       - ../src/Security/ApiRequest.php
@@ -26,8 +29,12 @@ services:
     resource: ../src/
 
   App\Controller\:
-    resource: ../src/Controller
+    resource: ../src/Controller/
     tags: [ controller.service_arguments ]
+
+  App\Doctrine\Repository\:
+    resource: ../src/Doctrine/Repository/
+    tags: [ doctrine.repository_service ]
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
@@ -41,6 +48,20 @@ services:
     autoconfigure: false
     class: App\OpenApi\OpenApiFactory
 
+  App\Doctrine\EventListener\Embeddable\MeasureListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Doctrine\Entity\Interfaces\EmbeddedInterface
+        event: postLoad
+        name: doctrine.orm.entity_listener
+
+  App\Doctrine\EventListener\Project\Product\FamilyListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Doctrine\Entity\Project\Product\Family
+        event: postLoad
+        name: doctrine.orm.entity_listener
+
   App\Doctrine\ORM\Decorator\EntityManagerDecorator:
     autoconfigure: false
     decorates: doctrine.orm.default_entity_manager
@@ -52,13 +73,6 @@ services:
       - event: kernel.request
         name: kernel.event_listener
 
-  App\EventListener\Embeddable\MeasureListener:
-    autoconfigure: false
-    tags:
-      - entity: App\Entity\Interfaces\EmbeddedInterface
-        event: postLoad
-        name: doctrine.orm.entity_listener
-
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'
@@ -67,13 +81,6 @@ services:
       - event: kernel.exception
         name: kernel.event_listener
         priority: 2
-
-  App\EventListener\Project\Product\FamilyListener:
-    autoconfigure: false
-    tags:
-      - entity: App\Entity\Project\Product\Family
-        event: postLoad
-        name: doctrine.orm.entity_listener
 
   App\EventListener\Security\LogoutListener:
     autoconfigure: false
@@ -88,15 +95,15 @@ services:
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
 
+  App\OpenApi\OpenApiNormalizer:
+    autoconfigure: false
+    decorates: api_platform.openapi.normalizer
+
   App\OpenApi\SchemaFactory:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
     autoconfigure: false
     decorates: api_platform.hydra.json_schema.schema_factory
-
-  App\OpenApi\OpenApiNormalizer:
-    autoconfigure: false
-    decorates: api_platform.openapi.normalizer
 
   App\Security\TokenAuthenticator:
     arguments:

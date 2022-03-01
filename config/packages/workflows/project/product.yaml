@@ -12,7 +12,7 @@ framework:
         - '%place_to_validate%'     # À valider
         - '%place_under_exemption%' # Sous-dérogation
       supports:
-        - App\Entity\Project\Product\Product
+        - App\Doctrine\Entity\Project\Product\Product
       transitions:
         '%tr_block%':
           from: [ '%place_agreed%', '%place_under_exemption%' ]
