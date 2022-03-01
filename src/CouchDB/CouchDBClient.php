@@ -13,7 +13,7 @@ final class CouchDBClient {
     /**
      * @param array<string, mixed> $criteria
      *
-     * @return Document[]
+     * @return mixed[]
      */
     public function findBy(array $criteria): array {
         return $this->couchdbClient->request(
