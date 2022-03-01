@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/ban-types,@typescript-eslint/ban-ts-comment,consistent-return */
 import * as Cookies from './cookie'
 import type {Merge} from './types/types'
 import type {paths} from './types/openapi'
@@ -31,6 +31,7 @@ export default async function fetchApi<U extends Urls, M extends Methods<U>>(
     url: U,
     method: M,
     body: ApiBody<U, M>
+    // @ts-ignore
 ): Promise<Response<U, M>> {
     const headers: ApiHeaders = {Accept: 'application/ld+json'}
     const token = Cookies.get('token')
@@ -57,6 +58,8 @@ export default async function fetchApi<U extends Urls, M extends Methods<U>>(
         return null as Response<U, M>
     if ([401, 422].includes(response.status))
         throw response
-    const json = await response.json() as Response<U, M>
-    return json
+    if (response.status !== 204) {
+        const json = await response.json() as Response<U, M>
+        return json
+    }
 }

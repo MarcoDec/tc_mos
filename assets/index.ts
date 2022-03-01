@@ -22,11 +22,16 @@ async function mount(): Promise<void> {
     const security: State = {username: null}
     if (Cookies.has()) {
         const id = Cookies.get('id')
-        if (typeof id === 'string') {
-            const user = await fetchApi('/api/employees/{id}', 'get', {id})
-            if (typeof user.username === 'string')
-                security.username = user.username
-        }
+        if (typeof id === 'string')
+            try {
+                const user = await fetchApi('/api/employees/{id}', 'get', {id})
+                if (typeof user.username === 'string')
+                    security.username = user.username
+                // eslint-disable-next-line no-empty
+            } catch (e) {
+            }
+        if (security.username === null)
+            Cookies.remove()
     }
     const store = generateStore(security)
     app.use(store)
