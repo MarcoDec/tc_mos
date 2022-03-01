@@ -16,6 +16,10 @@ final class DocumentManager {
     ) {
     }
 
+    public function createDatabase(): void {
+        $this->couchdbClient->createDatabase();
+    }
+
     /**
      * @template T of \App\CouchDB\Document\Document
      *

@@ -1,11 +1,15 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Doctrine;
 
+use App\Command\AbstractCommand;
+use App\Command\CurrencyRateCommand;
 use App\Fixtures\Configurations;
+use function collect;
 use Doctrine\ORM\EntityManagerInterface;
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
+use function removeEnd;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,8 +22,8 @@ use Symfony\Component\Yaml\Yaml;
 final class FixturesCommand extends AbstractCommand {
     private const DOCTRINE_FIXTURES_COMMAND = 'doctrine:fixtures:load';
 
-    protected static $defaultDescription = 'Transfert les données de l\'ancien système vers le nouveau.';
-    protected static $defaultName = 'gpao:fixtures:load';
+    protected static $defaultDescription = 'Transfert les données de l\'ancien système vers le nouveau système SQL.';
+    protected static $defaultName = 'gpao:doctrine:fixtures:load';
     private Configurations $configurations;
 
     public function __construct(

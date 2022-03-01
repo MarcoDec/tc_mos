@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Doctrine;
 
+use App\Command\AbstractCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,8 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class SchemaUpdateCommand extends AbstractCommand {
     private const DOCTRINE_COMMAND = 'doctrine:schema:update';
 
-    protected static $defaultDescription = 'Modifie le schéma de la base de données en fonction des entités';
-    protected static $defaultName = 'gpao:schema:update';
+    protected static $defaultDescription = 'Modifie le schéma de la base de données SQL en fonction des entités';
+    protected static $defaultName = 'gpao:doctrine:schema:update';
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $tag = 'Chargement du modèle';

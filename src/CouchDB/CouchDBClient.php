@@ -10,6 +10,10 @@ final class CouchDBClient {
     public function __construct(private HttpClientInterface $couchdbClient, private SerializerInterface $serializer) {
     }
 
+    public function createDatabase(): void {
+        $this->couchdbClient->request('PUT', '');
+    }
+
     /**
      * @param array<string, mixed> $criteria
      *
