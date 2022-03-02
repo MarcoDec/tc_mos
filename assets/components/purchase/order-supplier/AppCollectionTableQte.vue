@@ -1,15 +1,9 @@
 <script lang="ts" setup>
-    import type {Actions, Getters} from '../../../store/supplierItems'
-    import {
-        useNamespacedActions,
-        useNamespacedGetters
-    } from 'vuex-composition-helpers'
-    import {defineProps, onMounted} from 'vue'
+    import type {Items} from '../../../store/supplierItems/supplierItem/getters'
+    import {defineProps} from 'vue'
     import {useRoute} from 'vue-router'
-    import {Items} from "../../../store/supplierItems/supplierItem/getters";
 
-
-    const props = defineProps<{items:Items}>()
+    defineProps<{items: Items}>()
 
     const route = useRoute()
     const fields
@@ -33,8 +27,6 @@
                 label: 'Valeur'
             }
         ]
-
-
 </script>
 
 <template>

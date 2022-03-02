@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-    import {inject} from 'vue'
     import type {TableField} from '../../../types/app-collection-table'
+    import {inject} from 'vue'
 
     const fields = inject<TableField[]>('fields', [])
-
 </script>
 
 <template>
@@ -12,7 +11,6 @@
         <AppTableField
             v-for="field in fields"
             :key="field.name"
-            :field="field"
-            />
+            :field="field"/>
     </tr>
 </template>

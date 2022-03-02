@@ -6,7 +6,7 @@
     const props = defineProps({
         create: {required: false, type: Boolean},
         currentPage: {default: 1, type: Number},
-        fields: {required: true, type: Object as PropType<TableField>},
+        fields: {required: true, type: Array as PropType<TableField[]>},
         id: {required: true, type: String},
         items: {required: true, type: Array as PropType<TableItem[]>},
         pagination: {required: false, type: Boolean}
@@ -20,11 +20,11 @@
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
         <AppCollectionTableHeaders/>
-      <AppCollectionTableItems :items="items">
-        <template v-for="field in fields" v-slot:[field.name]="params">
-          <slot :name="field.name" v-bind="params"/>
-        </template>
-      </AppCollectionTableItems>
+        <AppCollectionTableItems :items="items">
+            <template v-for="field in fields" #[field.name]="params">
+                <slot :name="field.name" v-bind="params"/>
+            </template>
+        </AppCollectionTableItems>
     </table>
     <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/>
 </template>

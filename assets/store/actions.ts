@@ -1,12 +1,12 @@
-import app from "../app"
-import type {DeepReadonly} from '../types/types'
 import type {AppStore, State} from '.'
-import type {ActionContext as VuexActionContext, Module} from 'vuex'
+import type {Module, ActionContext as VuexActionContext} from 'vuex'
+import type {DeepReadonly} from '../types/types'
+import app from '../app'
 import emitter from '../emitter'
 
-export type StoreActionContext<S>=VuexActionContext<S, State>
+export type StoreActionContext<S> = VuexActionContext<S, State>
 type ActionContext = DeepReadonly<VuexActionContext<State, State>>
-type ModulePayload = {module:Module<unknown, State>,path:string[]|string}
+type ModulePayload = {module: Module<unknown, State>, path: string[] | string}
 
 export const actions = {
     async fetchApi({commit}: ActionContext, action: () => Promise<unknown>): Promise<void> {
@@ -23,9 +23,9 @@ export const actions = {
             commit('spin')
         }
     },
-    async registerModule(context:ActionContext,payload:ModulePayload):Promise<void>{
+    async registerModule(context: ActionContext, payload: ModulePayload): Promise<void>{
         (app.config.globalProperties.$store as AppStore)
-            .registerModule(payload.path as string,payload.module)
+            .registerModule(payload.path as string, payload.module)
     }
 }
 

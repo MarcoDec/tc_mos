@@ -7,7 +7,7 @@ export type State = {
     texte: string | null
     compagnie: string | null
     date: string | null
-    delete: boolean| null
+    delete: boolean | null
     update: boolean | null
     quantiteS: number | null
     quantite: number | null

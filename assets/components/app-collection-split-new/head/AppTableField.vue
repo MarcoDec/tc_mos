@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-    import {computed, defineEmits, defineProps} from 'vue'
+    import {defineEmits, defineProps} from 'vue'
     import type {TableField} from '../../../types/app-collection-table'
 
     const emit = defineEmits<(e: 'click', field: TableField) => void>()
     const props = defineProps<{field: TableField}>()
-
 
     function click(): void {
         emit('click', props.field)

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
+    import type {Items} from '../../../store/supplierItems/supplierItem/getters'
     import {defineProps} from 'vue'
     import {useRoute} from 'vue-router'
-    import {Items} from "../../../store/supplierItems/supplierItem/getters";
 
-    const props = defineProps<{items:Items}>()
+    defineProps<{items: Items}>()
 
     const route = useRoute()
     const fields = [
@@ -27,8 +27,6 @@
         }
 
     ]
-
-
 </script>
 
 <template>

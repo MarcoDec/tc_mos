@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-  import {defineProps, onMounted} from 'vue'
-    import {useNamespacedActions, useNamespacedGetters} from "vuex-composition-helpers";
-    import {Actions, Getters} from "../../../../../store/supplierItems";
+    import type {Actions, Getters} from '../../../../../store/supplierItems'
+    import {defineProps, onMounted} from 'vue'
+    import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
     defineProps<{icon: string, title: string}>()
 
-  const fetchItem = useNamespacedActions<Actions>('supplierItems', ['fetchItem']).fetchItem
-  const {items} = useNamespacedGetters<Getters>('supplierItems', ['items'])
+    const fetchItem = useNamespacedActions<Actions>('supplierItems', ['fetchItem']).fetchItem
+    const {items} = useNamespacedGetters<Getters>('supplierItems', ['items'])
 
-  onMounted(async () => {
-    await fetchItem()
-  })
+    onMounted(async () => {
+        await fetchItem()
+    })
 </script>
 
 <template>

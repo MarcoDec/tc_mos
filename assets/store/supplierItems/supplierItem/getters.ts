@@ -1,18 +1,17 @@
 import type {State} from './state'
 
-
 export type Items = {
-    composant: string | null
-    produit: string | null
-    type: string | null
-    ref: string | null
-    etat: string | null
-    texte: string | null
     compagnie: string | null
+    composant: string | null
     date: string | null
-    quantiteS: number | null
+    etat: string | null
+    id: number | null
+    produit: string | null
     quantite: number | null
-    id: number
+    quantiteS: number | null
+    ref: string | null
+    texte: string | null
+    type: string | null
 }
 
 export type Getters = {
@@ -23,17 +22,17 @@ export type GettersValues = {
 }
 export const getters: Getters = {
     list: state => ({
+        compagnie: state.compagnie,
         composant: state.composant,
-        produit:state.produit,
-        type:state.type,
-        ref:state.ref,
-        etat:state.etat,
-        texte:state.texte,
-        compagnie:state.compagnie,
-        date:state.date,
-        quantiteS:state.quantiteS,
-        quantite:state.quantite,
-        id:state.id,
+        date: state.date,
+        etat: state.etat,
+        id: state.id,
+        produit: state.produit,
+        quantite: state.quantite,
+        quantiteS: state.quantiteS,
+        ref: state.ref,
+        texte: state.texte,
+        type: state.type
     })
 }
 
