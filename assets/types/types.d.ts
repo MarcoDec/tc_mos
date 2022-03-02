@@ -1,4 +1,4 @@
-import type {O} from 'ts-toolbelt'
+import type {A, O} from 'ts-toolbelt'
 import type {components} from './openapi'
 
 export declare type Merge<O1, O2> =
@@ -10,3 +10,4 @@ export declare type Merge<O1, O2> =
 
 export declare type Violation = components['schemas']['Violation']
 export declare type Violations = components['schemas']['Violations']
+export declare type DeepReadonly<T extends object> = O.Readonly<T, A.Key, 'deep'>

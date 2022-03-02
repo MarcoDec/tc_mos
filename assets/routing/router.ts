@@ -37,6 +37,90 @@ const router = createRouter({
             name: 'product-families',
             path: '/product-families',
             props: {title: 'produits', type: 'Produits', url: '/api/product-families'}
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/AppRowsTablePage.vue'),
+            meta: {requiresAuth: true},
+            name: 'prices',
+            path: '/prices',
+            props: {
+                fields: [
+                 
+                    {
+                        create: false,
+                        filter: true,
+                        label: 'Nom',
+                        name: 'name',
+                        sort: false,
+                        type: 'text',
+                        update: true
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Proportion',
+                        name: 'proportion',
+                        sort: false,
+                        type: 'text',
+                        update: true
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Délai',
+                        name: 'Delai',
+                        sort: false,
+                        type: 'number',
+                        update: false
+                    },
+                    {
+                        create: false,
+                        filter: true,
+                        label: 'Moq',
+                        name: 'moq',
+                        sort: false,
+                        type: 'number',
+                        update: true
+                    },
+                    {
+                        create: false,
+                        filter: true,
+                        label: 'Poids cu',
+                        name: 'poidsCu',
+                        sort: false,
+                        type: 'text',
+                        update: true
+                    },
+                    {
+                        create: false,
+                        filter: true,
+                        label: 'Référence',
+                        name: 'reference',
+                        sort: false,
+                        type: 'text',
+                        update: false
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        label: 'Indice',
+                        name: 'indice',
+                        sort: false,
+                        type: 'number',
+                        update: true
+                    },
+                    {
+                        create: true,
+                        filter: true,
+                        children: [{label: 'Quantité', name: 'quantity'}, {label: 'Prix', name: 'price'}],
+                        label: 'Prix',
+                        name: 'prix',
+                        sort: false,
+                        type: 'text',
+                        update: false
+                    }
+                ]
+            }
         }
     ]
 })
