@@ -6,6 +6,7 @@ use App\CouchDB\Document\Document;
 use App\CouchDB\Metadata\Metadata;
 use App\CouchDB\Metadata\MetadataFactory;
 use App\CouchDB\Repository\DocumentRepository;
+use App\CouchDB\Repository\Finder\Finder;
 use Exception;
 
 final class DocumentManager {
@@ -23,12 +24,11 @@ final class DocumentManager {
     /**
      * @template T of \App\CouchDB\Document\Document
      *
-     * @param class-string<T>      $class
-     * @param array<string, mixed> $criteria
+     * @param class-string<T> $class
      *
      * @return T[]
      */
-    public function findBy(string $class, array $criteria = []): array {
+    public function findBy(string $class, ?Finder $criteria = null): array {
         return $this->repo->findBy($class, $criteria);
     }
 
@@ -53,7 +53,12 @@ final class DocumentManager {
         }
     }
 
-    public function persist(Document $entity): void {
-        $this->couchdbClient->persist($entity);
+    /**
+     * @template T of \App\CouchDB\Document\Document
+     *
+     * @param class-string<T> $class
+     */
+    public function persist(string $class, Document $entity): void {
+        $this->repo->persist($class, $entity);
     }
 }

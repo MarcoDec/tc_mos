@@ -13,7 +13,7 @@ final class DocumentDataPersister implements ContextAwareDataPersisterInterface 
      * @param array<string, mixed> $context
      */
     public function persist($data, array $context = []): void {
-        $this->dm->persist($data);
+        $this->dm->persist($context['resource_class'], $data);
     }
 
     /**

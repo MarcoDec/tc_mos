@@ -3,6 +3,7 @@
 namespace App\CouchDB;
 
 use App\CouchDB\Document\Document;
+use App\CouchDB\Repository\Finder\Finder;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -15,15 +16,13 @@ final class CouchDBClient {
     }
 
     /**
-     * @param array<string, mixed> $criteria
-     *
      * @return mixed[]
      */
-    public function findBy(array $criteria): array {
+    public function findBy(Finder $criteria): array {
         return $this->couchdbClient->request(
             method: 'POST',
             url: '_find',
-            options: ['body' => json_encode(['selector' => $criteria])]
+            options: ['body' => $this->serializer->serialize($criteria, 'json')]
         )->toArray()['docs'];
     }
 

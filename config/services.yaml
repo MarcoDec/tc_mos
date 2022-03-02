@@ -18,7 +18,9 @@ services:
       - ../src/Attributes/
       - ../src/Controller/
       - ../src/CouchDB/Document/
+      - ../src/CouchDB/Exception/
       - ../src/CouchDB/Metadata/Metadata.php
+      - ../src/CouchDB/Repository/Finder/
       - ../src/DependencyInjection/
       - ../src/Doctrine/Entity/
       - ../src/Doctrine/Repository/
