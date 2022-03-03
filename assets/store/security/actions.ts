@@ -1,39 +1,41 @@
 import * as Cookies from '../../cookie'
-import type {DeepReadonly} from '../../types/types'
-import type {State as RootState} from '..'
-import type {State} from '.'
-import type {ActionContext as VuexActionContext} from 'vuex'
-import {fetchApi} from '../../api'
+import type {ComputedGetters, State} from '.'
+import type {StoreActionContext} from '..'
 
-type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
+declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
-type Login = Readonly<{username: string | null, password: string | null}>
+declare type Login = {username: string | null, password: string | null}
 
 export const actions = {
     async login({commit, dispatch}: ActionContext, {password, username}: Login): Promise<void> {
-        await dispatch('fetchApi', async () => {
-            const user = await fetchApi('/api/login', {
-                json: {password: password ?? '', username: username ?? ''},
-                method: 'post'
-            })
-            if (
-                typeof user.id !== 'undefined'
-                && typeof user.token !== 'undefined'
-                && user.token !== null
-                && typeof user.username !== 'undefined'
-            ) {
-                Cookies.set(user.id, user.token)
-                commit('user', user.username)
-            }
-        }, {root: true})
+        const user = await dispatch(
+            'fetchApi',
+            {
+                body: {
+                    password: password ?? '',
+                    username: username ?? ''
+                },
+                method: 'post',
+                url: '/api/login'
+            },
+            {root: true}
+        )
+        Cookies.set(user.id, user.token)
+        commit('user', user.username)
     },
     async logout({commit, dispatch}: ActionContext): Promise<void> {
-        await dispatch('fetchApi', async () => {
-            await fetchApi('/api/logout', {method: 'post'})
-            Cookies.remove()
-            commit('user', null)
-        }, {root: true})
+        await dispatch(
+            'fetchApi',
+            {
+                body: {},
+                method: 'post',
+                url: '/api/logout'
+            },
+            {root: true}
+        )
+        Cookies.remove()
+        commit('user', null)
     }
 }
 
-export type Actions = typeof actions
+export declare type Actions = typeof actions

@@ -25,7 +25,7 @@ final class DeserializeListener {
             return;
         }
 
-        if ($request->getContentType() !== 'multipart') {
+        if (!in_array($request->getContentType(), ['form', 'multipart'])) {
             $this->decorated->onKernelRequest($event);
         }
 

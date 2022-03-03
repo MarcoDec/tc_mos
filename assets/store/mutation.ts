@@ -13,4 +13,4 @@ export const mutations = {
     }
 }
 
-export type Mutations = typeof mutations
+export declare type Mutations = typeof mutations
