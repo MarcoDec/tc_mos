@@ -2,9 +2,9 @@
 
 namespace App\Validator;
 
-use App\Doctrine\Entity\Embeddable\Measure;
-use App\Doctrine\Entity\Interfaces\MeasuredInterface;
-use App\Doctrine\Entity\Management\Unit;
+use App\Entity\Embeddable\Measure;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Validator\Measure as MeasureAttribute;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

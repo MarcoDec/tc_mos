@@ -8,9 +8,7 @@ api_platform:
     multipart: [ multipart/form-data ]
     html: [ text/html ]
   mapping:
-    paths:
-      - '%kernel.project_dir%/src/CouchDB/Document'
-      - '%kernel.project_dir%/src/Doctrine/Entity'
+    paths: [ '%kernel.project_dir%/src/Entity' ]
   patch_formats:
     json: [ application/merge-patch+json ]
   path_segment_name_generator: api_platform.path_segment_name_generator.dash

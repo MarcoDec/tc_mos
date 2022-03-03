@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures\Management;
 
-use App\Doctrine\Entity\Management\Currency;
+use App\Entity\Management\Currency;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Intl\Currencies;

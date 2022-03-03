@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Attributes\CronJob as CronJobAttribute;
-use App\Doctrine\Entity\CronJob;
+use App\Entity\CronJob;
 use Doctrine\ORM\EntityManagerInterface;
 use ReflectionClass;
 use Symfony\Component\Console\Command\Command;

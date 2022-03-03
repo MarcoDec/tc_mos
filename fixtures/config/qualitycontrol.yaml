@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Quality\Type:
+App\Entity\Quality\Type:
   deleted: statut
   properties:
     qualitycontrol:

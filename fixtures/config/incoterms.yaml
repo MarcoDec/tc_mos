@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Logistics\Incoterms:
+App\Entity\Logistics\Incoterms:
   deleted: statut
   properties:
     code:

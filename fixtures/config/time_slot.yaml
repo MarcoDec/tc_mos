@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Hr\TimeSlot:
+App\Entity\Hr\TimeSlot:
   properties:
     end:
       new_name: end

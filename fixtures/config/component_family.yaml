@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Purchase\Component\Family:
+App\Entity\Purchase\Component\Family:
   deleted: statut
   properties:
     code:

@@ -11,8 +11,8 @@ doctrine:
     mappings:
       App:
         alias: App
-        dir: '%kernel.project_dir%/src/Doctrine/Entity'
+        dir: '%kernel.project_dir%/src/Entity'
         is_bundle: false
-        prefix: App\Doctrine\Entity
+        prefix: App\Entity
         type: attribute
     naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

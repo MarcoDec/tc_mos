@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Hr\OutTrainer:
+App\Entity\Hr\OutTrainer:
   properties:
     prenom:
       new_name: name

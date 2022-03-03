@@ -5,11 +5,7 @@ namespace App\EventListener;
 use ApiPlatform\Core\EventListener\DeserializeListener as ApiDeserializeListener;
 use ApiPlatform\Core\Serializer\SerializerContextBuilderInterface;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
-use App\CouchDB\Document\Document;
-use App\CouchDB\DocumentManager;
-use App\Doctrine\Entity\Entity;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -18,7 +14,6 @@ final class DeserializeListener {
     public function __construct(
         private ApiDeserializeListener $decorated,
         private DenormalizerInterface $denormalizer,
-        private DocumentManager $dm,
         private EntityManagerInterface $em,
         private SerializerContextBuilderInterface $serializer
     ) {
@@ -42,7 +37,6 @@ final class DeserializeListener {
             return;
         }
 
-        /** @var array{resource_class: class-string<Document|Entity>} $context */
         $context = $this->serializer->createFromRequest($request, false, $attrs);
         if (!empty($populated = $request->attributes->get('data'))) {
             $context['object_to_populate'] = $populated;
@@ -56,20 +50,12 @@ final class DeserializeListener {
     }
 
     /**
-     * @template T of \App\CouchDB\Document\Document|\App\Doctrine\Entity\Entity
-     *
-     * @param array{resource_class: class-string<T>} $context
+     * @param mixed[] $context
      *
      * @return mixed[]
      */
     private function getData(array $context, Request $request): array {
-        try {
-            $metadata = $this->em->getClassMetadata($context['resource_class']);
-        } catch (MappingException $e) {
-            /** @var class-string<Document> $class */
-            $class = $context['resource_class'];
-            $metadata = $this->dm->getMetadata($class);
-        }
+        $metadata = $this->em->getClassMetadata($context['resource_class']);
         return collect(array_merge($request->request->all(), $request->files->all()))
             ->map(static function ($value, string $name) use ($metadata) {
                 return $metadata->getTypeOfField($name) === 'boolean'

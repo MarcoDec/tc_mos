@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Project\Product\Product:
+App\Entity\Project\Product\Product:
   deleted: statut
   properties:
     conditionnement:
@@ -23,7 +23,7 @@ App\Doctrine\Entity\Project\Product\Product:
       new_name: customs_code
     id_incoterms:
       new_name: incoterms_id
-      new_ref: App\Doctrine\Entity\Logistics\Incoterms
+      new_ref: App\Entity\Logistics\Incoterms
       old_ref: incoterms
     id_productstatus:
       force_value: 'product_workflow(id_productstatus)'
@@ -31,11 +31,11 @@ App\Doctrine\Entity\Project\Product\Product:
     id_product_child:
       force_value: 'product_parent(id)'
       new_name: parent_id
-      new_ref: App\Doctrine\Entity\Project\Product\Product
+      new_ref: App\Entity\Project\Product\Product
       old_ref: product
     id_product_subfamily:
       new_name: family_id
-      new_ref: App\Doctrine\Entity\Project\Product\Family
+      new_ref: App\Entity\Project\Product\Family
       old_ref: product_subfamily
     is_prototype:
       force_value: "is_prototype == null or is_prototype == 0 ? 'Série': (is_prototype == 1 ? 'PROTOTYPE' : 'EI')"

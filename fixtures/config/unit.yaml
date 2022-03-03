@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Management\Unit:
+App\Entity\Management\Unit:
   deleted: statut
   properties:
     unit_short_lbl:

@@ -8,7 +8,7 @@ use ApiPlatform\Core\JsonSchema\Schema;
 use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
-use App\Doctrine\Entity\Embeddable\Measure;
+use App\Entity\Embeddable\Measure;
 use Illuminate\Support\Collection;
 use ReflectionAttribute;
 use ReflectionClass;

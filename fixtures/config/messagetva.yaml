@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Management\VatMessage:
+App\Entity\Management\VatMessage:
   deleted: statut
   properties:
     message:

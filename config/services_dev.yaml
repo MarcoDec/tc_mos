@@ -7,9 +7,10 @@ services:
     exclude:
       - ../dev/ExpressionLanguage/
       - ../dev/Fixtures/
+      - ../dev/PhpStan/
     resource: ../dev/
 
-  App\Command\Doctrine\FixturesCommand:
+  App\Command\FixturesCommand:
     arguments:
       $configDir: '%kernel.project_dir%/fixtures/config'
       $jsonDir: '%kernel.project_dir%/fixtures/data'

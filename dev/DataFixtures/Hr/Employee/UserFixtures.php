@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures\Hr\Employee;
 
-use App\Doctrine\Entity\Embeddable\Hr\Employee\Roles;
-use App\Doctrine\Entity\Hr\Employee\Employee;
+use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Hr\Employee\Employee;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

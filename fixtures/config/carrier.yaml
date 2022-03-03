@@ -1,4 +1,4 @@
-App\Doctrine\Entity\Logistics\Carrier:
+App\Entity\Logistics\Carrier:
   deleted: statut
   properties:
     nom:

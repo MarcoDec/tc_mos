@@ -2,8 +2,8 @@
 
 namespace App\EventListener\Security;
 
-use App\Doctrine\Entity\Hr\Employee\Employee;
-use App\Doctrine\Repository\Api\TokenRepository;
+use App\Entity\Hr\Employee\Employee;
+use App\Repository\Api\TokenRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Event\LogoutEvent;

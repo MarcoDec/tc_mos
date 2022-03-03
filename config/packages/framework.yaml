@@ -1,12 +1,5 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-  http_client:
-    scoped_clients:
-      couchdb.client:
-        base_uri: '%env(resolve:COUCH_URL)%'
-        headers:
-          Content-Type: application/json
-
   http_method_override: false
 
   #esi: true
