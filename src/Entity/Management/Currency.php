@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -56,7 +57,15 @@ class Currency extends AbstractUnit {
     ]
     protected Collection $children;
 
-    #[ORM\Column(nullable: true)]
+    #[
+        ApiProperty(description: 'Code ', required: true, example: 'EUR'),
+        Assert\Length(exactly: 3),
+        Assert\NotBlank,
+        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
+        Serializer\Groups(['read:unit', 'write:unit'])
+    ]
+    protected ?string $code = null;
+
     protected ?string $name = null;
 
     #[

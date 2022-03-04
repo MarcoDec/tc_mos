@@ -69,7 +69,7 @@ class VatMessage extends Entity {
     #[
         ApiProperty(description: 'Message', required: true, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 120),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;

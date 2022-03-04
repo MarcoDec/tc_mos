@@ -20,24 +20,24 @@ class Address {
 
     #[
         ApiProperty(description: 'Adresse', example: '5 rue Alfred Nobel'),
-        Assert\Length(min: 3, max: 255),
-        ORM\Column(nullable: true),
+        Assert\Length(min: 3, max: 100),
+        ORM\Column(length: 100, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $address = null;
 
     #[
         ApiProperty(description: 'Complément d\'adresse', example: 'ZA La charrière'),
-        Assert\Length(min: 3, max: 255),
-        ORM\Column(nullable: true),
+        Assert\Length(min: 3, max: 100),
+        ORM\Column(length: 100, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $address2 = null;
 
     #[
         ApiProperty(description: 'Ville', example: 'Rioz'),
-        Assert\Length(min: 3, max: 255),
-        ORM\Column(nullable: true),
+        Assert\Length(min: 3, max: 50),
+        ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $city = null;
@@ -45,7 +45,7 @@ class Address {
     #[
         ApiProperty(description: 'Pays', example: 'FR'),
         Assert\Country,
-        ORM\Column(length: 2, nullable: true),
+        ORM\Column(type: 'char', length: 2, nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $country = null;
@@ -53,14 +53,16 @@ class Address {
     #[
         ApiProperty(description: 'E-mail', example: 'sales@tconcept.fr'),
         Assert\Email,
-        ORM\Column(nullable: true),
+        Assert\Length(min: 5, max: 100),
+        ORM\Column(length: 100, nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $email = null;
 
     #[
         ApiProperty(description: 'Numéro de téléphone', example: '03 84 91 99 84'),
-        ORM\Column(nullable: true),
+        Assert\Length(min: 10, max: 20),
+        ORM\Column(length: 20, nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:address', 'write:address']),
         ZipCode
     ]
@@ -68,7 +70,8 @@ class Address {
 
     #[
         ApiProperty(description: 'Code postal', example: '70190'),
-        ORM\Column(nullable: true),
+        Assert\Length(exactly: 5),
+        ORM\Column(type: 'char', length: 5, nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:address', 'write:address']),
         ZipCode
     ]

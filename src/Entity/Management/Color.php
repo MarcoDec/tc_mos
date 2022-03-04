@@ -8,13 +8,12 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'ral' => 'partial', 'rgb' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'rgb' => 'partial']),
     ApiResource(
         description: 'Couleur',
         collectionOperations: [
@@ -50,52 +49,45 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:color', 'write:name'],
+            'groups' => ['write:color'],
             'openapi_definition_name' => 'Color-write'
         ],
         normalizationContext: [
-            'groups' => ['read:color', 'read:id', 'read:name'],
+            'groups' => ['read:color', 'read:id'],
             'openapi_definition_name' => 'Color-read'
         ],
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class Color extends Entity {
-    use NameTrait;
-
     #[
         ApiProperty(description: 'nom', required: true, example: 'Gris'),
+        Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'ral', example: '17122018'),
-        ORM\Column(nullable: true),
+        ORM\Column(length: 20),
         Serializer\Groups(['read:color', 'write:color'])
     ]
-    private ?string $ral = null;
+    private ?string $name = null;
 
     #[
         ApiProperty(description: 'rgb', example: '#848484'),
-        ORM\Column(nullable: true),
+        Assert\Length(exactly: 7),
+        Assert\NotBlank,
+        ORM\Column(type: 'char', length: 7, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $rgb = null;
 
-    final public function getRal(): ?string {
-        return $this->ral;
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     final public function getRgb(): ?string {
         return $this->rgb;
     }
 
-    final public function setRal(?string $ral): self {
-        $this->ral = $ral;
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 

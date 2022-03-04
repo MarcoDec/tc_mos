@@ -9,7 +9,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use App\Filter\EnumFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -68,26 +67,34 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('name')
 ]
 class Type extends Entity {
-    use NameTrait;
-
     #[
         ApiProperty(description: 'Nom', required: true, example: 'ABSENCE'),
+        Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 30),
         Serializer\Groups(['read:name', 'write:name'])
     ]
-    protected ?string $name = null;
+    private ?string $name = null;
 
     #[
         ApiProperty(description: 'Status', example: 'blocked', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
-        ORM\Column(type: 'employee_current_place', nullable: true),
+        ORM\Column(type: 'employee_current_place', nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $toStatus = null;
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function getToStatus(): ?string {
         return $this->toStatus;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
     }
 
     final public function setToStatus(?string $toStatus): self {

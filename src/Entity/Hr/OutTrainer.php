@@ -69,8 +69,9 @@ class OutTrainer extends Entity {
 
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Rawaa'),
+        Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 30),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
@@ -84,8 +85,9 @@ class OutTrainer extends Entity {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'CHRAIET'),
+        Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 30),
         Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
     ]
     private ?string $surname = null;

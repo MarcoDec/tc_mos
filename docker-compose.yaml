@@ -20,10 +20,10 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     container_name: tconcept_gpao_mysql
     environment:
-      MYSQL_DATABASE: sf4
-      MYSQL_PASSWORD: sf4
+      MYSQL_DATABASE: ${DATABASE_DBNAME}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: sf4
+      MYSQL_USER: ${DATABASE_USER}
     restart: always
     volumes:
       - ./docker/mysql/db:/var/lib/mysql:delegated
@@ -63,4 +63,4 @@ services:
     restart: always
     volumes:
       - /sessions
-version: '3.1'
+version: '3.5'

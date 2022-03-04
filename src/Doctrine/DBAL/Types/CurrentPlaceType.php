@@ -2,7 +2,7 @@
 
 namespace App\Doctrine\DBAL\Types;
 
-abstract class CurrentPlaceType extends Type {
+abstract class CurrentPlaceType extends EnumType {
     public const TYPE_AGREED = 'agreed';
     public const TYPE_BLOCKED = 'blocked';
     public const TYPE_DISABLED = 'disabled';

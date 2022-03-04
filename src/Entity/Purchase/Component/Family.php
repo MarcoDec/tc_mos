@@ -64,11 +64,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:file', 'write:name'],
+            'groups' => ['write:family', 'write:file'],
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
+            'groups' => ['read:family', 'read:file', 'read:id'],
             'openapi_definition_name' => 'ComponentFamily-read'
         ],
         paginationEnabled: false
@@ -84,9 +84,10 @@ class Family extends AbstractFamily {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
+        Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:family', 'write:family'])
     ]
     protected ?string $name;
 
@@ -102,7 +103,9 @@ class Family extends AbstractFamily {
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'CAB'),
-        ORM\Column,
+        Assert\Length(exactly: 3),
+        Assert\NotBlank,
+        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $code = null;

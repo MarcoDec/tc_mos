@@ -6,7 +6,7 @@ use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DoctrineType;
 
-abstract class Type extends DoctrineType {
+abstract class EnumType extends DoctrineType {
     /** @var string[] */
     public const TYPES = [];
 
@@ -23,7 +23,7 @@ abstract class Type extends DoctrineType {
         return parent::convertToDatabaseValue($value, $platform);
     }
 
-    final public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
         return sprintf('ENUM(%s)', self::getStrTypes());
     }
 }

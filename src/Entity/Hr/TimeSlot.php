@@ -8,7 +8,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -64,22 +63,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table
 ]
 class TimeSlot extends Entity {
-    use NameTrait;
-
-    #[
-        ApiProperty(description: 'Nom', example: 'Journée'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:time-slot', 'write:time-slot'])
-    ]
-    protected ?string $name = null;
-
     /**
      * @ORM\Column(type="time_immutable")
      */
     #[
         ApiProperty(description: 'Fin', example: '17:30:00'),
-        ORM\Column(type: 'time_immutable', nullable: true),
+        ORM\Column(type: 'time_immutable'),
         Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
     ]
@@ -94,8 +83,16 @@ class TimeSlot extends Entity {
     private ?DateTimeImmutable $endBreak = null;
 
     #[
+        ApiProperty(description: 'Nom', example: 'Journée'),
+        Assert\NotBlank,
+        ORM\Column(length: 10),
+        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+    ]
+    private ?string $name = null;
+
+    #[
         ApiProperty(description: 'Début', example: '07:30:00'),
-        ORM\Column(type: 'time_immutable', nullable: true),
+        ORM\Column(type: 'time_immutable'),
         Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
     ]
@@ -117,6 +114,10 @@ class TimeSlot extends Entity {
         return $this->endBreak;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function getStart(): ?DateTimeImmutable {
         return $this->start;
     }
@@ -132,6 +133,11 @@ class TimeSlot extends Entity {
 
     final public function setEndBreak(?DateTimeImmutable $endBreak): self {
         $this->endBreak = $endBreak;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 

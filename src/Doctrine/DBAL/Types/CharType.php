@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Doctrine\DBAL\Types;
+
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
+
+final class CharType extends Type {
+    public function getName(): string {
+        return 'char';
+    }
+
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
+        return "CHAR({$column['length']})";
+    }
+}

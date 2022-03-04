@@ -8,7 +8,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -65,13 +64,21 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('name')
 ]
 class Type extends Entity {
-    use NameTrait;
-
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Assemblage'),
+        Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 50),
         Serializer\Groups(['read:name', 'write:name'])
     ]
-    protected ?string $name = null;
+    private ?string $name = null;
+
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
+    }
 }
