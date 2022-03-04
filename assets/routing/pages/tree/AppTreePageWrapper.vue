@@ -1,7 +1,6 @@
 <script lang="ts" setup>
     import {defineProps, onMounted, onUnmounted, provide, ref} from 'vue'
     import type {Actions} from '../../../store'
-    import AppTreePage from './AppTreePage.vue'
     import type {FormField} from '../../../types/bootstrap-5'
     import {generateItem} from '../../../store/tree/item'
     import {generateTree} from '../../../store/tree'
