@@ -1,6 +1,7 @@
 api_platform:
   defaults:
     pagination_items_per_page: 15
+  description: Application de gestion de la production de T-Concept
   enable_re_doc: false
   formats:
     jsonld: [ application/ld+json ]
@@ -14,3 +15,4 @@ api_platform:
   path_segment_name_generator: api_platform.path_segment_name_generator.dash
   swagger:
     versions: [ 3 ]
+  title: TConcept-GPAO

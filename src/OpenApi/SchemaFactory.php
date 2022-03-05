@@ -9,6 +9,7 @@ use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use App\Entity\Embeddable\Measure;
+use ArrayObject;
 use Illuminate\Support\Collection;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -48,6 +49,17 @@ final class SchemaFactory implements SchemaFactoryInterface {
     }
 
     /**
+     * @param array<string, mixed>|ArrayObject<string, mixed> $array
+     */
+    private static function ksort(array|ArrayObject &$array): void {
+        if ($array instanceof ArrayObject) {
+            $array->ksort();
+        } else {
+            ksort($array);
+        }
+    }
+
+    /**
      * @param class-string               $className
      * @param null|Schema<string, mixed> $schema
      * @param mixed[]|null               $serializerContext
@@ -81,6 +93,16 @@ final class SchemaFactory implements SchemaFactoryInterface {
         if ($className === Measure::class && !empty($key)) {
             unset($definitions[$key]);
             return $schema;
+        }
+
+        if (!empty($key) && in_array($format, ['json', 'jsonld'])) {
+            foreach (array_keys($definitions[$key]['properties']) as $property) {
+                if (isset($definitions[$key]['properties'][$property]['description'])) {
+                    $definitions[$key]['properties'][$property]['title'] = $definitions[$key]['properties'][$property]['description'];
+                }
+                self::ksort($definitions[$key]['properties'][$property]);
+            }
+            self::ksort($definitions[$key]['properties']);
         }
 
         if ('jsonld' !== $format) {
@@ -122,7 +144,9 @@ final class SchemaFactory implements SchemaFactoryInterface {
                         }
                         $definitions[$key]['properties'][$property]['nullable'] = false;
                     }
+                    self::ksort($definitions[$key]['properties'][$property]);
                 }
+                self::ksort($definitions[$key]['properties']);
             }
         }
 

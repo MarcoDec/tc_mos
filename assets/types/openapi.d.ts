@@ -292,155 +292,183 @@ export interface components {
     readonly schemas: {
         readonly 'Address-Carrier-read': {
             /**
+             * Adresse
              * @description Adresse
              * @example 5 rue Alfred Nobel
              */
-            readonly address?: string | null;
+            readonly address?: unknown | null;
             /**
+             * Complément d'adresse
              * @description Complément d'adresse
              * @example ZA La charrière
              */
-            readonly address2?: string | null;
+            readonly address2?: unknown | null;
             /**
+             * Ville
              * @description Ville
              * @example Rioz
              */
-            readonly city?: string | null;
+            readonly city?: unknown | null;
             /**
+             * Pays
              * @description Pays
              * @example FR
              */
-            readonly country?: string | null;
+            readonly country?: unknown | null;
             /**
+             * E-mail
              * Format: email
              * @description E-mail
              * @example sales@tconcept.fr
              */
-            readonly email?: string | null;
+            readonly email?: unknown | null;
             /**
+             * Numéro de téléphone
              * @description Numéro de téléphone
              * @example 03 84 91 99 84
              */
-            readonly phoneNumber?: string | null;
+            readonly phoneNumber?: unknown | null;
             /**
+             * Code postal
              * @description Code postal
              * @example 70190
              */
-            readonly zipCode?: string | null;
+            readonly zipCode?: unknown | null;
         };
         readonly 'Address-Carrier-write': {
             /**
+             * Adresse
              * @description Adresse
              * @example 5 rue Alfred Nobel
              */
-            readonly address?: string | null;
+            readonly address?: unknown | null;
             /**
+             * Complément d'adresse
              * @description Complément d'adresse
              * @example ZA La charrière
              */
-            readonly address2?: string | null;
+            readonly address2?: unknown | null;
             /**
+             * Ville
              * @description Ville
              * @example Rioz
              */
-            readonly city?: string | null;
+            readonly city?: unknown | null;
             /**
+             * Pays
              * @description Pays
              * @example FR
              */
-            readonly country?: string | null;
+            readonly country?: unknown | null;
             /**
+             * E-mail
              * Format: email
              * @description E-mail
              * @example sales@tconcept.fr
              */
-            readonly email?: string | null;
+            readonly email?: unknown | null;
             /**
+             * Numéro de téléphone
              * @description Numéro de téléphone
              * @example 03 84 91 99 84
              */
-            readonly phoneNumber?: string | null;
+            readonly phoneNumber?: unknown | null;
             /**
+             * Code postal
              * @description Code postal
              * @example 70190
              */
-            readonly zipCode?: string | null;
+            readonly zipCode?: unknown | null;
         };
         readonly 'Address-OutTrainer-read': {
             /**
+             * Adresse
              * @description Adresse
              * @example 5 rue Alfred Nobel
              */
-            readonly address?: string | null;
+            readonly address?: unknown | null;
             /**
+             * Complément d'adresse
              * @description Complément d'adresse
              * @example ZA La charrière
              */
-            readonly address2?: string | null;
+            readonly address2?: unknown | null;
             /**
+             * Ville
              * @description Ville
              * @example Rioz
              */
-            readonly city?: string | null;
+            readonly city?: unknown | null;
             /**
+             * Pays
              * @description Pays
              * @example FR
              */
-            readonly country?: string | null;
+            readonly country?: unknown | null;
             /**
+             * E-mail
              * Format: email
              * @description E-mail
              * @example sales@tconcept.fr
              */
-            readonly email?: string | null;
+            readonly email?: unknown | null;
             /**
+             * Numéro de téléphone
              * @description Numéro de téléphone
              * @example 03 84 91 99 84
              */
-            readonly phoneNumber?: string | null;
+            readonly phoneNumber?: unknown | null;
             /**
+             * Code postal
              * @description Code postal
              * @example 70190
              */
-            readonly zipCode?: string | null;
+            readonly zipCode?: unknown | null;
         };
         readonly 'Address-OutTrainer-write': {
             /**
+             * Adresse
              * @description Adresse
              * @example 5 rue Alfred Nobel
              */
-            readonly address?: string | null;
+            readonly address?: unknown | null;
             /**
+             * Complément d'adresse
              * @description Complément d'adresse
              * @example ZA La charrière
              */
-            readonly address2?: string | null;
+            readonly address2?: unknown | null;
             /**
+             * Ville
              * @description Ville
              * @example Rioz
              */
-            readonly city?: string | null;
+            readonly city?: unknown | null;
             /**
+             * Pays
              * @description Pays
              * @example FR
              */
-            readonly country?: string | null;
+            readonly country?: unknown | null;
             /**
+             * E-mail
              * Format: email
              * @description E-mail
              * @example sales@tconcept.fr
              */
-            readonly email?: string | null;
+            readonly email?: unknown | null;
             /**
+             * Numéro de téléphone
              * @description Numéro de téléphone
              * @example 03 84 91 99 84
              */
-            readonly phoneNumber?: string | null;
+            readonly phoneNumber?: unknown | null;
             /**
+             * Code postal
              * @description Code postal
              * @example 70190
              */
-            readonly zipCode?: string | null;
+            readonly zipCode?: unknown | null;
         };
         readonly 'Address.jsonld-Carrier-read': {
             readonly '@context'?:
@@ -453,41 +481,48 @@ export interface components {
             readonly '@id'?: string;
             readonly '@type'?: string;
             /**
+             * Adresse
              * @description Adresse
              * @example 5 rue Alfred Nobel
              */
-            readonly address?: string | null;
+            readonly address?: unknown | null;
             /**
+             * Complément d'adresse
              * @description Complément d'adresse
              * @example ZA La charrière
              */
-            readonly address2?: string | null;
+            readonly address2?: unknown | null;
             /**
+             * Ville
              * @description Ville
              * @example Rioz
              */
-            readonly city?: string | null;
+            readonly city?: unknown | null;
             /**
+             * Pays
              * @description Pays
              * @example FR
              */
-            readonly country?: string | null;
+            readonly country?: unknown | null;
             /**
+             * E-mail
              * Format: email
              * @description E-mail
              * @example sales@tconcept.fr
              */
-            readonly email?: string | null;
+            readonly email?: unknown | null;
             /**
+             * Numéro de téléphone
              * @description Numéro de téléphone
              * @example 03 84 91 99 84
              */
-            readonly phoneNumber?: string | null;
+            readonly phoneNumber?: unknown | null;
             /**
+             * Code postal
              * @description Code postal
              * @example 70190
              */
-            readonly zipCode?: string | null;
+            readonly zipCode?: unknown | null;
         };
         readonly 'Address.jsonld-Carrier-write': {
             readonly '@context'?:
@@ -500,41 +535,48 @@ export interface components {
             readonly '@id'?: string;
             readonly '@type'?: string;
             /**
+             * Adresse
              * @description Adresse
              * @example 5 rue Alfred Nobel
              */
-            readonly address?: string | null;
+            readonly address?: unknown | null;
             /**
+             * Complément d'adresse
              * @description Complément d'adresse
              * @example ZA La charrière
              */
-            readonly address2?: string | null;
+            readonly address2?: unknown | null;
             /**
+             * Ville
              * @description Ville
              * @example Rioz
              */
-            readonly city?: string | null;
+            readonly city?: unknown | null;
             /**
+             * Pays
              * @description Pays
              * @example FR
              */
-            readonly country?: string | null;
+            readonly country?: unknown | null;
             /**
+             * E-mail
              * Format: email
              * @description E-mail
              * @example sales@tconcept.fr
              */
-            readonly email?: string | null;
+            readonly email?: unknown | null;
             /**
+             * Numéro de téléphone
              * @description Numéro de téléphone
              * @example 03 84 91 99 84
              */
-            readonly phoneNumber?: string | null;
+            readonly phoneNumber?: unknown | null;
             /**
+             * Code postal
              * @description Code postal
              * @example 70190
              */
-            readonly zipCode?: string | null;
+            readonly zipCode?: unknown | null;
         };
         readonly 'Address.jsonld-OutTrainer-read': {
             readonly '@context'?:
@@ -547,41 +589,48 @@ export interface components {
             readonly '@id'?: string;
             readonly '@type'?: string;
             /**
+             * Adresse
              * @description Adresse
              * @example 5 rue Alfred Nobel
              */
-            readonly address?: string | null;
+            readonly address?: unknown | null;
             /**
+             * Complément d'adresse
              * @description Complément d'adresse
              * @example ZA La charrière
              */
-            readonly address2?: string | null;
+            readonly address2?: unknown | null;
             /**
+             * Ville
              * @description Ville
              * @example Rioz
              */
-            readonly city?: string | null;
+            readonly city?: unknown | null;
             /**
+             * Pays
              * @description Pays
              * @example FR
              */
-            readonly country?: string | null;
+            readonly country?: unknown | null;
             /**
+             * E-mail
              * Format: email
              * @description E-mail
              * @example sales@tconcept.fr
              */
-            readonly email?: string | null;
+            readonly email?: unknown | null;
             /**
+             * Numéro de téléphone
              * @description Numéro de téléphone
              * @example 03 84 91 99 84
              */
-            readonly phoneNumber?: string | null;
+            readonly phoneNumber?: unknown | null;
             /**
+             * Code postal
              * @description Code postal
              * @example 70190
              */
-            readonly zipCode?: string | null;
+            readonly zipCode?: unknown | null;
         };
         readonly 'Address.jsonld-OutTrainer-write': {
             readonly '@context'?:
@@ -594,41 +643,48 @@ export interface components {
             readonly '@id'?: string;
             readonly '@type'?: string;
             /**
+             * Adresse
              * @description Adresse
              * @example 5 rue Alfred Nobel
              */
-            readonly address?: string | null;
+            readonly address?: unknown | null;
             /**
+             * Complément d'adresse
              * @description Complément d'adresse
              * @example ZA La charrière
              */
-            readonly address2?: string | null;
+            readonly address2?: unknown | null;
             /**
+             * Ville
              * @description Ville
              * @example Rioz
              */
-            readonly city?: string | null;
+            readonly city?: unknown | null;
             /**
+             * Pays
              * @description Pays
              * @example FR
              */
-            readonly country?: string | null;
+            readonly country?: unknown | null;
             /**
+             * E-mail
              * Format: email
              * @description E-mail
              * @example sales@tconcept.fr
              */
-            readonly email?: string | null;
+            readonly email?: unknown | null;
             /**
+             * Numéro de téléphone
              * @description Numéro de téléphone
              * @example 03 84 91 99 84
              */
-            readonly phoneNumber?: string | null;
+            readonly phoneNumber?: unknown | null;
             /**
+             * Code postal
              * @description Code postal
              * @example 70190
              */
-            readonly zipCode?: string | null;
+            readonly zipCode?: unknown | null;
         };
         /** @description Authentification */
         readonly Auth: {
@@ -646,27 +702,36 @@ export interface components {
         /** @description Transporteur */
         readonly 'Carrier-Carrier-read': {
             /**
-             * @description Nom
-             * @example DHL
+             * Adresse
+             * @description Adresse
              */
-            readonly name: string;
-            /** @description Adresse */
             readonly address?: components['schemas']['Address-Carrier-read'];
             /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
-        };
-        /** @description Transporteur */
-        readonly 'Carrier-Carrier-write': {
             /**
+             * Nom
              * @description Nom
              * @example DHL
              */
             readonly name: string;
-            /** @description Adresse */
+        };
+        /** @description Transporteur */
+        readonly 'Carrier-Carrier-write': {
+            /**
+             * Adresse
+             * @description Adresse
+             */
             readonly address?: components['schemas']['Address-Carrier-write'];
+            /**
+             * Nom
+             * @description Nom
+             * @example DHL
+             */
+            readonly name: string;
         };
         /** @description Transporteur */
         readonly 'Carrier.jsonld-Carrier-read': {
@@ -683,17 +748,22 @@ export interface components {
             /** @example Carrier */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example DHL
+             * Adresse
+             * @description Adresse
              */
-            readonly name: string;
-            /** @description Adresse */
             readonly address?: components['schemas']['Address.jsonld-Carrier-read'];
             /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example DHL
+             */
+            readonly name: string;
         };
         /** @description Transporteur */
         readonly 'Carrier.jsonld-Carrier-write': {
@@ -710,53 +780,52 @@ export interface components {
             /** @example Carrier */
             readonly '@type'?: string;
             /**
+             * Adresse
+             * @description Adresse
+             */
+            readonly address?: components['schemas']['Address.jsonld-Carrier-write'];
+            /**
+             * Nom
              * @description Nom
              * @example DHL
              */
             readonly name: string;
-            /** @description Adresse */
-            readonly address?: components['schemas']['Address.jsonld-Carrier-write'];
         };
         /** @description Couleur */
         readonly 'Color-Color-read': {
             /**
-             * @description nom
-             * @example Gris
-             */
-            readonly name: string | null;
-            /**
-             * @description ral
-             * @example 17122018
-             */
-            readonly ral?: string | null;
-            /**
-             * @description rgb
-             * @example #848484
-             */
-            readonly rgb?: string | null;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
+            /**
+             * nom
+             * @description nom
+             * @example Gris
+             */
+            readonly name: string;
+            /**
+             * rgb
+             * @description rgb
+             * @example #848484
+             */
+            readonly rgb: string | null;
         };
         /** @description Couleur */
         readonly 'Color-Color-write': {
             /**
+             * nom
              * @description nom
              * @example Gris
              */
-            readonly name: string | null;
+            readonly name: string;
             /**
-             * @description ral
-             * @example 17122018
-             */
-            readonly ral?: string | null;
-            /**
+             * rgb
              * @description rgb
              * @example #848484
              */
-            readonly rgb?: string | null;
+            readonly rgb: string | null;
         };
         /** @description Couleur */
         readonly 'Color.jsonld-Color-read': {
@@ -773,25 +842,23 @@ export interface components {
             /** @example Color */
             readonly '@type': string;
             /**
+             * id
+             * @description id
+             * @example 1
+             */
+            readonly id: number;
+            /**
+             * nom
              * @description nom
              * @example Gris
              */
             readonly name: string;
             /**
-             * @description ral
-             * @example 17122018
-             */
-            readonly ral?: string | null;
-            /**
+             * rgb
              * @description rgb
              * @example #848484
              */
-            readonly rgb?: string | null;
-            /**
-             * @description id
-             * @example 1
-             */
-            readonly id: number;
+            readonly rgb: string | null;
         };
         /** @description Couleur */
         readonly 'Color.jsonld-Color-write': {
@@ -808,55 +875,58 @@ export interface components {
             /** @example Color */
             readonly '@type'?: string;
             /**
+             * nom
              * @description nom
              * @example Gris
              */
             readonly name: string;
             /**
-             * @description ral
-             * @example 17122018
-             */
-            readonly ral?: string | null;
-            /**
+             * rgb
              * @description rgb
              * @example #848484
              */
-            readonly rgb?: string | null;
+            readonly rgb: string | null;
         };
         /** @description Famille de composant */
         readonly 'ComponentFamily-ComponentFamily-read': {
             /**
-             * @description Nom
-             * @example Câbles
-             */
-            readonly name: string;
-            /**
-             * Format: iri-reference
-             * @description Famille parente
-             * @example /api/component-families/2
-             */
-            readonly parent?: string | null;
-            /**
+             * Code
              * @description Code
              * @example CAB
              */
-            readonly code: string;
+            readonly code: string | null;
             /**
+             * Cuivré
              * @description Cuivré
              * @example true
              */
             readonly copperable?: boolean;
+            readonly customsCode?: string | null;
             /**
+             * Icône
+             * @description Icône
+             * @example /uploads/component-families/1.jpg
+             */
+            readonly filepath?: string | null;
+            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
             /**
-             * @description Icône
-             * @example /uploads/component-families/1.jpg
+             * Nom
+             * @description Nom
+             * @example Câbles
              */
-            readonly filepath?: string | null;
-            readonly customsCode?: string | null;
+            readonly name: string;
+            /**
+             * Famille parente
+             * Format: iri-reference
+             * @description Famille parente
+             * @example /api/component-families/2
+             */
+            readonly parent?: string | null;
         };
         /** @description Famille de composant */
         readonly 'ComponentFamily-ComponentFamily-write': {
@@ -875,7 +945,7 @@ export interface components {
              * @description Code
              * @example CAB
              */
-            readonly code: string;
+            readonly code: string | null;
             /**
              * @description Cuivré
              * @example true
@@ -900,54 +970,57 @@ export interface components {
             /** @example ComponentFamily */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example Câbles
-             */
-            readonly name: string;
-            /**
-             * Format: iri-reference
-             * @description Famille parente
-             * @example /api/component-families/2
-             */
-            readonly parent?: string | null;
-            /**
+             * Code
              * @description Code
              * @example CAB
              */
             readonly code: string;
             /**
+             * Cuivré
              * @description Cuivré
              * @example true
              */
             readonly copperable?: boolean;
+            readonly customsCode?: string | null;
             /**
+             * Icône
+             * @description Icône
+             * @example /uploads/component-families/1.jpg
+             */
+            readonly filepath?: string | null;
+            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
             /**
-             * @description Icône
-             * @example /uploads/component-families/1.jpg
-             */
-            readonly filepath?: string | null;
-            readonly customsCode?: string | null;
-        };
-        /** @description Groupe de contrepartie de test */
-        readonly CounterPartGroup: {
-            /**
+             * Nom
              * @description Nom
-             * @example Table d'assemblage
+             * @example Câbles
              */
             readonly name: string;
             /**
+             * Famille parente
+             * Format: iri-reference
+             * @description Famille parente
+             * @example /api/component-families/2
+             */
+            readonly parent?: string | null;
+        };
+        /** @description Groupe de contrepartie de test */
+        readonly CounterPartGroup: {
+            readonly code: string;
+            readonly deleted?: boolean;
+            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
-            readonly type?: string;
-            readonly code: string;
+            readonly name: string;
             readonly safetyDevice?: boolean;
-            readonly deleted?: boolean;
+            readonly type?: string;
         };
         /** @description Groupe de contrepartie de test */
         readonly 'CounterPartGroup.jsonld': {
@@ -963,50 +1036,53 @@ export interface components {
             readonly '@id': string;
             /** @example CounterPartGroup */
             readonly '@type': string;
+            readonly code: string;
+            readonly deleted?: boolean;
             /**
-             * @description Nom
-             * @example Table d'assemblage
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
-            readonly type?: string;
-            readonly code: string;
+            readonly name: string;
             readonly safetyDevice?: boolean;
-            readonly deleted?: boolean;
+            readonly type?: string;
         };
         /** @description Devises */
         readonly 'Currency-Currency-read': {
             /**
+             * Active
+             * @description Active
+             * @example true
+             */
+            readonly active?: boolean;
+            /**
+             * Enfants
              * @description Enfants
              * @example /api/currencies/2,/api/currencies/3
              */
             readonly children?: readonly string[];
             /**
+             * id
+             * @description id
+             * @example 1
+             */
+            readonly id?: number;
+            /**
+             * Nom
              * @description Nom
              * @example Euro
              */
             readonly name: string | null;
             /**
+             * Parent
              * Format: iri-reference
              * @description Parent
              * @example /api/currencies/1
              */
             readonly parent?: string | null;
             /**
-             * @description Active
-             * @example true
-             */
-            readonly active?: boolean;
-            /**
-             * @description id
-             * @example 1
-             */
-            readonly id?: number;
-            /**
+             * Symbole
              * @description Symbole
              * @example €
              */
@@ -1015,16 +1091,18 @@ export interface components {
         /** @description Devises */
         readonly 'Currency-Currency-write': {
             /**
+             * Active
+             * @description Active
+             * @example true
+             */
+            readonly active?: boolean;
+            /**
+             * Parent
              * Format: iri-reference
              * @description Parent
              * @example /api/currencies/1
              */
             readonly parent?: string | null;
-            /**
-             * @description Active
-             * @example true
-             */
-            readonly active?: boolean;
         };
         /** @description Devises */
         readonly 'Currency.jsonld-Currency-read': {
@@ -1039,48 +1117,60 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /**
+             * Active
+             * @description Active
+             * @example true
+             */
+            readonly active?: boolean;
+            /**
+             * Enfants
              * @description Enfants
              * @example /api/currencies/2,/api/currencies/3
              */
             readonly children?: readonly string[];
             /**
+             * id
+             * @description id
+             * @example 1
+             */
+            readonly id: number;
+            /**
+             * Nom
              * @description Nom
              * @example Euro
              */
             readonly name: string | null;
             /**
+             * Parent
              * Format: iri-reference
              * @description Parent
              * @example /api/currencies/1
              */
             readonly parent?: string | null;
             /**
-             * @description Active
-             * @example true
-             */
-            readonly active?: boolean;
-            /**
-             * @description id
-             * @example 1
-             */
-            readonly id: number;
-            /**
+             * Symbole
              * @description Symbole
              * @example €
              */
             readonly symbol?: string | null;
         };
         readonly 'CurrentPlace-Product-collection': {
-            /** @description Nom */
-            readonly name: string | null;
             /** Format: date-time */
             readonly date?: string;
+            /**
+             * Nom
+             * @description Nom
+             */
+            readonly name: string | null;
         };
         readonly 'CurrentPlace-Product-read': {
-            /** @description Nom */
-            readonly name: string | null;
             /** Format: date-time */
             readonly date?: string;
+            /**
+             * Nom
+             * @description Nom
+             */
+            readonly name: string | null;
         };
         readonly 'CurrentPlace.jsonld-Product-collection': {
             readonly '@context'?:
@@ -1092,10 +1182,13 @@ export interface components {
             } & { readonly [key: string]: unknown });
             readonly '@id'?: string;
             readonly '@type'?: string;
-            /** @description Nom */
-            readonly name: string | null;
             /** Format: date-time */
             readonly date?: string;
+            /**
+             * Nom
+             * @description Nom
+             */
+            readonly name: string | null;
         };
         readonly 'CurrentPlace.jsonld-Product-read': {
             readonly '@context'?:
@@ -1107,38 +1200,46 @@ export interface components {
             } & { readonly [key: string]: unknown });
             readonly '@id'?: string;
             readonly '@type'?: string;
-            /** @description Nom */
-            readonly name: string | null;
             /** Format: date-time */
             readonly date?: string;
+            /**
+             * Nom
+             * @description Nom
+             */
+            readonly name: string | null;
         };
         /** @description Employé */
         readonly 'Employee-Employee-read': {
             /**
-             * @description Nom
-             * @example Super
-             */
-            readonly name: string;
-            /**
-             * @description identifiant
-             * @example super
-             */
-            readonly username?: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
             /**
+             * Nom
+             * @description Nom
+             * @example Super
+             */
+            readonly name: string;
+            /**
+             * Rôles
              * @description Rôles
              * @example ROLE_USER
              */
             readonly roles?: readonly string[];
             /**
+             * Token
              * @description Token
              * @example 47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707
              */
             readonly token?: string | null;
+            /**
+             * identifiant
+             * @description identifiant
+             * @example super
+             */
+            readonly username?: string;
         };
         /** @description Employé */
         readonly 'Employee.jsonld-Employee-read': {
@@ -1155,62 +1256,72 @@ export interface components {
             /** @example Employee */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example Super
-             */
-            readonly name: string;
-            /**
-             * @description identifiant
-             * @example super
-             */
-            readonly username?: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
             /**
+             * Nom
+             * @description Nom
+             * @example Super
+             */
+            readonly name: string;
+            /**
+             * Rôles
              * @description Rôles
              * @example ROLE_USER
              */
             readonly roles?: readonly string[];
             /**
+             * Token
              * @description Token
              * @example 47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707
              */
             readonly token: string;
+            /**
+             * identifiant
+             * @description identifiant
+             * @example super
+             */
+            readonly username?: string;
         };
         /** @description Groupe d'équipement */
         readonly 'EngineGroup-EngineGroup-read': {
             /**
-             * @description Nom
-             * @example Table d'assemblage
-             */
-            readonly name: string;
-            /**
+             * Code
              * @description Code
              * @example TA
              */
             readonly code: string;
-            readonly safetyDevice?: boolean;
             /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
-        };
-        /** @description Groupe d'équipement */
-        readonly 'EngineGroup-EngineGroup-write': {
             /**
+             * Nom
              * @description Nom
              * @example Table d'assemblage
              */
             readonly name: string;
+            readonly safetyDevice?: boolean;
+        };
+        /** @description Groupe d'équipement */
+        readonly 'EngineGroup-EngineGroup-write': {
             /**
+             * Code
              * @description Code
              * @example TA
              */
             readonly code: string;
+            /**
+             * Nom
+             * @description Nom
+             * @example Table d'assemblage
+             */
+            readonly name: string;
             readonly safetyDevice?: boolean;
         };
         /** @description Groupe d'équipement */
@@ -1226,30 +1337,41 @@ export interface components {
                 readonly hydra: 'http://www.w3.org/ns/hydra/core#';
             } & { readonly [key: string]: unknown });
             /**
-             * @description Nom
-             * @example Table d'assemblage
-             */
-            readonly name: string;
-            /**
+             * Code
              * @description Code
              * @example TA
              */
             readonly code: string;
-            readonly safetyDevice?: boolean;
             /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example Table d'assemblage
+             */
+            readonly name: string;
+            readonly safetyDevice?: boolean;
         };
         /** @description Type d'événements */
         readonly 'EventType-EventType-read': {
             /**
+             * id
+             * @description id
+             * @example 1
+             */
+            readonly id?: number;
+            /**
+             * Nom
              * @description Nom
              * @example ABSENCE
              */
             readonly name: string;
             /**
+             * Status
              * @description Status
              * @example blocked
              * @enum {string|null}
@@ -1257,20 +1379,17 @@ export interface components {
             readonly toStatus?:
                 | ('blocked' | 'disabled' | 'enabled' | 'warning')
                 | null;
-            /**
-             * @description id
-             * @example 1
-             */
-            readonly id?: number;
         };
         /** @description Type d'événements */
         readonly 'EventType-EventType-write': {
             /**
+             * Nom
              * @description Nom
              * @example ABSENCE
              */
             readonly name: string;
             /**
+             * Status
              * @description Status
              * @example blocked
              * @enum {string|null}
@@ -1294,11 +1413,19 @@ export interface components {
             /** @example EventType */
             readonly '@type': string;
             /**
+             * id
+             * @description id
+             * @example 1
+             */
+            readonly id: number;
+            /**
+             * Nom
              * @description Nom
              * @example ABSENCE
              */
             readonly name: string;
             /**
+             * Status
              * @description Status
              * @example blocked
              * @enum {string|null}
@@ -1306,11 +1433,6 @@ export interface components {
             readonly toStatus?:
                 | ('blocked' | 'disabled' | 'enabled' | 'warning')
                 | null;
-            /**
-             * @description id
-             * @example 1
-             */
-            readonly id: number;
         };
         /** @description Type d'événements */
         readonly 'EventType.jsonld-EventType-write': {
@@ -1327,11 +1449,13 @@ export interface components {
             /** @example EventType */
             readonly '@type'?: string;
             /**
+             * Nom
              * @description Nom
              * @example ABSENCE
              */
             readonly name: string;
             /**
+             * Status
              * @description Status
              * @example blocked
              * @enum {string|null}
@@ -1343,33 +1467,38 @@ export interface components {
         /** @description Incoterms */
         readonly 'Incoterms-Incoterms-read': {
             /**
-             * @description Nom
-             * @example Delivered Duty Paid
-             */
-            readonly name: string;
-            /**
+             * Code
              * @description Code
              * @example DDP
              */
             readonly code: string;
             /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
-        };
-        /** @description Incoterms */
-        readonly 'Incoterms-Incoterms-write': {
             /**
+             * Nom
              * @description Nom
              * @example Delivered Duty Paid
              */
             readonly name: string;
+        };
+        /** @description Incoterms */
+        readonly 'Incoterms-Incoterms-write': {
             /**
+             * Code
              * @description Code
              * @example DDP
              */
             readonly code: string;
+            /**
+             * Nom
+             * @description Nom
+             * @example Delivered Duty Paid
+             */
+            readonly name: string;
         };
         /** @description Incoterms */
         readonly 'Incoterms.jsonld-Incoterms-read': {
@@ -1386,20 +1515,23 @@ export interface components {
             /** @example Incoterms */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example Delivered Duty Paid
-             */
-            readonly name: string;
-            /**
+             * Code
              * @description Code
              * @example DDP
              */
             readonly code: string;
             /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example Delivered Duty Paid
+             */
+            readonly name: string;
         };
         /** @description Incoterms */
         readonly 'Incoterms.jsonld-Incoterms-write': {
@@ -1416,60 +1548,75 @@ export interface components {
             /** @example Incoterms */
             readonly '@type'?: string;
             /**
-             * @description Nom
-             * @example Delivered Duty Paid
-             */
-            readonly name: string;
-            /**
+             * Code
              * @description Code
              * @example DDP
              */
             readonly code: string;
+            /**
+             * Nom
+             * @description Nom
+             * @example Delivered Duty Paid
+             */
+            readonly name: string;
         };
         /** @description Délai de paiement des factures */
         readonly 'InvoiceTimeDue-InvoiceTimeDue-read': {
             /**
-             * @description Nom
-             * @example 30 jours fin de mois
-             */
-            readonly name: string;
-            /**
+             * Jours
              * @description Jours
              * @example 30
              */
-            readonly days?: number;
-            /** @description Jours après la fin du mois */
-            readonly daysAfterEndOfMonth?: number;
+            readonly days?: number | null;
             /**
+             * Jours après la fin du mois
+             * @description Jours après la fin du mois
+             */
+            readonly daysAfterEndOfMonth?: number | null;
+            /**
+             * Fin du mois
              * @description Fin du mois
              * @example true
              */
             readonly endOfMonth?: boolean;
             /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
-        };
-        /** @description Délai de paiement des factures */
-        readonly 'InvoiceTimeDue-InvoiceTimeDue-write': {
             /**
+             * Nom
              * @description Nom
              * @example 30 jours fin de mois
              */
             readonly name: string;
+        };
+        /** @description Délai de paiement des factures */
+        readonly 'InvoiceTimeDue-InvoiceTimeDue-write': {
             /**
+             * Jours
              * @description Jours
              * @example 30
              */
-            readonly days?: number;
-            /** @description Jours après la fin du mois */
-            readonly daysAfterEndOfMonth?: number;
+            readonly days?: number | null;
             /**
+             * Jours après la fin du mois
+             * @description Jours après la fin du mois
+             */
+            readonly daysAfterEndOfMonth?: number | null;
+            /**
+             * Fin du mois
              * @description Fin du mois
              * @example true
              */
             readonly endOfMonth?: boolean;
+            /**
+             * Nom
+             * @description Nom
+             * @example 30 jours fin de mois
+             */
+            readonly name: string;
         };
         /** @description Délai de paiement des factures */
         readonly 'InvoiceTimeDue.jsonld-InvoiceTimeDue-read': {
@@ -1486,27 +1633,34 @@ export interface components {
             /** @example InvoiceTimeDue */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example 30 jours fin de mois
-             */
-            readonly name: string;
-            /**
+             * Jours
              * @description Jours
              * @example 30
              */
-            readonly days?: number;
-            /** @description Jours après la fin du mois */
-            readonly daysAfterEndOfMonth?: number;
+            readonly days?: number | null;
             /**
+             * Jours après la fin du mois
+             * @description Jours après la fin du mois
+             */
+            readonly daysAfterEndOfMonth?: number | null;
+            /**
+             * Fin du mois
              * @description Fin du mois
              * @example true
              */
             readonly endOfMonth?: boolean;
             /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example 30 jours fin de mois
+             */
+            readonly name: string;
         };
         /** @description Délai de paiement des factures */
         readonly 'InvoiceTimeDue.jsonld-InvoiceTimeDue-write': {
@@ -1523,22 +1677,28 @@ export interface components {
             /** @example InvoiceTimeDue */
             readonly '@type'?: string;
             /**
-             * @description Nom
-             * @example 30 jours fin de mois
-             */
-            readonly name: string;
-            /**
+             * Jours
              * @description Jours
              * @example 30
              */
-            readonly days?: number;
-            /** @description Jours après la fin du mois */
-            readonly daysAfterEndOfMonth?: number;
+            readonly days?: number | null;
             /**
+             * Jours après la fin du mois
+             * @description Jours après la fin du mois
+             */
+            readonly daysAfterEndOfMonth?: number | null;
+            /**
+             * Fin du mois
              * @description Fin du mois
              * @example true
              */
             readonly endOfMonth?: boolean;
+            /**
+             * Nom
+             * @description Nom
+             * @example 30 jours fin de mois
+             */
+            readonly name: string;
         };
         /** @description Temps */
         readonly 'Measure-duration': {
@@ -1599,33 +1759,44 @@ export interface components {
         /** @description Formateur extérieur */
         readonly 'OutTrainer-OutTrainer-read': {
             /**
-             * @description Prénom
-             * @example Rawaa
+             * Adresse
+             * @description Adresse
              */
-            readonly name: string;
-            /** @description Adresse */
             readonly address?: components['schemas']['Address-OutTrainer-read'];
             /**
-             * @description Nom
-             * @example CHRAIET
-             */
-            readonly surname: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
-        };
-        /** @description Formateur extérieur */
-        readonly 'OutTrainer-OutTrainer-write': {
             /**
+             * Prénom
              * @description Prénom
              * @example Rawaa
              */
             readonly name: string;
-            /** @description Adresse */
+            /**
+             * Nom
+             * @description Nom
+             * @example CHRAIET
+             */
+            readonly surname: string;
+        };
+        /** @description Formateur extérieur */
+        readonly 'OutTrainer-OutTrainer-write': {
+            /**
+             * Adresse
+             * @description Adresse
+             */
             readonly address?: components['schemas']['Address-OutTrainer-write'];
             /**
+             * Prénom
+             * @description Prénom
+             * @example Rawaa
+             */
+            readonly name: string;
+            /**
+             * Nom
              * @description Nom
              * @example CHRAIET
              */
@@ -1646,22 +1817,28 @@ export interface components {
             /** @example OutTrainer */
             readonly '@type': string;
             /**
-             * @description Prénom
-             * @example Rawaa
+             * Adresse
+             * @description Adresse
              */
-            readonly name: string;
-            /** @description Adresse */
             readonly address?: components['schemas']['Address.jsonld-OutTrainer-read'];
             /**
-             * @description Nom
-             * @example CHRAIET
-             */
-            readonly surname: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Prénom
+             * @description Prénom
+             * @example Rawaa
+             */
+            readonly name: string;
+            /**
+             * Nom
+             * @description Nom
+             * @example CHRAIET
+             */
+            readonly surname: string;
         };
         /** @description Formateur extérieur */
         readonly 'OutTrainer.jsonld-OutTrainer-write': {
@@ -1678,13 +1855,18 @@ export interface components {
             /** @example OutTrainer */
             readonly '@type'?: string;
             /**
+             * Adresse
+             * @description Adresse
+             */
+            readonly address?: components['schemas']['Address.jsonld-OutTrainer-write'];
+            /**
+             * Prénom
              * @description Prénom
              * @example Rawaa
              */
             readonly name: string;
-            /** @description Adresse */
-            readonly address?: components['schemas']['Address.jsonld-OutTrainer-write'];
             /**
+             * Nom
              * @description Nom
              * @example CHRAIET
              */
@@ -1693,26 +1875,23 @@ export interface components {
         /** @description Produit */
         readonly 'Product-Product-clone': {
             /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
-            /**
+             * Indice
              * @description Indice
              * @example 02
              */
             readonly index?: string;
+            /**
+             * Référence
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
         };
         /** @description Produit */
         readonly 'Product-Product-collection': {
             /** @description Statut */
             readonly currentPlace?: components['schemas']['CurrentPlace-Product-collection'];
             /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
-            /**
              * Format: date-time
              * @description Date d'expiration
              * @example 2021-01-12
@@ -1723,7 +1902,7 @@ export interface components {
              * @description Famille de produit
              * @example /api/product-families/1
              */
-            readonly family?: string | null;
+            readonly family?: string;
             /**
              * @description Indice
              * @example 02
@@ -1733,211 +1912,298 @@ export interface components {
              * @description Type
              * @default Prototype
              * @example Prototype
-             * @enum {string}
+             * @enum {string|null}
              */
-            readonly kind?: 'EI' | 'Prototype' | 'Série' | 'Pièce de rechange';
+            readonly kind?:
+                | ('EI' | 'Prototype' | 'Série' | 'Pièce de rechange')
+                | null;
+            /**
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
         };
         /** @description Produit */
         readonly 'Product-Product-create': {
             /**
-             * @description Nom
-             * @example HEATING WIRE (HSR25304)
-             */
-            readonly name: string;
-            /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
-            /**
+             * Date d'expiration
              * Format: date-time
              * @description Date d'expiration
              * @example 2021-01-12
              */
             readonly expirationDate?: string | null;
             /**
+             * Famille de produit
              * Format: iri-reference
              * @description Famille de produit
              * @example /api/product-families/1
              */
-            readonly family?: string | null;
-            /** @description Volume prévisionnel */
+            readonly family?: string;
+            /**
+             * Volume prévisionnel
+             * @description Volume prévisionnel
+             */
             readonly forecastVolume?: components['schemas']['Measure-unitary'];
             /**
+             * Indice
              * @description Indice
              * @example 02
              */
             readonly index?: string;
             /**
+             * Type
              * @description Type
              * @default Prototype
              * @example Prototype
-             * @enum {string}
+             * @enum {string|null}
              */
-            readonly kind?: 'EI' | 'Prototype' | 'Série' | 'Pièce de rechange';
+            readonly kind?:
+                | ('EI' | 'Prototype' | 'Série' | 'Pièce de rechange')
+                | null;
             /**
-             * @description Notes
-             * @example Produit préféré des clients
-             */
-            readonly notes?: string | null;
-            /** @description Conditionnement */
-            readonly packaging: components['schemas']['Measure-unitary'];
-            /**
-             * @description Notes
-             * @example Type de packaging
-             */
-            readonly packagingKind?: string | null;
-            /**
-             * Format: iri-reference
-             * @description Unité
-             * @example /api/units/1
-             */
-            readonly unit: string | null;
-        };
-        /** @description Produit */
-        readonly 'Product-Product-read': {
-            /** @description Statut */
-            readonly currentPlace?: components['schemas']['CurrentPlace-Product-read'];
-            /**
+             * Nom
              * @description Nom
              * @example HEATING WIRE (HSR25304)
              */
             readonly name: string;
             /**
+             * Notes
+             * @description Notes
+             * @example Produit préféré des clients
+             */
+            readonly notes?: string | null;
+            /**
+             * Conditionnement
+             * @description Conditionnement
+             */
+            readonly packaging: components['schemas']['Measure-unitary'];
+            /**
+             * Notes
+             * @description Notes
+             * @example Type de packaging
+             */
+            readonly packagingKind?: string;
+            /**
+             * Référence
              * @description Référence
              * @example 54587F
              */
             readonly ref?: string;
             /**
+             * Unité
+             * Format: iri-reference
+             * @description Unité
+             * @example /api/units/1
+             */
+            readonly unit: string;
+        };
+        /** @description Produit */
+        readonly 'Product-Product-read': {
+            /**
+             * Statut
+             * @description Statut
+             */
+            readonly currentPlace?: components['schemas']['CurrentPlace-Product-read'];
+            /**
+             * Code douanier
              * @description Code douanier
              * @example 8544300089
              */
             readonly customsCode?: string | null;
             /**
+             * Date d'expiration
              * Format: date-time
              * @description Date d'expiration
              * @example 2021-01-12
              */
             readonly expirationDate?: string | null;
             /**
+             * Famille de produit
              * Format: iri-reference
              * @description Famille de produit
              * @example /api/product-families/1
              */
-            readonly family?: string | null;
-            /** @description Volume prévisionnel */
+            readonly family?: string;
+            /**
+             * Volume prévisionnel
+             * @description Volume prévisionnel
+             */
             readonly forecastVolume?: components['schemas']['Measure-unitary'];
             /**
+             * Incoterms
              * Format: iri-reference
              * @description Incoterms
              * @example /api/incoterms/1
              */
             readonly incoterms: string | null;
             /**
+             * Indice
              * @description Indice
              * @example 02
              */
             readonly index?: string;
             /**
+             * Indice interne
              * @description Indice interne
              * @default 1
              * @example 1
              */
             readonly internalIndex: number;
             /**
+             * Type
              * @description Type
              * @default Prototype
              * @example Prototype
-             * @enum {string}
+             * @enum {string|null}
              */
-            readonly kind?: 'EI' | 'Prototype' | 'Série' | 'Pièce de rechange';
+            readonly kind?:
+                | ('EI' | 'Prototype' | 'Série' | 'Pièce de rechange')
+                | null;
             /**
+             * Gestion cuivre
              * @description Gestion cuivre
              * @example true
              */
             readonly managedCopper?: boolean;
-            /** @description Nombre max de prototypes */
+            /**
+             * Nombre max de prototypes
+             * @description Nombre max de prototypes
+             */
             readonly maxProto: components['schemas']['Measure-unitary'];
-            /** @description Délai de livraison minimum */
+            /**
+             * Délai de livraison minimum
+             * @description Délai de livraison minimum
+             */
             readonly minDelivery: components['schemas']['Measure-unitary'];
-            /** @description Production minimum */
+            /**
+             * Production minimum
+             * @description Production minimum
+             */
             readonly minProd: components['schemas']['Measure-unitary'];
-            /** @description Stock minimum */
+            /**
+             * Stock minimum
+             * @description Stock minimum
+             */
             readonly minStock: components['schemas']['Measure-unitary'];
             /**
-             * @description Notes
-             * @example Produit préféré des clients
-             */
-            readonly notes?: string | null;
-            /** @description Conditionnement */
-            readonly packaging: components['schemas']['Measure-unitary'];
-            /**
-             * @description Notes
-             * @example Type de packaging
-             */
-            readonly packagingKind?: string | null;
-            /**
-             * Format: iri-reference
-             * @description Unité parente
-             * @example /api/products/3
-             */
-            readonly parent?: string | null;
-            /** @description Prix */
-            readonly price: components['schemas']['Measure-price'];
-            /** @description Prix sans cuivre */
-            readonly priceWithoutCopper: components['schemas']['Measure-price'];
-            /** @description Délai de production */
-            readonly productionDelay: components['schemas']['Measure-duration'];
-            /** @description Prix de cession des composants */
-            readonly transfertPriceSupplies: components['schemas']['Measure-price'];
-            /** @description Prix de cession de main d'œuvre */
-            readonly transfertPriceWork: components['schemas']['Measure-price'];
-            /**
-             * Format: iri-reference
-             * @description Unité
-             * @example /api/units/1
-             */
-            readonly unit: string | null;
-            /** @description Poids */
-            readonly weight?: components['schemas']['Measure-mass'];
-        };
-        /** @description Produit */
-        readonly 'Product-Product-upgrade': {
-            /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
-            /**
-             * @description Indice
-             * @example 02
-             */
-            readonly index?: string;
-        };
-        /** @description Produit */
-        readonly 'Product-Product-write': {
-            /**
+             * Nom
              * @description Nom
              * @example HEATING WIRE (HSR25304)
              */
             readonly name: string;
             /**
+             * Notes
+             * @description Notes
+             * @example Produit préféré des clients
+             */
+            readonly notes?: string | null;
+            /**
+             * Conditionnement
+             * @description Conditionnement
+             */
+            readonly packaging: components['schemas']['Measure-unitary'];
+            /**
+             * Notes
+             * @description Notes
+             * @example Type de packaging
+             */
+            readonly packagingKind?: string;
+            /**
+             * Unité parente
+             * Format: iri-reference
+             * @description Unité parente
+             * @example /api/products/3
+             */
+            readonly parent?: string | null;
+            /**
+             * Prix
+             * @description Prix
+             */
+            readonly price: components['schemas']['Measure-price'];
+            /**
+             * Prix sans cuivre
+             * @description Prix sans cuivre
+             */
+            readonly priceWithoutCopper: components['schemas']['Measure-price'];
+            /**
+             * Délai de production
+             * @description Délai de production
+             */
+            readonly productionDelay: components['schemas']['Measure-duration'];
+            /**
+             * Référence
              * @description Référence
              * @example 54587F
              */
             readonly ref?: string;
             /**
+             * Prix de cession des composants
+             * @description Prix de cession des composants
+             */
+            readonly transfertPriceSupplies: components['schemas']['Measure-price'];
+            /**
+             * Prix de cession de main d'œuvre
+             * @description Prix de cession de main d'œuvre
+             */
+            readonly transfertPriceWork: components['schemas']['Measure-price'];
+            /**
+             * Unité
+             * Format: iri-reference
+             * @description Unité
+             * @example /api/units/1
+             */
+            readonly unit: string;
+            /**
+             * Poids
+             * @description Poids
+             */
+            readonly weight?: components['schemas']['Measure-mass'];
+        };
+        /** @description Produit */
+        readonly 'Product-Product-upgrade': {
+            /**
+             * Indice
              * @description Indice
              * @example 02
              */
             readonly index?: string;
             /**
+             * Référence
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
+        };
+        /** @description Produit */
+        readonly 'Product-Product-write': {
+            /**
+             * Indice
+             * @description Indice
+             * @example 02
+             */
+            readonly index?: string;
+            /**
+             * Type
              * @description Type
              * @default Prototype
              * @example Prototype
-             * @enum {string}
+             * @enum {string|null}
              */
-            readonly kind?: 'EI' | 'Prototype' | 'Série' | 'Pièce de rechange';
+            readonly kind?:
+                | ('EI' | 'Prototype' | 'Série' | 'Pièce de rechange')
+                | null;
+            /**
+             * Nom
+             * @description Nom
+             * @example HEATING WIRE (HSR25304)
+             */
+            readonly name: string;
+            /**
+             * Référence
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
         };
         /** @description Produit */
         readonly 'Product.jsonld-Product-clone': {
@@ -1954,15 +2220,17 @@ export interface components {
             /** @example Product */
             readonly '@type'?: string;
             /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
-            /**
+             * Indice
              * @description Indice
              * @example 02
              */
             readonly index?: string;
+            /**
+             * Référence
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
         };
         /** @description Produit */
         readonly 'Product.jsonld-Product-collection': {
@@ -1970,11 +2238,6 @@ export interface components {
             readonly '@type'?: string;
             /** @description Statut */
             readonly currentPlace?: components['schemas']['CurrentPlace.jsonld-Product-collection'];
-            /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
             /**
              * Format: date-time
              * @description Date d'expiration
@@ -1986,7 +2249,7 @@ export interface components {
              * @description Famille de produit
              * @example /api/product-families/1
              */
-            readonly family?: string | null;
+            readonly family?: string;
             /**
              * @description Indice
              * @example 02
@@ -1996,9 +2259,16 @@ export interface components {
              * @description Type
              * @default Prototype
              * @example Prototype
-             * @enum {string}
+             * @enum {string|null}
              */
-            readonly kind?: 'EI' | 'Prototype' | 'Série' | 'Pièce de rechange';
+            readonly kind?:
+                | ('EI' | 'Prototype' | 'Série' | 'Pièce de rechange')
+                | null;
+            /**
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
         };
         /** @description Produit */
         readonly 'Product.jsonld-Product-create': {
@@ -2015,54 +2285,71 @@ export interface components {
             /** @example Product */
             readonly '@type'?: string;
             /**
-             * @description Nom
-             * @example HEATING WIRE (HSR25304)
-             */
-            readonly name: string;
-            /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
-            /**
+             * Date d'expiration
              * Format: date-time
              * @description Date d'expiration
              * @example 2021-01-12
              */
             readonly expirationDate?: string | null;
             /**
+             * Famille de produit
              * Format: iri-reference
              * @description Famille de produit
              * @example /api/product-families/1
              */
-            readonly family?: string | null;
-            /** @description Volume prévisionnel */
+            readonly family?: string;
+            /**
+             * Volume prévisionnel
+             * @description Volume prévisionnel
+             */
             readonly forecastVolume?: components['schemas']['Measure-unitary'];
             /**
+             * Indice
              * @description Indice
              * @example 02
              */
             readonly index?: string;
             /**
+             * Type
              * @description Type
              * @default Prototype
              * @example Prototype
-             * @enum {string}
+             * @enum {string|null}
              */
-            readonly kind?: 'EI' | 'Prototype' | 'Série' | 'Pièce de rechange';
+            readonly kind?:
+                | ('EI' | 'Prototype' | 'Série' | 'Pièce de rechange')
+                | null;
             /**
+             * Nom
+             * @description Nom
+             * @example HEATING WIRE (HSR25304)
+             */
+            readonly name: string;
+            /**
+             * Notes
              * @description Notes
              * @example Produit préféré des clients
              */
             readonly notes?: string | null;
-            /** @description Conditionnement */
+            /**
+             * Conditionnement
+             * @description Conditionnement
+             */
             readonly packaging: components['schemas']['Measure-unitary'];
             /**
+             * Notes
              * @description Notes
              * @example Type de packaging
              */
-            readonly packagingKind?: string | null;
+            readonly packagingKind?: string;
             /**
+             * Référence
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
+            /**
+             * Unité
              * Format: iri-reference
              * @description Unité
              * @example /api/units/1
@@ -2083,109 +2370,164 @@ export interface components {
             readonly '@id': string;
             /** @example Product */
             readonly '@type': string;
-            /** @description Statut */
+            /**
+             * Statut
+             * @description Statut
+             */
             readonly currentPlace?: components['schemas']['CurrentPlace.jsonld-Product-read'];
             /**
-             * @description Nom
-             * @example HEATING WIRE (HSR25304)
-             */
-            readonly name: string;
-            /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
-            /**
+             * Code douanier
              * @description Code douanier
              * @example 8544300089
              */
             readonly customsCode?: string | null;
             /**
+             * Date d'expiration
              * Format: date-time
              * @description Date d'expiration
              * @example 2021-01-12
              */
             readonly expirationDate?: string | null;
             /**
+             * Famille de produit
              * Format: iri-reference
              * @description Famille de produit
              * @example /api/product-families/1
              */
-            readonly family?: string | null;
-            /** @description Volume prévisionnel */
+            readonly family?: string;
+            /**
+             * Volume prévisionnel
+             * @description Volume prévisionnel
+             */
             readonly forecastVolume?: components['schemas']['Measure-unitary'];
             /**
+             * Incoterms
              * Format: iri-reference
              * @description Incoterms
              * @example /api/incoterms/1
              */
             readonly incoterms: string;
             /**
+             * Indice
              * @description Indice
              * @example 02
              */
             readonly index?: string;
             /**
+             * Indice interne
              * @description Indice interne
              * @default 1
              * @example 1
              */
             readonly internalIndex: number;
             /**
+             * Type
              * @description Type
              * @default Prototype
              * @example Prototype
-             * @enum {string}
+             * @enum {string|null}
              */
-            readonly kind?: 'EI' | 'Prototype' | 'Série' | 'Pièce de rechange';
+            readonly kind?:
+                | ('EI' | 'Prototype' | 'Série' | 'Pièce de rechange')
+                | null;
             /**
+             * Gestion cuivre
              * @description Gestion cuivre
              * @example true
              */
             readonly managedCopper?: boolean;
-            /** @description Nombre max de prototypes */
+            /**
+             * Nombre max de prototypes
+             * @description Nombre max de prototypes
+             */
             readonly maxProto: components['schemas']['Measure-unitary'];
-            /** @description Délai de livraison minimum */
+            /**
+             * Délai de livraison minimum
+             * @description Délai de livraison minimum
+             */
             readonly minDelivery: components['schemas']['Measure-unitary'];
-            /** @description Production minimum */
+            /**
+             * Production minimum
+             * @description Production minimum
+             */
             readonly minProd: components['schemas']['Measure-unitary'];
-            /** @description Stock minimum */
+            /**
+             * Stock minimum
+             * @description Stock minimum
+             */
             readonly minStock: components['schemas']['Measure-unitary'];
             /**
+             * Nom
+             * @description Nom
+             * @example HEATING WIRE (HSR25304)
+             */
+            readonly name: string;
+            /**
+             * Notes
              * @description Notes
              * @example Produit préféré des clients
              */
             readonly notes?: string | null;
-            /** @description Conditionnement */
+            /**
+             * Conditionnement
+             * @description Conditionnement
+             */
             readonly packaging: components['schemas']['Measure-unitary'];
             /**
+             * Notes
              * @description Notes
              * @example Type de packaging
              */
-            readonly packagingKind?: string | null;
+            readonly packagingKind?: string;
             /**
+             * Unité parente
              * Format: iri-reference
              * @description Unité parente
              * @example /api/products/3
              */
             readonly parent?: string | null;
-            /** @description Prix */
+            /**
+             * Prix
+             * @description Prix
+             */
             readonly price: components['schemas']['Measure-price'];
-            /** @description Prix sans cuivre */
+            /**
+             * Prix sans cuivre
+             * @description Prix sans cuivre
+             */
             readonly priceWithoutCopper: components['schemas']['Measure-price'];
-            /** @description Délai de production */
+            /**
+             * Délai de production
+             * @description Délai de production
+             */
             readonly productionDelay: components['schemas']['Measure-duration'];
-            /** @description Prix de cession des composants */
+            /**
+             * Référence
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
+            /**
+             * Prix de cession des composants
+             * @description Prix de cession des composants
+             */
             readonly transfertPriceSupplies: components['schemas']['Measure-price'];
-            /** @description Prix de cession de main d'œuvre */
+            /**
+             * Prix de cession de main d'œuvre
+             * @description Prix de cession de main d'œuvre
+             */
             readonly transfertPriceWork: components['schemas']['Measure-price'];
             /**
+             * Unité
              * Format: iri-reference
              * @description Unité
              * @example /api/units/1
              */
             readonly unit: string;
-            /** @description Poids */
+            /**
+             * Poids
+             * @description Poids
+             */
             readonly weight?: components['schemas']['Measure-mass'];
         };
         /** @description Produit */
@@ -2203,40 +2545,46 @@ export interface components {
             /** @example Product */
             readonly '@type'?: string;
             /**
-             * @description Référence
-             * @example 54587F
-             */
-            readonly ref?: string;
-            /**
+             * Indice
              * @description Indice
              * @example 02
              */
             readonly index?: string;
+            /**
+             * Référence
+             * @description Référence
+             * @example 54587F
+             */
+            readonly ref?: string;
         };
         /** @description Famille de produit */
         readonly 'ProductFamily-ProductFamily-read': {
+            readonly customsCode?: string | null;
             /**
-             * @description Nom
-             * @example Faisceaux
+             * Icône
+             * @description Icône
+             * @example /uploads/product-families/1.jpg
              */
-            readonly name: string;
+            readonly filepath?: string | null;
             /**
-             * Format: iri-reference
-             * @description Famille parente
-             * @example /api/product-families/1
-             */
-            readonly parent?: string | null;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
             /**
-             * @description Icône
-             * @example /uploads/product-families/1.jpg
+             * Nom
+             * @description Nom
+             * @example Faisceaux
              */
-            readonly filepath?: string | null;
-            readonly customsCode?: string | null;
+            readonly name: string;
+            /**
+             * Famille parente
+             * Format: iri-reference
+             * @description Famille parente
+             * @example /api/product-families/1
+             */
+            readonly parent?: string | null;
         };
         /** @description Famille de produit */
         readonly 'ProductFamily-ProductFamily-write': {
@@ -2269,45 +2617,52 @@ export interface components {
             readonly '@id': string;
             /** @example ProductFamily */
             readonly '@type': string;
+            readonly customsCode?: string | null;
             /**
-             * @description Nom
-             * @example Faisceaux
+             * Icône
+             * @description Icône
+             * @example /uploads/product-families/1.jpg
              */
-            readonly name: string;
+            readonly filepath?: string | null;
             /**
-             * Format: iri-reference
-             * @description Famille parente
-             * @example /api/product-families/1
-             */
-            readonly parent?: string | null;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
             /**
-             * @description Icône
-             * @example /uploads/product-families/1.jpg
+             * Nom
+             * @description Nom
+             * @example Faisceaux
              */
-            readonly filepath?: string | null;
-            readonly customsCode?: string | null;
+            readonly name: string;
+            /**
+             * Famille parente
+             * Format: iri-reference
+             * @description Famille parente
+             * @example /api/product-families/1
+             */
+            readonly parent?: string | null;
         };
         /** @description Type qualité */
         readonly 'QualityType-QualityType-read': {
             /**
-             * @description Nom
-             * @example Dimensions
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example Dimensions
+             */
+            readonly name: string;
         };
         /** @description Type qualité */
         readonly 'QualityType-QualityType-write': {
             /**
+             * Nom
              * @description Nom
              * @example Dimensions
              */
@@ -2328,15 +2683,17 @@ export interface components {
             /** @example QualityType */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example Dimensions
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example Dimensions
+             */
+            readonly name: string;
         };
         /** @description Type qualité */
         readonly 'QualityType.jsonld-QualityType-write': {
@@ -2353,6 +2710,7 @@ export interface components {
             /** @example QualityType */
             readonly '@type'?: string;
             /**
+             * Nom
              * @description Nom
              * @example Dimensions
              */
@@ -2361,19 +2719,22 @@ export interface components {
         /** @description Type de rebus */
         readonly 'RejectType-RejectType-read': {
             /**
-             * @description Nom
-             * @example sertissage dimensionnelle
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example sertissage dimensionnelle
+             */
+            readonly name: string;
         };
         /** @description Type de rebus */
         readonly 'RejectType-RejectType-write': {
             /**
+             * Nom
              * @description Nom
              * @example sertissage dimensionnelle
              */
@@ -2394,15 +2755,17 @@ export interface components {
             /** @example RejectType */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example sertissage dimensionnelle
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example sertissage dimensionnelle
+             */
+            readonly name: string;
         };
         /** @description Type de rebus */
         readonly 'RejectType.jsonld-RejectType-write': {
@@ -2419,6 +2782,7 @@ export interface components {
             /** @example RejectType */
             readonly '@type'?: string;
             /**
+             * Nom
              * @description Nom
              * @example sertissage dimensionnelle
              */
@@ -2427,19 +2791,22 @@ export interface components {
         /** @description Type de compétence */
         readonly 'SkillType-SkillType-read': {
             /**
-             * @description Nom
-             * @example Assemblage
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example Assemblage
+             */
+            readonly name: string;
         };
         /** @description Type de compétence */
         readonly 'SkillType-SkillType-write': {
             /**
+             * Nom
              * @description Nom
              * @example Assemblage
              */
@@ -2460,15 +2827,17 @@ export interface components {
             /** @example SkillType */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example Assemblage
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example Assemblage
+             */
+            readonly name: string;
         };
         /** @description Type de compétence */
         readonly 'SkillType.jsonld-SkillType-write': {
@@ -2485,6 +2854,7 @@ export interface components {
             /** @example SkillType */
             readonly '@type'?: string;
             /**
+             * Nom
              * @description Nom
              * @example Assemblage
              */
@@ -2493,66 +2863,77 @@ export interface components {
         /** @description Plages horaires */
         readonly 'TimeSlot-TimeSlot-read': {
             /**
-             * @description Nom
-             * @example Journée
-             */
-            readonly name: string;
-            /**
+             * Fin
              * Format: date-time
              * @description Fin
              * @example 17:30:00
              */
-            readonly end?: string | null;
+            readonly end?: string;
             /**
+             * Fin pause
              * Format: date-time
              * @description Fin pause
              * @example 13:30:00
              */
             readonly endBreak?: string | null;
             /**
+             * id
+             * @description id
+             * @example 1
+             */
+            readonly id?: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example Journée
+             */
+            readonly name: string;
+            /**
+             * Début
              * Format: date-time
              * @description Début
              * @example 07:30:00
              */
-            readonly start?: string | null;
+            readonly start?: string;
             /**
+             * Début pause
              * Format: date-time
              * @description Début pause
              * @example 12:30:00
              */
             readonly startBreak?: string | null;
-            /**
-             * @description id
-             * @example 1
-             */
-            readonly id?: number;
         };
         /** @description Plages horaires */
         readonly 'TimeSlot-TimeSlot-write': {
             /**
-             * @description Nom
-             * @example Journée
-             */
-            readonly name: string;
-            /**
+             * Fin
              * Format: date-time
              * @description Fin
              * @example 17:30:00
              */
-            readonly end?: string | null;
+            readonly end?: string;
             /**
+             * Fin pause
              * Format: date-time
              * @description Fin pause
              * @example 13:30:00
              */
             readonly endBreak?: string | null;
             /**
+             * Nom
+             * @description Nom
+             * @example Journée
+             */
+            readonly name: string;
+            /**
+             * Début
              * Format: date-time
              * @description Début
              * @example 07:30:00
              */
-            readonly start?: string | null;
+            readonly start?: string;
             /**
+             * Début pause
              * Format: date-time
              * @description Début pause
              * @example 12:30:00
@@ -2574,39 +2955,45 @@ export interface components {
             /** @example TimeSlot */
             readonly '@type': string;
             /**
-             * @description Nom
-             * @example Journée
-             */
-            readonly name: string;
-            /**
+             * Fin
              * Format: date-time
              * @description Fin
              * @example 17:30:00
              */
-            readonly end?: string | null;
+            readonly end?: string;
             /**
+             * Fin pause
              * Format: date-time
              * @description Fin pause
              * @example 13:30:00
              */
             readonly endBreak?: string | null;
             /**
+             * id
+             * @description id
+             * @example 1
+             */
+            readonly id: number;
+            /**
+             * Nom
+             * @description Nom
+             * @example Journée
+             */
+            readonly name: string;
+            /**
+             * Début
              * Format: date-time
              * @description Début
              * @example 07:30:00
              */
-            readonly start?: string | null;
+            readonly start?: string;
             /**
+             * Début pause
              * Format: date-time
              * @description Début pause
              * @example 12:30:00
              */
             readonly startBreak?: string | null;
-            /**
-             * @description id
-             * @example 1
-             */
-            readonly id: number;
         };
         /** @description Plages horaires */
         readonly 'TimeSlot.jsonld-TimeSlot-write': {
@@ -2623,29 +3010,34 @@ export interface components {
             /** @example TimeSlot */
             readonly '@type'?: string;
             /**
-             * @description Nom
-             * @example Journée
-             */
-            readonly name: string;
-            /**
+             * Fin
              * Format: date-time
              * @description Fin
              * @example 17:30:00
              */
-            readonly end?: string | null;
+            readonly end?: string;
             /**
+             * Fin pause
              * Format: date-time
              * @description Fin pause
              * @example 13:30:00
              */
             readonly endBreak?: string | null;
             /**
+             * Nom
+             * @description Nom
+             * @example Journée
+             */
+            readonly name: string;
+            /**
+             * Début
              * Format: date-time
              * @description Début
              * @example 07:30:00
              */
-            readonly start?: string | null;
+            readonly start?: string;
             /**
+             * Début pause
              * Format: date-time
              * @description Début pause
              * @example 12:30:00
@@ -2654,19 +3046,16 @@ export interface components {
         };
         /** @description Groupe d'outil */
         readonly ToolGroup: {
+            readonly code: string;
+            readonly deleted?: boolean;
             /**
-             * @description Nom
-             * @example Table d'assemblage
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
-            readonly code: string;
+            readonly name: string;
             readonly safetyDevice?: boolean;
-            readonly deleted?: boolean;
         };
         /** @description Groupe d'outil */
         readonly 'ToolGroup.jsonld': {
@@ -2682,69 +3071,82 @@ export interface components {
             readonly '@id': string;
             /** @example ToolGroup */
             readonly '@type': string;
+            readonly code: string;
+            readonly deleted?: boolean;
             /**
-             * @description Nom
-             * @example Table d'assemblage
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
-            readonly code: string;
+            readonly name: string;
             readonly safetyDevice?: boolean;
-            readonly deleted?: boolean;
         };
         /** @description Unit */
         readonly 'Unit-Unit-read': {
             /**
+             * @default 1
+             * @example 1
+             */
+            readonly base: number;
+            /**
+             * Enfants
              * @description Enfants
              * @example /api/units/2,/api/units/3
              */
             readonly children?: readonly string[];
             /**
-             * Format: iri-reference
-             * @description Parent
-             * @example /api/units/1
+             * Code
+             * @description Code
+             * @example g
              */
-            readonly parent?: string | null;
+            readonly code: string;
             /**
-             * @description Nom
-             * @example Gramme
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
             /**
-             * @default 1
-             * @example 1
-             */
-            readonly base: number;
-            readonly code: string;
-        };
-        /** @description Unit */
-        readonly 'Unit-Unit-write': {
-            /**
-             * Format: iri-reference
-             * @description Parent
-             * @example /api/units/1
-             */
-            readonly parent?: string | null;
-            /**
+             * Nom
              * @description Nom
              * @example Gramme
              */
             readonly name: string;
             /**
+             * Parent
+             * Format: iri-reference
+             * @description Parent
+             * @example /api/units/1
+             */
+            readonly parent?: string | null;
+        };
+        /** @description Unit */
+        readonly 'Unit-Unit-write': {
+            /**
              * @default 1
              * @example 1
              */
             readonly base: number;
+            /**
+             * Code
+             * @description Code
+             * @example g
+             */
             readonly code: string;
+            /**
+             * Nom
+             * @description Nom
+             * @example Gramme
+             */
+            readonly name: string;
+            /**
+             * Parent
+             * Format: iri-reference
+             * @description Parent
+             * @example /api/units/1
+             */
+            readonly parent?: string | null;
         };
         /** @description Unit */
         readonly 'Unit.jsonld-Unit-read': {
@@ -2761,32 +3163,41 @@ export interface components {
             /** @example Unit */
             readonly '@type': string;
             /**
+             * @default 1
+             * @example 1
+             */
+            readonly base: number;
+            /**
+             * Enfants
              * @description Enfants
              * @example /api/units/2,/api/units/3
              */
             readonly children?: readonly string[];
             /**
-             * Format: iri-reference
-             * @description Parent
-             * @example /api/units/1
+             * Code
+             * @description Code
+             * @example g
              */
-            readonly parent?: string | null;
+            readonly code: string;
             /**
-             * @description Nom
-             * @example Gramme
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
             /**
-             * @default 1
-             * @example 1
+             * Nom
+             * @description Nom
+             * @example Gramme
              */
-            readonly base: number;
-            readonly code: string;
+            readonly name: string;
+            /**
+             * Parent
+             * Format: iri-reference
+             * @description Parent
+             * @example /api/units/1
+             */
+            readonly parent?: string | null;
         };
         /** @description Unit */
         readonly 'Unit.jsonld-Unit-write': {
@@ -2803,39 +3214,49 @@ export interface components {
             /** @example Unit */
             readonly '@type'?: string;
             /**
-             * Format: iri-reference
-             * @description Parent
-             * @example /api/units/1
+             * @default 1
+             * @example 1
              */
-            readonly parent?: string | null;
+            readonly base: number;
             /**
+             * Code
+             * @description Code
+             * @example g
+             */
+            readonly code: string;
+            /**
+             * Nom
              * @description Nom
              * @example Gramme
              */
             readonly name: string;
             /**
-             * @default 1
-             * @example 1
+             * Parent
+             * Format: iri-reference
+             * @description Parent
+             * @example /api/units/1
              */
-            readonly base: number;
-            readonly code: string;
+            readonly parent?: string | null;
         };
         /** @description Message TVA */
         readonly 'VatMessage-VatMessage-read': {
             /**
-             * @description Message
-             * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
+            /**
+             * Message
+             * @description Message
+             * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+             */
+            readonly name: string;
         };
         /** @description Message TVA */
         readonly 'VatMessage-VatMessage-write': {
             /**
+             * Message
              * @description Message
              * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
              */
@@ -2856,15 +3277,17 @@ export interface components {
             /** @example VatMessage */
             readonly '@type': string;
             /**
-             * @description Message
-             * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
+            /**
+             * Message
+             * @description Message
+             * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+             */
+            readonly name: string;
         };
         /** @description Message TVA */
         readonly 'VatMessage.jsonld-VatMessage-write': {
@@ -2881,6 +3304,7 @@ export interface components {
             /** @example VatMessage */
             readonly '@type'?: string;
             /**
+             * Message
              * @description Message
              * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
              */
@@ -2910,19 +3334,16 @@ export interface components {
         };
         /** @description WorkstationGroup */
         readonly WorkstationGroup: {
+            readonly code: string;
+            readonly deleted?: boolean;
             /**
-             * @description Nom
-             * @example Table d'assemblage
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id?: number;
-            readonly code: string;
+            readonly name: string;
             readonly safetyDevice?: boolean;
-            readonly deleted?: boolean;
         };
         /** @description WorkstationGroup */
         readonly 'WorkstationGroup.jsonld': {
@@ -2938,19 +3359,16 @@ export interface components {
             readonly '@id': string;
             /** @example WorkstationGroup */
             readonly '@type': string;
+            readonly code: string;
+            readonly deleted?: boolean;
             /**
-             * @description Nom
-             * @example Table d'assemblage
-             */
-            readonly name: string;
-            /**
+             * id
              * @description id
              * @example 1
              */
             readonly id: number;
-            readonly code: string;
+            readonly name: string;
             readonly safetyDevice?: boolean;
-            readonly deleted?: boolean;
         };
     };
 }
@@ -3171,7 +3589,6 @@ export interface operations {
                 readonly name?: string;
                 /** The collection page number */
                 readonly page?: number;
-                readonly ral?: string;
                 readonly rgb?: string;
             };
         };
@@ -4164,8 +4581,6 @@ export interface operations {
     readonly getInvoiceTimeDueCollection: {
         readonly parameters: {
             readonly query: {
-                readonly days?: number;
-                readonly daysAfterEndOfMonth?: number;
                 readonly endOfMonth?: boolean;
                 readonly name?: string;
                 /** The collection page number */
