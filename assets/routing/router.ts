@@ -68,7 +68,7 @@ const router = createRouter({
                         create: true,
                         filter: true,
                         label: 'Délai',
-                        name: 'Delai',
+                        name: 'delai',
                         sort: false,
                         type: 'number',
                         update: false
@@ -112,9 +112,9 @@ const router = createRouter({
                     {
                         create: true,
                         filter: true,
-                        children: [{label: 'Quantité', name: 'quantity'}, {label: 'Prix', name: 'price'}],
+                        children: [{label: '€', name: 'price'}, {label: 'Q', name: 'quantite'}, {label: 'ref', name: 'ref'}],
                         label: 'Prix',
-                        name: 'prix',
+                        name: 'prices',
                         sort: false,
                         type: 'text',
                         update: false

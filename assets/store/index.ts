@@ -9,13 +9,15 @@ import {createStore} from 'vuex'
 import {generateSecurity} from './security'
 import {mutations} from './mutation'
 import {state} from './state'
+import {componentSuppliers} from './componentSuppliers'
+import {componentSupplierPrices} from './componentSupplierPrices'
 
 export type {Actions, Mutations, State, StoreActionContext}
 
 export function generateStore(security: Security): Store<State> {
     return createStore<State>({
         actions,
-        modules: {security: generateSecurity(security)},
+        modules: {security: generateSecurity(security), componentSuppliers, componentSupplierPrices},
         mutations,
         state,
         strict: process.env.NODE_ENV !== 'production'
