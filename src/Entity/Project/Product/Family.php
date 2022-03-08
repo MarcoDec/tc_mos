@@ -2,11 +2,11 @@
 
 namespace App\Entity\Project\Product;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\PlaceholderAction;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
 use App\Filter\OldRelationFilter;

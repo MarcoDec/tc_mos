@@ -453,8 +453,10 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             }
 
             $requestBody = null;
-            if ($contextRequestBody = $operation['openapi_context']['requestBody'] ?? false) {
-                $requestBody = new Model\RequestBody($contextRequestBody['description'] ?? '', new ArrayObject($contextRequestBody['content']), $contextRequestBody['required'] ?? false);
+            if (isset($operation['openapi_context']) && array_key_exists('requestBody', $operation['openapi_context'])) {
+                if ($contextRequestBody = $operation['openapi_context']['requestBody'] ?? false) {
+                    $requestBody = new Model\RequestBody($contextRequestBody['description'] ?? '', new ArrayObject($contextRequestBody['content']), $contextRequestBody['required'] ?? false);
+                }
             } elseif ('PUT' === $method || 'POST' === $method || 'PATCH' === $method) {
                 $operationInputSchemas = [];
                 foreach ($requestMimeTypes as $operationFormat) {

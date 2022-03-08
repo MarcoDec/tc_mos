@@ -264,6 +264,9 @@
     "phpdocumentor/type-resolver": {
         "version": "1.6.0"
     },
+    "phpmyadmin/sql-parser": {
+        "version": "5.5.0"
+    },
     "phpoption/phpoption": {
         "version": "1.8.1"
     },
@@ -394,9 +397,6 @@
     },
     "sebastian/version": {
         "version": "3.0.2"
-    },
-    "sidus/doctrine-debug-bundle": {
-        "version": "v1.0.2"
     },
     "spatie/backtrace": {
         "version": "1.2.1"

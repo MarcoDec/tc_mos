@@ -22,7 +22,7 @@ class Address {
         ApiProperty(
             description: 'Adresse',
             example: '5 rue Alfred Nobel',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'type' => 'streetAddress']
+            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
         ),
         Assert\Length(min: 10, max: 50),
         ORM\Column(length: 50, nullable: true),
@@ -34,7 +34,7 @@ class Address {
         ApiProperty(
             description: 'Complément d\'adresse',
             example: 'ZA La charrière',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'type' => 'streetAddress']
+            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
         ),
         Assert\Length(min: 10, max: 50),
         ORM\Column(length: 50, nullable: true),
@@ -46,7 +46,7 @@ class Address {
         ApiProperty(
             description: 'Ville',
             example: 'Rioz',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/addressLocality'], 'type' => 'addressLocality']
+            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/addressLocality'], 'format' => 'addressLocality']
         ),
         Assert\Length(min: 3, max: 50),
         ORM\Column(length: 50, nullable: true),
@@ -58,7 +58,7 @@ class Address {
         ApiProperty(
             description: 'Pays',
             example: 'FR',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/addressLocality'], 'type' => 'addressLocality']
+            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/addressLocality'], 'format' => 'addressLocality']
         ),
         Assert\Country,
         Assert\Length(exactly: 2),
@@ -68,7 +68,7 @@ class Address {
     private ?string $country = null;
 
     #[
-        ApiProperty(description: 'E-mail', example: 'sales@tconcept.fr', openapiContext: ['type' => 'email']),
+        ApiProperty(description: 'E-mail', example: 'sales@tconcept.fr', openapiContext: ['format' => 'email']),
         Assert\Email,
         Assert\Length(min: 5, max: 60),
         ORM\Column(length: 60, nullable: true, options: ['charset' => 'ascii']),
@@ -80,7 +80,7 @@ class Address {
         ApiProperty(
             description: 'Numéro de téléphone',
             example: '03 84 91 99 84',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/telephone'], 'type' => 'telephone']
+            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/telephone'], 'format' => 'telephone']
         ),
         AppAssert\PhoneNumber,
         Assert\Length(min: 10, max: 20),
@@ -93,7 +93,7 @@ class Address {
         ApiProperty(
             description: 'Code postal',
             example: '70190',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/postalCode'], 'type' => 'postalCode']
+            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/postalCode'], 'format' => 'postalCode']
         ),
         AppAssert\ZipCode,
         Assert\Length(min: 2, max: 10),
