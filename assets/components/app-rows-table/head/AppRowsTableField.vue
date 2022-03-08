@@ -4,7 +4,7 @@
 
     const emit = defineEmits<(e: 'click', field: TableField) => void>()
     const props = defineProps<{asc: boolean, field: TableField, sort: string, rowspan:number}>()
-    console.log('props',props);
+    // console.log('props',props);
     
     const down = computed(() => ({'text-secondary': props.field.name !== props.sort || props.asc}))
     const up = computed(() => ({'text-secondary': props.field.name !== props.sort || !props.asc}))

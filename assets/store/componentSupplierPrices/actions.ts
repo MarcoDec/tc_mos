@@ -1,11 +1,9 @@
-import type {DeepReadonly} from '../../types/types'
+import type {ComputedGetters, State} from '.'
+import type {StoreActionContext} from '..'
 import type {State as Items} from './componentSupplierPrice'
-import type {State as RootState} from '..'
-import type {State} from '.'
-import type {ActionContext as VuexActionContext} from 'vuex'
 import {generateItem} from './componentSupplierPrice'
 
-type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
+declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
 export const actions = {
     async fetchItem({dispatch}: ActionContext): Promise<void> {

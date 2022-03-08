@@ -8,7 +8,7 @@
         const ranks = []
         let current = fields
         do {
-            console.log('current',current);
+            // console.log('current',current);
             
             ranks.push(current)
             current = current.map(field => Array.isArray(field.children)&& field.children.length > 0 ? field.children: []).flat()

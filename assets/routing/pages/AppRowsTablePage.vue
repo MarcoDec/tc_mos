@@ -1,37 +1,22 @@
 <script lang="ts" setup>
     import type {TableField, TableItem} from '../../types/app-rows-table'
-    import {defineProps} from 'vue'
+    import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
+    import {defineProps, onMounted} from 'vue'
     import {useRoute} from 'vue-router'
 
-    defineProps<{fields: TableField[], icon: string, title: string}>()
+    defineProps<{fields: TableField[]}>()
     const route = useRoute()
 
-    const items: TableItem[] = [
-        {
-            cadence: 100,
-            code: 'AS 01',
-            delete: true,
-            limite: 'Mise En Bornier',
-            name: 'Mise en bornnier',
-            prix: null,
-            temps: null,
-            type: null,
-            update: true
-        },
-        {
-            cadence: 100,
-            code: 'AS 02',
-            delete: true,
-            limite: 'Mise En Bornier',
-            name: 'Mise en bornnier',
-            prix: null,
-            temps: null,
-            type: null,
-            update: true
-        }
-    ]
+    const fetchItem = useNamespacedActions<Actions>('componentSuppliers', ['fetchItem']).fetchItem
+    const {items} = useNamespacedGetters<Getters>('componentSuppliers', ['items'])
+    onMounted(async () => {
+        await fetchItem()
+    })
+    console.log('items',items);
+    
+
 </script>
 
 <template>
-    <AppRowsTable :id="route.name" :fields="fields" :items="items" create pagination/>
+    <AppRowsTable :id="route.name" :fields="fields" :items="items" create/>
 </template>

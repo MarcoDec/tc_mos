@@ -8,7 +8,7 @@
     const fields = inject<TableField[]>('fields', [])
     const formattedIndex = computed(() => props.index + ONE)
     const show = ref(true)
-    const td = computed(() => (show.value ? 'AppCollectionTableItemField' : 'AppCollectionTableItemInput'))
+    const td = computed(() => (show.value ? 'AppRowsTableItemField' : 'AppRowsTableItemInput'))
 
     const emit = defineEmits<(e: 'update', item: TableItem) => void>()
     function toggle(): void {
@@ -17,6 +17,8 @@
     function update(): void {
         emit('update', props.item)
     }
+    console.log('props.item', props.item);
+    
 </script>
 
 <template>

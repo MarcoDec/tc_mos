@@ -7,7 +7,7 @@
     const sort = ref('code')
 
     function walkRowspan(walkedFields: TableField[], span: number = 1): number {  
-        console.log('walkedFields', walkedFields)
+        // console.log('walkedFields', walkedFields)
         let max = span
         for (const field of walkedFields)
             if (field.children) {
@@ -19,7 +19,7 @@
     }
 
     const rowspan = computed(() => walkRowspan(props.fields))
-    console.log('rowspan', rowspan);
+    // console.log('rowspan', rowspan);
     
 
     function handleSort(field: TableField): void {

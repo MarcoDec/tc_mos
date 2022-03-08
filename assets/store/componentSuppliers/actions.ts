@@ -1,17 +1,15 @@
-import type {DeepReadonly} from '../../types/types'
+import type {ComputedGetters, State} from '.'
+import type {StoreActionContext} from '..'
 import type {State as Items} from './componentSupplier'
-import type {State as RootState} from '..'
-import type {State} from '.'
-import type {ActionContext as VuexActionContext} from 'vuex'
 import {generateItem} from './componentSupplier'
 
-type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
+declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
 export const actions = {
     async fetchItem({dispatch}: ActionContext): Promise<void> {
         const response: Items[] = [
             {
-                delete: false,
+                delete: true,
                 proportion: 'aaaaaa',
                 delai: 5,
                 moq: 1,
@@ -20,12 +18,12 @@ export const actions = {
                 indice: 1,
                 prices:['component-supplier-prices/1'],
                 name: 'CAMION FR-MD',
-                update: false,
-                update2: true,
+                update: true,
+                update2: false,
                 id:1
             },
             {
-                delete: false,
+                delete: true,
                 proportion: 'vvvvvv',
                 delai: 15,
                 moq: 2,
@@ -34,8 +32,8 @@ export const actions = {
                 indice: 2,
                 prices:['component-supplier-prices/2'],
                 name: 'CAMION',
-                update: false,
-                update2: true,
+                update: true,
+                update2: false,
                 id:2
             }
         ]
