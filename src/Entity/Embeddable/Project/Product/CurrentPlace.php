@@ -26,7 +26,7 @@ class CurrentPlace extends AbstractCurrentPlace {
         ApiProperty(description: 'Nom', required: true),
         Assert\NotBlank,
         ORM\Column(type: 'product_current_place', options: ['charset' => 'ascii', 'default' => CurrentPlaceType::TYPE_DRAFT]),
-        Serializer\Groups(['CurrentPlace-read'])
+        Serializer\Groups(['read:current-place'])
     ]
     protected ?string $name = null;
 

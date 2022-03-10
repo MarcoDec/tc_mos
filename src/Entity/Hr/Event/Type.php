@@ -58,7 +58,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'EventType-write'
         ],
         normalizationContext: [
-            'groups' => ['Entity:id', 'read:name', 'read:type'],
+            'groups' => ['read:id', 'read:name', 'read:type'],
             'openapi_definition_name' => 'EventType-read'
         ]
     ),

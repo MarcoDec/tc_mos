@@ -55,7 +55,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'SkillType-write'
         ],
         normalizationContext: [
-            'groups' => ['Entity:id', 'read:name'],
+            'groups' => ['read:id', 'read:name'],
             'openapi_definition_name' => 'SkillType-read'
         ]
     ),

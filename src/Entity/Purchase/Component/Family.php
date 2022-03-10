@@ -68,7 +68,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'Entity:id'],
+            'groups' => ['read:family', 'read:file', 'read:id'],
             'openapi_definition_name' => 'ComponentFamily-read'
         ],
         paginationEnabled: false

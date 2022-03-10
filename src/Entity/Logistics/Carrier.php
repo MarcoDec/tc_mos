@@ -52,11 +52,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['Address-write', 'Carrier-write'],
+            'groups' => ['write:address', 'write:carrier'],
             'openapi_definition_name' => 'Carrier-write'
         ],
         normalizationContext: [
-            'groups' => ['Address-read', 'Carrier-read', 'Entity:id'],
+            'groups' => ['read:address', 'read:carrier', 'read:id'],
             'openapi_definition_name' => 'Carrier-read'
         ]
     ),
@@ -66,7 +66,7 @@ class Carrier extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
-        Serializer\Groups(['Carrier-read', 'Carrier-write'])
+        Serializer\Groups(['read:carrier', 'write:carrier'])
     ]
     private Address $address;
 
@@ -75,7 +75,7 @@ class Carrier extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['Carrier-read', 'Carrier-write'])
+        Serializer\Groups(['read:carrier', 'write:carrier'])
     ]
     private ?string $name = null;
 

@@ -55,7 +55,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'TimeSlot-write'
         ],
         normalizationContext: [
-            'groups' => ['read:time-slot', 'Entity:id', 'read:name'],
+            'groups' => ['read:time-slot', 'read:id', 'read:name'],
             'openapi_definition_name' => 'TimeSlot-read'
         ]
     ),

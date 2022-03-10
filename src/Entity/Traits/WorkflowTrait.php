@@ -10,7 +10,7 @@ trait WorkflowTrait {
     /** @var CurrentPlace */
     #[
         ApiProperty(description: 'Statut'),
-        Serializer\Groups(['CurrentPlace-read'])
+        Serializer\Groups(['read:current-place'])
     ]
     protected $currentPlace;
 

@@ -13,7 +13,7 @@ abstract class Entity {
         ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
         ORM\Id,
-        Serializer\Groups(['Entity:id'])
+        Serializer\Groups(['read:id'])
     ]
     protected ?int $id = null;
 

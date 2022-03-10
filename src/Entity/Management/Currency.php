@@ -36,11 +36,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['Currency-write'],
+            'groups' => ['write:currency', 'write:currency'],
             'openapi_definition_name' => 'Currency-write'
         ],
         normalizationContext: [
-            'groups' => ['Currency-read', 'Entity:id'],
+            'groups' => ['read:currency', 'read:id'],
             'openapi_definition_name' => 'Currency-read'
         ],
         paginationEnabled: false
@@ -53,7 +53,7 @@ class Currency extends AbstractUnit {
     #[
         ApiProperty(description: 'Enfants ', readableLink: false, example: ['/api/currencies/2', '/api/currencies/3']),
         ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
-        Serializer\Groups(['Currency-read'])
+        Serializer\Groups(['read:currency'])
     ]
     protected Collection $children;
 
@@ -71,20 +71,20 @@ class Currency extends AbstractUnit {
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/currencies/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['Currency-read', 'Currency-write'])
+        Serializer\Groups(['read:currency', 'write:currency'])
     ]
     protected $parent;
 
     #[
         ApiProperty(description: 'Active', example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['Currency-read', 'Currency-write'])
+        Serializer\Groups(['read:currency', 'write:currency'])
     ]
     private bool $active = false;
 
     #[
         ApiProperty(description: 'Nom', example: 'Euro'),
-        Serializer\Groups(['Currency-read'])
+        Serializer\Groups(['read:currency'])
     ]
     final public function getName(): ?string {
         return !empty($this->getCode()) ? Currencies::getName($this->getCode()) : null;
@@ -92,7 +92,7 @@ class Currency extends AbstractUnit {
 
     #[
         ApiProperty(description: 'Symbole', example: '€'),
-        Serializer\Groups(['Currency-read'])
+        Serializer\Groups(['read:currency'])
     ]
     final public function getSymbol(): ?string {
         return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;

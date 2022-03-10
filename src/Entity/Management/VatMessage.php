@@ -55,7 +55,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'VatMessage-write'
         ],
         normalizationContext: [
-            'groups' => ['read:name', 'Entity:id'],
+            'groups' => ['read:name', 'read:id'],
             'openapi_definition_name' => 'VatMessage-read'
         ]
     ),

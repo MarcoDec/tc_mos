@@ -29,12 +29,6 @@
     "symfony/symfony": "*"
   },
   "extra": {
-    "composer-exit-on-patch-failure": true,
-    "patches": {
-      "api-platform/core": {
-        "Disable final on ApiProperty attribute": "./patches/api-platform/ApiProperty.patch"
-      }
-    },
     "symfony": {
       "allow-contrib": false,
       "require": "6.0.*"
@@ -52,14 +46,13 @@
     "php": "^8.0",
     "ext-ctype": "*",
     "ext-iconv": "*",
-    "api-platform/core": "2.6.8",
-    "cweagans/composer-patches": "^1.7",
+    "api-platform/core": "^2.6",
     "doctrine/annotations": "^1.13",
     "doctrine/doctrine-bundle": "^2.5",
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "doctrine/orm": "^2.11",
     "dragonmantank/cron-expression": "^3.3",
-    "illuminate/collections": "^9.4",
+    "illuminate/collections": "^9.3",
     "jawira/case-converter": "^3.4",
     "nelmio/cors-bundle": "^2.2",
     "pentatrion/vite-bundle": "^1.2",
