@@ -49,11 +49,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:color'],
+            'groups' => ['Color-write'],
             'openapi_definition_name' => 'Color-write'
         ],
         normalizationContext: [
-            'groups' => ['read:color', 'read:id'],
+            'groups' => ['Color-read', 'Entity:id'],
             'openapi_definition_name' => 'Color-read'
         ],
     ),
@@ -65,7 +65,7 @@ class Color extends Entity {
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
         ORM\Column(length: 20),
-        Serializer\Groups(['read:color', 'write:color'])
+        Serializer\Groups(['Color-read', 'Color-write'])
     ]
     private ?string $name = null;
 
@@ -74,7 +74,7 @@ class Color extends Entity {
         Assert\Length(exactly: 7),
         Assert\NotBlank,
         ORM\Column(type: 'char', length: 7, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:color', 'write:color'])
+        Serializer\Groups(['Color-read', 'Color-write'])
     ]
     private ?string $rgb = null;
 

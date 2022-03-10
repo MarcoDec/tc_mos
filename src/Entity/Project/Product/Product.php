@@ -48,13 +48,13 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les produits'
                 ],
                 'normalization_context' => [
-                    'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
+                    'groups' => ['CurrentPlace-read', 'Measure-read', 'Product-collection'],
                     'openapi_definition_name' => 'Product-collection'
                 ]
             ],
             'post' => [
                 'denormalization_context' => [
-                    'groups' => ['create:product', 'write:measure'],
+                    'groups' => ['Product-create', 'Measure-write'],
                     'openapi_definition_name' => 'Product-create'
                 ],
                 'openapi_context' => [
@@ -69,7 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'clone' => [
                 'controller' => PlaceholderAction::class,
                 'denormalization_context' => [
-                    'groups' => ['write:product:clone'],
+                    'groups' => ['Product-clone'],
                     'openapi_definition_name' => 'Product-clone'
                 ],
                 'method' => 'POST',
@@ -136,7 +136,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'upgrade' => [
                 'controller' => PlaceholderAction::class,
                 'denormalization_context' => [
-                    'groups' => ['write:product:clone'],
+                    'groups' => ['Product-clone'],
                     'openapi_definition_name' => 'Product-upgrade'
                 ],
                 'method' => 'POST',
@@ -153,11 +153,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:measure', 'write:product'],
+            'groups' => ['Measure-write', 'Product-write'],
             'openapi_definition_name' => 'Product-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current-place', 'read:measure', 'read:product'],
+            'groups' => ['CurrentPlace-read', 'Measure-read', 'Product-read'],
             'openapi_definition_name' => 'Product-read'
         ]
     ),
@@ -171,7 +171,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[
         ApiProperty(description: 'Statut'),
         ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:product', 'read:product:collection'])
+        Serializer\Groups(['Product-read', 'Product-collection'])
     ]
     protected $currentPlace;
 
@@ -201,14 +201,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 10),
         ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:product', 'write:product:logistics'])
+        Serializer\Groups(['Product-read', 'Product-logistics'])
     ]
     private ?string $customsCode;
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product:project'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-collection', 'Product-project'])
     ]
     private ?DateTimeImmutable $expirationDate;
 
@@ -216,7 +216,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Famille de produit', readableLink: false, example: '/api/product-families/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-collection'])
     ]
     private ?Family $family;
 
@@ -224,14 +224,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Volume prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure(groups: ['Product-create']),
         ORM\Embedded,
-        Serializer\Groups(['create:product', 'read:product'])
+        Serializer\Groups(['Product-create', 'Product-read'])
     ]
     private Measure $forecastVolume;
 
     #[
         ApiProperty(description: 'Incoterms', readableLink: false, required: true, example: '/api/incoterms/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:product', 'write:product:logistics'])
+        Serializer\Groups(['Product-read', 'Product-logistics'])
     ]
     private ?Incoterms $incoterms;
 
@@ -239,7 +239,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Indice', required: false, example: '02'),
         Assert\Length(min: 1, max: 3, groups: ['Product-admin', 'Product-create']),
         ORM\Column(name: '`index`', length: 3, options: ['charset' => 'ascii']),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-collection', 'Product-write', 'Product-admin', 'Product-clone'])
     ]
     private ?string $index = null;
 
@@ -248,7 +248,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Assert\NotNull,
         Assert\PositiveOrZero,
         ORM\Column(type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['Product-read'])
     ]
     private int $internalIndex = 1;
 
@@ -256,14 +256,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Type', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
         Assert\Choice(choices: KindType::TYPES, groups: ['Product-admin', 'Product-create', 'Product-project']),
         ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:project'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-collection', 'Product-write', 'Product-admin', 'Product-project'])
     ]
     private ?string $kind = KindType::TYPE_PROTOTYPE;
 
     #[
         ApiProperty(description: 'Gestion cuivre', required: false, example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['Product-read'])
     ]
     private bool $managedCopper = false;
 
@@ -277,14 +277,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Nombre max de prototypes', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure(groups: ['Product-project']),
         ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:project'])
+        Serializer\Groups(['Product-read', 'Product-project'])
     ]
     private Measure $maxProto;
 
     #[
         ApiProperty(description: 'Délai de livraison minimum', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:logistics'])
+        Serializer\Groups(['Product-read', 'Product-logistics'])
     ]
     private Measure $minDelivery;
 
@@ -292,7 +292,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Production minimum', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure(groups: ['Product-production']),
         ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:production'])
+        Serializer\Groups(['Product-read', 'Product-production'])
     ]
     private Measure $minProd;
 
@@ -300,7 +300,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Stock minimum', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure,
         ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:logistics'])
+        Serializer\Groups(['Product-read', 'Product-logistics'])
     ]
     private Measure $minStock;
 
@@ -309,14 +309,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Assert\Length(min: 3, max: 80),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
         ORM\Column(length: 80),
-        Serializer\Groups(['create:product', 'read:product', 'write:product', 'write:product:admin'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-write', 'Product-admin'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Produit préféré des clients'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'write:product:main'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-main'])
     ]
     private ?string $notes = null;
 
@@ -324,7 +324,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Conditionnement', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure(groups: ['Product-create', 'Product-production']),
         ORM\Embedded,
-        Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-production'])
     ]
     private Measure $packaging;
 
@@ -332,35 +332,35 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Notes', required: false, example: 'Type de packaging'),
         Assert\Length(max: 30, groups: ['Product-create', 'Product-production']),
         ORM\Column(length: 30),
-        Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-production'])
     ]
     private ?string $packagingKind = null;
 
     #[
         ApiProperty(description: 'Unité parente', readableLink: false, example: '/api/products/3'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['Product-read'])
     ]
     private ?self $parent = null;
 
     #[
         ApiProperty(description: 'Prix', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['Product-read'])
     ]
     private Measure $price;
 
     #[
         ApiProperty(description: 'Prix sans cuivre', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['Product-read'])
     ]
     private Measure $priceWithoutCopper;
 
     #[
         ApiProperty(description: 'Délai de production', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:production'])
+        Serializer\Groups(['Product-read', 'Product-production'])
     ]
     private Measure $productionDelay;
 
@@ -368,21 +368,21 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Référence', example: '54587F'),
         Assert\Length(min: 3, max: 30),
         ORM\Column(length: 30),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
+        Serializer\Groups(['Product-create', 'Product-read', 'Product-collection', 'Product-write', 'Product-admin', 'Product-clone'])
     ]
     private ?string $ref = null;
 
     #[
         ApiProperty(description: 'Prix de cession des composants', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['Product-read'])
     ]
     private Measure $transfertPriceSupplies;
 
     #[
         ApiProperty(description: 'Prix de cession de main d\'œuvre', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['Product-read'])
     ]
     private Measure $transfertPriceWork;
 
@@ -390,14 +390,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['create:product', 'read:product'])
+        Serializer\Groups(['Product-create', 'Product-read'])
     ]
     private ?Unit $unit;
 
     #[
         ApiProperty(description: 'Poids', openapiContext: ['$ref' => '#/components/schemas/Measure-mass']),
         ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:logistics'])
+        Serializer\Groups(['Product-read', 'Product-logistics'])
     ]
     private Measure $weight;
 

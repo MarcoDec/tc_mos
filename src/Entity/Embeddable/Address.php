@@ -26,7 +26,7 @@ class Address {
         ),
         Assert\Length(min: 10, max: 50),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['Address-read', 'Address-write'])
     ]
     private ?string $address = null;
 
@@ -38,7 +38,7 @@ class Address {
         ),
         Assert\Length(min: 10, max: 50),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['Address-read', 'Address-write'])
     ]
     private ?string $address2 = null;
 
@@ -50,7 +50,7 @@ class Address {
         ),
         Assert\Length(min: 3, max: 50),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['Address-read', 'Address-write'])
     ]
     private ?string $city = null;
 
@@ -63,7 +63,7 @@ class Address {
         Assert\Country,
         Assert\Length(exactly: 2),
         ORM\Column(type: 'char', length: 2, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['Address-read', 'Address-write'])
     ]
     private ?string $country = null;
 
@@ -72,7 +72,7 @@ class Address {
         Assert\Email,
         Assert\Length(min: 5, max: 60),
         ORM\Column(length: 60, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['Address-read', 'Address-write'])
     ]
     private ?string $email = null;
 
@@ -85,7 +85,7 @@ class Address {
         AppAssert\PhoneNumber,
         Assert\Length(min: 10, max: 20),
         ORM\Column(length: 20, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['Address-read', 'Address-write'])
     ]
     private ?string $phoneNumber = null;
 
@@ -98,7 +98,7 @@ class Address {
         AppAssert\ZipCode,
         Assert\Length(min: 2, max: 10),
         ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['Address-read', 'Address-write'])
     ]
     private ?string $zipCode = null;
 

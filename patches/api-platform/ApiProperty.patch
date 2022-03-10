@@ -1,0 +1,11 @@
+--- a/vendor/api-platform/core/src/Annotation/ApiProperty.php	2022-01-11 10:29:54.000000000 +0000
++++ b/vendor/api-platform/core/src/Annotation/ApiProperty.php	2022-03-09 14:04:46.628200911 +0000
+@@ -34,7 +34,7 @@
+  * )
+  */
+ #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::TARGET_PARAMETER)]
+-final class ApiProperty
++class ApiProperty
+ {
+     use AttributesHydratorTrait;
+ 

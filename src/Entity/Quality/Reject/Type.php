@@ -54,7 +54,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'RejectType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name'],
+            'groups' => ['Entity:id', 'read:name'],
             'openapi_definition_name' => 'RejectType-read'
         ]
     ),

@@ -25,6 +25,9 @@
     "composer/xdebug-handler": {
         "version": "2.0.4"
     },
+    "cweagans/composer-patches": {
+        "version": "1.7.2"
+    },
     "dflydev/dot-access-data": {
         "version": "v3.0.1"
     },

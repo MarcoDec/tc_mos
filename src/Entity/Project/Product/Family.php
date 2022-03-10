@@ -66,7 +66,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'ProductFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
+            'groups' => ['read:family', 'read:file', 'Entity:id', 'read:name'],
             'openapi_definition_name' => 'ProductFamily-read'
         ],
         paginationEnabled: false

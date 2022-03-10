@@ -48,11 +48,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:engine-group', 'write:name'],
+            'groups' => ['EngineGroup-write'],
             'openapi_definition_name' => 'EngineGroup-write'
         ],
         normalizationContext: [
-            'groups' => ['read:engine-group', 'read:id', 'read:name'],
+            'groups' => ['EngineGroup-read', 'Entity:id'],
             'openapi_definition_name' => 'EngineGroup-read'
         ]
     ),
@@ -74,7 +74,7 @@ abstract class Group extends Entity {
         Assert\Length(min: 2, max: 3),
         Assert\NotBlank,
         ORM\Column(length: 3, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:engine-group', 'write:engine-group'])
+        Serializer\Groups(['EngineGroup-read', 'EngineGroup-write'])
     ]
     private ?string $code = null;
 
@@ -83,13 +83,13 @@ abstract class Group extends Entity {
         Assert\Length(min: 3, max: 35),
         Assert\NotBlank,
         ORM\Column(length: 35),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['EngineGroup-read', 'EngineGroup-write'])
     ]
     private ?string $name = null;
 
     #[
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:engine-group', 'write:engine-group'])
+        Serializer\Groups(['EngineGroup-read', 'EngineGroup-write'])
     ]
     private bool $safetyDevice = false;
 

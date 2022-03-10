@@ -53,7 +53,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Incoterms-write'
         ],
         normalizationContext: [
-            'groups' => ['read:incoterms', 'read:id', 'read:name'],
+            'groups' => ['read:incoterms', 'Entity:id', 'read:name'],
             'openapi_definition_name' => 'Incoterms-read'
         ],
     ),

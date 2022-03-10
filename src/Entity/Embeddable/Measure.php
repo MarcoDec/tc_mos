@@ -11,13 +11,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class Measure {
     #[
         ORM\Column(length: 3, nullable: true),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        Serializer\Groups(['Measure-read', 'Measure-write'])
     ]
     private ?string $code = null;
 
     #[
         ORM\Column(length: 3, nullable: true),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        Serializer\Groups(['Measure-read', 'Measure-write'])
     ]
     private ?string $denominator = null;
 
@@ -26,7 +26,7 @@ class Measure {
 
     #[
         ORM\Column(options: ['default' => 0]),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        Serializer\Groups(['Measure-read', 'Measure-write'])
     ]
     private float $value = 0;
 
