@@ -2,8 +2,6 @@
 
 namespace App\Entity\Hr\Employee;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
-use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -16,31 +14,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[
-    ApiResource(
-        description: 'Employé',
-        collectionOperations: [],
-        itemOperations: [
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un employé',
-                    'summary' => 'Récupère un employé'
-                ]
-            ],
-        ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
-        ],
-        normalizationContext: [
-            'groups' => ['read:id', 'read:employee', 'read:name', 'read:user'],
-            'openapi_definition_name' => 'Employee-read'
-        ]
-    ),
-    ORM\Entity
-]
+#[ORM\Entity]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Super'),
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
@@ -61,7 +37,6 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     private ?string $password = null;
 
     #[
-        ApiProperty(description: 'identifiant', example: 'super'),
         Assert\Length(min: 3, max: 20),
         ORM\Column(length: 20, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:employee'])
@@ -131,7 +106,6 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      * @see UserInterface
      */
     #[
-        ApiProperty(description: 'Rôles', example: [Roles::ROLE_USER]),
         Pure,
         Serializer\Groups(['read:employee'])
     ]
@@ -149,10 +123,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         return null;
     }
 
-    #[
-        ApiProperty(description: 'Token', required: true, example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
-        Serializer\Groups(['read:employee'])
-    ]
+    #[Serializer\Groups(['read:employee'])]
     final public function getToken(): ?string {
         return $this->getCurrentApiToken()?->getToken();
     }

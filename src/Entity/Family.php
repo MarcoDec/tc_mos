@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Traits\FileTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,7 +24,6 @@ abstract class Family extends Entity implements FileEntity {
     protected $parent;
 
     #[
-        ApiProperty(description: 'Code douanier', example: '8544300089'),
         Assert\Length(min: 4, max: 10),
         ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:family', 'write:family'])

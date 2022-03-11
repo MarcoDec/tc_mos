@@ -2,7 +2,6 @@
 
 namespace App\Entity\Embeddable\Project\Product;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType;
 use App\Entity\Embeddable\CurrentPlace as AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,7 +22,6 @@ class CurrentPlace extends AbstractCurrentPlace {
     ];
 
     #[
-        ApiProperty(description: 'Nom', required: true),
         Assert\NotBlank,
         ORM\Column(type: 'product_current_place', options: ['charset' => 'ascii', 'default' => CurrentPlaceType::TYPE_DRAFT]),
         Serializer\Groups(['read:current-place'])
