@@ -13,3 +13,5 @@ export const AppSearchBool = defineAsyncComponent<Component>(async () => import(
 export const AppSelect = defineAsyncComponent<Component>(async () => import('./AppSelect.vue'))
 export const AppSelectOption = defineAsyncComponent<Component>(async () => import('./AppSelectOption.vue'))
 export const AppSwitch = defineAsyncComponent<Component>(async () => import('./AppSwitch.vue'))
+export const AppTrafficLight = defineAsyncComponent<Component>(async () => import('./AppTrafficLight.vue'))
+export const AppPhoneFlag = defineAsyncComponent<Component>(async () => import('./AppPhoneFlag.vue'))

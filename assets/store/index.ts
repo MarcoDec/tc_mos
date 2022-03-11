@@ -6,6 +6,7 @@ import type {State as Security} from './security'
 import type {State} from './state'
 import type {ComputedGetters as VueComputedGetters} from '../types/vue'
 import {actions} from './actions'
+import {countries} from './countries'
 import {createStore} from 'vuex'
 import {generateSecurity} from './security'
 import {mutations} from './mutation'
@@ -18,7 +19,7 @@ export type {RootState}
 export function generateStore(security: Security): Store<State> {
     return createStore<State>({
         actions,
-        modules: {security: generateSecurity(security), suppliers},
+        modules: {countries, security: generateSecurity(security), suppliers},
         mutations,
         state,
         strict: process.env.NODE_ENV !== 'production'

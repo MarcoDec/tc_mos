@@ -1,26 +1,34 @@
-import type {DeepReadonly} from '../../types/types'
 import type {State as Suppliers} from './supplier'
 import type {State as RootState} from '..'
 import type {State} from '.'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import {generateSupplier} from './supplier'
 
-type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
+type ActionContext = VuexActionContext<State, RootState>
 
 export const actions = {
     async fetchSuppliers({dispatch}: ActionContext): Promise<void> {
         const response: Suppliers[] = [
             { 
-                etat: 'etat',
-                delete: true,
+                etat: 'refus',
                 id: 1,
                 nom: '3M FRANCE',
+                show: true,
+                traffic: false
             },
             {
-                etat: 'etat',
-                delete: true,
+                etat: 'attente',
                 id: 2,
                 nom: 'ABB',
+                show: true,
+                traffic: true
+            },
+            {
+                etat: 'valide',
+                id: 3,
+                nom: 'ABB',
+                show: true,
+                traffic: true
             }
         ]
 

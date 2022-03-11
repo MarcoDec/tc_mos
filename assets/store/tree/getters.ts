@@ -23,7 +23,7 @@ export const getters: Getters = {
         const options: FormOption[] = [{text: '', value: null}]
         for (const item of computed.items)
             options.push(rootGetters[`${item}/option`] as FormOption)
-        return options.sort((a, b) => a.text.localeCompare(b.text))
+        return options.sort((a, b) => a.text.localeCompare(b.text))        
     },
     selected(state, computed, rootState) {
         for (const item of computed.items)

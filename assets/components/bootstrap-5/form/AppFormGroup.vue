@@ -21,6 +21,7 @@
     function input(value: FormValue): void {
         emit('update:modelValue', value)
         emit('input', {name: props.field.name, value})
+        
     }
 </script>
 

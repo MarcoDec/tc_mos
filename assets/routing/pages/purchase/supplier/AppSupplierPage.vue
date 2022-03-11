@@ -9,16 +9,15 @@ import { Actions, Getters } from "../../../../store/suppliers";
 import { TableField } from "../../../../types/app-collection-table";
 import AppSupplierCreate from './AppSupplierCreate.vue'
 
-defineProps<{ fields: TableField[]}>();
 const route = useRoute();
 const title = "Créer un Fournisseur";
 const modalId = computed(() => `target`)
 const target = computed(() => `#${modalId.value}`)
 
-const fetchSuppliers = useNamespacedActions<Actions>("suppliers", [
-  "fetchSuppliers",
-]).fetchSuppliers;
-const { items } = useNamespacedGetters<Getters>("suppliers", ["items"]);
+const fetchSuppliers = useNamespacedActions<Actions>("suppliers", ["fetchSuppliers",]).fetchSuppliers
+const { items } = useNamespacedGetters<Getters>("suppliers", ["items"])
+
+
 onMounted(async () => {
   await fetchSuppliers();
 });
@@ -55,14 +54,18 @@ const fields = [
       <AppBtn variant="success" data-bs-toggle="modal" :data-bs-target="target">Créer</AppBtn>
     </AppCol>
   </AppRow>
-  <AppModal :id="modalId" :title="title">
+
+  <AppModal class="four" :id="modalId" :title="title">
     <AppSupplierCreate></AppSupplierCreate>
-     </AppModal>
-  <AppCollectionTable
-    :id="route.name"
-    :fields="fields"
-    :items="items"
-    create
-    pagination
-  />
+  </AppModal>
+
+  <AppCollectionTable :id="route.name" :fields="fields" :items="items" pagination>
+    <template #etat="{item}">
+      <td><AppTrafficLight :item="item"/></td>
+    </template>
+  </AppCollectionTable>
+  
+   
+
+ 
 </template>

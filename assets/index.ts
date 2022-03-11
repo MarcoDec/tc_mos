@@ -15,6 +15,7 @@ library.add(fas)
 
 app.provide('emitter', emitter)
     .component('Fa', defineAsyncComponent(async () => import('@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon')))
+    .component('CountryFlag',defineAsyncComponent(async () => import('vue-country-flag-next')) )
 for (const [name, component] of Object.entries(components))
     app.component(name, component)
 

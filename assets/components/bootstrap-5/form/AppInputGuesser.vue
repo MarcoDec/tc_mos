@@ -22,6 +22,8 @@
                 return 'AppSearchBool'
             case 'select':
                 return 'AppSelect'
+            case 'phone':
+                return 'AppPhoneFlag'
             default:
                 return 'AppInput'
         }

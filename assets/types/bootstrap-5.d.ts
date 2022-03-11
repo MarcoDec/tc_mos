@@ -23,6 +23,7 @@ export declare type FormInput =
     | 'search-boolean'
     | 'select'
     | 'text'
+    | 'phone'
 
 export declare type FormOption = {text: string, value: FormValue}
 export declare type FormOptions = FormOption[]
@@ -39,10 +40,7 @@ export declare type FormField = {
 
 export declare type FormValue = boolean | number | string | null
 
-<<<<<<< HEAD
 export declare type FormValues = Record<string, FormValue>
-=======
-export type FormValues = Record<string, FormValue>
 
 export type Tab = {
     active: {active: boolean}
@@ -52,4 +50,3 @@ export type Tab = {
     target: string
     title: string
 }
->>>>>>> feature/vue/gui

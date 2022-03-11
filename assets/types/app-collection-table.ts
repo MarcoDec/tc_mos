@@ -10,4 +10,6 @@ export type TableField = FormField & {
 export type TableItem = FormValues & {
     delete: boolean
     update: boolean
+    traffic: boolean
+
 }
