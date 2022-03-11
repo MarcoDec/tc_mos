@@ -4,9 +4,9 @@ namespace App\Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type as DoctrineType;
+use Doctrine\DBAL\Types\Type;
 
-abstract class EnumType extends DoctrineType {
+abstract class EnumType extends Type {
     /** @var string[] */
     public const TYPES = [];
 

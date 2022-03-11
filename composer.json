@@ -6,7 +6,10 @@
     ],
     "psr-4": {
       "App\\": "src/",
-      "App\\Doctrine\\DBAL\\": "lib/doctrine/dbal/lib/Doctrine/DBAL/",
+      "App\\Doctrine\\DBAL\\": [
+        "lib/doctrine/dbal/lib/Doctrine/DBAL/",
+        "lib/doctrine/dbal/src/"
+      ],
       "App\\Doctrine\\ORM\\": "lib/doctrine/orm/lib/Doctrine/ORM/",
       "App\\Symfony\\Bridge\\Doctrine\\": "lib/symfony/doctrine-bridge/"
     }
