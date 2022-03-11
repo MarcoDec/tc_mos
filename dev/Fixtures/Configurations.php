@@ -8,6 +8,9 @@ use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
+/**
+ * @phpstan-import-type PropertyConfigArray from PropertyConfig
+ */
 final class Configurations {
     /** @var array<string, EntityConfig> */
     private array $configurations = [];
@@ -18,16 +21,16 @@ final class Configurations {
     /** @var array<int, string> */
     private array $customscode = [];
 
-    private ExpressionLanguage $exprLang;
+    private readonly ExpressionLanguage $exprLang;
 
-    public function __construct(private EntityManagerInterface $em) {
+    public function __construct(private readonly EntityManagerInterface $em) {
         $this->exprLang = new ExpressionLanguage();
         $this->exprLang->registerProvider(new ExpressionLanguageProvider($this));
     }
 
     /**
-     * @param class-string $entity
-     * @param array{deleted?: string, properties: array{country?: bool, customscode?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}[]} $config
+     * @param class-string                                                            $entity
+     * @param array{deleted?: string, properties: array<string, PropertyConfigArray>} $config
      */
     public function addConfig(string $name, string $entity, array $config): void {
         $this->configurations[$name] = new EntityConfig(
@@ -100,10 +103,7 @@ final class Configurations {
      */
     public function setCountries(array $countries): void {
         $this->countries = collect($countries)
-            ->mapWithKeys(static function (array $country): array {
-                /** @var array{code: string, id: string, statut: string} $country */
-                return empty($country['statut']) || $country['statut'] === '0' ? [(int) $country['id'] => $country['code']] : [];
-            })
+            ->mapWithKeys(static fn (array $country): array /** @var array{code: string, id: string, statut: string} $country */ => empty($country['statut']) || $country['statut'] === '0' ? [(int) $country['id'] => $country['code']] : [])
             ->all();
     }
 
@@ -112,10 +112,7 @@ final class Configurations {
      */
     public function setCustomscode(array $customscode): void {
         $this->customscode = collect($customscode)
-            ->mapWithKeys(static function (array $code): array {
-                /** @var array{code: string, id: string, statut: string} $code */
-                return empty($code['statut']) || $code['statut'] === '0' ? [(int) $code['id'] => $code['code']] : [];
-            })
+            ->mapWithKeys(static fn (array $code): array /** @var array{code: string, id: string, statut: string} $code */ => empty($code['statut']) || $code['statut'] === '0' ? [(int) $code['id'] => $code['code']] : [])
             ->all();
     }
 

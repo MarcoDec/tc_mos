@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 final class NotificationController {
-    public function __construct(private NotificationRepository $repo) {
+    public function __construct(private readonly NotificationRepository $repo) {
     }
 
     #[Route(

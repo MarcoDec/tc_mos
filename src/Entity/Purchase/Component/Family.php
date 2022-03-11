@@ -89,7 +89,7 @@ class Family extends AbstractFamily {
         ORM\Column(length: 30),
         Serializer\Groups(['read:family', 'write:family'])
     ]
-    protected ?string $name;
+    protected ?string $name = null;
 
     /**
      * @var null|self

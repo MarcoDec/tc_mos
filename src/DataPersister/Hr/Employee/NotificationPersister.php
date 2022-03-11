@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 final class NotificationPersister implements DataPersisterInterface {
-    public function __construct(private EntityManagerInterface $em, private RequestStack $requests) {
+    public function __construct(private readonly EntityManagerInterface $em, private readonly RequestStack $requests) {
     }
 
     /**

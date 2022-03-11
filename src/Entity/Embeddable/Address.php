@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class Address {
-    public const filter = [
+    final public const filter = [
         'address.address' => 'partial',
         'address.address2' => 'partial',
         'address.city' => 'partial',

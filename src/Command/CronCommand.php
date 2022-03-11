@@ -20,7 +20,7 @@ final class CronCommand extends AbstractCommand {
     protected static $defaultDescription = 'Lance les CRON.';
     protected static $defaultName = 'gpao:cron';
 
-    public function __construct(private EntityManagerInterface $em) {
+    public function __construct(private readonly EntityManagerInterface $em) {
         parent::__construct();
     }
 

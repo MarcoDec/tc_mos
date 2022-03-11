@@ -17,9 +17,9 @@ use ReflectionException;
 
 final class SchemaFactory implements SchemaFactoryInterface {
     public function __construct(
-        private DashPathSegmentNameGenerator $dashGenerator,
-        private SchemaFactoryInterface $decorated,
-        private ResourceMetadataFactoryInterface $resourceMetadataFactory
+        private readonly DashPathSegmentNameGenerator $dashGenerator,
+        private readonly SchemaFactoryInterface $decorated,
+        private readonly ResourceMetadataFactoryInterface $resourceMetadataFactory
     ) {
     }
 
@@ -32,11 +32,11 @@ final class SchemaFactory implements SchemaFactoryInterface {
         $attrs = new Collection();
         try {
             $attrs = $attrs->merge($refl->getProperty($propertyName)->getAttributes(ApiProperty::class));
-        } catch (ReflectionException $e) {
+        } catch (ReflectionException) {
         }
         try {
             $attrs = $attrs->merge($refl->getMethod('get'.ucfirst($propertyName))->getAttributes(ApiProperty::class));
-        } catch (ReflectionException $e) {
+        } catch (ReflectionException) {
         }
         foreach ($attrs as $attr) {
             /** @var ApiProperty $apiProperty */
@@ -62,7 +62,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
     /**
      * @param class-string               $className
      * @param null|Schema<string, mixed> $schema
-     * @param mixed[]|null               $serializerContext
+     * @param mixed[]                    $serializerContext
      *
      * @return Schema<string, mixed>
      */
@@ -112,7 +112,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
         if (!empty($key)) {
             try {
                 $resourceName = $this->resourceMetadataFactory->create($className)->getShortName();
-            } catch (ResourceClassNotFoundException $e) {
+            } catch (ResourceClassNotFoundException) {
                 return $schema;
             }
             if (!empty($resourceName)) {

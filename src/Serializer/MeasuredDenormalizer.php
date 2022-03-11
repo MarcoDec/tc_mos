@@ -11,17 +11,17 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 final class MeasuredDenormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface {
     use DenormalizerAwareTrait;
 
-    public function __construct(private MeasureHydrator $hydrator) {
+    public function __construct(private readonly MeasureHydrator $hydrator) {
     }
 
     public function denormalize($data, string $type, ?string $format = null, array $context = []): MeasuredInterface {
-        $context[__CLASS__] = true;
+        $context[self::class] = true;
         /** @var MeasuredInterface $entity */
         $entity = $this->denormalizer->denormalize($data, $type, $format, $context);
         return $this->hydrator->hydrateIn($entity);
     }
 
     public function supportsDenormalization($data, string $type, ?string $format = null, array $context = []): bool {
-        return !isset($context[__CLASS__]) && $type === MeasuredInterface::class;
+        return !isset($context[self::class]) && $type === MeasuredInterface::class;
     }
 }

@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 final class DeleteDataPersister implements ContextAwareDataPersisterInterface {
-    public function __construct(private EntityManagerInterface $em) {
+    public function __construct(private readonly EntityManagerInterface $em) {
     }
 
     /**

@@ -1,8 +1,4 @@
-FROM tconcept/tc_php:latest
-
-RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
-    apt install -y nodejs && \
-    npm install -g yarn
+FROM tconcept/tc_php:8.1.3
 
 RUN ln -fs /var/www/html/TConcept-GPAO/docker/php/.zshrc-root ~/.zshrc && \
     ln -fs /var/www/html/TConcept-GPAO/.docker/php/php.ini /usr/local/etc/php/php.ini && \

@@ -8,7 +8,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 
 final class ExpressionLanguageProvider implements ExpressionFunctionProviderInterface {
-    public function __construct(private Configurations $configurations) {
+    public function __construct(private readonly Configurations $configurations) {
     }
 
     /**

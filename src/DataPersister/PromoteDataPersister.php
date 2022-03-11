@@ -13,9 +13,9 @@ use Symfony\Component\Workflow\Registry;
 
 final class PromoteDataPersister implements ContextAwareDataPersisterInterface {
     public function __construct(
-        private EntityManagerInterface $em,
-        private Registry $registry,
-        private RequestStack $stack
+        private readonly EntityManagerInterface $em,
+        private readonly Registry $registry,
+        private readonly RequestStack $stack
     ) {
     }
 

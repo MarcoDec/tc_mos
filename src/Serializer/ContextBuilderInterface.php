@@ -7,11 +7,11 @@ use Jawira\CaseConverter\Convert;
 use Symfony\Component\HttpFoundation\Request;
 
 final class ContextBuilderInterface implements SerializerContextBuilderInterface {
-    public function __construct(private SerializerContextBuilderInterface $decorated) {
+    public function __construct(private readonly SerializerContextBuilderInterface $decorated) {
     }
 
     /**
-     * @param mixed[]|null $extractedAttributes
+     * @param mixed[] $extractedAttributes
      *
      * @return mixed[]
      */
@@ -25,7 +25,7 @@ final class ContextBuilderInterface implements SerializerContextBuilderInterface
             && $context['item_operation_name'] === 'patch'
             && isset($context['resource_class'])
         ) {
-            $exploded = explode('\\', $context['resource_class']);
+            $exploded = explode('\\', (string) $context['resource_class']);
             $context['groups'] = [sprintf(
                 "write:%s:{$request->attributes->get('process')}",
                 (new Convert(end($exploded)))->toKebab()

@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 final class ProcessGroupsGenerator implements ValidationGroupsGeneratorInterface {
-    public function __construct(private ResourceMetadataFactoryInterface $metadataFactory, private RequestStack $stack) {
+    public function __construct(private readonly ResourceMetadataFactoryInterface $metadataFactory, private readonly RequestStack $stack) {
     }
 
     /**

@@ -14,7 +14,7 @@ final class FileEntityNormalizer implements ContextAwareNormalizerInterface, Nor
 
     private const CALLED = 'FILE_ENTITY_NORMALIZER_CALLED_FOR';
 
-    public function __construct(private FileManager $fm) {
+    public function __construct(private readonly FileManager $fm) {
     }
 
     /**
@@ -26,7 +26,7 @@ final class FileEntityNormalizer implements ContextAwareNormalizerInterface, Nor
         if (!isset($context[self::CALLED])) {
             $context[self::CALLED] = [];
         }
-        $class = get_class($object);
+        $class = $object::class;
         if (!isset($context[self::CALLED][$class])) {
             $context[self::CALLED][$class] = [];
         }
@@ -49,7 +49,7 @@ final class FileEntityNormalizer implements ContextAwareNormalizerInterface, Nor
             return true;
         }
 
-        $class = get_class($data);
+        $class = $data::class;
         if (!isset($context[self::CALLED][$class]) || empty($context[self::CALLED][$class])) {
             return true;
         }

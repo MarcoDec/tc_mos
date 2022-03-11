@@ -20,13 +20,13 @@ final class FixturesCommand extends AbstractCommand {
 
     protected static $defaultDescription = 'Transfert les données de l\'ancien système vers le nouveau.';
     protected static $defaultName = 'gpao:fixtures:load';
-    private Configurations $configurations;
+    private readonly Configurations $configurations;
 
     public function __construct(
-        private string $configDir,
+        private readonly string $configDir,
         EntityManagerInterface $em,
-        private string $jsonDir,
-        private string $jsonPrefix
+        private readonly string $jsonDir,
+        private readonly string $jsonPrefix
     ) {
         parent::__construct();
         $this->configurations = new Configurations($em);
@@ -100,7 +100,7 @@ final class FixturesCommand extends AbstractCommand {
             throw new RuntimeException("Invalid $json.");
         }
 
-        $this->configurations->setCountries(json_decode($json, true));
+        $this->configurations->setCountries(json_decode($json, true, 512, JSON_THROW_ON_ERROR));
     }
 
     private function loadCustomscode(): void {
@@ -108,7 +108,7 @@ final class FixturesCommand extends AbstractCommand {
             throw new RuntimeException("Invalid $json.");
         }
 
-        $this->configurations->setCustomscode(json_decode($json, true));
+        $this->configurations->setCustomscode(json_decode($json, true, 512, JSON_THROW_ON_ERROR));
     }
 
     private function loadJSON(): void {
@@ -154,7 +154,7 @@ final class FixturesCommand extends AbstractCommand {
 
             $this->configurations->setData(
                 name: $name,
-                data: json_decode($json, true)
+                data: json_decode($json, true, 512, JSON_THROW_ON_ERROR)
             );
         }
 

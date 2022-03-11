@@ -2,24 +2,20 @@
 
 namespace App\Entity\Embeddable;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Entity\Traits\NameTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
-abstract class CurrentPlace {
-    use NameTrait;
-
-    public const TR_BLOCK = 'block';
-    public const TR_DISABLE = 'disable';
-    public const TR_PARTIALLY_UNLOCK = 'partially_unlock';
-    public const TR_PARTIALLY_VALIDATE = 'partially_validate';
-    public const TR_SUBMIT_VALIDATION = 'submit_validation';
-    public const TR_UNLOCK = 'unlock';
-    public const TR_VALIDATE = 'validate';
+abstract class CurrentPlace implements Stringable {
+    final public const TR_BLOCK = 'block';
+    final public const TR_DISABLE = 'disable';
+    final public const TR_PARTIALLY_UNLOCK = 'partially_unlock';
+    final public const TR_PARTIALLY_VALIDATE = 'partially_validate';
+    final public const TR_SUBMIT_VALIDATION = 'submit_validation';
+    final public const TR_UNLOCK = 'unlock';
+    final public const TR_VALIDATE = 'validate';
 
     #[
         ORM\Column(type: 'datetime_immutable', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP']),
@@ -27,17 +23,8 @@ abstract class CurrentPlace {
     ]
     protected ?DateTimeImmutable $date;
 
-    #[
-        ApiProperty(description: 'Nom', required: true),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:current-place'])
-    ]
-    protected ?string $name = null;
-
-    public function __construct(?string $name = null) {
+    public function __construct(protected ?string $name = null) {
         $this->date = new DateTimeImmutable();
-        $this->name = $name;
     }
 
     final public function __toString(): string {
@@ -50,6 +37,10 @@ abstract class CurrentPlace {
 
     final public function getDate(): ?DateTimeImmutable {
         return $this->date;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     final public function setName(?string $name): void {

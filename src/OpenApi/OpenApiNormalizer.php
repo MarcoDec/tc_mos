@@ -8,7 +8,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 final class OpenApiNormalizer implements NormalizerInterface {
     private const METHODS = ['delete', 'get', 'patch', 'post'];
 
-    public function __construct(private NormalizerInterface $decorated) {
+    public function __construct(private readonly NormalizerInterface $decorated) {
     }
 
     /**

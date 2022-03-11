@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Security;
 use UnexpectedValueException;
 
 final class NotificationExtension implements QueryCollectionExtensionInterface {
-    public function __construct(private Security $security) {
+    public function __construct(private readonly Security $security) {
     }
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?string $operationName = null): void {

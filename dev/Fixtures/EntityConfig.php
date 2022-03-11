@@ -8,6 +8,9 @@ use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
+/**
+ * @phpstan-import-type PropertyConfigArray from PropertyConfig
+ */
 final class EntityConfig {
     /** @var mixed[] */
     private array $data = [];
@@ -15,33 +18,32 @@ final class EntityConfig {
     private ?string $deleted;
 
     /** @var Collection<int, mixed> */
-    private Collection $entities;
+    private readonly Collection $entities;
 
     /** @var array<int, int> */
     private array $ids = [];
 
     /** @var array<string, PropertyConfig> */
-    private array $properties;
+    private readonly array $properties;
 
     /**
-     * @param ClassMetadata<object> $metadata
-     * @param array{deleted?: string, properties: array{country?: bool, customscode?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}[]} $config
+     * @param ClassMetadata<object>                                                   $metadata
+     * @param array{deleted?: string, properties: array<string, PropertyConfigArray>} $config
      */
     public function __construct(
-        private Configurations $configurations,
-        private ExpressionLanguage $exprLang,
-        private ClassMetadata $metadata,
+        private readonly Configurations $configurations,
+        private readonly ExpressionLanguage $exprLang,
+        private readonly ClassMetadata $metadata,
         array $config
     ) {
         $this->deleted = $config['deleted'] ?? null;
         /** @var mixed[] entities */
         $entities = [];
         $this->entities = collect($entities);
-        $this->properties = collect($config['properties'])
-            ->map(static function (array $config): PropertyConfig {
-                /** @var array{country?: bool, customscode?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string} $config */
-                return new PropertyConfig($config);
-            })
+        /** @var Collection<string, PropertyConfigArray> $properties */
+        $properties = collect($config['properties']);
+        $this->properties = $properties
+            ->map(static fn (array $config): PropertyConfig => new PropertyConfig($config))
             ->all();
     }
 

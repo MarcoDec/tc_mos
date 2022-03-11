@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {
-    public const TRANSITIONS = [
+    final public const TRANSITIONS = [
         self::TR_BLOCK,
         self::TR_DISABLE,
         self::TR_PARTIALLY_UNLOCK,

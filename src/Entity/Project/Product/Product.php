@@ -19,7 +19,6 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
-use App\Entity\Traits\WorkflowTrait;
 use App\Filter\RelationFilter;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
@@ -165,15 +164,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
-    use WorkflowTrait;
-
-    /** @var CurrentPlace */
-    #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:product', 'read:product:collection'])
-    ]
-    protected $currentPlace;
 
     #[
         ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
@@ -198,19 +188,26 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     private Measure $costingManualDuration;
 
     #[
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded(CurrentPlace::class),
+        Serializer\Groups(['read:product', 'read:product:collection'])
+    ]
+    private CurrentPlace $currentPlace;
+
+    #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 10),
         ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
-    private ?string $customsCode;
+    private ?string $customsCode = null;
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product:project'])
     ]
-    private ?DateTimeImmutable $expirationDate;
+    private ?DateTimeImmutable $expirationDate = null;
 
     #[
         ApiProperty(description: 'Famille de produit', readableLink: false, example: '/api/product-families/1'),
@@ -218,7 +215,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\ManyToOne,
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection'])
     ]
-    private ?Family $family;
+    private ?Family $family = null;
 
     #[
         ApiProperty(description: 'Volume prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -233,7 +230,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\ManyToOne,
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
-    private ?Incoterms $incoterms;
+    private ?Incoterms $incoterms = null;
 
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
@@ -392,7 +389,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\ManyToOne,
         Serializer\Groups(['create:product', 'read:product'])
     ]
-    private ?Unit $unit;
+    private ?Unit $unit = null;
 
     #[
         ApiProperty(description: 'Poids', openapiContext: ['$ref' => '#/components/schemas/Measure-mass']),
@@ -457,6 +454,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getCostingManualDuration(): Measure {
         return $this->costingManualDuration;
+    }
+
+    final public function getCurrentPlace(): CurrentPlace {
+        return $this->currentPlace;
     }
 
     final public function getCustomsCode(): ?string {
@@ -615,6 +616,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setCostingManualDuration(Measure $costingManualDuration): self {
         $this->costingManualDuration = $costingManualDuration;
+        return $this;
+    }
+
+    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
+        $this->currentPlace = $currentPlace;
         return $this;
     }
 
