@@ -6,7 +6,6 @@ use App\Entity\Family as AbstractFamily;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
@@ -22,32 +21,24 @@ class Family extends AbstractFamily {
     #[
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column(length: 30),
-        Serializer\Groups(['read:family', 'write:family'])
+        ORM\Column(length: 30)
     ]
     protected ?string $name = null;
 
     /**
      * @var null|self
      */
-    #[
-        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:family', 'write:family'])
-    ]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
     protected $parent;
 
     #[
         Assert\Length(exactly: 3),
         Assert\NotBlank,
-        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:family', 'write:family'])
+        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii'])
     ]
     private ?string $code = null;
 
-    #[
-        ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:family', 'write:family'])
-    ]
+    #[ORM\Column(options: ['default' => false])]
     private bool $copperable = false;
 
     final public function getCode(): ?string {
@@ -58,7 +49,6 @@ class Family extends AbstractFamily {
         return $this->copperable;
     }
 
-    #[Serializer\Groups(['read:file'])]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
     }

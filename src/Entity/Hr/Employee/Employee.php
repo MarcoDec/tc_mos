@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -19,8 +18,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column(length: 30),
-        Serializer\Groups(['read:name', 'write:name'])
+        ORM\Column(length: 30)
     ]
     protected ?string $name = null;
 
@@ -38,8 +36,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
 
     #[
         Assert\Length(min: 3, max: 20),
-        ORM\Column(length: 20, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:employee'])
+        ORM\Column(length: 20, options: ['charset' => 'ascii'])
     ]
     private ?string $username = null;
 
@@ -105,10 +102,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      *
      * @see UserInterface
      */
-    #[
-        Pure,
-        Serializer\Groups(['read:employee'])
-    ]
+    #[Pure]
     final public function getRoles(): array {
         return $this->embRoles->getRoles();
     }
@@ -123,7 +117,6 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         return null;
     }
 
-    #[Serializer\Groups(['read:employee'])]
     final public function getToken(): ?string {
         return $this->getCurrentApiToken()?->getToken();
     }

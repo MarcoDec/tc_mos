@@ -17,7 +17,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -37,71 +36,53 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[ORM\Embedded]
     private Measure $costingManualDuration;
 
-    #[
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:product', 'read:product:collection'])
-    ]
+    #[ORM\Embedded(CurrentPlace::class)]
     private CurrentPlace $currentPlace;
 
     #[
         Assert\Length(min: 4, max: 10),
-        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:product', 'write:product:logistics'])
+        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $customsCode = null;
 
-    #[
-        ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product:project'])
-    ]
+    #[ORM\Column(type: 'date_immutable', nullable: true)]
     private ?DateTimeImmutable $expirationDate = null;
 
     #[
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection'])
+        ORM\ManyToOne
     ]
     private ?Family $family = null;
 
     #[
         AppAssert\Measure(groups: ['Product-create']),
-        ORM\Embedded,
-        Serializer\Groups(['create:product', 'read:product'])
+        ORM\Embedded
     ]
     private Measure $forecastVolume;
 
-    #[
-        ORM\ManyToOne,
-        Serializer\Groups(['read:product', 'write:product:logistics'])
-    ]
+    #[ORM\ManyToOne]
     private ?Incoterms $incoterms = null;
 
     #[
         Assert\Length(min: 1, max: 3, groups: ['Product-admin', 'Product-create']),
-        ORM\Column(name: '`index`', length: 3, options: ['charset' => 'ascii']),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
+        ORM\Column(name: '`index`', length: 3, options: ['charset' => 'ascii'])
     ]
     private ?string $index = null;
 
     #[
         Assert\NotNull,
         Assert\PositiveOrZero,
-        ORM\Column(type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
-        Serializer\Groups(['read:product'])
+        ORM\Column(type: 'tinyint', options: ['default' => 1, 'unsigned' => true])
     ]
     private int $internalIndex = 1;
 
     #[
         Assert\Choice(choices: KindType::TYPES, groups: ['Product-admin', 'Product-create', 'Product-project']),
-        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:project'])
+        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE])
     ]
     private ?string $kind = KindType::TYPE_PROTOTYPE;
 
-    #[
-        ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:product'])
-    ]
+    #[ORM\Column(options: ['default' => false])]
     private bool $managedCopper = false;
 
     #[ORM\Embedded]
@@ -109,113 +90,78 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         AppAssert\Measure(groups: ['Product-project']),
-        ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:project'])
+        ORM\Embedded
     ]
     private Measure $maxProto;
 
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:logistics'])
-    ]
+    #[ORM\Embedded]
     private Measure $minDelivery;
 
     #[
         AppAssert\Measure(groups: ['Product-production']),
-        ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:production'])
+        ORM\Embedded
     ]
     private Measure $minProd;
 
     #[
         AppAssert\Measure,
-        ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:logistics'])
+        ORM\Embedded
     ]
     private Measure $minStock;
 
     #[
         Assert\Length(min: 3, max: 80),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
-        ORM\Column(length: 80),
-        Serializer\Groups(['create:product', 'read:product', 'write:product', 'write:product:admin'])
+        ORM\Column(length: 80)
     ]
     private ?string $name = null;
 
-    #[
-        ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'write:product:main'])
-    ]
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $notes = null;
 
     #[
         AppAssert\Measure(groups: ['Product-create', 'Product-production']),
-        ORM\Embedded,
-        Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
+        ORM\Embedded
     ]
     private Measure $packaging;
 
     #[
         Assert\Length(max: 30, groups: ['Product-create', 'Product-production']),
-        ORM\Column(length: 30),
-        Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
+        ORM\Column(length: 30)
     ]
     private ?string $packagingKind = null;
 
-    #[
-        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:product'])
-    ]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
     private ?self $parent = null;
 
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:product'])
-    ]
+    #[ORM\Embedded]
     private Measure $price;
 
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:product'])
-    ]
+    #[ORM\Embedded]
     private Measure $priceWithoutCopper;
 
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:production'])
-    ]
+    #[ORM\Embedded]
     private Measure $productionDelay;
 
     #[
         Assert\Length(min: 3, max: 30),
-        ORM\Column(length: 30),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
+        ORM\Column(length: 30)
     ]
     private ?string $ref = null;
 
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:product'])
-    ]
+    #[ORM\Embedded]
     private Measure $transfertPriceSupplies;
 
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:product'])
-    ]
+    #[ORM\Embedded]
     private Measure $transfertPriceWork;
 
     #[
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
-        Serializer\Groups(['create:product', 'read:product'])
+        ORM\ManyToOne
     ]
     private ?Unit $unit = null;
 
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:product', 'write:product:logistics'])
-    ]
+    #[ORM\Embedded]
     private Measure $weight;
 
     public function __construct() {

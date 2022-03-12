@@ -6,7 +6,6 @@ use App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType;
 use App\Entity\Embeddable\CurrentPlace as AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
@@ -23,8 +22,7 @@ class CurrentPlace extends AbstractCurrentPlace {
 
     #[
         Assert\NotBlank,
-        ORM\Column(type: 'product_current_place', options: ['charset' => 'ascii', 'default' => CurrentPlaceType::TYPE_DRAFT]),
-        Serializer\Groups(['read:current-place'])
+        ORM\Column(type: 'product_current_place', options: ['charset' => 'ascii', 'default' => CurrentPlaceType::TYPE_DRAFT])
     ]
     protected ?string $name = null;
 

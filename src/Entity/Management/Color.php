@@ -4,7 +4,6 @@ namespace App\Entity\Management;
 
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -12,16 +11,14 @@ class Color extends Entity {
     #[
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column(length: 20),
-        Serializer\Groups(['read:color', 'write:color'])
+        ORM\Column(length: 20)
     ]
     private ?string $name = null;
 
     #[
         Assert\Length(exactly: 7),
         Assert\NotBlank,
-        ORM\Column(type: 'char', length: 7, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:color', 'write:color'])
+        ORM\Column(type: 'char', length: 7, options: ['charset' => 'ascii'])
     ]
     private ?string $rgb = null;
 

@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
@@ -25,8 +24,7 @@ abstract class Family extends Entity implements FileEntity {
 
     #[
         Assert\Length(min: 4, max: 10),
-        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:family', 'write:family'])
+        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $customsCode = null;
 

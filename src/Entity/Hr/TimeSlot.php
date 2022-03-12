@@ -5,8 +5,6 @@ namespace App\Entity\Hr;
 use App\Entity\Entity;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -14,39 +12,22 @@ class TimeSlot extends Entity {
     /**
      * @ORM\Column(type="time_immutable")
      */
-    #[
-        ORM\Column(type: 'time_immutable'),
-        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
-        Serializer\Groups(['read:time-slot', 'write:time-slot'])
-    ]
+    #[ORM\Column(type: 'time_immutable')]
     private ?DateTimeImmutable $end = null;
 
-    #[
-        ORM\Column(type: 'time_immutable', nullable: true),
-        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
-        Serializer\Groups(['read:time-slot', 'write:time-slot'])
-    ]
+    #[ORM\Column(type: 'time_immutable', nullable: true)]
     private ?DateTimeImmutable $endBreak = null;
 
     #[
         Assert\NotBlank,
-        ORM\Column(length: 10),
-        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+        ORM\Column(length: 10)
     ]
     private ?string $name = null;
 
-    #[
-        ORM\Column(type: 'time_immutable'),
-        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
-        Serializer\Groups(['read:time-slot', 'write:time-slot'])
-    ]
+    #[ORM\Column(type: 'time_immutable')]
     private ?DateTimeImmutable $start = null;
 
-    #[
-        ORM\Column(type: 'time_immutable', nullable: true),
-        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
-        Serializer\Groups(['read:time-slot', 'write:time-slot'])
-    ]
+    #[ORM\Column(type: 'time_immutable', nullable: true)]
     private ?DateTimeImmutable $startBreak = null;
 
     final public function getEnd(): ?DateTimeImmutable {

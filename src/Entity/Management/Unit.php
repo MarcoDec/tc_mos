@@ -5,7 +5,6 @@ namespace App\Entity\Management;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @method self            addChild(self $children)
@@ -27,16 +26,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class Unit extends AbstractUnit {
     /** @var Collection<int, self> */
-    #[
-        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
-        Serializer\Groups(['read:unit'])
-    ]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     protected Collection $children;
 
     /** @var null|self */
-    #[
-        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:unit', 'write:unit'])
-    ]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
     protected $parent;
 }

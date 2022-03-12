@@ -4,7 +4,6 @@ namespace App\Entity\Embeddable;
 
 use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
@@ -19,54 +18,47 @@ class Address {
 
     #[
         Assert\Length(min: 10, max: 50),
-        ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        ORM\Column(length: 50, nullable: true)
     ]
     private ?string $address = null;
 
     #[
         Assert\Length(min: 10, max: 50),
-        ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        ORM\Column(length: 50, nullable: true)
     ]
     private ?string $address2 = null;
 
     #[
         Assert\Length(min: 3, max: 50),
-        ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        ORM\Column(length: 50, nullable: true)
     ]
     private ?string $city = null;
 
     #[
         Assert\Country,
         Assert\Length(exactly: 2),
-        ORM\Column(type: 'char', length: 2, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:address', 'write:address'])
+        ORM\Column(type: 'char', length: 2, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $country = null;
 
     #[
         Assert\Email,
         Assert\Length(min: 5, max: 60),
-        ORM\Column(length: 60, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:address', 'write:address'])
+        ORM\Column(length: 60, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $email = null;
 
     #[
         AppAssert\PhoneNumber,
         Assert\Length(min: 10, max: 20),
-        ORM\Column(length: 20, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:address', 'write:address'])
+        ORM\Column(length: 20, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $phoneNumber = null;
 
     #[
         AppAssert\ZipCode,
         Assert\Length(min: 2, max: 10),
-        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(['read:address', 'write:address'])
+        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $zipCode = null;
 

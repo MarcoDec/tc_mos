@@ -4,7 +4,6 @@ namespace App\Entity\Logistics;
 
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
@@ -15,16 +14,14 @@ class Incoterms extends Entity {
     #[
         Assert\Length(min: 3, max: 11),
         Assert\NotBlank,
-        ORM\Column(length: 11),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        ORM\Column(length: 11)
     ]
     private ?string $code = null;
 
     #[
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
-        ORM\Column(length: 50),
-        Serializer\Groups(['read:name', 'write:name'])
+        ORM\Column(length: 50)
     ]
     private ?string $name = null;
 
