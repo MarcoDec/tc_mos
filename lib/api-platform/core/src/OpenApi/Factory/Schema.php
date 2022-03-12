@@ -1,8 +1,9 @@
 <?php
 
-namespace App\OpenApi;
+namespace App\ApiPlatform\Core\OpenApi\Factory;
 
 use App\ApiPlatform\Core\Annotation\ApiProperty;
+use function collect;
 use Illuminate\Support\Collection;
 
 /**

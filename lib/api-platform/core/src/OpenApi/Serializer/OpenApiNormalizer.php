@@ -1,6 +1,6 @@
 <?php
 
-namespace App\OpenApi;
+namespace App\ApiPlatform\Core\OpenApi\Serializer;
 
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 

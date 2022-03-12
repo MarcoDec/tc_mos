@@ -20,7 +20,6 @@ services:
       - ../src/Entity/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
-      - ../src/OpenApi/Schema.php
       - ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
@@ -34,7 +33,7 @@ services:
 
   api_platform.openapi.factory:
     autoconfigure: false
-    class: App\OpenApi\OpenApiFactory
+    class: App\ApiPlatform\Core\OpenApi\Factory\OpenApiFactory
 
   App\Doctrine\ORM\Decorator\EntityManagerDecorator:
     autoconfigure: false
@@ -90,7 +89,7 @@ services:
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
 
-  App\OpenApi\OpenApiNormalizer:
+  App\ApiPlatform\Core\OpenApi\Serializer\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
 
