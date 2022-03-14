@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
+use App\ApiPlatform\Core\Annotation\ApiProperty;
 use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiSerializerGroups(inheritedRead: ['Resource' => ['Entity']]),
@@ -11,9 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
 ]
 abstract class Entity {
     #[
+        ApiProperty(readOnly: true, required: true),
         ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
-        ORM\Id
+        ORM\Id,
+        Serializer\Groups(groups: ['Entity'])
     ]
     protected ?int $id = null;
 

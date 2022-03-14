@@ -7,6 +7,12 @@ components:
           $ref: '#/components/schemas/Resource'
         -
           additionalProperties: false
+          properties:
+            id:
+              readOnly: true
+              type: integer
+          required:
+            - id
           type: object
       type: object
     Resource:
