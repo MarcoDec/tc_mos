@@ -33,6 +33,24 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         return new ArrayObject(['Resource' => new Schema(
             description: 'Base d\'une resource',
             properties: [
+                '@context' => new ApiProperty(
+                    oneOf: [
+                        new ApiProperty(),
+                        new Schema(
+                            additionalProperties: true,
+                            properties: [
+                                '@vocab' => new ApiProperty(readOnly: true, required: true),
+                                'hydra' => new ApiProperty(
+                                    enum: ['http://www.w3.org/ns/hydra/core#'],
+                                    readOnly: true,
+                                    required: true
+                                ),
+                            ]
+                        )
+                    ],
+                    readOnly: true,
+                    required: true
+                ),
                 '@id' => new ApiProperty(readOnly: true, required: true),
                 '@type' => new ApiProperty(readOnly: true, required: true)
             ]
