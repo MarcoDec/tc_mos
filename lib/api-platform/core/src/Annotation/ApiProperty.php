@@ -3,15 +3,14 @@
 namespace App\ApiPlatform\Core\Annotation;
 
 use ApiPlatform\Core\Annotation\ApiProperty as ApiPlatformProperty;
+use App\ApiPlatform\Core\OpenApi\Factory\OpenApiContext;
 use App\ApiPlatform\Core\OpenApi\Factory\Schema;
 use JetBrains\PhpStorm\ArrayShape;
 
 /**
- * @phpstan-type OpenApiPropertyArray array{enum?: string[], readOnly: bool, type?: string}
- * @phpstan-type OpenApiPropertyChildren array{oneOf: array<Schema|OpenApiPropertyArray>}
- * @phpstan-type OpenApiProperty OpenApiPropertyArray|OpenApiPropertyChildren
+ * @phpstan-import-type OpenApiProperty from OpenApiContext
  */
-final class ApiProperty extends ApiPlatformProperty {
+final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
     /**
      * @param string[]                  $enum
      * @param array<ApiProperty|Schema> $oneOf
@@ -36,7 +35,7 @@ final class ApiProperty extends ApiPlatformProperty {
     /**
      * @return OpenApiProperty
      */
-    #[ArrayShape(['readOnly' => 'bool', 'type' => 'string', 'oneOf' => 'mixed', 'enum' => 'array'])]
+    #[ArrayShape(['enum' => 'array', 'oneOf' => 'mixed', 'readOnly' => 'bool', 'type' => 'string'])]
     private function toOpenApi(): array {
         $context = ['readOnly' => $this->readOnly];
         if (!empty($this->enum)) {
@@ -46,13 +45,13 @@ final class ApiProperty extends ApiPlatformProperty {
             $context['type'] = 'string';
         } else {
             $context['oneOf'] = collect($this->oneOf)
-                ->map(static function (Schema|ApiProperty $one): Schema|array {
+                ->map(static function (Schema|ApiProperty $one): array {
                     if ($one instanceof self) {
                         $context = $one->getOpenApiContext();
                         unset($context['readOnly']);
                         return $context;
                     }
-                    return $one;
+                    return $one->getOpenApiContext();
                 })
                 ->values()
                 ->all();
