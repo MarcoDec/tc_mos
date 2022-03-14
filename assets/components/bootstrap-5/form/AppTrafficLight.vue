@@ -1,23 +1,16 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "@vue/runtime-core";
-import type { Suppliers } from "../../../store/suppliers/supplier/getters";
-import { TableField } from "../../../types/app-collection-table";
+    import type {Suppliers} from '../../../store/suppliers/supplier/getters'
+    import {defineProps} from 'vue'
 
-const props = defineProps<{ item: Suppliers }>();
-const statut = props.item.etat
-
-
-
+    defineProps<{item: Suppliers}>()
 </script>
 
 <template>
-  <div id="traffic-light" :item="item">
-    <input type="radio" name="traffic-light-color" id="color1" v-bind:value="item.etat" v-bind:checked="item.etat == 'refus' "/>
-    <input type="radio" name="traffic-light-color" id="color2" v-bind:value="item.etat" v-bind:checked="item.etat == 'attente' "/>
-    <input type="radio" name="traffic-light-color" id="color3" v-bind:value="item.etat" v-bind:checked="item.etat == 'valide' "/>
-  </div>
-  
-
+    <div id="traffic-light" :item="item">
+        <input id="color1" type="radio" name="traffic-light-color"/>
+        <input id="color2" type="radio" name="traffic-light-color"/>
+        <input id="color3" type="radio" name="traffic-light-color"/>
+    </div>
 </template>
 
 <style scoped>

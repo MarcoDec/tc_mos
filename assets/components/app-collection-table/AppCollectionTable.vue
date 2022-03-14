@@ -6,7 +6,7 @@
     const props = defineProps({
         create: {required: false, type: Boolean},
         currentPage: {default: 1, type: Number},
-        fields: {required: true, type: Object as PropType<TableField>},
+        fields: {required: true, type: Object as PropType<TableField[]>},
         id: {required: true, type: String},
         items: {required: true, type: Array as PropType<TableItem[]>},
         pagination: {required: false, type: Boolean}

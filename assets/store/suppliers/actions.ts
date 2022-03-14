@@ -1,6 +1,6 @@
-import type {State as Suppliers} from './supplier'
 import type {State as RootState} from '..'
 import type {State} from '.'
+import type {State as Suppliers} from './supplier'
 import type {ActionContext as VuexActionContext} from 'vuex'
 import {generateSupplier} from './supplier'
 
@@ -9,7 +9,7 @@ type ActionContext = VuexActionContext<State, RootState>
 export const actions = {
     async fetchSuppliers({dispatch}: ActionContext): Promise<void> {
         const response: Suppliers[] = [
-            { 
+            {
                 etat: 'refus',
                 id: 1,
                 nom: '3M FRANCE',

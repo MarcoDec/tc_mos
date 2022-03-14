@@ -7,25 +7,22 @@ export type Suppliers = {
 }
 
 export type Getters = {
+    filters: (state: State) => Pick<State, 'etat' | 'nom'>
     items: (state: State) => Suppliers[]
-    filters: (state: State) => Pick<State,'nom'|'etat'>
-
 
 }
 export type GettersValues = {
     readonly [key in keyof Getters]: ReturnType<Getters[key]>
 }
 
-
 export const getters: Getters = {
+    filters: state => ({etat: state.etat, nom: state.nom}),
     items(state) {
         const items = []
         for (const item of Object.values(state))
             if (typeof item === 'object' && !Array.isArray(item))
                 items.push(item)
         return items
-    },
-     filters: state => ({ nom: state.nom, etat: state.etat })
-
+    }
 
 }

@@ -1,53 +1,54 @@
 <script lang="ts" setup>
-import {
-  computed,
-  PropType,
-  defineEmits,
-  defineProps,
-  inject,
-  ComputedRef,
-} from "@vue/runtime-core";
-import { useNamespacedGetters } from "vuex-composition-helpers";
-import { Getters } from "../../../store/countries";
-import { FormField, FormValue } from "../../../types/bootstrap-5";
+    import type {
+        ComputedRef,
+        PropType
+    } from '@vue/runtime-core'
+    import type {FormField, FormValue} from '../../../types/bootstrap-5'
+    import {
+        computed,
+        defineEmits,
+        defineProps,
+        inject
+    } from '@vue/runtime-core'
+    import type {Getters} from '../../../store/countries'
+    import {useNamespacedGetters} from 'vuex-composition-helpers'
 
-const emit = defineEmits<(e: "update:modelValue", value: FormValue) => void>();
+    const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
 
-const phoneLabel = useNamespacedGetters<Getters>("countries", ['phoneLabel']).phoneLabel
+    const phoneLabel = useNamespacedGetters<Getters>('countries', ['phoneLabel']).phoneLabel
 
-const props = defineProps({
-  field: { required: true, type: Object as PropType<FormField> },
-  country: String,
-  modelValue: {
-    default: null,
-    type: [Boolean, Number, String] as PropType<FormValue>,
-  },
-});
+    defineProps({
+        field: {required: true, type: Object as PropType<FormField>},
+        modelValue: {
+            default: null,
+            type: [Boolean, Number, String] as PropType<FormValue>
+        }
+    })
 
-function input(e: Readonly<Event>): void {
-  emit("update:modelValue", (e.target as HTMLInputElement).value);
-}
-const country = inject<ComputedRef<string|null>>('country', computed(()=> null))
-const labelCountry = computed(() => phoneLabel.value(country.value))
-
+    function input(e: Readonly<Event>): void {
+        emit('update:modelValue', (e.target as HTMLInputElement).value)
+    }
+    const country = inject<ComputedRef<string | null>>('country', computed(() => null))
+    const labelCountry = computed(() => phoneLabel.value(country.value))
 </script>
 
 <template>
-  <AppRow class="rowPhone">
-    <CountryFlag :country="country" size="normal" />
-    <AppLabel class="labelPhone"> {{labelCountry}}   </AppLabel>
+    <AppRow class="rowPhone">
+        <CountryFlag :country="country" size="normal"/>
+        <AppLabel class="labelPhone">
+            {{ labelCountry }}
+        </AppLabel>
 
-    <AppCol class="colPhone">
-      <input
-        :id="field.id"
-        :name="field.name"
-        :value="modelValue"
-        class="form-control"
-        type="text"
-        @input="input"
-      />
-    </AppCol>
-  </AppRow>
+        <AppCol class="colPhone">
+            <input
+                :id="field.id"
+                :name="field.name"
+                :value="modelValue"
+                class="form-control"
+                type="text"
+                @input="input"/>
+        </AppCol>
+    </AppRow>
 </template>
 
 <style scoped>

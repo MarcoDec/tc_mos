@@ -1,15 +1,15 @@
 <script lang="ts" setup>
     import type {FormField, FormValue, FormValues} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps, provide, ref, withDefaults} from 'vue'
+    import {computed, defineEmits, defineProps, provide, withDefaults} from 'vue'
     import clone from 'clone'
 
     const emit = defineEmits<{(e: 'update:modelValue', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
     const props = withDefaults(
-        defineProps<{fields: FormField[], id: string, modelValue?: FormValues, countryField?: string|null}>(),
-        {modelValue: () => ({}), countryField: null}
+        defineProps<{countryField?: string | null, fields: FormField[], id: string, modelValue?: FormValues}>(),
+        {countryField: null, modelValue: () => ({})}
     )
-    const country = computed(() => props.countryField !== null ? props.modelValue[props.countryField]: null)
-    provide('country',country)   
+    const country = computed(() => (props.countryField !== null ? props.modelValue[props.countryField] : null))
+    provide('country', country)
 
     function input(value: Readonly<{value: FormValue, name: string}>): void {
         const cloned = clone(props.modelValue)
@@ -19,7 +19,7 @@
 </script>
 
 <template>
-    <form :id="id" autocomplete="off" @submit.prevent="emit('submit')" >
+    <form :id="id" autocomplete="off" @submit.prevent="emit('submit')">
         <AppFormGroup
             v-for="field in fields"
             :key="field.name"

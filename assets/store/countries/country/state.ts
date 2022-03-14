@@ -1,5 +1,5 @@
 export type State = {
-    code: string 
+    code: string
     name: string
-    prefix: string 
+    prefix: string
 }

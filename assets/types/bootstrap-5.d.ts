@@ -14,16 +14,7 @@ export declare type BootstrapVariant =
     | 'white'
 
 export declare type FormInput =
-    'boolean'
-    | 'date'
-    | 'file'
-    | 'number'
-    | 'password'
-    | 'radio'
-    | 'search-boolean'
-    | 'select'
-    | 'text'
-    | 'phone'
+    'boolean' | 'date' | 'file' | 'number' | 'password' | 'phone' | 'radio' | 'search-boolean' | 'select' | 'text'
 
 export declare type FormOption = {text: string, value: FormValue}
 export declare type FormOptions = FormOption[]

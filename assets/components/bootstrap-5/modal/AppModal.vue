@@ -41,21 +41,20 @@
                     <slot/>
                 </div>
                 <div class="modal-footer">
-                     <AppBtn data-bs-dismiss="modal" variant="success">
+                    <AppBtn data-bs-dismiss="modal" variant="success">
                         Créer
                     </AppBtn>
                     <AppBtn data-bs-dismiss="modal" variant="danger">
                         Fermer
                     </AppBtn>
-                   
                 </div>
             </div>
         </div>
     </div>
 </template>
+
 <style scoped>
 .modal-content{
     width: 160%;
 }
-
 </style>

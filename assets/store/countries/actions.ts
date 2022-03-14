@@ -9,26 +9,26 @@ type ActionContext = VuexActionContext<State, RootState>
 export const actions = {
     async fetchCountry({dispatch}: ActionContext): Promise<void> {
         const response: Country[] = [
-            { 
+            {
                 code: 'fr',
                 name: 'France',
-                prefix: '+333',
+                prefix: '+333'
             },
             {
                 code: 'tn',
                 name: 'Tunisie',
-                prefix: '+216',
+                prefix: '+216'
             },
             {
                 code: 'ch',
                 name: 'Suisse',
-                prefix: '+41',
+                prefix: '+41'
             }
         ]
 
         const countries = []
         for (const list of response)
-           countries.push(dispatch(
+            countries.push(dispatch(
                 'registerModule',
                 {module: generateCountry(list), path: ['countries', list.code.toString()]},
                 {root: true}

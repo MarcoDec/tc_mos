@@ -15,6 +15,7 @@
             name: 'Mise en bornnier',
             prix: null,
             temps: null,
+            traffic: false,
             type: null,
             update: false
         },
@@ -26,6 +27,7 @@
             name: 'Mise en bornnier',
             prix: null,
             temps: null,
+            traffic: false,
             type: null,
             update: true
         }

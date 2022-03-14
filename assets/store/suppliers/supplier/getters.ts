@@ -2,8 +2,8 @@ import type {State} from './state'
 
 export type Suppliers = {
     etat: string | null
-    nom: string | null
     id: number | null
+    nom: string | null
 }
 
 export type Getters = {
@@ -16,8 +16,7 @@ export type GettersValues = {
 export const getters: Getters = {
     list: state => ({
         etat: state.etat,
-        nom: state.nom,
         id: state.id,
-        
+        nom: state.nom
     })
 }

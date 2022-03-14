@@ -4,7 +4,6 @@
 
     defineProps<{items: TableItem[]}>()
     const fields = inject<TableField[]>('fields', [])
-
 </script>
 
 <template>
