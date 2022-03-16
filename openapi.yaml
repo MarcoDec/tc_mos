@@ -5,6 +5,14 @@ components:
       allOf:
         -
           $ref: '#/components/schemas/Address-write'
+      required:
+        - address
+        - address2
+        - city
+        - country
+        - email
+        - phoneNumber
+        - zipCode
       type: object
     Address-write:
       additionalProperties: false
