@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Adresse.
  */
 #[
-    ApiSerializerGroups(write: ['Address-write']),
+    ApiSerializerGroups(inheritedRead: ['Address-write' => ['Address-read']], write: ['Address-write']),
     ORM\Embeddable
 ]
 class Address {
@@ -32,7 +32,7 @@ class Address {
         ApiProperty(example: '5 rue Alfred Nobel', format: 'streetAddress'),
         Assert\Length(min: 10, max: 50),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(groups: ['Address-write'])
+        Serializer\Groups(groups: ['Address-read', 'Address-write'])
     ]
     private ?string $address = null;
 
@@ -43,7 +43,7 @@ class Address {
         ApiProperty(example: 'ZA La charrière', format: 'streetAddress'),
         Assert\Length(min: 10, max: 50),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(groups: ['Address-write'])
+        Serializer\Groups(groups: ['Address-read', 'Address-write'])
     ]
     private ?string $address2 = null;
 
@@ -54,7 +54,7 @@ class Address {
         ApiProperty(example: 'Rioz', format: 'addressLocality'),
         Assert\Length(min: 3, max: 50),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(groups: ['Address-write'])
+        Serializer\Groups(groups: ['Address-read', 'Address-write'])
     ]
     private ?string $city = null;
 
@@ -66,7 +66,7 @@ class Address {
         Assert\Country,
         Assert\Length(exactly: 2),
         ORM\Column(type: 'char', length: 2, options: ['charset' => 'ascii', 'default' => 'FR']),
-        Serializer\Groups(groups: ['Address-write'])
+        Serializer\Groups(groups: ['Address-read', 'Address-write'])
     ]
     private string $country = 'FR';
 
@@ -78,7 +78,7 @@ class Address {
         Assert\Email,
         Assert\Length(min: 5, max: 60),
         ORM\Column(length: 60, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(groups: ['Address-write'])
+        Serializer\Groups(groups: ['Address-read', 'Address-write'])
     ]
     private ?string $email = null;
 
@@ -90,7 +90,7 @@ class Address {
         AppAssert\PhoneNumber,
         Assert\Length(min: 10, max: 20),
         ORM\Column(length: 20, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(groups: ['Address-write'])
+        Serializer\Groups(groups: ['Address-read', 'Address-write'])
     ]
     private ?string $phoneNumber = null;
 
@@ -102,7 +102,7 @@ class Address {
         AppAssert\ZipCode,
         Assert\Length(min: 2, max: 10),
         ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(groups: ['Address-write'])
+        Serializer\Groups(groups: ['Address-read', 'Address-write'])
     ]
     private ?string $zipCode = null;
 

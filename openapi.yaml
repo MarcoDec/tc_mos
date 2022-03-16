@@ -1,5 +1,11 @@
 components:
   schemas:
+    Address-read:
+      additionalProperties: false
+      allOf:
+        -
+          $ref: '#/components/schemas/Address-write'
+      type: object
     Address-write:
       additionalProperties: false
       description: Adresse.
