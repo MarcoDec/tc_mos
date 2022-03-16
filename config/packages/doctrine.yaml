@@ -1,3 +1,6 @@
+parameters:
+  doctrine.entity.namespace: App\Entity
+
 doctrine:
   dbal:
     types:
@@ -19,6 +22,6 @@ doctrine:
         alias: App
         dir: '%kernel.project_dir%/src/Entity'
         is_bundle: false
-        prefix: App\Entity
+        prefix: '%doctrine.entity.namespace%'
         type: attribute
     naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

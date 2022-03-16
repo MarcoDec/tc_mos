@@ -6,5 +6,7 @@ parameters:
         - src
         - tests
         - utils
+    stubFiles:
+        - stubs/haydenpierce/class-finder/src/ClassFinder.stub
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml

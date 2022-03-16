@@ -23,6 +23,7 @@ final class Schema implements OpenApiContext {
         private readonly bool $additionalProperties = false,
         private readonly array $allOf = [],
         private readonly ?string $description = null,
+        private readonly ?bool $nullable = null,
         array $properties = []
     ) {
         $this->properties = collect($properties);
@@ -34,7 +35,8 @@ final class Schema implements OpenApiContext {
     #[ArrayShape([
         'additionalProperties' => 'bool',
         'allOf' => 'mixed',
-        'description' => 'string',
+        'description' => 'null|string',
+        'nullable' => 'bool',
         'properties' => 'mixed',
         'required' => 'string[]',
         'type' => 'string'
@@ -49,6 +51,9 @@ final class Schema implements OpenApiContext {
         }
         if (!empty($this->description)) {
             $context['description'] = $this->description;
+        }
+        if ($this->nullable !== null) {
+            $context['nullable'] = $this->nullable;
         }
         if (!empty($this->properties)) {
             $context['properties'] = $this->getProperties();

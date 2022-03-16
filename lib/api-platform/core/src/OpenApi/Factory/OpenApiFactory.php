@@ -8,9 +8,11 @@ use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\OpenApi\Options;
 use App\ApiPlatform\Core\Annotation\ApiProperty;
 use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
+use App\Service\EntitiesReflectionClassCollector;
 use ArrayObject;
-use Doctrine\ORM\EntityManagerInterface;
+use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
+use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -18,7 +20,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @phpstan-import-type SchemaContext from Schema
  */
 final class OpenApiFactory implements OpenApiFactoryInterface {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly Options $options) {
+    public function __construct(
+        private readonly EntitiesReflectionClassCollector $classCollector,
+        private readonly Options $options
+    ) {
     }
 
     /**
@@ -34,21 +39,37 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     /**
+     * @param ReflectionClass<T> $refl
+     *
+     * @template T of object
+     */
+    private static function getReflDescription(ReflectionClass $refl): ?string {
+        if (!empty($doc = $refl->getDocComment())) {
+            $matches = [];
+            preg_match('/^\/\*\*\n\s\*\s(.*)\n\s\*\//m', $doc, $matches);
+            return isset($matches[1]) && !empty($matches[1]) ? $matches[1] : null;
+        }
+        return null;
+    }
+
+    /**
      * @return ArrayObject<string, SchemaContext>
      */
     private function createSchemas(): ArrayObject {
         return new ArrayObject(['Resource' => (new Schema(
-            description: 'Base d\'une resource',
+            description: 'Base d\'une resource.',
             properties: [
                 '@context' => new ApiProperty(
                     oneOf: [
-                        new ApiProperty(),
+                        new ApiProperty(nullable: false),
                         new Schema(
                             additionalProperties: true,
+                            nullable: false,
                             properties: [
-                                '@vocab' => new ApiProperty(readOnly: true, required: true),
+                                '@vocab' => new ApiProperty(nullable: false, readOnly: true, required: true),
                                 'hydra' => new ApiProperty(
-                                    enum: ['http://www.w3.org/ns/hydra/core#'],
+                                    enum: ['https://www.w3.org/ns/hydra/core'],
+                                    nullable: false,
                                     readOnly: true,
                                     required: true
                                 ),
@@ -58,10 +79,27 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     readOnly: true,
                     required: true
                 ),
-                '@id' => new ApiProperty(readOnly: true, required: true),
-                '@type' => new ApiProperty(readOnly: true, required: true)
+                '@id' => new ApiProperty(nullable: false, readOnly: true, required: true),
+                '@type' => new ApiProperty(nullable: false, readOnly: true, required: true)
             ]
         ))->getOpenApiContext()]);
+    }
+
+    /**
+     * @param Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $properties
+     * @param ReflectionClass<T>                                                             $refl
+     *
+     * @template T of object
+     */
+    private function generateSchema(string $group, Collection $properties, ReflectionClass $refl): Schema {
+        return new Schema(
+            description: self::getReflDescription($refl),
+            properties: $properties
+                ->mapWithKeys(static fn (array $attributes, string $property): array => in_array($group, $attributes['groups']->getGroups())
+                    ? [$property => $attributes['apiProperty']]
+                    : [])
+                ->all()
+        );
     }
 
     /**
@@ -69,8 +107,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      */
     private function generateSchemas(): ArrayObject {
         $schemas = $this->createSchemas();
-        foreach ($this->em->getMetadataFactory()->getAllMetadata() as $metadata) {
-            $refl = $metadata->getReflectionClass();
+        foreach ($this->classCollector->getClasses() as $refl) {
             $properties = collect($refl->getProperties())
                 ->mapWithKeys(static function (ReflectionProperty $property): array {
                     $apiPropertyAttributes = $property->getAttributes(ApiProperty::class);
@@ -79,7 +116,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         /** @var ApiProperty $apiProperty */
                         $apiProperty = $apiPropertyAttributes[0]->newInstance();
                         return [$property->getName() => [
-                            'apiProperty' => $apiProperty->setType($property),
+                            'apiProperty' => $apiProperty->setReflectionProperty($property),
                             'groups' => $groupsAttributes[0]->newInstance()
                         ]];
                     }
@@ -91,17 +128,12 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 $groups = $attributes[0]->newInstance();
                 foreach ($groups->inheritedRead as $base => $children) {
                     foreach ($children as $group) {
-                        $schemas[$group] = (new Schema(allOf: [
-                            $base,
-                            new Schema(
-                                properties: $properties
-                                    ->mapWithKeys(static fn (array $attributes, string $property): array => in_array($group, $attributes['groups']->getGroups())
-                                        ? [$property => $attributes['apiProperty']]
-                                        : [])
-                                    ->all()
-                            )
-                        ]))->getOpenApiContext();
+                        $schemas[$group] = (new Schema(allOf: [$base, $this->generateSchema($group, $properties, $refl)]))
+                            ->getOpenApiContext();
                     }
+                }
+                foreach ($groups->write as $group) {
+                    $schemas[$group] = $this->generateSchema($group, $properties, $refl)->getOpenApiContext();
                 }
             }
         }

@@ -100,3 +100,8 @@ services:
   App\Serializer\ContextBuilderInterface:
     autoconfigure: false
     decorates: api_platform.serializer.context_builder
+
+  App\Service\EntitiesReflectionClassCollector:
+    arguments:
+      $namespace: '%doctrine.entity.namespace%'
+    autoconfigure: false
