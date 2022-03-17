@@ -5,6 +5,7 @@ components:
       allOf:
         -
           $ref: '#/components/schemas/Address-write'
+      description: Adresse.
       required:
         - address
         - address2
@@ -104,6 +105,44 @@ components:
           title: 'Code postal'
           type: string
       type: object
+    Carrier-read:
+      additionalProperties: false
+      allOf:
+        -
+          $ref: '#/components/schemas/Carrier-write'
+        -
+          $ref: '#/components/schemas/Entity'
+        -
+          additionalProperties: false
+          properties:
+            address:
+              $ref: '#/components/schemas/Address-read'
+          type: object
+      description: Transporteur.
+      required:
+        - address
+      type: object
+    Carrier-write:
+      additionalProperties: false
+      description: Transporteur.
+      properties:
+        address:
+          $ref: '#/components/schemas/Address-write'
+        name:
+          description: Nom
+          example: DHL
+          externalDocs:
+            url: 'https://schema.org/name'
+          format: name
+          maxLength: 50
+          minLength: 3
+          nullable: false
+          readOnly: false
+          title: Nom
+          type: string
+      required:
+        - name
+      type: object
     Entity:
       additionalProperties: false
       allOf:
@@ -111,7 +150,6 @@ components:
           $ref: '#/components/schemas/Resource'
         -
           additionalProperties: false
-          description: Entité.
           properties:
             id:
               default: 1
@@ -119,9 +157,8 @@ components:
               nullable: false
               readOnly: true
               type: integer
-          required:
-            - id
           type: object
+      description: Entité.
       type: object
     Resource:
       additionalProperties: false

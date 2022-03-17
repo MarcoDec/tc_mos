@@ -8,7 +8,7 @@ use App\ApiPlatform\Core\OpenApi\Factory\Schema;
 use App\Validator as AppAssert;
 use Attribute;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use ReflectionNamedType;
 use ReflectionProperty;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,6 +20,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 #[Attribute]
 final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
+    private bool $readMode = true;
+
     /**
      * @param array<bool|float|int|string>|bool|float|int|null|string $default
      * @param string[]                                                $enum
@@ -34,7 +36,10 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
         public bool $nullable = true,
         public readonly array $oneOf = [],
         public readonly bool $readOnly = false,
-        bool $required = false
+        public readonly ?string $readRef = null,
+        public readonly ?string $ref = null,
+        bool $required = false,
+        public readonly ?string $writeRef = null
     ) {
         parent::__construct(
             writable: !$this->readOnly,
@@ -43,8 +48,10 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
             example: $example
         );
         $this->attributes['openapi_context'] = $this->toOpenApi();
-        $this->setDefault($default);
-        $this->setFormat($format);
+        if ($this->hasNoRef()) {
+            $this->setDefault($default);
+            $this->setFormat($format);
+        }
     }
 
     private static function getReflDescription(ReflectionProperty $refl): ?string {
@@ -59,31 +66,28 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
     /**
      * @return OpenApiProperty
      */
-    #[ArrayShape([
-        'default' => 'mixed',
-        'enum' => 'string[]',
-        'example' => 'mixed',
-        'externalDocs' => 'mixed',
-        'format' => 'string',
-        'maxLength' => 'int',
-        'minLength' => 'int',
-        'nullable' => 'bool',
-        'oneOf' => 'mixed',
-        'readOnly' => 'bool',
-        'type' => 'string'
-    ])]
     public function getOpenApiContext(): array {
         return $this->attributes['openapi_context'];
     }
 
-    public function setFormat(?string $format): void {
-        if (!empty($format)) {
-            $this->attributes['openapi_context']['externalDocs'] = ['url' => "https://schema.org/$format"];
-            $this->attributes['openapi_context']['format'] = $format;
+    #[Pure]
+    public function hasRef(): bool {
+        return !$this->hasNoRef();
+    }
+
+    public function setReadMode(bool $readMode): self {
+        $this->readMode = $readMode;
+        if ($this->hasRef()) {
+            $this->attributes['openapi_context'] = $this->toOpenApi();
         }
+        return $this;
     }
 
     public function setReflectionProperty(ReflectionProperty $property): self {
+        if ($this->hasRef()) {
+            return $this;
+        }
+
         $this->setDefault($property->getDefaultValue());
 
         if (!empty($description = self::getReflDescription($property))) {
@@ -108,12 +112,25 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
             $this->attributes['openapi_context']['minLength'] = $length->min;
         }
 
+        $this->required = count($property->getAttributes(Assert\NotBlank::class)) === 1;
         if (($type = $property->getType()) instanceof ReflectionNamedType) {
-            $this->nullable = $type->allowsNull() && count($property->getAttributes(ORM\Id::class)) === 0;
+            $this->nullable = $type->allowsNull()
+                && count($property->getAttributes(ORM\Id::class)) === 0
+                && !$this->required;
             $this->attributes['openapi_context']['nullable'] = $this->nullable;
             $this->attributes['openapi_context']['type'] = ('int' === $name = $type->getName()) ? 'integer' : $name;
         }
         return $this;
+    }
+
+    private function getRef(): ?string {
+        return empty($this->ref)
+            ? ($this->readMode ? $this->readRef : $this->writeRef)
+            : $this->ref;
+    }
+
+    private function hasNoRef(): bool {
+        return empty($this->ref) && empty($this->readRef) && empty($this->writeRef);
     }
 
     /**
@@ -133,18 +150,21 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
         }
     }
 
+    private function setFormat(?string $format): void {
+        if (!empty($format)) {
+            $this->attributes['openapi_context']['externalDocs'] = ['url' => "https://schema.org/$format"];
+            $this->attributes['openapi_context']['format'] = $format;
+        }
+    }
+
     /**
      * @return OpenApiProperty
      */
-    #[ArrayShape([
-        'enum' => 'string[]',
-        'example' => 'mixed',
-        'nullable' => 'bool',
-        'oneOf' => 'mixed',
-        'readOnly' => 'bool',
-        'type' => 'string'
-    ])]
     private function toOpenApi(): array {
+        if ($this->hasRef()) {
+            return ['$ref' => "#/components/schemas/{$this->getRef()}"];
+        }
+
         $context = ['nullable' => $this->nullable, 'readOnly' => $this->readOnly];
         if (!empty($this->enum)) {
             $context['enum'] = $this->enum;

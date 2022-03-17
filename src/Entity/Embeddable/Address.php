@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Adresse.
  */
 #[
-    ApiSerializerGroups(inheritedRead: ['Address-write' => ['Address-read']], write: ['Address-write']),
+    ApiSerializerGroups(inheritedRead: ['Address-read' => ['Address-write']], write: ['Address-write']),
     ORM\Embeddable
 ]
 class Address {
