@@ -1,0 +1,20 @@
+--- a/vendor/api-platform/core/src/OpenApi/Model/Operation.php	2022-01-11 10:29:54.000000000 +0000
++++ b/vendor/api-platform/core/src/OpenApi/Model/Operation.php	2022-03-18 14:32:43.704593865 +0000
+@@ -30,7 +30,7 @@
+     private $servers;
+     private $externalDocs;
+ 
+-    public function __construct(string $operationId = null, array $tags = [], array $responses = [], string $summary = '', string $description = '', ExternalDocumentation $externalDocs = null, array $parameters = [], RequestBody $requestBody = null, \ArrayObject $callbacks = null, bool $deprecated = false, ?array $security = null, ?array $servers = null, array $extensionProperties = [])
++    public function __construct(string $operationId = null, array $tags = [], array $responses = [], string $summary = '', string $description = '', ExternalDocumentation $externalDocs = null, array $parameters = [], RequestBody|array $requestBody = null, \ArrayObject $callbacks = null, bool $deprecated = false, ?array $security = null, ?array $servers = null, array $extensionProperties = [])
+     {
+         $this->tags = $tags;
+         $this->summary = $summary;
+@@ -89,7 +89,7 @@
+         return $this->parameters;
+     }
+ 
+-    public function getRequestBody(): ?RequestBody
++    public function getRequestBody(): RequestBody|array|null
+     {
+         return $this->requestBody;
+     }

@@ -2,7 +2,6 @@
 
 namespace App\ApiPlatform\Core\OpenApi\Serializer;
 
-use stdClass;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class OpenApiNormalizer implements NormalizerInterface {
@@ -36,7 +35,6 @@ final class OpenApiNormalizer implements NormalizerInterface {
         /** @var mixed[] $normalized */
         $normalized = $this->decorated->normalize($object, $format, $context);
         $normalized = self::map($normalized);
-        $normalized['paths'] = new stdClass();
         ksort($normalized);
         return $normalized;
     }

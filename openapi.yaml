@@ -1,4 +1,33 @@
 components:
+  parameters:
+    id:
+      allowEmptyValue: false
+      allowReserved: false
+      deprecated: false
+      description: ''
+      example: 1
+      explode: false
+      in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+      style: simple
+  requestBodies:
+    Carrier-write:
+      content:
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/Carrier-write'
+      description: Transporteur.
+      required: true
+  responses:
+    Carrier-read:
+      content:
+        application/ld+json:
+          schema:
+            $ref: '#/components/schemas/Carrier-read'
+      description: Transporteur.
   schemas:
     Address-read:
       additionalProperties: false
@@ -206,4 +235,28 @@ info:
   title: TConcept-GPAO
   version: 0.0.0
 openapi: 3.0.3
-paths: {  }
+paths:
+  '/api/carriers/{id}':
+    delete:
+      deprecated: false
+      description: 'Supprime un transporteur'
+      responses:
+        204:
+          description: Succès
+      summary: 'Supprime un transporteur'
+      tags:
+        - Carrier
+    parameters:
+      -
+        $ref: '#/components/parameters/id'
+    patch:
+      deprecated: false
+      description: 'Modifie un transporteur'
+      requestBody:
+        $ref: '#/components/requestBodies/Carrier-write'
+      responses:
+        200:
+          $ref: '#/components/responses/Carrier-read'
+      summary: 'Modifie un transporteur'
+      tags:
+        - Carrier

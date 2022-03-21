@@ -32,6 +32,8 @@ services:
   # please note that last definitions always *replace* previous ones
 
   api_platform.openapi.factory:
+    arguments:
+      $resolver: '@api_platform.operation_path_resolver'
     autoconfigure: false
     class: App\ApiPlatform\Core\OpenApi\Factory\OpenApiFactory
 

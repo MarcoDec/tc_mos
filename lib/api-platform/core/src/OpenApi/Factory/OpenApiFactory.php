@@ -2,15 +2,21 @@
 
 namespace App\ApiPlatform\Core\OpenApi\Factory;
 
+use ApiPlatform\Core\Api\OperationType;
+use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
+use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
+use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\Core\OpenApi\Model;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\OpenApi\Options;
+use ApiPlatform\Core\PathResolver\OperationPathResolverInterface;
 use App\ApiPlatform\Core\Annotation\ApiProperty;
 use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use App\Service\EntitiesReflectionClassCollector;
 use ArrayObject;
 use Illuminate\Support\Collection;
+use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
 use ReflectionClass;
 use ReflectionProperty;
@@ -18,10 +24,15 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @phpstan-import-type SchemaContext from Schema
+ *
+ * @phpstan-type Operation array{method: string, openapi_context: OperationContext}
+ * @phpstan-type OperationContext array{description: string, summary: string}
  */
 final class OpenApiFactory implements OpenApiFactoryInterface {
     public function __construct(
         private readonly EntitiesReflectionClassCollector $classCollector,
+        private readonly ResourceMetadataFactoryInterface $metadataFactory,
+        private readonly OperationPathResolverInterface $resolver,
         private readonly Options $options
     ) {
     }
@@ -30,11 +41,25 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      * @param array{base_url?: string} $context
      */
     public function __invoke(array $context = []): OpenApi {
+        $openApi = $this->generateOpenApi();
         return new OpenApi(
             info: $this->getInfo(),
             servers: [],
-            paths: new Model\Paths(),
-            components: new Model\Components(schemas: $this->generateSchemas())
+            paths: $openApi['paths'],
+            components: new Model\Components(
+                schemas: $openApi['schemas'],
+                responses: $openApi['responses'],
+                parameters: new ArrayObject([
+                    'id' => new Model\Parameter(
+                        name: 'id',
+                        in: 'path',
+                        required: true,
+                        schema: ['type' => 'integer'],
+                        example: 1
+                    )
+                ]),
+                requestBodies: $openApi['bodies']
+            )
         );
     }
 
@@ -86,6 +111,130 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     /**
+     * @return array{bodies: ArrayObject<string, Model\RequestBody>, paths: Model\Paths, responses: ArrayObject<string, Model\Response>, schemas: ArrayObject<string, SchemaContext>}
+     */
+    #[ArrayShape([
+        'bodies' => ArrayObject::class,
+        'paths' => Model\Paths::class,
+        'responses' => ArrayObject::class,
+        'schemas' => ArrayObject::class
+    ])]
+    private function generateOpenApi(): array {
+        /** @var Collection<string, Model\RequestBody> $bodies */
+        $bodies = new Collection();
+        $paths = new Model\Paths();
+        /** @var Collection<string, Schema> $reads */
+        $reads = new Collection();
+        /** @var Collection<string, Model\Response> $responses */
+        $responses = new Collection();
+        $schemas = $this->createSchemas();
+
+        foreach ($this->classCollector->getClasses() as $refl) {
+            $this->generateSchemas($reads, $refl, $schemas);
+            $this->generatePaths($bodies, $paths, $refl, $responses);
+        }
+
+        foreach ($reads as $read) {
+            foreach ($read->getParents() as $parent) {
+                if (null !== $schema = $schemas->get($parent)) {
+                    $read->appendRequired($schema->getNotRequired());
+                }
+            }
+        }
+
+        /** @var array<string, SchemaContext> $schemas */
+        $schemas = $schemas->map->getOpenApiContext()->all();
+        return [
+            'bodies' => new ArrayObject($bodies->all()),
+            'paths' => $paths,
+            'responses' => new ArrayObject($responses->all()),
+            'schemas' => new ArrayObject($schemas)
+        ];
+    }
+
+    /**
+     * @param Operation $operation
+     */
+    private function generateOperation(ResourceMetadata $metadata, array $operation, Model\PathItem $path): Model\PathItem {
+        if ($operation['openapi_context']['summary'] === 'hidden') {
+            return $path;
+        }
+        return $path->{'with'.ucfirst(strtolower($operation['method']))}(new Model\Operation(
+            tags: [$metadata->getShortName()],
+            responses: $operation['method'] === 'DELETE' || empty($normalizationContext = $metadata->getAttribute('normalization_context', []))
+                ? [204 => ['description' => 'Succès']]
+                : [200 => ['$ref' => "#/components/responses/{$normalizationContext['openapi_definition_name']}"]],
+            summary: $operation['openapi_context']['summary'],
+            description: $operation['openapi_context']['description'],
+            requestBody: $operation['method'] === 'DELETE' || empty($denormalizationContext = $metadata->getAttribute('denormalization_context', []))
+                ? null
+                : ['$ref' => "#/components/requestBodies/{$denormalizationContext['openapi_definition_name']}"]
+        ));
+    }
+
+    /**
+     * @param null|Operation[]   $operations
+     * @param ReflectionClass<T> $refl
+     *
+     * @template T of object
+     */
+    private function generateOperations(ResourceMetadata $metadata, ?array $operations, Model\Paths $paths, ReflectionClass $refl, string $type): void {
+        if (!empty($operations)) {
+            foreach ($operations as $operation) {
+                $path = $this->getPath($metadata->getShortName() ?? $refl->getShortName(), $operation, $type);
+                $paths->addPath(
+                    $path,
+                    $this->generateOperation(
+                        metadata: $metadata,
+                        operation: $operation,
+                        path: $paths->getPath($path) ?? new Model\PathItem(parameters: [['$ref' => '#/components/parameters/id']])
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * @param Collection<string, Model\RequestBody> $bodies
+     * @param ReflectionClass<T>                    $refl
+     * @param Collection<string, Model\Response>    $responses
+     *
+     * @template T of object
+     */
+    private function generatePaths(Collection $bodies, Model\Paths $paths, ReflectionClass $refl, Collection $responses): void {
+        try {
+            $metadata = $this->metadataFactory->create($refl->getName());
+            if (!empty($denormalizationContext = $metadata->getAttribute('denormalization_context', []))) {
+                $bodies[$denormalizationContext['openapi_definition_name']] = new Model\RequestBody(
+                    description: self::getReflDescription($refl) ?? $metadata->getShortName() ?? $refl->getShortName(),
+                    content: new ArrayObject([
+                        'application/merge-patch+json' => [
+                            'schema' => [
+                                '$ref' => "#/components/schemas/{$denormalizationContext['openapi_definition_name']}"
+                            ]
+                        ]
+                    ]),
+                    required: true
+                );
+            }
+            if (!empty($normalizationContext = $metadata->getAttribute('normalization_context', []))) {
+                $responses[$normalizationContext['openapi_definition_name']] = new Model\Response(
+                    description: self::getReflDescription($refl) ?? $metadata->getShortName() ?? $refl->getShortName(),
+                    content: new ArrayObject([
+                        'application/ld+json' => [
+                            'schema' => [
+                                '$ref' => "#/components/schemas/{$normalizationContext['openapi_definition_name']}"
+                            ]
+                        ]
+                    ])
+                );
+            }
+            $this->generateOperations($metadata, $metadata->getItemOperations(), $paths, $refl, OperationType::ITEM);
+        } catch (ResourceClassNotFoundException) {
+        }
+    }
+
+    /**
      * @param Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $properties
      * @param ReflectionClass<T>                                                             $refl
      * @param string[]                                                                       $parents
@@ -108,68 +257,57 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     /**
-     * @return ArrayObject<string, SchemaContext>
+     * @param Collection<string, Schema> $reads
+     * @param ReflectionClass<T>         $refl
+     * @param Collection<string, Schema> $schemas
+     *
+     * @template T of object
      */
-    private function generateSchemas(): ArrayObject {
-        $schemas = $this->createSchemas();
-        /** @var Collection<string, Schema> $reads */
-        $reads = new Collection();
-        foreach ($this->classCollector->getClasses() as $refl) {
-            /** @var Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $properties */
-            $properties = collect($refl->getProperties())
-                ->mapWithKeys(static function (ReflectionProperty $property): array {
-                    $apiPropertyAttributes = $property->getAttributes(ApiProperty::class);
-                    $groupsAttributes = $property->getAttributes(Serializer\Groups::class);
-                    if (count($apiPropertyAttributes) === 1 && count($groupsAttributes) === 1) {
-                        /** @var ApiProperty $apiProperty */
-                        $apiProperty = $apiPropertyAttributes[0]->newInstance();
-                        return [$property->getName() => [
-                            'apiProperty' => $apiProperty->setReflectionProperty($property),
-                            'groups' => $groupsAttributes[0]->newInstance()
-                        ]];
-                    }
-                    return [];
-                });
-            $attributes = $refl->getAttributes(ApiSerializerGroups::class);
-            if (count($attributes) === 1) {
-                /** @var ApiSerializerGroups $groups */
-                $groups = $attributes[0]->newInstance();
-                foreach ($groups->inheritedRead as $group => $parents) {
-                    $allOf = (new ArrayObject($parents))->getArrayCopy();
-                    if (!empty($schema = $this->generateSchema($group, $properties, $refl, $parents))) {
-                        $allOf[] = $schema;
-                    }
-                    $schema = new Schema(allOf: $allOf, description: self::getReflDescription($refl));
+    private function generateSchemas(Collection $reads, ReflectionClass $refl, Collection $schemas): void {
+        /** @var Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $properties */
+        $properties = collect($refl->getProperties())
+            ->mapWithKeys(static function (ReflectionProperty $property): array {
+                $apiPropertyAttributes = $property->getAttributes(ApiProperty::class);
+                $groupsAttributes = $property->getAttributes(Serializer\Groups::class);
+                if (count($apiPropertyAttributes) === 1 && count($groupsAttributes) === 1) {
+                    /** @var ApiProperty $apiProperty */
+                    $apiProperty = $apiPropertyAttributes[0]->newInstance();
+                    return [$property->getName() => [
+                        'apiProperty' => $apiProperty->setReflectionProperty($property),
+                        'groups' => $groupsAttributes[0]->newInstance()
+                    ]];
+                }
+                return [];
+            });
+        $attributes = $refl->getAttributes(ApiSerializerGroups::class);
+        if (count($attributes) === 1) {
+            /** @var ApiSerializerGroups $groups */
+            $groups = $attributes[0]->newInstance();
+            foreach ($groups->inheritedRead as $group => $parents) {
+                $allOf = (new ArrayObject($parents))->getArrayCopy();
+                if (!empty($schema = $this->generateSchema($group, $properties, $refl, $parents))) {
+                    $allOf[] = $schema;
+                }
+                $schema = new Schema(allOf: $allOf, description: self::getReflDescription($refl));
+                $schemas->put($group, $schema);
+                $reads->put($group, $schema);
+            }
+            /** @var Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $writeProperties */
+            $writeProperties = $properties->map(static fn (array $attributes): array => [
+                'apiProperty' => (clone $attributes['apiProperty'])->setReadMode(false),
+                'groups' => $attributes['groups']
+            ]);
+            foreach ($groups->write as $group) {
+                if (!empty($schema = $this->generateSchema(
+                    group: $group,
+                    properties: $writeProperties,
+                    refl: $refl
+                ))) {
                     $schemas->put($group, $schema);
                     $reads->put($group, $schema);
                 }
-                /** @var Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $writeProperties */
-                $writeProperties = $properties->map(static fn (array $attributes): array => [
-                    'apiProperty' => (clone $attributes['apiProperty'])->setReadMode(false),
-                    'groups' => $attributes['groups']
-                ]);
-                foreach ($groups->write as $group) {
-                    if (!empty($schema = $this->generateSchema(
-                        group: $group,
-                        properties: $writeProperties,
-                        refl: $refl
-                    ))) {
-                        $schemas->put($group, $schema);
-                        $reads->put($group, $schema);
-                    }
-                }
             }
         }
-        foreach ($reads as $read) {
-            foreach ($read->getParents() as $parent) {
-                if (null !== $schema = $schemas->get($parent)) {
-                    $read->appendRequired($schema->getNotRequired());
-                }
-            }
-        }
-        /** @var array<string, SchemaContext> $schemas */
-        $schemas = $schemas->map->getOpenApiContext()->all();
-        return new ArrayObject($schemas);
     }
 
     #[Pure]
@@ -179,5 +317,14 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             version: $this->options->getVersion(),
             description: $this->options->getDescription()
         );
+    }
+
+    /**
+     * @param Operation $operation
+     */
+    private function getPath(string $resourceShortName, array $operation, string $operationType): string {
+        $path = removeEnd($this->resolver->resolveOperationPath($resourceShortName, $operation, $operationType), '.{_format}');
+        $path = str_starts_with($path, '/') ? $path : "/$path";
+        return str_starts_with($path, '/api') ? $path : "/api$path";
     }
 }
