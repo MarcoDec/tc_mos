@@ -25,6 +25,15 @@ export const actions = {
                 id: 2,
                 update: true,
                 update2: false
+            },
+            {
+                delete: false,
+                price: 1000,
+                quantite:  30,
+                ref: 'azertsscssy',
+                id: 3,
+                update: true,
+                update2: false
             }
         ]
 

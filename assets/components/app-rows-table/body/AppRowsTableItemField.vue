@@ -4,8 +4,6 @@
 
     const props = defineProps<{field: TableField, item: TableItem}>()
     const value = computed(() => props.item[props.field.name])
-    console.log('props.itemmmmm', props.item);
-    console.log('value',value);
     
 </script>
 

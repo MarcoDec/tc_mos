@@ -9,14 +9,17 @@
 
     const fetchItem = useNamespacedActions<Actions>('componentSuppliers', ['fetchItem']).fetchItem
     const {items} = useNamespacedGetters<Getters>('componentSuppliers', ['items'])
+    const {rows} = useNamespacedGetters<Getters>('componentSuppliers', ['rows'])
+    const fetchItemPrices = useNamespacedActions<Actions>('componentSupplierPrices', ['fetchItem']).fetchItem
+
     onMounted(async () => {
         await fetchItem()
+        await fetchItemPrices()
     })
-    console.log('items',items);
     
 
 </script>
 
 <template>
-    <AppRowsTable :id="route.name" :fields="fields" :items="items" create/>
+    <AppRowsTable :id="route.name" :fields="fields" :items="rows" create/>
 </template>

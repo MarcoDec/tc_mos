@@ -53,7 +53,8 @@ const router = createRouter({
                         name: 'name',
                         sort: false,
                         type: 'text',
-                        update: true
+                        update: true,
+                        prefix: 'componentSuppliers'
                     },
                     {
                         create: true,
@@ -62,7 +63,8 @@ const router = createRouter({
                         name: 'proportion',
                         sort: false,
                         type: 'text',
-                        update: true
+                        update: true,
+                        prefix: 'componentSuppliers'
                     },
                     {
                         create: true,
@@ -71,7 +73,8 @@ const router = createRouter({
                         name: 'delai',
                         sort: false,
                         type: 'number',
-                        update: false
+                        update: false,
+                        prefix: 'componentSuppliers'
                     },
                     {
                         create: false,
@@ -80,7 +83,8 @@ const router = createRouter({
                         name: 'moq',
                         sort: false,
                         type: 'number',
-                        update: true
+                        update: true,
+                        prefix: 'componentSuppliers'
                     },
                     {
                         create: false,
@@ -89,7 +93,8 @@ const router = createRouter({
                         name: 'poidsCu',
                         sort: false,
                         type: 'text',
-                        update: true
+                        update: true,
+                        prefix: 'componentSuppliers'
                     },
                     {
                         create: false,
@@ -98,7 +103,8 @@ const router = createRouter({
                         name: 'reference',
                         sort: false,
                         type: 'text',
-                        update: false
+                        update: false,
+                        prefix: 'componentSuppliers'
                     },
                     {
                         create: true,
@@ -107,17 +113,23 @@ const router = createRouter({
                         name: 'indice',
                         sort: false,
                         type: 'number',
-                        update: true
+                        update: true,
+                        prefix: 'componentSuppliers'
                     },
                     {
                         create: true,
                         filter: true,
-                        children: [{label: '€', name: 'price'}, {label: 'Q', name: 'quantite'}, {label: 'ref', name: 'ref'}],
+                        children: [
+                            {label: '€', name: 'price',prefix: 'componentSupplierPrices'}, 
+                            {label: 'Q', name: 'quantite',prefix: 'componentSupplierPrices'},
+                            {label: 'ref', name: 'ref',prefix: 'componentSupplierPrices'}
+                        ],
                         label: 'Prix',
                         name: 'prices',
                         sort: false,
                         type: 'text',
-                        update: false
+                        update: false,
+                        prefix: 'componentSuppliers'
                     }
                 ]
             }

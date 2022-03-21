@@ -9,23 +9,16 @@ export type items = {
     reference: string | null
     indice: number 
     prices: string []
+    id: number
 }
 
 export type Getters = {
-    list: (state: State) => items
+    rowspan : (state : State) => number
 }
 export type GettersValues = {
     readonly [key in keyof Getters]: ReturnType<Getters[key]>
 }
 export const getters: Getters = {
-    list: state => ({
-    name: state.name,
-    proportion: state.proportion,
-    delai: state.delai,
-    moq: state.moq,
-    poidsCu: state.poidsCu,
-    reference: state.reference,
-    indice: state.indice,
-    prices: state.prices
-    })
+    
+    rowspan: state => state.prices.length//+1
 }

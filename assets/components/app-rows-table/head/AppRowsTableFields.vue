@@ -19,7 +19,7 @@
     }
 
     const rowspan = computed(() => walkRowspan(props.fields))
-    // console.log('rowspan', rowspan);
+    console.log('rowspan', rowspan);
     
 
     function handleSort(field: TableField): void {

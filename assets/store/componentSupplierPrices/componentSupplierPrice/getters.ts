@@ -4,18 +4,17 @@ export type items = {
     price: number 
     quantite:  number
     ref: string | null
+    id: number
 }
 
 export type Getters = {
-    list: (state: State) => items
+  
+    rowspan : () => number
 }
 export type GettersValues = {
     readonly [key in keyof Getters]: ReturnType<Getters[key]>
 }
 export const getters: Getters = {
-    list: state => ({
-        price: state.price,
-        quantite:  state.quantite,
-        ref: state.ref
-    })
+ 
+    rowspan:()=> 1
 }

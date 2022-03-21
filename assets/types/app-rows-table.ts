@@ -5,6 +5,8 @@ export type TableField = FormField & {
     filter: boolean
     sort: boolean
     update: boolean
+    prefix: string
+    children?: TableField []
 }
 
 export type TableItem = FormValues & {

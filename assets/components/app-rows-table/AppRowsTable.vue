@@ -19,12 +19,20 @@
     function update(item: TableItem): void {
         emit('update', item)
     }
+    function align (field: TableField): TableField[] {
+        if (Array.isArray(field.children)&&(field.children.length>0)){
+            return [field,... field.children.map(align).flat()]
+        } 
+        return [field]
+    }
+    const alignFields = computed(() => props.fields.map(align).flat())
+    console.log('alignFields', [alignFields]);
 </script>
 
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
         <AppRowsTableHeaders/>
-        <AppRowsTableItems :items="items" @update="update"/>
+        <AppRowsTableItems :items="items" :fields="alignFields"  @update="update"/>
     </table>
     <slot name="btn"/>
     <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/>

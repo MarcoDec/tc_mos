@@ -13,7 +13,7 @@
             ranks.push(current)
             current = current.map(field => Array.isArray(field.children)&& field.children.length > 0 ? field.children: []).flat()
         } while (current.length > 0)
-        return ranks
+        return ranks    
     })
     
     
