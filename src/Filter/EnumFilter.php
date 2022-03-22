@@ -2,13 +2,11 @@
 
 namespace App\Filter;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
-use DateTimeInterface;
-use Doctrine\DBAL\Types\Types;
+use App\Symfony\Component\Validator\Constraints\Choice;
 use Doctrine\ORM\QueryBuilder;
-use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use ReflectionProperty;
 
 final class EnumFilter extends AbstractFilter {
@@ -23,10 +21,7 @@ final class EnumFilter extends AbstractFilter {
             $description[$property] = [
                 'property' => $property,
                 'required' => false,
-                'schema' => [
-                    'enum' => $this->getEnum($reflClass->getProperty($property)),
-                    'type' => $this->getType($metadata->getTypeOfField($property))
-                ]
+                'schema' => ['$ref' => "#/components/schemas/{$this->getEnum($reflClass->getProperty($property))}"]
             ];
         }
         return $description;
@@ -46,36 +41,12 @@ final class EnumFilter extends AbstractFilter {
             ->setParameter($parameter, $value);
     }
 
-    /**
-     * @return mixed[]
-     */
-    private function getEnum(ReflectionProperty $property): array {
-        /** @var Collection<int, mixed> $enum */
-        $enum = new Collection();
-        foreach ($property->getAttributes(ApiProperty::class) as $attribute) {
-            /** @var ApiProperty $apiProperty */
-            $apiProperty = $attribute->newInstance();
-            if (
-                !empty($apiProperty->attributes)
-                && isset($apiProperty->attributes['openapi_context'])
-                && !empty($context = $apiProperty->attributes['openapi_context'])
-                && isset($context['enum'])
-                && !empty($context['enum'])
-            ) {
-                $enum = $enum->merge($context['enum']);
-            }
+    private function getEnum(ReflectionProperty $property): string {
+        foreach ($property->getAttributes(Choice::class) as $attribute) {
+            /** @var Choice $choices */
+            $choices = $attribute->newInstance();
+            return $choices->name;
         }
-        return $enum->values()->all();
-    }
-
-    private function getType(?string $doctrineType): string {
-        return match ($doctrineType) {
-            Types::ARRAY => 'array',
-            Types::BIGINT, Types::INTEGER, Types::SMALLINT => 'int',
-            Types::BOOLEAN => 'bool',
-            Types::DATE_MUTABLE, Types::TIME_MUTABLE, Types::DATETIME_MUTABLE, Types::DATETIMETZ_MUTABLE, Types::DATE_IMMUTABLE, Types::TIME_IMMUTABLE, Types::DATETIME_IMMUTABLE, Types::DATETIMETZ_IMMUTABLE => DateTimeInterface::class,
-            Types::FLOAT => 'float',
-            default => 'string',
-        };
+        throw new InvalidArgumentException('Missing choice constraint.');
     }
 }
