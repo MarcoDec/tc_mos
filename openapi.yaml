@@ -247,6 +247,79 @@ paths:
     get:
       deprecated: false
       description: 'Récupère les transporteurs'
+      parameters:
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.address
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.address2
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.city
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.country
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.email
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          style: form
       responses:
         200:
           $ref: '#/components/responses/Carrier-read'

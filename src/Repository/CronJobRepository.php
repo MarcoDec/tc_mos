@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\CronJob;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use UnexpectedValueException;
 
 /**
  * @extends ServiceEntityRepository<CronJob>
@@ -22,6 +23,11 @@ final class CronJobRepository extends ServiceEntityRepository {
      * @return CronJob[]
      */
     public function findAll(): array {
-        return $this->createQueryBuilder('j', 'j.command')->getQuery()->getResult();
+        /** @var CronJob[]|mixed $jobs */
+        $jobs = $this->createQueryBuilder('j', 'j.command')->getQuery()->getResult();
+        if (is_array($jobs)) {
+            return $jobs;
+        }
+        throw new UnexpectedValueException(sprintf('Expected argument of type "array", "%s" given', get_debug_type($jobs)));
     }
 }

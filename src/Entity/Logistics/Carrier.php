@@ -2,7 +2,9 @@
 
 namespace App\Entity\Logistics;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\ApiPlatform\Core\Annotation\ApiProperty;
 use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use App\Entity\Embeddable\Address;
@@ -17,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Transporteur.
  */
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: Address::filter),
     ApiResource(
         collectionOperations: [
             'get' => [

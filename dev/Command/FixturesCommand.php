@@ -14,6 +14,9 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * @method static string getDefaultName()
+ *
+ * @phpstan-import-type CodeJson from Configurations
+ * @phpstan-import-type Entity from Configurations
  */
 final class FixturesCommand extends AbstractCommand {
     private const DOCTRINE_FIXTURES_COMMAND = 'doctrine:fixtures:load';
@@ -100,7 +103,9 @@ final class FixturesCommand extends AbstractCommand {
             throw new RuntimeException("Invalid $json.");
         }
 
-        $this->configurations->setCountries(json_decode($json, true, 512, JSON_THROW_ON_ERROR));
+        /** @var CodeJson[] $countries */
+        $countries = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->configurations->setCountries($countries);
     }
 
     private function loadCustomscode(): void {
@@ -108,7 +113,9 @@ final class FixturesCommand extends AbstractCommand {
             throw new RuntimeException("Invalid $json.");
         }
 
-        $this->configurations->setCustomscode(json_decode($json, true, 512, JSON_THROW_ON_ERROR));
+        /** @var CodeJson[] $customscode */
+        $customscode = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->configurations->setCustomscode($customscode);
     }
 
     private function loadJSON(): void {
@@ -152,10 +159,9 @@ final class FixturesCommand extends AbstractCommand {
                 throw new RuntimeException("Invalid $json.");
             }
 
-            $this->configurations->setData(
-                name: $name,
-                data: json_decode($json, true, 512, JSON_THROW_ON_ERROR)
-            );
+            /** @var Entity[] $entities */
+            $entities = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            $this->configurations->setData(name: $name, data: $entities);
         }
 
         $processed->push($file);

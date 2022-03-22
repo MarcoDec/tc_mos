@@ -5,6 +5,7 @@ namespace App\Serializer;
 use ApiPlatform\Core\Serializer\SerializerContextBuilderInterface;
 use Jawira\CaseConverter\Convert;
 use Symfony\Component\HttpFoundation\Request;
+use UnexpectedValueException;
 
 final class ContextBuilderInterface implements SerializerContextBuilderInterface {
     public function __construct(private readonly SerializerContextBuilderInterface $decorated) {
@@ -26,10 +27,10 @@ final class ContextBuilderInterface implements SerializerContextBuilderInterface
             && isset($context['resource_class'])
         ) {
             $exploded = explode('\\', (string) $context['resource_class']);
-            $context['groups'] = [sprintf(
-                "write:%s:{$request->attributes->get('process')}",
-                (new Convert(end($exploded)))->toKebab()
-            )];
+            if (!is_string($process = $request->attributes->get('process'))) {
+                throw new UnexpectedValueException(sprintf('Expected argument of type "string", "%s" given', get_debug_type($process)));
+            }
+            $context['groups'] = [sprintf("write:%s:$process", (new Convert(end($exploded)))->toKebab())];
         }
         return $context;
     }

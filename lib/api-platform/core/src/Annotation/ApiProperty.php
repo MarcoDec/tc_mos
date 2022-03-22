@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @phpstan-import-type OpenApiProperty from OpenApiContext
  *
+ * @phpstan-type PropertyDefault array<bool|float|int|string>|bool|float|int|string|null
+ *
  * @property array{openapi_context: OpenApiProperty} $attributes
  */
 #[Attribute]
@@ -23,15 +25,15 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
     private bool $readMode = true;
 
     /**
-     * @param array<bool|float|int|string>|bool|float|int|null|string $default
-     * @param string[]                                                $enum
-     * @param array<bool|float|int|string>|bool|float|int|null|string $example
-     * @param array<ApiProperty|Schema>                               $oneOf
+     * @param PropertyDefault           $default
+     * @param string[]                  $enum
+     * @param PropertyDefault           $example
+     * @param array<ApiProperty|Schema> $oneOf
      */
     public function __construct(
-        string|int|float|bool|array|null $default = null,
+        array|bool|float|int|string|null $default = null,
         public readonly array $enum = [],
-        string|int|float|bool|array|null $example = null,
+        array|bool|float|int|string|null $example = null,
         ?string $format = null,
         public bool $nullable = true,
         public readonly array $oneOf = [],
@@ -88,7 +90,9 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
             return $this;
         }
 
-        $this->setDefault($property->getDefaultValue());
+        /** @var PropertyDefault $default */
+        $default = $property->getDefaultValue();
+        $this->setDefault($default);
 
         if (!empty($description = self::getReflDescription($property))) {
             $this->description = $description;
@@ -134,9 +138,9 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
     }
 
     /**
-     * @param array<bool|float|int|string>|bool|float|int|null|string $default
+     * @param PropertyDefault $default
      */
-    private function setDefault(float|array|bool|int|string|null $default): void {
+    private function setDefault(array|bool|float|int|string|null $default): void {
         $this->default = $default;
         if (
             $this->default !== null && (

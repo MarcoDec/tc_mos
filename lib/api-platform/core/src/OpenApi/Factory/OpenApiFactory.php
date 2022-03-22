@@ -2,8 +2,10 @@
 
 namespace App\ApiPlatform\Core\OpenApi\Factory;
 
+use ApiPlatform\Core\Api\FilterInterface;
 use ApiPlatform\Core\Api\OperationType;
 use ApiPlatform\Core\Exception\ResourceClassNotFoundException;
+use ApiPlatform\Core\JsonSchema\TypeFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
@@ -18,8 +20,10 @@ use ArrayObject;
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionProperty;
+use Symfony\Component\PropertyInfo\Type;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
@@ -31,9 +35,11 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 final class OpenApiFactory implements OpenApiFactoryInterface {
     public function __construct(
         private readonly EntitiesReflectionClassCollector $classCollector,
+        private readonly ContainerInterface $filterLocator,
         private readonly ResourceMetadataFactoryInterface $metadataFactory,
         private readonly OperationPathResolverInterface $resolver,
-        private readonly Options $options
+        private readonly Options $options,
+        private readonly TypeFactoryInterface $typeFactory
     ) {
     }
 
@@ -153,9 +159,12 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     /**
-     * @param Operation $operation
+     * @param Operation          $operation
+     * @param ReflectionClass<T> $refl
+     *
+     * @template T of object
      */
-    private function generateOperation(ResourceMetadata $metadata, array $operation, Model\PathItem $path): Model\PathItem {
+    private function generateOperation(ResourceMetadata $metadata, string $name, array $operation, Model\PathItem $path, ReflectionClass $refl): Model\PathItem {
         if ($operation['openapi_context']['summary'] === 'hidden') {
             return $path;
         }
@@ -184,6 +193,9 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             ],
             summary: $operation['openapi_context']['summary'],
             description: $operation['openapi_context']['description'],
+            parameters: $operation['method'] === 'GET'
+                ? $this->getFiltersParameters($metadata, $name, $refl->getName())
+                : [],
             requestBody: $body
         ));
     }
@@ -196,16 +208,18 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      */
     private function generateOperations(ResourceMetadata $metadata, ?array $operations, Model\Paths $paths, ReflectionClass $refl, string $type): void {
         if (!empty($operations)) {
-            foreach ($operations as $operation) {
+            foreach ($operations as $name => $operation) {
                 $path = $this->getPath($metadata->getShortName() ?? $refl->getShortName(), $operation, $type);
                 $paths->addPath(
                     $path,
                     $this->generateOperation(
                         metadata: $metadata,
+                        name: $name,
                         operation: $operation,
                         path: $paths->getPath($path) ?? new Model\PathItem(
                             parameters: $type === OperationType::ITEM ? [['$ref' => '#/components/parameters/id']] : []
-                        )
+                        ),
+                        refl: $refl
                     )
                 );
             }
@@ -338,6 +352,52 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 }
             }
         }
+    }
+
+    /**
+     * @return Model\Parameter[]
+     */
+    private function getFiltersParameters(ResourceMetadata $metadata, string $operationName, string $resourceClass): array {
+        /** @var Collection<string, Model\Parameter> $parameters */
+        $parameters = collect([]);
+        $resourceFilters = $metadata->getCollectionOperationAttribute($operationName, 'filters', [], true);
+        foreach ($resourceFilters as $filterId) {
+            /** @var FilterInterface|null $filter */
+            $filter = $this->filterLocator->get($filterId);
+            if (empty($filter)) {
+                continue;
+            }
+
+            foreach ($filter->getDescription($resourceClass) as $name => $data) {
+                $schema = $data['schema'] ?? (
+                    in_array($data['type'], Type::$builtinTypes, true)
+                        ? $this->typeFactory->getType(new Type(
+                            builtinType: $data['type'],
+                            nullable: false,
+                            class: null,
+                            collection: $data['is_collection'] ?? false
+                        ))
+                        : ['type' => 'string']
+                );
+
+                $parameters->put($name, new Model\Parameter(
+                    name: $name,
+                    in: 'query',
+                    description: $data['description'] ?? '',
+                    required: $data['required'] ?? false,
+                    allowEmptyValue: $data['openapi']['allowEmptyValue'] ?? true,
+                    schema: $schema,
+                    style: $schema['type'] === 'array' && in_array(
+                        $data['type'],
+                        [Type::BUILTIN_TYPE_ARRAY, Type::BUILTIN_TYPE_OBJECT],
+                        true
+                    ) ? 'deepObject' : 'form',
+                    explode: $schema['type'] === 'array'
+                ));
+            }
+        }
+
+        return $parameters->sortKeys()->values()->all();
     }
 
     #[Pure]
