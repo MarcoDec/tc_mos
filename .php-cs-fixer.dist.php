@@ -5,6 +5,7 @@ return (new PhpCsFixer\Config())
         PhpCsFixer\Finder::create()
             ->in([
                 __DIR__.'/dev',
+                __DIR__.'/doc',
                 __DIR__.'/lib',
                 __DIR__.'/src',
                 __DIR__.'/tests',
