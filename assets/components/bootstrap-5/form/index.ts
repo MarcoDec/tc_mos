@@ -15,3 +15,6 @@ export const AppSelectOption = defineAsyncComponent<Component>(async () => impor
 export const AppSwitch = defineAsyncComponent<Component>(async () => import('./AppSwitch.vue'))
 export const AppTrafficLight = defineAsyncComponent<Component>(async () => import('./AppTrafficLight.vue'))
 export const AppPhoneFlag = defineAsyncComponent<Component>(async () => import('./AppPhoneFlag.vue'))
+export const AppFormField = defineAsyncComponent<Component>(async () => import('./AppFormField.vue'))
+export const AppFormFieldset = defineAsyncComponent<Component>(async () => import('./AppFormFieldset.vue'))
+export const AppFormTabs = defineAsyncComponent<Component>(async () => import('./AppFormTabs.vue'))

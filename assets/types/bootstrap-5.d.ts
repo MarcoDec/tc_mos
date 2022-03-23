@@ -27,6 +27,11 @@ export declare type FormField = {
     name: string
     options?: FormOptions
     type?: FormInput
+    children?: FormField[] | String
+    tab?: boolean
+    icon?: string
+    active?: boolean
+
 }
 
 export declare type FormValue = boolean | number | string | null

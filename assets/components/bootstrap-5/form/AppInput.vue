@@ -12,6 +12,7 @@
 
     function input(e: Readonly<Event>): void {
         emit('update:modelValue', (e.target as HTMLInputElement).value)
+        
     }
 </script>
 

@@ -1,17 +1,19 @@
 import type {Actions, StoreActionContext} from './actions'
 import type {GetterTree, Store, Module as VuexModule} from 'vuex'
+import type {State as RootState, State} from './state'
 import type {Mutations} from './mutation'
-import type {State as RootState} from './state'
 import type {State as Security} from './security'
-import type {State} from './state'
 import type {ComputedGetters as VueComputedGetters} from '../types/vue'
 import {actions} from './actions'
+import {attributs} from './attributs'
 import {countries} from './countries'
+import {famillies} from './famillies'
 import {createStore} from 'vuex'
 import {generateSecurity} from './security'
 import {mutations} from './mutation'
 import {state} from './state'
 import {suppliers} from './suppliers'
+import {components} from './components'
 
 export type {Actions, Mutations, State, StoreActionContext}
 export type {RootState}
@@ -19,7 +21,7 @@ export type {RootState}
 export function generateStore(security: Security): Store<State> {
     return createStore<State>({
         actions,
-        modules: {countries, security: generateSecurity(security), suppliers},
+        modules: {attributs, components, countries, famillies, security: generateSecurity(security), suppliers},
         mutations,
         state,
         strict: process.env.NODE_ENV !== 'production'

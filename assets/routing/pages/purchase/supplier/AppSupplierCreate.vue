@@ -50,7 +50,7 @@
 
     function input(e: Readonly<Event>): void {
         emit('update:modelValue', (e.target as HTMLInputElement).value)
-        value.pays = (e.target as HTMLInputElement).value
+        value.pays = (e.target as HTMLInputElement).value        
     }
     onMounted(async () => {
         await fetchCountry()
@@ -60,16 +60,16 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-general" active icon="sitemap" title="Général">
-            <AppForm id="login" v-model="value" :fields="fields" country-field="pays" @input="input"/>
+            <AppForm id="general" v-model="value" :fields="fields" country-field="pays" @input="input"/>
         </AppTab>
         <AppTab id="gui-start-qte" icon="folder" title="Qualité">
-            <AppForm id="login" :fields="fieldsQte"/>
+            <AppForm id="qte" :fields="fieldsQte"/>
         </AppTab>
         <AppTab id="gui-start-comptabilite" icon="chart-line" title="Comptabilité">
-            <AppForm id="login" :fields="fieldsComp"/>
+            <AppForm id="comp" :fields="fieldsComp"/>
         </AppTab>
         <AppTab id="gui-start-cuivre" icon="clipboard-list" title="Cuivre">
-            <AppForm id="login" :fields="fieldsCuivre"/>
+            <AppForm id="cuivre" :fields="fieldsCuivre"/>
         </AppTab>
     </AppTabs>
 </template>

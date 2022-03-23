@@ -24,6 +24,9 @@
                 <AppNavbarLink icon="user-tag" to="supplier-list">
                     Fournisseurs
                 </AppNavbarLink>
+                 <AppNavbarLink icon="user-tag" to="component-list">
+                    Composants
+                </AppNavbarLink>
                 <AppNavbarLink icon="layer-group" to="component-families">
                     Familles de composants
                 </AppNavbarLink>

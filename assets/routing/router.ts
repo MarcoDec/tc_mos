@@ -43,8 +43,13 @@ const router = createRouter({
             meta: {requiresAuth: true},
             name: 'supplier-list',
             path: '/supplier-list'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/purchase/component/AppComponentPage.vue'),
+            meta: {requiresAuth: true},
+            name: 'component-list',
+            path: '/component-list'
         }
     ]
 })
-
 export default router

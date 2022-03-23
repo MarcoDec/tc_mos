@@ -12,6 +12,8 @@
     const sizeClass = computed(() => `form-select-${props.size}`)
     function input(e: Readonly<Event>): void {
         emit('update:modelValue', (e.target as HTMLInputElement).value)
+                console.log('select5 ',  (e.target as HTMLInputElement).value);
+
     }
 </script>
 
