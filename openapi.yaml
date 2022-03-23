@@ -98,6 +98,20 @@ components:
             $ref: '#/components/schemas/OutTrainer-write'
       description: 'Formateur extérieur.'
       required: true
+    QualityType-write:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/QualityType-write'
+      description: 'Type qualité.'
+      required: true
+    QualityType-write-patch:
+      content:
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/QualityType-write'
+      description: 'Type qualité.'
+      required: true
   responses:
     Carrier-read:
       content:
@@ -135,6 +149,12 @@ components:
           schema:
             $ref: '#/components/schemas/OutTrainer-read'
       description: 'Formateur extérieur.'
+    QualityType-read:
+      content:
+        application/ld+json:
+          schema:
+            $ref: '#/components/schemas/QualityType-read'
+      description: 'Type qualité.'
   schemas:
     Address-read:
       additionalProperties: false
@@ -533,6 +553,34 @@ components:
       required:
         - name
         - surname
+      type: object
+    QualityType-read:
+      additionalProperties: false
+      allOf:
+        -
+          $ref: '#/components/schemas/QualityType-write'
+        -
+          $ref: '#/components/schemas/Entity'
+      description: 'Type qualité.'
+      type: object
+    QualityType-write:
+      additionalProperties: false
+      description: 'Type qualité.'
+      properties:
+        name:
+          description: Nom
+          example: Dimensions
+          externalDocs:
+            url: 'https://schema.org/name'
+          format: name
+          maxLength: 20
+          minLength: 3
+          nullable: false
+          readOnly: false
+          title: Nom
+          type: string
+      required:
+        - name
       type: object
     Resource:
       additionalProperties: false
@@ -1133,3 +1181,61 @@ paths:
       summary: 'Modifie un formateur extérieur'
       tags:
         - OutTrainer
+  /api/quality-types:
+    get:
+      deprecated: false
+      description: 'Récupère les types qualités'
+      parameters:
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          style: form
+      responses:
+        200:
+          $ref: '#/components/responses/QualityType-read'
+      summary: 'Récupère les types qualités'
+      tags:
+        - QualityType
+    post:
+      deprecated: false
+      description: 'Créer un type qualité'
+      requestBody:
+        $ref: '#/components/requestBodies/QualityType-write'
+      responses:
+        201:
+          $ref: '#/components/responses/QualityType-read'
+      summary: 'Créer un type qualité'
+      tags:
+        - QualityType
+  '/api/quality-types/{id}':
+    delete:
+      deprecated: false
+      description: 'Supprime un type qualité'
+      responses:
+        204:
+          $ref: '#/components/responses/QualityType-read'
+      summary: 'Supprime un type qualité'
+      tags:
+        - QualityType
+    parameters:
+      -
+        $ref: '#/components/parameters/id'
+    patch:
+      deprecated: false
+      description: 'Modifie un type qualité'
+      requestBody:
+        $ref: '#/components/requestBodies/QualityType-write-patch'
+      responses:
+        200:
+          $ref: '#/components/responses/QualityType-read'
+      summary: 'Modifie un type qualité'
+      tags:
+        - QualityType
