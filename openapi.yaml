@@ -84,6 +84,20 @@ components:
             $ref: '#/components/schemas/InvoiceTimeDue-write'
       description: 'Délai de paiement des factures.'
       required: true
+    OutTrainer-write:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OutTrainer-write'
+      description: 'Formateur extérieur.'
+      required: true
+    OutTrainer-write-patch:
+      content:
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/OutTrainer-write'
+      description: 'Formateur extérieur.'
+      required: true
   responses:
     Carrier-read:
       content:
@@ -115,6 +129,12 @@ components:
           schema:
             $ref: '#/components/schemas/InvoiceTimeDue-read'
       description: 'Délai de paiement des factures.'
+    OutTrainer-read:
+      content:
+        application/ld+json:
+          schema:
+            $ref: '#/components/schemas/OutTrainer-read'
+      description: 'Formateur extérieur.'
   schemas:
     Address-read:
       additionalProperties: false
@@ -462,6 +482,57 @@ components:
           type: string
       required:
         - name
+      type: object
+    OutTrainer-read:
+      additionalProperties: false
+      allOf:
+        -
+          $ref: '#/components/schemas/OutTrainer-write'
+        -
+          $ref: '#/components/schemas/Entity'
+        -
+          additionalProperties: false
+          properties:
+            address:
+              $ref: '#/components/schemas/Address-read'
+          type: object
+      description: 'Formateur extérieur.'
+      required:
+        - address
+      type: object
+    OutTrainer-write:
+      additionalProperties: false
+      description: 'Formateur extérieur.'
+      properties:
+        address:
+          $ref: '#/components/schemas/Address-write'
+        name:
+          description: Prénom
+          example: Rawaa
+          externalDocs:
+            url: 'https://schema.org/name'
+          format: name
+          maxLength: 30
+          minLength: 3
+          nullable: false
+          readOnly: false
+          title: Prénom
+          type: string
+        surname:
+          description: Nom
+          example: CHRAIET
+          externalDocs:
+            url: 'https://schema.org/name'
+          format: name
+          maxLength: 30
+          minLength: 3
+          nullable: false
+          readOnly: false
+          title: Nom
+          type: string
+      required:
+        - name
+        - surname
       type: object
     Resource:
       additionalProperties: false
@@ -932,3 +1003,133 @@ paths:
       summary: 'Modifie un délai de paiement des factures'
       tags:
         - InvoiceTimeDue
+  /api/out-trainers:
+    get:
+      deprecated: false
+      description: 'Récupère les formateurs extérieurs'
+      parameters:
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.address
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.address2
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.city
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.country
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: address.email
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: surname
+          required: false
+          schema:
+            type: string
+          style: form
+      responses:
+        200:
+          $ref: '#/components/responses/OutTrainer-read'
+      summary: 'Récupère les formateurs extérieurs'
+      tags:
+        - OutTrainer
+    post:
+      deprecated: false
+      description: 'Créer un formateur extérieur'
+      requestBody:
+        $ref: '#/components/requestBodies/OutTrainer-write'
+      responses:
+        201:
+          $ref: '#/components/responses/OutTrainer-read'
+      summary: 'Créer un formateur extérieur'
+      tags:
+        - OutTrainer
+  '/api/out-trainers/{id}':
+    delete:
+      deprecated: false
+      description: 'Supprime un formateur extérieur'
+      responses:
+        204:
+          $ref: '#/components/responses/OutTrainer-read'
+      summary: 'Supprime un formateur extérieur'
+      tags:
+        - OutTrainer
+    parameters:
+      -
+        $ref: '#/components/parameters/id'
+    patch:
+      deprecated: false
+      description: 'Modifie un formateur extérieur'
+      requestBody:
+        $ref: '#/components/requestBodies/OutTrainer-write-patch'
+      responses:
+        200:
+          $ref: '#/components/responses/OutTrainer-read'
+      summary: 'Modifie un formateur extérieur'
+      tags:
+        - OutTrainer
