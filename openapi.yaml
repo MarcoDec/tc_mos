@@ -47,28 +47,42 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/EventType-write'
-      description: EventType
+      description: 'Type d''événements.'
       required: true
     EventType-write-patch:
       content:
         application/merge-patch+json:
           schema:
             $ref: '#/components/schemas/EventType-write'
-      description: EventType
+      description: 'Type d''événements.'
       required: true
     Incoterms-write:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Incoterms-write'
-      description: Incoterms
+      description: Incoterms.
       required: true
     Incoterms-write-patch:
       content:
         application/merge-patch+json:
           schema:
             $ref: '#/components/schemas/Incoterms-write'
-      description: Incoterms
+      description: Incoterms.
+      required: true
+    InvoiceTimeDue-write:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InvoiceTimeDue-write'
+      description: 'Délai de paiement des factures.'
+      required: true
+    InvoiceTimeDue-write-patch:
+      content:
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/InvoiceTimeDue-write'
+      description: 'Délai de paiement des factures.'
       required: true
   responses:
     Carrier-read:
@@ -88,13 +102,19 @@ components:
         application/ld+json:
           schema:
             $ref: '#/components/schemas/EventType-read'
-      description: EventType
+      description: 'Type d''événements.'
     Incoterms-read:
       content:
         application/ld+json:
           schema:
             $ref: '#/components/schemas/Incoterms-read'
-      description: Incoterms
+      description: Incoterms.
+    InvoiceTimeDue-read:
+      content:
+        application/ld+json:
+          schema:
+            $ref: '#/components/schemas/InvoiceTimeDue-read'
+      description: 'Délai de paiement des factures.'
   schemas:
     Address-read:
       additionalProperties: false
@@ -253,6 +273,7 @@ components:
       description: Couleur.
       properties:
         name:
+          description: Nom
           example: Gris
           externalDocs:
             url: 'https://schema.org/name'
@@ -261,8 +282,10 @@ components:
           minLength: 3
           nullable: false
           readOnly: false
+          title: Nom
           type: string
         rgb:
+          description: RGB
           example: '#848484'
           externalDocs:
             url: 'https://schema.org/color'
@@ -271,6 +294,7 @@ components:
           minLength: 7
           nullable: false
           readOnly: false
+          title: RGB
           type: string
       required:
         - name
@@ -306,13 +330,16 @@ components:
             toStatus:
               $ref: '#/components/schemas/EventTypeStatusEnum'
           type: object
+      description: 'Type d''événements.'
       required:
         - toStatus
       type: object
     EventType-write:
       additionalProperties: false
+      description: 'Type d''événements.'
       properties:
         name:
+          description: Nom
           example: ABSENCE
           externalDocs:
             url: 'https://schema.org/name'
@@ -321,6 +348,7 @@ components:
           minLength: 3
           nullable: false
           readOnly: false
+          title: Nom
           type: string
         toStatus:
           $ref: '#/components/schemas/EventTypeStatusEnum'
@@ -341,11 +369,14 @@ components:
           $ref: '#/components/schemas/Incoterms-write'
         -
           $ref: '#/components/schemas/Entity'
+      description: Incoterms.
       type: object
     Incoterms-write:
       additionalProperties: false
+      description: Incoterms.
       properties:
         code:
+          description: Code
           example: DDP
           externalDocs:
             url: 'https://schema.org/codeValue'
@@ -354,8 +385,10 @@ components:
           minLength: 3
           nullable: false
           readOnly: false
+          title: Code
           type: string
         name:
+          description: Nom
           example: 'Delivered Duty Paid'
           externalDocs:
             url: 'https://schema.org/name'
@@ -364,9 +397,70 @@ components:
           minLength: 3
           nullable: false
           readOnly: false
+          title: Nom
           type: string
       required:
         - code
+        - name
+      type: object
+    InvoiceTimeDue-read:
+      additionalProperties: false
+      allOf:
+        -
+          $ref: '#/components/schemas/InvoiceTimeDue-write'
+        -
+          $ref: '#/components/schemas/Entity'
+      description: 'Délai de paiement des factures.'
+      required:
+        - days
+        - daysAfterEndOfMonth
+        - endOfMonth
+      type: object
+    InvoiceTimeDue-write:
+      additionalProperties: false
+      description: 'Délai de paiement des factures.'
+      properties:
+        days:
+          default: 0
+          description: Jours
+          example: 0
+          maxLength: 31
+          minLength: 0
+          nullable: true
+          readOnly: false
+          title: Jours
+          type: integer
+        daysAfterEndOfMonth:
+          default: 0
+          description: 'Jours après la fin du mois'
+          example: 0
+          maxLength: 31
+          minLength: 0
+          nullable: true
+          readOnly: false
+          title: 'Jours après la fin du mois'
+          type: integer
+        endOfMonth:
+          default: false
+          description: 'Fin du mois'
+          example: false
+          nullable: true
+          readOnly: false
+          title: 'Fin du mois'
+          type: boolean
+        name:
+          description: Nom
+          example: '30 jours fin de mois'
+          externalDocs:
+            url: 'https://schema.org/name'
+          format: name
+          maxLength: 30
+          minLength: 3
+          nullable: false
+          readOnly: false
+          title: Nom
+          type: string
+      required:
         - name
       type: object
     Resource:
@@ -744,3 +838,97 @@ paths:
       summary: 'Modifie un incoterms'
       tags:
         - Incoterms
+  /api/invoice-time-dues:
+    get:
+      deprecated: false
+      description: 'Récupère les délais de paiement des factures'
+      parameters:
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: days
+          required: false
+          schema:
+            type: integer
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: daysAfterEndOfMonth
+          required: false
+          schema:
+            type: integer
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: endOfMonth
+          required: false
+          schema:
+            type: boolean
+          style: form
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          style: form
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceTimeDue-read'
+      summary: 'Récupère les délais de paiement des factures'
+      tags:
+        - InvoiceTimeDue
+    post:
+      deprecated: false
+      description: 'Créer un délai de paiement des factures'
+      requestBody:
+        $ref: '#/components/requestBodies/InvoiceTimeDue-write'
+      responses:
+        201:
+          $ref: '#/components/responses/InvoiceTimeDue-read'
+      summary: 'Créer un délai de paiement des factures'
+      tags:
+        - InvoiceTimeDue
+  '/api/invoice-time-dues/{id}':
+    delete:
+      deprecated: false
+      description: 'Supprime un délai de paiement des factures'
+      responses:
+        204:
+          $ref: '#/components/responses/InvoiceTimeDue-read'
+      summary: 'Supprime un délai de paiement des factures'
+      tags:
+        - InvoiceTimeDue
+    parameters:
+      -
+        $ref: '#/components/parameters/id'
+    patch:
+      deprecated: false
+      description: 'Modifie un délai de paiement des factures'
+      requestBody:
+        $ref: '#/components/requestBodies/InvoiceTimeDue-write-patch'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceTimeDue-read'
+      summary: 'Modifie un délai de paiement des factures'
+      tags:
+        - InvoiceTimeDue

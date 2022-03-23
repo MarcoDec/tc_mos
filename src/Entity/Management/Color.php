@@ -63,6 +63,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('rgb')
 ]
 class Color extends Entity {
+    /**
+     * @var null|string Nom
+     */
     #[
         ApiProperty(example: 'Gris', format: 'name'),
         Assert\Length(min: 3, max: 20),
@@ -72,6 +75,9 @@ class Color extends Entity {
     ]
     private ?string $name = null;
 
+    /**
+     * @var null|string RGB
+     */
     #[
         ApiProperty(example: '#848484', format: 'color'),
         Assert\CssColor(
