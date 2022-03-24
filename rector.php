@@ -11,7 +11,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters = $containerConfigurator->parameters();
     $parameters->set(Option::PATHS, [
         __DIR__.'/dev',
-        __DIR__.'/doc',
         __DIR__.'/lib',
         __DIR__.'/src',
         __DIR__.'/tests',

@@ -1,19 +1,15 @@
 <?php
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\ApiPlatform\Core\Annotation\ApiProperty;
 use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
- * Description.
+ * Description
  */
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['property' => 'partial']),
     ApiResource(
         collectionOperations: [
             'get' => [
@@ -59,8 +55,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class MyEntity extends Entity {
     #[
         ApiProperty,
-        ORM\Column,
-        Serializer\Groups(groups: ['MyEntity-read', 'MyEntity-write'])
+        ORM\Column
     ]
     private mixed $property;
 }

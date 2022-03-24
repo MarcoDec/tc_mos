@@ -28,20 +28,6 @@ components:
             $ref: '#/components/schemas/Carrier-write'
       description: Transporteur.
       required: true
-    Color-write:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Color-write'
-      description: Couleur.
-      required: true
-    Color-write-patch:
-      content:
-        application/merge-patch+json:
-          schema:
-            $ref: '#/components/schemas/Color-write'
-      description: Couleur.
-      required: true
   responses:
     Carrier-read:
       content:
@@ -49,12 +35,6 @@ components:
           schema:
             $ref: '#/components/schemas/Carrier-read'
       description: Transporteur.
-    Color-read:
-      content:
-        application/ld+json:
-          schema:
-            $ref: '#/components/schemas/Color-read'
-      description: Couleur.
   schemas:
     Address-read:
       additionalProperties: false
@@ -198,43 +178,6 @@ components:
           type: string
       required:
         - name
-      type: object
-    Color-read:
-      additionalProperties: false
-      allOf:
-        -
-          $ref: '#/components/schemas/Color-write'
-        -
-          $ref: '#/components/schemas/Entity'
-      description: Couleur.
-      type: object
-    Color-write:
-      additionalProperties: false
-      description: Couleur.
-      properties:
-        name:
-          example: Gris
-          externalDocs:
-            url: 'https://schema.org/name'
-          format: name
-          maxLength: 20
-          minLength: 3
-          nullable: false
-          readOnly: false
-          type: string
-        rgb:
-          example: '#848484'
-          externalDocs:
-            url: 'https://schema.org/color'
-          format: color
-          maxLength: 7
-          minLength: 7
-          nullable: false
-          readOnly: false
-          type: string
-      required:
-        - name
-        - rgb
       type: object
     Entity:
       additionalProperties: false
@@ -418,73 +361,3 @@ paths:
       summary: 'Modifie un transporteur'
       tags:
         - Carrier
-  /api/colors:
-    get:
-      deprecated: false
-      description: 'Récupère les couleurs'
-      parameters:
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: name
-          required: false
-          schema:
-            type: string
-          style: form
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: rgb
-          required: false
-          schema:
-            type: string
-          style: form
-      responses:
-        200:
-          $ref: '#/components/responses/Color-read'
-      summary: 'Récupère les couleurs'
-      tags:
-        - Color
-    post:
-      deprecated: false
-      description: 'Créer une couleur'
-      requestBody:
-        $ref: '#/components/requestBodies/Color-write'
-      responses:
-        201:
-          $ref: '#/components/responses/Color-read'
-      summary: 'Créer une couleur'
-      tags:
-        - Color
-  '/api/colors/{id}':
-    delete:
-      deprecated: false
-      description: 'Supprime une couleur'
-      responses:
-        204:
-          $ref: '#/components/responses/Color-read'
-      summary: 'Supprime une couleur'
-      tags:
-        - Color
-    parameters:
-      -
-        $ref: '#/components/parameters/id'
-    patch:
-      deprecated: false
-      description: 'Modifie une couleur'
-      requestBody:
-        $ref: '#/components/requestBodies/Color-write-patch'
-      responses:
-        200:
-          $ref: '#/components/responses/Color-read'
-      summary: 'Modifie une couleur'
-      tags:
-        - Color

@@ -109,17 +109,17 @@ final class EntityConfig {
                 if (is_string($value)) {
                     $value = trim($value);
                 }
-                if ($config->isCountry() && is_numeric($value)) {
-                    $value = $this->configurations->getCountry((int) $value);
+                if ($config->isCountry() && is_int($value)) {
+                    $value = $this->configurations->getCountry($value);
                 }
-                if ($config->isCustomscode() && is_numeric($value)) {
-                    $value = $this->configurations->getCustomscode((int) $value);
+                if ($config->isCustomscode() && is_int($value)) {
+                    $value = $this->configurations->getCustomscode($value);
                 }
                 if (!empty($forceValue = $config->getForceValue())) {
                     $value = $this->exprLang->evaluate($forceValue, $entity);
                 }
-                if (!empty($ref = $config->getOldRef()) && is_numeric($value)) {
-                    $value = $this->configurations->getId($ref, (int) $value);
+                if (!empty($ref = $config->getOldRef()) && is_int($value)) {
+                    $value = $this->configurations->getId($ref, $value);
                 }
                 $transformed[$config->getNewName()] = $value;
             }
