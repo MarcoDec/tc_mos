@@ -42,8 +42,7 @@
     "composer-exit-on-failure": true,
     "patches": {
       "api-platform/core": {
-        "Open class": "./patches/api-platform/core/src/Annotation/ApiProperty.patch",
-        "Change RequestBody type to RequestBody|array": "./patches/api-platform/core/src/OpenApi/Model/Operation.patch"
+        "Open class": "./patches/api-platform/core/src/Annotation/ApiProperty.patch"
       }
     },
     "symfony": {
