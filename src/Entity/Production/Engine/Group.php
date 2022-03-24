@@ -2,6 +2,12 @@
 
 namespace App\Entity\Production\Engine;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Production\Engine\CounterPart\Group as CounterPartGroup;
 use App\Entity\Production\Engine\Tool\Group as ToolGroup;
@@ -11,6 +17,45 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: BooleanFilter::class, properties: ['safetyDevice']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
+    ApiResource(
+        description: 'Groupe d\'équipement',
+        collectionOperations: [
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère les groupes d\'équipement',
+                    'summary' => 'Récupère les groupes d\'équipement',
+                ]
+            ],
+        ],
+        itemOperations: [
+            'delete' => [
+                'openapi_context' => [
+                    'description' => 'Supprime un groupe d\'équipement',
+                    'summary' => 'Supprime un groupe d\'équipement',
+                ]
+            ],
+            'patch' => [
+                'openapi_context' => [
+                    'description' => 'Modifie un groupe d\'équipement',
+                    'summary' => 'Modifie un groupe d\'équipement',
+                ]
+            ]
+        ],
+        shortName: 'EngineGroup',
+        attributes: [
+            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
+        ],
+        denormalizationContext: [
+            'groups' => ['write:engine-group', 'write:name'],
+            'openapi_definition_name' => 'EngineGroup-write'
+        ],
+        normalizationContext: [
+            'groups' => ['read:engine-group', 'read:id', 'read:name'],
+            'openapi_definition_name' => 'EngineGroup-read'
+        ]
+    ),
     ORM\DiscriminatorColumn(name: 'type', type: 'engine_type'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
@@ -25,6 +70,7 @@ abstract class Group extends Entity {
     ];
 
     #[
+        ApiProperty(description: 'Code ', required: true, example: 'TA'),
         Assert\Length(min: 2, max: 3),
         Assert\NotBlank,
         ORM\Column(length: 3, options: ['charset' => 'ascii']),
@@ -33,6 +79,7 @@ abstract class Group extends Entity {
     private ?string $code = null;
 
     #[
+        ApiProperty(description: 'Nom', required: true, example: 'Table d\'assemblage'),
         Assert\Length(min: 3, max: 35),
         Assert\NotBlank,
         ORM\Column(length: 35),

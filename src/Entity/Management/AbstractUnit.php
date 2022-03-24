@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,6 +18,7 @@ abstract class AbstractUnit extends Entity {
     protected Collection $children;
 
     #[
+        ApiProperty(description: 'Code ', required: true, example: 'g'),
         Assert\NotBlank,
         ORM\Column(length: 3),
         Serializer\Groups(['read:unit', 'write:unit'])
@@ -24,6 +26,7 @@ abstract class AbstractUnit extends Entity {
     protected ?string $code = null;
 
     #[
+        ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
         Assert\NotBlank,
         ORM\Column(length: 20),
         Serializer\Groups(['read:name', 'write:name'])
@@ -34,6 +37,7 @@ abstract class AbstractUnit extends Entity {
     protected $parent;
 
     #[
+        ApiProperty(description: 'Base', required: true, example: 1),
         Assert\NotBlank,
         Assert\Positive,
         ORM\Column(options: ['default' => 1]),
