@@ -7,16 +7,11 @@ use ApiPlatform\Core\OpenApi\Model;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\OpenApi\Options;
 use App\ApiPlatform\Core\Annotation\ApiProperty;
-use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use ArrayObject;
-use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\Pure;
 
-/**
- * @phpstan-import-type SchemaContext from Schema
- */
 final class OpenApiFactory implements OpenApiFactoryInterface {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly Options $options) {
+    public function __construct(private readonly Options $options) {
     }
 
     /**
@@ -32,10 +27,10 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     /**
-     * @return ArrayObject<string, SchemaContext>
+     * @return ArrayObject<string, Schema>
      */
-    private function createSchemas(): ArrayObject {
-        return new ArrayObject(['Resource' => (new Schema(
+    private function generateSchemas(): ArrayObject {
+        return new ArrayObject(['Resource' => new Schema(
             description: 'Base d\'une resource',
             properties: [
                 '@context' => new ApiProperty(
@@ -59,30 +54,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 '@id' => new ApiProperty(readOnly: true, required: true),
                 '@type' => new ApiProperty(readOnly: true, required: true)
             ]
-        ))->getOpenApiContext()]);
-    }
-
-    /**
-     * @return ArrayObject<string, SchemaContext>
-     */
-    private function generateSchemas(): ArrayObject {
-        $schemas = $this->createSchemas();
-        foreach ($this->em->getMetadataFactory()->getAllMetadata() as $metadata) {
-            $attributes = $metadata->getReflectionClass()->getAttributes(ApiSerializerGroups::class);
-            if (count($attributes) === 1) {
-                /** @var ApiSerializerGroups $groups */
-                $groups = $attributes[0]->newInstance();
-                foreach ($groups->inheritedRead as $base => $children) {
-                    foreach ($children as $group) {
-                        $schemas[$group] = (new Schema(allOf: [
-                            $base,
-                            new Schema()
-                        ]))->getOpenApiContext();
-                    }
-                }
-            }
-        }
-        return $schemas;
+        )]);
     }
 
     #[Pure]

@@ -3,14 +3,15 @@
 namespace App\ApiPlatform\Core\Annotation;
 
 use ApiPlatform\Core\Annotation\ApiProperty as ApiPlatformProperty;
-use App\ApiPlatform\Core\OpenApi\Factory\OpenApiContext;
 use App\ApiPlatform\Core\OpenApi\Factory\Schema;
 use JetBrains\PhpStorm\ArrayShape;
 
 /**
- * @phpstan-import-type OpenApiProperty from OpenApiContext
+ * @phpstan-type OpenApiPropertyArray array{enum?: string[], readOnly: bool, type?: string}
+ * @phpstan-type OpenApiPropertyChildren array{oneOf: array<Schema|OpenApiPropertyArray>}
+ * @phpstan-type OpenApiProperty OpenApiPropertyArray|OpenApiPropertyChildren
  */
-final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
+final class ApiProperty extends ApiPlatformProperty {
     /**
      * @param string[]                  $enum
      * @param array<ApiProperty|Schema> $oneOf
@@ -35,7 +36,7 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
     /**
      * @return OpenApiProperty
      */
-    #[ArrayShape(['enum' => 'array', 'oneOf' => 'mixed', 'readOnly' => 'bool', 'type' => 'string'])]
+    #[ArrayShape(['readOnly' => 'bool', 'type' => 'string', 'oneOf' => 'mixed', 'enum' => 'array'])]
     private function toOpenApi(): array {
         $context = ['readOnly' => $this->readOnly];
         if (!empty($this->enum)) {
@@ -45,13 +46,13 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
             $context['type'] = 'string';
         } else {
             $context['oneOf'] = collect($this->oneOf)
-                ->map(static function (Schema|ApiProperty $one): array {
+                ->map(static function (Schema|ApiProperty $one): Schema|array {
                     if ($one instanceof self) {
                         $context = $one->getOpenApiContext();
                         unset($context['readOnly']);
                         return $context;
                     }
-                    return $one->getOpenApiContext();
+                    return $one;
                 })
                 ->values()
                 ->all();

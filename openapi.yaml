@@ -1,14 +1,5 @@
 components:
   schemas:
-    Entity:
-      additionalProperties: false
-      allOf:
-        -
-          $ref: '#/components/schemas/Resource'
-        -
-          additionalProperties: false
-          type: object
-      type: object
     Resource:
       additionalProperties: false
       description: 'Base d''une resource'

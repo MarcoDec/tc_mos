@@ -2,13 +2,9 @@
 
 namespace App\Entity;
 
-use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use Doctrine\ORM\Mapping as ORM;
 
-#[
-    ApiSerializerGroups(inheritedRead: ['Resource' => ['Entity']]),
-    ORM\MappedSuperclass
-]
+#[ORM\MappedSuperclass]
 abstract class Entity {
     #[
         ORM\Column(options: ['unsigned' => true]),
