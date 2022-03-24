@@ -16,15 +16,11 @@ final class Schema {
     /**
      * @param array<string, ApiProperty> $properties
      */
-    public function __construct(
-        private readonly bool $additionalProperties = false,
-        private readonly ?string $description = null,
-        array $properties = []
-    ) {
+    public function __construct(private readonly string $description, array $properties) {
         $this->properties = collect($properties);
     }
 
-    public function getDescription(): ?string {
+    public function getDescription(): string {
         return $this->description;
     }
 
@@ -33,7 +29,7 @@ final class Schema {
      */
     public function getProperties(): array {
         /** @var Collection<string, OpenApiProperty> $mapped */
-        $mapped = $this->properties->map->getOpenApiContext();
+        $mapped = $this->properties->map->toOpenApi();
         return $mapped->all();
     }
 
@@ -48,9 +44,5 @@ final class Schema {
 
     public function getType(): string {
         return 'object';
-    }
-
-    public function isAdditionalProperties(): bool {
-        return $this->additionalProperties;
     }
 }

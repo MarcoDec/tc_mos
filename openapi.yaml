@@ -1,28 +1,8 @@
 components:
   schemas:
     Resource:
-      additionalProperties: false
       description: 'Base d''une resource'
       properties:
-        '@context':
-          oneOf:
-            -
-              type: string
-            -
-              additionalProperties: true
-              properties:
-                '@vocab':
-                  readOnly: true
-                  type: string
-                hydra:
-                  enum: ['http://www.w3.org/ns/hydra/core#']
-                  readOnly: true
-                  type: string
-              required:
-                - '@vocab'
-                - hydra
-              type: object
-          readOnly: true
         '@id':
           readOnly: true
           type: string
@@ -30,7 +10,6 @@ components:
           readOnly: true
           type: string
       required:
-        - '@context'
         - '@id'
         - '@type'
       type: object
@@ -39,4 +18,4 @@ info:
   title: TConcept-GPAO
   version: 0.0.0
 openapi: 3.0.3
-paths: {  }
+paths: {}
