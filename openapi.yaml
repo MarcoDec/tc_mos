@@ -56,20 +56,6 @@ components:
             $ref: '#/components/schemas/EventType-write'
       description: EventType
       required: true
-    Incoterms-write:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Incoterms-write'
-      description: Incoterms
-      required: true
-    Incoterms-write-patch:
-      content:
-        application/merge-patch+json:
-          schema:
-            $ref: '#/components/schemas/Incoterms-write'
-      description: Incoterms
-      required: true
   responses:
     Carrier-read:
       content:
@@ -89,12 +75,6 @@ components:
           schema:
             $ref: '#/components/schemas/EventType-read'
       description: EventType
-    Incoterms-read:
-      content:
-        application/ld+json:
-          schema:
-            $ref: '#/components/schemas/Incoterms-read'
-      description: Incoterms
   schemas:
     Address-read:
       additionalProperties: false
@@ -334,41 +314,6 @@ components:
         - enabled
         - warning
       type: string
-    Incoterms-read:
-      additionalProperties: false
-      allOf:
-        -
-          $ref: '#/components/schemas/Incoterms-write'
-        -
-          $ref: '#/components/schemas/Entity'
-      type: object
-    Incoterms-write:
-      additionalProperties: false
-      properties:
-        code:
-          example: DDP
-          externalDocs:
-            url: 'https://schema.org/codeValue'
-          format: codeValue
-          maxLength: 11
-          minLength: 3
-          nullable: false
-          readOnly: false
-          type: string
-        name:
-          example: 'Delivered Duty Paid'
-          externalDocs:
-            url: 'https://schema.org/name'
-          format: name
-          maxLength: 50
-          minLength: 3
-          nullable: false
-          readOnly: false
-          type: string
-      required:
-        - code
-        - name
-      type: object
     Resource:
       additionalProperties: false
       description: 'Base d''une resource.'
@@ -674,73 +619,3 @@ paths:
       summary: 'Modifie un type d''événement'
       tags:
         - EventType
-  /api/incoterms:
-    get:
-      deprecated: false
-      description: 'Récupère les incoterms'
-      parameters:
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: code
-          required: false
-          schema:
-            type: string
-          style: form
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: name
-          required: false
-          schema:
-            type: string
-          style: form
-      responses:
-        200:
-          $ref: '#/components/responses/Incoterms-read'
-      summary: 'Récupère les incoterms'
-      tags:
-        - Incoterms
-    post:
-      deprecated: false
-      description: 'Créer un incoterms'
-      requestBody:
-        $ref: '#/components/requestBodies/Incoterms-write'
-      responses:
-        201:
-          $ref: '#/components/responses/Incoterms-read'
-      summary: 'Créer un incoterms'
-      tags:
-        - Incoterms
-  '/api/incoterms/{id}':
-    delete:
-      deprecated: false
-      description: 'Supprime un incoterms'
-      responses:
-        204:
-          $ref: '#/components/responses/Incoterms-read'
-      summary: 'Supprime un incoterms'
-      tags:
-        - Incoterms
-    parameters:
-      -
-        $ref: '#/components/parameters/id'
-    patch:
-      deprecated: false
-      description: 'Modifie un incoterms'
-      requestBody:
-        $ref: '#/components/requestBodies/Incoterms-write-patch'
-      responses:
-        200:
-          $ref: '#/components/responses/Incoterms-read'
-      summary: 'Modifie un incoterms'
-      tags:
-        - Incoterms
