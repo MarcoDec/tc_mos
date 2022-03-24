@@ -2,12 +2,14 @@
 
 namespace App\Entity\Management;
 
+use App\ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Illuminate\Support\Collection as LaravelCollection;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
@@ -15,25 +17,40 @@ abstract class AbstractUnit extends Entity {
     /** @var Collection<int, static> */
     protected Collection $children;
 
+    /**
+     * @var null|string Code
+     */
     #[
+        ApiProperty(example: 'g', format: 'codeValue'),
         Assert\NotBlank,
-        ORM\Column(length: 3)
+        ORM\Column(length: 3),
+        Serializer\Groups(groups: ['Unit-read', 'Unit-write'])
     ]
     protected ?string $code = null;
 
+    /**
+     * @var null|string Nom
+     */
     #[
+        ApiProperty(example: 'Gramme', format: 'name'),
         Assert\NotBlank,
-        ORM\Column(length: 20)
+        ORM\Column(length: 20),
+        Serializer\Groups(groups: ['Unit-read', 'Unit-write'])
     ]
     protected ?string $name = null;
 
     /** @var null|static */
     protected $parent;
 
+    /**
+     * @var float Base
+     */
     #[
+        ApiProperty,
         Assert\NotBlank,
         Assert\Positive,
-        ORM\Column(options: ['default' => 1])
+        ORM\Column(options: ['default' => 1]),
+        Serializer\Groups(groups: ['Unit-read', 'Unit-write'])
     ]
     private float $base = 1;
 

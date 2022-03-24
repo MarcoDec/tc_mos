@@ -1,0 +1,11 @@
+--- a/vendor/api-platform/core/src/Metadata/Property/Factory/AnnotationPropertyMetadataFactory.php	2022-01-11 10:29:54.000000000 +0000
++++ b/vendor/api-platform/core/src/Metadata/Property/Factory/AnnotationPropertyMetadataFactory.php	2022-03-24 09:13:00.529957642 +0000
+@@ -58,7 +58,7 @@
+         if ($reflectionClass->hasProperty($property)) {
+             $annotation = null;
+             $reflectionProperty = $reflectionClass->getProperty($property);
+-            if (\PHP_VERSION_ID >= 80000 && $attributes = $reflectionProperty->getAttributes(ApiProperty::class)) {
++            if (\PHP_VERSION_ID >= 80000 && $attributes = $reflectionProperty->getAttributes(ApiProperty::class, \ReflectionAttribute::IS_INSTANCEOF)) {
+                 $annotation = $attributes[0]->newInstance();
+             } elseif (null !== $this->reader) {
+                 $annotation = $this->reader->getPropertyAnnotation($reflectionProperty, ApiProperty::class);
