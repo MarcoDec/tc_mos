@@ -23,14 +23,8 @@ final class ExpressionLanguageProvider implements ExpressionFunctionProviderInte
             ),
             new ExpressionFunction(
                 name: 'component_subfamily_code',
-                compiler: static fn (int $id): string => sprintf(<<<'COMPILER'
-$data = $this->configurations->findData('component_family', %1$d);
-return !empty($data) && is_string($code = $data['code']) ? strtoupper(substr($code, 0, 3)) : null;
-COMPILER, $id),
-                evaluator: function (array $args, int $id): ?string {
-                    $data = $this->configurations->findData('component_family', $id);
-                    return !empty($data) && is_string($code = $data['code']) ? strtoupper(substr($code, 0, 3)) : null;
-                }
+                compiler: static fn (int $id): string => sprintf('strtoupper(substr($this->configurations->findData(\'component_family\', %1$d)[\'family_name\'], 0, 3))', $id),
+                evaluator: fn (array $args, int $id): string => strtoupper(substr($this->configurations->findData('component_family', $id)['code'], 0, 3))
             ),
             new ExpressionFunction(
                 name: 'engine_group',
@@ -41,16 +35,10 @@ COMPILER, $id),
             new ExpressionFunction(
                 name: 'product_parent',
                 compiler: static fn (int $id): string => sprintf(<<<'FUNCTION'
-$entity = collect($this->configurations->findEntities('product'))
-    ->first(static fn(array $entity): bool => $entity['id_product_child'] == %1$d, ['id' => 0]);
-return is_array($entity) ? $entity['id'] : 0;
+$this->configurations->findEntities('product')->first(static fn (Collection $entity): bool => $entity['id_product_child'] == %s)
 FUNCTION, $id),
-                evaluator: function (array $args, int $id): int {
-                    /** @var array{int: int}|mixed $entity */
-                    $entity = collect($this->configurations->findEntities('product'))
-                        ->first(static fn (array $entity): bool => $entity['id_product_child'] == $id, ['id' => 0]);
-                    return is_array($entity) ? $entity['id'] : 0;
-                }
+                evaluator: fn (array $args, int $id): int => collect($this->configurations->findEntities('product'))
+                    ->first(static fn (array $entity): bool => $entity['id_product_child'] == $id, ['id' => 0])['id']
             ),
             new ExpressionFunction(
                 name: 'product_workflow',

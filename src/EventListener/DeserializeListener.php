@@ -50,7 +50,7 @@ final class DeserializeListener {
     }
 
     /**
-     * @param class-string[] $context
+     * @param mixed[] $context
      *
      * @return mixed[]
      */

@@ -7,21 +7,17 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use UnexpectedValueException;
 
 /**
  * @phpstan-import-type PropertyConfigArray from PropertyConfig
- *
- * @phpstan-type ConvertedEntity Collection<string, bool|int|float|string>
- * @phpstan-type Entity array<string, bool|int|float|string>
  */
 final class EntityConfig {
-    /** @var Entity[] */
+    /** @var mixed[] */
     private array $data = [];
 
     private ?string $deleted;
 
-    /** @var Collection<int, ConvertedEntity> */
+    /** @var Collection<int, mixed> */
     private readonly Collection $entities;
 
     /** @var array<int, int> */
@@ -41,7 +37,7 @@ final class EntityConfig {
         array $config
     ) {
         $this->deleted = $config['deleted'] ?? null;
-        /** @var ConvertedEntity[] entities */
+        /** @var mixed[] entities */
         $entities = [];
         $this->entities = collect($entities);
         /** @var Collection<string, PropertyConfigArray> $properties */
@@ -57,7 +53,7 @@ final class EntityConfig {
     }
 
     /**
-     * @return ConvertedEntity|null
+     * @return mixed
      */
     public function findData(int $id) {
         return $this->entities->first(fn (Collection $entity): bool => $entity['id'] === $this->ids[$id]);
@@ -72,7 +68,7 @@ final class EntityConfig {
     }
 
     /**
-     * @return Entity[]
+     * @return mixed[]
      */
     public function getData(): array {
         return $this->data;
@@ -90,7 +86,7 @@ final class EntityConfig {
     }
 
     /**
-     * @param Entity[] $data
+     * @param mixed[] $data
      */
     public function setData(array $data, int $count): void {
         $this->data = $data;
@@ -100,30 +96,28 @@ final class EntityConfig {
                 continue;
             }
 
-            /** @var ConvertedEntity $transformed */
-            $transformed = collect(['id' => $id = ++$count]);
+            $transformed = ['id' => $id = ++$count];
             $this->ids[(int) ($entity['id'])] = $id;
             foreach ($this->properties as $property => $config) {
-                /** @var bool|float|int|string $value */
                 $value = !$config->isNew() ? $entity[$property] : null;
                 if (is_string($value)) {
                     $value = trim($value);
                 }
-                if ($config->isCountry() && is_int($value)) {
+                if ($config->isCountry()) {
                     $value = $this->configurations->getCountry($value);
                 }
-                if ($config->isCustomscode() && is_int($value)) {
+                if ($config->isCustomscode()) {
                     $value = $this->configurations->getCustomscode($value);
                 }
                 if (!empty($forceValue = $config->getForceValue())) {
                     $value = $this->exprLang->evaluate($forceValue, $entity);
                 }
-                if (!empty($ref = $config->getOldRef()) && is_int($value)) {
+                if (!empty($ref = $config->getOldRef())) {
                     $value = $this->configurations->getId($ref, $value);
                 }
                 $transformed[$config->getNewName()] = $value;
             }
-            $this->entities->push($transformed);
+            $this->entities->push(collect($transformed));
         }
     }
 
@@ -156,11 +150,6 @@ final class EntityConfig {
     }
 
     private function getMaxColumns(): int {
-        /** @var ConvertedEntity|int $max */
-        $max = $this->entities->max(static fn (Collection $entity): int => $entity->keys()->count());
-        if (is_int($max)) {
-            return $max;
-        }
-        throw new UnexpectedValueException(sprintf('Expected argument of type "int", "%s" given', get_debug_type($max)));
+        return $this->entities->max(static fn (Collection $entity): int => $entity->keys()->count());
     }
 }

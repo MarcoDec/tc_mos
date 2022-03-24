@@ -9,11 +9,7 @@ use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
- * @phpstan-import-type ConvertedEntity from EntityConfig
- * @phpstan-import-type Entity from EntityConfig
  * @phpstan-import-type PropertyConfigArray from PropertyConfig
- *
- * @phpstan-type CodeJson array{code: string, id: string, statut: string}
  */
 final class Configurations {
     /** @var array<string, EntityConfig> */
@@ -58,15 +54,12 @@ final class Configurations {
         return $count;
     }
 
-    /**
-     * @return ConvertedEntity|null
-     */
     public function findData(string $name, int $id): mixed {
         return $this->configurations[$name]->findData($id);
     }
 
     /**
-     * @return Entity[]
+     * @return mixed[]
      */
     #[Pure]
     public function findEntities(string $name): array {
@@ -106,25 +99,25 @@ final class Configurations {
     }
 
     /**
-     * @param CodeJson[] $countries
+     * @param array{code: string, id: string, statut: string}[] $countries
      */
     public function setCountries(array $countries): void {
         $this->countries = collect($countries)
-            ->mapWithKeys(static fn (array $country): array => empty($country['statut']) || $country['statut'] === '0' ? [(int) $country['id'] => $country['code']] : [])
+            ->mapWithKeys(static fn (array $country): array /** @var array{code: string, id: string, statut: string} $country */ => empty($country['statut']) || $country['statut'] === '0' ? [(int) $country['id'] => $country['code']] : [])
             ->all();
     }
 
     /**
-     * @param CodeJson[] $customscode
+     * @param array{code: string, id: string, statut: string}[] $customscode
      */
     public function setCustomscode(array $customscode): void {
         $this->customscode = collect($customscode)
-            ->mapWithKeys(static fn (array $code): array => empty($code['statut']) || $code['statut'] === '0' ? [(int) $code['id'] => $code['code']] : [])
+            ->mapWithKeys(static fn (array $code): array /** @var array{code: string, id: string, statut: string} $code */ => empty($code['statut']) || $code['statut'] === '0' ? [(int) $code['id'] => $code['code']] : [])
             ->all();
     }
 
     /**
-     * @param Entity[] $data
+     * @param mixed[] $data
      */
     public function setData(string $name, array $data): void {
         $this->configurations[$name]->setData(

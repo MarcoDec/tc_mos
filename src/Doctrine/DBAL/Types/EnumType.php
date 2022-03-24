@@ -16,9 +16,6 @@ abstract class EnumType extends Type {
             ->implode(', ');
     }
 
-    /**
-     * @param string $value
-     */
     final public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed {
         if (!empty($value) && !in_array($value, static::TYPES, true)) {
             throw new InvalidArgumentException(sprintf("Invalid value. Get \"$value\", but valid values are [%s].", self::getStrTypes()));

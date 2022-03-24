@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['name', 'parent'])
 ]
 class Family extends AbstractFamily {
+    /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     protected Collection $children;
 
@@ -24,6 +25,7 @@ class Family extends AbstractFamily {
     ]
     protected ?string $name = null;
 
+    /** @var null|self */
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
     protected $parent;
 

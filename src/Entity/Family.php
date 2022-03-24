@@ -14,12 +14,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class Family extends Entity implements FileEntity {
     use FileTrait;
 
-    /** @var Collection<int, static> */
+    /** @var Collection<int, mixed> */
     protected Collection $children;
 
     protected ?string $name = null;
 
-    /** @var null|static */
+    /** @var null|self */
     protected $parent;
 
     #[
@@ -33,9 +33,6 @@ abstract class Family extends Entity implements FileEntity {
         $this->children = new ArrayCollection();
     }
 
-    /**
-     * @param static $children
-     */
     final public function addChildren(self $children): self {
         if (!$this->children->contains($children)) {
             $this->children->add($children);
@@ -45,7 +42,7 @@ abstract class Family extends Entity implements FileEntity {
     }
 
     /**
-     * @return Collection<int, static>
+     * @return Collection<int, self>
      */
     final public function getChildren(): Collection {
         return $this->children;
@@ -63,9 +60,6 @@ abstract class Family extends Entity implements FileEntity {
         return $this->parent;
     }
 
-    /**
-     * @param static $children
-     */
     final public function removeChildren(self $children): self {
         if ($this->children->contains($children)) {
             $this->children->removeElement($children);
@@ -86,9 +80,6 @@ abstract class Family extends Entity implements FileEntity {
         return $this;
     }
 
-    /**
-     * @param null|static $parent
-     */
     final public function setParent(?self $parent): self {
         $this->parent = $parent;
         return $this;

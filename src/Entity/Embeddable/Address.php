@@ -22,7 +22,7 @@ class Address {
         'address.address2' => 'partial',
         'address.city' => 'partial',
         'address.country' => 'partial',
-        'address.email' => 'partial'
+        'address.email' => 'partial',
     ];
 
     /**
