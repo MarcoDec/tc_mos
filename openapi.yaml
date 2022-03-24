@@ -126,20 +126,6 @@ components:
             $ref: '#/components/schemas/RejectType-write'
       description: 'Types de rebus.'
       required: true
-    SkillType-write:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SkillType-write'
-      description: 'Type de compétence.'
-      required: true
-    SkillType-write-patch:
-      content:
-        application/merge-patch+json:
-          schema:
-            $ref: '#/components/schemas/SkillType-write'
-      description: 'Type de compétence.'
-      required: true
   responses:
     Carrier-read:
       content:
@@ -189,12 +175,6 @@ components:
           schema:
             $ref: '#/components/schemas/RejectType-read'
       description: 'Types de rebus.'
-    SkillType-read:
-      content:
-        application/ld+json:
-          schema:
-            $ref: '#/components/schemas/SkillType-read'
-      description: 'Type de compétence.'
   schemas:
     Address-read:
       additionalProperties: false
@@ -690,34 +670,6 @@ components:
         - '@context'
         - '@id'
         - '@type'
-      type: object
-    SkillType-read:
-      additionalProperties: false
-      allOf:
-        -
-          $ref: '#/components/schemas/SkillType-write'
-        -
-          $ref: '#/components/schemas/Entity'
-      description: 'Type de compétence.'
-      type: object
-    SkillType-write:
-      additionalProperties: false
-      description: 'Type de compétence.'
-      properties:
-        name:
-          description: Nom
-          example: Assemblage
-          externalDocs:
-            url: 'https://schema.org/name'
-          format: name
-          maxLength: 50
-          minLength: 3
-          nullable: false
-          readOnly: false
-          title: Nom
-          type: string
-      required:
-        - name
       type: object
 info:
   description: 'Application de gestion de la production de T-Concept'
@@ -1393,61 +1345,3 @@ paths:
       summary: 'Modifie un type de rebus'
       tags:
         - RejectType
-  /api/skill-types:
-    get:
-      deprecated: false
-      description: 'Récupère les types de compétence'
-      parameters:
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: name
-          required: false
-          schema:
-            type: string
-          style: form
-      responses:
-        200:
-          $ref: '#/components/responses/SkillType-read'
-      summary: 'Récupère les types de compétence'
-      tags:
-        - SkillType
-    post:
-      deprecated: false
-      description: 'Créer un type de compétence'
-      requestBody:
-        $ref: '#/components/requestBodies/SkillType-write'
-      responses:
-        201:
-          $ref: '#/components/responses/SkillType-read'
-      summary: 'Créer un type de compétence'
-      tags:
-        - SkillType
-  '/api/skill-types/{id}':
-    delete:
-      deprecated: false
-      description: 'Supprime un type de compétence'
-      responses:
-        204:
-          $ref: '#/components/responses/SkillType-read'
-      summary: 'Supprime un type de compétence'
-      tags:
-        - SkillType
-    parameters:
-      -
-        $ref: '#/components/parameters/id'
-    patch:
-      deprecated: false
-      description: 'Modifie un type de compétence'
-      requestBody:
-        $ref: '#/components/requestBodies/SkillType-write-patch'
-      responses:
-        200:
-          $ref: '#/components/responses/SkillType-read'
-      summary: 'Modifie un type de compétence'
-      tags:
-        - SkillType
