@@ -7,6 +7,7 @@ use App\ApiPlatform\Core\OpenApi\Factory\OpenApiContext;
 use App\ApiPlatform\Core\OpenApi\Factory\Schema;
 use App\Validator as AppAssert;
 use Attribute;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use ReflectionNamedType;
@@ -123,6 +124,7 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
                 && !$this->required;
             $this->attributes['openapi_context']['nullable'] = $this->nullable;
             $this->attributes['openapi_context']['type'] = match ($name = $type->getName()) {
+                DateTimeImmutable::class => 'string',
                 'bool' => 'boolean',
                 'int' => 'integer',
                 default => $name

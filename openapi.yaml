@@ -140,6 +140,20 @@ components:
             $ref: '#/components/schemas/SkillType-write'
       description: 'Type de compétence.'
       required: true
+    TimeSlot-write:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TimeSlot-write'
+      description: 'Plage horaire.'
+      required: true
+    TimeSlot-write-patch:
+      content:
+        application/merge-patch+json:
+          schema:
+            $ref: '#/components/schemas/TimeSlot-write'
+      description: 'Plage horaire.'
+      required: true
   responses:
     Carrier-read:
       content:
@@ -195,6 +209,12 @@ components:
           schema:
             $ref: '#/components/schemas/SkillType-read'
       description: 'Type de compétence.'
+    TimeSlot-read:
+      content:
+        application/ld+json:
+          schema:
+            $ref: '#/components/schemas/TimeSlot-read'
+      description: 'Plage horaire.'
   schemas:
     Address-read:
       additionalProperties: false
@@ -715,6 +735,77 @@ components:
           nullable: false
           readOnly: false
           title: Nom
+          type: string
+      required:
+        - name
+      type: object
+    TimeSlot-read:
+      additionalProperties: false
+      allOf:
+        -
+          $ref: '#/components/schemas/TimeSlot-write'
+        -
+          $ref: '#/components/schemas/Entity'
+      description: 'Plage horaire.'
+      required:
+        - end
+        - endBreak
+        - start
+        - startBreak
+      type: object
+    TimeSlot-write:
+      additionalProperties: false
+      description: 'Plage horaire.'
+      properties:
+        end:
+          description: Fin
+          example: '17:30:00'
+          externalDocs:
+            url: 'https://schema.org/endTime'
+          format: endTime
+          nullable: true
+          readOnly: false
+          title: Fin
+          type: string
+        endBreak:
+          description: 'Fin de la pause'
+          example: '13:30:00'
+          externalDocs:
+            url: 'https://schema.org/endTime'
+          format: endTime
+          nullable: true
+          readOnly: false
+          title: 'Fin de la pause'
+          type: string
+        name:
+          description: Nom
+          example: Journée
+          externalDocs:
+            url: 'https://schema.org/name'
+          format: name
+          nullable: false
+          readOnly: false
+          title: Nom
+          type: string
+        start:
+          description: Début
+          example: '07:30:00'
+          externalDocs:
+            url: 'https://schema.org/startTime'
+          format: startTime
+          nullable: true
+          readOnly: false
+          title: Début
+          type: string
+        startBreak:
+          description: 'Début de la pause'
+          example: '12:30:00'
+          externalDocs:
+            url: 'https://schema.org/startTime'
+          format: startTime
+          nullable: true
+          readOnly: false
+          title: 'Début de la pause'
           type: string
       required:
         - name
@@ -1451,3 +1542,61 @@ paths:
       summary: 'Modifie un type de compétence'
       tags:
         - SkillType
+  /api/time-slots:
+    get:
+      deprecated: false
+      description: 'Récupère les plages horaires'
+      parameters:
+        -
+          allowEmptyValue: true
+          allowReserved: false
+          deprecated: false
+          description: ''
+          explode: false
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          style: form
+      responses:
+        200:
+          $ref: '#/components/responses/TimeSlot-read'
+      summary: 'Récupère les plages horaires'
+      tags:
+        - TimeSlot
+    post:
+      deprecated: false
+      description: 'Créer une plage horaire'
+      requestBody:
+        $ref: '#/components/requestBodies/TimeSlot-write'
+      responses:
+        201:
+          $ref: '#/components/responses/TimeSlot-read'
+      summary: 'Créer une plage horaire'
+      tags:
+        - TimeSlot
+  '/api/time-slots/{id}':
+    delete:
+      deprecated: false
+      description: 'Supprime une plage horaire'
+      responses:
+        204:
+          $ref: '#/components/responses/TimeSlot-read'
+      summary: 'Supprime une plage horaire'
+      tags:
+        - TimeSlot
+    parameters:
+      -
+        $ref: '#/components/parameters/id'
+    patch:
+      deprecated: false
+      description: 'Modifie une plage horaire'
+      requestBody:
+        $ref: '#/components/requestBodies/TimeSlot-write-patch'
+      responses:
+        200:
+          $ref: '#/components/responses/TimeSlot-read'
+      summary: 'Modifie une plage horaire'
+      tags:
+        - TimeSlot
