@@ -44,8 +44,6 @@
     "patches": {
       "api-platform/core": {
         "Open class": "./patches/api-platform/core/src/Annotation/ApiProperty.patch",
-        "ApiProperty inheritance in AnnotationPropertyMetadataFactory": "./patches/api-platform/core/src/Metadata/Property/Factory/AnnotationPropertyMetadataFactory.patch",
-        "ApiProperty inheritance in AnnotationPropertyNameCollectionFactory": "./patches/api-platform/core/src/Metadata/Property/Factory/AnnotationPropertyNameCollectionFactory.patch",
         "Change RequestBody type to RequestBody|array": "./patches/api-platform/core/src/OpenApi/Model/Operation.patch"
       }
     },
@@ -106,12 +104,12 @@
     "friendsofphp/php-cs-fixer": "^3.8",
     "jetbrains/phpstorm-attributes": "^1.0",
     "nunomaduro/larastan": "^2.1",
-    "orchestra/testbench": "^7.2",
+    "orchestra/testbench": "^7.1",
     "phpstan/extension-installer": "^1.1",
     "phpstan/phpstan": "^1.4",
     "phpstan/phpstan-symfony": "^1.1",
     "phpunit/phpunit": "^9.5",
-    "rector/rector": "^0.12.19",
+    "rector/rector": "0.12.17",
     "symfony/debug-bundle": "6.0.*",
     "symfony/phpunit-bridge": "^6.0",
     "symfony/stopwatch": "6.0.*",

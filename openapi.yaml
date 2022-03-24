@@ -154,20 +154,6 @@ components:
             $ref: '#/components/schemas/TimeSlot-write'
       description: 'Plage horaire.'
       required: true
-    Unit-write:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Unit-write'
-      description: Unité.
-      required: true
-    Unit-write-patch:
-      content:
-        application/merge-patch+json:
-          schema:
-            $ref: '#/components/schemas/Unit-write'
-      description: Unité.
-      required: true
   responses:
     Carrier-read:
       content:
@@ -229,12 +215,6 @@ components:
           schema:
             $ref: '#/components/schemas/TimeSlot-read'
       description: 'Plage horaire.'
-    Unit-read:
-      content:
-        application/ld+json:
-          schema:
-            $ref: '#/components/schemas/Unit-read'
-      description: Unité.
   schemas:
     Address-read:
       additionalProperties: false
@@ -829,60 +809,6 @@ components:
           type: string
       required:
         - name
-      type: object
-    Unit-read:
-      additionalProperties: false
-      allOf:
-        -
-          $ref: '#/components/schemas/Unit-write'
-        -
-          $ref: '#/components/schemas/Entity'
-      description: Unité.
-      required:
-        - parent
-      type: object
-    Unit-write:
-      additionalProperties: false
-      description: Unité.
-      properties:
-        base:
-          default: 1.0
-          description: Base
-          example: 1.0
-          nullable: false
-          readOnly: false
-          title: Base
-          type: number
-        code:
-          description: Code
-          example: g
-          externalDocs:
-            url: 'https://schema.org/codeValue'
-          format: codeValue
-          nullable: false
-          readOnly: false
-          title: Code
-          type: string
-        name:
-          description: Nom
-          example: Gramme
-          externalDocs:
-            url: 'https://schema.org/name'
-          format: name
-          nullable: false
-          readOnly: false
-          title: Nom
-          type: string
-        parent:
-          description: Parent
-          nullable: true
-          readOnly: false
-          title: Parent
-          type: string
-      required:
-        - code
-        - name
-        - base
       type: object
 info:
   description: 'Application de gestion de la production de T-Concept'
@@ -1674,73 +1600,3 @@ paths:
       summary: 'Modifie une plage horaire'
       tags:
         - TimeSlot
-  /api/units:
-    get:
-      deprecated: false
-      description: 'Récupère les unités'
-      parameters:
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: code
-          required: false
-          schema:
-            type: string
-          style: form
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: name
-          required: false
-          schema:
-            type: string
-          style: form
-      responses:
-        200:
-          $ref: '#/components/responses/Unit-read'
-      summary: 'Récupère les unités'
-      tags:
-        - Unit
-    post:
-      deprecated: false
-      description: 'Créer une unité'
-      requestBody:
-        $ref: '#/components/requestBodies/Unit-write'
-      responses:
-        201:
-          $ref: '#/components/responses/Unit-read'
-      summary: 'Créer une unité'
-      tags:
-        - Unit
-  '/api/units/{id}':
-    delete:
-      deprecated: false
-      description: 'Supprime une unité'
-      responses:
-        204:
-          $ref: '#/components/responses/Unit-read'
-      summary: 'Supprime une unité'
-      tags:
-        - Unit
-    parameters:
-      -
-        $ref: '#/components/parameters/id'
-    patch:
-      deprecated: false
-      description: 'Modifie une unité'
-      requestBody:
-        $ref: '#/components/requestBodies/Unit-write-patch'
-      responses:
-        200:
-          $ref: '#/components/responses/Unit-read'
-      summary: 'Modifie une unité'
-      tags:
-        - Unit

@@ -39,7 +39,6 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
         public bool $nullable = true,
         public readonly array $oneOf = [],
         public readonly bool $readOnly = false,
-        ?bool $readableLink = null,
         public readonly ?string $readRef = null,
         public readonly ?string $ref = null,
         bool $required = false,
@@ -47,7 +46,6 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
     ) {
         parent::__construct(
             writable: !$this->readOnly,
-            readableLink: $readableLink,
             required: $required,
             default: $default,
             example: $example
@@ -120,9 +118,6 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
         }
 
         $this->required = count($property->getAttributes(Assert\NotBlank::class)) === 1;
-        if ($property->getName() === 'parent') {
-            dd($property, $property->getType());
-        }
         if (($type = $property->getType()) instanceof ReflectionNamedType) {
             $this->nullable = $type->allowsNull()
                 && count($property->getAttributes(ORM\Id::class)) === 0
@@ -131,7 +126,6 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
             $this->attributes['openapi_context']['type'] = match ($name = $type->getName()) {
                 DateTimeImmutable::class => 'string',
                 'bool' => 'boolean',
-                'float' => 'number',
                 'int' => 'integer',
                 default => $name
             };

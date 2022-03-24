@@ -75,33 +75,6 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     /**
      * @param ReflectionClass<T> $refl
      *
-     * @return Collection<string, ReflectionProperty>
-     *
-     * @template T of object
-     */
-    private static function getProperties(ReflectionClass $refl): Collection {
-        $properties = collect($refl->getProperties())
-            ->mapWithKeys(static fn (ReflectionProperty $property): array => [$property->getName() => $property]);
-        if ($parent = $refl->getParentClass()) {
-            foreach (self::getProperties($parent) as $name => $property) {
-                $value = $property;
-                if ($properties->has($name)) {
-                    $value = $properties->get($name);
-                    if (is_array($value)) {
-                        $value[] = $property;
-                    } else {
-                        $value = [$value, $property];
-                    }
-                }
-                $properties->put($name, $value);
-            }
-        }
-        return $properties;
-    }
-
-    /**
-     * @param ReflectionClass<T> $refl
-     *
      * @template T of object
      */
     private static function getReflDescription(ReflectionClass $refl): ?string {
@@ -341,7 +314,8 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      * @template T of object
      */
     private function generateSchemas(Collection $reads, ReflectionClass $refl, Collection $schemas): void {
-        $properties = self::getProperties($refl)
+        /** @var Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $properties */
+        $properties = collect($refl->getProperties())
             ->mapWithKeys(static function (ReflectionProperty $property) use ($schemas): array {
                 $choiceAttributes = $property->getAttributes(Choice::class);
                 if (count($choiceAttributes) === 1) {
