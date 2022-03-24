@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f4432e7bfb1c129deb0df7fbb688eea5",
+    "content-hash": "cfe829092ca200aabef6e945beba0f50",
     "packages": [
         {
             "name": "api-platform/core",
@@ -9747,16 +9747,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.8.0",
+            "version": "v3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "cbad1115aac4b5c3c5540e7210d3c9fba2f81fa3"
+                "reference": "7705d5a985132a40282d18a176eb9a4a0497747c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/cbad1115aac4b5c3c5540e7210d3c9fba2f81fa3",
-                "reference": "cbad1115aac4b5c3c5540e7210d3c9fba2f81fa3",
+                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/7705d5a985132a40282d18a176eb9a4a0497747c",
+                "reference": "7705d5a985132a40282d18a176eb9a4a0497747c",
                 "shasum": ""
             },
             "require": {
@@ -9824,7 +9824,7 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/issues",
-                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.8.0"
+                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.7.0"
             },
             "funding": [
                 {
@@ -9832,20 +9832,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-18T17:20:59+00:00"
+            "time": "2022-03-07T16:59:59+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.2.1",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "c94a94f120803a18554c1805ef2e539f8285f9a2"
+                "reference": "089edd38f5b8abba6cb01567c2a8aaa47cec4c72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/c94a94f120803a18554c1805ef2e539f8285f9a2",
-                "reference": "c94a94f120803a18554c1805ef2e539f8285f9a2",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/089edd38f5b8abba6cb01567c2a8aaa47cec4c72",
+                "reference": "089edd38f5b8abba6cb01567c2a8aaa47cec4c72",
                 "shasum": ""
             },
             "require": {
@@ -9869,7 +9869,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.2-dev"
+                    "dev-master": "2.1-dev"
                 }
             },
             "autoload": {
@@ -9931,7 +9931,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.2.1"
+                "source": "https://github.com/guzzle/psr7/tree/2.1.0"
             },
             "funding": [
                 {
@@ -9947,7 +9947,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-20T21:55:58+00:00"
+            "time": "2021-10-06T17:43:30+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -10329,23 +10329,23 @@
         },
         {
             "name": "orchestra/testbench",
-            "version": "v7.2.0",
+            "version": "v7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench.git",
-                "reference": "d221e9328c781fbc1f2e5eec5b09254ed1be51e9"
+                "reference": "8ea5319a54e9d803ce7c911c6ab8991aefb87262"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench/zipball/d221e9328c781fbc1f2e5eec5b09254ed1be51e9",
-                "reference": "d221e9328c781fbc1f2e5eec5b09254ed1be51e9",
+                "url": "https://api.github.com/repos/orchestral/testbench/zipball/8ea5319a54e9d803ce7c911c6ab8991aefb87262",
+                "reference": "8ea5319a54e9d803ce7c911c6ab8991aefb87262",
                 "shasum": ""
             },
             "require": {
                 "fakerphp/faker": "^1.9.2",
-                "laravel/framework": "^9.5.1",
+                "laravel/framework": "^9.2",
                 "mockery/mockery": "^1.4.4",
-                "orchestra/testbench-core": "^7.2",
+                "orchestra/testbench-core": "^7.1",
                 "php": "^8.0",
                 "phpunit/phpunit": "^9.5.10",
                 "spatie/laravel-ray": "^1.28",
@@ -10382,7 +10382,7 @@
             ],
             "support": {
                 "issues": "https://github.com/orchestral/testbench/issues",
-                "source": "https://github.com/orchestral/testbench/tree/v7.2.0"
+                "source": "https://github.com/orchestral/testbench/tree/v7.1.0"
             },
             "funding": [
                 {
@@ -10394,20 +10394,20 @@
                     "type": "liberapay"
                 }
             ],
-            "time": "2022-03-20T07:29:14+00:00"
+            "time": "2022-02-23T01:11:08+00:00"
         },
         {
             "name": "orchestra/testbench-core",
-            "version": "v7.2.0",
+            "version": "v7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench-core.git",
-                "reference": "a6f193db075c8d90d39a40cd502bb99113bfb56c"
+                "reference": "c44550eae79877d8e23ee5d8d7c49d3b9bf6ded9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench-core/zipball/a6f193db075c8d90d39a40cd502bb99113bfb56c",
-                "reference": "a6f193db075c8d90d39a40cd502bb99113bfb56c",
+                "url": "https://api.github.com/repos/orchestral/testbench-core/zipball/c44550eae79877d8e23ee5d8d7c49d3b9bf6ded9",
+                "reference": "c44550eae79877d8e23ee5d8d7c49d3b9bf6ded9",
                 "shasum": ""
             },
             "require": {
@@ -10415,7 +10415,7 @@
             },
             "require-dev": {
                 "fakerphp/faker": "^1.9.2",
-                "laravel/framework": "^9.5.1",
+                "laravel/framework": "^9.2",
                 "laravel/laravel": "9.x-dev",
                 "mockery/mockery": "^1.4.4",
                 "orchestra/canvas": "^7.0",
@@ -10426,7 +10426,7 @@
             },
             "suggest": {
                 "fakerphp/faker": "Allow using Faker for testing (^1.9.2).",
-                "laravel/framework": "Required for testing (^9.5.1).",
+                "laravel/framework": "Required for testing (^9.2).",
                 "mockery/mockery": "Allow using Mockery for testing (^1.4.4).",
                 "orchestra/testbench-browser-kit": "Allow using legacy Laravel BrowserKit for testing (^7.0).",
                 "orchestra/testbench-dusk": "Allow using Laravel Dusk for testing (^7.0).",
@@ -10486,7 +10486,7 @@
                     "type": "liberapay"
                 }
             ],
-            "time": "2022-03-20T07:06:20+00:00"
+            "time": "2022-02-23T01:10:25+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -11757,21 +11757,21 @@
         },
         {
             "name": "rector/rector",
-            "version": "0.12.18",
+            "version": "0.12.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "f6c756c9cd41166eff304f1f4f6ecf97935dfd42"
+                "reference": "4f32575b718a4d7032423dc8e9d1e530ad859782"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/f6c756c9cd41166eff304f1f4f6ecf97935dfd42",
-                "reference": "f6c756c9cd41166eff304f1f4f6ecf97935dfd42",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/4f32575b718a4d7032423dc8e9d1e530ad859782",
+                "reference": "4f32575b718a4d7032423dc8e9d1e530ad859782",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1|^8.0",
-                "phpstan/phpstan": "^1.4.8"
+                "phpstan/phpstan": "^1.4.6"
             },
             "conflict": {
                 "phpstan/phpdoc-parser": "<1.2",
@@ -11805,7 +11805,7 @@
             "description": "Instant Upgrade and Automated Refactoring of any PHP code",
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/0.12.18"
+                "source": "https://github.com/rectorphp/rector/tree/0.12.17"
             },
             "funding": [
                 {
@@ -11813,7 +11813,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-20T23:00:21+00:00"
+            "time": "2022-03-03T12:18:11+00:00"
         },
         {
             "name": "sebastian/cli-parser",

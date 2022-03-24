@@ -16,13 +16,6 @@ components:
   requestBodies:
     Carrier-write:
       content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Carrier-write'
-      description: Transporteur.
-      required: true
-    Carrier-write-patch:
-      content:
         application/merge-patch+json:
           schema:
             $ref: '#/components/schemas/Carrier-write'
@@ -243,34 +236,13 @@ info:
   version: 0.0.0
 openapi: 3.0.3
 paths:
-  /api/carriers:
-    get:
-      deprecated: false
-      description: 'Récupère les transporteurs'
-      responses:
-        200:
-          $ref: '#/components/responses/Carrier-read'
-      summary: 'Récupère les transporteurs'
-      tags:
-        - Carrier
-    post:
-      deprecated: false
-      description: 'Créer un transporteur'
-      requestBody:
-        $ref: '#/components/requestBodies/Carrier-write'
-      responses:
-        201:
-          $ref: '#/components/responses/Carrier-read'
-      summary: 'Créer un transporteur'
-      tags:
-        - Carrier
   '/api/carriers/{id}':
     delete:
       deprecated: false
       description: 'Supprime un transporteur'
       responses:
         204:
-          $ref: '#/components/responses/Carrier-read'
+          description: Succès
       summary: 'Supprime un transporteur'
       tags:
         - Carrier
@@ -281,7 +253,7 @@ paths:
       deprecated: false
       description: 'Modifie un transporteur'
       requestBody:
-        $ref: '#/components/requestBodies/Carrier-write-patch'
+        $ref: '#/components/requestBodies/Carrier-write'
       responses:
         200:
           $ref: '#/components/responses/Carrier-read'

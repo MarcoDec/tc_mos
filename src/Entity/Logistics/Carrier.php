@@ -7,7 +7,6 @@ use App\ApiPlatform\Core\Annotation\ApiProperty;
 use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use App\Entity\Embeddable\Address;
 use App\Entity\Entity;
-use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -57,8 +56,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ),
     ApiSerializerGroups(inheritedRead: ['Carrier-read' => ['Carrier-write', 'Entity']], write: ['Carrier-write']),
-    ORM\Entity,
-    UniqueEntity('name')
+    ORM\Entity
 ]
 class Carrier extends Entity {
     #[

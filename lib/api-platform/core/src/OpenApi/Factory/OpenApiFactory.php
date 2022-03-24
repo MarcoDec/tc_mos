@@ -159,32 +159,16 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         if ($operation['openapi_context']['summary'] === 'hidden') {
             return $path;
         }
-        if (
-            in_array($operation['method'], ['DELETE', 'GET'])
-            || empty($denormalizationContext = $metadata->getAttribute('denormalization_context', []))
-        ) {
-            $body = null;
-        } else {
-            $bodyRef = "#/components/requestBodies/{$denormalizationContext['openapi_definition_name']}";
-            if ($operation['method'] === 'PATCH') {
-                $bodyRef .= '-patch';
-            }
-            $body = ['$ref' => $bodyRef];
-        }
         return $path->{'with'.ucfirst(strtolower($operation['method']))}(new Model\Operation(
             tags: [$metadata->getShortName()],
-            responses: [
-                match ($operation['method']) {
-                    'DELETE' => 204,
-                    'POST' => 201,
-                    default => 200
-                } => empty($normalizationContext = $metadata->getAttribute('normalization_context', []))
-                    ? ['description' => 'Succès']
-                    : ['$ref' => "#/components/responses/{$normalizationContext['openapi_definition_name']}"]
-            ],
+            responses: $operation['method'] === 'DELETE' || empty($normalizationContext = $metadata->getAttribute('normalization_context', []))
+                ? [204 => ['description' => 'Succès']]
+                : [200 => ['$ref' => "#/components/responses/{$normalizationContext['openapi_definition_name']}"]],
             summary: $operation['openapi_context']['summary'],
             description: $operation['openapi_context']['description'],
-            requestBody: $body
+            requestBody: $operation['method'] === 'DELETE' || empty($denormalizationContext = $metadata->getAttribute('denormalization_context', []))
+                ? null
+                : ['$ref' => "#/components/requestBodies/{$denormalizationContext['openapi_definition_name']}"]
         ));
     }
 
@@ -203,9 +187,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     $this->generateOperation(
                         metadata: $metadata,
                         operation: $operation,
-                        path: $paths->getPath($path) ?? new Model\PathItem(
-                            parameters: $type === OperationType::ITEM ? [['$ref' => '#/components/parameters/id']] : []
-                        )
+                        path: $paths->getPath($path) ?? new Model\PathItem(parameters: [['$ref' => '#/components/parameters/id']])
                     )
                 );
             }
@@ -224,17 +206,6 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             $metadata = $this->metadataFactory->create($refl->getName());
             if (!empty($denormalizationContext = $metadata->getAttribute('denormalization_context', []))) {
                 $bodies[$denormalizationContext['openapi_definition_name']] = new Model\RequestBody(
-                    description: self::getReflDescription($refl) ?? $metadata->getShortName() ?? $refl->getShortName(),
-                    content: new ArrayObject([
-                        'application/json' => [
-                            'schema' => [
-                                '$ref' => "#/components/schemas/{$denormalizationContext['openapi_definition_name']}"
-                            ]
-                        ]
-                    ]),
-                    required: true
-                );
-                $bodies["{$denormalizationContext['openapi_definition_name']}-patch"] = new Model\RequestBody(
                     description: self::getReflDescription($refl) ?? $metadata->getShortName() ?? $refl->getShortName(),
                     content: new ArrayObject([
                         'application/merge-patch+json' => [
@@ -258,7 +229,6 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     ])
                 );
             }
-            $this->generateOperations($metadata, $metadata->getCollectionOperations(), $paths, $refl, OperationType::COLLECTION);
             $this->generateOperations($metadata, $metadata->getItemOperations(), $paths, $refl, OperationType::ITEM);
         } catch (ResourceClassNotFoundException) {
         }
