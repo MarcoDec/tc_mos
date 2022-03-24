@@ -5,6 +5,7 @@ namespace App\Entity\Hr\Employee\Skill;
 use App\Entity\Entity;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
@@ -16,7 +17,8 @@ class Type extends Entity {
     #[
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
-        ORM\Column(length: 50)
+        ORM\Column(length: 50),
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     private ?string $name = null;
 

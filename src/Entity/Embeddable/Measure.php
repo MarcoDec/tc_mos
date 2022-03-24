@@ -5,19 +5,29 @@ namespace App\Entity\Embeddable;
 use App\Entity\Management\Unit;
 use Doctrine\ORM\Mapping as ORM;
 use LogicException;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class Measure {
-    #[ORM\Column(length: 3, nullable: true)]
+    #[
+        ORM\Column(length: 3, nullable: true),
+        Serializer\Groups(['read:measure', 'write:measure'])
+    ]
     private ?string $code = null;
 
-    #[ORM\Column(length: 3, nullable: true)]
+    #[
+        ORM\Column(length: 3, nullable: true),
+        Serializer\Groups(['read:measure', 'write:measure'])
+    ]
     private ?string $denominator = null;
 
     private ?Unit $denominatorUnit = null;
     private ?Unit $unit = null;
 
-    #[ORM\Column(options: ['default' => 0])]
+    #[
+        ORM\Column(options: ['default' => 0]),
+        Serializer\Groups(['read:measure', 'write:measure'])
+    ]
     private float $value = 0;
 
     final public function add(self $measure): self {

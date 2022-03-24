@@ -7,6 +7,7 @@ use App\Entity\Production\Engine\CounterPart\Group as CounterPartGroup;
 use App\Entity\Production\Engine\Tool\Group as ToolGroup;
 use App\Entity\Production\Engine\Workstation\Group as WorkstationGroup;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
@@ -17,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table(name: 'engine_group')
 ]
 abstract class Group extends Entity {
-    final public const TYPES = [
+    public const TYPES = [
         'counter-part' => CounterPartGroup::class,
         'tool' => ToolGroup::class,
         'workstation' => WorkstationGroup::class
@@ -26,18 +27,23 @@ abstract class Group extends Entity {
     #[
         Assert\Length(min: 2, max: 3),
         Assert\NotBlank,
-        ORM\Column(length: 3, options: ['charset' => 'ascii'])
+        ORM\Column(length: 3, options: ['charset' => 'ascii']),
+        Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private ?string $code = null;
 
     #[
         Assert\Length(min: 3, max: 35),
         Assert\NotBlank,
-        ORM\Column(length: 35)
+        ORM\Column(length: 35),
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     private ?string $name = null;
 
-    #[ORM\Column(options: ['default' => false])]
+    #[
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:engine-group', 'write:engine-group'])
+    ]
     private bool $safetyDevice = false;
 
     final public function getCode(): ?string {

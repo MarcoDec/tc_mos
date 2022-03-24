@@ -5,6 +5,7 @@ namespace App\Entity\Management;
 use App\Entity\Entity;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
@@ -15,21 +16,27 @@ use Symfony\Component\Validator\Constraints as Assert;
 class InvoiceTimeDue extends Entity {
     #[
         Assert\Length(min: 0, max: 31),
-        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true])
+        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
+        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
     private ?int $days = 0;
 
     #[
         Assert\Length(min: 0, max: 31),
-        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true])
+        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
+        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
     private ?int $daysAfterEndOfMonth = 0;
 
-    #[ORM\Column(options: ['default' => false])]
+    #[
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
+    ]
     private ?bool $endOfMonth = false;
 
     #[
         ORM\Column(length: 30),
+        Serializer\Groups(['read:name', 'write:name']),
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank
     ]

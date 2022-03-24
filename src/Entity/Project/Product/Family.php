@@ -6,6 +6,7 @@ use App\Entity\Family as AbstractFamily;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
@@ -21,14 +22,19 @@ class Family extends AbstractFamily {
     #[
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column(length: 30)
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
 
     /** @var null|self */
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+    #[
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
     protected $parent;
 
+    #[Serializer\Groups(['read:file'])]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
     }

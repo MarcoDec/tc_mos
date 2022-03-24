@@ -6,6 +6,7 @@ use App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType;
 use App\Entity\Entity;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
@@ -17,13 +18,15 @@ class Type extends Entity {
     #[
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column(length: 30)
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     private ?string $name = null;
 
     #[
         Assert\Choice(choices: CurrentPlaceType::TYPES),
-        ORM\Column(type: 'employee_current_place', nullable: true, options: ['charset' => 'ascii'])
+        ORM\Column(type: 'employee_current_place', nullable: true, options: ['charset' => 'ascii']),
+        Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $toStatus = null;
 

@@ -5,6 +5,7 @@ namespace App\Entity\Management;
 use App\Entity\Entity;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
@@ -14,7 +15,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class VatMessage extends Entity {
     #[
         Assert\NotBlank,
-        ORM\Column(length: 120)
+        ORM\Column(length: 120),
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     private ?string $name = null;
 

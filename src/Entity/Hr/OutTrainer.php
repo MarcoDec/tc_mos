@@ -6,24 +6,30 @@ use App\Entity\Embeddable\Address;
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class OutTrainer extends Entity {
-    #[ORM\Embedded]
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
+    ]
     private Address $address;
 
     #[
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column(length: 30)
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     private ?string $name = null;
 
     #[
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column(length: 30)
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
     ]
     private ?string $surname = null;
 

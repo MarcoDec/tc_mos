@@ -5,6 +5,7 @@ namespace App\Entity\Embeddable;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\MappedSuperclass]
 abstract class CurrentPlace implements Stringable {
@@ -16,7 +17,10 @@ abstract class CurrentPlace implements Stringable {
     final public const TR_UNLOCK = 'unlock';
     final public const TR_VALIDATE = 'validate';
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[
+        ORM\Column(type: 'datetime_immutable', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP']),
+        Serializer\Groups(['read:current-place'])
+    ]
     protected ?DateTimeImmutable $date;
 
     public function __construct(protected ?string $name = null) {

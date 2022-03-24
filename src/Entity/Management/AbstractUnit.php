@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Illuminate\Support\Collection as LaravelCollection;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
@@ -17,13 +18,15 @@ abstract class AbstractUnit extends Entity {
 
     #[
         Assert\NotBlank,
-        ORM\Column(length: 3)
+        ORM\Column(length: 3),
+        Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected ?string $code = null;
 
     #[
         Assert\NotBlank,
-        ORM\Column(length: 20)
+        ORM\Column(length: 20),
+        Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
 
@@ -33,7 +36,8 @@ abstract class AbstractUnit extends Entity {
     #[
         Assert\NotBlank,
         Assert\Positive,
-        ORM\Column(options: ['default' => 1])
+        ORM\Column(options: ['default' => 1]),
+        Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private float $base = 1;
 
