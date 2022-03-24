@@ -15,9 +15,6 @@ final class Schema implements OpenApiContext {
     /** @var Collection<string, ApiProperty> */
     private readonly Collection $properties;
 
-    /** @var string[] */
-    private array $required = [];
-
     /**
      * @param array<self|string>         $allOf
      * @param array<string, ApiProperty> $properties
@@ -30,26 +27,6 @@ final class Schema implements OpenApiContext {
         array $properties = []
     ) {
         $this->properties = collect($properties);
-    }
-
-    /**
-     * @param string[] $required
-     */
-    public function appendRequired(array $required): self {
-        $this->required = array_merge($this->required, $required);
-        return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getNotRequired(): array {
-        $required = $this->getRequired();
-        return $this->getProperties()
-            ->keys()
-            ->filter(static fn (string $property): bool => !in_array($property, $required))
-            ->values()
-            ->all();
     }
 
     /**
@@ -79,36 +56,27 @@ final class Schema implements OpenApiContext {
             $context['nullable'] = $this->nullable;
         }
         if (!empty($this->properties)) {
-            $context['properties'] = $this->getProperties()->all();
+            $context['properties'] = $this->getProperties();
             $context['required'] = $this->getRequired();
         }
         return $context;
     }
 
     /**
-     * @return string[]
+     * @return array<string, OpenApiProperty>
      */
-    public function getParents(): array {
-        return collect($this->allOf)->filter(static fn (self|string $all): bool => is_string($all))->values()->all();
-    }
-
-    /**
-     * @return Collection<string, OpenApiProperty>
-     */
-    private function getProperties(): Collection {
-        /** @phpstan-ignore-next-line */
-        return $this->properties->map->getOpenApiContext();
+    public function getProperties(): array {
+        /** @var Collection<string, OpenApiProperty> $mapped */
+        $mapped = $this->properties->map->getOpenApiContext();
+        return $mapped->all();
     }
 
     /**
      * @return string[]
      */
-    private function getRequired(): array {
-        if (empty($this->required)) {
-            /** @var Collection<string, ApiProperty> $required */
-            $required = $this->properties->filter->required;
-            $this->required = $required->keys()->values()->all();
-        }
-        return $this->required;
+    public function getRequired(): array {
+        /** @var Collection<string, ApiProperty> $required */
+        $required = $this->properties->filter->required;
+        return $required->keys()->all();
     }
 }

@@ -73,7 +73,7 @@
     "doctrine/orm": "^2.11",
     "dragonmantank/cron-expression": "^3.3",
     "haydenpierce/class-finder": "^0.4.3",
-    "illuminate/collections": "^9.5",
+    "illuminate/collections": "^9.4",
     "jawira/case-converter": "^3.4",
     "nelmio/cors-bundle": "^2.2",
     "pentatrion/vite-bundle": "^1.2",

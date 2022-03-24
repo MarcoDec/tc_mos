@@ -53,10 +53,10 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     /**
-     * @return Collection<string, Schema>
+     * @return ArrayObject<string, SchemaContext>
      */
-    private function createSchemas(): Collection {
-        return collect(['Resource' => new Schema(
+    private function createSchemas(): ArrayObject {
+        return new ArrayObject(['Resource' => (new Schema(
             description: 'Base d\'une resource.',
             properties: [
                 '@context' => new ApiProperty(
@@ -82,7 +82,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 '@id' => new ApiProperty(nullable: false, readOnly: true, required: true),
                 '@type' => new ApiProperty(nullable: false, readOnly: true, required: true)
             ]
-        )]);
+        ))->getOpenApiContext()]);
     }
 
     /**
@@ -106,8 +106,6 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      */
     private function generateSchemas(): ArrayObject {
         $schemas = $this->createSchemas();
-        /** @var Collection<string, Schema> $reads */
-        $reads = new Collection();
         foreach ($this->classCollector->getClasses() as $refl) {
             $properties = collect($refl->getProperties())
                 ->mapWithKeys(static function (ReflectionProperty $property): array {
@@ -133,29 +131,17 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         if (!empty($schema = $this->generateSchema($group, $properties, $refl, $base))) {
                             $allOf[] = $schema;
                         }
-                        $schema = new Schema(allOf: $allOf);
-                        $schemas->put($group, $schema);
-                        $reads->put($group, $schema);
+                        $schemas[$group] = (new Schema(allOf: $allOf))->getOpenApiContext();
                     }
                 }
                 foreach ($groups->write as $group) {
                     if (!empty($schema = $this->generateSchema($group, $properties, $refl))) {
-                        $schemas->put($group, $schema);
-                        $reads->put($group, $schema);
+                        $schemas[$group] = $schema->getOpenApiContext();
                     }
                 }
             }
         }
-        foreach ($reads as $read) {
-            foreach ($read->getParents() as $parent) {
-                if (null !== $schema = $schemas->get($parent)) {
-                    $read->appendRequired($schema->getNotRequired());
-                }
-            }
-        }
-        /** @var array<string, SchemaContext> $schemas */
-        $schemas = $schemas->map->getOpenApiContext()->all();
-        return new ArrayObject($schemas);
+        return $schemas;
     }
 
     #[Pure]
