@@ -5,15 +5,11 @@ namespace App\ApiPlatform\Core\Annotation;
 use ApiPlatform\Core\Annotation\ApiProperty as ApiPlatformProperty;
 use App\ApiPlatform\Core\OpenApi\Factory\OpenApiContext;
 use App\ApiPlatform\Core\OpenApi\Factory\Schema;
-use Attribute;
 use JetBrains\PhpStorm\ArrayShape;
-use ReflectionNamedType;
-use ReflectionProperty;
 
 /**
  * @phpstan-import-type OpenApiProperty from OpenApiContext
  */
-#[Attribute]
 final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
     /**
      * @param string[]                  $enum
@@ -34,13 +30,6 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
     #[ArrayShape(['oneOf' => 'array', 'readOnly' => 'bool', 'type' => 'string'])]
     public function getOpenApiContext(): array {
         return $this->attributes['openapi_context'];
-    }
-
-    public function setType(ReflectionProperty $property): self {
-        if (($type = $property->getType()) instanceof ReflectionNamedType) {
-            $this->attributes['openapi_context']['type'] = ('int' === $name = $type->getName()) ? 'integer' : $name;
-        }
-        return $this;
     }
 
     /**

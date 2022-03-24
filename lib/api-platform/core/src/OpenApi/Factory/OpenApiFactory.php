@@ -11,8 +11,6 @@ use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use ArrayObject;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\Pure;
-use ReflectionProperty;
-use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @phpstan-import-type SchemaContext from Schema
@@ -70,22 +68,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     private function generateSchemas(): ArrayObject {
         $schemas = $this->createSchemas();
         foreach ($this->em->getMetadataFactory()->getAllMetadata() as $metadata) {
-            $refl = $metadata->getReflectionClass();
-            $properties = collect($refl->getProperties())
-                ->mapWithKeys(static function (ReflectionProperty $property): array {
-                    $apiPropertyAttributes = $property->getAttributes(ApiProperty::class);
-                    $groupsAttributes = $property->getAttributes(Serializer\Groups::class);
-                    if (count($apiPropertyAttributes) === 1 && count($groupsAttributes) === 1) {
-                        /** @var ApiProperty $apiProperty */
-                        $apiProperty = $apiPropertyAttributes[0]->newInstance();
-                        return [$property->getName() => [
-                            'apiProperty' => $apiProperty->setType($property),
-                            'groups' => $groupsAttributes[0]->newInstance()
-                        ]];
-                    }
-                    return [];
-                });
-            $attributes = $refl->getAttributes(ApiSerializerGroups::class);
+            $attributes = $metadata->getReflectionClass()->getAttributes(ApiSerializerGroups::class);
             if (count($attributes) === 1) {
                 /** @var ApiSerializerGroups $groups */
                 $groups = $attributes[0]->newInstance();
@@ -93,13 +76,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     foreach ($children as $group) {
                         $schemas[$group] = (new Schema(allOf: [
                             $base,
-                            new Schema(
-                                properties: $properties
-                                    ->mapWithKeys(static fn (array $attributes, string $property): array => in_array($group, $attributes['groups']->getGroups())
-                                        ? [$property => $attributes['apiProperty']]
-                                        : [])
-                                    ->all()
-                            )
+                            new Schema()
                         ]))->getOpenApiContext();
                     }
                 }
