@@ -88,23 +88,17 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     /**
      * @param Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $properties
      * @param ReflectionClass<T>                                                             $refl
-     * @param string[]                                                                       $parents
      *
      * @template T of object
      */
-    private function generateSchema(string $group, Collection $properties, ReflectionClass $refl, array $parents = []): ?Schema {
-        $parents = collect($parents);
+    private function generateSchema(string $group, Collection $properties, ReflectionClass $refl, ?string $parent = null): ?Schema {
         $properties = $properties
-            ->mapWithKeys(static fn (array $attributes, string $property): array => $attributes['apiProperty']->hasRef()
-            || (in_array($group, $attributes['groups']->getGroups())
-                && $parents->intersect($attributes['groups']->getGroups())->isEmpty())
+            ->mapWithKeys(static fn (array $attributes, string $property): array => in_array($group, $attributes['groups']->getGroups())
+            && (empty($parent) || !in_array($parent, $attributes['groups']->getGroups()))
                 ? [$property => $attributes['apiProperty']]
                 : [])
             ->all();
-        return empty($properties) ? null : new Schema(
-            description: $parents->isEmpty() ? self::getReflDescription($refl) : null,
-            properties: $properties
-        );
+        return empty($properties) ? null : new Schema(description: self::getReflDescription($refl), properties: $properties);
     }
 
     /**
@@ -115,7 +109,6 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         /** @var Collection<string, Schema> $reads */
         $reads = new Collection();
         foreach ($this->classCollector->getClasses() as $refl) {
-            /** @var Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $properties */
             $properties = collect($refl->getProperties())
                 ->mapWithKeys(static function (ReflectionProperty $property): array {
                     $apiPropertyAttributes = $property->getAttributes(ApiProperty::class);
@@ -134,26 +127,19 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             if (count($attributes) === 1) {
                 /** @var ApiSerializerGroups $groups */
                 $groups = $attributes[0]->newInstance();
-                foreach ($groups->inheritedRead as $group => $parents) {
-                    $allOf = (new ArrayObject($parents))->getArrayCopy();
-                    if (!empty($schema = $this->generateSchema($group, $properties, $refl, $parents))) {
-                        $allOf[] = $schema;
+                foreach ($groups->inheritedRead as $base => $children) {
+                    foreach ($children as $group) {
+                        $allOf = [$base];
+                        if (!empty($schema = $this->generateSchema($group, $properties, $refl, $base))) {
+                            $allOf[] = $schema;
+                        }
+                        $schema = new Schema(allOf: $allOf);
+                        $schemas->put($group, $schema);
+                        $reads->put($group, $schema);
                     }
-                    $schema = new Schema(allOf: $allOf, description: self::getReflDescription($refl));
-                    $schemas->put($group, $schema);
-                    $reads->put($group, $schema);
                 }
-                /** @var Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $writeProperties */
-                $writeProperties = $properties->map(static fn (array $attributes): array => [
-                    'apiProperty' => (clone $attributes['apiProperty'])->setReadMode(false),
-                    'groups' => $attributes['groups']
-                ]);
                 foreach ($groups->write as $group) {
-                    if (!empty($schema = $this->generateSchema(
-                        group: $group,
-                        properties: $writeProperties,
-                        refl: $refl
-                    ))) {
+                    if (!empty($schema = $this->generateSchema($group, $properties, $refl))) {
                         $schemas->put($group, $schema);
                         $reads->put($group, $schema);
                     }

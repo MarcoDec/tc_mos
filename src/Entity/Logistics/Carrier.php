@@ -2,39 +2,21 @@
 
 namespace App\Entity\Logistics;
 
-use App\ApiPlatform\Core\Annotation\ApiProperty;
-use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use App\Entity\Embeddable\Address;
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Transporteur.
- */
-#[
-    ApiSerializerGroups(inheritedRead: ['Carrier-read' => ['Carrier-write', 'Entity']], write: ['Carrier-write']),
-    ORM\Entity
-]
+#[ORM\Entity]
 class Carrier extends Entity {
-    #[
-        ApiProperty(readRef: 'Address-read', writeRef: 'Address-write'),
-        ORM\Embedded,
-        Serializer\Groups(groups: ['Carrier-read', 'Carrier-write'])
-    ]
+    #[ORM\Embedded]
     private Address $address;
 
-    /**
-     * @var null|string Nom
-     */
     #[
-        ApiProperty(example: 'DHL', format: 'name'),
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
-        ORM\Column(length: 50),
-        Serializer\Groups(groups: ['Carrier-read', 'Carrier-write'])
+        ORM\Column(length: 50)
     ]
     private ?string $name = null;
 

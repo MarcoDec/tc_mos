@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * Entité.
  */
 #[
-    ApiSerializerGroups(inheritedRead: ['Entity' => ['Resource']]),
+    ApiSerializerGroups(inheritedRead: ['Resource' => ['Entity']]),
     ORM\MappedSuperclass
 ]
 abstract class Entity {

@@ -40,10 +40,6 @@ final class Schema implements OpenApiContext {
         return $this;
     }
 
-    public function getDescription(): ?string {
-        return $this->description;
-    }
-
     /**
      * @return string[]
      */
