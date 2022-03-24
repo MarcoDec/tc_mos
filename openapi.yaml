@@ -42,20 +42,6 @@ components:
             $ref: '#/components/schemas/Color-write'
       description: Couleur.
       required: true
-    EventType-write:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/EventType-write'
-      description: EventType
-      required: true
-    EventType-write-patch:
-      content:
-        application/merge-patch+json:
-          schema:
-            $ref: '#/components/schemas/EventType-write'
-      description: EventType
-      required: true
   responses:
     Carrier-read:
       content:
@@ -69,12 +55,6 @@ components:
           schema:
             $ref: '#/components/schemas/Color-read'
       description: Couleur.
-    EventType-read:
-      content:
-        application/ld+json:
-          schema:
-            $ref: '#/components/schemas/EventType-read'
-      description: EventType
   schemas:
     Address-read:
       additionalProperties: false
@@ -273,47 +253,6 @@ components:
           type: object
       description: Entité.
       type: object
-    EventType-read:
-      additionalProperties: false
-      allOf:
-        -
-          $ref: '#/components/schemas/EventType-write'
-        -
-          $ref: '#/components/schemas/Entity'
-        -
-          additionalProperties: false
-          properties:
-            toStatus:
-              $ref: '#/components/schemas/EventTypeStatusEnum'
-          type: object
-      required:
-        - toStatus
-      type: object
-    EventType-write:
-      additionalProperties: false
-      properties:
-        name:
-          example: ABSENCE
-          externalDocs:
-            url: 'https://schema.org/name'
-          format: name
-          maxLength: 30
-          minLength: 3
-          nullable: false
-          readOnly: false
-          type: string
-        toStatus:
-          $ref: '#/components/schemas/EventTypeStatusEnum'
-      required:
-        - name
-      type: object
-    EventTypeStatusEnum:
-      enum:
-        - blocked
-        - disabled
-        - enabled
-        - warning
-      type: string
     Resource:
       additionalProperties: false
       description: 'Base d''une resource.'
@@ -549,73 +488,3 @@ paths:
       summary: 'Modifie une couleur'
       tags:
         - Color
-  /api/event-types:
-    get:
-      deprecated: false
-      description: 'Récupère les types d''événement'
-      parameters:
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: name
-          required: false
-          schema:
-            type: string
-          style: form
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: toStatus
-          required: false
-          schema:
-            $ref: '#/components/schemas/EventTypeStatusEnum'
-          style: form
-      responses:
-        200:
-          $ref: '#/components/responses/EventType-read'
-      summary: 'Récupère les types d''événement'
-      tags:
-        - EventType
-    post:
-      deprecated: false
-      description: 'Créer un type d''événement'
-      requestBody:
-        $ref: '#/components/requestBodies/EventType-write'
-      responses:
-        201:
-          $ref: '#/components/responses/EventType-read'
-      summary: 'Créer un type d''événement'
-      tags:
-        - EventType
-  '/api/event-types/{id}':
-    delete:
-      deprecated: false
-      description: 'Supprime un type d''événement'
-      responses:
-        204:
-          $ref: '#/components/responses/EventType-read'
-      summary: 'Supprime un type d''événement'
-      tags:
-        - EventType
-    parameters:
-      -
-        $ref: '#/components/parameters/id'
-    patch:
-      deprecated: false
-      description: 'Modifie un type d''événement'
-      requestBody:
-        $ref: '#/components/requestBodies/EventType-write-patch'
-      responses:
-        200:
-          $ref: '#/components/responses/EventType-read'
-      summary: 'Modifie un type d''événement'
-      tags:
-        - EventType

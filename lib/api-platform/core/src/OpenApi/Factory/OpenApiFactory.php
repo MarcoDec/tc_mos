@@ -16,7 +16,6 @@ use ApiPlatform\Core\PathResolver\OperationPathResolverInterface;
 use App\ApiPlatform\Core\Annotation\ApiProperty;
 use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use App\Service\EntitiesReflectionClassCollector;
-use App\Symfony\Component\Validator\Constraints\Choice;
 use ArrayObject;
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\ArrayShape;
@@ -32,8 +31,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  *
  * @phpstan-type Operation array{method: string, openapi_context: OperationContext}
  * @phpstan-type OperationContext array{description: string, summary: string}
- * @phpstan-type SchemaEnum array{enum: array<string>, type: string}
- * @phpstan-type SchemaItem Schema|SchemaEnum
  */
 final class OpenApiFactory implements OpenApiFactoryInterface {
     public function __construct(
@@ -136,7 +133,6 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         $reads = new Collection();
         /** @var Collection<string, Model\Response> $responses */
         $responses = new Collection();
-        /** @var Collection<string, SchemaItem> $schemas */
         $schemas = $this->createSchemas();
 
         foreach ($this->classCollector->getClasses() as $refl) {
@@ -146,16 +142,14 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
 
         foreach ($reads as $read) {
             foreach ($read->getParents() as $parent) {
-                if (($schema = $schemas->get($parent)) !== null && $schema instanceof Schema) {
+                if (null !== $schema = $schemas->get($parent)) {
                     $read->appendRequired($schema->getNotRequired());
                 }
             }
         }
 
         /** @var array<string, SchemaContext> $schemas */
-        $schemas = $schemas
-            ->map(static fn (array|Schema $schema): array => $schema instanceof Schema ? $schema->getOpenApiContext() : $schema)
-            ->all();
+        $schemas = $schemas->map->getOpenApiContext()->all();
         return [
             'bodies' => new ArrayObject($bodies->all()),
             'paths' => $paths,
@@ -307,24 +301,16 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
     }
 
     /**
-     * @param Collection<string, Schema>     $reads
-     * @param ReflectionClass<T>             $refl
-     * @param Collection<string, SchemaItem> $schemas
+     * @param Collection<string, Schema> $reads
+     * @param ReflectionClass<T>         $refl
+     * @param Collection<string, Schema> $schemas
      *
      * @template T of object
      */
     private function generateSchemas(Collection $reads, ReflectionClass $refl, Collection $schemas): void {
         /** @var Collection<string, array{apiProperty: ApiProperty, groups: Serializer\Groups}> $properties */
         $properties = collect($refl->getProperties())
-            ->mapWithKeys(static function (ReflectionProperty $property) use ($schemas): array {
-                $choiceAttributes = $property->getAttributes(Choice::class);
-                if (count($choiceAttributes) === 1) {
-                    /** @var Choice $choice */
-                    $choice = $choiceAttributes[0]->newInstance();
-                    if ($schemas->doesntContain($choice->name)) {
-                        $schemas->put($choice->name, ['enum' => $choice->choices, 'type' => 'string']);
-                    }
-                }
+            ->mapWithKeys(static function (ReflectionProperty $property): array {
                 $apiPropertyAttributes = $property->getAttributes(ApiProperty::class);
                 $groupsAttributes = $property->getAttributes(Serializer\Groups::class);
                 if (count($apiPropertyAttributes) === 1 && count($groupsAttributes) === 1) {
@@ -401,12 +387,12 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     required: $data['required'] ?? false,
                     allowEmptyValue: $data['openapi']['allowEmptyValue'] ?? true,
                     schema: $schema,
-                    style: isset($schema['type']) && $schema['type'] === 'array' && in_array(
+                    style: $schema['type'] === 'array' && in_array(
                         $data['type'],
                         [Type::BUILTIN_TYPE_ARRAY, Type::BUILTIN_TYPE_OBJECT],
                         true
                     ) ? 'deepObject' : 'form',
-                    explode: isset($schema['type']) && $schema['type'] === 'array'
+                    explode: $schema['type'] === 'array'
                 ));
             }
         }

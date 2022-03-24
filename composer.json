@@ -12,8 +12,7 @@
         "lib/doctrine/dbal/src/"
       ],
       "App\\Doctrine\\ORM\\": "lib/doctrine/orm/lib/Doctrine/ORM/",
-      "App\\Symfony\\Bridge\\Doctrine\\": "lib/symfony/doctrine-bridge/",
-      "App\\Symfony\\Component\\Validator\\": "lib/symfony/validator/"
+      "App\\Symfony\\Bridge\\Doctrine\\": "lib/symfony/doctrine-bridge/"
     }
   },
   "autoload-dev": {
