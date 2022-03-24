@@ -20,7 +20,6 @@ services:
       - ../src/Entity/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
-      - ../src/OpenApi/Schema.php
       - ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
