@@ -112,20 +112,6 @@ components:
             $ref: '#/components/schemas/QualityType-write'
       description: 'Type qualité.'
       required: true
-    RejectType-write:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RejectType-write'
-      description: 'Types de rebus.'
-      required: true
-    RejectType-write-patch:
-      content:
-        application/merge-patch+json:
-          schema:
-            $ref: '#/components/schemas/RejectType-write'
-      description: 'Types de rebus.'
-      required: true
   responses:
     Carrier-read:
       content:
@@ -169,12 +155,6 @@ components:
           schema:
             $ref: '#/components/schemas/QualityType-read'
       description: 'Type qualité.'
-    RejectType-read:
-      content:
-        application/ld+json:
-          schema:
-            $ref: '#/components/schemas/RejectType-read'
-      description: 'Types de rebus.'
   schemas:
     Address-read:
       additionalProperties: false
@@ -590,34 +570,6 @@ components:
         name:
           description: Nom
           example: Dimensions
-          externalDocs:
-            url: 'https://schema.org/name'
-          format: name
-          maxLength: 20
-          minLength: 3
-          nullable: false
-          readOnly: false
-          title: Nom
-          type: string
-      required:
-        - name
-      type: object
-    RejectType-read:
-      additionalProperties: false
-      allOf:
-        -
-          $ref: '#/components/schemas/RejectType-write'
-        -
-          $ref: '#/components/schemas/Entity'
-      description: 'Types de rebus.'
-      type: object
-    RejectType-write:
-      additionalProperties: false
-      description: 'Types de rebus.'
-      properties:
-        name:
-          description: Nom
-          example: 'sertissage dimensionnelle'
           externalDocs:
             url: 'https://schema.org/name'
           format: name
@@ -1287,61 +1239,3 @@ paths:
       summary: 'Modifie un type qualité'
       tags:
         - QualityType
-  /api/reject-types:
-    get:
-      deprecated: false
-      description: 'Récupère les types de rebus'
-      parameters:
-        -
-          allowEmptyValue: true
-          allowReserved: false
-          deprecated: false
-          description: ''
-          explode: false
-          in: query
-          name: name
-          required: false
-          schema:
-            type: string
-          style: form
-      responses:
-        200:
-          $ref: '#/components/responses/RejectType-read'
-      summary: 'Récupère les types de rebus'
-      tags:
-        - RejectType
-    post:
-      deprecated: false
-      description: 'Créer un type de rebus'
-      requestBody:
-        $ref: '#/components/requestBodies/RejectType-write'
-      responses:
-        201:
-          $ref: '#/components/responses/RejectType-read'
-      summary: 'Créer un type de rebus'
-      tags:
-        - RejectType
-  '/api/reject-types/{id}':
-    delete:
-      deprecated: false
-      description: 'Supprime un type de rebus'
-      responses:
-        204:
-          $ref: '#/components/responses/RejectType-read'
-      summary: 'Supprime un type de rebus'
-      tags:
-        - RejectType
-    parameters:
-      -
-        $ref: '#/components/parameters/id'
-    patch:
-      deprecated: false
-      description: 'Modifie un type de rebus'
-      requestBody:
-        $ref: '#/components/requestBodies/RejectType-write-patch'
-      responses:
-        200:
-          $ref: '#/components/responses/RejectType-read'
-      summary: 'Modifie un type de rebus'
-      tags:
-        - RejectType
