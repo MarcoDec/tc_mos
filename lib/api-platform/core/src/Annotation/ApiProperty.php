@@ -122,11 +122,7 @@ final class ApiProperty extends ApiPlatformProperty implements OpenApiContext {
                 && count($property->getAttributes(ORM\Id::class)) === 0
                 && !$this->required;
             $this->attributes['openapi_context']['nullable'] = $this->nullable;
-            $this->attributes['openapi_context']['type'] = match ($name = $type->getName()) {
-                'bool' => 'boolean',
-                'int' => 'integer',
-                default => $name
-            };
+            $this->attributes['openapi_context']['type'] = ('int' === $name = $type->getName()) ? 'integer' : $name;
         }
         return $this;
     }

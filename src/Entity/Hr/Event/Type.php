@@ -16,9 +16,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Type d'événements.
- */
 #[
     ApiFilter(filterClass: EnumFilter::class, properties: ['toStatus']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
@@ -68,9 +65,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('name')
 ]
 class Type extends Entity {
-    /**
-     * @var null|string Nom
-     */
     #[
         ApiProperty(example: 'ABSENCE', format: 'name'),
         Assert\Length(min: 3, max: 30),
@@ -80,9 +74,6 @@ class Type extends Entity {
     ]
     private ?string $name = null;
 
-    /**
-     * @var null|string Statut
-     */
     #[
         ApiProperty(ref: 'EventTypeStatusEnum'),
         Choice(choices: CurrentPlaceType::TYPES, name: 'EventTypeStatusEnum'),
