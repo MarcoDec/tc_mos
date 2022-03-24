@@ -5,3 +5,4 @@ export const AppRowsTableItem = defineAsyncComponent<Component>(async () => impo
 export const AppRowsTableItems = defineAsyncComponent<Component>(async () => import('./AppRowsTableItems.vue'))
 export const AppRowsTableItemField = defineAsyncComponent<Component>(async () => import('./AppRowsTableItemField.vue'))
 export const AppRowsTableItemInput = defineAsyncComponent<Component>(async () => import('./AppRowsTableItemInput.vue'))
+export const AppRowsTableItemComponent = defineAsyncComponent<Component>(async () => import('./AppRowsTableItemComponent.vue'))

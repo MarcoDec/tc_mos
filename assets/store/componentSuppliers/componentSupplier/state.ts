@@ -1,3 +1,4 @@
+import type {State as Price} from '../../componentSupplierPrices/componentSupplierPrice'
 export type State = {
     name: string | null
     proportion:  string | null
@@ -12,3 +13,4 @@ export type State = {
     update2: boolean | null
     id: number
 }
+export type Response= Omit<State,'prices'> & {prices:Omit <Price,'index'>[]}

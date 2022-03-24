@@ -6,4 +6,5 @@ export type State = {
     update: boolean | null
     update2: boolean | null
     id: number
+    index: number
 }

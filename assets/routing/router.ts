@@ -73,7 +73,7 @@ const router = createRouter({
                         name: 'delai',
                         sort: false,
                         type: 'number',
-                        update: false,
+                        update: true,
                         prefix: 'componentSuppliers'
                     },
                     {
@@ -103,7 +103,7 @@ const router = createRouter({
                         name: 'reference',
                         sort: false,
                         type: 'text',
-                        update: false,
+                        update: true,
                         prefix: 'componentSuppliers'
                     },
                     {
@@ -120,15 +120,15 @@ const router = createRouter({
                         create: true,
                         filter: true,
                         children: [
-                            {label: '€', name: 'price',prefix: 'componentSupplierPrices'}, 
-                            {label: 'Q', name: 'quantite',prefix: 'componentSupplierPrices'},
-                            {label: 'ref', name: 'ref',prefix: 'componentSupplierPrices'}
+                            {create: false, filter: true, label: '€', name: 'price',prefix: 'componentSupplierPrices', sort: false, type: 'number',update: true}, 
+                            {create: false, filter: true, label: 'Q', name: 'quantite',prefix: 'componentSupplierPrices', sort: false, type: 'number',update: true},
+                            {create: false, filter: true, label: 'ref', name: 'ref',prefix: 'componentSupplierPrices', sort: false, type: 'number',update: true}
                         ],
                         label: 'Prix',
                         name: 'prices',
                         sort: false,
                         type: 'text',
-                        update: false,
+                        update: true,
                         prefix: 'componentSuppliers'
                     }
                 ]

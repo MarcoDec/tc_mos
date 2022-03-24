@@ -5,6 +5,7 @@ export type items = {
     quantite:  number
     ref: string | null
     id: number
+    index : number
 }
 
 export type Getters = {

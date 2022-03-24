@@ -10,13 +10,13 @@
     const fetchItem = useNamespacedActions<Actions>('componentSuppliers', ['fetchItem']).fetchItem
     const {items} = useNamespacedGetters<Getters>('componentSuppliers', ['items'])
     const {rows} = useNamespacedGetters<Getters>('componentSuppliers', ['rows'])
-    const fetchItemPrices = useNamespacedActions<Actions>('componentSupplierPrices', ['fetchItem']).fetchItem
 
     onMounted(async () => {
         await fetchItem()
-        await fetchItemPrices()
+        console.log('itemsssss', items);
     })
     
+
 
 </script>
 
