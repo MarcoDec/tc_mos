@@ -2,20 +2,11 @@
 
 namespace App\Entity\Embeddable;
 
-use App\ApiPlatform\Core\Annotation\ApiProperty;
-use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Adresse.
- */
-#[
-    ApiSerializerGroups(write: ['Address-write']),
-    ORM\Embeddable
-]
+#[ORM\Embeddable]
 class Address {
     final public const filter = [
         'address.address' => 'partial',
@@ -25,84 +16,49 @@ class Address {
         'address.email' => 'partial',
     ];
 
-    /**
-     * @var null|string Adresse
-     */
     #[
-        ApiProperty(example: '5 rue Alfred Nobel', format: 'streetAddress'),
         Assert\Length(min: 10, max: 50),
-        ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(groups: ['Address-write'])
+        ORM\Column(length: 50, nullable: true)
     ]
     private ?string $address = null;
 
-    /**
-     * @var null|string Complément d'adresse
-     */
     #[
-        ApiProperty(example: 'ZA La charrière', format: 'streetAddress'),
         Assert\Length(min: 10, max: 50),
-        ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(groups: ['Address-write'])
+        ORM\Column(length: 50, nullable: true)
     ]
     private ?string $address2 = null;
 
-    /**
-     * @var null|string Ville
-     */
     #[
-        ApiProperty(example: 'Rioz', format: 'addressLocality'),
         Assert\Length(min: 3, max: 50),
-        ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(groups: ['Address-write'])
+        ORM\Column(length: 50, nullable: true)
     ]
     private ?string $city = null;
 
-    /**
-     * @var string Pays
-     */
     #[
-        ApiProperty(format: 'addressLocality'),
         Assert\Country,
         Assert\Length(exactly: 2),
-        ORM\Column(type: 'char', length: 2, options: ['charset' => 'ascii', 'default' => 'FR']),
-        Serializer\Groups(groups: ['Address-write'])
+        ORM\Column(type: 'char', length: 2, nullable: true, options: ['charset' => 'ascii'])
     ]
-    private string $country = 'FR';
+    private ?string $country = null;
 
-    /**
-     * @var null|string E-mail
-     */
     #[
-        ApiProperty(example: 'sales@tconcept.fr'),
         Assert\Email,
         Assert\Length(min: 5, max: 60),
-        ORM\Column(length: 60, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(groups: ['Address-write'])
+        ORM\Column(length: 60, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $email = null;
 
-    /**
-     * @var null|string Numéro de téléphone
-     */
     #[
-        ApiProperty(example: '03 84 91 99 84'),
         AppAssert\PhoneNumber,
         Assert\Length(min: 10, max: 20),
-        ORM\Column(length: 20, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(groups: ['Address-write'])
+        ORM\Column(length: 20, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $phoneNumber = null;
 
-    /**
-     * @var null|string Code postal
-     */
     #[
-        ApiProperty(example: '70190'),
         AppAssert\ZipCode,
         Assert\Length(min: 2, max: 10),
-        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
-        Serializer\Groups(groups: ['Address-write'])
+        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii'])
     ]
     private ?string $zipCode = null;
 
@@ -118,7 +74,7 @@ class Address {
         return $this->city;
     }
 
-    final public function getCountry(): string {
+    final public function getCountry(): ?string {
         return $this->country;
     }
 
@@ -149,7 +105,7 @@ class Address {
         return $this;
     }
 
-    final public function setCountry(string $country): self {
+    final public function setCountry(?string $country): self {
         $this->country = $country;
         return $this;
     }

@@ -1,95 +1,5 @@
 components:
   schemas:
-    Address-write:
-      additionalProperties: false
-      description: Adresse.
-      properties:
-        address:
-          description: Adresse
-          example: '5 rue Alfred Nobel'
-          externalDocs:
-            url: 'https://schema.org/streetAddress'
-          format: streetAddress
-          maxLength: 50
-          minLength: 10
-          nullable: true
-          readOnly: false
-          title: Adresse
-          type: string
-        address2:
-          description: 'Complément d''adresse'
-          example: 'ZA La charrière'
-          externalDocs:
-            url: 'https://schema.org/streetAddress'
-          format: streetAddress
-          maxLength: 50
-          minLength: 10
-          nullable: true
-          readOnly: false
-          title: 'Complément d''adresse'
-          type: string
-        city:
-          description: Ville
-          example: Rioz
-          externalDocs:
-            url: 'https://schema.org/addressLocality'
-          format: addressLocality
-          maxLength: 50
-          minLength: 3
-          nullable: true
-          readOnly: false
-          title: Ville
-          type: string
-        country:
-          default: FR
-          description: Pays
-          example: FR
-          externalDocs:
-            url: 'https://schema.org/addressLocality'
-          format: addressLocality
-          maxLength: 2
-          minLength: 2
-          nullable: false
-          readOnly: false
-          title: Pays
-          type: string
-        email:
-          description: E-mail
-          example: sales@tconcept.fr
-          externalDocs:
-            url: 'https://schema.org/email'
-          format: email
-          maxLength: 60
-          minLength: 5
-          nullable: true
-          readOnly: false
-          title: E-mail
-          type: string
-        phoneNumber:
-          description: 'Numéro de téléphone'
-          example: '03 84 91 99 84'
-          externalDocs:
-            url: 'https://schema.org/telephone'
-          format: telephone
-          maxLength: 20
-          minLength: 10
-          nullable: true
-          readOnly: false
-          title: 'Numéro de téléphone'
-          type: string
-        zipCode:
-          description: 'Code postal'
-          example: '70190'
-          externalDocs:
-            url: 'https://schema.org/postalCode'
-          format: postalCode
-          maxLength: 10
-          minLength: 2
-          nullable: true
-          readOnly: false
-          title: 'Code postal'
-          type: string
-      type: object
     Entity:
       additionalProperties: false
       allOf:
@@ -97,12 +7,8 @@ components:
           $ref: '#/components/schemas/Resource'
         -
           additionalProperties: false
-          description: Entité.
           properties:
             id:
-              default: 1
-              example: 1
-              nullable: false
               readOnly: true
               type: integer
           required:
@@ -111,25 +17,20 @@ components:
       type: object
     Resource:
       additionalProperties: false
-      description: 'Base d''une resource.'
+      description: 'Base d''une resource'
       properties:
         '@context':
-          nullable: true
           oneOf:
             -
-              nullable: false
               type: string
             -
               additionalProperties: true
-              nullable: false
               properties:
                 '@vocab':
-                  nullable: false
                   readOnly: true
                   type: string
                 hydra:
-                  enum: ['https://www.w3.org/ns/hydra/core']
-                  nullable: false
+                  enum: ['http://www.w3.org/ns/hydra/core#']
                   readOnly: true
                   type: string
               required:
@@ -138,11 +39,9 @@ components:
               type: object
           readOnly: true
         '@id':
-          nullable: false
           readOnly: true
           type: string
         '@type':
-          nullable: false
           readOnly: true
           type: string
       required:

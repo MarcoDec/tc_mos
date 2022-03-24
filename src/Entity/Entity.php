@@ -7,16 +7,13 @@ use App\ApiPlatform\Core\Annotation\ApiSerializerGroups;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-/**
- * Entité.
- */
 #[
     ApiSerializerGroups(inheritedRead: ['Resource' => ['Entity']]),
     ORM\MappedSuperclass
 ]
 abstract class Entity {
     #[
-        ApiProperty(default: 1, readOnly: true, required: true),
+        ApiProperty(readOnly: true, required: true),
         ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
         ORM\Id,

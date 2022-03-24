@@ -166,9 +166,6 @@
     "hamcrest/hamcrest-php": {
         "version": "v2.0.1"
     },
-    "haydenpierce/class-finder": {
-        "version": "0.4.3"
-    },
     "jawira/case-converter": {
         "version": "v3.4.6"
     },
