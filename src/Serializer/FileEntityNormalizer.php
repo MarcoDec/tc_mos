@@ -9,6 +9,9 @@ use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 
+/**
+ * @phpstan-type Context array{FILE_ENTITY_NORMALIZER_CALLED_FOR?: array<class-string, int[]>}
+ */
 final class FileEntityNormalizer implements ContextAwareNormalizerInterface, NormalizerAwareInterface {
     use NormalizerAwareTrait;
 
@@ -19,6 +22,7 @@ final class FileEntityNormalizer implements ContextAwareNormalizerInterface, Nor
 
     /**
      * @param FileEntity $object
+     * @param Context    $context
      *
      * @return mixed[]
      */
@@ -32,6 +36,7 @@ final class FileEntityNormalizer implements ContextAwareNormalizerInterface, Nor
         }
         $context[self::CALLED][$class][] = $object->getId();
 
+        /** @var array{filepath: string}|mixed $normalized */
         $normalized = $this->normalizer->normalize($object, $format, $context);
         if (!is_array($normalized)) {
             throw new LogicException(sprintf('Unexpected value. Require array, get %s.', gettype($normalized)));
@@ -40,6 +45,9 @@ final class FileEntityNormalizer implements ContextAwareNormalizerInterface, Nor
         return $normalized;
     }
 
+    /**
+     * @param Context $context
+     */
     public function supportsNormalization($data, ?string $format = null, array $context = []): bool {
         if ($format !== 'jsonld' || !($data instanceof FileEntity)) {
             return false;

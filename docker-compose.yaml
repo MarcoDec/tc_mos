@@ -3,7 +3,7 @@ services:
     container_name: tconcept_gpao_apache
     depends_on:
       - php
-    image: tconcept/tc_apache:debian-11.2
+    image: tconcept/tc_apache:latest
     ports:
       - '8000:80'
     restart: always

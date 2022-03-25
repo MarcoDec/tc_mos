@@ -1,4 +1,4 @@
-FROM tconcept/tc_php:8.1.3
+FROM tconcept/tc_php:latest
 
 RUN ln -fs /var/www/html/TConcept-GPAO/docker/php/.zshrc-root ~/.zshrc && \
     ln -fs /var/www/html/TConcept-GPAO/.docker/php/php.ini /usr/local/etc/php/php.ini && \

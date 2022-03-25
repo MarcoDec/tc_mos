@@ -3,20 +3,13 @@
 return (new PhpCsFixer\Config())
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->exclude([
-                '.git',
-                '.idea',
-                'assets',
-                'docker',
-                'node_modules',
-                'public/build',
-                'public/bundles',
-                'public/uploads',
-                'templates',
-                'var',
-                'vendor',
+            ->in([
+                __DIR__.'/dev',
+                __DIR__.'/lib',
+                __DIR__.'/src',
+                __DIR__.'/tests',
+                __DIR__.'/utils'
             ])
-            ->in(__DIR__)
     )
     ->setRiskyAllowed(true)
     ->setRules([

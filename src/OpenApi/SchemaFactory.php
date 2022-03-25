@@ -86,7 +86,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
             serializerContext: $serializerContext,
             forceCollection: $forceCollection
         );
-
+        /** @var ArrayObject<string, array{properties: array<string, mixed[]>, required: string[]}> $definitions */
         $definitions = $schema->getDefinitions();
         $key = $schema->getRootDefinitionKey();
 
@@ -95,7 +95,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
             return $schema;
         }
 
-        if (!empty($key) && in_array($format, ['json', 'jsonld'])) {
+        if (!empty($key) && in_array($format, ['json', 'jsonld']) && isset($definitions[$key])) {
             foreach (array_keys($definitions[$key]['properties']) as $property) {
                 if (isset($definitions[$key]['properties'][$property]['description'])) {
                     $definitions[$key]['properties'][$property]['title'] = $definitions[$key]['properties'][$property]['description'];
@@ -115,7 +115,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
             } catch (ResourceClassNotFoundException) {
                 return $schema;
             }
-            if (!empty($resourceName)) {
+            if (!empty($resourceName) && isset($definitions[$key])) {
                 $definitions[$key]['properties']['@context']['example'] = "/api/contexts/$resourceName";
                 $definitions[$key]['properties']['@id']['example'] = "/api/{$this->dashGenerator->getSegmentName($resourceName)}/1";
                 $definitions[$key]['properties']['@type']['example'] = $resourceName;

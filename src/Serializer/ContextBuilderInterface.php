@@ -25,9 +25,11 @@ final class ContextBuilderInterface implements SerializerContextBuilderInterface
             && $context['item_operation_name'] === 'patch'
             && isset($context['resource_class'])
         ) {
+            /** @var string $process */
+            $process = $request->attributes->get('process');
             $exploded = explode('\\', (string) $context['resource_class']);
             $context['groups'] = [sprintf(
-                "write:%s:{$request->attributes->get('process')}",
+                "write:%s:{$process}",
                 (new Convert(end($exploded)))->toKebab()
             )];
         }

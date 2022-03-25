@@ -36,7 +36,7 @@ final class DeserializeListener {
         if (empty($attrs = RequestAttributesExtractor::extractAttributes($request))) {
             return;
         }
-
+        /** @var array{resource_class: string} $context */
         $context = $this->serializer->createFromRequest($request, false, $attrs);
         if (!empty($populated = $request->attributes->get('data'))) {
             $context['object_to_populate'] = $populated;
@@ -50,7 +50,7 @@ final class DeserializeListener {
     }
 
     /**
-     * @param mixed[] $context
+     * @param array{resource_class: string} $context
      *
      * @return mixed[]
      */

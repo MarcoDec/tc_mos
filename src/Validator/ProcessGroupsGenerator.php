@@ -7,6 +7,7 @@ use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use UnexpectedValueException;
 
 final class ProcessGroupsGenerator implements ValidationGroupsGeneratorInterface {
     public function __construct(private readonly ResourceMetadataFactoryInterface $metadataFactory, private readonly RequestStack $stack) {
@@ -19,6 +20,13 @@ final class ProcessGroupsGenerator implements ValidationGroupsGeneratorInterface
         return ["{$this->getShortName()}-{$this->getProcess()}"];
     }
 
+    private function getAttribute(string $attr): string {
+        if (is_string($this->getCurrentRequest()->attributes->get($attr))) {
+            return $attr;
+        }
+        throw new UnexpectedValueException(sprintf('Expected argument of type "string", "%s" given', get_debug_type($attr)));
+    }
+
     private function getCurrentRequest(): Request {
         if (!empty($request = $this->stack->getCurrentRequest())) {
             return $request;
@@ -27,13 +35,11 @@ final class ProcessGroupsGenerator implements ValidationGroupsGeneratorInterface
     }
 
     private function getProcess(): string {
-        return $this->getCurrentRequest()->attributes->get('process');
+        return $this->getAttribute('process');
     }
 
     private function getShortName(): string {
-        if (!empty($shortName = $this->metadataFactory->create(
-            $this->getCurrentRequest()->attributes->get('_api_resource_class')
-        )->getShortName())) {
+        if (!empty($shortName = $this->metadataFactory->create($this->getAttribute('_api_resource_class'))->getShortName())) {
             return $shortName;
         }
         throw new InvalidArgumentException('ShortName not found.');

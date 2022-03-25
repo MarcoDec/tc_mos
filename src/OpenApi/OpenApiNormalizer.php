@@ -5,6 +5,9 @@ namespace App\OpenApi;
 use Illuminate\Support\Collection;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+/**
+ * @phpstan-type Paths array<string, array<'delete'|'get'|'patch'|'post', array{parameters?: mixed[], tags: string[]}>>
+ */
 final class OpenApiNormalizer implements NormalizerInterface {
     private const METHODS = ['delete', 'get', 'patch', 'post'];
 
@@ -12,7 +15,7 @@ final class OpenApiNormalizer implements NormalizerInterface {
     }
 
     /**
-     * @param mixed[] $paths
+     * @param Paths $paths
      *
      * @return mixed[]
      */
@@ -23,6 +26,7 @@ final class OpenApiNormalizer implements NormalizerInterface {
         foreach ($paths as $path => $item) {
             $tag = 'hidden';
             foreach (self::METHODS as $method) {
+                /** @phpstan-ignore-next-line */
                 if (!isset($item[$method]) || empty($operation = $item[$method])) {
                     continue;
                 }
@@ -56,7 +60,7 @@ final class OpenApiNormalizer implements NormalizerInterface {
      * @return mixed[]
      */
     public function normalize($object, ?string $format = null, array $context = []): array {
-        /** @var array{components: array{schemas: array<string, mixed>}, paths: mixed[]} $normalized */
+        /** @var array{components: array{schemas: array<string, mixed>}, paths: Paths} $normalized */
         $normalized = $this->decorated->normalize($object, $format, $context);
         $normalized['components']['schemas'] = collect($normalized['components']['schemas'])->sortKeys()->all();
         $normalized['paths'] = self::sortPaths($normalized['paths']);
