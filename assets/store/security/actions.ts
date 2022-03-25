@@ -21,7 +21,7 @@ export const actions = {
             {root: true}
         )
         Cookies.set(user.id, user.token)
-        commit('user', user.username)
+        commit('login', user)
     },
     async logout({commit, dispatch}: ActionContext): Promise<void> {
         await dispatch(
@@ -34,7 +34,7 @@ export const actions = {
             {root: true}
         )
         Cookies.remove()
-        commit('user', null)
+        commit('login', {})
     }
 }
 

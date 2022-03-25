@@ -3,7 +3,15 @@
     import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
     import {useRouter} from 'vue-router'
 
-    const hasUser = useNamespacedGetters<Getters>('security', ['hasUser']).hasUser
+    const {
+        hasUser,
+        isPurchaseAdmin,
+        isPurchaseReader
+    } = useNamespacedGetters<Getters>('security', [
+        'hasUser',
+        'isPurchaseAdmin',
+        'isPurchaseReader'
+    ])
     const logout = useNamespacedActions<Actions>('security', ['logout']).logout
     const name = useNamespacedState<State>('security', ['username']).username
     const router = useRouter()
@@ -20,15 +28,20 @@
             T-Concept
         </AppNavbarBrand>
         <AppNavbarCollapse>
-            <AppNavbarItem id="nav-purchase" icon="shopping-bag" title="Achats">
-                <AppNavbarLink icon="layer-group" to="attribute-list">
-                    Attribut
-                </AppNavbarLink>
-                <AppNavbarLink icon="layer-group" to="component-families">
-                    Familles de composants
-                </AppNavbarLink>
+            <AppNavbarItem v-if="isPurchaseReader" id="nav-purchase" icon="shopping-bag" title="Achats">
+                <template v-if="isPurchaseAdmin">
+                    <AppDropdownItem variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink disabled icon="magnet" to="attribute-list" variant="danger">
+                        Attribut
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
+                        Familles de composants
+                    </AppNavbarLink>
+                </template>
             </AppNavbarItem>
-            <AppNavbarItem id="nav-purchase" icon="sitemap" title="Direction">
+            <!-- AppNavbarItem id="nav-purchase" icon="sitemap" title="Direction">
                 <AppNavbarLink icon="palette" to="color-list">
                     Couleur
                 </AppNavbarLink>
@@ -54,7 +67,7 @@
                 <AppNavbarLink icon="shuttle-van" to="Carrier-list">
                     Transporteur
                 </AppNavbarLink>
-                <AppNavbarLink icon="contract" to="Incoterms-list">
+                <AppNavbarLink icon="file-contract" to="Incoterms-list">
                     Incoterms
                 </AppNavbarLink>
             </AppNavbarItem>
@@ -76,7 +89,7 @@
                 <AppNavbarLink icon="atom" to="operation-list">
                     Opération
                 </AppNavbarLink>
-                <AppNavbarLink icon="elementor" to="OperationType-list">
+                <AppNavbarLink brands icon="elementor" to="OperationType-list">
                     Type d'opération
                 </AppNavbarLink>
             </AppNavbarItem>
@@ -84,10 +97,10 @@
                 <AppNavbarLink icon="check-circle" to="ComponentReferenceValue-list">
                     Relevé qualité composant
                 </AppNavbarLink>
-                <AppNavbarLink icon="elementor" to="RejectType-list">
+                <AppNavbarLink brands icon="elementor" to="RejectType-list">
                     Catégorie de rejet de production
                 </AppNavbarLink>
-                <AppNavbarLink icon="elementor" to="QualityType-list">
+                <AppNavbarLink brands icon="elementor" to="QualityType-list">
                     Critère qualité
                 </AppNavbarLink>
             </AppNavbarItem>
@@ -95,13 +108,13 @@
                 <AppNavbarLink icon="user-graduate" to="OutTrainer-list">
                     Formateur extérieur
                 </AppNavbarLink>
-                <AppNavbarLink icon="elementor" to="EmployeeEventType-list">
+                <AppNavbarLink brands icon="elementor" to="EmployeeEventType-list">
                     Catégories d'événement des employés
                 </AppNavbarLink>
                 <AppNavbarLink icon="clock" to="TimeSlot-list">
                     Plage horaire
                 </AppNavbarLink>
-            </AppNavbarItem>
+            </AppNavbarItem -->
         </AppNavbarCollapse>
         <div v-if="hasUser" class="text-white">
             <Fa icon="user-circle"/>

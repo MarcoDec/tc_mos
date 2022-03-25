@@ -1,8 +1,9 @@
 import type {State} from '.'
 
 export const mutations = {
-    user(state: State, username: string): void {
-        state.username = username
+    login(state: State, user: State): void {
+        state.roles = user.roles
+        state.username = user.username
     }
 }
 
