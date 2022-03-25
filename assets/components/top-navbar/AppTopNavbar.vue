@@ -69,7 +69,7 @@
                     Catégorie d'événement des équipements
                 </AppNavbarLink>
             </AppNavbarItem>
-            <AppNavbarItem id="nav-purchase" icon="industry" title="Production">
+            <AppNavbarItem id="nav-purchase" icon="industry" title="Projet">
                 <AppNavbarLink icon="layer-group" to="product-families">
                     Familles de produits
                 </AppNavbarLink>
@@ -86,7 +86,8 @@
                 </AppNavbarLink>
                 <AppNavbarLink icon="elementor" to="RejectType-list">
                     Catégorie de rejet de production
-                </AppNavbarLink><AppNavbarLink icon="elementor" to="QualityType-list">
+                </AppNavbarLink>
+                <AppNavbarLink icon="elementor" to="QualityType-list">
                     Critère qualité
                 </AppNavbarLink>
             </AppNavbarItem>
