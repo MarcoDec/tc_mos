@@ -23,3 +23,13 @@ export function set(id: number, token: string): void {
     setExpirableCookie('id', id.toString())
     setExpirableCookie('token', token)
 }
+
+export function renew(): void {
+    const id = get('id')
+    const token = get('token')
+    if (typeof id !== 'undefined' && typeof token !== 'undefined') {
+        const intId = parseInt(id)
+        if (!isNaN(intId))
+            set(intId, token)
+    }
+}

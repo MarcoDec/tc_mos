@@ -53,6 +53,7 @@ export default async function fetchApi<U extends Urls, M extends Methods<U>>(
             if (generatedUrl.includes(`{${key}}`))
                 generatedUrl = generatedUrl.replace(`{${key}}`, body[key] as string)
     }
+    Cookies.renew()
     const response = await fetch(generatedUrl, init)
     if (method === 'delete')
         return null as Response<U, M>
