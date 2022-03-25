@@ -10,7 +10,7 @@
     const sizeClass = computed(() => `form-control-${props.size}`)
     const type = computed(() => props.field.type ?? 'text')
 
-    function input(e: Readonly<Event>): void {
+    function input(e: Event): void {
         emit('update:modelValue', (e.target as HTMLInputElement).value)
     }
 </script>

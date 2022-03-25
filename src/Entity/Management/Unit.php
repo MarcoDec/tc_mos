@@ -7,12 +7,10 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
@@ -63,31 +61,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('code'),
     UniqueEntity('name')
 ]
-class Unit extends Entity {
-    use NameTrait;
-
+class Unit extends AbstractUnit {
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        ApiProperty(description: 'Enfants ', readableLink: false, example: ['/api/units/2', '/api/units/3']),
+        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
+        Serializer\Groups(['read:unit'])
     ]
-    protected ?string $name = null;
+    protected Collection $children;
 
     #[
-        ApiProperty(description: 'Code ', required: true, example: 'g'),
-        Assert\NotBlank,
-        ORM\Column,
+        ApiProperty(description: 'Parent ', readableLink: false, example: '/api/units/1'),
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
-    private ?string $code = null;
-
-    final public function getCode(): ?string {
-        return $this->code;
-    }
-
-    final public function setCode(?string $code): self {
-        $this->code = $code;
-        return $this;
-    }
+    protected $parent;
 }

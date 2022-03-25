@@ -1,9 +1,8 @@
 import type {BootstrapSize, FormField, FormOption, FormValue} from '../../../types/bootstrap-5'
 import type {PropType, SetupContext, VNode} from 'vue'
 import {computed, h} from 'vue'
-import type {DeepReadonly} from '../../../types/types'
 
-type Props = {
+declare type Props = {
     field: FormField
     id: string
     modelValue?: FormValue
@@ -20,7 +19,7 @@ export default {
         option: {required: true, type: Object as PropType<FormOption>},
         size: {default: 'sm', type: String as PropType<BootstrapSize>}
     },
-    setup(props: DeepReadonly<Props>, {emit}: DeepReadonly<SetupContext>): () => VNode | VNode[] {
+    setup(props: Props, {emit}: SetupContext): () => VNode | VNode[] {
         const btn = computed(() => Boolean(props.field.btn))
         const checked = computed(() => props.modelValue === props.option.value)
         const inputClass = computed(() => ({
@@ -35,7 +34,7 @@ export default {
             'form-check-label': !btn.value
         }))
 
-        function input(e: Readonly<InputEvent>): void {
+        function input(e: InputEvent): void {
             emit('update:modelValue', (e.target as HTMLInputElement).value)
         }
 

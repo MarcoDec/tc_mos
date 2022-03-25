@@ -5,8 +5,8 @@ namespace App\Entity\Management;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
 use App\Repository\CurrencyRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -45,10 +45,34 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity(repositoryClass: CurrencyRepository::class),
-    ORM\Table
+    ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
-class Currency extends Entity {
+class Currency extends AbstractUnit {
+    #[
+        ApiProperty(description: 'Enfants ', readableLink: false, example: ['/api/currencies/2', '/api/currencies/3']),
+        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
+        Serializer\Groups(['read:currency'])
+    ]
+    protected Collection $children;
+
+    #[
+        ApiProperty(description: 'Code ', required: true, example: 'EUR'),
+        Assert\Length(exactly: 3),
+        Assert\NotBlank,
+        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
+        Serializer\Groups(['read:unit', 'write:unit'])
+    ]
+    protected ?string $code = null;
+
+    protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Parent ', readableLink: false, example: '/api/currencies/1'),
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
+        Serializer\Groups(['read:currency', 'write:currency'])
+    ]
+    protected $parent;
+
     #[
         ApiProperty(description: 'Active', example: true),
         ORM\Column(options: ['default' => false]),
@@ -57,36 +81,11 @@ class Currency extends Entity {
     private bool $active = false;
 
     #[
-        ApiProperty(description: 'Code', required: true, example: 'EUR'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:currency'])
-    ]
-    private ?string $code = null;
-
-    #[
-        ApiProperty(description: 'Taux (€)', required: true, example: 1),
-        Assert\NotBlank,
-        Assert\Positive,
-        ORM\Column(options: ['default' => 1, 'unsigned' => true]),
-        Serializer\Groups(['read:currency'])
-    ]
-    private float $rate = 1;
-
-    final public function getCode(): ?string {
-        return $this->code;
-    }
-
-    #[
         ApiProperty(description: 'Nom', example: 'Euro'),
         Serializer\Groups(['read:currency'])
     ]
     final public function getName(): ?string {
-        return !empty($this->code) ? Currencies::getName($this->code) : null;
-    }
-
-    final public function getRate(): float {
-        return $this->rate;
+        return !empty($this->getCode()) ? Currencies::getName($this->getCode()) : null;
     }
 
     #[
@@ -94,7 +93,7 @@ class Currency extends Entity {
         Serializer\Groups(['read:currency'])
     ]
     final public function getSymbol(): ?string {
-        return !empty($this->code) ? Currencies::getSymbol($this->code) : null;
+        return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;
     }
 
     final public function isActive(): bool {
@@ -103,16 +102,6 @@ class Currency extends Entity {
 
     final public function setActive(bool $active): self {
         $this->active = $active;
-        return $this;
-    }
-
-    final public function setCode(?string $code): self {
-        $this->code = $code;
-        return $this;
-    }
-
-    final public function setRate(float $rate): self {
-        $this->rate = $rate;
         return $this;
     }
 }

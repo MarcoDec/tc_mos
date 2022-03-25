@@ -1,5 +1,4 @@
 import {computed, h} from 'vue'
-import type {DeepReadonly} from '../../../types/types'
 import type {FunContext} from '../../../types/vue'
 import type {VNode} from 'vue'
 import {useSlots} from '../../../composition/slots'
@@ -12,7 +11,7 @@ export default {
     props: {
         current: {required: false, type: Boolean}
     },
-    setup(props: Readonly<Props>, context: DeepReadonly<FunContext>): () => VNode {
+    setup(props: Props, context: FunContext): () => VNode {
         const li = computed(() => ({
             active: props.current,
             'page-item': true

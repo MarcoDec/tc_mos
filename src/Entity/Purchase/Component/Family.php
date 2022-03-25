@@ -10,7 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
-use App\Filter\RelationFilter;
+use App\Filter\OldRelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['copperable']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
+    ApiFilter(filterClass: OldRelationFilter::class, properties: ['parent']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Famille de composant',
@@ -64,11 +64,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:file', 'write:name'],
+            'groups' => ['write:family', 'write:file'],
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
+            'groups' => ['read:family', 'read:file', 'read:id'],
             'openapi_definition_name' => 'ComponentFamily-read'
         ],
         paginationEnabled: false
@@ -78,21 +78,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['name', 'parent'])
 ]
 class Family extends AbstractFamily {
-    /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     protected Collection $children;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
+        Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:family', 'write:family'])
     ]
-    protected ?string $name;
+    protected ?string $name = null;
 
-    /**
-     * @var null|self
-     */
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/component-families/2'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
@@ -101,8 +98,10 @@ class Family extends AbstractFamily {
     protected $parent;
 
     #[
-        ApiProperty(description: 'Code ', example: 'CAB'),
-        ORM\Column,
+        ApiProperty(description: 'Code ', required: true, example: 'CAB'),
+        Assert\Length(exactly: 3),
+        Assert\NotBlank,
+        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $code = null;

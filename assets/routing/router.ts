@@ -1,13 +1,24 @@
-/* eslint-disable consistent-return,@typescript-eslint/prefer-readonly-parameter-types */
 import {createRouter, createWebHistory} from 'vue-router'
-import type {Getters} from '../store/security'
 import type {RouteComponent} from 'vue-router'
-import store from '../store'
-import {useNamespacedGetters} from 'vuex-composition-helpers'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/tree/AppTreePageWrapper.vue'),
+            meta: {requiresAuth: true},
+            name: 'component-families',
+            path: '/component-families',
+            props: {
+                extraFields: [
+                    {label: 'Code', name: 'code', type: 'text'},
+                    {label: 'Cuivre', name: 'copperable', type: 'boolean'}
+                ],
+                title: 'composants',
+                type: 'Composants',
+                url: '/api/component-families'
+            }
+        },
         {
             component: async (): Promise<RouteComponent> => import('./pages/AppHome'),
             meta: {requiresAuth: true},
@@ -1043,16 +1054,15 @@ const router = createRouter({
                 icon: 'elementor',
                 title: 'Type d opération'
             }
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/tree/AppTreePageWrapper.vue'),
+            meta: {requiresAuth: true},
+            name: 'product-families',
+            path: '/product-families',
+            props: {title: 'produits', type: 'Produits', url: '/api/product-families'}
         }
     ]
-})
-
-router.beforeEach(to => {
-    if (
-        to.matched.some(record => record.meta.requiresAuth && record.name !== 'login')
-        && !useNamespacedGetters<Getters>(store, 'users', ['hasUser']).hasUser.value
-    )
-        return {name: 'login'}
 })
 
 export default router

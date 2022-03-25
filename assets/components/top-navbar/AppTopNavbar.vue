@@ -1,34 +1,16 @@
 <script lang="ts" setup>
-    import {ActionTypes, MutationTypes} from '../../store/security'
-    import type {Actions, Mutations, State} from '../../store/security'
-    import {
-        useMutations,
-        useNamespacedActions,
-        useNamespacedGetters,
-        useNamespacedMutations,
-        useNamespacedState
-    } from 'vuex-composition-helpers'
-    import {MutationTypes as MutationSpinner} from '../../store/mutation'
+    import type {Actions, Getters, State} from '../../store/security'
+    import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
     import {useRouter} from 'vue-router'
 
-    const hasUser = useNamespacedGetters('users', ['hasUser']).hasUser
-    const logout = useNamespacedActions<Actions>('users', [ActionTypes.LOGOUT_USERS])[ActionTypes.LOGOUT_USERS]
-    const name = useNamespacedState<State>('users', ['username']).username
-    const error = useNamespacedMutations<Mutations>('users', [MutationTypes.LOGOUT])[MutationTypes.LOGOUT]
-    const loader = useMutations([MutationSpinner.SPINNER])[MutationSpinner.SPINNER]
-
+    const hasUser = useNamespacedGetters<Getters>('security', ['hasUser']).hasUser
+    const logout = useNamespacedActions<Actions>('security', ['logout']).logout
+    const name = useNamespacedState<State>('security', ['username']).username
     const router = useRouter()
 
-    async function onLogout(): Promise<void> {
-        loader()
-        try {
-            await logout()
-            await router.push({name: 'login'})
-        } catch (e) {
-            error()
-        } finally {
-            loader()
-        }
+    async function handleLogout(): Promise<void> {
+        await logout()
+        await router.push({name: 'login'})
     }
 </script>
 
@@ -37,10 +19,13 @@
         <AppNavbarBrand to="home">
             T-Concept
         </AppNavbarBrand>
-        <AppNavbarCollapse v-if="hasUser">
+        <AppNavbarCollapse>
             <AppNavbarItem id="nav-purchase" icon="shopping-bag" title="Achats">
                 <AppNavbarLink icon="layer-group" to="attribute-list">
                     Attribut
+                </AppNavbarLink>
+                <AppNavbarLink icon="layer-group" to="component-families">
+                    Familles de composants
                 </AppNavbarLink>
             </AppNavbarItem>
             <AppNavbarItem id="nav-purchase" icon="sitemap" title="Direction">
@@ -84,12 +69,15 @@
                     Catégorie d'événement des équipements
                 </AppNavbarLink>
             </AppNavbarItem>
-            <AppNavbarItem id="nav-purchase" icon="project-diagram" title="Projet">
-                <AppNavbarLink icon="elementor" to="OperationType-list">
-                    Type d'opération
+            <AppNavbarItem id="nav-purchase" icon="industry" title="Production">
+                <AppNavbarLink icon="layer-group" to="product-families">
+                    Familles de produits
                 </AppNavbarLink>
                 <AppNavbarLink icon="atom" to="operation-list">
                     Opération
+                </AppNavbarLink>
+                <AppNavbarLink icon="elementor" to="OperationType-list">
+                    Type d'opération
                 </AppNavbarLink>
             </AppNavbarItem>
             <AppNavbarItem id="nav-purchase" icon="certificate" title="Qualité">
@@ -114,14 +102,12 @@
                 </AppNavbarLink>
             </AppNavbarItem>
         </AppNavbarCollapse>
-        <div v-if="hasUser">
-            <div class="text-white">
-                <Fa icon="user-circle"/>
-                {{ name }}
-                <AppBtn variant="danger" @click="onLogout">
-                    <Fa icon="sign-out-alt"/>
-                </AppBtn>
-            </div>
+        <div v-if="hasUser" class="text-white">
+            <Fa icon="user-circle"/>
+            {{ name }}
+            <AppBtn variant="danger" @click="handleLogout">
+                <Fa icon="sign-out-alt"/>
+            </AppBtn>
         </div>
     </AppNavbar>
 </template>

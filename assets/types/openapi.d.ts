@@ -71,6 +71,33 @@ export interface paths {
     get: operations["getEmployeeItem"];
     parameters: {};
   };
+  "/api/counter-part-groups": {
+    /** créer un groupe de contrepartie de test */
+    post: operations["postCounterPartGroupCollection"];
+    parameters: {};
+  };
+  "/api/engine-groups": {
+    /** Récupère les groupes d'équipement */
+    get: operations["getEngineGroupCollection"];
+    parameters: {};
+  };
+  "/api/engine-groups/{id}": {
+    /** Supprime un groupe d'équipement */
+    delete: operations["deleteEngineGroupItem"];
+    /** Modifie un groupe d'équipement */
+    patch: operations["patchEngineGroupItem"];
+    parameters: {};
+  };
+  "/api/tool-groups": {
+    /** Créer un groupe d'outil */
+    post: operations["postToolGroupCollection"];
+    parameters: {};
+  };
+  "/api/workstation-groups": {
+    /** Créer un groupe de poste de travail */
+    post: operations["postWorkstationGroupCollection"];
+    parameters: {};
+  };
   "/api/event-types": {
     /** Récupère les types d'événements */
     get: operations["getEventTypeCollection"];
@@ -113,6 +140,28 @@ export interface paths {
     patch: operations["patchInvoiceTimeDueItem"];
     parameters: {};
   };
+  "/api/notifications": {
+    /** Récupère les notifications de l'utilisateur courant */
+    get: operations["getNotificationCollection"];
+    parameters: {};
+  };
+  "/api/notifications/category/all": {
+    /** Supprime les notifications de l'utilisateur dans la catégorie */
+    delete: operations["deleteNotificationCollection"];
+    parameters: {};
+  };
+  "/api/notifications/category/read-all": {
+    /** Marque les notifications de l'utilisateur dans la catégorie */
+    patch: operations["patchNotificationCollection"];
+    parameters: {};
+  };
+  "/api/notifications/{id}": {
+    /** Supprime la notification */
+    delete: operations["deleteNotificationItem"];
+    /** Marque la notifications comme lue */
+    patch: operations["patchNotificationItem"];
+    parameters: {};
+  };
   "/api/out-trainers": {
     /** Récupère les formateurs extérieurs */
     get: operations["getOutTrainerCollection"];
@@ -125,6 +174,40 @@ export interface paths {
     delete: operations["deleteOutTrainerItem"];
     /** Modifie un formateur extérieur */
     patch: operations["patchOutTrainerItem"];
+    parameters: {};
+  };
+  "/api/products": {
+    /** Récupère les produits */
+    get: operations["getProductCollection"];
+    /** Créer un produit */
+    post: operations["postProductCollection"];
+    parameters: {};
+  };
+  "/api/products/{id}": {
+    /** Récupère un produit */
+    get: operations["getProductItem"];
+    /** Supprime un produit */
+    delete: operations["deleteProductItem"];
+    parameters: {};
+  };
+  "/api/products/{id}/clone": {
+    /** Clone un produit */
+    post: operations["cloneProductItem"];
+    parameters: {};
+  };
+  "/api/products/{id}/promote/{transition}": {
+    /** Transite le produit à son prochain statut de workflow */
+    patch: operations["promoteProductItem"];
+    parameters: {};
+  };
+  "/api/products/{id}/upgrade": {
+    /** Évolue le produit au prochain indice */
+    post: operations["upgradeProductItem"];
+    parameters: {};
+  };
+  "/api/products/{id}/{process}": {
+    /** Modifie un produit */
+    patch: operations["patchProductItem"];
     parameters: {};
   };
   "/api/product-families": {
@@ -230,67 +313,207 @@ export interface paths {
 export interface components {
   schemas: {
     "Address-Carrier-read": {
-      /** Adresse */
+      /**
+       * Adresse
+       * Format: streetAddress
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
       address?: string | null;
-      /** Complément d'adresse */
+      /**
+       * Complément d'adresse
+       * Format: streetAddress
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
       address2?: string | null;
-      /** Ville */
+      /**
+       * Ville
+       * Format: addressLocality
+       * @description Ville
+       * @example Rioz
+       */
       city?: string | null;
-      /** Pays */
+      /**
+       * Pays
+       * Format: addressLocality
+       * @description Pays
+       * @example FR
+       */
       country?: string | null;
-      /** E-mail */
+      /**
+       * E-mail
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
       email?: string | null;
-      /** Numéro de téléphone */
+      /**
+       * Numéro de téléphone
+       * Format: telephone
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
       phoneNumber?: string | null;
-      /** Code postal */
+      /**
+       * Code postal
+       * Format: postalCode
+       * @description Code postal
+       * @example 70190
+       */
       zipCode?: string | null;
     };
     "Address-Carrier-write": {
-      /** Adresse */
+      /**
+       * Adresse
+       * Format: streetAddress
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
       address?: string | null;
-      /** Complément d'adresse */
+      /**
+       * Complément d'adresse
+       * Format: streetAddress
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
       address2?: string | null;
-      /** Ville */
+      /**
+       * Ville
+       * Format: addressLocality
+       * @description Ville
+       * @example Rioz
+       */
       city?: string | null;
-      /** Pays */
+      /**
+       * Pays
+       * Format: addressLocality
+       * @description Pays
+       * @example FR
+       */
       country?: string | null;
-      /** E-mail */
+      /**
+       * E-mail
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
       email?: string | null;
-      /** Numéro de téléphone */
+      /**
+       * Numéro de téléphone
+       * Format: telephone
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
       phoneNumber?: string | null;
-      /** Code postal */
+      /**
+       * Code postal
+       * Format: postalCode
+       * @description Code postal
+       * @example 70190
+       */
       zipCode?: string | null;
     };
     "Address-OutTrainer-read": {
-      /** Adresse */
+      /**
+       * Adresse
+       * Format: streetAddress
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
       address?: string | null;
-      /** Complément d'adresse */
+      /**
+       * Complément d'adresse
+       * Format: streetAddress
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
       address2?: string | null;
-      /** Ville */
+      /**
+       * Ville
+       * Format: addressLocality
+       * @description Ville
+       * @example Rioz
+       */
       city?: string | null;
-      /** Pays */
+      /**
+       * Pays
+       * Format: addressLocality
+       * @description Pays
+       * @example FR
+       */
       country?: string | null;
-      /** E-mail */
+      /**
+       * E-mail
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
       email?: string | null;
-      /** Numéro de téléphone */
+      /**
+       * Numéro de téléphone
+       * Format: telephone
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
       phoneNumber?: string | null;
-      /** Code postal */
+      /**
+       * Code postal
+       * Format: postalCode
+       * @description Code postal
+       * @example 70190
+       */
       zipCode?: string | null;
     };
     "Address-OutTrainer-write": {
-      /** Adresse */
+      /**
+       * Adresse
+       * Format: streetAddress
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
       address?: string | null;
-      /** Complément d'adresse */
+      /**
+       * Complément d'adresse
+       * Format: streetAddress
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
       address2?: string | null;
-      /** Ville */
+      /**
+       * Ville
+       * Format: addressLocality
+       * @description Ville
+       * @example Rioz
+       */
       city?: string | null;
-      /** Pays */
+      /**
+       * Pays
+       * Format: addressLocality
+       * @description Pays
+       * @example FR
+       */
       country?: string | null;
-      /** E-mail */
+      /**
+       * E-mail
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
       email?: string | null;
-      /** Numéro de téléphone */
+      /**
+       * Numéro de téléphone
+       * Format: telephone
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
       phoneNumber?: string | null;
-      /** Code postal */
+      /**
+       * Code postal
+       * Format: postalCode
+       * @description Code postal
+       * @example 70190
+       */
       zipCode?: string | null;
     };
     "Address.jsonld-Carrier-read": {
@@ -298,23 +521,59 @@ export interface components {
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
       "@id"?: string;
       "@type"?: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * Format: streetAddress
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
       address?: string | null;
-      /** Complément d'adresse */
+      /**
+       * Complément d'adresse
+       * Format: streetAddress
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
       address2?: string | null;
-      /** Ville */
+      /**
+       * Ville
+       * Format: addressLocality
+       * @description Ville
+       * @example Rioz
+       */
       city?: string | null;
-      /** Pays */
+      /**
+       * Pays
+       * Format: addressLocality
+       * @description Pays
+       * @example FR
+       */
       country?: string | null;
-      /** E-mail */
+      /**
+       * E-mail
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
       email?: string | null;
-      /** Numéro de téléphone */
+      /**
+       * Numéro de téléphone
+       * Format: telephone
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
       phoneNumber?: string | null;
-      /** Code postal */
+      /**
+       * Code postal
+       * Format: postalCode
+       * @description Code postal
+       * @example 70190
+       */
       zipCode?: string | null;
     };
     "Address.jsonld-Carrier-write": {
@@ -322,23 +581,59 @@ export interface components {
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
       "@id"?: string;
       "@type"?: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * Format: streetAddress
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
       address?: string | null;
-      /** Complément d'adresse */
+      /**
+       * Complément d'adresse
+       * Format: streetAddress
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
       address2?: string | null;
-      /** Ville */
+      /**
+       * Ville
+       * Format: addressLocality
+       * @description Ville
+       * @example Rioz
+       */
       city?: string | null;
-      /** Pays */
+      /**
+       * Pays
+       * Format: addressLocality
+       * @description Pays
+       * @example FR
+       */
       country?: string | null;
-      /** E-mail */
+      /**
+       * E-mail
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
       email?: string | null;
-      /** Numéro de téléphone */
+      /**
+       * Numéro de téléphone
+       * Format: telephone
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
       phoneNumber?: string | null;
-      /** Code postal */
+      /**
+       * Code postal
+       * Format: postalCode
+       * @description Code postal
+       * @example 70190
+       */
       zipCode?: string | null;
     };
     "Address.jsonld-OutTrainer-read": {
@@ -346,23 +641,59 @@ export interface components {
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
       "@id"?: string;
       "@type"?: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * Format: streetAddress
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
       address?: string | null;
-      /** Complément d'adresse */
+      /**
+       * Complément d'adresse
+       * Format: streetAddress
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
       address2?: string | null;
-      /** Ville */
+      /**
+       * Ville
+       * Format: addressLocality
+       * @description Ville
+       * @example Rioz
+       */
       city?: string | null;
-      /** Pays */
+      /**
+       * Pays
+       * Format: addressLocality
+       * @description Pays
+       * @example FR
+       */
       country?: string | null;
-      /** E-mail */
+      /**
+       * E-mail
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
       email?: string | null;
-      /** Numéro de téléphone */
+      /**
+       * Numéro de téléphone
+       * Format: telephone
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
       phoneNumber?: string | null;
-      /** Code postal */
+      /**
+       * Code postal
+       * Format: postalCode
+       * @description Code postal
+       * @example 70190
+       */
       zipCode?: string | null;
     };
     "Address.jsonld-OutTrainer-write": {
@@ -370,807 +701,2776 @@ export interface components {
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
       "@id"?: string;
       "@type"?: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * Format: streetAddress
+       * @description Adresse
+       * @example 5 rue Alfred Nobel
+       */
       address?: string | null;
-      /** Complément d'adresse */
+      /**
+       * Complément d'adresse
+       * Format: streetAddress
+       * @description Complément d'adresse
+       * @example ZA La charrière
+       */
       address2?: string | null;
-      /** Ville */
+      /**
+       * Ville
+       * Format: addressLocality
+       * @description Ville
+       * @example Rioz
+       */
       city?: string | null;
-      /** Pays */
+      /**
+       * Pays
+       * Format: addressLocality
+       * @description Pays
+       * @example FR
+       */
       country?: string | null;
-      /** E-mail */
+      /**
+       * E-mail
+       * Format: email
+       * @description E-mail
+       * @example sales@tconcept.fr
+       */
       email?: string | null;
-      /** Numéro de téléphone */
+      /**
+       * Numéro de téléphone
+       * Format: telephone
+       * @description Numéro de téléphone
+       * @example 03 84 91 99 84
+       */
       phoneNumber?: string | null;
-      /** Code postal */
+      /**
+       * Code postal
+       * Format: postalCode
+       * @description Code postal
+       * @example 70190
+       */
       zipCode?: string | null;
     };
+    /** @description Authentification */
     Auth: {
-      /** mot de passe */
-      password?: string;
-      /** identifiant */
-      username?: string;
+      /**
+       * @description Mot de passe
+       * @example super
+       */
+      password: string;
+      /**
+       * @description Identifiant
+       * @example super
+       */
+      username: string;
     };
-    /** Transporteur */
+    /** @description Transporteur */
     "Carrier-Carrier-read": {
-      /** Nom */
-      name: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * @description Adresse
+       */
       address?: components["schemas"]["Address-Carrier-read"];
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example DHL
+       */
+      name: string;
     };
-    /** Transporteur */
+    /** @description Transporteur */
     "Carrier-Carrier-write": {
-      /** Nom */
-      name: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * @description Adresse
+       */
       address?: components["schemas"]["Address-Carrier-write"];
+      /**
+       * Nom
+       * @description Nom
+       * @example DHL
+       */
+      name: string;
     };
-    /** Transporteur */
+    /** @description Transporteur */
     "Carrier.jsonld-Carrier-read": {
-      "@context"?:
+      /** @example /api/contexts/Carrier */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Adresse */
+      /** @example /api/carriers/1 */
+      "@id": string;
+      /** @example Carrier */
+      "@type": string;
+      /**
+       * Adresse
+       * @description Adresse
+       */
       address?: components["schemas"]["Address.jsonld-Carrier-read"];
-      /** id */
-      id?: number;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example DHL
+       */
+      name: string;
     };
-    /** Transporteur */
+    /** @description Transporteur */
     "Carrier.jsonld-Carrier-write": {
+      /** @example /api/contexts/Carrier */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/carriers/1 */
       "@id"?: string;
+      /** @example Carrier */
       "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * @description Adresse
+       */
       address?: components["schemas"]["Address.jsonld-Carrier-write"];
+      /**
+       * Nom
+       * @description Nom
+       * @example DHL
+       */
+      name: string;
     };
-    /** Couleur */
+    /** @description Couleur */
     "Color-Color-read": {
-      /** nom */
-      name: string | null;
-      /** ral */
-      ral?: string | null;
-      /** rgb */
-      rgb?: string | null;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * nom
+       * @description nom
+       * @example Gris
+       */
+      name: string;
+      /**
+       * rgb
+       * @description rgb
+       * @example #848484
+       */
+      rgb: string | null;
     };
-    /** Couleur */
+    /** @description Couleur */
     "Color-Color-write": {
-      /** nom */
-      name: string | null;
-      /** ral */
-      ral?: string | null;
-      /** rgb */
-      rgb?: string | null;
+      /**
+       * nom
+       * @description nom
+       * @example Gris
+       */
+      name: string;
+      /**
+       * rgb
+       * @description rgb
+       * @example #848484
+       */
+      rgb: string | null;
     };
-    /** Couleur */
+    /** @description Couleur */
     "Color.jsonld-Color-read": {
-      "@context"?:
+      /** @example /api/contexts/Color */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** nom */
-      name: string | null;
-      /** ral */
-      ral?: string | null;
-      /** rgb */
-      rgb?: string | null;
-      /** id */
-      id?: number;
+      /** @example /api/colors/1 */
+      "@id": string;
+      /** @example Color */
+      "@type": string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * nom
+       * @description nom
+       * @example Gris
+       */
+      name: string;
+      /**
+       * rgb
+       * @description rgb
+       * @example #848484
+       */
+      rgb: string | null;
     };
-    /** Couleur */
+    /** @description Couleur */
     "Color.jsonld-Color-write": {
+      /** @example /api/contexts/Color */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/colors/1 */
       "@id"?: string;
+      /** @example Color */
       "@type"?: string;
-      /** nom */
-      name: string | null;
-      /** ral */
-      ral?: string | null;
-      /** rgb */
-      rgb?: string | null;
+      /**
+       * nom
+       * @description nom
+       * @example Gris
+       */
+      name: string;
+      /**
+       * rgb
+       * @description rgb
+       * @example #848484
+       */
+      rgb: string | null;
     };
-    /** Famille de composant */
+    /** @description Famille de composant */
     "ComponentFamily-ComponentFamily-read": {
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** Code */
-      code?: string;
-      /** Cuivré */
+      /**
+       * Code
+       * @description Code
+       * @example CAB
+       */
+      code: string | null;
+      /**
+       * Cuivré
+       * @description Cuivré
+       * @example true
+       */
       copperable?: boolean;
-      /** id */
-      id?: number;
-      /** Icône */
-      filepath?: string | null;
       customsCode?: string | null;
+      /**
+       * Icône
+       * @description Icône
+       * @example /uploads/component-families/1.jpg
+       */
+      filepath?: string | null;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Câbles
+       */
+      name: string;
+      /**
+       * Famille parente
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/component-families/2
+       */
+      parent?: string | null;
     };
-    /** Famille de composant */
+    /** @description Famille de composant */
     "ComponentFamily-ComponentFamily-write": {
-      /** Nom */
+      /**
+       * @description Nom
+       * @example Câbles
+       */
       name: string;
-      /** Famille parente */
+      /**
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/component-families/2
+       */
       parent?: string | null;
-      /** Code */
-      code?: string;
-      /** Cuivré */
+      /**
+       * @description Code
+       * @example CAB
+       */
+      code: string | null;
+      /**
+       * @description Cuivré
+       * @example true
+       */
       copperable?: boolean;
       customsCode?: string | null;
+      /** Format: binary */
       file?: string | null;
     };
-    /** Famille de composant */
+    /** @description Famille de composant */
     "ComponentFamily.jsonld-ComponentFamily-read": {
-      "@context"?:
+      /** @example /api/contexts/ComponentFamily */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** Code */
-      code?: string;
-      /** Cuivré */
+      /** @example /api/component-families/1 */
+      "@id": string;
+      /** @example ComponentFamily */
+      "@type": string;
+      /**
+       * Code
+       * @description Code
+       * @example CAB
+       */
+      code: string;
+      /**
+       * Cuivré
+       * @description Cuivré
+       * @example true
+       */
       copperable?: boolean;
-      /** id */
-      id?: number;
-      /** Icône */
-      filepath?: string | null;
       customsCode?: string | null;
+      /**
+       * Icône
+       * @description Icône
+       * @example /uploads/component-families/1.jpg
+       */
+      filepath?: string | null;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Câbles
+       */
+      name: string;
+      /**
+       * Famille parente
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/component-families/2
+       */
+      parent?: string | null;
     };
-    /** Devises */
+    /** @description Groupe de contrepartie de test */
+    CounterPartGroup: {
+      code: string;
+      deleted?: boolean;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id?: number;
+      name: string;
+      safetyDevice?: boolean;
+      type?: string;
+    };
+    /** @description Groupe de contrepartie de test */
+    "CounterPartGroup.jsonld": {
+      /** @example /api/contexts/CounterPartGroup */
+      "@context":
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /** @example /api/counter-part-groups/1 */
+      "@id": string;
+      /** @example CounterPartGroup */
+      "@type": string;
+      code: string;
+      deleted?: boolean;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      name: string;
+      safetyDevice?: boolean;
+      type?: string;
+    };
+    /** @description Devises */
     "Currency-Currency-read": {
-      /** Active */
+      /**
+       * Active
+       * @description Active
+       * @example true
+       */
       active?: boolean;
-      /** Code */
-      code: string;
-      /** Taux (€) */
-      rate: number;
-      /** id */
+      /**
+       * Enfants
+       * @description Enfants
+       * @example /api/currencies/2,/api/currencies/3
+       */
+      children?: string[];
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
-      /** Nom */
-      name?: string | null;
-      /** Symbole */
+      /**
+       * Nom
+       * @description Nom
+       * @example Euro
+       */
+      name: string | null;
+      /**
+       * Parent
+       * Format: iri-reference
+       * @description Parent
+       * @example /api/currencies/1
+       */
+      parent?: string | null;
+      /**
+       * Symbole
+       * @description Symbole
+       * @example €
+       */
       symbol?: string | null;
     };
-    /** Devises */
+    /** @description Devises */
     "Currency-Currency-write": {
-      /** Active */
+      /**
+       * Active
+       * @description Active
+       * @example true
+       */
       active?: boolean;
+      /**
+       * Parent
+       * Format: iri-reference
+       * @description Parent
+       * @example /api/currencies/1
+       */
+      parent?: string | null;
     };
-    /** Devises */
+    /** @description Devises */
     "Currency.jsonld-Currency-read": {
-      "@id"?: string;
-      "@type"?: string;
-      "@context"?:
+      "@id": string;
+      "@type": string;
+      /** @example /api/contexts/Currency */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      /** Active */
+      /**
+       * Active
+       * @description Active
+       * @example true
+       */
       active?: boolean;
-      /** Code */
-      code: string;
-      /** Taux (€) */
-      rate: number;
-      /** id */
-      id?: number;
-      /** Nom */
-      name?: string | null;
-      /** Symbole */
+      /**
+       * Enfants
+       * @description Enfants
+       * @example /api/currencies/2,/api/currencies/3
+       */
+      children?: string[];
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Euro
+       */
+      name: string | null;
+      /**
+       * Parent
+       * Format: iri-reference
+       * @description Parent
+       * @example /api/currencies/1
+       */
+      parent?: string | null;
+      /**
+       * Symbole
+       * @description Symbole
+       * @example €
+       */
       symbol?: string | null;
     };
-    /** Employé */
+    "CurrentPlace-Product-collection": {
+      /** Format: date-time */
+      date?: string;
+      /**
+       * Nom
+       * @description Nom
+       */
+      name: string | null;
+    };
+    "CurrentPlace-Product-read": {
+      /** Format: date-time */
+      date?: string;
+      /**
+       * Nom
+       * @description Nom
+       */
+      name: string | null;
+    };
+    "CurrentPlace.jsonld-Product-collection": {
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      "@id"?: string;
+      "@type"?: string;
+      /** Format: date-time */
+      date?: string;
+      /**
+       * Nom
+       * @description Nom
+       */
+      name: string | null;
+    };
+    "CurrentPlace.jsonld-Product-read": {
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      "@id"?: string;
+      "@type"?: string;
+      /** Format: date-time */
+      date?: string;
+      /**
+       * Nom
+       * @description Nom
+       */
+      name: string | null;
+    };
+    /** @description Employé */
     "Employee-Employee-read": {
-      /** Nom */
-      name: string;
-      /** identifiant */
-      username?: string;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
-      /** Rôles */
+      /**
+       * Nom
+       * @description Nom
+       * @example Super
+       */
+      name: string;
+      /**
+       * Rôles
+       * @description Rôles
+       * @example ROLE_USER
+       */
       roles?: string[];
-      /** Token */
+      /**
+       * Token
+       * @description Token
+       * @example 47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707
+       */
       token?: string | null;
+      /**
+       * identifiant
+       * @description identifiant
+       * @example super
+       */
+      username?: string;
     };
-    /** Employé */
+    /** @description Employé */
     "Employee.jsonld-Employee-read": {
-      "@context"?:
+      /** @example /api/contexts/Employee */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
+      /** @example /api/employees/1 */
+      "@id": string;
+      /** @example Employee */
+      "@type": string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Super
+       */
       name: string;
-      /** identifiant */
-      username?: string;
-      /** id */
-      id?: number;
-      /** Rôles */
+      /**
+       * Rôles
+       * @description Rôles
+       * @example ROLE_USER
+       */
       roles?: string[];
-      /** Token */
-      token?: string | null;
+      /**
+       * Token
+       * @description Token
+       * @example 47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707
+       */
+      token: string;
+      /**
+       * identifiant
+       * @description identifiant
+       * @example super
+       */
+      username?: string;
     };
-    /** Type d'événements */
+    /** @description Groupe d'équipement */
+    "EngineGroup-EngineGroup-read": {
+      /**
+       * Code
+       * @description Code
+       * @example TA
+       */
+      code: string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      name: string;
+      safetyDevice?: boolean;
+    };
+    /** @description Groupe d'équipement */
+    "EngineGroup-EngineGroup-write": {
+      /**
+       * Code
+       * @description Code
+       * @example TA
+       */
+      code: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      name: string;
+      safetyDevice?: boolean;
+    };
+    /** @description Groupe d'équipement */
+    "EngineGroup.jsonld-EngineGroup-read": {
+      "@id": string;
+      "@type": string;
+      /** @example /api/contexts/EngineGroup */
+      "@context":
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /**
+       * Code
+       * @description Code
+       * @example TA
+       */
+      code: string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Table d'assemblage
+       */
+      name: string;
+      safetyDevice?: boolean;
+    };
+    /** @description Type d'événements */
     "EventType-EventType-read": {
-      /** Nom */
-      name: string;
-      /** Status */
-      toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example ABSENCE
+       */
+      name: string;
+      /**
+       * Status
+       * @description Status
+       * @example blocked
+       * @enum {string|null}
+       */
+      toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
     };
-    /** Type d'événements */
+    /** @description Type d'événements */
     "EventType-EventType-write": {
-      /** Nom */
+      /**
+       * Nom
+       * @description Nom
+       * @example ABSENCE
+       */
       name: string;
-      /** Status */
+      /**
+       * Status
+       * @description Status
+       * @example blocked
+       * @enum {string|null}
+       */
       toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
     };
-    /** Type d'événements */
+    /** @description Type d'événements */
     "EventType.jsonld-EventType-read": {
-      "@context"?:
+      /** @example /api/contexts/EventType */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
+      /** @example /api/event-types/1 */
+      "@id": string;
+      /** @example EventType */
+      "@type": string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example ABSENCE
+       */
       name: string;
-      /** Status */
+      /**
+       * Status
+       * @description Status
+       * @example blocked
+       * @enum {string|null}
+       */
       toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
-      /** id */
-      id?: number;
     };
-    /** Type d'événements */
+    /** @description Type d'événements */
     "EventType.jsonld-EventType-write": {
+      /** @example /api/contexts/EventType */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/event-types/1 */
       "@id"?: string;
+      /** @example EventType */
       "@type"?: string;
-      /** Nom */
+      /**
+       * Nom
+       * @description Nom
+       * @example ABSENCE
+       */
       name: string;
-      /** Status */
+      /**
+       * Status
+       * @description Status
+       * @example blocked
+       * @enum {string|null}
+       */
       toStatus?: ("blocked" | "disabled" | "enabled" | "warning") | null;
     };
-    /** Incoterms */
+    /** @description Incoterms */
     "Incoterms-Incoterms-read": {
-      /** Nom */
-      name: string;
-      /** Code */
+      /**
+       * Code
+       * @description Code
+       * @example DDP
+       */
       code: string;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Delivered Duty Paid
+       */
+      name: string;
     };
-    /** Incoterms */
+    /** @description Incoterms */
     "Incoterms-Incoterms-write": {
-      /** Nom */
-      name: string;
-      /** Code */
+      /**
+       * Code
+       * @description Code
+       * @example DDP
+       */
       code: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example Delivered Duty Paid
+       */
+      name: string;
     };
-    /** Incoterms */
+    /** @description Incoterms */
     "Incoterms.jsonld-Incoterms-read": {
-      "@context"?:
+      /** @example /api/contexts/Incoterms */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Code */
+      /** @example /api/incoterms/1 */
+      "@id": string;
+      /** @example Incoterms */
+      "@type": string;
+      /**
+       * Code
+       * @description Code
+       * @example DDP
+       */
       code: string;
-      /** id */
-      id?: number;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Delivered Duty Paid
+       */
+      name: string;
     };
-    /** Incoterms */
+    /** @description Incoterms */
     "Incoterms.jsonld-Incoterms-write": {
+      /** @example /api/contexts/Incoterms */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/incoterms/1 */
       "@id"?: string;
+      /** @example Incoterms */
       "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Code */
+      /**
+       * Code
+       * @description Code
+       * @example DDP
+       */
       code: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example Delivered Duty Paid
+       */
+      name: string;
     };
-    /** Délai de paiement des factures */
+    /** @description Délai de paiement des factures */
     "InvoiceTimeDue-InvoiceTimeDue-read": {
-      /** Nom */
-      name: string;
-      /** Jours */
-      days?: number;
-      /** Jours après la fin du mois */
-      daysAfterEndOfMonth?: number;
-      /** Fin du mois */
+      /**
+       * Jours
+       * @description Jours
+       * @example 30
+       */
+      days?: number | null;
+      /**
+       * Jours après la fin du mois
+       * @description Jours après la fin du mois
+       */
+      daysAfterEndOfMonth?: number | null;
+      /**
+       * Fin du mois
+       * @description Fin du mois
+       * @example true
+       */
       endOfMonth?: boolean;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example 30 jours fin de mois
+       */
+      name: string;
     };
-    /** Délai de paiement des factures */
+    /** @description Délai de paiement des factures */
     "InvoiceTimeDue-InvoiceTimeDue-write": {
-      /** Nom */
-      name: string;
-      /** Jours */
-      days?: number;
-      /** Jours après la fin du mois */
-      daysAfterEndOfMonth?: number;
-      /** Fin du mois */
+      /**
+       * Jours
+       * @description Jours
+       * @example 30
+       */
+      days?: number | null;
+      /**
+       * Jours après la fin du mois
+       * @description Jours après la fin du mois
+       */
+      daysAfterEndOfMonth?: number | null;
+      /**
+       * Fin du mois
+       * @description Fin du mois
+       * @example true
+       */
       endOfMonth?: boolean;
+      /**
+       * Nom
+       * @description Nom
+       * @example 30 jours fin de mois
+       */
+      name: string;
     };
-    /** Délai de paiement des factures */
+    /** @description Délai de paiement des factures */
     "InvoiceTimeDue.jsonld-InvoiceTimeDue-read": {
-      "@context"?:
+      /** @example /api/contexts/InvoiceTimeDue */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Jours */
-      days?: number;
-      /** Jours après la fin du mois */
-      daysAfterEndOfMonth?: number;
-      /** Fin du mois */
+      /** @example /api/invoice-time-dues/1 */
+      "@id": string;
+      /** @example InvoiceTimeDue */
+      "@type": string;
+      /**
+       * Jours
+       * @description Jours
+       * @example 30
+       */
+      days?: number | null;
+      /**
+       * Jours après la fin du mois
+       * @description Jours après la fin du mois
+       */
+      daysAfterEndOfMonth?: number | null;
+      /**
+       * Fin du mois
+       * @description Fin du mois
+       * @example true
+       */
       endOfMonth?: boolean;
-      /** id */
-      id?: number;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example 30 jours fin de mois
+       */
+      name: string;
     };
-    /** Délai de paiement des factures */
+    /** @description Délai de paiement des factures */
     "InvoiceTimeDue.jsonld-InvoiceTimeDue-write": {
+      /** @example /api/contexts/InvoiceTimeDue */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/invoice-time-dues/1 */
       "@id"?: string;
+      /** @example InvoiceTimeDue */
       "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Jours */
-      days?: number;
-      /** Jours après la fin du mois */
-      daysAfterEndOfMonth?: number;
-      /** Fin du mois */
+      /**
+       * Jours
+       * @description Jours
+       * @example 30
+       */
+      days?: number | null;
+      /**
+       * Jours après la fin du mois
+       * @description Jours après la fin du mois
+       */
+      daysAfterEndOfMonth?: number | null;
+      /**
+       * Fin du mois
+       * @description Fin du mois
+       * @example true
+       */
       endOfMonth?: boolean;
+      /**
+       * Nom
+       * @description Nom
+       * @example 30 jours fin de mois
+       */
+      name: string;
     };
-    /** Formateur extérieur */
+    /** @description Temps */
+    "Measure-duration": {
+      /**
+       * @description Code
+       * @default s
+       * @example s
+       */
+      code?: string;
+      /**
+       * @description Valeur
+       * @example 1
+       */
+      value?: number;
+    };
+    /** @description Masse */
+    "Measure-mass": {
+      /**
+       * @description Code
+       * @default kg
+       * @example kg
+       */
+      code?: string;
+      /**
+       * @description Valeur
+       * @example 1
+       */
+      value?: number;
+    };
+    /** @description Prix */
+    "Measure-price": {
+      /**
+       * @description Code
+       * @default €
+       * @example €
+       */
+      code?: string;
+      /**
+       * @description Valeur
+       * @example 1
+       */
+      value?: number;
+    };
+    /** @description Unitaire */
+    "Measure-unitary": {
+      /**
+       * @description Code
+       * @default U
+       * @example U
+       */
+      code?: string;
+      /**
+       * @description Valeur
+       * @example 1
+       */
+      value?: number;
+    };
+    /** @description Notifications */
+    Notification: {
+      category?: string | null;
+      /**
+       * Format: date-time
+       * @default CURRENT_TIMESTAMP
+       * @example CURRENT_TIMESTAMP
+       */
+      createdAt?: string;
+      deleted?: boolean;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id?: number;
+      read?: boolean;
+      subject?: string | null;
+      /** Format: iri-reference */
+      user?: string;
+    };
+    /** @description Notifications */
+    "Notification.jsonld": {
+      "@id": string;
+      "@type": string;
+      /** @example /api/contexts/Notification */
+      "@context":
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      category?: string | null;
+      /**
+       * Format: date-time
+       * @default CURRENT_TIMESTAMP
+       * @example CURRENT_TIMESTAMP
+       */
+      createdAt?: string;
+      deleted?: boolean;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      read?: boolean;
+      subject?: string | null;
+      /** Format: iri-reference */
+      user?: string;
+    };
+    /** @description Formateur extérieur */
     "OutTrainer-OutTrainer-read": {
-      /** Prénom */
-      name: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * @description Adresse
+       */
       address?: components["schemas"]["Address-OutTrainer-read"];
-      /** Nom */
-      surname: string;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Prénom
+       * @description Prénom
+       * @example Rawaa
+       */
+      name: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example CHRAIET
+       */
+      surname: string;
     };
-    /** Formateur extérieur */
+    /** @description Formateur extérieur */
     "OutTrainer-OutTrainer-write": {
-      /** Prénom */
-      name: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * @description Adresse
+       */
       address?: components["schemas"]["Address-OutTrainer-write"];
-      /** Nom */
+      /**
+       * Prénom
+       * @description Prénom
+       * @example Rawaa
+       */
+      name: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example CHRAIET
+       */
       surname: string;
     };
-    /** Formateur extérieur */
+    /** @description Formateur extérieur */
     "OutTrainer.jsonld-OutTrainer-read": {
-      "@context"?:
+      /** @example /api/contexts/OutTrainer */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Prénom */
-      name: string;
-      /** Adresse */
+      /** @example /api/out-trainers/1 */
+      "@id": string;
+      /** @example OutTrainer */
+      "@type": string;
+      /**
+       * Adresse
+       * @description Adresse
+       */
       address?: components["schemas"]["Address.jsonld-OutTrainer-read"];
-      /** Nom */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Prénom
+       * @description Prénom
+       * @example Rawaa
+       */
+      name: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example CHRAIET
+       */
       surname: string;
-      /** id */
-      id?: number;
     };
-    /** Formateur extérieur */
+    /** @description Formateur extérieur */
     "OutTrainer.jsonld-OutTrainer-write": {
+      /** @example /api/contexts/OutTrainer */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/out-trainers/1 */
       "@id"?: string;
+      /** @example OutTrainer */
       "@type"?: string;
-      /** Prénom */
-      name: string;
-      /** Adresse */
+      /**
+       * Adresse
+       * @description Adresse
+       */
       address?: components["schemas"]["Address.jsonld-OutTrainer-write"];
-      /** Nom */
+      /**
+       * Prénom
+       * @description Prénom
+       * @example Rawaa
+       */
+      name: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example CHRAIET
+       */
       surname: string;
     };
-    /** Famille de produit */
-    "ProductFamily-ProductFamily-read": {
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** id */
-      id?: number;
-      /** Icône */
-      filepath?: string | null;
-      customsCode?: string | null;
+    /** @description Produit */
+    "Product-Product-clone": {
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
     };
-    /** Famille de produit */
-    "ProductFamily-ProductFamily-write": {
-      /** Nom */
+    /** @description Produit */
+    "Product-Product-collection": {
+      /** @description Statut */
+      currentPlace?: components["schemas"]["CurrentPlace-Product-collection"];
+      /**
+       * Format: date-time
+       * @description Date d'expiration
+       * @example 2021-01-12
+       */
+      expirationDate?: string | null;
+      /**
+       * Format: iri-reference
+       * @description Famille de produit
+       * @example /api/product-families/1
+       */
+      family?: string;
+      /**
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * @description Type
+       * @default Prototype
+       * @example Prototype
+       * @enum {string|null}
+       */
+      kind?: ("EI" | "Prototype" | "Série" | "Pièce de rechange") | null;
+      /**
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+    };
+    /** @description Produit */
+    "Product-Product-create": {
+      /**
+       * Date d'expiration
+       * Format: date-time
+       * @description Date d'expiration
+       * @example 2021-01-12
+       */
+      expirationDate?: string | null;
+      /**
+       * Famille de produit
+       * Format: iri-reference
+       * @description Famille de produit
+       * @example /api/product-families/1
+       */
+      family?: string;
+      /**
+       * Volume prévisionnel
+       * @description Volume prévisionnel
+       */
+      forecastVolume?: components["schemas"]["Measure-unitary"];
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Type
+       * @description Type
+       * @default Prototype
+       * @example Prototype
+       * @enum {string|null}
+       */
+      kind?: ("EI" | "Prototype" | "Série" | "Pièce de rechange") | null;
+      /**
+       * Nom
+       * @description Nom
+       * @example HEATING WIRE (HSR25304)
+       */
       name: string;
-      /** Famille parente */
+      /**
+       * Notes
+       * @description Notes
+       * @example Produit préféré des clients
+       */
+      notes?: string | null;
+      /**
+       * Conditionnement
+       * @description Conditionnement
+       */
+      packaging: components["schemas"]["Measure-unitary"];
+      /**
+       * Notes
+       * @description Notes
+       * @example Type de packaging
+       */
+      packagingKind?: string;
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+      /**
+       * Unité
+       * Format: iri-reference
+       * @description Unité
+       * @example /api/units/1
+       */
+      unit: string;
+    };
+    /** @description Produit */
+    "Product-Product-read": {
+      /**
+       * Statut
+       * @description Statut
+       */
+      currentPlace?: components["schemas"]["CurrentPlace-Product-read"];
+      /**
+       * Code douanier
+       * @description Code douanier
+       * @example 8544300089
+       */
+      customsCode?: string | null;
+      /**
+       * Date d'expiration
+       * Format: date-time
+       * @description Date d'expiration
+       * @example 2021-01-12
+       */
+      expirationDate?: string | null;
+      /**
+       * Famille de produit
+       * Format: iri-reference
+       * @description Famille de produit
+       * @example /api/product-families/1
+       */
+      family?: string;
+      /**
+       * Volume prévisionnel
+       * @description Volume prévisionnel
+       */
+      forecastVolume?: components["schemas"]["Measure-unitary"];
+      /**
+       * Incoterms
+       * Format: iri-reference
+       * @description Incoterms
+       * @example /api/incoterms/1
+       */
+      incoterms: string | null;
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Indice interne
+       * @description Indice interne
+       * @default 1
+       * @example 1
+       */
+      internalIndex: number;
+      /**
+       * Type
+       * @description Type
+       * @default Prototype
+       * @example Prototype
+       * @enum {string|null}
+       */
+      kind?: ("EI" | "Prototype" | "Série" | "Pièce de rechange") | null;
+      /**
+       * Gestion cuivre
+       * @description Gestion cuivre
+       * @example true
+       */
+      managedCopper?: boolean;
+      /**
+       * Nombre max de prototypes
+       * @description Nombre max de prototypes
+       */
+      maxProto: components["schemas"]["Measure-unitary"];
+      /**
+       * Délai de livraison minimum
+       * @description Délai de livraison minimum
+       */
+      minDelivery: components["schemas"]["Measure-unitary"];
+      /**
+       * Production minimum
+       * @description Production minimum
+       */
+      minProd: components["schemas"]["Measure-unitary"];
+      /**
+       * Stock minimum
+       * @description Stock minimum
+       */
+      minStock: components["schemas"]["Measure-unitary"];
+      /**
+       * Nom
+       * @description Nom
+       * @example HEATING WIRE (HSR25304)
+       */
+      name: string;
+      /**
+       * Notes
+       * @description Notes
+       * @example Produit préféré des clients
+       */
+      notes?: string | null;
+      /**
+       * Conditionnement
+       * @description Conditionnement
+       */
+      packaging: components["schemas"]["Measure-unitary"];
+      /**
+       * Notes
+       * @description Notes
+       * @example Type de packaging
+       */
+      packagingKind?: string;
+      /**
+       * Unité parente
+       * Format: iri-reference
+       * @description Unité parente
+       * @example /api/products/3
+       */
+      parent?: string | null;
+      /**
+       * Prix
+       * @description Prix
+       */
+      price: components["schemas"]["Measure-price"];
+      /**
+       * Prix sans cuivre
+       * @description Prix sans cuivre
+       */
+      priceWithoutCopper: components["schemas"]["Measure-price"];
+      /**
+       * Délai de production
+       * @description Délai de production
+       */
+      productionDelay: components["schemas"]["Measure-duration"];
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+      /**
+       * Prix de cession des composants
+       * @description Prix de cession des composants
+       */
+      transfertPriceSupplies: components["schemas"]["Measure-price"];
+      /**
+       * Prix de cession de main d'œuvre
+       * @description Prix de cession de main d'œuvre
+       */
+      transfertPriceWork: components["schemas"]["Measure-price"];
+      /**
+       * Unité
+       * Format: iri-reference
+       * @description Unité
+       * @example /api/units/1
+       */
+      unit: string;
+      /**
+       * Poids
+       * @description Poids
+       */
+      weight?: components["schemas"]["Measure-mass"];
+    };
+    /** @description Produit */
+    "Product-Product-upgrade": {
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+    };
+    /** @description Produit */
+    "Product-Product-write": {
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Type
+       * @description Type
+       * @default Prototype
+       * @example Prototype
+       * @enum {string|null}
+       */
+      kind?: ("EI" | "Prototype" | "Série" | "Pièce de rechange") | null;
+      /**
+       * Nom
+       * @description Nom
+       * @example HEATING WIRE (HSR25304)
+       */
+      name: string;
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+    };
+    /** @description Produit */
+    "Product.jsonld-Product-clone": {
+      /** @example /api/contexts/Product */
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /** @example /api/products/1 */
+      "@id"?: string;
+      /** @example Product */
+      "@type"?: string;
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+    };
+    /** @description Produit */
+    "Product.jsonld-Product-collection": {
+      "@id"?: string;
+      "@type"?: string;
+      /** @description Statut */
+      currentPlace?: components["schemas"]["CurrentPlace.jsonld-Product-collection"];
+      /**
+       * Format: date-time
+       * @description Date d'expiration
+       * @example 2021-01-12
+       */
+      expirationDate?: string | null;
+      /**
+       * Format: iri-reference
+       * @description Famille de produit
+       * @example /api/product-families/1
+       */
+      family?: string;
+      /**
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * @description Type
+       * @default Prototype
+       * @example Prototype
+       * @enum {string|null}
+       */
+      kind?: ("EI" | "Prototype" | "Série" | "Pièce de rechange") | null;
+      /**
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+    };
+    /** @description Produit */
+    "Product.jsonld-Product-create": {
+      /** @example /api/contexts/Product */
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /** @example /api/products/1 */
+      "@id"?: string;
+      /** @example Product */
+      "@type"?: string;
+      /**
+       * Date d'expiration
+       * Format: date-time
+       * @description Date d'expiration
+       * @example 2021-01-12
+       */
+      expirationDate?: string | null;
+      /**
+       * Famille de produit
+       * Format: iri-reference
+       * @description Famille de produit
+       * @example /api/product-families/1
+       */
+      family?: string;
+      /**
+       * Volume prévisionnel
+       * @description Volume prévisionnel
+       */
+      forecastVolume?: components["schemas"]["Measure-unitary"];
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Type
+       * @description Type
+       * @default Prototype
+       * @example Prototype
+       * @enum {string|null}
+       */
+      kind?: ("EI" | "Prototype" | "Série" | "Pièce de rechange") | null;
+      /**
+       * Nom
+       * @description Nom
+       * @example HEATING WIRE (HSR25304)
+       */
+      name: string;
+      /**
+       * Notes
+       * @description Notes
+       * @example Produit préféré des clients
+       */
+      notes?: string | null;
+      /**
+       * Conditionnement
+       * @description Conditionnement
+       */
+      packaging: components["schemas"]["Measure-unitary"];
+      /**
+       * Notes
+       * @description Notes
+       * @example Type de packaging
+       */
+      packagingKind?: string;
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+      /**
+       * Unité
+       * Format: iri-reference
+       * @description Unité
+       * @example /api/units/1
+       */
+      unit: string;
+    };
+    /** @description Produit */
+    "Product.jsonld-Product-read": {
+      /** @example /api/contexts/Product */
+      "@context":
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /** @example /api/products/1 */
+      "@id": string;
+      /** @example Product */
+      "@type": string;
+      /**
+       * Statut
+       * @description Statut
+       */
+      currentPlace?: components["schemas"]["CurrentPlace.jsonld-Product-read"];
+      /**
+       * Code douanier
+       * @description Code douanier
+       * @example 8544300089
+       */
+      customsCode?: string | null;
+      /**
+       * Date d'expiration
+       * Format: date-time
+       * @description Date d'expiration
+       * @example 2021-01-12
+       */
+      expirationDate?: string | null;
+      /**
+       * Famille de produit
+       * Format: iri-reference
+       * @description Famille de produit
+       * @example /api/product-families/1
+       */
+      family?: string;
+      /**
+       * Volume prévisionnel
+       * @description Volume prévisionnel
+       */
+      forecastVolume?: components["schemas"]["Measure-unitary"];
+      /**
+       * Incoterms
+       * Format: iri-reference
+       * @description Incoterms
+       * @example /api/incoterms/1
+       */
+      incoterms: string;
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Indice interne
+       * @description Indice interne
+       * @default 1
+       * @example 1
+       */
+      internalIndex: number;
+      /**
+       * Type
+       * @description Type
+       * @default Prototype
+       * @example Prototype
+       * @enum {string|null}
+       */
+      kind?: ("EI" | "Prototype" | "Série" | "Pièce de rechange") | null;
+      /**
+       * Gestion cuivre
+       * @description Gestion cuivre
+       * @example true
+       */
+      managedCopper?: boolean;
+      /**
+       * Nombre max de prototypes
+       * @description Nombre max de prototypes
+       */
+      maxProto: components["schemas"]["Measure-unitary"];
+      /**
+       * Délai de livraison minimum
+       * @description Délai de livraison minimum
+       */
+      minDelivery: components["schemas"]["Measure-unitary"];
+      /**
+       * Production minimum
+       * @description Production minimum
+       */
+      minProd: components["schemas"]["Measure-unitary"];
+      /**
+       * Stock minimum
+       * @description Stock minimum
+       */
+      minStock: components["schemas"]["Measure-unitary"];
+      /**
+       * Nom
+       * @description Nom
+       * @example HEATING WIRE (HSR25304)
+       */
+      name: string;
+      /**
+       * Notes
+       * @description Notes
+       * @example Produit préféré des clients
+       */
+      notes?: string | null;
+      /**
+       * Conditionnement
+       * @description Conditionnement
+       */
+      packaging: components["schemas"]["Measure-unitary"];
+      /**
+       * Notes
+       * @description Notes
+       * @example Type de packaging
+       */
+      packagingKind?: string;
+      /**
+       * Unité parente
+       * Format: iri-reference
+       * @description Unité parente
+       * @example /api/products/3
+       */
+      parent?: string | null;
+      /**
+       * Prix
+       * @description Prix
+       */
+      price: components["schemas"]["Measure-price"];
+      /**
+       * Prix sans cuivre
+       * @description Prix sans cuivre
+       */
+      priceWithoutCopper: components["schemas"]["Measure-price"];
+      /**
+       * Délai de production
+       * @description Délai de production
+       */
+      productionDelay: components["schemas"]["Measure-duration"];
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+      /**
+       * Prix de cession des composants
+       * @description Prix de cession des composants
+       */
+      transfertPriceSupplies: components["schemas"]["Measure-price"];
+      /**
+       * Prix de cession de main d'œuvre
+       * @description Prix de cession de main d'œuvre
+       */
+      transfertPriceWork: components["schemas"]["Measure-price"];
+      /**
+       * Unité
+       * Format: iri-reference
+       * @description Unité
+       * @example /api/units/1
+       */
+      unit: string;
+      /**
+       * Poids
+       * @description Poids
+       */
+      weight?: components["schemas"]["Measure-mass"];
+    };
+    /** @description Produit */
+    "Product.jsonld-Product-upgrade": {
+      /** @example /api/contexts/Product */
+      "@context"?:
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /** @example /api/products/1 */
+      "@id"?: string;
+      /** @example Product */
+      "@type"?: string;
+      /**
+       * Indice
+       * @description Indice
+       * @example 02
+       */
+      index?: string;
+      /**
+       * Référence
+       * @description Référence
+       * @example 54587F
+       */
+      ref?: string;
+    };
+    /** @description Famille de produit */
+    "ProductFamily-ProductFamily-read": {
+      customsCode?: string | null;
+      /**
+       * Icône
+       * @description Icône
+       * @example /uploads/product-families/1.jpg
+       */
+      filepath?: string | null;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Faisceaux
+       */
+      name: string;
+      /**
+       * Famille parente
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/product-families/1
+       */
+      parent?: string | null;
+    };
+    /** @description Famille de produit */
+    "ProductFamily-ProductFamily-write": {
+      /**
+       * @description Nom
+       * @example Faisceaux
+       */
+      name: string;
+      /**
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/product-families/1
+       */
       parent?: string | null;
       customsCode?: string | null;
+      /** Format: binary */
       file?: string | null;
     };
-    /** Famille de produit */
+    /** @description Famille de produit */
     "ProductFamily.jsonld-ProductFamily-read": {
-      "@context"?:
+      /** @example /api/contexts/ProductFamily */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Famille parente */
-      parent?: string | null;
-      /** id */
-      id?: number;
-      /** Icône */
-      filepath?: string | null;
+      /** @example /api/product-families/1 */
+      "@id": string;
+      /** @example ProductFamily */
+      "@type": string;
       customsCode?: string | null;
+      /**
+       * Icône
+       * @description Icône
+       * @example /uploads/product-families/1.jpg
+       */
+      filepath?: string | null;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Faisceaux
+       */
+      name: string;
+      /**
+       * Famille parente
+       * Format: iri-reference
+       * @description Famille parente
+       * @example /api/product-families/1
+       */
+      parent?: string | null;
     };
-    /** Type qualité */
+    /** @description Type qualité */
     "QualityType-QualityType-read": {
-      /** Nom */
-      name: string;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Dimensions
+       */
+      name: string;
     };
-    /** Type qualité */
+    /** @description Type qualité */
     "QualityType-QualityType-write": {
-      /** Nom */
+      /**
+       * Nom
+       * @description Nom
+       * @example Dimensions
+       */
       name: string;
     };
-    /** Type qualité */
+    /** @description Type qualité */
     "QualityType.jsonld-QualityType-read": {
-      "@context"?:
+      /** @example /api/contexts/QualityType */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
+      /** @example /api/quality-types/1 */
+      "@id": string;
+      /** @example QualityType */
+      "@type": string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Dimensions
+       */
       name: string;
-      /** id */
-      id?: number;
     };
-    /** Type qualité */
+    /** @description Type qualité */
     "QualityType.jsonld-QualityType-write": {
+      /** @example /api/contexts/QualityType */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/quality-types/1 */
       "@id"?: string;
+      /** @example QualityType */
       "@type"?: string;
-      /** Nom */
+      /**
+       * Nom
+       * @description Nom
+       * @example Dimensions
+       */
       name: string;
     };
-    /** Type de rebus */
+    /** @description Type de rebus */
     "RejectType-RejectType-read": {
-      /** Nom */
-      name: string;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example sertissage dimensionnelle
+       */
+      name: string;
     };
-    /** Type de rebus */
+    /** @description Type de rebus */
     "RejectType-RejectType-write": {
-      /** Nom */
+      /**
+       * Nom
+       * @description Nom
+       * @example sertissage dimensionnelle
+       */
       name: string;
     };
-    /** Type de rebus */
+    /** @description Type de rebus */
     "RejectType.jsonld-RejectType-read": {
-      "@context"?:
+      /** @example /api/contexts/RejectType */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
+      /** @example /api/reject-types/1 */
+      "@id": string;
+      /** @example RejectType */
+      "@type": string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example sertissage dimensionnelle
+       */
       name: string;
-      /** id */
-      id?: number;
     };
-    /** Type de rebus */
+    /** @description Type de rebus */
     "RejectType.jsonld-RejectType-write": {
+      /** @example /api/contexts/RejectType */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/reject-types/1 */
       "@id"?: string;
+      /** @example RejectType */
       "@type"?: string;
-      /** Nom */
+      /**
+       * Nom
+       * @description Nom
+       * @example sertissage dimensionnelle
+       */
       name: string;
     };
-    /** Type de compétence */
+    /** @description Type de compétence */
     "SkillType-SkillType-read": {
-      /** Nom */
-      name: string;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Assemblage
+       */
+      name: string;
     };
-    /** Type de compétence */
+    /** @description Type de compétence */
     "SkillType-SkillType-write": {
-      /** Nom */
+      /**
+       * Nom
+       * @description Nom
+       * @example Assemblage
+       */
       name: string;
     };
-    /** Type de compétence */
+    /** @description Type de compétence */
     "SkillType.jsonld-SkillType-read": {
-      "@context"?:
+      /** @example /api/contexts/SkillType */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
+      /** @example /api/skill-types/1 */
+      "@id": string;
+      /** @example SkillType */
+      "@type": string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Assemblage
+       */
       name: string;
-      /** id */
-      id?: number;
     };
-    /** Type de compétence */
+    /** @description Type de compétence */
     "SkillType.jsonld-SkillType-write": {
+      /** @example /api/contexts/SkillType */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/skill-types/1 */
       "@id"?: string;
+      /** @example SkillType */
       "@type"?: string;
-      /** Nom */
+      /**
+       * Nom
+       * @description Nom
+       * @example Assemblage
+       */
       name: string;
     };
-    /** Plages horaires */
+    /** @description Plages horaires */
     "TimeSlot-TimeSlot-read": {
-      /** Nom */
-      name: string;
-      /** Fin */
-      end?: string | null;
-      /** Fin pause */
+      /**
+       * Fin
+       * Format: date-time
+       * @description Fin
+       * @example 17:30:00
+       */
+      end?: string;
+      /**
+       * Fin pause
+       * Format: date-time
+       * @description Fin pause
+       * @example 13:30:00
+       */
       endBreak?: string | null;
-      /** Début */
-      start?: string | null;
-      /** Début pause */
-      startBreak?: string | null;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Journée
+       */
+      name: string;
+      /**
+       * Début
+       * Format: date-time
+       * @description Début
+       * @example 07:30:00
+       */
+      start?: string;
+      /**
+       * Début pause
+       * Format: date-time
+       * @description Début pause
+       * @example 12:30:00
+       */
+      startBreak?: string | null;
     };
-    /** Plages horaires */
+    /** @description Plages horaires */
     "TimeSlot-TimeSlot-write": {
-      /** Nom */
-      name: string;
-      /** Fin */
-      end?: string | null;
-      /** Fin pause */
+      /**
+       * Fin
+       * Format: date-time
+       * @description Fin
+       * @example 17:30:00
+       */
+      end?: string;
+      /**
+       * Fin pause
+       * Format: date-time
+       * @description Fin pause
+       * @example 13:30:00
+       */
       endBreak?: string | null;
-      /** Début */
-      start?: string | null;
-      /** Début pause */
+      /**
+       * Nom
+       * @description Nom
+       * @example Journée
+       */
+      name: string;
+      /**
+       * Début
+       * Format: date-time
+       * @description Début
+       * @example 07:30:00
+       */
+      start?: string;
+      /**
+       * Début pause
+       * Format: date-time
+       * @description Début pause
+       * @example 12:30:00
+       */
       startBreak?: string | null;
     };
-    /** Plages horaires */
+    /** @description Plages horaires */
     "TimeSlot.jsonld-TimeSlot-read": {
-      "@context"?:
+      /** @example /api/contexts/TimeSlot */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Fin */
-      end?: string | null;
-      /** Fin pause */
+      /** @example /api/time-slots/1 */
+      "@id": string;
+      /** @example TimeSlot */
+      "@type": string;
+      /**
+       * Fin
+       * Format: date-time
+       * @description Fin
+       * @example 17:30:00
+       */
+      end?: string;
+      /**
+       * Fin pause
+       * Format: date-time
+       * @description Fin pause
+       * @example 13:30:00
+       */
       endBreak?: string | null;
-      /** Début */
-      start?: string | null;
-      /** Début pause */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Journée
+       */
+      name: string;
+      /**
+       * Début
+       * Format: date-time
+       * @description Début
+       * @example 07:30:00
+       */
+      start?: string;
+      /**
+       * Début pause
+       * Format: date-time
+       * @description Début pause
+       * @example 12:30:00
+       */
       startBreak?: string | null;
-      /** id */
-      id?: number;
     };
-    /** Plages horaires */
+    /** @description Plages horaires */
     "TimeSlot.jsonld-TimeSlot-write": {
+      /** @example /api/contexts/TimeSlot */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/time-slots/1 */
       "@id"?: string;
+      /** @example TimeSlot */
       "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Fin */
-      end?: string | null;
-      /** Fin pause */
+      /**
+       * Fin
+       * Format: date-time
+       * @description Fin
+       * @example 17:30:00
+       */
+      end?: string;
+      /**
+       * Fin pause
+       * Format: date-time
+       * @description Fin pause
+       * @example 13:30:00
+       */
       endBreak?: string | null;
-      /** Début */
-      start?: string | null;
-      /** Début pause */
+      /**
+       * Nom
+       * @description Nom
+       * @example Journée
+       */
+      name: string;
+      /**
+       * Début
+       * Format: date-time
+       * @description Début
+       * @example 07:30:00
+       */
+      start?: string;
+      /**
+       * Début pause
+       * Format: date-time
+       * @description Début pause
+       * @example 12:30:00
+       */
       startBreak?: string | null;
     };
-    /** Unit */
+    /** @description Groupe d'outil */
+    ToolGroup: {
+      code: string;
+      deleted?: boolean;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id?: number;
+      name: string;
+      safetyDevice?: boolean;
+    };
+    /** @description Groupe d'outil */
+    "ToolGroup.jsonld": {
+      /** @example /api/contexts/ToolGroup */
+      "@context":
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /** @example /api/tool-groups/1 */
+      "@id": string;
+      /** @example ToolGroup */
+      "@type": string;
+      code: string;
+      deleted?: boolean;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      name: string;
+      safetyDevice?: boolean;
+    };
+    /** @description Unit */
     "Unit-Unit-read": {
-      /** Nom */
-      name: string;
-      /** Code */
+      /**
+       * @default 1
+       * @example 1
+       */
+      base: number;
+      /**
+       * Enfants
+       * @description Enfants
+       * @example /api/units/2,/api/units/3
+       */
+      children?: string[];
+      /**
+       * Code
+       * @description Code
+       * @example g
+       */
       code: string;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Gramme
+       */
+      name: string;
+      /**
+       * Parent
+       * Format: iri-reference
+       * @description Parent
+       * @example /api/units/1
+       */
+      parent?: string | null;
     };
-    /** Unit */
+    /** @description Unit */
     "Unit-Unit-write": {
-      /** Nom */
-      name: string;
-      /** Code */
+      /**
+       * @default 1
+       * @example 1
+       */
+      base: number;
+      /**
+       * Code
+       * @description Code
+       * @example g
+       */
       code: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example Gramme
+       */
+      name: string;
+      /**
+       * Parent
+       * Format: iri-reference
+       * @description Parent
+       * @example /api/units/1
+       */
+      parent?: string | null;
     };
-    /** Unit */
+    /** @description Unit */
     "Unit.jsonld-Unit-read": {
-      "@context"?:
+      /** @example /api/contexts/Unit */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Code */
+      /** @example /api/units/1 */
+      "@id": string;
+      /** @example Unit */
+      "@type": string;
+      /**
+       * @default 1
+       * @example 1
+       */
+      base: number;
+      /**
+       * Enfants
+       * @description Enfants
+       * @example /api/units/2,/api/units/3
+       */
+      children?: string[];
+      /**
+       * Code
+       * @description Code
+       * @example g
+       */
       code: string;
-      /** id */
-      id?: number;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Nom
+       * @description Nom
+       * @example Gramme
+       */
+      name: string;
+      /**
+       * Parent
+       * Format: iri-reference
+       * @description Parent
+       * @example /api/units/1
+       */
+      parent?: string | null;
     };
-    /** Unit */
+    /** @description Unit */
     "Unit.jsonld-Unit-write": {
+      /** @example /api/contexts/Unit */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/units/1 */
       "@id"?: string;
+      /** @example Unit */
       "@type"?: string;
-      /** Nom */
-      name: string;
-      /** Code */
+      /**
+       * @default 1
+       * @example 1
+       */
+      base: number;
+      /**
+       * Code
+       * @description Code
+       * @example g
+       */
       code: string;
+      /**
+       * Nom
+       * @description Nom
+       * @example Gramme
+       */
+      name: string;
+      /**
+       * Parent
+       * Format: iri-reference
+       * @description Parent
+       * @example /api/units/1
+       */
+      parent?: string | null;
     };
-    /** Message TVA */
+    /** @description Message TVA */
     "VatMessage-VatMessage-read": {
-      /** Message */
-      name: string;
-      /** id */
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
       id?: number;
+      /**
+       * Message
+       * @description Message
+       * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+       */
+      name: string;
     };
-    /** Message TVA */
+    /** @description Message TVA */
     "VatMessage-VatMessage-write": {
-      /** Message */
+      /**
+       * Message
+       * @description Message
+       * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+       */
       name: string;
     };
-    /** Message TVA */
+    /** @description Message TVA */
     "VatMessage.jsonld-VatMessage-read": {
-      "@context"?:
+      /** @example /api/contexts/VatMessage */
+      "@context":
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
-      "@id"?: string;
-      "@type"?: string;
-      /** Message */
+      /** @example /api/vat-messages/1 */
+      "@id": string;
+      /** @example VatMessage */
+      "@type": string;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      /**
+       * Message
+       * @description Message
+       * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+       */
       name: string;
-      /** id */
-      id?: number;
     };
-    /** Message TVA */
+    /** @description Message TVA */
     "VatMessage.jsonld-VatMessage-write": {
+      /** @example /api/contexts/VatMessage */
       "@context"?:
         | string
         | ({
             "@vocab": string;
+            /** @enum {string} */
             hydra: "http://www.w3.org/ns/hydra/core#";
           } & { [key: string]: unknown });
+      /** @example /api/vat-messages/1 */
       "@id"?: string;
+      /** @example VatMessage */
       "@type"?: string;
-      /** Message */
+      /**
+       * Message
+       * @description Message
+       * @example Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.
+       */
       name: string;
+    };
+    Violation: {
+      /** @example c1051bb4-d103-4f74-8988-acbcafc7fdc3 */
+      code: string;
+      /** @example This value should not be blank. */
+      message: string;
+      /** @example name */
+      propertyPath: string;
+    };
+    Violations: {
+      /** @example /api/contexts/ConstraintViolationList */
+      "@context"?: string;
+      /** @example ConstraintViolationList */
+      "@type"?: string;
+      /** @example An error occurred */
+      "hydra:title"?: string;
+      /**
+       * @example name: This value should not be blank.
+       * name: This value should not be blank.
+       */
+      "hydra:description"?: string;
+      violations: components["schemas"]["Violation"][];
+    };
+    /** @description WorkstationGroup */
+    WorkstationGroup: {
+      code: string;
+      deleted?: boolean;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id?: number;
+      name: string;
+      safetyDevice?: boolean;
+    };
+    /** @description WorkstationGroup */
+    "WorkstationGroup.jsonld": {
+      /** @example /api/contexts/WorkstationGroup */
+      "@context":
+        | string
+        | ({
+            "@vocab": string;
+            /** @enum {string} */
+            hydra: "http://www.w3.org/ns/hydra/core#";
+          } & { [key: string]: unknown });
+      /** @example /api/workstation-groups/1 */
+      "@id": string;
+      /** @example WorkstationGroup */
+      "@type": string;
+      code: string;
+      deleted?: boolean;
+      /**
+       * id
+       * @description id
+       * @example 1
+       */
+      id: number;
+      name: string;
+      safetyDevice?: boolean;
     };
   };
-  responses: {};
-  parameters: {};
-  requestBodies: {};
-  headers: {};
 }
 
 export interface operations {
@@ -1240,11 +3540,16 @@ export interface operations {
             "hydra:member": components["schemas"]["Carrier.jsonld-Carrier-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -1384,7 +3689,6 @@ export interface operations {
         name?: string;
         /** The collection page number */
         page?: number;
-        ral?: string;
         rgb?: string;
       };
     };
@@ -1396,11 +3700,16 @@ export interface operations {
             "hydra:member": components["schemas"]["Color.jsonld-Color-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -1552,11 +3861,16 @@ export interface operations {
             "hydra:member": components["schemas"]["ComponentFamily.jsonld-ComponentFamily-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -1697,11 +4011,16 @@ export interface operations {
             "hydra:member": components["schemas"]["Currency.jsonld-Currency-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -1805,6 +4124,239 @@ export interface operations {
       500: unknown;
     };
   };
+  /** créer un groupe de contrepartie de test */
+  postCounterPartGroupCollection: {
+    parameters: {};
+    responses: {
+      /** CounterPartGroup resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["CounterPartGroup.jsonld"];
+          "application/json": components["schemas"]["CounterPartGroup"];
+          "multipart/form-data": components["schemas"]["CounterPartGroup"];
+          "text/html": components["schemas"]["CounterPartGroup"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new CounterPartGroup resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["CounterPartGroup.jsonld"];
+        "application/json": components["schemas"]["CounterPartGroup"];
+        "multipart/form-data": components["schemas"]["CounterPartGroup"];
+        "text/html": components["schemas"]["CounterPartGroup"];
+      };
+    };
+  };
+  /** Récupère les groupes d'équipement */
+  getEngineGroupCollection: {
+    parameters: {
+      query: {
+        code?: string;
+        name?: string;
+        /** The collection page number */
+        page?: number;
+        safetyDevice?: boolean;
+      };
+    };
+    responses: {
+      /** EngineGroup collection */
+      200: {
+        content: {
+          "application/ld+json": {
+            "hydra:member": components["schemas"]["EngineGroup.jsonld-EngineGroup-read"][];
+            "hydra:totalItems"?: number;
+            "hydra:view"?: {
+              /** Format: iri-reference */
+              "@id"?: string;
+              "@type"?: string;
+              /** Format: iri-reference */
+              "hydra:first"?: string;
+              /** Format: iri-reference */
+              "hydra:last"?: string;
+              /** Format: iri-reference */
+              "hydra:previous"?: string;
+              /** Format: iri-reference */
+              "hydra:next"?: string;
+            };
+            "hydra:search"?: {
+              "@type"?: string;
+              "hydra:template"?: string;
+              "hydra:variableRepresentation"?: string;
+              "hydra:mapping"?: {
+                "@type"?: string;
+                variable?: string;
+                property?: string | null;
+                required?: boolean;
+              }[];
+            };
+          };
+          "application/json": components["schemas"]["EngineGroup-EngineGroup-read"][];
+          "multipart/form-data": components["schemas"]["EngineGroup-EngineGroup-read"][];
+          "text/html": components["schemas"]["EngineGroup-EngineGroup-read"][];
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Supprime un groupe d'équipement */
+  deleteEngineGroupItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** EngineGroup resource deleted */
+      204: never;
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Modifie un groupe d'équipement */
+  patchEngineGroupItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** EngineGroup resource updated */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["EngineGroup.jsonld-EngineGroup-read"];
+          "application/json": components["schemas"]["EngineGroup-EngineGroup-read"];
+          "multipart/form-data": components["schemas"]["EngineGroup-EngineGroup-read"];
+          "text/html": components["schemas"]["EngineGroup-EngineGroup-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The updated EngineGroup resource */
+    requestBody: {
+      content: {
+        "application/merge-patch+json": components["schemas"]["EngineGroup-EngineGroup-write"];
+      };
+    };
+  };
+  /** Créer un groupe d'outil */
+  postToolGroupCollection: {
+    parameters: {};
+    responses: {
+      /** ToolGroup resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["ToolGroup.jsonld"];
+          "application/json": components["schemas"]["ToolGroup"];
+          "multipart/form-data": components["schemas"]["ToolGroup"];
+          "text/html": components["schemas"]["ToolGroup"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new ToolGroup resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["ToolGroup.jsonld"];
+        "application/json": components["schemas"]["ToolGroup"];
+        "multipart/form-data": components["schemas"]["ToolGroup"];
+        "text/html": components["schemas"]["ToolGroup"];
+      };
+    };
+  };
+  /** Créer un groupe de poste de travail */
+  postWorkstationGroupCollection: {
+    parameters: {};
+    responses: {
+      /** WorkstationGroup resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["WorkstationGroup.jsonld"];
+          "application/json": components["schemas"]["WorkstationGroup"];
+          "multipart/form-data": components["schemas"]["WorkstationGroup"];
+          "text/html": components["schemas"]["WorkstationGroup"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new WorkstationGroup resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["WorkstationGroup.jsonld"];
+        "application/json": components["schemas"]["WorkstationGroup"];
+        "multipart/form-data": components["schemas"]["WorkstationGroup"];
+        "text/html": components["schemas"]["WorkstationGroup"];
+      };
+    };
+  };
   /** Récupère les types d'événements */
   getEventTypeCollection: {
     parameters: {
@@ -1823,11 +4375,16 @@ export interface operations {
             "hydra:member": components["schemas"]["EventType.jsonld-EventType-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -1978,11 +4535,16 @@ export interface operations {
             "hydra:member": components["schemas"]["Incoterms.jsonld-Incoterms-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -2119,8 +4681,6 @@ export interface operations {
   getInvoiceTimeDueCollection: {
     parameters: {
       query: {
-        days?: number;
-        daysAfterEndOfMonth?: number;
         endOfMonth?: boolean;
         name?: string;
         /** The collection page number */
@@ -2135,11 +4695,16 @@ export interface operations {
             "hydra:member": components["schemas"]["InvoiceTimeDue.jsonld-InvoiceTimeDue-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -2272,6 +4837,189 @@ export interface operations {
       };
     };
   };
+  /** Récupère les notifications de l'utilisateur courant */
+  getNotificationCollection: {
+    parameters: {};
+    responses: {
+      /** Notification collection */
+      200: {
+        content: {
+          "application/ld+json": {
+            "hydra:member": components["schemas"]["Notification.jsonld"][];
+            "hydra:totalItems"?: number;
+            "hydra:view"?: {
+              /** Format: iri-reference */
+              "@id"?: string;
+              "@type"?: string;
+              /** Format: iri-reference */
+              "hydra:first"?: string;
+              /** Format: iri-reference */
+              "hydra:last"?: string;
+              /** Format: iri-reference */
+              "hydra:previous"?: string;
+              /** Format: iri-reference */
+              "hydra:next"?: string;
+            };
+            "hydra:search"?: {
+              "@type"?: string;
+              "hydra:template"?: string;
+              "hydra:variableRepresentation"?: string;
+              "hydra:mapping"?: {
+                "@type"?: string;
+                variable?: string;
+                property?: string | null;
+                required?: boolean;
+              }[];
+            };
+          };
+          "application/json": components["schemas"]["Notification"][];
+          "multipart/form-data": components["schemas"]["Notification"][];
+          "text/html": components["schemas"]["Notification"][];
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Supprime les notifications de l'utilisateur dans la catégorie */
+  deleteNotificationCollection: {
+    parameters: {};
+    responses: {
+      /** Notification resource deleted */
+      204: never;
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Marque les notifications de l'utilisateur dans la catégorie */
+  patchNotificationCollection: {
+    parameters: {};
+    responses: {
+      /** Notification resource updated */
+      200: {
+        content: {
+          "application/ld+json": {
+            "hydra:member": components["schemas"]["Notification.jsonld"][];
+            "hydra:totalItems"?: number;
+            "hydra:view"?: {
+              /** Format: iri-reference */
+              "@id"?: string;
+              "@type"?: string;
+              /** Format: iri-reference */
+              "hydra:first"?: string;
+              /** Format: iri-reference */
+              "hydra:last"?: string;
+              /** Format: iri-reference */
+              "hydra:previous"?: string;
+              /** Format: iri-reference */
+              "hydra:next"?: string;
+            };
+            "hydra:search"?: {
+              "@type"?: string;
+              "hydra:template"?: string;
+              "hydra:variableRepresentation"?: string;
+              "hydra:mapping"?: {
+                "@type"?: string;
+                variable?: string;
+                property?: string | null;
+                required?: boolean;
+              }[];
+            };
+          };
+          "application/json": components["schemas"]["Notification"][];
+          "multipart/form-data": components["schemas"]["Notification"][];
+          "text/html": components["schemas"]["Notification"][];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Supprime la notification */
+  deleteNotificationItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** Notification resource deleted */
+      204: never;
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Marque la notifications comme lue */
+  patchNotificationItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** Notification resource updated */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["Notification.jsonld"];
+          "application/json": components["schemas"]["Notification"];
+          "multipart/form-data": components["schemas"]["Notification"];
+          "text/html": components["schemas"]["Notification"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
   /** Récupère les formateurs extérieurs */
   getOutTrainerCollection: {
     parameters: {
@@ -2295,11 +5043,16 @@ export interface operations {
             "hydra:member": components["schemas"]["OutTrainer.jsonld-OutTrainer-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -2432,6 +5185,343 @@ export interface operations {
       };
     };
   };
+  /** Récupère les produits */
+  getProductCollection: {
+    parameters: {
+      query: {
+        currentPlace?: string;
+        "expirationDate[after]"?: string;
+        "expirationDate[before]"?: string;
+        "expirationDate[strictly_after]"?: string;
+        "expirationDate[strictly_before]"?: string;
+        family?: string;
+        index?: string;
+        kind?: string;
+        "order[index]"?: "asc" | "desc";
+        "order[kind]"?: "asc" | "desc";
+        "order[ref]"?: "asc" | "desc";
+        /** The collection page number */
+        page?: number;
+        ref?: string;
+      };
+    };
+    responses: {
+      /** Product collection */
+      200: {
+        content: {
+          "application/ld+json": {
+            "hydra:member": components["schemas"]["Product.jsonld-Product-collection"][];
+            "hydra:totalItems"?: number;
+            "hydra:view"?: {
+              /** Format: iri-reference */
+              "@id"?: string;
+              "@type"?: string;
+              /** Format: iri-reference */
+              "hydra:first"?: string;
+              /** Format: iri-reference */
+              "hydra:last"?: string;
+              /** Format: iri-reference */
+              "hydra:previous"?: string;
+              /** Format: iri-reference */
+              "hydra:next"?: string;
+            };
+            "hydra:search"?: {
+              "@type"?: string;
+              "hydra:template"?: string;
+              "hydra:variableRepresentation"?: string;
+              "hydra:mapping"?: {
+                "@type"?: string;
+                variable?: string;
+                property?: string | null;
+                required?: boolean;
+              }[];
+            };
+          };
+          "application/json": components["schemas"]["Product-Product-collection"][];
+          "multipart/form-data": components["schemas"]["Product-Product-collection"][];
+          "text/html": components["schemas"]["Product-Product-collection"][];
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Créer un produit */
+  postProductCollection: {
+    parameters: {};
+    responses: {
+      /** Product resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["Product.jsonld-Product-read"];
+          "application/json": components["schemas"]["Product-Product-read"];
+          "multipart/form-data": components["schemas"]["Product-Product-read"];
+          "text/html": components["schemas"]["Product-Product-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new Product resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["Product.jsonld-Product-create"];
+        "application/json": components["schemas"]["Product-Product-create"];
+        "multipart/form-data": components["schemas"]["Product-Product-create"];
+        "text/html": components["schemas"]["Product-Product-create"];
+      };
+    };
+  };
+  /** Récupère un produit */
+  getProductItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** Product resource */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["Product.jsonld-Product-read"];
+          "application/json": components["schemas"]["Product-Product-read"];
+          "multipart/form-data": components["schemas"]["Product-Product-read"];
+          "text/html": components["schemas"]["Product-Product-read"];
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Supprime un produit */
+  deleteProductItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** Product resource deleted */
+      204: never;
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  /** Clone un produit */
+  cloneProductItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** Product resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["Product.jsonld-Product-read"];
+          "application/json": components["schemas"]["Product-Product-read"];
+          "multipart/form-data": components["schemas"]["Product-Product-read"];
+          "text/html": components["schemas"]["Product-Product-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new Product resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["Product.jsonld-Product-clone"];
+        "application/json": components["schemas"]["Product-Product-clone"];
+        "multipart/form-data": components["schemas"]["Product-Product-clone"];
+        "text/html": components["schemas"]["Product-Product-clone"];
+      };
+    };
+  };
+  /** Transite le produit à son prochain statut de workflow */
+  promoteProductItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+        transition:
+          | "block"
+          | "disable"
+          | "partially_unlock"
+          | "partially_validate"
+          | "submit_validation"
+          | "unlock"
+          | "validate";
+      };
+    };
+    responses: {
+      /** Product resource updated */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["Product.jsonld-Product-read"];
+          "application/json": components["schemas"]["Product-Product-read"];
+          "multipart/form-data": components["schemas"]["Product-Product-read"];
+          "text/html": components["schemas"]["Product-Product-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The updated Product resource */
+    requestBody: {
+      content: {
+        "application/merge-patch+json": components["schemas"]["Product-Product-write"];
+      };
+    };
+  };
+  /** Évolue le produit au prochain indice */
+  upgradeProductItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+      };
+    };
+    responses: {
+      /** Product resource created */
+      201: {
+        content: {
+          "application/ld+json": components["schemas"]["Product.jsonld-Product-read"];
+          "application/json": components["schemas"]["Product-Product-read"];
+          "multipart/form-data": components["schemas"]["Product-Product-read"];
+          "text/html": components["schemas"]["Product-Product-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The new Product resource */
+    requestBody: {
+      content: {
+        "application/ld+json": components["schemas"]["Product.jsonld-Product-upgrade"];
+        "application/json": components["schemas"]["Product-Product-upgrade"];
+        "multipart/form-data": components["schemas"]["Product-Product-upgrade"];
+        "text/html": components["schemas"]["Product-Product-upgrade"];
+      };
+    };
+  };
+  /** Modifie un produit */
+  patchProductItem: {
+    parameters: {
+      path: {
+        /** Resource identifier */
+        id: string;
+        process: "admin" | "logistics" | "main" | "production" | "project";
+      };
+    };
+    responses: {
+      /** Product resource updated */
+      200: {
+        content: {
+          "application/ld+json": components["schemas"]["Product.jsonld-Product-read"];
+          "application/json": components["schemas"]["Product-Product-read"];
+          "multipart/form-data": components["schemas"]["Product-Product-read"];
+          "text/html": components["schemas"]["Product-Product-read"];
+        };
+      };
+      /** Invalid input */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Forbidden */
+      403: unknown;
+      /** Resource not found */
+      404: unknown;
+      /** Method Not Allowed */
+      405: unknown;
+      /** Unprocessable entity */
+      422: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    /** The updated Product resource */
+    requestBody: {
+      content: {
+        "application/merge-patch+json": components["schemas"]["Product-Product-write"];
+      };
+    };
+  };
   /** Récupère les familles de produit */
   getProductFamilyCollection: {
     parameters: {
@@ -2449,11 +5539,16 @@ export interface operations {
             "hydra:member": components["schemas"]["ProductFamily.jsonld-ProductFamily-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -2600,11 +5695,16 @@ export interface operations {
             "hydra:member": components["schemas"]["QualityType.jsonld-QualityType-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -2754,11 +5854,16 @@ export interface operations {
             "hydra:member": components["schemas"]["RejectType.jsonld-RejectType-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -2908,11 +6013,16 @@ export interface operations {
             "hydra:member": components["schemas"]["SkillType.jsonld-SkillType-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -3066,11 +6176,16 @@ export interface operations {
             "hydra:member": components["schemas"]["TimeSlot.jsonld-TimeSlot-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -3221,11 +6336,16 @@ export interface operations {
             "hydra:member": components["schemas"]["Unit.jsonld-Unit-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {
@@ -3375,11 +6495,16 @@ export interface operations {
             "hydra:member": components["schemas"]["VatMessage.jsonld-VatMessage-read"][];
             "hydra:totalItems"?: number;
             "hydra:view"?: {
+              /** Format: iri-reference */
               "@id"?: string;
               "@type"?: string;
+              /** Format: iri-reference */
               "hydra:first"?: string;
+              /** Format: iri-reference */
               "hydra:last"?: string;
+              /** Format: iri-reference */
               "hydra:previous"?: string;
+              /** Format: iri-reference */
               "hydra:next"?: string;
             };
             "hydra:search"?: {

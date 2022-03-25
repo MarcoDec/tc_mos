@@ -9,7 +9,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use App\Filter\NumericFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -69,20 +68,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('name')
 ]
 class InvoiceTimeDue extends Entity {
-    use NameTrait;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name']),
-        Assert\NotBlank
-    ]
-    protected ?string $name = null;
-
     #[
         ApiProperty(description: 'Jours ', example: 30),
         Assert\Length(min: 0, max: 31),
-        ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
+        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
     private ?int $days = 0;
@@ -90,7 +79,7 @@ class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
         Assert\Length(min: 0, max: 31),
-        ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
+        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
     private ?int $daysAfterEndOfMonth = 0;
@@ -102,6 +91,15 @@ class InvoiceTimeDue extends Entity {
     ]
     private ?bool $endOfMonth = false;
 
+    #[
+        ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:name', 'write:name']),
+        Assert\Length(min: 3, max: 30),
+        Assert\NotBlank
+    ]
+    private ?string $name = null;
+
     final public function getDays(): ?int {
         return $this->days;
     }
@@ -112,6 +110,10 @@ class InvoiceTimeDue extends Entity {
 
     final public function getEndOfMonth(): ?bool {
         return $this->endOfMonth;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     final public function setDays(?int $days): self {
@@ -126,6 +128,11 @@ class InvoiceTimeDue extends Entity {
 
     final public function setEndOfMonth(?bool $endOfMonth): self {
         $this->endOfMonth = $endOfMonth;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 }

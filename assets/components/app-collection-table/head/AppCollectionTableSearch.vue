@@ -6,7 +6,7 @@
     const create = inject<boolean>('create', false)
     const fields = inject<TableField[]>('fields', [])
     const tableId = inject<string>('table-id', 'table')
-    const searchFields = computed<TableField[]>(() => fields.map((field: Readonly<TableField>): TableField => ({
+    const searchFields = computed<TableField[]>(() => fields.map((field: TableField): TableField => ({
         ...field,
         id: `${tableId}-search-${field.name}`,
         type: field.type === 'boolean' ? 'search-boolean' : field.type

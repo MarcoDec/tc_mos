@@ -9,7 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
-use App\Filter\RelationFilter;
+use App\Filter\OldRelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
+    ApiFilter(filterClass: OldRelationFilter::class, properties: ['parent']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Famille de produit',
@@ -76,19 +76,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['name', 'parent'])
 ]
 class Family extends AbstractFamily {
-    /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     protected Collection $children;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
+        Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 30),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
 
-    /** @var null|self */
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/product-families/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),

@@ -1,7 +1,14 @@
 doctrine:
   dbal:
     types:
+      char: App\Doctrine\DBAL\Types\CharType
+      !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
+      !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
       employee_current_place: App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType
+      engine_type: App\Doctrine\DBAL\Types\Production\Engine\EngineType
+      product_current_place: App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType
+      product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
+      tinyint: App\Doctrine\DBAL\Types\Tinyint
     url: '%env(resolve:DATABASE_URL)%'
     wrapper_class: App\Doctrine\DBAL\Connection
   orm:
