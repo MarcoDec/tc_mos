@@ -5,10 +5,14 @@
 
     const {
         hasUser,
+        isManagementAdmin,
+        isManagementReader,
         isPurchaseAdmin,
         isPurchaseReader
     } = useNamespacedGetters<Getters>('security', [
         'hasUser',
+        'isManagementAdmin',
+        'isManagementReader',
         'isPurchaseAdmin',
         'isPurchaseReader'
     ])
@@ -34,18 +38,23 @@
                         Administrateur
                     </AppDropdownItem>
                     <AppNavbarLink disabled icon="magnet" to="attribute-list" variant="danger">
-                        Attribut
+                        Attributs
                     </AppNavbarLink>
                     <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
                         Familles de composants
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
-            <!-- AppNavbarItem id="nav-purchase" icon="sitemap" title="Direction">
-                <AppNavbarLink icon="palette" to="color-list">
-                    Couleur
-                </AppNavbarLink>
-                <AppNavbarLink icon="hourglass-half" to="invoiceTimeDue-list">
+            <AppNavbarItem v-if="isManagementReader" id="nav-purchase" icon="sitemap" title="Direction">
+                <template v-if="isManagementAdmin">
+                    <AppDropdownItem variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="palette" to="color-list" variant="warning">
+                        Couleurs
+                    </AppNavbarLink>
+                </template>
+                <!-- AppNavbarLink icon="hourglass-half" to="invoiceTimeDue-list">
                     Délai de paiement d'une facture
                 </AppNavbarLink>
                 <AppNavbarLink icon="print" to="Printer-list">
@@ -56,9 +65,9 @@
                 </AppNavbarLink>
                 <AppNavbarLink icon="comments-dollar" to="VatMessage-list">
                     Message TVA
-                </AppNavbarLink>
+                </AppNavbarLink -->
             </AppNavbarItem>
-            <AppNavbarItem id="nav-purchase" icon="laptop" title="Informatique">
+            <!-- AppNavbarItem id="nav-purchase" icon="laptop" title="Informatique">
                 <AppNavbarLink icon="laptop-code" to="ITRequest-list">
                     Demande
                 </AppNavbarLink>
