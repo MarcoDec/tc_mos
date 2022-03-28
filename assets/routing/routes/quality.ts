@@ -2,7 +2,7 @@ import type {RouteComponent} from 'vue-router'
 
 export default [
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'ComponentReferenceValue-list',
         path: '/ComponentReferenceValue/list',
@@ -114,7 +114,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'RejectType-list',
         path: '/RejectType/list',
@@ -144,7 +144,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'QualityType-list',
         path: '/QualityType/list',

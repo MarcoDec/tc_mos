@@ -2,7 +2,7 @@ import type {RouteComponent} from 'vue-router'
 
 export default [
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'operation-list',
         path: '/operation/list',
@@ -87,7 +87,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'OperationType-list',
         path: '/OperationType/list',

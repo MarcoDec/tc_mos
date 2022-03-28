@@ -3,7 +3,7 @@ import type {FunContext} from '../../../types/vue'
 import type {VNode} from 'vue'
 import {useSlots} from '../../../composition/slots'
 
-type Props = {
+declare type Props = {
     current: boolean
 }
 

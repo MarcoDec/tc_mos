@@ -2,7 +2,7 @@ import type {RouteComponent} from 'vue-router'
 
 export default [
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'color-list',
         path: '/color/list',
@@ -37,11 +37,12 @@ export default [
                 }
             ],
             icon: 'palette',
+            modulePath: 'colors',
             title: 'Couleur'
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'invoiceTimeDue-list',
         path: '/InvoiceTimeDue/list',
@@ -89,7 +90,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'Printer-list',
         path: '/Printer/list',
@@ -128,7 +129,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'Unit-list',
         path: '/Unit/list',
@@ -158,7 +159,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'VatMessage-list',
         path: '/VatMessage/list',

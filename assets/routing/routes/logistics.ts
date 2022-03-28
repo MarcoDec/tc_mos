@@ -2,7 +2,7 @@ import type {RouteComponent} from 'vue-router'
 
 export default [
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'Carrier-list',
         path: '/Carrier/list',
@@ -87,7 +87,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'Incoterms-list',
         path: '/Incoterms/list',

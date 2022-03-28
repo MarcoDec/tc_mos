@@ -2,7 +2,7 @@ import type {RouteComponent} from 'vue-router'
 
 export default [
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'Zone-list',
         path: '/Zone/list',
@@ -23,7 +23,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'Group-list',
         path: '/Group/list',
@@ -72,7 +72,7 @@ export default [
         }
     },
     {
-        component: async (): Promise<RouteComponent> => import('../pages/AppCollectionTablePage.vue'),
+        component: async (): Promise<RouteComponent> => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
         meta: {requiresAuth: true},
         name: 'EngineEvent-list',
         path: '/EngineEvent/list',
