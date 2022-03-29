@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 final class ZipCodeValidator extends CountryValidator {
-    public function validate($value, Constraint $constraint): void {
+    public function validate(mixed $value, Constraint $constraint): void {
         if (!$constraint instanceof ZipCodeAttribute) {
             throw new UnexpectedTypeException($constraint, ZipCodeAttribute::class);
         }

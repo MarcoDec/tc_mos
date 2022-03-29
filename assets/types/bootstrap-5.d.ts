@@ -1,6 +1,6 @@
-export type BootstrapSize = 'lg' | 'md' | 'sm'
+export declare type BootstrapSize = 'lg' | 'md' | 'sm'
 
-export type BootstrapVariant =
+export declare type BootstrapVariant =
     'body'
     | 'danger'
     | 'dark'
@@ -13,14 +13,30 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
-export type FormField = {
+export declare type FormInput =
+    'boolean'
+    | 'date'
+    | 'file'
+    | 'number'
+    | 'password'
+    | 'radio'
+    | 'search-boolean'
+    | 'select'
+    | 'text'
+
+export declare type FormOption = {text: string, value: FormValue}
+export declare type FormOptions = FormOption[]
+
+export declare type FormField = {
+    btn?: boolean
+    id?: string
     label: string
+    labelCols?: number
     name: string
+    options?: FormOptions
     type?: FormInput
 }
 
-export type FormInput = 'password' | 'text'
+export declare type FormValue = boolean | number | string | null
 
-export type FormValue = number | string | null
-
-export type FormValues = Record<string, FormValue>
+export declare type FormValues = Record<string, FormValue>

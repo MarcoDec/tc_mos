@@ -2,14 +2,14 @@
 
 namespace App\Filesystem;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 final class Directory {
-    /** @var Collection<string> */
+    /** @var Collection<int, string> */
     private Collection $files;
 
     public function __construct(private string $path) {
-        $this->files = collect(scandir($path))->filter(static fn (string $file): bool => !in_array($file, ['.', '..', '.gitignore']));
+        $this->files = collect(scandir($path) ?: [])->filter(static fn (string $file): bool => !in_array($file, ['.', '..', '.gitignore']));
     }
 
     public function __toString(): string {

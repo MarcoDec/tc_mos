@@ -1,33 +1,7 @@
-import {existsSync, unlinkSync} from 'fs'
 import {defineConfig} from 'vite'
-import {resolve} from 'path'
 import checker from 'vite-plugin-checker'
 import vue from '@vitejs/plugin-vue'
-
-const symfonyPlugin = {
-    configResolved(config) {
-        if (config.env.DEV && config.build.manifest) {
-            const buildDir = resolve(
-                config.root,
-                config.build.outDir,
-                'manifest.json'
-            )
-            existsSync(buildDir) && unlinkSync(buildDir)
-        }
-    },
-    configureServer(devServer) {
-        const {watcher, ws} = devServer
-        watcher.add(resolve('templates/**/*.twig'))
-        watcher.on('change', path => {
-            if (path.endsWith('.twig')) {
-                ws.send({
-                    type: 'full-reload'
-                })
-            }
-        })
-    },
-    name: 'symfony'
-}
+import symfonyPlugin from 'vite-plugin-symfony'
 
 export default defineConfig({
     base: '/build/',
@@ -35,22 +9,23 @@ export default defineConfig({
         assetsDir: '',
         emptyOutDir: true,
         manifest: true,
-        outDir: '../public/build/',
+        outDir: './public/build/',
         rollupOptions: {
-            input: ['./app.ts']
+            input: {index: './assets/index.ts'}
         }
     },
     plugins: [
-        symfonyPlugin,
+        symfonyPlugin(),
         vue(),
         checker({
-            eslint: {extensions: ['.ts', '.vue'], files: [resolve('assets')]},
+            eslint: {lintCommand: 'eslint -c .eslintrc.js ./assets/**/*.{ts,vue}'},
             typescript: true,
             vueTsc: true
         })
     ],
-    root: './assets/',
+    root: './',
     server: {
+        force: true,
         fs: {
             allow: ['..'],
             strict: false
