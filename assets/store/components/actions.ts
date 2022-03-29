@@ -10,8 +10,8 @@ export const actions = {
     async fetchComponent({dispatch}: ActionContext): Promise<void> {
         const response: Suppliers[] = [
             {
+                designation: 'des',
                 etat: 'refus',
-                designation:'des',
                 famille: 'cc',
                 fournisseurs: 'cc',
                 id: 1,
@@ -23,28 +23,32 @@ export const actions = {
                 traffic: false
             },
             {
+                designation: 'dess',
                 etat: 'attente',
-                designation:'dess',
                 famille: 'cc',
                 fournisseurs: 'cc',
                 id: 2,
-                indice: 'CAB-1000',
                 img: 'ddd',
+                indice: 'CAB-1000',
                 nom: 'ABB',
                 ref: 'CAB-1000',
                 show: true,
                 traffic: true
-            },
-           
+            }
         ]
 
         const components = []
         for (const list of response)
-        components.push(dispatch(
-                'registerModule',
-                {module: generateComponent(list), path: ['components', list.id.toString()]},
-                {root: true}
-            ))
+            components.push(
+                dispatch(
+                    'registerModule',
+                    {
+                        module: generateComponent(list),
+                        path: ['components', list.id.toString()]
+                    },
+                    {root: true}
+                )
+            )
         await Promise.all(components)
     }
 }

@@ -50,7 +50,7 @@
 
     function input(e: Readonly<Event>): void {
         emit('update:modelValue', (e.target as HTMLInputElement).value)
-        value.pays = (e.target as HTMLInputElement).value        
+        value.pays = (e.target as HTMLInputElement).value
     }
     onMounted(async () => {
         await fetchCountry()

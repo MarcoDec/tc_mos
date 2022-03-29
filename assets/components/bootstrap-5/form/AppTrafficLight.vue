@@ -34,7 +34,42 @@ body {
   border-radius: 5px;
   transform: rotate(90deg);
 }
+@media only screen and (max-width: 1px) {
+#traffic-light {
+    margin-left: 37px;
+    margin-top: -36px;
+    width: 38px;
+    height: 103px;
 
+}
+input {
+    appearance: none;
+    position: relative;
+    left: 20%;
+    width: 20px;
+    height: 20px;
+    margin-top: 10px;
+    margin-right: -23px;
+}
+}
+@media screen and (min-width: 1000px)   {
+#traffic-light {
+    margin-left: 56px;
+    margin-top: -60px;
+    width: 38px;
+    height: 150px;
+
+}
+input {
+    appearance: none;
+    position: relative;
+    left: 20%;
+    width: 20px;
+    height: 20px;
+    margin-top: 10px;
+    margin-right: -23px;
+}
+}
 input {
   appearance: none;
   position: relative;

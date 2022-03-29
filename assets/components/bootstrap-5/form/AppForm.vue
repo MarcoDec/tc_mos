@@ -1,75 +1,77 @@
 <script lang="ts" setup>
-import type {
-  FormField,
-  FormValue,
-  FormValues,
-} from "../../../types/bootstrap-5";
-import { computed, defineEmits, defineProps, provide, withDefaults } from "vue";
-import clone from "clone";
+    import type {
+        FormField,
+        FormValue,
+        FormValues
+    } from '../../../types/bootstrap-5'
+    import {computed, defineEmits, defineProps, provide, withDefaults} from 'vue'
+    import clone from 'clone'
 
-const emit = defineEmits<{
-  (e: "update:modelValue", values: Readonly<FormValues>): void;
-  (e: "submit"): void;
-}>();
-const props = withDefaults(
-  defineProps<{
-    countryField?: string | null;
-    fields: FormField[];
-    id: string;
-    modelValue?: FormValues;
-  }>(),
-  { countryField: null, modelValue: () => ({}) }
-);
-const country = computed(() =>
-  props.countryField !== null ? props.modelValue[props.countryField] : null
-);
+    const emit = defineEmits<{
+        (e: 'update:modelValue', values: Readonly<FormValues>): void
+        (e: 'submit'): void
+    }>()
+    const props = withDefaults(
+        defineProps<{
+            countryField?: string | null
+            fields: FormField[]
+            id: string
+            modelValue?: FormValues
+        }>(),
+        {countryField: null, modelValue: () => ({})}
+    )
+    const country = computed(() =>
+        (props.countryField === null ? null : props.modelValue[props.countryField]))
 
-const tabs = computed(() => {
-  for (const field of props.fields) if (field.tab) return true;
-  return false;
-});
+    const tabs = computed(() => {
+        for (const field of props.fields) if (field.mode === 'tab') return true
+        return false
+    })
 
+    const btn = computed(() => {
+        for (const field of props.fields) if (field.btn === true) return true
+        return false
+    })
+    provide('country', country)
 
-provide("country", country);
-
-function input(value: Readonly<{ value: FormValue; name: string }>): void {
-  const cloned = clone(props.modelValue);
-  cloned[value.name] = value.value;
-  emit("update:modelValue", cloned);
-  console.log("select1bbb", cloned);
-}
+    function input(value: Readonly<{value: FormValue, name: string}>): void {
+        const cloned = clone(props.modelValue)
+        cloned[value.name] = value.value
+        emit('update:modelValue', cloned)
+    }
 </script>
 
 <template>
-  <form :id="id" autocomplete="off" @submit.prevent="emit('submit')">
-    <AppTabs id="gui-start" class="gui-start-content" v-if="tabs">
-      <AppFormField
-        v-for="field in fields"
-        :key="field.name"
-        :field="field"
-        :form="id"
-        :model-value="modelValue[field.name]"
-        @input="input"
-      />
-     <slot/>
-    </AppTabs>
-    <template v-else>
-      <AppFormField
-        v-for="field in fields"
-        :key="field.name"
-        :field="field"
-        :form="id"
-        :model-value="modelValue[field.name]"
-        @input="input"
-      />
-    </template>
-    <div class="float-start">
-      <slot name="start" />
-    </div>
-    <div class="float-end">
-      <slot />
-    </div>
-  </form>
+    <form :id="id" autocomplete="off" @submit.prevent="emit('submit')">
+        <AppTabs v-if="tabs" id="gui-start" class="gui-start-content">
+            <AppFormField
+                v-for="field in fields"
+                :key="field.name"
+                :field="field"
+                :form="id"
+                :model-value="modelValue[field.name]"
+                @input="input">
+                <slot :name="field.name"/>
+            </AppFormField>
+            <slot v-if="btn" name="plus"/>
+        </AppTabs>
+
+        <template v-else>
+            <AppFormField
+                v-for="field in fields"
+                :key="field.name"
+                :field="field"
+                :form="id"
+                :model-value="modelValue[field.name]"
+                @input="input"/>
+        </template>
+        <div class="float-start">
+            <slot name="start"/>
+        </div>
+        <div class="float-end">
+            <slot/>
+        </div>
+    </form>
 </template>
 
 <style scoped>

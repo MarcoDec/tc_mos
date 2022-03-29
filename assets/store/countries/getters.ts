@@ -37,6 +37,6 @@ export const getters: Getters = {
     phoneLabel(state, computed, rootState, rootGetters){
         return (code: string | null): string | null => (code === null
             ? null
-            : rootGetters[`countries/${code}/phoneLabel`] ?? null)
+            : rootGetters[`countries/${code}/phoneLabel`] as string | null ?? null)
     }
 }

@@ -1,48 +1,32 @@
 <script lang="ts" setup>
-import { computed } from "@vue/runtime-core";
-import { FormField, FormValue } from "../../../types/bootstrap-5";
+    import type {FormField, FormValue} from '../../../types/bootstrap-5'
+    import {defineEmits, defineProps} from 'vue'
 
-const emit = defineEmits<{
-(e: "update:modelValue", value: FormValue) : void
-(e: 'click') : void
-}>();
+    const emit = defineEmits<{
+        (e: 'update:modelValue', value: FormValue): void
+        (e: 'click'): void
+    }>()
 
-const props =
-  defineProps<{ field: FormField; form: string; modelValue?: FormValue }>();
+    defineProps<{field: FormField, form: string, modelValue?: FormValue}>()
 
-const td = computed(() =>
-  Array.isArray(props.field.children) && props.field.children.length > 0
-    ? "AppFormFieldset"
-    : "AppFormGroup"
-);
-
-function input(value: FormValue): void {
-  emit("update:modelValue", value);
-}
-
-function click(){
-  emit('click')
-}
+    function input(value: FormValue): void {
+        emit('update:modelValue', value)
+    }
 </script>
 
 <template>
-  <fieldset class="scheduler-border">
-    <legend class="scheduler-border">{{ field.label }}</legend>
-    <AppFormField
-      v-for="field in field.children"
-      :form="form"
-      :key="field.name"
-      :field="field"
-      :model-value="modelValue"
-      @update:model-value="input"
-    >
-    
-    </AppFormField>
-    
-     <AppBtn class="float-end" type="submit" v-if="field.btn" @click="click">
-      <Fa icon="plus" />
-    </AppBtn>
-  </fieldset>
+    <fieldset class="scheduler-border">
+        <legend class="scheduler-border">
+            {{ field.label }}
+        </legend>
+        <AppFormField
+            v-for="child in field.children"
+            :key="child"
+            :form="form"
+            :field="child"
+            :model-value="modelValue"
+            @update:model-value="input"/>
+    </fieldset>
 </template>
 
 <style scoped>

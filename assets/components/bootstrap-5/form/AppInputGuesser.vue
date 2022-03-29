@@ -31,7 +31,6 @@
 
     function input(value: FormValue): void {
         emit('update:modelValue', value)
-
     }
 </script>
 

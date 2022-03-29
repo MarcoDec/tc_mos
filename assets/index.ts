@@ -1,6 +1,7 @@
 import './app.scss'
 import * as Cookies from './cookie'
 import * as components from './components'
+import type {Component} from 'vue'
 import type {State} from './store/security'
 import app from './app'
 import {defineAsyncComponent} from 'vue'
@@ -15,7 +16,7 @@ library.add(fas)
 
 app.provide('emitter', emitter)
     .component('Fa', defineAsyncComponent(async () => import('@fortawesome/vue-fontawesome/src/components/FontAwesomeIcon')))
-    .component('CountryFlag', defineAsyncComponent(async () => import('vue-country-flag-next')))
+    .component('CountryFlag', defineAsyncComponent<Component>(async () => import('vue-country-flag-next')))
 for (const [name, component] of Object.entries(components))
     app.component(name, component)
 

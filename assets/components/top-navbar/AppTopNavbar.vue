@@ -1,6 +1,10 @@
 <script lang="ts" setup>
     import type {Actions, Getters, State} from '../../store/security'
-    import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
+    import {
+        useNamespacedActions,
+        useNamespacedGetters,
+        useNamespacedState
+    } from 'vuex-composition-helpers'
     import {useRouter} from 'vue-router'
 
     const hasUser = useNamespacedGetters<Getters>('security', ['hasUser']).hasUser
@@ -24,16 +28,37 @@
                 <AppNavbarLink icon="user-tag" to="supplier-list">
                     Fournisseurs
                 </AppNavbarLink>
-                 <AppNavbarLink icon="user-tag" to="component-list">
+                <AppNavbarLink icon="user-tag" to="component-list">
                     Composants
                 </AppNavbarLink>
                 <AppNavbarLink icon="layer-group" to="component-families">
                     Familles de composants
                 </AppNavbarLink>
             </AppNavbarItem>
+            <AppNavbarItem id="nav-purchase" icon="industry" title="Ventes">
+                <AppNavbarLink icon="layer-group" to="customer-list">
+                    Client
+                </AppNavbarLink>
+            </AppNavbarItem>
             <AppNavbarItem id="nav-purchase" icon="industry" title="Production">
                 <AppNavbarLink icon="layer-group" to="product-families">
                     Familles de produits
+                </AppNavbarLink>
+                <AppNavbarLink icon="tools" to="engine-list">
+                    Equipements
+                </AppNavbarLink>
+                <AppNavbarLink to="manufacturingOrder-list">
+                    OFs
+                </AppNavbarLink>
+            </AppNavbarItem>
+            <AppNavbarItem id="nav-purchase" icon="product-hunt" title="Projet">
+                <AppNavbarLink icon="product-hunt" to="product-list">
+                    Produits
+                </AppNavbarLink>
+            </AppNavbarItem>
+            <AppNavbarItem id="nav-purchase" icon="product-hunt" title="RH">
+                <AppNavbarLink icon="product-hunt" to="employee-list">
+                    Employés
                 </AppNavbarLink>
             </AppNavbarItem>
         </AppNavbarCollapse>

@@ -49,6 +49,36 @@ const router = createRouter({
             meta: {requiresAuth: true},
             name: 'component-list',
             path: '/component-list'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/selling/customer/AppCustomerPage.vue'),
+            meta: {requiresAuth: true},
+            name: 'customer-list',
+            path: '/customer-list'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/production/engine/AppEnginePage.vue'),
+            meta: {requiresAuth: true},
+            name: 'engine-list',
+            path: '/engine-list'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/production/order/AppManufacturingOrderPage.vue'),
+            meta: {requiresAuth: true},
+            name: 'manufacturingOrder-list',
+            path: '/manufacturingOrder-list'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/project/AppProductPage.vue'),
+            meta: {requiresAuth: true},
+            name: 'product-list',
+            path: '/product-list'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/employee/AppEmployeePage.vue'),
+            meta: {requiresAuth: true},
+            name: 'employee-list',
+            path: '/employee-list'
         }
     ]
 })
