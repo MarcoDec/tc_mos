@@ -1,4 +1,5 @@
 <script setup>
+    import AppSelectOption from './AppSelectOption.vue'
     import {computed} from 'vue'
 
     const props = defineProps({

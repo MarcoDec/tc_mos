@@ -1,11 +1,13 @@
 <script setup>
     import {useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
+    import AppTreeClickableItem from './AppTreeClickableItem.vue'
+    import AppTreeItem from './AppTreeItem.vue'
     import {computed} from 'vue'
 
     const props = defineProps({modulePath: {required: true, type: String}})
     const {children, hasChildren} = useNamespacedGetters(props.modulePath, ['children', 'hasChildren'])
     const opened = useNamespacedState(props.modulePath, ['opened']).opened
-    const tag = computed(() => (hasChildren.value ? 'AppTreeClickableItem' : 'AppTreeItem'))
+    const tag = computed(() => (hasChildren.value ? AppTreeClickableItem : AppTreeItem))
 </script>
 
 <template>

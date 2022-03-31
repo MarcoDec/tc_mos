@@ -1,4 +1,5 @@
 <script setup>
+    import AppRadio from './AppRadio'
     import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])

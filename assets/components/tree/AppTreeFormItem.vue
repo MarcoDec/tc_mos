@@ -1,6 +1,7 @@
 <script setup>
     import {computed, inject, provide} from 'vue'
     import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
+    import AppTreeForm from './AppTreeForm.vue'
 
     const fields = inject('fields', computed(() => []))
     const moduleName = inject('moduleName', '')

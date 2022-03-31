@@ -1,5 +1,8 @@
 <script setup>
     import {computed, provide} from 'vue'
+    import AppCollectionTableHeaders from './head/AppCollectionTableHeaders.vue'
+    import AppCollectionTableItems from './body/AppCollectionTableItems.vue'
+    import AppPagination from '../bootstrap-5/pagination/AppPagination.vue'
 
     const emit = defineEmits(['update'])
     const props = defineProps({

@@ -1,5 +1,6 @@
 <script setup>
     import {inject, ref} from 'vue'
+    import AppCollectionTableField from './AppCollectionTableField.vue'
 
     const fields = inject('fields', [])
     const asc = ref(false)

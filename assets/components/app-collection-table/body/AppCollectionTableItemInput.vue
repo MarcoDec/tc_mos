@@ -1,4 +1,5 @@
 <script setup>
+    import AppCollectionTableItemField from './AppCollectionTableItemField.vue'
     import {computed} from 'vue'
 
     const props = defineProps({

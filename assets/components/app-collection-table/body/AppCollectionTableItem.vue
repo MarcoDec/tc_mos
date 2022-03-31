@@ -1,5 +1,7 @@
 <script setup>
     import {computed, inject, ref} from 'vue'
+    import AppCollectionTableItemField from './AppCollectionTableItemField.vue'
+    import AppCollectionTableItemInput from './AppCollectionTableItemInput.vue'
 
     const props = defineProps({
         index: {required: true, type: Number},
@@ -8,7 +10,7 @@
     const fields = inject('fields', [])
     const formattedIndex = computed(() => props.index + 1)
     const show = ref(true)
-    const td = computed(() => (show.value ? 'AppCollectionTableItemField' : 'AppCollectionTableItemInput'))
+    const td = computed(() => (show.value ? AppCollectionTableItemField : AppCollectionTableItemInput))
     const emit = defineEmits(['update'])
 
     function toggle() {

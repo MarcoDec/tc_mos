@@ -1,5 +1,6 @@
 <script setup>
     import {useNamespacedMutations, useNamespacedState} from 'vuex-composition-helpers'
+    import AppTreeItem from './AppTreeItem.vue'
     import {computed} from 'vue'
 
     const props = defineProps({modulePath: {required: true, type: String}})

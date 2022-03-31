@@ -1,4 +1,6 @@
 <script setup>
+    import AppCollectionTableItem from './AppCollectionTableItem.vue'
+
     const emit = defineEmits(['update'])
     defineProps({items: {required: true, type: Array}})
 

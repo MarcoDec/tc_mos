@@ -1,4 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import AppHome from './pages/AppHome'
+import AppLogin from './pages/security/AppLogin.vue'
 import hr from './routes/hr'
 import it from './routes/it'
 import logistics from './routes/logistics'
@@ -12,13 +14,13 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            component: async () => import('./pages/AppHome'),
+            component: AppHome,
             meta: {requiresAuth: true},
             name: 'home',
             path: '/'
         },
         {
-            component: async () => import('./pages/security/AppLogin.vue'),
+            component: AppLogin,
             meta: {requiresAuth: false},
             name: 'login',
             path: '/login'

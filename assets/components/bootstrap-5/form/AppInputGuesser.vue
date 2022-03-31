@@ -1,4 +1,9 @@
 <script setup>
+    import AppInput from './AppInput.vue'
+    import AppRadioGroup from './AppRadioGroup.vue'
+    import AppSearchBool from './AppSearchBool.vue'
+    import AppSelect from './AppSelect.vue'
+    import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
@@ -12,15 +17,15 @@
     const guessed = computed(() => {
         switch (type.value) {
             case 'boolean':
-                return 'AppSwitch'
+                return AppSwitch
             case 'radio':
-                return 'AppRadioGroup'
+                return AppRadioGroup
             case 'search-boolean':
-                return 'AppSearchBool'
+                return AppSearchBool
             case 'select':
-                return 'AppSelect'
+                return AppSelect
             default:
-                return 'AppInput'
+                return AppInput
         }
     })
 
