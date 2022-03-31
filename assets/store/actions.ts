@@ -1,12 +1,11 @@
-import type * as Store from '.'
 import type {ApiBody, Response as ApiResponse, Methods, Urls} from '../api'
+import type {AppStore, Module, RootComputedGetters, State} from '.'
+import type {ActionContext as VuexActionContext} from 'vuex'
 import app from '../app'
 import emitter from '../emitter'
 import fetchApi from '../api'
 
-declare type ActionContext = Store.ActionContext<Actions, Store.Mutations, Store.State>
-
-export declare type ApiPayload<U extends Urls, M extends Methods<U>> = {
+declare type ApiPayload<U extends Urls, M extends Methods<U>> = {
     body: ApiBody<U, M>
     method: M
     url: U
@@ -19,18 +18,15 @@ declare module 'vuex' {
     }
 }
 
-declare type ModulePath = string[] | string
+export declare type StoreActionContext<S, G> = Omit<VuexActionContext<S, State>, 'getters'> & {getters: G}
+
+declare type ActionContext = StoreActionContext<State, RootComputedGetters>
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare type ModulePayload = {module: Store.Module<any>, path: ModulePath}
+declare type ModulePayload = {module: Module<any>, path: string[] | string}
 
-export declare type Actions = {
-    fetchApi: <U extends Urls, M extends Methods<U>>(ctx: ActionContext, payload: ApiPayload<U, M>) => Promise<ApiResponse<U, M>>
-    registerModule: (ctx: ActionContext, payload: ModulePayload) => Promise<void>
-    unregisterModule: (ctx: ActionContext, path: ModulePath) => Promise<void>
-}
-
-export const actions: Actions = {
-    async fetchApi({commit}, payload) {
+export const actions = {
+    async fetchApi<U extends Urls, M extends Methods<U>>({commit}: ActionContext, payload: ApiPayload<U, M>): Promise<ApiResponse<U, M>> {
         commit('spin')
         try {
             const response = await fetchApi(payload.url, payload.method, payload.body)
@@ -50,10 +46,13 @@ export const actions: Actions = {
             commit('spin')
         }
     },
-    async registerModule(ctx, payload) {
-        (app.config.globalProperties.$store as Store.Store).registerModule(payload.path as string, payload.module)
+    async registerModule(context: ActionContext, payload: ModulePayload): Promise<void> {
+        (app.config.globalProperties.$store as AppStore)
+            .registerModule(payload.path as string, payload.module)
     },
-    async unregisterModule(ctx, path) {
-        (app.config.globalProperties.$store as Store.Store).unregisterModule(path as string)
+    async unregisterModule(context: ActionContext, path: string[] | string): Promise<void> {
+        (app.config.globalProperties.$store as AppStore).unregisterModule(path as string)
     }
 }
+
+export declare type Actions = typeof actions

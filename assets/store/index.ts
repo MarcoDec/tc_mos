@@ -1,40 +1,19 @@
-import type * as Types from '../types/vue'
-import type * as Vuex from 'vuex'
-import type {Actions, ApiPayload} from './actions'
-import type {Response as ApiResponse, Methods, Urls} from '../api'
-import type {Merge, ObjectToIntersection} from '../types/types'
-import type {GetterTree} from 'vuex'
-import type {Mutations} from './mutations'
+import type {Actions, StoreActionContext} from './actions'
+import type {GetterTree, Store, Module as VuexModule} from 'vuex'
+import type {Mutations} from './mutation'
 import type {State as Security} from './security'
 import type {State} from './state'
+import type {ComputedGetters as VueComputedGetters} from '../types/vue'
 import {actions} from './actions'
 import {createStore} from 'vuex'
 import {generateSecurity} from './security'
-import {mutations} from './mutations'
+import {mutations} from './mutation'
 import {state} from './state'
 
-export type {Actions, Mutations, State}
+export type {Actions, Mutations, State, StoreActionContext}
 
-export declare type ActionContext<A extends object, M extends object, S> =
-    Omit<Vuex.ActionContext<S, State>, 'commit' | 'dispatch'>
-    & {
-        commit: ObjectToIntersection<Types.Commit<M, S>>
-        dispatch: ObjectToIntersection<Types.Dispatch<A, S>>
-    }
-export declare type ActionContextTree<A extends object, M extends object, S, AT extends object> =
-    Omit<Vuex.ActionContext<S, State>, 'commit' | 'dispatch'>
-    & {
-        commit: ObjectToIntersection<Types.Commit<M, S>>
-        dispatch: ObjectToIntersection<Omit<Merge<Types.Dispatch<A, S>, Types.DispatchRoot<AT>>, 'fetchApi'> & {
-            fetchApi: <U extends Urls, N extends Methods<U>>(type: 'fetchApi', payload: ApiPayload<U, N>, options: {root: true}) => Promise<ApiResponse<U, N>>
-        }>
-    }
-export declare type ComputedGetters<G extends GetterTree<S>, S> = Types.ComputedGetters<G, S>
-export declare type Module<S> = Omit<Vuex.Module<S, State>, 'namespaced'> & {namespaced: true}
-export declare type Store = Vuex.Store<State>
-
-export function generateStore(security: Security): Store {
-    return createStore({
+export function generateStore(security: Security): Store<State> {
+    return createStore<State>({
         actions,
         modules: {security: generateSecurity(security)},
         mutations,
@@ -42,3 +21,9 @@ export function generateStore(security: Security): Store {
         strict: process.env.NODE_ENV !== 'production'
     })
 }
+
+export declare type AppStore = ReturnType<typeof generateStore>
+export declare type Getters = GetterTree<State, State>
+export declare type ComputedGetters<G extends GetterTree<S, State>, S> = VueComputedGetters<G, S, State>
+export declare type RootComputedGetters = ComputedGetters<Getters, State>
+export declare type Module<S> = VuexModule<S, State>

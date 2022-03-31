@@ -268,7 +268,7 @@ module.exports = {
         'no-template-curly-in-string': 'error',
         'no-this-before-super': 'error',
         'no-trailing-spaces': 'error',
-        'no-undef': 'off',
+        'no-undef': 'error',
         'no-undef-init': 'error',
         'no-undefined': 'error',
         'no-underscore-dangle': ['error', {allowFunctionParams: false}],

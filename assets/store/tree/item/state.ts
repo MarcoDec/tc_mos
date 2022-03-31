@@ -8,4 +8,4 @@ export declare type TreeItemAction = {opened: boolean, selected: boolean}
 export declare type State =
     Item
     & TreeItemAction
-    & {baseUrl: string, moduleName: 'tree/{id}', url: string, violations: Violation[]}
+    & {baseUrl: string, moduleName: string, parentModuleName: string, url: string, violations: Violation[]}

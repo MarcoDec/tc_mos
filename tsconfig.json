@@ -10,14 +10,43 @@
     "strict": true,
     "target": "esnext",
     "typeRoots": [
-      "assets-3/types"
+      "assets/types"
     ],
     "types": [
       "node"
     ]
   },
+  "exclude": [
+    "bin",
+    "config",
+    "dev",
+    "doc",
+    "docker",
+    "fixtures",
+    "lib",
+    "migrations",
+    "node_modules",
+    "public",
+    "src",
+    "templates",
+    "utils",
+    "var",
+    "vendor",
+    ".bash_aliases",
+    ".env",
+    ".git",
+    ".gitignore",
+    ".idea",
+    ".php-cs-fixer.dist.php",
+    "composer.json",
+    "composer.lock",
+    "docker-compose.yaml",
+    "phpstan.neon.dist",
+    "README.md",
+    "symfony.lock"
+  ],
   "include": [
-    "assets-3",
+    "assets",
     ".eslintrc.js"
   ]
 }
