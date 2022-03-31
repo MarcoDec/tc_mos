@@ -1,26 +1,25 @@
-<script lang="ts" setup>
-    import type {Actions, Getters, State} from '../../store/tree/item'
-    import type {FormField, FormValues} from '../../types/bootstrap-5'
-    import {computed, defineProps, inject, provide} from 'vue'
+<script setup>
+    import {computed, inject, provide} from 'vue'
     import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
-    import type {ComputedRef} from 'vue'
-    import type {Actions as TreeActions} from '../../store/tree'
 
-    const fields = inject<ComputedRef<FormField[]>>('fields', computed(() => []))
+    const fields = inject('fields', computed(() => []))
     const moduleName = inject('moduleName', '')
-    const props = defineProps<{id: string, selected: string}>()
-    const label = useNamespacedGetters<Getters>(props.selected, ['label']).label
-    const state = useNamespacedState<FormValues>(props.selected, fields.value.map(({name}) => name))
+    const props = defineProps({
+        id: {required: true, type: String},
+        selected: {required: true, type: String}
+    })
+    const label = useNamespacedGetters(props.selected, ['label']).label
+    const state = useNamespacedState(props.selected, fields.value.map(({name}) => name))
     const title = computed(() => `Modification de ${label.value}`)
     const stateValues = computed(() => {
-        const values: FormValues = {}
+        const values = {}
         for (const property in state)
             values[property] = state[property].value
         return values
     })
-    const violations = useNamespacedState<State>(props.selected, ['violations']).violations
-    const unselect = useNamespacedActions<TreeActions>(moduleName, ['unselect']).unselect
-    const {remove, update} = useNamespacedActions<Actions>(props.selected, ['remove', 'update'])
+    const violations = useNamespacedState(props.selected, ['violations']).violations
+    const unselect = useNamespacedActions(moduleName, ['unselect']).unselect
+    const {remove, update} = useNamespacedActions(props.selected, ['remove', 'update'])
 
     provide('violations', violations)
 </script>

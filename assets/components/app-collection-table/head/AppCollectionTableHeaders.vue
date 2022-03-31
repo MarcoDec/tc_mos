@@ -1,10 +1,10 @@
-<script lang="ts" setup>
+<script setup>
     import {computed, ref} from 'vue'
 
     const search = ref(true)
     const row = computed(() => (search.value ? 'AppCollectionTableSearch' : 'AppCollectionTableAdd'))
 
-    function toggle(): void {
+    function toggle() {
         search.value = !search.value
     }
 </script>

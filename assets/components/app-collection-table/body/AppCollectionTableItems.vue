@@ -1,10 +1,8 @@
-<script lang="ts" setup>
-    import {defineEmits, defineProps} from 'vue'
-    import type {TableItem} from '../../../types/app-collection-table'
+<script setup>
+    const emit = defineEmits(['update'])
+    defineProps({items: {required: true, type: Array}})
 
-    const emit = defineEmits<(e: 'update', item: TableItem) => void>()
-    defineProps<{items: TableItem[]}>()
-    function update(item: TableItem): void {
+    function update(item) {
         emit('update', item)
     }
 </script>

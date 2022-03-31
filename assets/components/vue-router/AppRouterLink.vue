@@ -1,7 +1,10 @@
-<script lang="ts" setup>
-    import {computed, defineProps} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
-    const props = defineProps({disabled: {required: false, type: Boolean}, to: {required: true, type: String}})
+    const props = defineProps({
+        disabled: {required: false, type: Boolean},
+        to: {required: true, type: String}
+    })
     const link = computed(() => ({name: props.to}))
 </script>
 

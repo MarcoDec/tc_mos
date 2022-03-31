@@ -1,18 +1,17 @@
-<script lang="ts" setup>
-    import {computed, defineEmits, inject} from 'vue'
-    import type {TableField} from '../../../types/app-collection-table'
+<script setup>
+    import {computed, inject} from 'vue'
 
-    const emit = defineEmits<(e: 'toggle') => void>()
-    const create = inject<boolean>('create', false)
-    const fields = inject<TableField[]>('fields', [])
-    const tableId = inject<string>('table-id', 'table')
-    const searchFields = computed<TableField[]>(() => fields.map((field: TableField): TableField => ({
+    const emit = defineEmits(['toggle'])
+    const create = inject('create', false)
+    const fields = inject('fields', [])
+    const tableId = inject('table-id', 'table')
+    const searchFields = computed(() => fields.map(field => ({
         ...field,
         id: `${tableId}-search-${field.name}`,
         type: field.type === 'boolean' ? 'search-boolean' : field.type
     })))
 
-    function toggle(): void {
+    function toggle() {
         emit('toggle')
     }
 </script>

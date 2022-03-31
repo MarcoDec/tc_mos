@@ -1,9 +1,11 @@
-<script lang="ts" setup>
-    import type {FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineProps} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
-    const props = defineProps<{field: FormField, modelValue?: FormValue}>()
-    const radioGroup = computed<FormField>(() => ({
+    const props = defineProps({
+        field: {required: true, type: Object},
+        modelValue: {default: null}
+    })
+    const radioGroup = computed(() => ({
         btn: true,
         id: props.field.id,
         label: props.field.label,

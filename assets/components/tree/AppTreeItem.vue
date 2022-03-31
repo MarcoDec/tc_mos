@@ -1,16 +1,15 @@
-<script lang="ts" setup>
-    import type {Actions, Getters, State} from '../../store/tree/item'
-    import {computed, defineEmits, defineProps} from 'vue'
+<script setup>
     import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
+    import {computed} from 'vue'
 
-    const emit = defineEmits<(e: 'click') => void>()
-    const props = defineProps<{modulePath: string}>()
-    const label = useNamespacedGetters<Getters>(props.modulePath, ['label']).label
-    const select = useNamespacedActions<Actions>(props.modulePath, ['select']).select
-    const selected = useNamespacedState<State>(props.modulePath, ['selected']).selected
+    const emit = defineEmits(['click'])
+    const props = defineProps({modulePath: {required: true, type: String}})
+    const label = useNamespacedGetters(props.modulePath, ['label']).label
+    const select = useNamespacedActions(props.modulePath, ['select']).select
+    const selected = useNamespacedState(props.modulePath, ['selected']).selected
     const bg = computed(() => ({'bg-warning': selected.value}))
 
-    async function click(): Promise<void> {
+    async function click() {
         await select()
         emit('click')
     }

@@ -1,8 +1,10 @@
-<script lang="ts" setup>
-    import type {TableField, TableItem} from '../../../types/app-collection-table'
-    import {computed, defineProps} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
-    const props = defineProps<{field: TableField, item: TableItem}>()
+    const props = defineProps({
+        field: {required: true, type: Object},
+        item: {required: true, type: Object}
+    })
     const value = computed(() => props.item[props.field.name])
 </script>
 

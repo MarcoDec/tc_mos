@@ -1,22 +1,22 @@
-<script lang="ts" setup>
-    import type {TableField, TableItem} from '../../types/app-collection-table'
-    import {computed, defineEmits, defineProps, provide} from 'vue'
-    import type {PropType} from 'vue'
+<script setup>
+    import {computed, provide} from 'vue'
 
-    const emit = defineEmits<(e: 'update', item: TableItem) => void>()
+    const emit = defineEmits(['update'])
     const props = defineProps({
         create: {required: false, type: Boolean},
         currentPage: {default: 1, type: Number},
-        fields: {required: true, type: Object as PropType<TableField>},
+        fields: {required: true, type: Object},
         id: {required: true, type: String},
-        items: {required: true, type: Array as PropType<TableItem[]>},
+        items: {required: true, type: Array},
         pagination: {required: false, type: Boolean}
     })
     const count = computed(() => props.items.length)
+
     provide('create', props.create)
     provide('fields', props.fields)
     provide('table-id', props.id)
-    function update(item: TableItem): void {
+
+    function update(item) {
         emit('update', item)
     }
 </script>

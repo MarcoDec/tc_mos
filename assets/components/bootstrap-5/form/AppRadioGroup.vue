@@ -1,17 +1,16 @@
-<script lang="ts" setup>
-    import type {BootstrapSize, FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps, withDefaults} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
-    const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
-    const props = withDefaults(
-        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize}>(),
-        {modelValue: null, size: 'sm'}
-    )
+    const emit = defineEmits(['update:modelValue'])
+    const props = defineProps({
+        field: {required: true, type: Object},
+        modelValue: {default: null},
+        size: {default: 'sm', type: String}
+    })
     const sizeClass = computed(() => `btn-group-${props.size}`)
-
     const options = computed(() => props.field.options ?? [])
 
-    function input(value: FormValue): void {
+    function input(value) {
         emit('update:modelValue', value)
     }
 </script>

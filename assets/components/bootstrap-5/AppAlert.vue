@@ -1,8 +1,7 @@
-<script lang="ts" setup>
-    import {computed, defineProps, withDefaults} from 'vue'
-    import type {BootstrapVariant} from '../../types/bootstrap-5'
+<script setup>
+    import {computed} from 'vue'
 
-    const props = withDefaults(defineProps<{variant: BootstrapVariant}>(), {variant: 'danger'})
+    const props = defineProps({variant: {default: 'danger', type: String}})
     const bg = computed(() => `alert-${props.variant}`)
 </script>
 

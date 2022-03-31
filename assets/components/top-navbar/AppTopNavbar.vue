@@ -1,5 +1,4 @@
-<script lang="ts" setup>
-    import type {Actions, Getters, State} from '../../store/security'
+<script setup>
     import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
     import {useRouter} from 'vue-router'
 
@@ -9,18 +8,18 @@
         isManagementReader,
         isPurchaseAdmin,
         isPurchaseReader
-    } = useNamespacedGetters<Getters>('security', [
+    } = useNamespacedGetters('security', [
         'hasUser',
         'isManagementAdmin',
         'isManagementReader',
         'isPurchaseAdmin',
         'isPurchaseReader'
     ])
-    const logout = useNamespacedActions<Actions>('security', ['logout']).logout
-    const name = useNamespacedState<State>('security', ['username']).username
+    const logout = useNamespacedActions('security', ['logout']).logout
+    const name = useNamespacedState('security', ['username']).username
     const router = useRouter()
 
-    async function handleLogout(): Promise<void> {
+    async function handleLogout() {
         await logout()
         await router.push({name: 'login'})
     }

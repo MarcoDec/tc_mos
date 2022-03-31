@@ -1,5 +1,5 @@
-<script lang="ts" setup>
-    import {computed, defineProps} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
     const props = defineProps({
         brands: {required: false, type: Boolean},

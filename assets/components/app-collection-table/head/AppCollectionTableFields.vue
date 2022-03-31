@@ -1,12 +1,11 @@
-<script lang="ts" setup>
+<script setup>
     import {inject, ref} from 'vue'
-    import type {TableField} from '../../../types/app-collection-table'
 
-    const fields = inject<TableField[]>('fields', [])
+    const fields = inject('fields', [])
     const asc = ref(false)
     const sort = ref('code')
 
-    function handleSort(field: TableField): void {
+    function handleSort(field) {
         if (sort.value === field.name)
             asc.value = !asc.value
         else {

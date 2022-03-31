@@ -1,18 +1,16 @@
-<script lang="ts" setup>
-    import type {Actions} from '../../../store/security'
-    import type {FormField} from '../../../types/bootstrap-5'
+<script setup>
     import {ref} from 'vue'
     import router from '../../router'
     import {useNamespacedActions} from 'vuex-composition-helpers'
 
-    const fields: FormField[] = [
+    const fields = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
-    const formData = ref<{password: string | null, username: string | null}>({password: null, username: null})
-    const login = useNamespacedActions<Actions>('security', ['login']).login
+    const formData = ref({password: null, username: null})
+    const login = useNamespacedActions('security', ['login']).login
 
-    async function handleClick(): Promise<void> {
+    async function handleClick() {
         await login(formData.value)
         await router.push({name: 'home'})
     }

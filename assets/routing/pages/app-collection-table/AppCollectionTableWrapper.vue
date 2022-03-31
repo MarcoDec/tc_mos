@@ -1,14 +1,17 @@
-<script lang="ts" setup>
-    import {defineProps, onMounted, onUnmounted, ref} from 'vue'
-    import type {Actions} from '../../../store'
+<script setup>
+    import {onMounted, onUnmounted, ref} from 'vue'
     import AppCollectionTablePage from './AppCollectionTablePage.vue'
-    import type {TableField} from '../../../types/app-collection-table'
     import {generateColors} from '../../../store/colors'
     import {useActions} from 'vuex-composition-helpers'
 
     const loaded = ref(false)
-    const props = defineProps<{fields: TableField[], icon: string, modulePath: string, title: string}>()
-    const {registerModule, unregisterModule} = useActions<Actions>(['registerModule', 'unregisterModule'])
+    const props = defineProps({
+        fields: {required: true, type: Array},
+        icon: {required: true, type: String},
+        modulePath: {required: true, type: String},
+        title: {required: true, type: String}
+    })
+    const {registerModule, unregisterModule} = useActions(['registerModule', 'unregisterModule'])
 
     onMounted(async () => {
         let generated = null
@@ -20,7 +23,6 @@
             await registerModule({module: generated, path: props.modulePath})
         loaded.value = true
     })
-
     onUnmounted(async () => unregisterModule(props.modulePath))
 </script>
 

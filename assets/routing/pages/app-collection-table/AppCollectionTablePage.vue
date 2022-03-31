@@ -1,13 +1,16 @@
-<script lang="ts" setup>
-    import type {TableField, TableItem} from '../../../types/app-collection-table'
-    import {defineProps, onMounted} from 'vue'
-    import type {Actions} from '../../../store/colors'
+<script setup>
+    import {onMounted} from 'vue'
     import {useNamespacedActions} from 'vuex-composition-helpers'
     import {useRoute} from 'vue-router'
 
-    const items: TableItem[] = []
-    const props = defineProps<{fields: TableField[], icon: string, modulePath: string, title: string}>()
-    const load = useNamespacedActions<Actions>(props.modulePath, ['load']).load
+    const items = []
+    const props = defineProps({
+        fields: {required: true, type: Array},
+        icon: {required: true, type: String},
+        modulePath: {required: true, type: String},
+        title: {required: true, type: String}
+    })
+    const load = useNamespacedActions(props.modulePath, ['load']).load
     const route = useRoute()
 
     onMounted(load)

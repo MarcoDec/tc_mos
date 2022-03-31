@@ -1,16 +1,19 @@
-<script lang="ts" setup>
-    import {defineProps, onMounted, onUnmounted, provide, ref} from 'vue'
-    import type {Actions} from '../../../store'
+<script setup>
+    import {onMounted, onUnmounted, provide, ref} from 'vue'
     import AppTreePage from './AppTreePage.vue'
-    import type {FormField} from '../../../types/bootstrap-5'
     import {generateItem} from '../../../store/tree/item'
     import {generateTree} from '../../../store/tree'
     import {useActions} from 'vuex-composition-helpers'
 
     const loaded = ref(false)
-    const modulePath: [string, ...string[]] = ['families']
-    const props = defineProps<{extraFields?: FormField[], title: string, type: string, url: string}>()
-    const {registerModule, unregisterModule} = useActions<Actions>(['registerModule', 'unregisterModule'])
+    const modulePath = ['families']
+    const props = defineProps({
+        extraFields: {default: () => [], type: Array},
+        title: {required: true, type: String},
+        type: {required: true, type: String},
+        url: {required: true, type: String}
+    })
+    const {registerModule, unregisterModule} = useActions(['registerModule', 'unregisterModule'])
 
     const moduleName = modulePath.join('/')
     provide('moduleName', moduleName)
@@ -23,20 +26,14 @@
             path: modulePath
         })
         await registerModule({
-            module: generateItem(
-                firstItem,
-                moduleName,
-                {
-                    '@context': '',
-                    '@id': '0',
-                    '@type': '',
-                    code: 'Familles',
-                    id: 0,
-                    name: props.type
-                },
-                props.url,
-                {opened: true, selected: false}
-            ),
+            module: generateItem(firstItem, moduleName, {
+                '@context': '',
+                '@id': '0',
+                '@type': '',
+                code: 'Familles',
+                id: 0,
+                name: props.type
+            }, props.url, {opened: true, selected: false}),
             path: firstItem.split('/')
         })
         loaded.value = true

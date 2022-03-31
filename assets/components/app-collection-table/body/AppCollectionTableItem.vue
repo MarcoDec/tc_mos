@@ -1,20 +1,21 @@
-<script lang="ts" setup>
-    import type {TableField, TableItem} from '../../../types/app-collection-table'
-    import {computed, defineEmits, defineProps, inject, ref} from 'vue'
+<script setup>
+    import {computed, inject, ref} from 'vue'
 
-    const ONE = 1
-
-    const props = defineProps<{index: number, item: TableItem}>()
-    const fields = inject<TableField[]>('fields', [])
-    const formattedIndex = computed(() => props.index + ONE)
+    const props = defineProps({
+        index: {required: true, type: Number},
+        item: {required: true, type: Object}
+    })
+    const fields = inject('fields', [])
+    const formattedIndex = computed(() => props.index + 1)
     const show = ref(true)
     const td = computed(() => (show.value ? 'AppCollectionTableItemField' : 'AppCollectionTableItemInput'))
+    const emit = defineEmits(['update'])
 
-    const emit = defineEmits<(e: 'update', item: TableItem) => void>()
-    function toggle(): void {
+    function toggle() {
         show.value = !show.value
     }
-    function update(): void {
+
+    function update() {
         emit('update', props.item)
     }
 </script>

@@ -1,10 +1,9 @@
-<script lang="ts" setup>
-    import type {State as RootState} from '../store'
+<script setup>
     import {useRoute} from 'vue-router'
     import {useState} from 'vuex-composition-helpers'
 
     const route = useRoute()
-    const spinner = useState<RootState>(['spinner']).spinner
+    const spinner = useState(['spinner']).spinner
 </script>
 
 <template>

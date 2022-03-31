@@ -1,8 +1,7 @@
-<script lang="ts" setup>
-    import {computed, defineProps, withDefaults} from 'vue'
-    import type {BootstrapVariant} from '../../../types/bootstrap-5'
+<script setup>
+    import {computed} from 'vue'
 
-    const props = withDefaults(defineProps<{variant?: BootstrapVariant}>(), {variant: 'dark'})
+    const props = defineProps({variant: {default: 'dark', type: String}})
     const bg = computed(() => `bg-${props.variant}`)
 </script>
 

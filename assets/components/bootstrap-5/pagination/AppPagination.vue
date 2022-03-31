@@ -1,7 +1,11 @@
-<script lang="ts" setup>
-    import {computed, defineProps, withDefaults} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
-    const props = withDefaults(defineProps<{count: number, current: number, perPage?: number}>(), {perPage: 15})
+    const props = defineProps({
+        count: {required: true, type: Number},
+        current: {required: true, type: Number},
+        perPage: {default: 15, type: Number}
+    })
     const pages = computed(() => Math.ceil(props.count / props.perPage))
 </script>
 

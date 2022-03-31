@@ -1,7 +1,8 @@
-<script lang="ts" setup>
-    import {defineProps, withDefaults} from 'vue'
-
-    withDefaults(defineProps<{titleTag?: string, title: string}>(), {titleTag: 'h2'})
+<script setup>
+    defineProps({
+        title: {required: true, type: String},
+        titleTag: {default: 'h2', type: String}
+    })
 </script>
 
 <template>

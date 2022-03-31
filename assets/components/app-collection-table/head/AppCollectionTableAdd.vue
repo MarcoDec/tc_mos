@@ -1,11 +1,10 @@
-<script lang="ts" setup>
-    import {defineEmits, inject} from 'vue'
-    import type {TableField} from '../../../types/app-collection-table'
+<script setup>
+    import {inject} from 'vue'
 
-    const emit = defineEmits<(e: 'toggle') => void>()
-    const fields = inject<TableField[]>('fields', [])
+    const emit = defineEmits(['toggle'])
+    const fields = inject('fields', [])
 
-    function toggle(): void {
+    function toggle() {
         emit('toggle')
     }
 </script>

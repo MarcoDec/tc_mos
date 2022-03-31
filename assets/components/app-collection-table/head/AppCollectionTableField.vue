@@ -1,13 +1,16 @@
-<script lang="ts" setup>
-    import {computed, defineEmits, defineProps} from 'vue'
-    import type {TableField} from '../../../types/app-collection-table'
+<script setup>
+    import {computed} from 'vue'
 
-    const emit = defineEmits<(e: 'click', field: TableField) => void>()
-    const props = defineProps<{asc: boolean, field: TableField, sort: string}>()
+    const emit = defineEmits(['click'])
+    const props = defineProps({
+        asc: {required: true, type: Boolean},
+        field: {required: true, type: Object},
+        sort: {required: true, type: String}
+    })
     const down = computed(() => ({'text-secondary': props.field.name !== props.sort || props.asc}))
     const up = computed(() => ({'text-secondary': props.field.name !== props.sort || !props.asc}))
 
-    function click(): void {
+    function click() {
         emit('click', props.field)
     }
 </script>

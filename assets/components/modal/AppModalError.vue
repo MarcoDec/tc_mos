@@ -1,30 +1,28 @@
-<script lang="ts" setup>
-    import type {Mutations, State} from '../../store'
-    import {defineProps, inject, onMounted, onUnmounted, ref} from 'vue'
+<script setup>
+    import {inject, onMounted, onUnmounted, ref} from 'vue'
     import {useMutations, useState} from 'vuex-composition-helpers'
-    import type {Emitter} from '../../emitter'
     import {Modal} from 'bootstrap'
 
-    const clean = useMutations<Mutations>(['responseError']).responseError
-    const emitter = inject<Emitter>('emitter')
-    const modal = ref<Modal | null>(null)
-    const props = defineProps<{id: string}>()
-    const {status: code, text} = useState<State>(['status', 'text'])
+    const clean = useMutations(['responseError']).responseError
+    const emitter = inject('emitter')
+    const modal = ref(null)
+    const props = defineProps({id: {required: true, type: String}})
+    const {status: code, text} = useState(['status', 'text'])
 
-    function dispose(): void {
+    function dispose() {
         if (modal.value !== null) {
             modal.value.dispose()
             modal.value = null
         }
     }
 
-    function instantiate(): void {
+    function instantiate() {
         dispose()
         const el = document.getElementById(props.id)
         if (el === null)
             return
 
-        function destroy(): void {
+        function destroy() {
             clean({status: 0, text: null})
             el?.removeEventListener('hidden.bs.modal', destroy)
             dispose()
