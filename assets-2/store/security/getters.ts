@@ -1,7 +1,7 @@
-import type * as Store from '..'
 import type {State} from '.'
+import type {ComputedGetters as VueComputedGetters} from '..'
 
-declare type Getters = {
+export declare type Getters = {
     has: (state: State) => (role: string) => boolean
     hasUser: (state: State) => boolean
     isManagementAdmin: (state: State, computed: ComputedGetters) => boolean
@@ -11,7 +11,8 @@ declare type Getters = {
     isPurchaseReader: (state: State, computed: ComputedGetters) => boolean
     isPurchaseWriter: (state: State, computed: ComputedGetters) => boolean
 }
-declare type ComputedGetters = Store.ComputedGetters<Getters, State>
+
+export declare type ComputedGetters = VueComputedGetters<Getters, State>
 
 export const getters: Getters = {
     has: state => role => state.roles?.includes(role) ?? false,

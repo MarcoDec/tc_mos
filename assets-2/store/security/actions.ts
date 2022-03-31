@@ -1,18 +1,13 @@
 import * as Cookies from '../../cookie'
-import type * as Store from '..'
-import type {Mutations, State} from '.'
+import type {ComputedGetters, State} from '.'
+import type {StoreActionContext} from '..'
 
-declare type ActionContext = Store.ActionContextTree<Actions, Mutations, State, Store.Actions>
+declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
 declare type Login = {username: string | null, password: string | null}
 
-declare type Actions = {
-    login: (ctx: ActionContext, payload: Login) => Promise<void>
-    logout: (ctx: ActionContext) => Promise<void>
-}
-
-export const actions: Actions = {
-    async login({commit, dispatch}, {password, username}) {
+export const actions = {
+    async login({commit, dispatch}: ActionContext, {password, username}: Login): Promise<void> {
         const user = await dispatch(
             'fetchApi',
             {
@@ -28,7 +23,7 @@ export const actions: Actions = {
         Cookies.set(user.id, user.token)
         commit('login', user)
     },
-    async logout({commit, dispatch}) {
+    async logout({commit, dispatch}: ActionContext): Promise<void> {
         await dispatch(
             'fetchApi',
             {
@@ -39,14 +34,8 @@ export const actions: Actions = {
             {root: true}
         )
         Cookies.remove()
-        commit('login', {
-            '@context': 'null',
-            '@id': '0',
-            '@type': 'null',
-            id: 0,
-            name: 'null',
-            roles: [],
-            token: 'null'
-        })
+        commit('login', {})
     }
 }
+
+export declare type Actions = typeof actions

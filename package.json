@@ -41,8 +41,8 @@
   "scripts": {
     "build": "vue-tsc --noEmit && vite build && echo '*\n!.gitignore' > public/build/.gitignore",
     "dev": "sudo rm -r public/build/*; vite",
-    "eslint": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js ./assets/**/*.{ts,vue}",
-    "eslint-fix": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js --fix ./assets/**/*.{ts,vue}",
+    "eslint": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js ./assets-3/**/*.{ts,vue}",
+    "eslint-fix": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js --fix ./assets-3/**/*.{ts,vue}",
     "openapi": "php bin/console api:openapi:export -y -o openapi.yaml && npx openapi-typescript openapi.yaml --output assets/types/openapi.d.ts && rm openapi.yaml",
     "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
     "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"
