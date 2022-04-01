@@ -20,7 +20,7 @@ const router = createRouter({
             }
         },
         {
-            component: async (): Promise<RouteComponent> => import('./pages/AppHome'),
+            component: async (): Promise<RouteComponent> => import('./pages/AppHome.vue'),
             meta: {requiresAuth: true},
             name: 'home',
             path: '/'
@@ -37,7 +37,43 @@ const router = createRouter({
             name: 'product-families',
             path: '/product-families',
             props: {title: 'produits', type: 'Produits', url: '/api/product-families'}
-        }
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/chart/supplier/AppSupplierShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'supplier-show',
+            path: '/supplier/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/chart/component/AppComponentShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'component-show',
+            path: '/component/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/chart/customer/AppCustomerShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'customer-show',
+            path: '/customer/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/chart/product/AppProductShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'product-show',
+            path: '/product/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/chart/company/AppCompanyShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'company-show',
+            path: '/company/show'
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/chart/employee/AppEmployeeShow.vue'),
+            meta: {requiresAuth: false},
+            name: 'employee-show',
+            path: '/employee/show'
+        },
     ]
 })
 

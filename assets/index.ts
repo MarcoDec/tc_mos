@@ -46,3 +46,4 @@ async function mount(): Promise<void> {
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 mount().then(() => app.use(router).mount('#vue'))
+
