@@ -1,19 +1,24 @@
 <script setup>
-    import {onMounted} from 'vue'
-    import {useNamespacedActions} from 'vuex-composition-helpers'
+    import {computed, onMounted, ref} from 'vue'
+    import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
     import {useRoute} from 'vue-router'
 
-    const items = []
     const props = defineProps({
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
         modulePath: {required: true, type: String},
         title: {required: true, type: String}
     })
+    const loaded = ref(false)
+    const tableItems = useNamespacedGetters(props.modulePath, ['tableItems']).tableItems
+    const items = computed(() => (loaded.value ? tableItems.value(props.fields) : []))
     const load = useNamespacedActions(props.modulePath, ['load']).load
     const route = useRoute()
 
-    onMounted(load)
+    onMounted(async () => {
+        await load()
+        loaded.value = true
+    })
 </script>
 
 <template>

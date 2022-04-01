@@ -23,15 +23,6 @@ export default [
                     sort: true,
                     type: 'color',
                     update: false
-                },
-                {
-                    create: false,
-                    filter: true,
-                    label: 'RAL',
-                    name: 'ral',
-                    sort: true,
-                    type: 'text',
-                    update: true
                 }
             ],
             icon: 'palette',
