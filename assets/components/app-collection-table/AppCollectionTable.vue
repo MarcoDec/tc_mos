@@ -4,7 +4,7 @@
     import AppCollectionTableItems from './body/AppCollectionTableItems.vue'
     import AppPagination from '../bootstrap-5/pagination/AppPagination.vue'
 
-    const emit = defineEmits(['update'])
+    const emit = defineEmits(['search', 'update'])
     const props = defineProps({
         create: {required: false, type: Boolean},
         currentPage: {default: 1, type: Number},
@@ -15,18 +15,22 @@
     })
     const count = computed(() => props.items.length)
 
-    provide('create', props.create)
-    provide('fields', props.fields)
-    provide('table-id', props.id)
+    function search(searchOptions) {
+        emit('search', searchOptions)
+    }
 
     function update(item) {
         emit('update', item)
     }
+
+    provide('create', props.create)
+    provide('fields', props.fields)
+    provide('table-id', props.id)
 </script>
 
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
-        <AppCollectionTableHeaders/>
+        <AppCollectionTableHeaders @search="search"/>
         <AppCollectionTableItems :items="items" @update="update"/>
     </table>
     <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/>

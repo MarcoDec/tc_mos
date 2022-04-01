@@ -1,7 +1,7 @@
 <script setup>
-    import {computed, inject} from 'vue'
+    import {computed, inject, reactive} from 'vue'
 
-    const emit = defineEmits(['toggle'])
+    const emit = defineEmits(['search', 'toggle'])
     const create = inject('create', false)
     const fields = inject('fields', [])
     const tableId = inject('table-id', 'table')
@@ -10,6 +10,21 @@
         id: `${tableId}-search-${field.name}`,
         type: field.type === 'boolean' ? 'search-boolean' : field.type
     })))
+
+    const searchOptionsObject = {}
+    for (const field of fields)
+        if (field.filter)
+            searchOptionsObject[field.name] = null
+    const searchOptions = reactive({...searchOptionsObject})
+
+    function reset() {
+        for (const [key, value] of Object.entries(searchOptionsObject))
+            searchOptions[key] = value
+    }
+
+    function search() {
+        emit('search', searchOptions)
+    }
 
     function toggle() {
         emit('toggle')
@@ -23,11 +38,11 @@
         </td>
         <td>
             <AppBtn v-if="create" icon="plus-circle" variant="success" @click="toggle"/>
-            <AppBtn icon="search" variant="secondary"/>
-            <AppBtn icon="times" variant="danger"/>
+            <AppBtn icon="search" variant="secondary" @click="search"/>
+            <AppBtn icon="times" variant="danger" @click="reset"/>
         </td>
         <td v-for="field in searchFields" :key="field.name">
-            <AppInputGuesser v-if="field.filter" :field="field"/>
+            <AppInputGuesser v-if="field.filter" v-model="searchOptions[field.name]" :field="field"/>
         </td>
     </tr>
 </template>

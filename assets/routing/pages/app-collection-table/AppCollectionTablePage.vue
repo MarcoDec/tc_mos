@@ -12,7 +12,7 @@
     const loaded = ref(false)
     const tableItems = useNamespacedGetters(props.modulePath, ['tableItems']).tableItems
     const items = computed(() => (loaded.value ? tableItems.value(props.fields) : []))
-    const load = useNamespacedActions(props.modulePath, ['load']).load
+    const {load, search} = useNamespacedActions(props.modulePath, ['load', 'search'])
     const route = useRoute()
 
     onMounted(async () => {
@@ -26,5 +26,5 @@
         <Fa :icon="icon"/>
         {{ title }}
     </h1>
-    <AppCollectionTable :id="route.name" :fields="fields" :items="items" create pagination/>
+    <AppCollectionTable :id="route.name" :fields="fields" :items="items" create pagination @search="search"/>
 </template>

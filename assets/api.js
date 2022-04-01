@@ -21,6 +21,8 @@ export default async function fetchApi(url, method, body) {
         for (const key in body)
             if (generatedUrl.includes(`{${key}}`))
                 generatedUrl = generatedUrl.replace(`{${key}}`, body[key])
+            else if (body[key] !== null)
+                generatedUrl += `${generatedUrl.includes('?') ? '&' : '?'}${key}=${body[key]}`
     }
     Cookies.renew()
     const response = await fetch(generatedUrl, init)
