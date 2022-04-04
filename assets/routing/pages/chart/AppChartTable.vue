@@ -1,9 +1,12 @@
 <script lang="ts" setup>
-const props = defineProps({
-  data: { required: true, type: Array },
-  titleX: String,
-  titleY: String,
-});
+import { S } from "ts-toolbelt";
+import { defineProps } from "vue";
+
+ defineProps<{
+  data: {labels:string, },
+  titleX: string,
+  titleY: string,
+}>();
 
 </script>
 

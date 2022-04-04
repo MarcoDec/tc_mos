@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Vue3ChartJs from "@j-t-mcc/vue3-chartjs";
 import AppChartTable from "../AppChartTable.vue";
+import { defineProps } from "vue";
 
 const props = defineProps({
   data: { required: true, type: Array },

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import Vue3ChartJs from "@j-t-mcc/vue3-chartjs";
 import AppChartTable from "../AppChartTable.vue";
+import { defineProps } from "vue";
 
-const props = defineProps({
-  data: { required: true, type: Array },
-  titleX: { required: true, type: String },
-  titleY: { required: true, type: String },
-});
+ defineProps<{
+  data: string[],
+  titleX: string,
+  titleY: string,
+}>();
 const doughnutChart = {
   id: "doughnut",
   type: "doughnut",
