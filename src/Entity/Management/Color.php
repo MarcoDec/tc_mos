@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -57,7 +58,9 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Color-read'
         ],
     ),
-    ORM\Entity
+    ORM\Entity,
+    UniqueEntity('name'),
+    UniqueEntity('rgb')
 ]
 class Color extends Entity {
     #[

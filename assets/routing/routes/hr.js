@@ -1,6 +1,6 @@
 export default [
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
+        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'OutTrainer-list',
         path: '/OutTrainer/list',
@@ -94,7 +94,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
+        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'EmployeeEventType-list',
         path: '/EmployeeEventType/list',
@@ -124,7 +124,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
+        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'TimeSlot-list',
         path: '/TimeSlot/list',

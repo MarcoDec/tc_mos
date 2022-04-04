@@ -1,6 +1,8 @@
+import ColorRepository from '../../store/colors/ColorRepository'
+
 export default [
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
+        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'color-list',
         path: '/color/list',
@@ -26,12 +28,12 @@ export default [
                 }
             ],
             icon: 'palette',
-            modulePath: 'colors',
+            repo: ColorRepository,
             title: 'Couleur'
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
+        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'invoiceTimeDue-list',
         path: '/InvoiceTimeDue/list',
@@ -79,7 +81,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
+        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'Printer-list',
         path: '/Printer/list',
@@ -118,7 +120,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
+        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'Unit-list',
         path: '/Unit/list',
@@ -148,7 +150,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTableWrapper.vue'),
+        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'VatMessage-list',
         path: '/VatMessage/list',

@@ -1,3 +1,4 @@
+import VuexORM from '@vuex-orm/core'
 import app from '../app'
 import {createStore} from 'vuex'
 import emitter from '../emitter'
@@ -47,6 +48,7 @@ export function generateStore(security) {
                 state.spinner = !state.spinner
             }
         },
+        plugins: [VuexORM.install()],
         state: {
             spinner: false,
             status: 0,

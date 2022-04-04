@@ -1,30 +1,31 @@
 <script setup>
     import {computed, onMounted, ref} from 'vue'
-    import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
     import {useRoute} from 'vue-router'
+    import {useStore} from 'vuex'
 
     const props = defineProps({
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
-        modulePath: {required: true, type: String},
+        repo: {required: true, type: Function},
         title: {required: true, type: String}
     })
-    const loading = ref(true)
-    const tableItems = useNamespacedGetters(props.modulePath, ['tableItems']).tableItems
-    const items = computed(() => (loading.value ? [] : tableItems.value(props.fields)))
-    const {create, load, search} = useNamespacedActions(props.modulePath, ['create', 'load', 'search'])
     const route = useRoute()
-    const violations = useNamespacedState(props.modulePath, ['violations']).violations
+    const store = useStore()
+    const violations = ref([])
 
-    async function createHandler(createOptions) {
-        loading.value = true
-        await create(createOptions)
-        loading.value = false
+    const repoInstance = computed(() => store.$repo(props.repo))
+    const items = computed(() => repoInstance.value.tableItems(props.fields))
+
+    async function create(createOptions) {
+        violations.value = await repoInstance.value.create(createOptions)
+    }
+
+    async function search(searchOptions) {
+        await repoInstance.value.load(searchOptions)
     }
 
     onMounted(async () => {
-        await load()
-        loading.value = false
+        await repoInstance.value.load()
     })
 </script>
 
@@ -40,6 +41,6 @@
         :violations="violations"
         create
         pagination
-        @create="createHandler"
+        @create="create"
         @search="search"/>
 </template>
