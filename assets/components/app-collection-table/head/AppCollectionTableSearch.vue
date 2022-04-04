@@ -37,9 +37,9 @@
             <Fa icon="filter"/>
         </td>
         <td>
-            <AppBtn v-if="create" icon="plus-circle" variant="success" @click="toggle"/>
-            <AppBtn icon="search" variant="secondary" @click="search"/>
-            <AppBtn icon="times" variant="danger" @click="reset"/>
+            <AppBtn v-if="create" icon="plus-circle" title="Basculer en mode ajout" variant="success" @click="toggle"/>
+            <AppBtn icon="search" title="Rechercher" variant="secondary" @click="search"/>
+            <AppBtn icon="times" title="Annuler" variant="danger" @click="reset"/>
         </td>
         <td v-for="field in searchFields" :key="field.name">
             <AppInputGuesser v-if="field.filter" v-model="searchOptions[field.name]" :field="field"/>

@@ -7,7 +7,7 @@ export default [
         props: {
             fields: [
                 {
-                    create: false,
+                    create: true,
                     filter: true,
                     label: 'Nom',
                     name: 'name',

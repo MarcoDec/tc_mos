@@ -1,6 +1,5 @@
 <script setup>
     import {computed, inject, ref} from 'vue'
-    import AppInvalidFeedback from './AppInvalidFeedback'
     import AppLabel from './AppLabel.vue'
 
     const emit = defineEmits(['input', 'update:modelValue'])

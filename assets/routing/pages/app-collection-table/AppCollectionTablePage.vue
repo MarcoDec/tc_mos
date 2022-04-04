@@ -1,6 +1,6 @@
 <script setup>
     import {computed, onMounted, ref} from 'vue'
-    import {useNamespacedActions, useNamespacedGetters} from 'vuex-composition-helpers'
+    import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
     import {useRoute} from 'vue-router'
 
     const props = defineProps({
@@ -9,15 +9,22 @@
         modulePath: {required: true, type: String},
         title: {required: true, type: String}
     })
-    const loaded = ref(false)
+    const loading = ref(true)
     const tableItems = useNamespacedGetters(props.modulePath, ['tableItems']).tableItems
-    const items = computed(() => (loaded.value ? tableItems.value(props.fields) : []))
-    const {load, search} = useNamespacedActions(props.modulePath, ['load', 'search'])
+    const items = computed(() => (loading.value ? [] : tableItems.value(props.fields)))
+    const {create, load, search} = useNamespacedActions(props.modulePath, ['create', 'load', 'search'])
     const route = useRoute()
+    const violations = useNamespacedState(props.modulePath, ['violations']).violations
+
+    async function createHandler(createOptions) {
+        loading.value = true
+        await create(createOptions)
+        loading.value = false
+    }
 
     onMounted(async () => {
         await load()
-        loaded.value = true
+        loading.value = false
     })
 </script>
 
@@ -26,5 +33,13 @@
         <Fa :icon="icon"/>
         {{ title }}
     </h1>
-    <AppCollectionTable :id="route.name" :fields="fields" :items="items" create pagination @search="search"/>
+    <AppCollectionTable
+        :id="route.name"
+        :fields="fields"
+        :items="items"
+        :violations="violations"
+        create
+        pagination
+        @create="createHandler"
+        @search="search"/>
 </template>

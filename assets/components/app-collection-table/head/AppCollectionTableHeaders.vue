@@ -1,12 +1,18 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import AppCollectionTableAdd from './AppCollectionTableAdd.vue'
+    import AppCollectionTableCreate from './AppCollectionTableCreate.vue'
     import AppCollectionTableFields from './AppCollectionTableFields.vue'
     import AppCollectionTableSearch from './AppCollectionTableSearch.vue'
 
-    const emit = defineEmits(['search'])
+    defineProps({violations: {default: () => [], type: Array}})
+
+    const emit = defineEmits(['create', 'search'])
     const search = ref(true)
-    const row = computed(() => (search.value ? AppCollectionTableSearch : AppCollectionTableAdd))
+    const row = computed(() => (search.value ? AppCollectionTableSearch : AppCollectionTableCreate))
+
+    function create(createOptions) {
+        emit('create', createOptions)
+    }
 
     function searchHandler(searchOptions) {
         emit('search', searchOptions)
@@ -20,6 +26,6 @@
 <template>
     <thead class="table-dark">
         <AppCollectionTableFields/>
-        <component :is="row" @search="searchHandler" @toggle="toggle"/>
+        <component :is="row" :violations="violations" @create="create" @search="searchHandler" @toggle="toggle"/>
     </thead>
 </template>

@@ -1,15 +1,17 @@
 <script setup>
+    import {computed, ref} from 'vue'
     import AppFormGroup from './AppFormGroup.vue'
     import clone from 'clone'
-    import {ref} from 'vue'
 
     const form = ref()
     const emit = defineEmits(['submit', 'update:modelValue'])
     const props = defineProps({
-        fields: {required: true, type: Array},
+        fields: {default: () => [], type: Array},
         id: {required: true, type: String},
+        inline: {required: false, type: Boolean},
         modelValue: {default: () => ({}), type: Object}
     })
+    const displayInline = computed(() => ({'d-inline': props.inline, 'm-0': props.inline, 'p-0': props.inline}))
 
     function input(value) {
         const cloned = clone(props.modelValue)
@@ -24,19 +26,22 @@
 </script>
 
 <template>
-    <form :id="id" ref="form" autocomplete="off" @submit.prevent="submit">
-        <AppFormGroup
-            v-for="field in fields"
-            :key="field.name"
-            :field="field"
-            :form="id"
-            :model-value="modelValue[field.name]"
-            @input="input"/>
-        <div class="float-start">
-            <slot name="start"/>
-        </div>
-        <div class="float-end">
-            <slot/>
-        </div>
+    <form :id="id" ref="form" :class="displayInline" autocomplete="off" @submit.prevent="submit">
+        <slot v-if="inline"/>
+        <template v-else>
+            <AppFormGroup
+                v-for="field in fields"
+                :key="field.name"
+                :field="field"
+                :form="id"
+                :model-value="modelValue[field.name]"
+                @input="input"/>
+            <div class="float-start">
+                <slot name="start"/>
+            </div>
+            <div class="float-end">
+                <slot/>
+            </div>
+        </template>
     </form>
 </template>
