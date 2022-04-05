@@ -1,10 +1,10 @@
-<script lang="ts" setup>
-    import type {Getters, Mutations} from '../../store/gui'
-    import {onMounted, onUnmounted, ref, watchPostEffect} from 'vue'
+<script setup>
+    import {computed, onMounted, onUnmounted, ref, watchPostEffect} from 'vue'
     import {useNamespacedGetters, useNamespacedMutations} from 'vuex-composition-helpers'
-    import {MutationTypes} from '../../store/gui'
+    import AppShowGuiCard from './AppShowGuiCard.vue'
+    import AppShowGuiResizableCard from './AppShowGuiResizableCard.vue'
 
-    const gui = ref<HTMLDivElement>()
+    const gui = ref()
     const {
         bottomHeightPx,
         endWidthPx,
@@ -19,7 +19,7 @@
         topHeightPx,
         marginTopPx,
         widthPx
-    } = useNamespacedGetters<Getters>('gui', [
+    } = useNamespacedGetters('gui', [
         'bottomHeightPx',
         'endWidthPx',
         'guiBottom',
@@ -34,16 +34,15 @@
         'marginTopPx',
         'widthPx'
     ])
-    const {[MutationTypes.RESIZE]: resize} = useNamespacedMutations<Mutations>('gui', [MutationTypes.RESIZE])
+    const guiBottomTag = computed(() => (guiBottom.value === 'AppShowGuiResizableCard' ? AppShowGuiResizableCard : AppShowGuiCard))
+    const resize = useNamespacedMutations('gui', ['resize']).resize
 
-    function resizeHandler(): void {
+    function resizeHandler() {
         if (typeof gui.value !== 'undefined')
             resize(gui.value)
     }
 
-    watchPostEffect(() => {
-        resizeHandler()
-    })
+    watchPostEffect(resizeHandler)
 
     onMounted(() => {
         window.addEventListener('resize', resizeHandler)
@@ -82,7 +81,7 @@
                 class="gui-card gui-end"/>
         </div>
         <component
-            :is="guiBottom"
+            :is="guiBottomTag"
             :height="bottomHeightPx"
             :inner-width="innerWidthPx"
             :margin-top="marginTopPx"

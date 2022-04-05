@@ -1,13 +1,17 @@
-<script lang="ts" setup>
-    import {ActionTypes, MutationTypes} from '../../store/gui'
-    import type {Actions, Mutations} from '../../store/gui'
+<script setup>
     import {useNamespacedActions, useNamespacedMutations} from 'vuex-composition-helpers'
-    import type {BootstrapVariant} from '../../types/bootstrap-5'
+    import AppShowGuiCard from './AppShowGuiCard.vue'
     import {defineProps} from 'vue'
 
-    defineProps<{bgVariant: BootstrapVariant, height: string, marginEnd?: string, marginTop?: string, width: string}>()
-    const {[ActionTypes.DRAG]: drag} = useNamespacedActions<Actions>('gui', [ActionTypes.DRAG])
-    const {[MutationTypes.ENABLE_DRAG]: enableDrag} = useNamespacedMutations<Mutations>('gui', [MutationTypes.ENABLE_DRAG])
+    defineProps({
+        bgVariant: {required: true, type: String},
+        height: {required: true, type: String},
+        marginEnd: {default: null, type: String},
+        marginTop: {default: null, type: String},
+        width: {required: true, type: String}
+    })
+    const drag = useNamespacedActions('gui', ['drag']).drag
+    const enableDrag = useNamespacedMutations('gui', ['enableDrag']).enableDrag
 </script>
 
 <template>

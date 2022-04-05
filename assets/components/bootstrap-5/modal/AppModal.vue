@@ -1,22 +1,22 @@
-<script lang="ts" setup>
-    import {defineProps, onMounted, onUnmounted, ref} from 'vue'
+<script setup>
+    import {onMounted, onUnmounted, ref} from 'vue'
     import {Modal} from 'bootstrap'
 
     const props = defineProps({
         noInstantiate: {required: false, type: Boolean},
         title: {required: true, type: String}
     })
-    const el = ref<HTMLDivElement>()
-    const modal = ref<Modal | null>(null)
+    const el = ref()
+    const modal = ref(null)
 
-    function dispose(): void {
+    function dispose() {
         if (modal.value !== null) {
             modal.value.dispose()
             modal.value = null
         }
     }
 
-    function instantiate(): void {
+    function instantiate() {
         if (!props.noInstantiate && el.value) {
             dispose()
             modal.value = new Modal(el.value)
@@ -24,7 +24,6 @@
     }
 
     onMounted(instantiate)
-
     onUnmounted(dispose)
 </script>
 

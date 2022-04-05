@@ -1,11 +1,11 @@
-<script lang="ts" setup>
-    import {computed, defineProps, withDefaults} from 'vue'
-    import type {BootstrapVariant} from '../../../types/bootstrap-5'
+<script setup>
+    import {computed} from 'vue'
 
-    const props = withDefaults(
-        defineProps<{bgVariant?: BootstrapVariant | null, titleTag?: string, title: string}>(),
-        {bgVariant: null, titleTag: 'h2'}
-    )
+    const props = defineProps({
+        bgVariant: {default: null, type: String},
+        title: {required: true, type: String},
+        titleTag: {default: 'h2', type: String}
+    })
     const bg = computed(() => (props.bgVariant === null ? null : `bg-${props.bgVariant}`))
 </script>
 

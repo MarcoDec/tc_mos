@@ -1,51 +1,41 @@
-<script lang="ts" setup>
-    import {computed, defineProps, onMounted, onUnmounted, provide, ref, watch} from 'vue'
+<script setup>
+    import {computed, onMounted, onUnmounted, provide, ref, watch} from 'vue'
+    import AppTabBtn from './AppTabBtn.vue'
     import {Tab as BTab} from 'bootstrap'
-    import type {Tab} from '../../../types/bootstrap-5'
 
     const props = defineProps({
         iconSwitch: {required: false, type: Boolean},
         id: {required: true, type: String},
         vertical: {required: false, type: Boolean}
     })
-
-    const bTab = ref<BTab | null>(null)
+    const bTab = ref(null)
     const divFlex = computed(() => `flex-${props.vertical ? 'row' : 'column'}`)
-    const el = ref<HTMLUListElement>()
+    const el = ref()
     const iconMode = ref(false)
     const iconSwitchId = computed(() => `${props.id}-icon-switch`)
-    const tabs = ref<Tab[]>([])
+    const tabs = ref([])
     const tabsSize = computed(() => `${props.vertical ? 'w' : 'h'}-90`)
     const ulCss = computed(() => `flex-${props.vertical ? 'column' : 'row'} ${props.vertical ? 'w' : 'h'}-10`)
 
-    function dispose(): void {
+    function dispose() {
         if (bTab.value !== null) {
             bTab.value.dispose()
             bTab.value = null
         }
     }
 
-    function instantiate(): void {
+    function instantiate() {
         if (typeof el.value === 'undefined')
             return
-
         dispose()
         bTab.value = new BTab(el.value)
     }
 
     provide('tabs', tabs)
 
-    onMounted(() => {
-        instantiate()
-    })
-
-    onUnmounted(() => {
-        dispose()
-    })
-
-    watch(tabs, () => {
-        instantiate()
-    })
+    onMounted(instantiate)
+    onUnmounted(dispose)
+    watch(tabs, instantiate)
 </script>
 
 <template>

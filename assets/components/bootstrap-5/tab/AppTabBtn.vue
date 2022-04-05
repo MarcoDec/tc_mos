@@ -1,11 +1,7 @@
-<script lang="ts" setup>
-    import type {PropType} from 'vue'
-    import type {Tab} from '../../../types/bootstrap-5'
-    import {defineProps} from 'vue'
-
+<script setup>
     defineProps({
         icon: {required: false, type: Boolean},
-        tab: {required: true, type: Object as PropType<Tab>}
+        tab: {required: true, type: Object}
     })
 </script>
 

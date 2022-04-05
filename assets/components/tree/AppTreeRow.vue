@@ -1,14 +1,16 @@
-<script lang="ts" setup>
-    import {computed, defineProps, inject} from 'vue'
-    import type {Getters} from '../../store/tree'
+<script setup>
+    import {computed, inject} from 'vue'
+    import AppTree from './AppTree.vue'
+    import AppTreeForm from './AppTreeForm.vue'
+    import AppTreeFormItem from './AppTreeFormItem.vue'
     import {useNamespacedGetters} from 'vuex-composition-helpers'
 
     const firstItem = inject('firstItem', '')
     const moduleName = inject('moduleName', '')
-    const props = defineProps<{id: string}>()
+    const props = defineProps({id: {required: true, type: String}})
     const cardId = computed(() => `${props.id}-card`)
-    const selected = useNamespacedGetters<Getters>(moduleName, ['selected']).selected
-    const formTag = computed(() => (selected.value === null ? 'AppTreeForm' : 'AppTreeFormItem'))
+    const selected = useNamespacedGetters(moduleName, ['selected']).selected
+    const formTag = computed(() => (selected.value === null ? AppTreeForm : AppTreeFormItem))
 </script>
 
 <template>

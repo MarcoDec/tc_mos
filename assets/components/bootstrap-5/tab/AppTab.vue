@@ -1,9 +1,7 @@
-<script lang="ts" setup>
-    import {computed, defineProps, inject, onMounted, onUnmounted} from 'vue'
-    import type {Ref} from 'vue'
-    import type {Tab} from '../../../types/bootstrap-5'
+<script setup>
+    import {computed, inject, onMounted, onUnmounted} from 'vue'
 
-    const tabs = inject<Ref<Tab[]>>('tabs')
+    const tabs = inject('tabs')
     const props = defineProps({
         active: {required: false, type: Boolean},
         icon: {required: true, type: String},
@@ -13,7 +11,6 @@
     const activeClass = computed(() => ({active: props.active}))
     const labelledby = computed(() => `${props.id}-tab`)
     const target = computed(() => `#${props.id}`)
-
     onMounted(() => {
         if (typeof tabs !== 'undefined')
             tabs.value.push({
@@ -25,7 +22,6 @@
                 title: props.title
             })
     })
-
     onUnmounted(() => {
         if (typeof tabs !== 'undefined')
             tabs.value = tabs.value.filter(({id}) => id !== props.id)

@@ -1,7 +1,7 @@
-<script lang="ts" setup>
-    import AppWrapper from '../../../../components/gui/AppWrapper.vue'
+<script setup>
+    import AppShowGuiWrapper from '../../../../components/gui/AppShowGuiWrapper.vue'
 </script>
 
 <template>
-    <AppWrapper/>
+    <AppShowGuiWrapper/>
 </template>

@@ -1,18 +1,16 @@
-<script lang="ts" setup>
-    import type {FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps} from 'vue'
-    import type {PropType} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
-    const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
+    const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
-        field: {required: true, type: Object as PropType<FormField>},
-        modelValue: {default: null, type: [Boolean, Number, String] as PropType<FormValue>},
+        field: {required: true, type: Object},
+        modelValue: {default: null, type: [Boolean, Number, String]},
         noLabel: {required: false, type: Boolean}
     })
     const checkClass = computed(() => ({'form-check': !props.noLabel}))
 
-    function input(e: Event): void {
-        emit('update:modelValue', (e.target as HTMLInputElement).value)
+    function input(e) {
+        emit('update:modelValue', e.target.value)
     }
 </script>
 

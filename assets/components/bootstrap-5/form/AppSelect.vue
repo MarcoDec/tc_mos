@@ -1,11 +1,12 @@
-<script lang="ts" setup>
-    import type {BootstrapSize, FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineProps, withDefaults} from 'vue'
+<script setup>
+    import AppSelectOption from './AppSelectOption.vue'
+    import {computed} from 'vue'
 
-    const props = withDefaults(
-        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize}>(),
-        {modelValue: null, size: 'sm'}
-    )
+    const props = defineProps({
+        field: {required: true, type: Object},
+        modelValue: {default: null},
+        size: {default: 'sm', type: String}
+    })
     const options = computed(() => props.field.options ?? [])
     const sizeClass = computed(() => `form-select-${props.size}`)
 </script>

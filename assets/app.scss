@@ -12,27 +12,22 @@
   background-color: #8ac2f1;
 }
 
-.overlay {
-  background-color: #EFEFEF;
-  height: 100%;
-  left: 0;
-  opacity: .5;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
 .card-body {
   padding: 0 0 !important;
 }
 
 .container {
   min-width: 100%;
+}
+
+.dropdown-item {
+  &.bg-success {
+    background-color: #57ec57 !important;
+  }
+
+  &.text-success {
+    color: #57ec57 !important;
+  }
 }
 
 .gui-container {
@@ -46,6 +41,21 @@
 
 .h-90 {
   height: 90% !important;
+}
+
+.overlay {
+  background-color: #EFEFEF;
+  height: 100%;
+  left: 0;
+  opacity: .5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 .resizer {

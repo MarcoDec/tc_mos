@@ -1,5 +1,4 @@
-<script lang="ts" setup>
-    import {defineProps} from 'vue'
+<script setup>
     import {colValidator as validator} from '../../../composition/bootstrap-5'
 
     defineProps({cols: {default: 2, type: Number, validator}})

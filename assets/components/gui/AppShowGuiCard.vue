@@ -1,11 +1,8 @@
-<script lang="ts" setup>
-    /* eslint-disable vue/no-unused-properties */
+<script setup>
     import {computed, defineProps} from 'vue'
-    import type {BootstrapVariant} from '../../types/bootstrap-5'
-    import type {PropType} from 'vue'
 
     const props = defineProps({
-        bgVariant: {required: true, type: String as PropType<BootstrapVariant>},
+        bgVariant: {required: true, type: String},
         height: {required: true, type: String},
         innerWidth: {required: true, type: String},
         marginEnd: {default: '0px', type: String},
