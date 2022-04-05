@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, inject, ref} from 'vue'
     import AppCollectionTableCreate from './AppCollectionTableCreate.vue'
     import AppCollectionTableFields from './AppCollectionTableFields.vue'
     import AppCollectionTableSearch from './AppCollectionTableSearch.vue'
@@ -7,8 +7,8 @@
     defineProps({violations: {default: () => [], type: Array}})
 
     const emit = defineEmits(['create', 'search'])
-    const search = ref(true)
-    const row = computed(() => (search.value ? AppCollectionTableSearch : AppCollectionTableCreate))
+    const searchMode = inject('searchMode', ref(true))
+    const row = computed(() => (searchMode.value ? AppCollectionTableSearch : AppCollectionTableCreate))
 
     function create(createOptions) {
         emit('create', createOptions)
@@ -19,7 +19,7 @@
     }
 
     function toggle() {
-        search.value = !search.value
+        searchMode.value = !searchMode.value
     }
 </script>
 

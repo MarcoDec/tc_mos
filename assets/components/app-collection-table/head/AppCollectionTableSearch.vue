@@ -17,13 +17,14 @@
             searchOptionsObject[field.name] = null
     const searchOptions = reactive({...searchOptionsObject})
 
+    function search() {
+        emit('search', searchOptions)
+    }
+
     function reset() {
         for (const [key, value] of Object.entries(searchOptionsObject))
             searchOptions[key] = value
-    }
-
-    function search() {
-        emit('search', searchOptions)
+        search()
     }
 
     function toggle() {

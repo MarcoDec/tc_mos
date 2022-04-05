@@ -1,6 +1,6 @@
 export default [
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'Zone-list',
         path: '/Zone/list',
@@ -21,7 +21,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'Group-list',
         path: '/Group/list',
@@ -70,7 +70,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'EngineEvent-list',
         path: '/EngineEvent/list',

@@ -1,6 +1,6 @@
 export default [
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'attribute-list',
         path: '/Attribute/list',

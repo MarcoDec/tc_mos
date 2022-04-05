@@ -2,7 +2,7 @@ import ColorRepository from '../../store/colors/ColorRepository'
 
 export default [
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'color-list',
         path: '/color/list',
@@ -24,7 +24,7 @@ export default [
                     name: 'rgb',
                     sort: true,
                     type: 'color',
-                    update: false
+                    update: true
                 }
             ],
             icon: 'palette',
@@ -33,7 +33,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'invoiceTimeDue-list',
         path: '/InvoiceTimeDue/list',
@@ -81,7 +81,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'Printer-list',
         path: '/Printer/list',
@@ -120,7 +120,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'Unit-list',
         path: '/Unit/list',
@@ -150,7 +150,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'VatMessage-list',
         path: '/VatMessage/list',

@@ -35,4 +35,22 @@ export default class ColorRepository extends Repository {
     tableItems(fields) {
         return this.all().map(color => color.tableItem(fields))
     }
+
+    async update(body) {
+        try {
+            const color = await app.config.globalProperties.$store.dispatch('fetchApi', {
+                body,
+                method: 'patch',
+                url: '/api/colors/{id}'
+            })
+            this.save(color)
+        } catch (e) {
+            if (e instanceof Response && e.status === 422) {
+                const violations = await e.json()
+                return violations.violations
+            }
+            throw e
+        }
+        return []
+    }
 }

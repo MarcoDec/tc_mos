@@ -1,6 +1,6 @@
 export default [
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'ComponentReferenceValue-list',
         path: '/ComponentReferenceValue/list',
@@ -112,7 +112,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'RejectType-list',
         path: '/RejectType/list',
@@ -142,7 +142,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'QualityType-list',
         path: '/QualityType/list',

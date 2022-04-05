@@ -9,11 +9,17 @@ export default async function fetchApi(url, method, body) {
     const init = {headers, method}
     let generatedUrl = url
     if (body instanceof FormData) {
-        init.body = body
-        body.forEach((value, key) => {
+        if (method === 'patch') {
+            init.headers['Content-Type'] = 'application/merge-patch+json'
+            const json = {}
+            for (const [key, value] of body.entries())
+                json[key] = value
+            init.body = JSON.stringify(json)
+        } else
+            init.body = body
+        for (const [key, value] of body.entries())
             if (generatedUrl.includes(`{${key}}`))
                 generatedUrl = generatedUrl.replace(`{${key}}`, value)
-        })
     } else {
         for (const key in body)
             if (body[key] === null)

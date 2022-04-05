@@ -1,6 +1,6 @@
 export default [
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'operation-list',
         path: '/operation/list',
@@ -85,7 +85,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/app-collection-table/AppCollectionTablePage.vue'),
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
         name: 'OperationType-list',
         path: '/OperationType/list',

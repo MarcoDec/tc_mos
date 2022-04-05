@@ -1,5 +1,6 @@
 <script setup>
     import {computed, onMounted, ref} from 'vue'
+    import emitter from '../../emitter'
     import {useRoute} from 'vue-router'
     import {useStore} from 'vuex'
 
@@ -24,6 +25,11 @@
         await repoInstance.value.load(searchOptions)
     }
 
+    async function update(item) {
+        violations.value = await repoInstance.value.update(item)
+        emitter.emit(`${route.name}-update-${item.get('id')}`)
+    }
+
     onMounted(async () => {
         await repoInstance.value.load()
     })
@@ -42,5 +48,6 @@
         create
         pagination
         @create="create"
-        @search="search"/>
+        @search="search"
+        @update="update"/>
 </template>
