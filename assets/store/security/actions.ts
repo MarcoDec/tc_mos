@@ -1,53 +1,41 @@
 import * as Cookies from '../../cookie'
-import type {DeepReadonly} from '../../types/types'
-import {MutationTypes} from '.'
-import type {RootState} from '../index'
-import type {State} from '.'
-import type {ActionContext as VuexActionContext} from 'vuex'
-import {fetchApi} from '../../api'
+import type {ComputedGetters, State} from '.'
+import type {StoreActionContext} from '..'
 
-export enum ActionTypes {
-    CONNECT = 'CONNECT',
-    FETCH_USERS = 'FETCH_USERS',
-    LOGOUT_USERS = 'LOGOUT_USERS'
-}
+declare type ActionContext = StoreActionContext<State, ComputedGetters>
 
-type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
-
-type Login = {username: string | null, password: string | null}
+declare type Login = {username: string | null, password: string | null}
 
 export const actions = {
-    async [ActionTypes.CONNECT]({commit}: ActionContext): Promise<void> {
-        if (Cookies.has('token') && Cookies.has('id')) {
-            const id = Cookies.get('id')
-            if (typeof id === 'undefined')
-                return
-            const user = await fetchApi('/api/employees/{id}', {params: {id}})
-            commit(MutationTypes.SET_USER, user.username)
-        }
+    async login({commit, dispatch}: ActionContext, {password, username}: Login): Promise<void> {
+        const user = await dispatch(
+            'fetchApi',
+            {
+                body: {
+                    password: password ?? '',
+                    username: username ?? ''
+                },
+                method: 'post',
+                url: '/api/login'
+            },
+            {root: true}
+        )
+        Cookies.set(user.id, user.token)
+        commit('user', user.username)
     },
-    async [ActionTypes.FETCH_USERS]({commit}: ActionContext, {password, username}: Readonly<Login>): Promise<void> {
-        const user = await fetchApi('/api/login', {
-            json: {password: password ?? '', username: username ?? ''},
-            method: 'post'
-        })
-        if (
-            typeof user.id !== 'undefined'
-            && typeof user.token !== 'undefined'
-            && user.token !== null
-            && typeof user.username !== 'undefined'
-        ) {
-            Cookies.set('id', user.id.toString())
-            Cookies.set('token', user.token)
-            commit(MutationTypes.SET_USER, user.username)
-        }
-    },
-    async [ActionTypes.LOGOUT_USERS]({commit}: ActionContext): Promise<void> {
-        await fetchApi('/api/logout', {method: 'post'})
-        Cookies.remove('id')
-        Cookies.remove('token')
-        commit(MutationTypes.SET_USER, null)
+    async logout({commit, dispatch}: ActionContext): Promise<void> {
+        await dispatch(
+            'fetchApi',
+            {
+                body: {},
+                method: 'post',
+                url: '/api/logout'
+            },
+            {root: true}
+        )
+        Cookies.remove()
+        commit('user', null)
     }
 }
 
-export type Actions = typeof actions
+export declare type Actions = typeof actions

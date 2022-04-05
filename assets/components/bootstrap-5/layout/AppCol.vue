@@ -1,7 +1,7 @@
 <script lang="ts" setup>
     import {computed, defineProps} from 'vue'
     import type {PropType} from 'vue'
-    import {colValidator as validator} from '../../../composition/boostrap-5'
+    import {colValidator as validator} from '../../../composition/bootstrap-5'
 
     const props = defineProps({
         cols: {default: null, type: Number as PropType<number | null>, validator},

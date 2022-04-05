@@ -2,10 +2,9 @@
     import type {Getters, Mutations} from '../../store/gui'
     import {onMounted, onUnmounted, ref, watchPostEffect} from 'vue'
     import {useNamespacedGetters, useNamespacedMutations} from 'vuex-composition-helpers'
-    import type {DeepReadonly} from '../../types/types'
     import {MutationTypes} from '../../store/gui'
 
-    const gui = ref<DeepReadonly<HTMLDivElement>>()
+    const gui = ref<HTMLDivElement>()
     const {
         bottomHeightPx,
         endWidthPx,
@@ -100,40 +99,40 @@
 </template>
 
 <style scoped>
-.gui {
-  max-width: v-bind('widthPx');
-  min-width: v-bind('widthPx');
-  padding: v-bind('paddingPx');
-  width: v-bind('widthPx');
-}
+    .gui {
+        max-width: v-bind('widthPx');
+        min-width: v-bind('widthPx');
+        padding: v-bind('paddingPx');
+        width: v-bind('widthPx');
+    }
 
-.gui-bottom-content {
-  height: v-bind('innerBottomHeightPx');
-  max-height: v-bind('innerBottomHeightPx');
-  min-height: v-bind('innerBottomHeightPx');
-}
+    .gui-bottom-content {
+        height: v-bind('innerBottomHeightPx');
+        max-height: v-bind('innerBottomHeightPx');
+        min-height: v-bind('innerBottomHeightPx');
+    }
 
-.gui-card {
-  padding: v-bind('paddingPx');
-}
+    .gui-card {
+        padding: v-bind('paddingPx');
+    }
 
-.gui-start-content {
-  height: v-bind('innerStartHeightPx');
-  max-height: v-bind('innerStartHeightPx');
-  min-height: v-bind('innerStartHeightPx');
-}
+    .gui-start-content {
+        height: v-bind('innerStartHeightPx');
+        max-height: v-bind('innerStartHeightPx');
+        min-height: v-bind('innerStartHeightPx');
+    }
 
-@media (max-width: 1140px) {
-  .gui-end {
-    margin-top: v-bind('marginTopPx') !important;
-  }
-}
+    @media (max-width: 1140px) {
+        .gui-end {
+            margin-top: v-bind('marginTopPx') !important;
+        }
+    }
 
-@media (min-width: 1140px) {
-  .gui {
-    height: v-bind('heightPx');
-    max-height: v-bind('heightPx');
-    min-height: v-bind('heightPx');
-  }
-}
+    @media (min-width: 1140px) {
+        .gui {
+            height: v-bind('heightPx');
+            max-height: v-bind('heightPx');
+            min-height: v-bind('heightPx');
+        }
+    }
 </style>

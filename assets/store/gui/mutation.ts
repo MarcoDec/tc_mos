@@ -1,4 +1,3 @@
-import type {DeepReadonly} from '../../types/types'
 import {LARGE_SCREEN} from '.'
 import type {State} from '.'
 
@@ -25,7 +24,7 @@ export const mutations = {
         if (ratio >= RATIO_MIN && ratio <= RATIO_MAX)
             state.ratio = ratio
     },
-    [MutationTypes.RESIZE](state: State, el: DeepReadonly<HTMLDivElement>): void {
+    [MutationTypes.RESIZE](state: State, el: HTMLDivElement): void {
         const rect = el.getBoundingClientRect()
         state.top = rect.top
         if (window.top !== null) {

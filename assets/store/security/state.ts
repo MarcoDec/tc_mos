@@ -1,9 +1,3 @@
-export type State = {
-    password: string | null
+export declare type State = {
     username: string | null
-}
-
-export const state: State = {
-    password: null,
-    username: null
 }

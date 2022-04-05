@@ -1,31 +1,44 @@
 <script lang="ts" setup>
     import type {FormField, FormValue, FormValues} from '../../../types/bootstrap-5'
-    import {defineEmits, defineProps, withDefaults} from 'vue'
+    import {defineEmits, defineProps, ref, withDefaults} from 'vue'
     import clone from 'clone'
 
-    const emit = defineEmits<{(e: 'update:values', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
+    const form = ref<HTMLFormElement>()
+    const emit = defineEmits<{
+        (e: 'submit', values: FormData): void
+        (e: 'update:modelValue', values: FormValues): void
+    }>()
     const props = withDefaults(
-        defineProps<{fields: FormField[], values?: FormValues}>(),
-        {values: () => ({})}
+        defineProps<{fields: FormField[], id: string, modelValue?: FormValues}>(),
+        {modelValue: () => ({})}
     )
 
-    function input(value: Readonly<{value: FormValue, name: string}>): void {
-        const cloned = clone(props.values)
+    function input(value: {value: FormValue, name: string}): void {
+        const cloned = clone(props.modelValue)
         cloned[value.name] = value.value
-        emit('update:values', cloned)
+        emit('update:modelValue', cloned)
+    }
+
+    function submit(): void {
+        if (typeof form.value !== 'undefined')
+            emit('submit', new FormData(form.value))
     }
 </script>
 
 <template>
-    <form autocomplete="off" @submit.prevent="emit('submit')">
+    <form :id="id" ref="form" autocomplete="off" @submit.prevent="submit">
         <AppFormGroup
             v-for="field in fields"
             :key="field.name"
             :field="field"
-            :value="values[field.name]"
+            :form="id"
+            :model-value="modelValue[field.name]"
             @input="input"/>
-        <AppBtn class="float-end" type="submit">
-            Connexion
-        </AppBtn>
+        <div class="float-start">
+            <slot name="start"/>
+        </div>
+        <div class="float-end">
+            <slot/>
+        </div>
     </form>
 </template>

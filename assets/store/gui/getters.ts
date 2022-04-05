@@ -2,33 +2,33 @@ import {LARGE_SCREEN} from '.'
 import type {State} from '.'
 
 export type Getters = {
-    bottomHeight: (state: Readonly<State>, computed: GettersValues) => number
-    bottomHeightPx: (state: Readonly<State>, computed: GettersValues) => string
-    endWidth: (state: Readonly<State>, computed: GettersValues) => number
-    endWidthPx: (state: Readonly<State>, computed: GettersValues) => string
-    guiBottom: (state: Readonly<State>) => string
-    heightPx: (state: Readonly<State>) => string
-    innerBottomHeight: (state: Readonly<State>, computed: GettersValues) => number
-    innerBottomHeightPx: (state: Readonly<State>, computed: GettersValues) => string
-    innerHeight: (state: Readonly<State>) => number
-    innerStartHeight: (state: Readonly<State>, computed: GettersValues) => number
-    innerStartHeightPx: (state: Readonly<State>, computed: GettersValues) => string
-    innerWidth: (state: Readonly<State>) => number
-    innerWidthPx: (state: Readonly<State>, computed: GettersValues) => string
-    marginEndPx: (state: Readonly<State>) => string
-    marginTopPx: (state: Readonly<State>) => string
-    marginedInnerHeight: (state: Readonly<State>, computed: GettersValues) => number
-    marginedInnerWidth: (state: Readonly<State>, computed: GettersValues) => number
-    paddingPx: (state: Readonly<State>) => string
-    startWidth: (state: Readonly<State>, computed: GettersValues) => number
-    startWidthPx: (state: Readonly<State>, computed: GettersValues) => string
-    topHeight: (state: Readonly<State>, computed: GettersValues) => number
-    topHeightPx: (state: Readonly<State>, computed: GettersValues) => string
-    widthPx: (state: Readonly<State>) => string
+    bottomHeight: (state: State, computed: GettersValues) => number
+    bottomHeightPx: (state: State, computed: GettersValues) => string
+    endWidth: (state: State, computed: GettersValues) => number
+    endWidthPx: (state: State, computed: GettersValues) => string
+    guiBottom: (state: State) => string
+    heightPx: (state: State) => string
+    innerBottomHeight: (state: State, computed: GettersValues) => number
+    innerBottomHeightPx: (state: State, computed: GettersValues) => string
+    innerHeight: (state: State) => number
+    innerStartHeight: (state: State, computed: GettersValues) => number
+    innerStartHeightPx: (state: State, computed: GettersValues) => string
+    innerWidth: (state: State) => number
+    innerWidthPx: (state: State, computed: GettersValues) => string
+    marginEndPx: (state: State) => string
+    marginTopPx: (state: State) => string
+    marginedInnerHeight: (state: State, computed: GettersValues) => number
+    marginedInnerWidth: (state: State, computed: GettersValues) => number
+    paddingPx: (state: State) => string
+    startWidth: (state: State, computed: GettersValues) => number
+    startWidthPx: (state: State, computed: GettersValues) => string
+    topHeight: (state: State, computed: GettersValues) => number
+    topHeightPx: (state: State, computed: GettersValues) => string
+    widthPx: (state: State) => string
 }
 
 export type GettersValues = {
-    readonly [key in keyof Getters]: ReturnType<Getters[key]>
+    [key in keyof Getters]: ReturnType<Getters[key]>
 }
 
 const INNER_PADDING = 2
