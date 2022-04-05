@@ -24,12 +24,16 @@
                 <AppNavbarLink icon="layer-group" to="component-families">
                     Familles de composants
                 </AppNavbarLink>
+                 <AppNavbarLink icon="route" to="needs">
+                    Calcul des besoins
+                </AppNavbarLink>
             </AppNavbarItem>
             <AppNavbarItem id="nav-purchase" icon="industry" title="Production">
                 <AppNavbarLink icon="layer-group" to="product-families">
                     Familles de produits
                 </AppNavbarLink>
             </AppNavbarItem>
+        
         </AppNavbarCollapse>
         <div v-if="hasUser" class="text-white">
             <Fa icon="user-circle"/>

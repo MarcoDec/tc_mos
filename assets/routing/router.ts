@@ -74,6 +74,12 @@ const router = createRouter({
             name: 'employee-show',
             path: '/employee/show'
         },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/needs/AppProductNeeds.vue'),
+            meta: {requiresAuth: false},
+            name: 'needs',
+            path: '/needs'
+        },
     ]
 })
 
