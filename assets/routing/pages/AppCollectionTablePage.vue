@@ -21,6 +21,10 @@
         violations.value = await repoInstance.value.create(createOptions)
     }
 
+    async function deleteHandler(id) {
+        await repoInstance.value['delete'](id)
+    }
+
     async function search(searchOptions) {
         await repoInstance.value.load(searchOptions)
     }
@@ -48,6 +52,7 @@
         create
         pagination
         @create="create"
+        @delete="deleteHandler"
         @search="search"
         @update="update"/>
 </template>

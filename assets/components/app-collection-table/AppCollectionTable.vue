@@ -4,7 +4,7 @@
     import AppCollectionTableItems from './body/AppCollectionTableItems.vue'
     import AppPagination from '../bootstrap-5/pagination/AppPagination.vue'
 
-    const emit = defineEmits(['create', 'search', 'show', 'update'])
+    const emit = defineEmits(['create', 'delete', 'search', 'show', 'update'])
     const props = defineProps({
         create: {required: false, type: Boolean},
         currentPage: {default: 1, type: Number},
@@ -19,6 +19,10 @@
 
     function createHandler(createOptions) {
         emit('create', createOptions)
+    }
+
+    async function deleteHandler(id) {
+        emit('delete', id)
     }
 
     function search(searchOptions) {
@@ -42,7 +46,12 @@
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
         <AppCollectionTableHeaders :violations="violations" @create="createHandler" @search="search"/>
-        <AppCollectionTableItems :items="items" :violations="violations" @show="show" @update="update"/>
+        <AppCollectionTableItems
+            :items="items"
+            :violations="violations"
+            @delete="deleteHandler"
+            @show="show"
+            @update="update"/>
     </table>
     <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/>
 </template>

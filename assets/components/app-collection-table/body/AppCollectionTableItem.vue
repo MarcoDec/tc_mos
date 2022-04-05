@@ -19,7 +19,11 @@
     const formattedIndex = computed(() => props.index + 1)
     const show = computed(() => props.updated !== props.index)
     const td = computed(() => (show.value ? AppCollectionTableItemField : AppCollectionTableItemInput))
-    const emit = defineEmits(['show', 'toggle', 'update'])
+    const emit = defineEmits(['delete', 'show', 'toggle', 'update'])
+
+    async function deleteHandler() {
+        emit('delete', props.item.id)
+    }
 
     function showHandler() {
         emit('show', props.item)
@@ -50,7 +54,7 @@
         <td v-if="show" class="text-center">
             <AppBtn v-if="item.update" icon="pencil-alt" title="Modifier" variant="primary" @click="toggle"/>
             <AppBtn v-if="item.show" icon="eye" title="Voir" variant="secondary" @click="showHandler"/>
-            <AppBtn v-if="item['delete']" icon="trash" title="Supprimer" variant="danger"/>
+            <AppBtn v-if="item['delete']" icon="trash" title="Supprimer" variant="danger" @click="deleteHandler"/>
         </td>
         <td v-else class="text-center">
             <AppForm :id="formId" inline @submit="update">

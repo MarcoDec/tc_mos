@@ -23,6 +23,15 @@ export default class ColorRepository extends Repository {
         return []
     }
 
+    async delete(id) {
+        await app.config.globalProperties.$store.dispatch('fetchApi', {
+            body: {id},
+            method: 'delete',
+            url: '/api/colors/{id}'
+        })
+        this.destroy(id)
+    }
+
     async load(body = {}) {
         const colors = await app.config.globalProperties.$store.dispatch('fetchApi', {
             body,
