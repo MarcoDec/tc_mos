@@ -1,33 +1,35 @@
-<script lang="ts" setup>
-    import type {BootstrapSize, FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps} from 'vue'
-    import type {PropType} from 'vue'
+<script setup>
+    import AppInput from './AppInput.vue'
+    import AppRadioGroup from './AppRadioGroup.vue'
+    import AppSearchBool from './AppSearchBool.vue'
+    import AppSelect from './AppSelect.vue'
+    import AppSwitch from './AppSwitch.vue'
+    import {computed} from 'vue'
 
-    const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
+    const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
-        field: {required: true, type: Object as PropType<FormField>},
-        modelValue: {default: null, type: [Boolean, Number, String] as PropType<FormValue>},
+        field: {required: true, type: Object},
+        modelValue: {default: null, type: [Boolean, Number, String]},
         noLabel: {required: false, type: Boolean},
-        size: {default: 'sm', type: String as PropType<BootstrapSize>}
+        size: {default: 'sm', type: String}
     })
     const type = computed(() => props.field.type ?? 'text')
-
     const guessed = computed(() => {
         switch (type.value) {
             case 'boolean':
-                return 'AppSwitch'
+                return AppSwitch
             case 'radio':
-                return 'AppRadioGroup'
+                return AppRadioGroup
             case 'search-boolean':
-                return 'AppSearchBool'
+                return AppSearchBool
             case 'select':
-                return 'AppSelect'
+                return AppSelect
             default:
-                return 'AppInput'
+                return AppInput
         }
     })
 
-    function input(value: FormValue): void {
+    function input(value) {
         emit('update:modelValue', value)
     }
 </script>

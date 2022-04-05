@@ -1,21 +1,12 @@
-<script lang="ts" setup>
-    import type {BootstrapSize, BootstrapVariant} from '../../types/bootstrap-5'
-    import {computed, defineProps, withDefaults} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
-    const props = withDefaults(
-        defineProps<{
-            icon?: string | null
-            size?: BootstrapSize
-            type?: 'button' | 'reset' | 'submit'
-            variant?: BootstrapVariant
-        }>(),
-        {
-            icon: null,
-            size: 'sm',
-            type: 'button',
-            variant: 'primary'
-        }
-    )
+    const props = defineProps({
+        icon: {default: null, type: String},
+        size: {default: 'sm', type: String},
+        type: {default: 'button', type: String},
+        variant: {default: 'primary', type: String}
+    })
     const btnClass = computed(() => ({
         [`btn-${props.size} btn-${props.variant}`]: true,
         'btn-icon': Boolean(props.icon)

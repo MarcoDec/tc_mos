@@ -1,24 +1,23 @@
-<script lang="ts" setup>
-    import type {FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps, inject, ref} from 'vue'
-    import type {Ref} from 'vue'
-    import type {Violation} from '../../../types/types'
+<script setup>
+    import {computed, inject, ref} from 'vue'
+    import AppLabel from './AppLabel.vue'
 
-    const emit = defineEmits<{
-        (e: 'update:modelValue', value: FormValue): void
-        (e: 'input', payload: {value: FormValue, name: string}): void
-    }>()
-    const props = defineProps<{field: FormField, form: string, modelValue?: FormValue}>()
-    const inputFields = computed<FormField>(() => ({
+    const emit = defineEmits(['input', 'update:modelValue'])
+    const props = defineProps({
+        field: {required: true, type: Object},
+        form: {required: true, type: String},
+        modelValue: {default: null}
+    })
+    const inputFields = computed(() => ({
         ...props.field,
         id: props.field.id ?? `${props.form}-${props.field.name}`
     }))
     const labelCols = computed(() => props.field.labelCols ?? 2)
-    const violations = inject<Ref<Violation[]>>('violations', ref([]))
+    const violations = inject('violations', ref([]))
     const violation = computed(() => violations.value.find(({propertyPath}) => propertyPath === props.field.name) ?? null)
     const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
 
-    function input(value: FormValue): void {
+    function input(value) {
         emit('update:modelValue', value)
         emit('input', {name: props.field.name, value})
     }

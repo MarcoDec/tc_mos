@@ -11,17 +11,13 @@ export default defineConfig({
         manifest: true,
         outDir: './public/build/',
         rollupOptions: {
-            input: {index: './assets/index.ts'}
+            input: {index: './assets/index.js'}
         }
     },
     plugins: [
         symfonyPlugin(),
         vue(),
-        checker({
-            eslint: {lintCommand: 'eslint -c .eslintrc.js ./assets/**/*.{ts,vue}'},
-            typescript: true,
-            vueTsc: true
-        })
+        checker({eslint: {lintCommand: 'eslint -c .eslintrc.js ./assets/**/*.{js,vue}'}})
     ],
     root: './',
     server: {

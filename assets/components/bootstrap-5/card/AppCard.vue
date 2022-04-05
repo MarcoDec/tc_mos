@@ -1,11 +1,16 @@
-<script lang="ts" setup>
-    import {defineProps, withDefaults} from 'vue'
+<script setup>
+    import {computed} from 'vue'
 
-    withDefaults(defineProps<{titleTag?: string, title: string}>(), {titleTag: 'h2'})
+    const props = defineProps({
+        bgVariant: {default: null, type: String},
+        title: {required: true, type: String},
+        titleTag: {default: 'h2', type: String}
+    })
+    const bg = computed(() => (props.bgVariant === null ? null : `bg-${props.bgVariant}`))
 </script>
 
 <template>
-    <div class="card">
+    <div :class="bg" class="card">
         <component :is="titleTag" class="card-title">
             {{ title }}
         </component>

@@ -1,8 +1,10 @@
 {
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.3.0",
-    "@fortawesome/free-solid-svg-icons": "^6.0.0",
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
+    "@popperjs/core": "^2.11.5",
+    "@vuex-orm/core": "^1.0.0-draft.16",
     "bootstrap": "^5.1.3",
     "clone": "^2.1.2",
     "js-cookie": "^3.0.1",
@@ -11,37 +13,27 @@
     "vue": "^3.2.31",
     "vue-router": "^4.0.14",
     "vuex": "^4.0.2",
-    "vuex-composition-helpers": "^2.0.1"
+    "vuex-composition-helpers": "^2.0.3"
   },
   "devDependencies": {
-    "@types/bootstrap": "^5.1.9",
-    "@types/clone": "^2.1.1",
-    "@types/js-cookie": "^3.0.1",
-    "@types/lodash": "^4.14.179",
-    "@types/node": "^17.0.21",
-    "@typescript-eslint/eslint-plugin": "^5.14.0",
-    "@typescript-eslint/parser": "^5.14.0",
-    "@vitejs/plugin-vue": "^2.2.4",
-    "@vue/eslint-config-typescript": "^10.0.0",
-    "eslint": "^8.10.0",
+    "@babel/core": "^7.17.8",
+    "@babel/eslint-parser": "^7.17.0",
+    "@vitejs/plugin-vue": "^2.3.1",
+    "eslint": "^8.12.0",
     "eslint-plugin-vue": "^8.5.0",
     "humps": "^2.0.1",
-    "sass": "^1.49.9",
-    "ts-toolbelt": "^9.6.0",
-    "typescript": "^4.6.2",
-    "vite": "^2.8.6",
-    "vite-plugin-checker": "^0.4.2",
-    "vite-plugin-symfony": "^0.3.1",
-    "vue-tsc": "0.32.0"
+    "sass": "^1.49.11",
+    "vite": "^2.9.1",
+    "vite-plugin-checker": "^0.4.5",
+    "vite-plugin-symfony": "^0.3.1"
   },
   "license": "proprietary",
   "private": true,
   "scripts": {
-    "build": "vue-tsc --noEmit && vite build && echo '*\n!.gitignore' > public/build/.gitignore",
-    "dev": "vite",
-    "eslint": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js ./assets/**/*.{ts,vue}",
-    "eslint-fix": "vue-tsc --noEmit && NODE_ENV=production eslint -c .eslintrc.js --fix ./assets/**/*.{ts,vue}",
-    "openapi": "php bin/console api:openapi:export -y -o openapi.yaml && npx openapi-typescript openapi.yaml --output assets/types/openapi.d.ts && rm openapi.yaml",
+    "build": "vite build && echo '*\n!.gitignore' > public/build/.gitignore",
+    "dev": "sudo rm -r public/build/*; vite",
+    "eslint": "NODE_ENV=production eslint -c .eslintrc.js ./assets/**/*.{js,vue}",
+    "eslint-fix": "NODE_ENV=production eslint -c .eslintrc.js --fix ./assets/**/*.{js,vue}",
     "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
     "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"
   }

@@ -1,8 +1,5 @@
-<script lang="ts" setup>
-    import type {FormOption} from '../../../types/bootstrap-5'
-    import {defineProps} from 'vue'
-
-    defineProps<{option: FormOption}>()
+<script setup>
+    defineProps({option: {required: true, type: Object}})
 </script>
 
 <template>
