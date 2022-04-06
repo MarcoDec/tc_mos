@@ -10,7 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -29,14 +28,15 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Modifie une devise',
                     'summary' => 'Modifie une devise',
-                ]
+                ],
+                'validate' => false
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:currency', 'write:currency'],
+            'groups' => ['write:currency'],
             'openapi_definition_name' => 'Currency-write'
         ],
         normalizationContext: [
@@ -57,8 +57,6 @@ class Currency extends AbstractUnit {
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'EUR'),
-        Assert\Length(exactly: 3),
-        Assert\NotBlank,
         ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
@@ -69,7 +67,7 @@ class Currency extends AbstractUnit {
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/currencies/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:currency', 'write:currency'])
+        Serializer\Groups(['read:currency'])
     ]
     protected $parent;
 
