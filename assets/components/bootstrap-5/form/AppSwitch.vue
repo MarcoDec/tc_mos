@@ -4,7 +4,7 @@
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         field: {required: true, type: Object},
-        modelValue: {default: null, type: [Boolean, Number, String]},
+        modelValue: {required: false, type: Boolean},
         noLabel: {required: false, type: Boolean}
     })
     const checkClass = computed(() => ({'form-check': !props.noLabel}))
@@ -18,8 +18,8 @@
     <div :class="checkClass" class="form-switch">
         <input
             :id="field.id"
+            :checked="modelValue"
             :name="field.name"
-            :value="modelValue"
             class="form-check-input"
             type="checkbox"
             @input="input"/>
