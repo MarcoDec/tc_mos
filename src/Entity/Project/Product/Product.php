@@ -126,6 +126,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                             'type' => 'string'
                         ]
                     ]],
+                    'requestBody' => null,
                     'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
                 'path' => '/products/{id}/promote/{transition}',
@@ -570,6 +571,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->ref;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
     final public function getTransfertPriceSupplies(): Measure {
         return $this->transfertPriceSupplies;
     }
@@ -737,6 +743,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setRef(?string $ref): self {
         $this->ref = $ref;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 
