@@ -64,9 +64,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Type extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'sertissage dimensionnelle'),
-        Assert\Length(min: 3, max: 20),
+        Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
-        ORM\Column(length: 30),
+        ORM\Column(length: 40),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     private ?string $name = null;
