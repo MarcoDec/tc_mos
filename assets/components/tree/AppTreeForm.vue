@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, inject, provide} from 'vue'
+    import {computed, inject, provide, ref} from 'vue'
     import {useNamespacedActions, useNamespacedState} from 'vuex-composition-helpers'
 
     const emit = defineEmits(['submit'])
@@ -13,6 +13,7 @@
         update: {required: false, type: Boolean}
     })
     const formdId = computed(() => `${props.id}-form`)
+    const value = ref({...props.state})
     const violations = useNamespacedState(moduleName, ['violations']).violations
 
     async function submit(data) {
@@ -28,7 +29,7 @@
 
 <template>
     <AppCard :id="id" :title="title" class="bg-blue">
-        <AppForm :id="formdId" :fields="fields" :model-value="state" @submit="submit">
+        <AppForm :id="formdId" v-model="value" :fields="fields" @submit="submit">
             <template #start>
                 <slot name="start"/>
             </template>

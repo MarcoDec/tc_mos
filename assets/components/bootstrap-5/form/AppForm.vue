@@ -1,7 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppFormGroup from './AppFormGroup.vue'
-    import clone from 'clone'
 
     const form = ref()
     const emit = defineEmits(['submit', 'update:modelValue'])
@@ -14,9 +13,7 @@
     const displayInline = computed(() => ({'d-inline': props.inline, 'm-0': props.inline, 'p-0': props.inline}))
 
     function input(value) {
-        const cloned = clone(props.modelValue)
-        cloned[value.name] = value.value
-        emit('update:modelValue', cloned)
+        emit('update:modelValue', {...props.modelValue, [value.name]: value.value})
     }
 
     function submit() {
