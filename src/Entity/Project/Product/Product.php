@@ -306,7 +306,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Assert\Length(min: 3, max: 80),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
         ORM\Column(length: 80),
-        Serializer\Groups(['create:product', 'read:product', 'write:product', 'write:product:admin'])
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
     ]
     private ?string $name = null;
 
