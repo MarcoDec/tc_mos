@@ -15,6 +15,7 @@ export function generateItem(
                     method: 'delete',
                     url: state.url
                 }, {root: true})
+                await dispatch(`${state.parentModuleName}/unselect`, null, {root: true})
                 await dispatch('unregisterModule', state.moduleName.split('/'), {root: true})
             },
             async select({commit, dispatch, state}) {
@@ -39,6 +40,7 @@ export function generateItem(
                     }
                     return
                 }
+                commit('violate')
                 const updated = {...response}
                 if (typeof updated.parent !== 'string')
                     updated.parent = '0'

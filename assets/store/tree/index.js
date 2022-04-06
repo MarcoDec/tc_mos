@@ -21,6 +21,7 @@ export function generateTree(moduleName, url) {
                     }
                     return
                 }
+                commit('violate')
                 const created = {...response}
                 if (typeof created.parent !== 'string')
                     created.parent = '0'
@@ -48,6 +49,7 @@ export function generateTree(moduleName, url) {
                 await Promise.all(items)
             },
             async unselect({commit, getters}) {
+                commit('violate')
                 for (const item of getters.items)
                     commit(`${item}/select`, false, {root: true})
             }
