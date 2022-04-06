@@ -123,11 +123,12 @@ class InvoiceTimeDue extends Entity {
 
     final public function setDaysAfterEndOfMonth(?int $daysAfterEndOfMonth): self {
         $this->daysAfterEndOfMonth = $daysAfterEndOfMonth;
+        $this->setEndOfMonth();
         return $this;
     }
 
-    final public function setEndOfMonth(?bool $endOfMonth): self {
-        $this->endOfMonth = $endOfMonth;
+    final public function setEndOfMonth(?bool $endOfMonth = false): self {
+        $this->endOfMonth = $endOfMonth || $this->daysAfterEndOfMonth > 0;
         return $this;
     }
 
