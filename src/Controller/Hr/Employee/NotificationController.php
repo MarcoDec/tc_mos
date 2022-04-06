@@ -12,7 +12,7 @@ final class NotificationController {
     }
 
     #[Route(
-        path: '/api/notifications/category/all',
+        path: '/api/notifications/{category}/all',
         name: 'api_notifications_delete_collection',
         defaults: [
             '_api_collection_operation_name' => 'delete',
@@ -20,15 +20,15 @@ final class NotificationController {
         ],
         methods: 'DELETE'
     )]
-    public function delete(): void {
-        $this->repo->delete();
+    public function delete(string $category): void {
+        $this->repo->delete($category);
     }
 
     /**
      * @return Notification[]
      */
     #[Route(
-        path: '/api/notifications/category/read-all',
+        path: '/api/notifications/{category}/read-all',
         name: 'api_notifications_patch_collection',
         defaults: [
             '_api_collection_operation_name' => 'patch',
@@ -36,8 +36,8 @@ final class NotificationController {
         ],
         methods: 'PATCH'
     )]
-    public function read(Request $request): array {
-        $request->attributes->set('data', $data = $this->repo->read());
+    public function read(string $category, Request $request): array {
+        $request->attributes->set('data', $data = $this->repo->read($category));
         return $data;
     }
 }

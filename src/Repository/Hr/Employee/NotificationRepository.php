@@ -23,24 +23,25 @@ final class NotificationRepository extends ServiceEntityRepository {
         parent::__construct($registry, Notification::class);
     }
 
-    public function delete(): void {
-        $this->createReadQueryBuilder()->set('n.deleted', true)->getQuery()->execute();
+    public function delete(string $category): void {
+        $this->createReadQueryBuilder($category)->set('n.deleted', true)->getQuery()->execute();
     }
 
     /**
      * @return Notification[]
      */
-    public function read(): array {
-        $this->createReadQueryBuilder()->getQuery()->execute();
+    public function read(string $category): array {
+        $this->createReadQueryBuilder($category)->getQuery()->execute();
         return $this->findBy(['user' => $this->getUser()]);
     }
 
-    private function createReadQueryBuilder(): QueryBuilder {
+    private function createReadQueryBuilder(string $category): QueryBuilder {
         return $this->_em->createQueryBuilder()
             ->update($this->getClassName(), 'n')
             ->set('n.read', true)
             ->where('n.user = :user')
-            ->setParameter('user', $this->getUser());
+            ->andWhere('n.category = :category')
+            ->setParameters(['category' => $category, 'user' => $this->getUser()]);
     }
 
     private function getUser(): int {

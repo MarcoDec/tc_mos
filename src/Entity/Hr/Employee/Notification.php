@@ -2,7 +2,9 @@
 
 namespace App\Entity\Hr\Employee;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType;
 use App\Entity\Entity;
 use App\Repository\Hr\Employee\NotificationRepository;
 use DateTimeImmutable;
@@ -17,6 +19,15 @@ use Doctrine\ORM\Mapping as ORM;
                 'method' => 'DELETE',
                 'openapi_context' => [
                     'description' => 'Supprime les notifications de l\'utilisateur dans la catégorie',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'category',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => NotificationCategoryType::TYPES,
+                            'type' => 'string'
+                        ]
+                    ]],
                     'summary' => 'Supprime les notifications de l\'utilisateur dans la catégorie'
                 ],
                 'read' => false,
@@ -36,6 +47,15 @@ use Doctrine\ORM\Mapping as ORM;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Marque les notifications de l\'utilisateur dans la catégorie',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'category',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => NotificationCategoryType::TYPES,
+                            'type' => 'string'
+                        ]
+                    ]],
                     'requestBody' => null,
                     'summary' => 'Marque les notifications de l\'utilisateur dans la catégorie'
                 ],
@@ -56,9 +76,9 @@ use Doctrine\ORM\Mapping as ORM;
             'patch' => [
                 'deserialize' => false,
                 'openapi_context' => [
-                    'description' => 'Marque la notifications comme lue',
+                    'description' => 'Marque la notification comme lue',
                     'requestBody' => null,
-                    'summary' => 'Marque la notifications comme lue'
+                    'summary' => 'Marque la notification comme lue'
                 ]
             ]
         ],
@@ -67,8 +87,11 @@ use Doctrine\ORM\Mapping as ORM;
     ORM\Entity(repositoryClass: NotificationRepository::class)
 ]
 class Notification extends Entity {
-    #[ORM\Column(length: 30, nullable: true)]
-    private ?string $category = null;
+    #[
+        ApiProperty(description: 'Catégorie', example: NotificationCategoryType::TYPE_DEFAULT, openapiContext: ['enum' => NotificationCategoryType::TYPES]),
+        ORM\Column(type: 'notification_category', options: ['default' => NotificationCategoryType::TYPE_DEFAULT])
+    ]
+    private ?string $category = NotificationCategoryType::TYPE_DEFAULT;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private DateTimeImmutable $createdAt;
