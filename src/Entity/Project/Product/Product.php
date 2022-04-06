@@ -422,6 +422,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     public function __clone() {
         parent::__clone();
         $this->children = new ArrayCollection();
+        $this->currentPlace = new CurrentPlace();
         $this->parent = null;
     }
 
