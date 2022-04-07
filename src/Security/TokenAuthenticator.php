@@ -22,6 +22,9 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     }
 
     private static function getBearer(Request $request): ?string {
+        if ($request->cookies->has('token')) {
+            return $request->cookies->get('token');
+        }
         $authorization = $request->headers->get('Authorization');
         if (empty($authorization)) {
             return null;
@@ -59,6 +62,6 @@ final class TokenAuthenticator extends AbstractAuthenticator {
 
     public function supports(Request $request): ?bool {
         $roles = $this->map->getPatterns($request)[0];
-        return empty($roles) || !in_array('IS_AUTHENTICATED_ANONYMOUSLY', $roles);
+        return empty($roles) || !in_array('IS_AUTHENTICATED_ANONYMOUSLY', $roles) || $request->cookies->has('token');
     }
 }

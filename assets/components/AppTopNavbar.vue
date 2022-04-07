@@ -4,12 +4,14 @@
 
     const {
         hasUser,
+        isItAdmin,
         isProductionAdmin,
         isProductionReader,
         isPurchaseAdmin,
         isPurchaseReader
     } = useNamespacedGetters('security', [
         'hasUser',
+        'isItAdmin',
         'isProductionAdmin',
         'isProductionReader',
         'isPurchaseAdmin',
@@ -40,6 +42,15 @@
                         Familles de composants
                     </AppNavbarLink>
                 </template>
+            </AppNavbarItem>
+            <AppNavbarItem v-if="isItAdmin" id="nav-purchase" icon="laptop" title="Informatique">
+                <AppDropdownItem variant="warning">
+                    Administrateur
+                </AppDropdownItem>
+                <a class="dropdown-item text-warning" href="/api">
+                    <Fa icon="server"/>
+                    API
+                </a>
             </AppNavbarItem>
             <AppNavbarItem v-if="isProductionReader" id="nav-purchase" icon="industry" title="Projet">
                 <template v-if="isProductionAdmin">
