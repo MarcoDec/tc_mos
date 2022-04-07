@@ -10,8 +10,8 @@ export const actions = {
     async fetchItem({dispatch}: ActionContext): Promise<void> {
         const response: Response[] = [
             {
-                delete: true,
                 delai: 5,
+                delete: true,
                 id: 1,
                 indice: 1,
                 moq: 1,
@@ -19,19 +19,19 @@ export const actions = {
                 poidsCu: 'bbbbb',
                 prices: [{
                     delete: false,
+                    id: 1,
                     price: 1000,
                     quantite: 100,
                     ref: 'afsfsfss',
-                    id: 1,
                     update: true,
                     update2: false
                 },
                 {
                     delete: false,
+                    id: 3,
                     price: 1000,
                     quantite: 30,
                     ref: 'azertsscssy',
-                    id: 3,
                     update: true,
                     update2: false
                 }],
@@ -41,8 +41,8 @@ export const actions = {
                 update2: false
             },
             {
-                delete: true,
                 delai: 15,
+                delete: true,
                 id: 2,
                 indice: 2,
                 moq: 2,
@@ -51,10 +51,10 @@ export const actions = {
                 prices: [
                     {
                         delete: false,
+                        id: 2,
                         price: 100,
                         quantite: 50,
                         ref: 'azerty',
-                        id: 2,
                         update: true,
                         update2: false
                     }

@@ -5,19 +5,19 @@ import type {State as Security} from './security'
 import type {State} from './state'
 import type {ComputedGetters as VueComputedGetters} from '../types/vue'
 import {actions} from './actions'
+import {componentSupplierPrices} from './componentSupplierPrices'
+import {componentSuppliers} from './componentSuppliers'
 import {createStore} from 'vuex'
 import {generateSecurity} from './security'
 import {mutations} from './mutation'
 import {state} from './state'
-import {componentSuppliers} from './componentSuppliers'
-import {componentSupplierPrices} from './componentSupplierPrices'
 
 export type {Actions, Mutations, State, StoreActionContext}
 
 export function generateStore(security: Security): Store<State> {
     return createStore<State>({
         actions,
-        modules: {security: generateSecurity(security), componentSuppliers, componentSupplierPrices},
+        modules: {componentSupplierPrices, componentSuppliers, security: generateSecurity(security)},
         mutations,
         state,
         strict: process.env.NODE_ENV !== 'production'

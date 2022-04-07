@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-    import {computed} from 'vue'
-    import {defineProps} from '../../../types/app-rows-table'
+    import {computed, defineProps} from 'vue'
     import type {TableField} from '../../../types/app-rows-table'
 
     const props = defineProps<{last: {required: true, type: boolean}, item: number, fields: TableField[], fieldsByLevel: TableField[][], alignFields: TableField[], index: number}>()

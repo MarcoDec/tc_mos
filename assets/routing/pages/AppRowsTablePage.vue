@@ -18,5 +18,5 @@
 </script>
 
 <template>
-    <AppRowsTable :id="route.name" :fields="fields" :items="rows" create/>
+    <AppRowsTable :id="route.name" :fields="fields" :items="rows"/>
 </template>

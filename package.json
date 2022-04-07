@@ -38,7 +38,7 @@
   "private": true,
   "scripts": {
     "build": "vite build && echo '*\n!.gitignore' > public/build/.gitignore",
-    "dev": "vite",
+    "dev": "sudo rm -r public/build/*; vite",
     "eslint": "NODE_ENV=production eslint -c .eslintrc.js ./assets/**/*.{ts,vue}",
     "eslint-fix": "NODE_ENV=production eslint -c .eslintrc.js --fix ./assets/**/*.{ts,vue}",
     "openapi": "php bin/console api:openapi:export -y -o openapi.yaml && npx openapi-typescript openapi.yaml --immutable-types --output assets/types/openapi.d.ts && rm openapi.yaml",

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+    import type {TableField, TableItem} from '../../../types/app-rows-table'
     import {computed, defineProps, ref} from 'vue'
-    import type {TableField} from '../../../types/app-rows-table'
 
-    defineProps<{state: {}, i: number, stateFields: TableField[][]}>()
+    defineProps<{state: TableItem, i: number, stateFields: TableField[][]}>()
 
     const show = ref(true)
     const td = computed(() => (show.value ? 'AppRowsTableItemField' : 'AppRowsTableItemInput'))

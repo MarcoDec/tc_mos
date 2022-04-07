@@ -17,6 +17,6 @@
 
 <template>
     <thead class="table-dark">
-        <AppRowsTableFields v-for="row in rows" :fields="row"/>
+        <AppRowsTableFields v-for="(row, i) in rows" :key="i" :fields="row"/>
     </thead>
 </template>

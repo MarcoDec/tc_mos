@@ -1,11 +1,11 @@
 <script lang="ts" setup>
+    import type {TableField, TableItem} from '../../../types/app-rows-table'
     import {useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
-    import type {TableField} from '../../../types/app-rows-table'
     import {defineProps} from 'vue'
 
     const props = defineProps<{item: string[], alignFields: TableField[]}>()
     const stateFields: TableField[][] = []
-    const states: TableField[] = []
+    const states: TableItem[] = []
     for (const part of props.item){
         const tabFields: TableField[] = []
         for (const field of props.alignFields){
@@ -16,15 +16,13 @@
         stateFields.push(tabFields)
         states.push({
             ...useNamespacedState(part, [...tabFields.map(({name}) => name), 'delete', 'update', 'index']),
-            rowspan: useNamespacedGetters(part, ['rowspan']).rowspan.value
+            rowspan: useNamespacedGetters(part, ['rowspan']).rowspan.value as number
         })
     }
 </script>
 
 <template>
     <tr>
-        <template v-for="(state, i) in states">
-            <AppRowsTableItemComponent :i="i" :state="state" :state-fields="stateFields"/>
-        </template>
+        <AppRowsTableItemComponent v-for="(state, i) in states" :key="i" :i="i" :state="state" :state-fields="stateFields"/>
     </tr>
 </template>

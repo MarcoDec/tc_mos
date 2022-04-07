@@ -19,8 +19,6 @@ export default defineConfig({
         vue(),
         checker({
             eslint: {lintCommand: 'eslint -c .eslintrc.js ./assets/**/*.{ts,vue}'},
-            typescript: true,
-            vueTsc: true
         })
     ],
     root: './',

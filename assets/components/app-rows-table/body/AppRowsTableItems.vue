@@ -22,9 +22,9 @@
         return lastindexes
     })
 
-    const fieldsByLevel = computed(() => {
-        const rows = []
-        let next = []
+    const fieldsByLevel = computed<TableField[][]>(() => {
+        const rows: TableField[][] = []
+        let next: TableField[] = []
         let hasChild = false
         do {
             const current = next.length > 0 ? next : props.fields
@@ -33,7 +33,7 @@
             const row = []
             for (const field of current) {
                 row.push(field)
-                if (field.children) {
+                if (Array.isArray(field.children) && field.children.length > 0) {
                     next.push(...field.children)
                     hasChild = true
                 }
@@ -42,7 +42,6 @@
         } while (hasChild)
         return rows
     })
-    // console.log('fieldsByLevel',fieldsByLevel);
 
     const levels = computed(() => {
         const levelObj = {}
@@ -50,20 +49,12 @@
             levelObj[i] = j
         return levelObj
     })
-    // console.log('levels',levels);
-
-    const itemsWithGhosts = computed(() => {
-        const result = []
-        // console.log('props.items.length',props.items.length);
-
+    const itemsWithGhosts = computed<(TableItem | number)[]>(() => {
+        const result: (TableItem | number)[] = []
         for (let i = 0, j = 1; i < props.items.length; i++, j++) {
-            // console.log('i',i);
-            // console.log('j',j);
             result.push(props.items[i])
             if (j === props.items.length || props.items[j].length >= props.items[i].length) {
                 for (const k in levels.value){
-                    // console.debug('k',k);
-                    // console.debug('props.items[i].length',props.items[i].length);
                     if (props.items[i].length >= k){
                         result.push(levels.value[k])
                     }
@@ -73,7 +64,6 @@
         result.push(0)
         return result
     })
-    console.log('itemsWithGhosts', itemsWithGhosts)
 </script>
 
 <template>

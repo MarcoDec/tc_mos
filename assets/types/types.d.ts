@@ -1,4 +1,4 @@
-import type {A, O} from 'ts-toolbelt'
+import type {O} from 'ts-toolbelt'
 import type {components} from './openapi'
 
 export declare type Merge<O1, O2> =

@@ -1,6 +1,5 @@
+import type {State as RootState, ComputedGetters as VueComputedGetters} from '..'
 import type {State} from '.'
-import type {State as RootState} from '..'
-import type {ComputedGetters as VueComputedGetters} from '..'
 
 export type Getters = {
     items: (state: State) => string[]
@@ -14,8 +13,9 @@ export const getters: Getters = {
         for (const id of Object.keys(state)) {
             const row = [`componentSuppliers/${id}`]
             const prices = [...(rootState.componentSuppliers as State)[id].prices]
-            if (prices.length > 0)
-                row.push(prices.shift()!)
+            const first = prices.shift()
+            if (typeof first === 'string')
+                row.push(first)
             rows.push(row)
             for (const price of prices)
                 rows.push([price])

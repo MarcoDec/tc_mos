@@ -117,12 +117,12 @@ const router = createRouter({
                         update: true
                     },
                     {
-                        create: false,
                         children: [
                             {create: true, filter: true, label: '€', name: 'price', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true},
                             {create: true, filter: true, label: 'Q', name: 'quantite', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true},
                             {create: true, filter: true, label: 'ref', name: 'ref', prefix: 'componentSupplierPrices', sort: false, type: 'number', update: true}
                         ],
+                        create: false,
                         filter: true,
                         label: 'Prix',
                         name: 'prices',

@@ -80,7 +80,7 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'error',
         '@typescript-eslint/no-redeclare': 'error',
         '@typescript-eslint/no-require-imports': 'error',
-        '@typescript-eslint/no-shadow': ['error', {allow: ['name'], builtinGlobals: true, hoist: 'all'}],
+        '@typescript-eslint/no-shadow': ['error', {allow: ['name','Response'], builtinGlobals: true, hoist: 'all'}],
         '@typescript-eslint/no-this-alias': 'error',
         '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
         '@typescript-eslint/no-unnecessary-condition': 'error',

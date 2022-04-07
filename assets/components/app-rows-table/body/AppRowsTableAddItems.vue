@@ -5,10 +5,10 @@
     const props = defineProps<{fields: TableField[]}>()
     const alignfields = computed <TableField[]>(() => props.fields
         .map(field => {
+            function nulField(index: number): TableField{
+                return {name: `${field.name}-${index}`, type: null}
+            }
             if (Array.isArray(field.children) && field.children.length > 0){
-                function nulField(index: number): TableField{
-                    return {name: `${field.name}-${index}`, type: null}
-                }
                 return [nulField(1), nulField(2), ...field.children]
             }
             return field
