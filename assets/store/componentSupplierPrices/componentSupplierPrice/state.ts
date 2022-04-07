@@ -1,6 +1,6 @@
 export type State = {
-    price: number 
-    quantite:  number
+    price: number
+    quantite: number
     ref: string | null
     delete: boolean | null
     update: boolean | null

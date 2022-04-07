@@ -1,7 +1,6 @@
-import type {State} from '.'
 import type {State as items} from './componentSupplierPrice'
+import type {State} from '.'
 import type {ComputedGetters as VueComputedGetters} from '..'
-
 
 export type Getters = {
     items: (state: State) => items[] | null

@@ -13,8 +13,7 @@ export declare type BootstrapVariant =
     | 'warning'
     | 'white'
 
-export type FormInput = 'boolean' | 'date' | 'number' | 'password' | 'radio' | 'rating' | 'search-boolean' | 'select' | 'text'
-
+export type FormInput = 'boolean' | 'date' | 'number' | 'password' | 'radio' | 'rating' | 'search-boolean' | 'select' | 'text' | null
 
 export declare type FormOption = {text: string, value: FormValue}
 export declare type FormOptions = FormOption[]
@@ -22,7 +21,7 @@ export declare type FormOptions = FormOption[]
 export declare type FormField = {
     btn?: boolean
     id?: string
-    label: string
+    label?: string
     labelCols?: number
     name: string
     options?: FormOptions
