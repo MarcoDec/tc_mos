@@ -1,3 +1,4 @@
+import CollectionRepository from '../collections/CollectionRepository'
 import Color from './Color'
 import {Repository} from '@vuex-orm/core'
 import app from '../../app'
@@ -5,13 +6,14 @@ import app from '../../app'
 export default class ColorRepository extends Repository {
     use = Color
 
+    static async fetchApi(url, method, body) {
+        const response = await app.config.globalProperties.$store.dispatch('fetchApi', {body, method, url})
+        return response
+    }
+
     async create(body) {
         try {
-            const color = await app.config.globalProperties.$store.dispatch('fetchApi', {
-                body,
-                method: 'post',
-                url: '/api/colors'
-            })
+            const color = await ColorRepository.fetchApi('/api/colors', 'post', body)
             this.fresh(color)
         } catch (e) {
             if (e instanceof Response && e.status === 422) {
@@ -20,25 +22,20 @@ export default class ColorRepository extends Repository {
             }
             throw e
         }
+        this.repo(CollectionRepository).unify(this.use.entity)
         return []
     }
 
     async delete(id) {
-        await app.config.globalProperties.$store.dispatch('fetchApi', {
-            body: {id},
-            method: 'delete',
-            url: '/api/colors/{id}'
-        })
+        await ColorRepository.fetchApi('/api/colors/{id}', 'delete', {id})
         this.destroy(id)
+        this.repo(CollectionRepository)['delete'](this.use.entity)
     }
 
     async load(body = {}) {
-        const colors = await app.config.globalProperties.$store.dispatch('fetchApi', {
-            body,
-            method: 'get',
-            url: '/api/colors'
-        })
+        const colors = await ColorRepository.fetchApi('/api/colors', 'get', body)
         this.fresh(colors['hydra:member'])
+        this.repo(CollectionRepository).create(this.use.entity, colors)
     }
 
     tableItems(fields) {
@@ -47,11 +44,7 @@ export default class ColorRepository extends Repository {
 
     async update(body) {
         try {
-            const color = await app.config.globalProperties.$store.dispatch('fetchApi', {
-                body,
-                method: 'patch',
-                url: '/api/colors/{id}'
-            })
+            const color = await ColorRepository.fetchApi('/api/colors/{id}', 'patch', body)
             this.save(color)
         } catch (e) {
             if (e instanceof Response && e.status === 422) {

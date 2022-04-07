@@ -1,5 +1,5 @@
 <script setup>
-    import AppPaginationItem from './AppPaginationItem'
+    import AppPaginationItem from './AppPaginationItem.vue'
     import {computed} from 'vue'
 
     const props = defineProps({
