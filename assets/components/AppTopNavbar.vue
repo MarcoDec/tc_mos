@@ -4,12 +4,14 @@
 
     const {
         hasUser,
+        isItAdmin,
         isManagementAdmin,
         isManagementReader,
         isPurchaseAdmin,
         isPurchaseReader
     } = useNamespacedGetters('security', [
         'hasUser',
+        'isItAdmin',
         'isManagementAdmin',
         'isManagementReader',
         'isPurchaseAdmin',
@@ -66,12 +68,19 @@
                     Message TVA
                 </AppNavbarLink -->
             </AppNavbarItem>
-            <!-- AppNavbarItem id="nav-purchase" icon="laptop" title="Informatique">
-                <AppNavbarLink icon="laptop-code" to="ITRequest-list">
+            <AppNavbarItem v-if="isItAdmin" id="nav-purchase" icon="laptop" title="Informatique">
+                <AppDropdownItem variant="warning">
+                    Administrateur
+                </AppDropdownItem>
+                <a class="dropdown-item text-warning" href="/api">
+                    <Fa icon="server"/>
+                    API
+                </a>
+                <!-- AppNavbarLink icon="laptop-code" to="ITRequest-list">
                     Demande
-                </AppNavbarLink>
+                </AppNavbarLink -->
             </AppNavbarItem>
-            <AppNavbarItem id="nav-purchase" icon="boxes" title="Logistique">
+            <!-- AppNavbarItem id="nav-purchase" icon="boxes" title="Logistique">
                 <AppNavbarLink icon="shuttle-van" to="Carrier-list">
                     Transporteur
                 </AppNavbarLink>

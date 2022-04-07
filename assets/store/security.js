@@ -28,9 +28,13 @@ export function generateSecurity(initialState) {
         getters: {
             has: state => role => state.roles?.includes(role) ?? false,
             hasUser: state => typeof state.username !== 'undefined',
+            isItAdmin: (state, computed) => computed.has('ROLE_IT_ADMIN'),
             isManagementAdmin: (state, computed) => computed.has('ROLE_MANAGEMENT_ADMIN'),
             isManagementReader: (state, computed) => computed.isManagementAdmin || computed.has('ROLE_MANAGEMENT_READER'),
             isManagementWriter: (state, computed) => computed.isManagementAdmin || computed.has('ROLE_MANAGEMENT_WRITER'),
+            isProductionAdmin: (state, computed) => computed.has('ROLE_PRODUCTION_ADMIN'),
+            isProductionReader: (state, computed) => computed.isProductionAdmin || computed.has('ROLE_PRODUCTION_READER'),
+            isProductionWriter: (state, computed) => computed.isProductionAdmin || computed.has('ROLE_PRODUCTION_WRITER'),
             isPurchaseAdmin: (state, computed) => computed.has('ROLE_PURCHASE_ADMIN'),
             isPurchaseReader: (state, computed) => computed.isPurchaseAdmin || computed.has('ROLE_PURCHASE_READER'),
             isPurchaseWriter: (state, computed) => computed.isPurchaseAdmin || computed.has('ROLE_PURCHASE_WRITER')

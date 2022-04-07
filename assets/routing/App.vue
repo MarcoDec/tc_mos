@@ -1,4 +1,5 @@
 <script setup>
+    import AppTopNavbar from '../components/AppTopNavbar.vue'
     import {useRoute} from 'vue-router'
     import {useState} from 'vuex-composition-helpers'
 
