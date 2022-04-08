@@ -1,14 +1,36 @@
 <script lang="ts" setup>
 import Vue3ChartJs from "@j-t-mcc/vue3-chartjs";
 import AppChartTable from "../AppChartTable.vue";
-import { defineProps, ref } from "vue";
+import { defineProps, onMounted, onUnmounted, ref } from "vue";
+import InfiniteLoading from "v3-infinite-loading";
+import "v3-infinite-loading/lib/style.css";
+import { useNamespacedActions, useNamespacedMutations, useNamespacedState } from "vuex-composition-helpers";
+import { Actions ,Mutations,State} from "../../../store/needs";
 
 const props = defineProps({
   data: { required: true, type: Array },
   titleX: { required: true, type: String },
   titleY: { required: true, type: String },
 });
+const loaded = ref(false)
+const loading = useNamespacedActions<Actions>("needs", ["load"]).load;
 
+const mut = useNamespacedMutations<Mutations>("needs", ["needs"]).needs;
+const show = useNamespacedActions<Actions>("needs", ["show"]).show;
+
+const displayed = useNamespacedState<State>("needs", ["displayed"]).displayed;
+
+console.log('needs--->', displayed);
+
+onMounted(async () => {
+  await loading(10);
+  await mut
+  loaded.value = true
+});
+onUnmounted(() => 
+console.log('onunmounted')
+
+)
 const heureChart = {
   id: "chart",
   type: "mixed",
@@ -19,7 +41,7 @@ const heureChart = {
         id: "line",
         type: "line",
         label: "Heure",
-        data: [2, 1, 4, 5, 9.7528, 9.7528],
+        data: [7, 9.6716, 9.7407, 9.7407, 9.7528, 9.7528],
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
           "rgba(54, 162, 235, 0.2)",
@@ -105,16 +127,34 @@ const getRefProduct = (nb: number) => {
   return ret;
 };
 
-const list = ref(getRefProduct(100));
+const list = ref(getRefProduct(5));
 //console.log("pppp", list);
+
+let comments = ref([]);
+let page = 1;
+const load = async (state) => {
+ // console.log("loading...");
+
+  try {
+    var res = displayed.value;
+
+    if (res.length < 10) state.complete();
+    else {
+      comments.value.push(...res);
+      state.loaded();
+    }
+   // show
+  } catch (error) {
+    state.error();
+  }
+};
 </script>
 
 <template>
   <AppRow>
     <div class="container bcontent">
-      <h2>Calcul des besoins</h2>
       <hr />
-      <div class="card" v-for="list in list" :key="list">
+      <div class="card" v-for="list in displayed" :key="list">
         <div class="row no-gutters">
           <div class="col-sm-5">
             <vue3-chart-js
@@ -185,6 +225,7 @@ const list = ref(getRefProduct(100));
         </div>
       </div>
     </div>
+    <InfiniteLoading @infinite="show" v-if="loaded"> </InfiniteLoading>
   </AppRow>
 </template>
 

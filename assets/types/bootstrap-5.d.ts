@@ -40,3 +40,12 @@ export declare type FormField = {
 export declare type FormValue = boolean | number | string | null
 
 export declare type FormValues = Record<string, FormValue>
+
+export type Tab = {
+    active: {active: boolean}
+    icon: string
+    id: string
+    labelledby: string
+    target: string
+    title: string
+}
