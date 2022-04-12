@@ -1,5 +1,6 @@
 export declare type State = {
-  displayed: [] ;
-  needs: [] ;
-  page: 0;
-};
+    displayed: []
+    initiale: []
+    needs: []
+    page: 0
+}

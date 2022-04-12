@@ -1,52 +1,66 @@
-<script lang="ts" setup></script>
-
 <template>
-  <div>
-    <ul>
-      <li>
-        Achats
+    <div>
         <ul>
-          <li>
-            <router-link to="/supplier/show">Fournisseur</router-link>
-          </li>
-          <li><router-link to="/component/show">Composants</router-link></li>
+            <li>
+                Achats
+                <ul>
+                    <li>
+                        <RouterLink to="/supplier/show">
+                            Fournisseur
+                        </RouterLink>
+                    </li>
+                    <li>
+                        <RouterLink to="/component/show">
+                            Composants
+                        </RouterLink>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Ventes
+                <ul>
+                    <li>
+                        <RouterLink to="/customer/show">
+                            Client
+                        </RouterLink>
+                    </li>
+                    <li>
+                        <RouterLink to="/product/show">
+                            Produits
+                        </RouterLink>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Direction
+                <ul>
+                    <li>
+                        <RouterLink to="/company/show">
+                            Compagnie
+                        </RouterLink>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Projet
+                <ul>
+                    <li>
+                        <RouterLink to="/product/show">
+                            Produits
+                        </RouterLink>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                RH
+                <ul>
+                    <li>
+                        <RouterLink to="/employee/show">
+                            Employées
+                        </RouterLink>
+                    </li>
+                </ul>
+            </li>
         </ul>
-      </li>
-      <li>
-        Ventes
-        <ul>
-          <li>
-            <router-link to="/customer/show">Client</router-link>
-          </li>
-          <li>
-            <router-link to="/product/show">Produits</router-link>
-          </li>
-        </ul>
-      </li>
-      <li>
-        Direction
-        <ul>
-          <li>
-            <router-link to="/company/show">Compagnie</router-link>
-          </li>
-        </ul>
-      </li>
-      <li>
-        Projet
-        <ul>
-          <li>
-            <router-link to="/product/show">Produits</router-link>
-          </li>
-        </ul>
-      </li>
-      <li>
-        RH
-        <ul>
-          <li>
-            <router-link to="/employee/show">Employées</router-link>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+    </div>
 </template>

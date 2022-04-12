@@ -1,3 +1,5 @@
+@use 'v3-infinite-loading/lib/style.css';
+
 @use 'bootstrap/scss/bootstrap' with (
   $container-max-widths: (
     sm: 540px,

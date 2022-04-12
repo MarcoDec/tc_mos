@@ -24,7 +24,7 @@
                 <AppNavbarLink icon="layer-group" to="component-families">
                     Familles de composants
                 </AppNavbarLink>
-                 <AppNavbarLink icon="route" to="needs">
+                <AppNavbarLink icon="route" to="needs">
                     Calcul des besoins
                 </AppNavbarLink>
             </AppNavbarItem>
@@ -33,7 +33,6 @@
                     Familles de produits
                 </AppNavbarLink>
             </AppNavbarItem>
-        
         </AppNavbarCollapse>
         <div v-if="hasUser" class="text-white">
             <Fa icon="user-circle"/>

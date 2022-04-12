@@ -79,7 +79,7 @@ const router = createRouter({
             meta: {requiresAuth: false},
             name: 'needs',
             path: '/needs'
-        },
+        }
     ]
 })
 

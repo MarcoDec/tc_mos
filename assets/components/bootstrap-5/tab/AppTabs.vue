@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-    import {computed, defineProps, onMounted, onUnmounted, provide, ref, watch} from 'vue'
+    import {computed, defineEmits, defineProps, onMounted, onUnmounted, provide, ref, watch} from 'vue'
     import {Tab as BTab} from 'bootstrap'
     import type {Tab} from '../../../types/bootstrap-5'
 
-const emit = defineEmits<{
-  (e: "click", name: string): void;
-}>();
+    const emit = defineEmits<(e: 'click', name: string) => void>()
     const props = defineProps({
         iconSwitch: {required: false, type: Boolean},
         id: {required: true, type: String},
@@ -49,9 +47,9 @@ const emit = defineEmits<{
     watch(tabs, () => {
         instantiate()
     })
-    function click(tab: string) {
-  emit("click", tab );
-}
+    function click(tab: string): void {
+        emit('click', tab)
+    }
 </script>
 
 <template>
