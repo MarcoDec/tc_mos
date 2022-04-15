@@ -16,6 +16,7 @@ use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
@@ -49,7 +50,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'normalization_context' => [
                     'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
                     'openapi_definition_name' => 'Product-collection'
-                ]
+                ],
+                'write' => false
             ],
             'post' => [
                 'denormalization_context' => [
@@ -163,7 +165,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Product extends Entity implements BarCodeInterface, MeasuredInterface {
+class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
 
     #[
@@ -596,6 +598,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[Pure]
     final public function isDeletable(): bool {
         return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
     }
 
     final public function isManagedCopper(): bool {
