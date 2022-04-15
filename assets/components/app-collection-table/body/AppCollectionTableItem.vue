@@ -1,6 +1,6 @@
 <script setup>
     import {computed, inject, onMounted, onUnmounted} from 'vue'
-    import AppCollectionTableItemField from './AppCollectionTableItemField.vue'
+    import AppCollectionTableItemField from './AppCollectionTableItemField'
     import AppCollectionTableItemInput from './AppCollectionTableItemInput.vue'
     import emitter from '../../../emitter'
     import {useRoute} from 'vue-router'
@@ -14,6 +14,7 @@
     const fields = inject('fields', [])
     const route = useRoute()
     const tableId = inject('table-id', 'table')
+    const stateMachine = inject('stateMachine')
 
     const formId = computed(() => `${tableId}-create`)
     const formattedIndex = computed(() => props.index + 1)
@@ -57,7 +58,7 @@
             <AppBtn v-if="item['delete']" icon="trash" title="Supprimer" variant="danger" @click="deleteHandler"/>
         </td>
         <td v-else class="text-center">
-            <AppForm :id="formId" inline @submit="update">
+            <AppForm :id="formId" :state-machine="stateMachine" inline multipart @submit="update">
                 <input :value="item.id" name="id" type="hidden"/>
                 <AppBtn icon="check" title="Modifier" type="submit" variant="success"/>
             </AppForm>

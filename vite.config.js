@@ -1,7 +1,7 @@
-import {defineConfig} from 'vite'
 import checker from 'vite-plugin-checker'
-import vue from '@vitejs/plugin-vue'
+import {defineConfig} from 'vite'
 import symfonyPlugin from 'vite-plugin-symfony'
+import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
     base: '/build/',
@@ -17,7 +17,7 @@ export default defineConfig({
     plugins: [
         symfonyPlugin(),
         vue(),
-        checker({eslint: {lintCommand: 'eslint -c .eslintrc.js ./assets/**/*.{js,vue}'}})
+        checker({eslint: {lintCommand: 'eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}'}})
     ],
     root: './',
     server: {

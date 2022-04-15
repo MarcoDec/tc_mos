@@ -1,12 +1,7 @@
-import {defineAsyncComponent} from 'vue'
-
-export * from './card'
 export * from './form'
 export * from './layout'
-export * from './modal'
-export * from './navbar'
 export * from './pagination'
-
-export const AppAlert = defineAsyncComponent(async () => import('./AppAlert.vue'))
-export const AppBadge = defineAsyncComponent(async () => import('./AppBadge.vue'))
-export const AppBtn = defineAsyncComponent(async () => import('./AppBtn.vue'))
+export {default as AppAlert} from './AppAlert'
+export {default as AppBadge} from './AppBadge'
+export {default as AppBtn} from './AppBtn'
+export {default as AppCard} from './AppCard'

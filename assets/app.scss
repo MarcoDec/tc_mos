@@ -23,30 +23,26 @@
     vertical-align: middle;
   }
 }
-.overlay {
-  background-color: #EFEFEF;
-  height: 100%;
-  left: 0;
-  opacity: .5;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
+
+.container {
+  min-width: 100%;
 }
 
 .pointer {
   cursor: pointer;
 }
 
-.container {
-  min-width: 100%;
+.overlay {
+  background-color: #EFEFEF;
+  height: 100%;
+  left: 0;
+  opacity: .5;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
-th {
-  &[aria-sort] {
-    cursor: pointer;
-  }
-}
-.pointer {
+th[aria-sort] {
   cursor: pointer;
 }

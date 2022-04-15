@@ -1,3 +1,1 @@
-import {defineAsyncComponent} from 'vue'
-
-export const AppPagination = defineAsyncComponent(async () => import('./AppPagination.vue'))
+export {default as AppPagination} from './AppPagination.vue'

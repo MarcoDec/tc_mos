@@ -12,6 +12,7 @@
         id: {required: true, type: String},
         items: {required: true, type: Array},
         pagination: {required: false, type: Boolean},
+        stateMachine: {required: true, type: String},
         violations: {default: () => [], type: Array}
     })
     const searchMode = ref(true)
@@ -40,6 +41,7 @@
     provide('create', props.create)
     provide('fields', props.fields)
     provide('searchMode', searchMode)
+    provide('stateMachine', props.stateMachine)
     provide('table-id', props.id)
 </script>
 

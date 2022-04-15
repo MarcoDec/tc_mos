@@ -1,3 +1,1 @@
-import {defineAsyncComponent} from 'vue'
-
-export const AppCollectionTable = defineAsyncComponent(async () => import('./AppCollectionTable.vue'))
+export {default as AppCollectionTable} from './AppCollectionTable.vue'

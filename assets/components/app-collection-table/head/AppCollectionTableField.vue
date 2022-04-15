@@ -9,6 +9,8 @@
     })
     const down = computed(() => ({'text-secondary': props.field.name !== props.sort || props.asc}))
     const up = computed(() => ({'text-secondary': props.field.name !== props.sort || !props.asc}))
+    const order = computed(() => (props.asc ? 'ascending' : 'descending'))
+    const ariaSort = computed(() => (props.sort ? order.value : 'none'))
 
     function click() {
         emit('click', props.field)
@@ -16,7 +18,7 @@
 </script>
 
 <template>
-    <th @click="click">
+    <th :aria-sort="ariaSort" @click="click">
         <span class="d-flex justify-content-between">
             <span>{{ field.label }}</span>
             <span v-if="field.sort" class="d-flex flex-column">

@@ -1,67 +1,21 @@
+import {ComponentFamilyRepository} from '../../store/modules'
+import {familyFields} from './project'
+
 export default [
     {
-        component: async () => import('../pages/AppCollectionTablePage.vue'),
-        meta: {requiresAuth: true},
-        name: 'attribute-list',
-        path: '/Attribute/list',
-        props: {
-            fields: [
-                {
-                    create: false,
-                    filter: true,
-                    label: 'Nom',
-                    name: 'name',
-                    sort: true,
-                    type: 'text',
-                    update: true
-                },
-                {
-                    create: true,
-                    filter: true,
-                    label: 'Description',
-                    name: 'description',
-                    sort: true,
-                    type: 'text',
-                    update: false
-                },
-                {
-                    create: false,
-                    filter: true,
-                    label: 'Unité',
-                    name: 'unité',
-                    options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}],
-                    sort: true,
-                    type: 'select',
-                    update: true
-                },
-                {
-                    create: false,
-                    filter: true,
-                    label: 'Familles',
-                    name: 'familles',
-                    options: [{text: 'aaaaa', value: 'aaaaa'}, {text: 'bbbb', value: 'bbbb'}],
-                    sort: true,
-                    type: 'select',
-                    update: true
-                }
-            ],
-            icon: 'magnet',
-            title: 'Attributs'
-        }
-    },
-    {
-        component: async () => import('../pages/tree/AppTreePageWrapper.vue'),
+        component: async () => import('../pages/AppTreePage'),
         meta: {requiresAuth: true},
         name: 'component-families',
         path: '/component-families',
         props: {
-            extraFields: [
+            fields: [
+                {label: 'Parent', name: 'parent', repo: ComponentFamilyRepository, type: 'select'},
                 {label: 'Code', name: 'code', type: 'text'},
+                ...familyFields,
                 {label: 'Cuivre', name: 'copperable', type: 'boolean'}
             ],
-            title: 'composants',
-            type: 'Composants',
-            url: '/api/component-families'
+            repo: ComponentFamilyRepository,
+            title: 'Familles de composants'
         }
     }
 ]

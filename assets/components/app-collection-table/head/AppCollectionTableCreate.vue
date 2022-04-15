@@ -7,6 +7,7 @@
     const emit = defineEmits(['create', 'toggle'])
     const fields = inject('fields', [])
     const tableId = inject('table-id', 'table')
+    const stateMachine = inject('stateMachine')
     const formId = computed(() => `${tableId}-create`)
 
     function create(created) {
@@ -25,7 +26,7 @@
         </td>
         <td>
             <AppBtn icon="filter" title="Basculer en mode recherche" variant="secondary" @click="toggle"/>
-            <AppForm :id="formId" inline @submit="create">
+            <AppForm :id="formId" :state-machine="stateMachine" inline multipart @submit="create">
                 <AppBtn icon="plus" title="Ajouter" type="submit" variant="success"/>
             </AppForm>
         </td>

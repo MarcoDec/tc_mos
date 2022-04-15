@@ -1,6 +1,10 @@
 import {h} from 'vue'
-import {useSlots} from '../../../composition/slots'
+import {useSlots} from '../../../composition'
 
-export default function AppRow(props, context) {
-    return h('div', {class: 'row'}, useSlots(context))
+function AppRow(props, context) {
+    return h('div', {...props, class: 'row'}, useSlots(context))
 }
+
+AppRow.displayName = 'AppRow'
+
+export default AppRow
