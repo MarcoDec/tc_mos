@@ -442,6 +442,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 $responses['404'] = new Model\Response('Resource not found');
             }
 
+            /** @phpstan-ignore-next-line */
             if (!$responses) {
                 $responses['default'] = new Model\Response('Unexpected error');
             }

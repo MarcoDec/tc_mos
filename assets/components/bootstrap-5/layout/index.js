@@ -1,5 +1,3 @@
-import {defineAsyncComponent} from 'vue'
-
-export const AppCol = defineAsyncComponent(async () => import('./AppCol.vue'))
-export const AppContainer = defineAsyncComponent(async () => import('./AppContainer.vue'))
-export const AppRow = defineAsyncComponent(async () => import('./AppRow'))
+export {default as AppCol} from './AppCol'
+export {default as AppContainer} from './AppContainer'
+export {default as AppRow} from './AppRow'

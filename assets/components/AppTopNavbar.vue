@@ -1,29 +1,22 @@
 <script setup>
-    import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
-    import {useRouter} from 'vue-router'
+    import {useRepo, useRouter} from '../composition'
+    import AppDropdownItem from './bootstrap-5/navbar/AppDropdownItem'
+    import AppNavbar from './bootstrap-5/navbar/AppNavbar'
+    import AppNavbarBrand from './bootstrap-5/navbar/AppNavbarBrand'
+    import AppNavbarCollapse from './bootstrap-5/navbar/AppNavbarCollapse'
+    import AppNavbarItem from './bootstrap-5/navbar/AppNavbarItem.vue'
+    import AppNavbarLink from './bootstrap-5/navbar/AppNavbarLink'
+    import {EmployeeRepository} from '../store/modules'
+    import {computed} from 'vue'
 
-    const {
-        hasUser,
-        isItAdmin,
-        isProductionAdmin,
-        isProductionReader,
-        isPurchaseAdmin,
-        isPurchaseReader
-    } = useNamespacedGetters('security', [
-        'hasUser',
-        'isItAdmin',
-        'isProductionAdmin',
-        'isProductionReader',
-        'isPurchaseAdmin',
-        'isPurchaseReader'
-    ])
-    const logout = useNamespacedActions('security', ['logout']).logout
-    const name = useNamespacedState('security', ['username']).username
-    const router = useRouter()
+    const repo = useRepo(EmployeeRepository)
+    const {router} = useRouter()
+    const hasUser = computed(() => repo.hasUser)
+    const user = computed(() => repo.user)
 
-    async function handleLogout() {
-        await logout()
-        await router.push({name: 'login'})
+    async function logout() {
+        await repo.logout('login')
+        router.push({name: 'login'})
     }
 </script>
 
@@ -32,43 +25,45 @@
         <AppNavbarBrand to="home">
             T-Concept
         </AppNavbarBrand>
-        <AppNavbarCollapse>
-            <AppNavbarItem v-if="isPurchaseReader" id="nav-purchase" icon="shopping-bag" title="Achats">
-                <template v-if="isPurchaseAdmin">
+        <template v-if="hasUser">
+            <AppNavbarCollapse>
+                <AppNavbarItem v-if="user.isProjectReader" id="purchase" icon="shopping-bag" title="Achats">
+                    <template v-if="user.isProjectAdmin">
+                        <AppDropdownItem variant="warning">
+                            Administrateur
+                        </AppDropdownItem>
+                        <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
+                            Familles de composants
+                        </AppNavbarLink>
+                    </template>
+                </AppNavbarItem>
+                <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
                     <AppDropdownItem variant="warning">
                         Administrateur
                     </AppDropdownItem>
-                    <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
-                        Familles de composants
-                    </AppNavbarLink>
-                </template>
-            </AppNavbarItem>
-            <AppNavbarItem v-if="isItAdmin" id="nav-purchase" icon="laptop" title="Informatique">
-                <AppDropdownItem variant="warning">
-                    Administrateur
-                </AppDropdownItem>
-                <a class="dropdown-item text-warning" href="/api">
-                    <Fa icon="server"/>
-                    API
-                </a>
-            </AppNavbarItem>
-            <AppNavbarItem v-if="isProductionReader" id="nav-purchase" icon="industry" title="Projet">
-                <template v-if="isProductionAdmin">
-                    <AppDropdownItem variant="warning">
-                        Administrateur
-                    </AppDropdownItem>
-                    <AppNavbarLink icon="layer-group" to="product-families" variant="warning">
-                        Familles de produits
-                    </AppNavbarLink>
-                </template>
-            </AppNavbarItem>
-        </AppNavbarCollapse>
-        <div v-if="hasUser" class="text-white">
-            <Fa icon="user-circle"/>
-            {{ name }}
-            <AppBtn variant="danger" @click="handleLogout">
-                <Fa icon="sign-out-alt"/>
-            </AppBtn>
-        </div>
+                    <a class="dropdown-item text-warning" href="/api" target="_blank">
+                        <Fa icon="server"/>
+                        API
+                    </a>
+                </AppNavbarItem>
+                <AppNavbarItem v-if="user.isProjectReader" id="project" icon="industry" title="Projet">
+                    <template v-if="user.isProjectAdmin">
+                        <AppDropdownItem variant="warning">
+                            Administrateur
+                        </AppDropdownItem>
+                        <AppNavbarLink icon="layer-group" to="product-families" variant="warning">
+                            Familles de produits
+                        </AppNavbarLink>
+                    </template>
+                </AppNavbarItem>
+            </AppNavbarCollapse>
+            <div class="text-white">
+                <Fa icon="user-circle"/>
+                {{ user.name }}
+                <AppBtn variant="danger" @click="logout">
+                    <Fa icon="sign-out-alt"/>
+                </AppBtn>
+            </div>
+        </template>
     </AppNavbar>
 </template>

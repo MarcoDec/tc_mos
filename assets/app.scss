@@ -12,35 +12,24 @@
   background-color: #8ac2f1;
 }
 
-.card-body {
-  padding: 0 0 !important;
+.btn-icon {
+  height: 20px;
+  line-height: .8;
+  margin: 3.5px;
+  padding: 1px;
+  width: 20px;
+
+  i {
+    vertical-align: middle;
+  }
 }
 
 .container {
   min-width: 100%;
 }
 
-.dropdown-item {
-  &.bg-success {
-    background-color: #57ec57 !important;
-  }
-
-  &.text-success {
-    color: #57ec57 !important;
-  }
-}
-
-.gui-container {
-  background-color: #cecdcd;
-  border-radius: 15px;
-}
-
-.h-10 {
-  height: 10% !important;
-}
-
-.h-90 {
-  height: 90% !important;
+.pointer {
+  cursor: pointer;
 }
 
 .overlay {
@@ -48,51 +37,12 @@
   height: 100%;
   left: 0;
   opacity: .5;
-  position: fixed;
+  position: absolute;
   top: 0;
   width: 100%;
   z-index: 1000;
 }
 
-.pointer {
+th[aria-sort] {
   cursor: pointer;
-}
-
-.resizer {
-  background-color: black;
-  cursor: row-resize;
-  margin: 0;
-  padding: 2px;
-}
-
-.w-10 {
-  width: 10% !important;
-}
-
-.w-90 {
-  width: 90% !important;
-}
-
-@media (max-width: 1140px) {
-  .gui-left {
-    display: block;
-  }
-
-  .gui-top {
-    display: block;
-  }
-}
-
-@media (min-width: 1140px) {
-  .gui {
-    overflow: hidden;
-  }
-
-  .gui-left {
-    display: inline;
-  }
-
-  .gui-top {
-    display: flex;
-  }
 }
