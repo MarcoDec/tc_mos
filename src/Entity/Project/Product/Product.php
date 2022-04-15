@@ -205,6 +205,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
+        Assert\GreaterThan(value: 'today', groups: ['Product-create', 'Product-project']),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product:project'])
     ]
