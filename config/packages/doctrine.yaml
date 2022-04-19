@@ -15,6 +15,9 @@ doctrine:
   orm:
     auto_generate_proxy_classes: true
     auto_mapping: true
+    dql:
+      datetime_functions:
+        now: App\Doctrine\DQL\Now
     mappings:
       App:
         alias: App
