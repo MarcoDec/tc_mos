@@ -21,6 +21,7 @@ use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -80,7 +81,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'path' => '/products/{id}/clone',
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
-                'validate' => false
+                'validation_groups' => ['Product-clone']
             ],
             'delete' => [
                 'openapi_context' => [
@@ -148,7 +149,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'path' => '/products/{id}/upgrade',
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
-                'validate' => false
+                'validation_groups' => ['Product-clone']
             ]
         ],
         attributes: [
@@ -163,7 +164,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Product-read'
         ]
     ),
-    ORM\Entity
+    ORM\Entity,
+    UniqueEntity(fields: ['index', 'ref'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
 class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
@@ -427,6 +429,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         parent::__clone();
         $this->children = new ArrayCollection();
         $this->currentPlace = new CurrentPlace();
+        $this->internalIndex = 1;
         $this->parent = null;
     }
 
