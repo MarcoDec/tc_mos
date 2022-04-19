@@ -29,7 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer une famille de produit',
                     'summary' => 'Créer une famille de produit',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -37,7 +38,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une famille de produit',
                     'summary' => 'Supprime une famille de produit',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'post' => [
@@ -49,12 +51,13 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une famille de produit',
                 ],
                 'path' => '/product-families/{id}',
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')',
                 'status' => 200
             ]
         ],
         shortName: 'ProductFamily',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:family', 'write:file', 'write:name'],

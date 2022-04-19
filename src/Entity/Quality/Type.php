@@ -27,7 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un type qualité',
                     'summary' => 'Créer un type qualité',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -35,19 +36,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un type qualité',
                     'summary' => 'Supprime un type qualité',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un type qualité',
                     'summary' => 'Modifie un type qualité',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
             ]
         ],
         shortName: 'QualityType',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:name'],

@@ -27,7 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer une couleur',
                     'summary' => 'Créer une couleur',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -35,18 +36,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une couleur',
                     'summary' => 'Supprime une couleur',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une couleur',
                     'summary' => 'Modifie une couleur',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:color'],

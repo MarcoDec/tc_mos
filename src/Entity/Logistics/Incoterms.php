@@ -28,7 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un incoterms',
                     'summary' => 'Créer un incoterms',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -36,18 +37,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un incoterms',
                     'summary' => 'Supprime un incoterms',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un incoterms',
                     'summary' => 'Modifie un incoterms',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:incoterms', 'write:name'],

@@ -28,13 +28,14 @@ use Doctrine\ORM\Mapping as ORM;
                     'description' => 'Créer un groupe d\'outil',
                     'summary' => 'Créer un groupe d\'outil',
                     'tags' => ['EngineGroup']
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         shortName: 'ToolGroup',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:engine-group', 'write:name'],

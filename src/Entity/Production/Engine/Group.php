@@ -34,18 +34,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un groupe d\'équipement',
                     'summary' => 'Supprime un groupe d\'équipement',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un groupe d\'équipement',
                     'summary' => 'Modifie un groupe d\'équipement',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ]
         ],
         shortName: 'EngineGroup',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:engine-group', 'write:name'],

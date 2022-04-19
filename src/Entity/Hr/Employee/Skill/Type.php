@@ -28,7 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer les types de compétence',
                     'summary' => 'Créer les types de compétence',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -36,19 +37,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime les types de compétence',
                     'summary' => 'Supprime les types de compétence',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie les types de compétence',
                     'summary' => 'Modifie les types de compétence',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ]
         ],
         shortName: 'SkillType',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:name'],
