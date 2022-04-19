@@ -28,7 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un message TVA',
                     'summary' => 'Créer un message TVA',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -36,18 +37,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un message TVA',
                     'summary' => 'Supprime un message TVA',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un message TVA',
                     'summary' => 'Modifie un message TVA',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:name'],

@@ -31,7 +31,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un type d\'événements',
                     'summary' => 'Créer un type d\'événements',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -39,19 +40,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un type d\'événements',
                     'summary' => 'Supprime un type d\'événements',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un type d\'événements',
                     'summary' => 'Modifie un type d\'événements',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ]
         ],
         shortName: 'EventType',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:name', 'write:type'],

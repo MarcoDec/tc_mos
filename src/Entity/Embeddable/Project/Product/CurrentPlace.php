@@ -46,4 +46,8 @@ class CurrentPlace extends AbstractCurrentPlace {
     final public function isDeletable(): bool {
         return in_array($this->name, [CurrentPlaceType::TYPE_DISABLED, CurrentPlaceType::TYPE_DRAFT]);
     }
+
+    final public function isFrozen(): bool {
+        return $this->name === CurrentPlaceType::TYPE_DISABLED;
+    }
 }

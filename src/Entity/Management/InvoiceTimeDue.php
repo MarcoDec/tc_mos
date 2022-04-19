@@ -32,7 +32,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un délai de paiement des factures',
                     'summary' => 'Créer un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -40,18 +41,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un délai de paiement des factures',
                     'summary' => 'Supprime un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un délai de paiement des factures',
                     'summary' => 'Modifie un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:invoice-time-due', 'write:name'],
@@ -123,11 +126,12 @@ class InvoiceTimeDue extends Entity {
 
     final public function setDaysAfterEndOfMonth(?int $daysAfterEndOfMonth): self {
         $this->daysAfterEndOfMonth = $daysAfterEndOfMonth;
+        $this->setEndOfMonth();
         return $this;
     }
 
-    final public function setEndOfMonth(?bool $endOfMonth): self {
-        $this->endOfMonth = $endOfMonth;
+    final public function setEndOfMonth(?bool $endOfMonth = false): self {
+        $this->endOfMonth = $endOfMonth || $this->daysAfterEndOfMonth > 0;
         return $this;
     }
 

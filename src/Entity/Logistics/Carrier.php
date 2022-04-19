@@ -30,7 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un transporteur',
                     'summary' => 'Créer un transporteur',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -38,18 +39,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un transporteur',
                     'summary' => 'Supprime un transporteur',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un transporteur',
                     'summary' => 'Modifie un transporteur',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:address', 'write:carrier'],

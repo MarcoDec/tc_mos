@@ -88,6 +88,13 @@ services:
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
 
+  App\EventListener\WriteListener:
+    autoconfigure: false
+    tags:
+      - event: kernel.view
+        name: kernel.event_listener
+        priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::PRE_WRITE
+
   App\Filesystem\FileManager:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'

@@ -20,8 +20,8 @@ final class ProcessGroupsGenerator implements ValidationGroupsGeneratorInterface
         return ["{$this->getShortName()}-{$this->getProcess()}"];
     }
 
-    private function getAttribute(string $attr): string {
-        if (is_string($this->getCurrentRequest()->attributes->get($attr))) {
+    private function getAttribute(string $name): string {
+        if (is_string($attr = $this->getCurrentRequest()->attributes->get($name))) {
             return $attr;
         }
         throw new UnexpectedValueException(sprintf('Expected argument of type "string", "%s" given', get_debug_type($attr)));

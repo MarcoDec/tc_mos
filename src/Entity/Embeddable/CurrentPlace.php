@@ -35,6 +35,8 @@ abstract class CurrentPlace implements Stringable {
 
     abstract public function isDeletable(): bool;
 
+    abstract public function isFrozen(): bool;
+
     final public function getDate(): ?DateTimeImmutable {
         return $this->date;
     }

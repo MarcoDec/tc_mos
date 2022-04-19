@@ -27,7 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un type de rebus',
                     'summary' => 'Créer un type de rebus',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -35,19 +36,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un type de rebus',
                     'summary' => 'Supprime un type de rebus',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un type de rebus',
                     'summary' => 'Modifie un type de rebus',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
             ]
         ],
         shortName: 'RejectType',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:name'],
@@ -64,9 +67,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Type extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'sertissage dimensionnelle'),
-        Assert\Length(min: 3, max: 20),
+        Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
-        ORM\Column(length: 30),
+        ORM\Column(length: 40),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     private ?string $name = null;

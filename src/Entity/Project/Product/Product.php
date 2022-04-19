@@ -16,10 +16,12 @@ use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -49,7 +51,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'normalization_context' => [
                     'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
                     'openapi_definition_name' => 'Product-collection'
-                ]
+                ],
+                'write' => false
             ],
             'post' => [
                 'denormalization_context' => [
@@ -78,7 +81,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'path' => '/products/{id}/clone',
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
-                'validate' => false
+                'validation_groups' => ['Product-clone']
             ],
             'delete' => [
                 'openapi_context' => [
@@ -126,6 +129,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                             'type' => 'string'
                         ]
                     ]],
+                    'requestBody' => null,
                     'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
                 'path' => '/products/{id}/promote/{transition}',
@@ -145,7 +149,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'path' => '/products/{id}/upgrade',
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
-                'validate' => false
+                'validation_groups' => ['Product-clone']
             ]
         ],
         attributes: [
@@ -160,9 +164,10 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Product-read'
         ]
     ),
-    ORM\Entity
+    ORM\Entity,
+    UniqueEntity(fields: ['index', 'ref'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends Entity implements BarCodeInterface, MeasuredInterface {
+class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
 
     #[
@@ -204,6 +209,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
+        Assert\GreaterThan(value: 'today', groups: ['Product-create', 'Product-project']),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product:project'])
     ]
@@ -306,7 +312,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Assert\Length(min: 3, max: 80),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
         ORM\Column(length: 80),
-        Serializer\Groups(['create:product', 'read:product', 'write:product', 'write:product:admin'])
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
     ]
     private ?string $name = null;
 
@@ -422,6 +428,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     public function __clone() {
         parent::__clone();
         $this->children = new ArrayCollection();
+        $this->currentPlace = new CurrentPlace();
+        $this->internalIndex = 1;
         $this->parent = null;
     }
 
@@ -569,6 +577,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->ref;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
     final public function getTransfertPriceSupplies(): Measure {
         return $this->transfertPriceSupplies;
     }
@@ -588,6 +601,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[Pure]
     final public function isDeletable(): bool {
         return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
     }
 
     final public function isManagedCopper(): bool {
@@ -736,6 +754,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setRef(?string $ref): self {
         $this->ref = $ref;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 
