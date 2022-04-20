@@ -12,11 +12,11 @@
         inline: {required: false, type: Boolean},
         modelValue: {default: () => ({}), type: Object},
         multipart: {type: Boolean},
-        stateMachine: {required: true, type: String}
+        stateMachine: {default: null, type: String}
     })
     const displayInline = computed(() => ({'d-inline': props.inline, 'm-0': props.inline, 'p-0': props.inline}))
     const repo = useRepo(FiniteStateMachineRepository)
-    const state = computed(() => repo.find(props.stateMachine))
+    const state = computed(() => (props.inline ? null : repo.find(props.stateMachine)))
     const error = computed(() => state.value?.error ?? null)
     const loading = computed(() => state.value?.loading ?? false)
     const status = computed(() => state.value?.status ?? 200)
@@ -40,31 +40,31 @@
 </script>
 
 <template>
-    <AppOverlay :css="displayInline" :loading="loading">
+    <form v-if="inline" :id="id" ref="form" :class="displayInline" autocomplete="off" @submit.prevent="submit">
+        <slot/>
+    </form>
+    <AppOverlay v-else :css="displayInline" :loading="loading">
         <AppAlert v-if="error !== null">
             <AppBadge>{{ status }}</AppBadge>
             {{ error }}
         </AppAlert>
         <form :id="id" ref="form" :class="displayInline" autocomplete="off" @submit.prevent="submit">
-            <slot v-if="inline"/>
-            <template v-else>
-                <AppFormGroup
-                    v-for="field in fields"
-                    :key="field.name"
-                    :field="field"
-                    :form="id"
-                    :model-value="modelValue[field.name]"
-                    :state-machine="stateMachine"
-                    @input="input"/>
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <slot name="start"/>
-                    </div>
-                    <div>
-                        <slot/>
-                    </div>
+            <AppFormGroup
+                v-for="field in fields"
+                :key="field.name"
+                :field="field"
+                :form="id"
+                :model-value="modelValue[field.name]"
+                :state-machine="stateMachine"
+                @input="input"/>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <slot name="start"/>
                 </div>
-            </template>
+                <div>
+                    <slot/>
+                </div>
+            </div>
         </form>
     </AppOverlay>
 </template>

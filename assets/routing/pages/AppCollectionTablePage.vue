@@ -31,8 +31,8 @@
         await repoInstance.remove(entityId, id.value)
     }
 
-    async function load(searchOptions = {}) {
-        await repoInstance.load(id.value, searchOptions)
+    async function load() {
+        await repoInstance.load(id.value)
     }
 
     async function pageHandler(page) {

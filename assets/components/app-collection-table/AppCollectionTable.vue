@@ -29,8 +29,8 @@
         emit('page', page)
     }
 
-    function search(searchOptions) {
-        emit('search', searchOptions)
+    function search() {
+        emit('search')
     }
 
     function show(item) {
@@ -50,7 +50,7 @@
 
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
-        <AppCollectionTableHeaders :violations="violations" @create="createHandler" @search="search"/>
+        <AppCollectionTableHeaders :coll="coll" :violations="violations" @create="createHandler" @search="search"/>
         <AppCollectionTableItems
             :items="items"
             :violations="violations"

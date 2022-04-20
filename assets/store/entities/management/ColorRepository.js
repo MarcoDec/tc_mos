@@ -14,12 +14,12 @@ export default class ColorRepository extends EntityRepository {
 
     async load(vue) {
         this.loading(vue)
-        const body = {}
-        const collRepo = store.$repo(CollectionRepository)
-        const coll = collRepo.find(vue)
-        if (coll !== null)
-            body.page = coll.page
-        const response = await this.fetch(vue, '/api/colors', 'get', body)
+        const response = await this.fetch(
+            vue,
+            '/api/colors',
+            'get',
+            store.$repo(CollectionRepository).find(vue)?.body ?? {}
+        )
         this.destroyAll(vue)
         this.save(response['hydra:member'])
         store.$repo(CollectionRepository).save(response, vue)

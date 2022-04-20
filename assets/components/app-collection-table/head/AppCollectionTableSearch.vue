@@ -1,30 +1,21 @@
 <script setup>
-    import {computed, inject, reactive} from 'vue'
+    import {computed, inject} from 'vue'
+    import AppCollectionTableSearchField from './AppCollectionTableSearchField.vue'
 
+    defineProps({coll: {required: true, type: Object}})
     const emit = defineEmits(['search', 'toggle'])
     const create = inject('create', false)
     const fields = inject('fields', [])
     const tableId = inject('table-id', 'table')
+    const form = computed(() => `${tableId}-search`)
     const searchFields = computed(() => fields.map(field => ({
         ...field,
-        id: `${tableId}-search-${field.name}`,
+        id: `${form.value}-${field.name}`,
         type: field.type === 'boolean' ? 'search-boolean' : field.type
     })))
 
-    const searchOptionsObject = {}
-    for (const field of fields)
-        if (field.filter)
-            searchOptionsObject[field.name] = null
-    const searchOptions = reactive({...searchOptionsObject})
-
     function search() {
-        emit('search', searchOptions)
-    }
-
-    function reset() {
-        for (const [key, value] of Object.entries(searchOptionsObject))
-            searchOptions[key] = value
-        search()
+        emit('search')
     }
 
     function toggle() {
@@ -39,11 +30,16 @@
         </td>
         <td>
             <AppBtn v-if="create" icon="plus-circle" title="Basculer en mode ajout" variant="success" @click="toggle"/>
-            <AppBtn icon="search" title="Rechercher" variant="secondary" @click="search"/>
-            <AppBtn icon="times" title="Annuler" variant="danger" @click="reset"/>
+            <AppForm :id="form" inline @submit="search">
+                <AppBtn icon="search" title="Rechercher" type="submit" variant="secondary"/>
+            </AppForm>
+            <AppBtn icon="times" title="Annuler" variant="danger"/>
         </td>
-        <td v-for="field in searchFields" :key="field.name">
-            <AppInputGuesser v-if="field.filter" v-model="searchOptions[field.name]" :field="field"/>
-        </td>
+        <AppCollectionTableSearchField
+            v-for="field in searchFields"
+            :key="field.name"
+            :coll="coll"
+            :field="field"
+            :form="form"/>
     </tr>
 </template>

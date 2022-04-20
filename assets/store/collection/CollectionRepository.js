@@ -11,6 +11,11 @@ export default class CollectionRepository extends Repository {
         return parseInt(extracted[1] ?? 1)
     }
 
+    input(id, field, value) {
+        const search = this.find(id)?.search ?? {}
+        this.save({id, search: {...search, [field]: value}})
+    }
+
     save(records, vue = null) {
         if (typeof records === 'object' && typeof records['hydra:view'] === 'object') {
             const view = records['hydra:view']

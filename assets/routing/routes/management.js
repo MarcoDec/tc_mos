@@ -29,7 +29,7 @@ export default [
             ],
             icon: 'palette',
             repo: ColorRepository,
-            title: 'Couleur'
+            title: 'Couleurs'
         }
     }
 ]
