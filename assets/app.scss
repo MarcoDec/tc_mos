@@ -28,10 +28,6 @@
   min-width: 100%;
 }
 
-.pointer {
-  cursor: pointer;
-}
-
 .overlay {
   background-color: #EFEFEF;
   height: 100%;
@@ -41,6 +37,14 @@
   top: 0;
   width: 100%;
   z-index: 1000;
+}
+
+.page-item {
+  cursor: pointer;
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 th[aria-sort] {

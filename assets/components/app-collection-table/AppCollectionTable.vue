@@ -1,13 +1,13 @@
 <script setup>
-    import {computed, provide, ref} from 'vue'
+    import {provide, ref} from 'vue'
     import AppCollectionTableHeaders from './head/AppCollectionTableHeaders.vue'
     import AppCollectionTableItems from './body/AppCollectionTableItems.vue'
     import AppPagination from '../bootstrap-5/pagination/AppPagination.vue'
 
-    const emit = defineEmits(['create', 'delete', 'search', 'show', 'update'])
+    const emit = defineEmits(['create', 'delete', 'page', 'search', 'show', 'update'])
     const props = defineProps({
+        coll: {required: true, type: Object},
         create: {required: false, type: Boolean},
-        currentPage: {default: 1, type: Number},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         items: {required: true, type: Array},
@@ -16,7 +16,6 @@
         violations: {default: () => [], type: Array}
     })
     const searchMode = ref(true)
-    const count = computed(() => props.items.length)
 
     function createHandler(createOptions) {
         emit('create', createOptions)
@@ -24,6 +23,10 @@
 
     async function deleteHandler(id) {
         emit('delete', id)
+    }
+
+    function pageHandler(page) {
+        emit('page', page)
     }
 
     function search(searchOptions) {
@@ -55,5 +58,5 @@
             @show="show"
             @update="update"/>
     </table>
-    <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/>
+    <AppPagination v-if="pagination" :coll="coll" class="float-end" @click="pageHandler"/>
 </template>

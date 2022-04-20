@@ -1,25 +1,37 @@
 <script setup>
     import AppPaginationItem from './AppPaginationItem.vue'
-    import {computed} from 'vue'
 
-    const props = defineProps({
-        count: {required: true, type: Number},
-        current: {required: true, type: Number},
-        perPage: {default: 15, type: Number}
-    })
-    const pages = computed(() => Math.ceil(props.count / props.perPage))
+    defineProps({coll: {required: true, type: Object}})
+    const emit = defineEmits(['click'])
+
+    function click(page) {
+        emit('click', page)
+    }
 </script>
 
 <template>
     <nav>
         <ul class="pagination">
-            <AppPaginationItem>Début</AppPaginationItem>
-            <AppPaginationItem>Préc.</AppPaginationItem>
-            <AppPaginationItem v-for="page in pages" :key="page" :current="current === page">
+            <AppPaginationItem :page="coll.first" @click="click">
+                Début
+            </AppPaginationItem>
+            <AppPaginationItem :page="coll.prev" @click="click">
+                Préc.
+            </AppPaginationItem>
+            <AppPaginationItem
+                v-for="page in coll.pages"
+                :key="page"
+                :current="coll.page === page"
+                :page="page"
+                @click="click">
                 {{ page }}
             </AppPaginationItem>
-            <AppPaginationItem>Suiv.</AppPaginationItem>
-            <AppPaginationItem>Fin</AppPaginationItem>
+            <AppPaginationItem :page="coll.next" @click="click">
+                Suiv.
+            </AppPaginationItem>
+            <AppPaginationItem :page="coll.last" @click="click">
+                Fin
+            </AppPaginationItem>
         </ul>
     </nav>
 </template>

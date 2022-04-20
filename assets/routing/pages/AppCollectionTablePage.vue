@@ -1,7 +1,7 @@
 <script setup>
+    import {CollectionRepository, FiniteStateMachineRepository} from '../../store/modules'
     import {computed, onMounted, onUnmounted, ref} from 'vue'
     import {useRepo, useRouter} from '../../composition'
-    import {FiniteStateMachineRepository} from '../../store/modules'
     import emitter from '../../emitter'
 
     const props = defineProps({
@@ -11,12 +11,17 @@
         title: {required: true, type: String}
     })
     const {route} = useRouter()
+    const collRepo = useRepo(CollectionRepository)
     const id = computed(() => route.name)
+    const coll = computed(() => collRepo.find(id.value))
     const tableId = computed(() => `${id.value}-table`)
     const violations = ref([])
     const repoInstance = useRepo(props.repo)
     const items = computed(() => repoInstance.tableItems(props.fields))
     const stateRepo = useRepo(FiniteStateMachineRepository)
+    const state = computed(() => stateRepo.find(id.value))
+    const loading = computed(() => state.value?.loading ?? false)
+    const mount = ref(false)
 
     async function create(createOptions) {
         violations.value = await repoInstance.create(createOptions, id.value)
@@ -26,8 +31,13 @@
         await repoInstance.remove(entityId, id.value)
     }
 
-    async function search(searchOptions) {
-        await repoInstance.load(searchOptions, id.value)
+    async function load(searchOptions = {}) {
+        await repoInstance.load(id.value, searchOptions)
+    }
+
+    async function pageHandler(page) {
+        collRepo.setPage(page, id.value)
+        await load()
     }
 
     async function update(item) {
@@ -37,7 +47,8 @@
 
     onMounted(async () => {
         stateRepo.create(id.value)
-        await repoInstance.load(id.value)
+        await load()
+        mount.value = true
     })
 
     onUnmounted(() => {
@@ -46,22 +57,27 @@
 </script>
 
 <template>
-    <div :id="id">
-        <h1>
-            <Fa :icon="icon"/>
-            {{ title }}
-        </h1>
-        <AppCollectionTable
-            :id="tableId"
-            :fields="fields"
-            :items="items"
-            :state-machine="id"
-            :violations="violations"
-            create
-            pagination
-            @create="create"
-            @delete="deleteHandler"
-            @search="search"
-            @update="update"/>
-    </div>
+    <AppOverlay :loading="loading">
+        <div :id="id">
+            <h1>
+                <Fa :icon="icon"/>
+                {{ title }}
+            </h1>
+            <AppCollectionTable
+                v-if="mount"
+                :id="tableId"
+                :coll="coll"
+                :fields="fields"
+                :items="items"
+                :state-machine="id"
+                :violations="violations"
+                create
+                pagination
+                @create="create"
+                @delete="deleteHandler"
+                @page="pageHandler"
+                @search="load"
+                @update="update"/>
+        </div>
+    </AppOverlay>
 </template>

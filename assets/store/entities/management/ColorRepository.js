@@ -1,4 +1,5 @@
-import {Color, EntityRepository} from '../../modules'
+import {CollectionRepository, Color, EntityRepository} from '../../modules'
+import store from '../..'
 
 export default class ColorRepository extends EntityRepository {
     use = Color
@@ -13,8 +14,15 @@ export default class ColorRepository extends EntityRepository {
 
     async load(vue) {
         this.loading(vue)
-        const response = await this.fetch(vue, '/api/colors', 'get', {})
+        const body = {}
+        const collRepo = store.$repo(CollectionRepository)
+        const coll = collRepo.find(vue)
+        if (coll !== null)
+            body.page = coll.page
+        const response = await this.fetch(vue, '/api/colors', 'get', body)
+        this.destroyAll(vue)
         this.save(response['hydra:member'])
+        store.$repo(CollectionRepository).save(response, vue)
         this.finish(vue)
     }
 
