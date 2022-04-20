@@ -1,19 +1,19 @@
 <script setup>
+    import {CollectionRepository} from '../../../store/modules'
     import {computed} from 'vue'
+    import {useRepo} from '../../../composition'
 
     const emit = defineEmits(['click'])
-    const props = defineProps({
-        asc: {required: true, type: Boolean},
-        field: {required: true, type: Object},
-        sort: {required: true, type: String}
-    })
-    const down = computed(() => ({'text-secondary': props.field.name !== props.sort || props.asc}))
-    const up = computed(() => ({'text-secondary': props.field.name !== props.sort || !props.asc}))
-    const order = computed(() => (props.asc ? 'ascending' : 'descending'))
-    const ariaSort = computed(() => (props.sort ? order.value : 'none'))
+    const props = defineProps({coll: {required: true, type: Object}, field: {required: true, type: Object}})
+    const down = computed(() => ({'text-secondary': props.field.name !== props.coll.sort || props.coll.asc}))
+    const up = computed(() => ({'text-secondary': props.field.name !== props.coll.sort || !props.coll.asc}))
+    const order = computed(() => (props.coll.asc ? 'ascending' : 'descending'))
+    const ariaSort = computed(() => (props.coll.sort ? order.value : 'none'))
+    const repo = useRepo(CollectionRepository)
 
     function click() {
-        emit('click', props.field)
+        repo.sort(props.coll, props.field)
+        emit('click')
     }
 </script>
 

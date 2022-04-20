@@ -1,18 +1,13 @@
 <script setup>
-    import {inject, ref} from 'vue'
     import AppCollectionTableField from './AppCollectionTableField.vue'
+    import {inject} from 'vue'
 
+    defineProps({coll: {required: true, type: Object}})
+    const emit = defineEmits(['click'])
     const fields = inject('fields', [])
-    const asc = ref(false)
-    const sort = ref('code')
 
-    function handleSort(field) {
-        if (sort.value === field.name)
-            asc.value = !asc.value
-        else {
-            asc.value = false
-            sort.value = field.name
-        }
+    function click() {
+        emit('click')
     }
 </script>
 
@@ -20,12 +15,6 @@
     <tr>
         <th/>
         <th>Actions</th>
-        <AppCollectionTableField
-            v-for="field in fields"
-            :key="field.name"
-            :asc="asc"
-            :field="field"
-            :sort="sort"
-            @click="handleSort"/>
+        <AppCollectionTableField v-for="field in fields" :key="field.name" :coll="coll" :field="field" @click="click"/>
     </tr>
 </template>

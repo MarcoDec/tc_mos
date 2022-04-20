@@ -24,7 +24,7 @@
 
 <template>
     <thead class="table-dark">
-        <AppCollectionTableFields/>
+        <AppCollectionTableFields :coll="coll" @click="search"/>
         <AppCollectionTableSearch v-if="searchMode" :coll="coll" @search="search" @toggle="toggle"/>
         <AppCollectionTableCreate v-else :violations="violations" @create="create" @toggle="toggle"/>
     </thead>

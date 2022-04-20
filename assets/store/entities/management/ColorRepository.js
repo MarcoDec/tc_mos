@@ -21,7 +21,7 @@ export default class ColorRepository extends EntityRepository {
             store.$repo(CollectionRepository).find(vue)?.body ?? {}
         )
         this.destroyAll(vue)
-        this.save(response['hydra:member'])
+        this.save(response['hydra:member'], vue)
         store.$repo(CollectionRepository).save(response, vue)
         this.finish(vue)
     }
@@ -33,8 +33,12 @@ export default class ColorRepository extends EntityRepository {
         this.finish(vue)
     }
 
-    tableItems(fields) {
-        return this.all().map(color => color.tableItem(fields))
+    tableItems(fields, vue) {
+        const colors = this.where(color => color.vues.includes(vue))
+        const coll = store.$repo(CollectionRepository).find(vue)
+        if (coll !== null && coll.isSorted)
+            colors.orderBy(coll.sort, coll.direction)
+        return colors.get().map(color => color.tableItem(fields))
     }
 
     async update(body, vue) {

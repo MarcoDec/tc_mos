@@ -17,7 +17,7 @@
     const tableId = computed(() => `${id.value}-table`)
     const violations = ref([])
     const repoInstance = useRepo(props.repo)
-    const items = computed(() => repoInstance.tableItems(props.fields))
+    const items = computed(() => repoInstance.tableItems(props.fields, id.value))
     const stateRepo = useRepo(FiniteStateMachineRepository)
     const state = computed(() => stateRepo.find(id.value))
     const loading = computed(() => state.value?.loading ?? false)

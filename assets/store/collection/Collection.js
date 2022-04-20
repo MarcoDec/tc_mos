@@ -4,7 +4,19 @@ export default class Collection extends Model {
     static entity = 'collections'
 
     get body() {
-        return {...this.search, page: this.page}
+        return {...this.search, ...this.order, page: this.page}
+    }
+
+    get direction() {
+        return this.asc ? 'asc' : 'desc'
+    }
+
+    get isSorted() {
+        return Boolean(this.sort)
+    }
+
+    get order() {
+        return this.sort === null ? {} : {[`order[${this.sort}]`]: this.asc ? 'asc' : 'desc'}
     }
 
     get pages() {
@@ -14,6 +26,7 @@ export default class Collection extends Model {
     static fields() {
         return {
             ...super.fields(),
+            asc: this['boolean'](false),
             first: this.number(1),
             id: this.string(null),
             last: this.number(1),
@@ -22,6 +35,7 @@ export default class Collection extends Model {
             perPage: this.number(15),
             prev: this.number(1),
             search: this.attr({}),
+            sort: this.string(null),
             total: this.number(0)
         }
     }
