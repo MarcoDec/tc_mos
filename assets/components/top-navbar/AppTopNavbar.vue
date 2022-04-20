@@ -29,6 +29,9 @@
                 <AppNavbarLink icon="layer-group" to="product-families">
                     Familles de produits
                 </AppNavbarLink>
+                <AppNavbarLink icon="calendar-alt" to="manufacturing-schedule">
+                    Planning de production
+                </AppNavbarLink>
             </AppNavbarItem>
         </AppNavbarCollapse>
         <div v-if="hasUser" class="text-white">

@@ -8,6 +8,8 @@ import {actions} from './actions'
 import {createStore} from 'vuex'
 import {generateSecurity} from './security'
 import {mutations} from './mutation'
+import {productionPlannings} from './productionPlannings'
+import {productionPlanningsItems} from './productionPlanningsItems'
 import {state} from './state'
 
 export type {Actions, Mutations, State, StoreActionContext}
@@ -15,7 +17,7 @@ export type {Actions, Mutations, State, StoreActionContext}
 export function generateStore(security: Security): Store<State> {
     return createStore<State>({
         actions,
-        modules: {security: generateSecurity(security)},
+        modules: {productionPlannings, productionPlanningsItems, security: generateSecurity(security)},
         mutations,
         state,
         strict: process.env.NODE_ENV !== 'production'

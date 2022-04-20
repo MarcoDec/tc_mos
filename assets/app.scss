@@ -26,3 +26,43 @@
 .pointer {
   cursor: pointer;
 }
+
+.tableFixHead          { overflow: auto; height: 760px;}
+.tableFixHead thead th { top: 0; z-index: 50; position: sticky;}
+
+/* Just common table stuff. Really. */
+table  { border-collapse: collapse; width: 100%; }
+th, td { padding: 8px 16px; text-align: center; }
+th     { background:#eee; }
+
+/* Borders (if you need them) */
+
+.tableFixHead td {
+  box-shadow: inset 1px -1px #000;
+}
+.tableFixHead th {
+  box-shadow: inset 1px 1px #000, 0 1px #000;
+}
+
+// .tableFixHead {
+//   width: 500px;
+//   table-layout: fixed;
+//   border-collapse: collapse;
+// }
+//   .tableFixHead tbody {
+//   display: block;
+//   width: 100%;
+//   overflow: auto;
+//   height: 100%;
+// }
+// .tableFixHead thead tr {
+//   display: block;
+// }
+// .tableFixHead th,
+// .tableFixHead  td {
+//   padding: 5px 10px;
+//   width: 100%;
+// }
+// th {
+//   background: #ABDD93;
+// }
