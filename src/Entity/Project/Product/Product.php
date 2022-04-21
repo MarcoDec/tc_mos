@@ -21,6 +21,7 @@ use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Repository\Project\Product\ProductRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
@@ -164,7 +165,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Product-read'
         ]
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['index', 'ref'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
 class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
