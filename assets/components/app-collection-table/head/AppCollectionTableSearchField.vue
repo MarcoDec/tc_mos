@@ -8,7 +8,12 @@
         field: {required: true, type: Object},
         form: {required: true, type: String}
     })
+    const inputId = computed(() => `${props.form}-${props.field.name}`)
     const modelValue = computed(() => props.coll.search[props.field.name] ?? null)
+    const searchField = computed(() => (props.field.type === 'boolean'
+        ? {...props.field, type: 'search-boolean'}
+        : props.field
+    ))
     const repo = useRepo(CollectionRepository)
 
     function input(value) {
@@ -20,7 +25,8 @@
     <td>
         <AppInputGuesser
             v-if="field.filter"
-            :field="field"
+            :id="inputId"
+            :field="searchField"
             :form="form"
             :model-value="modelValue"
             @update:model-value="input"/>

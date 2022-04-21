@@ -8,11 +8,6 @@
     const fields = inject('fields', [])
     const tableId = inject('table-id', 'table')
     const form = computed(() => `${tableId}-search`)
-    const searchFields = computed(() => fields.map(field => ({
-        ...field,
-        id: `${form.value}-${field.name}`,
-        type: field.type === 'boolean' ? 'search-boolean' : field.type
-    })))
 
     function search() {
         emit('search')
@@ -36,7 +31,7 @@
             <AppBtn icon="times" title="Annuler" variant="danger"/>
         </td>
         <AppCollectionTableSearchField
-            v-for="field in searchFields"
+            v-for="field in fields"
             :key="field.name"
             :coll="coll"
             :field="field"

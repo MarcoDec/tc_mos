@@ -6,6 +6,7 @@
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         field: {required: true, type: Object},
+        id: {required: true, type: String},
         modelValue: {default: null},
         size: {default: 'sm', type: String}
     })
@@ -24,7 +25,7 @@
 
 <template>
     <select
-        :id="field.id"
+        :id="id"
         :class="sizeClass"
         :name="field.name"
         :value="value"

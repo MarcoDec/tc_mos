@@ -12,10 +12,7 @@
         modelValue: {default: null},
         stateMachine: {required: true, type: String}
     })
-    const normalizedField = computed(() => ({
-        ...props.field,
-        id: props.field.id ?? `${props.form}-${props.field.name}`
-    }))
+    const inputId = computed(() => `${props.form}-${props.field.name}`)
     const state = computed(() => repo.find(props.stateMachine))
     const violation = computed(() => state.value?.findViolation(props.field) ?? null)
     const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
@@ -29,12 +26,13 @@
 <template>
     <AppRow class="mb-3">
         <AppLabel>
-            {{ normalizedField.label }}
+            {{ field.label }}
         </AppLabel>
         <AppCol>
             <AppInputGuesser
+                :id="inputId"
                 :class="isInvalid"
-                :field="normalizedField"
+                :field="field"
                 :form="form"
                 :model-value="modelValue"
                 @update:model-value="input"/>

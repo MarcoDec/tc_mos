@@ -1,6 +1,6 @@
 <script setup>
     import {computed, inject, onMounted, onUnmounted} from 'vue'
-    import AppCollectionTableItemField from './AppCollectionTableItemField'
+    import AppCollectionTableItemField from './AppCollectionTableItemField.vue'
     import AppCollectionTableItemInput from './AppCollectionTableItemInput.vue'
     import emitter from '../../../emitter'
     import {useRoute} from 'vue-router'

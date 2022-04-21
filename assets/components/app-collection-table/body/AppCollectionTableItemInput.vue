@@ -1,5 +1,5 @@
 <script setup>
-    import AppCollectionTableItemField from './AppCollectionTableItemField'
+    import AppCollectionTableItemField from './AppCollectionTableItemField.vue'
     import {computed} from 'vue'
 
     const props = defineProps({
@@ -8,6 +8,7 @@
         item: {required: true, type: Object},
         violations: {default: () => [], type: Array}
     })
+    const inputId = computed(() => `${props.form}-${props.field.name}`)
     const violation = computed(() => props.violations.find(({propertyPath}) => propertyPath === props.field.name) ?? null)
     const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
     const value = computed(() => props.item[props.field.name])
@@ -15,7 +16,7 @@
 
 <template>
     <td v-if="field.update">
-        <AppInputGuesser :class="isInvalid" :field="field" :form="form" :model-value="value" no-label/>
+        <AppInputGuesser :id="inputId" :class="isInvalid" :field="field" :form="form" :model-value="value" no-label/>
         <AppInvalidFeedback v-if="violation !== null">
             {{ violation.message }}
         </AppInvalidFeedback>

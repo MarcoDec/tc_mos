@@ -48,6 +48,9 @@
                         <AppNavbarLink icon="palette" to="colors" variant="warning">
                             Couleurs
                         </AppNavbarLink>
+                        <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
+                            Délais de paiement des factures
+                        </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
@@ -73,9 +76,7 @@
             <div class="text-white">
                 <Fa icon="user-circle"/>
                 {{ user.name }}
-                <AppBtn variant="danger" @click="logout">
-                    <Fa icon="sign-out-alt"/>
-                </AppBtn>
+                <AppBtn icon="sign-out-alt" title="Déconnexion" variant="danger" @click="logout"/>
             </div>
         </template>
     </AppNavbar>

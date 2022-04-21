@@ -11,4 +11,11 @@ export default class Entity extends Model {
             '@type': this.string(null)
         }
     }
+
+    tableItem(fields) {
+        const item = {delete: true, id: this.id, update: true}
+        for (const field of fields)
+            item[field.name] = this[field.name]
+        return item
+    }
 }
