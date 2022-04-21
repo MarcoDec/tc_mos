@@ -1,4 +1,4 @@
-import {ColorRepository, InvoiceTimeDueRepository} from '../../store/modules'
+import {ColorRepository, InvoiceTimeDueRepository, UnitRepository} from '../../store/modules'
 
 export default [
     {
@@ -79,6 +79,55 @@ export default [
             icon: 'hourglass-half',
             repo: InvoiceTimeDueRepository,
             title: 'Délais de paiement des factures'
+        }
+    },
+    {
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'units',
+        path: '/units',
+        props: {
+            fields: [
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Code',
+                    name: 'code',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                },
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Nom',
+                    name: 'name',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                },
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Parent',
+                    name: 'parent',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                },
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Base',
+                    name: 'base',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                }
+            ],
+            icon: 'ruler-horizontal',
+            repo: UnitRepository,
+            title: 'Unités'
         }
     }
 ]

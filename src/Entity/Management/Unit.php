@@ -5,6 +5,7 @@ namespace App\Entity\Management;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['base', 'code', 'name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Unit',
@@ -65,11 +67,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     UniqueEntity('name')
 ]
 class Unit extends AbstractUnit {
-    #[
-        ApiProperty(description: 'Enfants ', readableLink: false, example: ['/api/units/2', '/api/units/3']),
-        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
-        Serializer\Groups(['read:unit'])
-    ]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     protected Collection $children;
 
     #[

@@ -51,6 +51,12 @@
                         <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
                             Délais de paiement des factures
                         </AppNavbarLink>
+                        <AppNavbarLink disabled icon="print" to="printers" variant="danger">
+                            Imprimantes
+                        </AppNavbarLink>
+                        <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">
+                            Unités
+                        </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">

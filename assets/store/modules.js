@@ -10,6 +10,7 @@ export {default as FiniteStateMachine} from './finite-state-machines/FiniteState
 export {default as InvoiceTimeDue} from './entities/management/InvoiceTimeDue'
 export {default as Node} from './tree/Node'
 export {default as ProductFamily} from './entities/project/product/Family'
+export {default as Unit} from './entities/management/Unit'
 // repositories
 export {default as Repository} from './Repository'
 export {default as EntityRepository} from './entities/EntityRepository'
@@ -22,3 +23,4 @@ export {default as FiniteStateMachineRepository} from './finite-state-machines/F
 export {default as InvoiceTimeDueRepository} from './entities/management/InvoiceTimeDueRepository'
 export {default as NodeRepository} from './tree/NodeRepository'
 export {default as ProductFamilyRepository} from './entities/project/product/FamilyRepository'
+export {default as UnitRepository} from './entities/management/UnitRepository'
