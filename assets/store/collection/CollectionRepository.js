@@ -33,6 +33,10 @@ export default class CollectionRepository extends Repository {
         return super.save(records, vue)
     }
 
+    resetSearch(coll) {
+        this.save({id: coll.id, search: {}})
+    }
+
     setPage(page, id) {
         this.save({id, page})
     }
