@@ -24,7 +24,7 @@ export default async function fetchApi(url, method, body) {
         for (const key in body)
             if (body[key] === null)
                 delete body[key]
-        init.headers['Content-Type'] = 'application/json'
+        init.headers['Content-Type'] = method === 'patch' ? 'application/merge-patch+json' : 'application/json'
         if (!['delete', 'get'].includes(method))
             init.body = JSON.stringify(body)
         for (const key in body)

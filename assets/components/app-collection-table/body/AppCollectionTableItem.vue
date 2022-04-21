@@ -58,7 +58,7 @@
             <AppBtn v-if="item['delete']" icon="trash" title="Supprimer" variant="danger" @click="deleteHandler"/>
         </td>
         <td v-else class="text-center">
-            <AppForm :id="formId" :state-machine="stateMachine" inline multipart @submit="update">
+            <AppForm :id="formId" :fields="fields" :state-machine="stateMachine" inline @submit="update">
                 <input :value="item.id" name="id" type="hidden"/>
                 <AppBtn icon="check" title="Modifier" type="submit" variant="success"/>
             </AppForm>

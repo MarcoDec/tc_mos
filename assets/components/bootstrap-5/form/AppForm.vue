@@ -34,7 +34,7 @@
 
         const json = {}
         for (const [key, value] of data.entries())
-            json[key] = value
+            json[key] = props.fields.find(field => field.name === key)?.type === 'number' ? parseFloat(value) : value
         emit('submit', json)
     }
 </script>
