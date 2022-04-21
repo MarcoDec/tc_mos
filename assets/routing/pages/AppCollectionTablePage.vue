@@ -15,16 +15,16 @@
     const id = computed(() => route.name)
     const coll = computed(() => collRepo.find(id.value))
     const tableId = computed(() => `${id.value}-table`)
-    const violations = ref([])
     const repoInstance = useRepo(props.repo)
     const items = computed(() => repoInstance.tableItems(props.fields, id.value))
     const stateRepo = useRepo(FiniteStateMachineRepository)
     const state = computed(() => stateRepo.find(id.value))
     const loading = computed(() => state.value?.loading ?? false)
+    const violations = computed(() => state.value?.violations ?? [])
     const mount = ref(false)
 
     async function create(createOptions) {
-        violations.value = await repoInstance.create(createOptions, id.value)
+        await repoInstance.create(createOptions, id.value)
     }
 
     async function deleteHandler(entityId) {
@@ -41,7 +41,7 @@
     }
 
     async function update(item) {
-        violations.value = await repoInstance.update(item, id.value)
+        await repoInstance.update(item, id.value)
         emitter.emit(`${route.name}-update-${item.get('id')}`)
     }
 

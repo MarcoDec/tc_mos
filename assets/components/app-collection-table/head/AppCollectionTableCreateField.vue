@@ -6,6 +6,7 @@
         form: {required: true, type: String},
         violations: {default: () => [], type: Array}
     })
+    const inputId = computed(() => `${props.form}-${props.field.name}`)
     const violation = computed(() => props.violations.find(({propertyPath}) => propertyPath === props.field.name) ?? null)
     const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
 </script>
@@ -14,6 +15,7 @@
     <td>
         <AppInputGuesser
             v-if="field.create"
+            :id="inputId"
             :class="isInvalid"
             :field="field"
             :form="form"

@@ -1,6 +1,5 @@
 import * as Cookies from './cookie'
 
-// eslint-disable-next-line consistent-return
 export default async function fetchApi(url, method, body) {
     const headers = {Accept: 'application/ld+json'}
     const token = Cookies.get('token')
@@ -43,4 +42,5 @@ export default async function fetchApi(url, method, body) {
         const json = await response.json()
         return json
     }
+    return null
 }

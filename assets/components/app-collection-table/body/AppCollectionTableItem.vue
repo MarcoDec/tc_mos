@@ -2,7 +2,9 @@
     import {computed, inject, onMounted, onUnmounted} from 'vue'
     import AppCollectionTableItemField from './AppCollectionTableItemField.vue'
     import AppCollectionTableItemInput from './AppCollectionTableItemInput.vue'
+    import {FiniteStateMachineRepository} from '../../../store/modules'
     import emitter from '../../../emitter'
+    import {useRepo} from '../../../composition'
     import {useRoute} from 'vue-router'
 
     const props = defineProps({
@@ -15,6 +17,7 @@
     const route = useRoute()
     const tableId = inject('table-id', 'table')
     const stateMachine = inject('stateMachine')
+    const stateRepo = useRepo(FiniteStateMachineRepository)
 
     const formId = computed(() => `${tableId}-create`)
     const formattedIndex = computed(() => props.index + 1)
@@ -31,6 +34,7 @@
     }
 
     function toggle() {
+        stateRepo.reset(stateMachine)
         emit('toggle', props.index)
     }
 

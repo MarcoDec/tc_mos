@@ -16,6 +16,7 @@
         violations: {default: () => [], type: Array}
     })
     const searchMode = ref(true)
+    const updated = ref(-1)
 
     function createHandler(createOptions) {
         emit('create', createOptions)
@@ -46,6 +47,7 @@
     provide('searchMode', searchMode)
     provide('stateMachine', props.stateMachine)
     provide('table-id', props.id)
+    provide('updated', updated)
 </script>
 
 <template>

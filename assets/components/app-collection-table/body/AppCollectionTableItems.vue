@@ -8,7 +8,7 @@
         violations: {default: () => [], type: Array}
     })
     const searchMode = inject('searchMode', ref(true))
-    const updated = ref(-1)
+    const updated = inject('updated', ref(-1))
 
     async function deleteHandler(id) {
         emit('delete', id)

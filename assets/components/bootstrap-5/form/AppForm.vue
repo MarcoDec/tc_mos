@@ -33,8 +33,11 @@
         }
 
         const json = {}
-        for (const [key, value] of data.entries())
-            json[key] = props.fields.find(field => field.name === key)?.type === 'number' ? parseFloat(value) : value
+        for (const [key, value] of data.entries()) {
+            const normalizedValue = props.fields.find(field => field.name === key)?.type === 'number' ? parseFloat(value) : value
+            if (typeof normalizedValue !== 'string' || normalizedValue.length > 0)
+                json[key] = normalizedValue
+        }
         emit('submit', json)
     }
 </script>
@@ -43,12 +46,12 @@
     <form v-if="inline" :id="id" ref="form" :class="displayInline" autocomplete="off" @submit.prevent="submit">
         <slot/>
     </form>
-    <AppOverlay v-else :css="displayInline" :loading="loading">
+    <AppOverlay v-else :loading="loading">
         <AppAlert v-if="error !== null">
             <AppBadge>{{ status }}</AppBadge>
             {{ error }}
         </AppAlert>
-        <form :id="id" ref="form" :class="displayInline" autocomplete="off" @submit.prevent="submit">
+        <form :id="id" ref="form" autocomplete="off" @submit.prevent="submit">
             <AppFormGroup
                 v-for="field in fields"
                 :key="field.name"
