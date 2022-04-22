@@ -8,13 +8,15 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Filter\OldRelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['base', 'code', 'name']),
+    ApiFilter(filterClass: OldRelationFilter::class, properties: ['parent']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['base', 'code', 'name', 'parent']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Unit',

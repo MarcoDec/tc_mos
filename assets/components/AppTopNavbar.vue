@@ -67,6 +67,10 @@
                         <Fa icon="server"/>
                         API
                     </a>
+                    <a class="dropdown-item text-warning" href="http://localhost:8080" target="_blank">
+                        <Fa icon="database"/>
+                        Base de données
+                    </a>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isProjectReader" id="project" icon="industry" title="Projet">
                     <template v-if="user.isProjectAdmin">

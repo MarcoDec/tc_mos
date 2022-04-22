@@ -2,6 +2,7 @@
 
 namespace App\Fixtures;
 
+use App\Entity\Management\Unit;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Illuminate\Support\Collection;
@@ -22,7 +23,7 @@ final class EntityConfig {
     private ?string $deleted;
 
     /** @var Collection<int, ConvertedEntity> */
-    private readonly Collection $entities;
+    private Collection $entities;
 
     /** @var array<int, int> */
     private array $ids = [];
@@ -93,16 +94,21 @@ final class EntityConfig {
      * @param Entity[] $data
      */
     public function setData(array $data, int $count): void {
-        $this->data = $data;
-
+        $this->data = [];
         foreach ($data as $entity) {
             if (!empty($this->deleted) && $entity[$this->deleted] !== '0') {
                 continue;
             }
 
-            /** @var ConvertedEntity $transformed */
-            $transformed = collect(['id' => $id = ++$count]);
+            $id = ++$count;
             $this->ids[(int) ($entity['id'])] = $id;
+            $entity['id'] = $id;
+            $this->data[] = $entity;
+        }
+
+        foreach ($this->data as $entity) {
+            /** @var ConvertedEntity $transformed */
+            $transformed = collect(['id' => $entity['id']]);
             foreach ($this->properties as $property => $config) {
                 /** @var bool|float|int|string $value */
                 $value = !$config->isNew() ? $entity[$property] : null;
@@ -124,6 +130,14 @@ final class EntityConfig {
                 $transformed[$config->getNewName()] = $value;
             }
             $this->entities->push($transformed);
+        }
+
+        if ($this->metadata->getName() === Unit::class) {
+            /** @phpstan-ignore-next-line */
+            $this->entities = $this->entities
+                ->mapToGroups(static fn (Collection $entity): array => [$entity['parent_id'] === null ? 'null' : 'parent' => $entity])
+                ->sortKeys()
+                ->flatten(1);
         }
     }
 

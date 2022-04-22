@@ -4,79 +4,79 @@
     "statut": "0",
     "unit_short_lbl": "U",
     "unit_complete_lbl": "Pièce",
-    "date_creation": "0000-00-00 00:00:00",
-    "date_modification": "0000-00-00 00:00:00",
-    "id_user_creation": null,
-    "id_user_modification": null
+    "base": "1",
+    "parent": null
   },
   {
     "id": "2",
     "statut": "0",
     "unit_short_lbl": "ml",
     "unit_complete_lbl": "Mètre linéaire",
-    "date_creation": "0000-00-00 00:00:00",
-    "date_modification": "0000-00-00 00:00:00",
-    "id_user_creation": null,
-    "id_user_modification": null
+    "base": "1",
+    "parent": null
   },
   {
     "id": "3",
     "statut": "0",
     "unit_short_lbl": "m²",
-    "unit_complete_lbl": "mètre carré",
-    "date_creation": "0000-00-00 00:00:00",
-    "date_modification": "0000-00-00 00:00:00",
-    "id_user_creation": null,
-    "id_user_modification": null
+    "unit_complete_lbl": "Mètre carré",
+    "base": "1",
+    "parent": null
   },
   {
     "id": "4",
     "statut": "0",
     "unit_short_lbl": "g",
     "unit_complete_lbl": "Gramme",
-    "date_creation": "0000-00-00 00:00:00",
-    "date_modification": "0000-00-00 00:00:00",
-    "id_user_creation": null,
-    "id_user_modification": null
+    "base": "0.001",
+    "parent": "5"
   },
   {
     "id": "5",
     "statut": "0",
     "unit_short_lbl": "Kg",
-    "unit_complete_lbl": "Kilo-gramme",
-    "date_creation": "0000-00-00 00:00:00",
-    "date_modification": "0000-00-00 00:00:00",
-    "id_user_creation": null,
-    "id_user_modification": null
+    "unit_complete_lbl": "Kilogramme",
+    "base": "1",
+    "parent": null
   },
   {
     "id": "6",
     "statut": "0",
-    "unit_short_lbl": "l",
-    "unit_complete_lbl": "litre",
-    "date_creation": "0000-00-00 00:00:00",
-    "date_modification": "0000-00-00 00:00:00",
-    "id_user_creation": null,
-    "id_user_modification": null
+    "unit_short_lbl": "L",
+    "unit_complete_lbl": "Litre",
+    "base": "1",
+    "parent": null
   },
   {
     "id": "7",
     "statut": "0",
     "unit_short_lbl": "km",
-    "unit_complete_lbl": "Kilo-mètre",
-    "date_creation": "0000-00-00 00:00:00",
-    "date_modification": "0000-00-00 00:00:00",
-    "id_user_creation": null,
-    "id_user_modification": null
+    "unit_complete_lbl": "Kilomètre",
+    "base": "1000",
+    "parent": "10"
   },
   {
     "id": "8",
     "statut": "0",
     "unit_short_lbl": "ft",
     "unit_complete_lbl": "Pied",
-    "date_creation": "2018-04-24 00:00:00",
-    "date_modification": "2018-04-24 06:24:28",
-    "id_user_creation": null,
-    "id_user_modification": null
+    "base": "0.3048",
+    "parent": "10"
+  },
+  {
+    "id": "9",
+    "statut": "0",
+    "unit_short_lbl": "mL",
+    "unit_complete_lbl": "Millilitre",
+    "base": "0.001",
+    "parent": "6"
+  },
+  {
+    "id": "10",
+    "statut": "0",
+    "unit_short_lbl": "m",
+    "unit_complete_lbl": "Mètre",
+    "base": "1",
+    "parent": null
   }
 ]

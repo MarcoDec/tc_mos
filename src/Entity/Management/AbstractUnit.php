@@ -98,6 +98,14 @@ abstract class AbstractUnit extends Entity {
         return $this->parent;
     }
 
+    #[
+        Pure,
+        Serializer\Groups(['read:unit'])
+    ]
+    final public function getParentId(): int {
+        return $this->parent?->getId() ?? 0;
+    }
+
     /**
      * @param null|static $unit
      */

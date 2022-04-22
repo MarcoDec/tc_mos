@@ -4,6 +4,10 @@ import store from '../..'
 export default class UnitRepository extends EntityRepository {
     use = Unit
 
+    get options() {
+        return [...this.withAll().get().map(unit => unit.option)].sort((a, b) => a.text.localeCompare(b.text))
+    }
+
     async create(body, vue) {
         this.loading(vue)
         const unit = await this.fetch(vue, '/api/units', 'post', body)
@@ -38,7 +42,7 @@ export default class UnitRepository extends EntityRepository {
         const coll = store.$repo(CollectionRepository).find(vue)
         if (coll !== null && coll.isSorted)
             units.orderBy(coll.sort, coll.direction)
-        return units.get().map(unit => unit.tableItem(fields))
+        return units.withAll().get().map(unit => unit.tableItem(fields))
     }
 
     async update(body, vue) {

@@ -143,7 +143,8 @@ final class Configurations {
                 return;
             }
         }
-        $this->em->getConnection()->executeStatement($config->toSQL($this->em->getConnection()));
+        $sql = $config->toSQL($this->em->getConnection());
+        $this->em->getConnection()->executeStatement($sql);
         $processed->push($current);
     }
 }

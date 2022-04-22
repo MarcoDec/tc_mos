@@ -109,19 +109,20 @@ export default [
                 {
                     create: true,
                     filter: true,
-                    label: 'Parent',
-                    name: 'parent',
+                    label: 'Base',
+                    name: 'base',
                     sort: true,
-                    type: 'text',
+                    type: 'number',
                     update: true
                 },
                 {
                     create: true,
                     filter: true,
-                    label: 'Base',
-                    name: 'base',
+                    label: 'Parent',
+                    name: 'parent',
+                    repo: UnitRepository,
                     sort: true,
-                    type: 'text',
+                    type: 'select',
                     update: true
                 }
             ],
