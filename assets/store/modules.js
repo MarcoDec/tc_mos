@@ -11,6 +11,7 @@ export {default as InvoiceTimeDue} from './entities/management/InvoiceTimeDue'
 export {default as Node} from './tree/Node'
 export {default as ProductFamily} from './entities/project/product/Family'
 export {default as Unit} from './entities/management/Unit'
+export {default as VatMessage} from './entities/management/VatMessage'
 // repositories
 export {default as Repository} from './Repository'
 export {default as EntityRepository} from './entities/EntityRepository'
@@ -24,3 +25,4 @@ export {default as InvoiceTimeDueRepository} from './entities/management/Invoice
 export {default as NodeRepository} from './tree/NodeRepository'
 export {default as ProductFamilyRepository} from './entities/project/product/FamilyRepository'
 export {default as UnitRepository} from './entities/management/UnitRepository'
+export {default as VatMessageRepository} from './entities/management/VatMessageRepository'

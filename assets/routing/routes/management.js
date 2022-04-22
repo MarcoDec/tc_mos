@@ -1,4 +1,4 @@
-import {ColorRepository, InvoiceTimeDueRepository, UnitRepository} from '../../store/modules'
+import {ColorRepository, InvoiceTimeDueRepository, UnitRepository, VatMessageRepository} from '../../store/modules'
 
 export default [
     {
@@ -130,6 +130,26 @@ export default [
             icon: 'ruler-horizontal',
             repo: UnitRepository,
             title: 'Unités'
+        }
+    },
+    {
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'vat-messages',
+        path: '/vat-messages',
+        props: {
+            fields: [{
+                create: true,
+                filter: true,
+                label: 'Message',
+                name: 'name',
+                sort: true,
+                type: 'text',
+                update: true
+            }],
+            icon: 'comments-dollar',
+            repo: VatMessageRepository,
+            title: 'Messages TVA'
         }
     }
 ]
