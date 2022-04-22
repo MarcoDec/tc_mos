@@ -19,15 +19,15 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     public function __construct(
-        private NormalizerInterface $normalizer,
-        private TokenRepository $tokenRepo,
-        private UrlGeneratorInterface $urlGenerator
+        private readonly NormalizerInterface $normalizer,
+        private readonly TokenRepository $tokenRepo,
+        private readonly UrlGeneratorInterface $urlGenerator
     ) {
     }
 
     public function authenticate(Request $request): Passport {
         /** @var array{password?: string, username?: string}|null $content */
-        $content = json_decode($request->getContent(), true);
+        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         if (empty($content)) {
             throw new BadCredentialsException();
         }

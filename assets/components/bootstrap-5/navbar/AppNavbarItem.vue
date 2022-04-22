@@ -1,20 +1,25 @@
-<script lang="ts" setup>
-    import {computed, defineProps, onMounted, onUnmounted, ref} from 'vue'
+<script setup>
+    import {computed, onMounted, onUnmounted, ref} from 'vue'
     import {Dropdown} from 'bootstrap'
 
-    const props = defineProps<{icon: string, id: string, title: string}>()
-    const dropdown = ref<Dropdown | null>(null)
-    const dropdownId = computed(() => `${props.id}-dropdown`)
-    const el = ref<HTMLLIElement>()
+    const props = defineProps({
+        icon: {required: true, type: String},
+        id: {required: true, type: String},
+        title: {required: true, type: String}
+    })
+    const dropdown = ref(null)
+    const el = ref()
+    const liId = computed(() => `nav-${props.id}`)
+    const dropdownId = computed(() => `${liId.value}-dropdown`)
 
-    function dispose(): void {
+    function dispose() {
         if (dropdown.value !== null) {
             dropdown.value.dispose()
             dropdown.value = null
         }
     }
 
-    function instantiate(): void {
+    function instantiate() {
         if (typeof el.value === 'undefined')
             return
         dispose()
@@ -22,12 +27,11 @@
     }
 
     onMounted(instantiate)
-
     onUnmounted(dispose)
 </script>
 
 <template>
-    <li :id="id" ref="el" class="dropdown nav-item">
+    <li :id="liId" ref="el" class="dropdown nav-item">
         <a
             :id="dropdownId"
             aria-expanded="false"

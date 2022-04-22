@@ -12,19 +12,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-/**
- * @method self            addChild(self $children)
- * @method Collection<int, self> getChildren()
- * @method float           getConvertorDistance(self $unit)
- * @method null|self       getParent()
- * @method bool            has(null|self $unit)
- * @method bool            isLessThan(self $unit)
- * @method self            removeChild(self $children)
- * @method self            setBase(float $base)
- * @method self            setCode(null|string $code)
- * @method self            setName(null|string $name)
- * @method self            setParent(null|self $parent)
- */
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
@@ -40,7 +27,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Créer une unité',
                     'summary' => 'Créer une unité',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -48,18 +36,20 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Supprime une unité',
                     'summary' => 'Supprime une unité',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une unité',
                     'summary' => 'Modifie une unité',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:name', 'write:unit'],
@@ -75,7 +65,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     UniqueEntity('name')
 ]
 class Unit extends AbstractUnit {
-    /** @var Collection<int, self> */
     #[
         ApiProperty(description: 'Enfants ', readableLink: false, example: ['/api/units/2', '/api/units/3']),
         ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
@@ -83,7 +72,6 @@ class Unit extends AbstractUnit {
     ]
     protected Collection $children;
 
-    /** @var null|self */
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/units/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),

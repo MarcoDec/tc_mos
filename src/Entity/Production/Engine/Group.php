@@ -12,7 +12,6 @@ use App\Entity\Entity;
 use App\Entity\Production\Engine\CounterPart\Group as CounterPartGroup;
 use App\Entity\Production\Engine\Tool\Group as ToolGroup;
 use App\Entity\Production\Engine\Workstation\Group as WorkstationGroup;
-use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -35,18 +34,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un groupe d\'équipement',
                     'summary' => 'Supprime un groupe d\'équipement',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un groupe d\'équipement',
                     'summary' => 'Modifie un groupe d\'équipement',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ]
         ],
         shortName: 'EngineGroup',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:engine-group', 'write:name'],
@@ -57,15 +58,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'EngineGroup-read'
         ]
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'string'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'engine_type'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'engine_group')
 ]
 abstract class Group extends Entity {
-    use NameTrait;
-
     public const TYPES = [
         'counter-part' => CounterPartGroup::class,
         'tool' => ToolGroup::class,
@@ -73,20 +72,22 @@ abstract class Group extends Entity {
     ];
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Table d\'assemblage'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    #[
         ApiProperty(description: 'Code ', required: true, example: 'TA'),
+        Assert\Length(min: 2, max: 3),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 3, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private ?string $code = null;
+
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Table d\'assemblage'),
+        Assert\Length(min: 3, max: 35),
+        Assert\NotBlank,
+        ORM\Column(length: 35),
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    private ?string $name = null;
 
     #[
         ORM\Column(options: ['default' => false]),
@@ -98,12 +99,21 @@ abstract class Group extends Entity {
         return $this->code;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function isSafetyDevice(): bool {
         return $this->safetyDevice;
     }
 
     final public function setCode(?string $code): self {
         $this->code = $code;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 

@@ -13,9 +13,9 @@ use Symfony\Component\Workflow\Registry;
 
 final class PromoteDataPersister implements ContextAwareDataPersisterInterface {
     public function __construct(
-        private EntityManagerInterface $em,
-        private Registry $registry,
-        private RequestStack $stack
+        private readonly EntityManagerInterface $em,
+        private readonly Registry $registry,
+        private readonly RequestStack $stack
     ) {
     }
 
@@ -24,7 +24,9 @@ final class PromoteDataPersister implements ContextAwareDataPersisterInterface {
      * @param mixed[] $context
      */
     public function persist($data, array $context = []): Entity {
-        if (empty($transition = $this->getCurrentRequest()->attributes->get('transition'))) {
+        /** @var string $transition */
+        $transition = $this->getCurrentRequest()->attributes->get('transition');
+        if (empty($transition)) {
             throw new BadRequestException('Missing "transition" parameter.');
         }
         $workflow = $this->registry->get($data);

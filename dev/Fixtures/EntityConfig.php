@@ -7,41 +7,47 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Illuminate\Support\Collection;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use UnexpectedValueException;
 
+/**
+ * @phpstan-import-type PropertyConfigArray from PropertyConfig
+ *
+ * @phpstan-type ConvertedEntity Collection<string, bool|int|float|string>
+ * @phpstan-type Entity array<string, bool|int|float|string>
+ */
 final class EntityConfig {
-    /** @var mixed[] */
+    /** @var Entity[] */
     private array $data = [];
 
     private ?string $deleted;
 
-    /** @var Collection<int, mixed> */
-    private Collection $entities;
+    /** @var Collection<int, ConvertedEntity> */
+    private readonly Collection $entities;
 
     /** @var array<int, int> */
     private array $ids = [];
 
     /** @var array<string, PropertyConfig> */
-    private array $properties;
+    private readonly array $properties;
 
     /**
-     * @param ClassMetadata<object> $metadata
-     * @param array{deleted?: string, properties: array{country?: bool, customscode?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string}[]} $config
+     * @param ClassMetadata<object>                                                   $metadata
+     * @param array{deleted?: string, properties: array<string, PropertyConfigArray>} $config
      */
     public function __construct(
-        private Configurations $configurations,
-        private ExpressionLanguage $exprLang,
-        private ClassMetadata $metadata,
+        private readonly Configurations $configurations,
+        private readonly ExpressionLanguage $exprLang,
+        private readonly ClassMetadata $metadata,
         array $config
     ) {
         $this->deleted = $config['deleted'] ?? null;
-        /** @var mixed[] entities */
+        /** @var ConvertedEntity[] entities */
         $entities = [];
         $this->entities = collect($entities);
-        $this->properties = collect($config['properties'])
-            ->map(static function (array $config): PropertyConfig {
-                /** @var array{country?: bool, customscode?: bool, force_value?: string, new?: bool, new_name: string, new_ref?: class-string, old_ref?: string} $config */
-                return new PropertyConfig($config);
-            })
+        /** @var Collection<string, PropertyConfigArray> $properties */
+        $properties = collect($config['properties']);
+        $this->properties = $properties
+            ->map(static fn (array $config): PropertyConfig => new PropertyConfig($config))
             ->all();
     }
 
@@ -51,7 +57,7 @@ final class EntityConfig {
     }
 
     /**
-     * @return mixed
+     * @return ConvertedEntity|null
      */
     public function findData(int $id) {
         return $this->entities->first(fn (Collection $entity): bool => $entity['id'] === $this->ids[$id]);
@@ -66,7 +72,7 @@ final class EntityConfig {
     }
 
     /**
-     * @return mixed[]
+     * @return Entity[]
      */
     public function getData(): array {
         return $this->data;
@@ -84,7 +90,7 @@ final class EntityConfig {
     }
 
     /**
-     * @param mixed[] $data
+     * @param Entity[] $data
      */
     public function setData(array $data, int $count): void {
         $this->data = $data;
@@ -94,28 +100,30 @@ final class EntityConfig {
                 continue;
             }
 
-            $transformed = ['id' => $id = ++$count];
+            /** @var ConvertedEntity $transformed */
+            $transformed = collect(['id' => $id = ++$count]);
             $this->ids[(int) ($entity['id'])] = $id;
             foreach ($this->properties as $property => $config) {
+                /** @var bool|float|int|string $value */
                 $value = !$config->isNew() ? $entity[$property] : null;
                 if (is_string($value)) {
                     $value = trim($value);
                 }
-                if ($config->isCountry()) {
-                    $value = $this->configurations->getCountry($value);
+                if ($config->isCountry() && is_numeric($value)) {
+                    $value = $this->configurations->getCountry((int) $value);
                 }
-                if ($config->isCustomscode()) {
-                    $value = $this->configurations->getCustomscode($value);
+                if ($config->isCustomscode() && is_numeric($value)) {
+                    $value = $this->configurations->getCustomscode((int) $value);
                 }
                 if (!empty($forceValue = $config->getForceValue())) {
                     $value = $this->exprLang->evaluate($forceValue, $entity);
                 }
-                if (!empty($ref = $config->getOldRef())) {
-                    $value = $this->configurations->getId($ref, $value);
+                if (!empty($ref = $config->getOldRef()) && is_numeric($value)) {
+                    $value = $this->configurations->getId($ref, (int) $value);
                 }
                 $transformed[$config->getNewName()] = $value;
             }
-            $this->entities->push(collect($transformed));
+            $this->entities->push($transformed);
         }
     }
 
@@ -148,6 +156,11 @@ final class EntityConfig {
     }
 
     private function getMaxColumns(): int {
-        return $this->entities->max(static fn (Collection $entity): int => $entity->keys()->count());
+        /** @var ConvertedEntity|int $max */
+        $max = $this->entities->max(static fn (Collection $entity): int => $entity->keys()->count());
+        if (is_int($max)) {
+            return $max;
+        }
+        throw new UnexpectedValueException(sprintf('Expected argument of type "int", "%s" given', get_debug_type($max)));
     }
 }

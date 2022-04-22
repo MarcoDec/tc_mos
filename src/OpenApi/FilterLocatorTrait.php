@@ -13,7 +13,7 @@ trait FilterLocatorTrait {
 
     private function getFilter(string $filterId): ?FilterInterface {
         return $this->filterLocator instanceof ContainerInterface && $this->filterLocator->has($filterId)
-            ? $this->filterLocator->get($filterId)
+            ? (($filter = $this->filterLocator->get($filterId)) instanceof FilterInterface ? $filter : null)
             : null;
     }
 

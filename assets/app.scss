@@ -12,17 +12,37 @@
   background-color: #8ac2f1;
 }
 
+.btn-icon {
+  height: 20px;
+  line-height: .8;
+  margin: 3.5px;
+  padding: 1px;
+  width: 20px;
+
+  i {
+    vertical-align: middle;
+  }
+}
+
+.container {
+  min-width: 100%;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
 .overlay {
   background-color: #EFEFEF;
   height: 100%;
   left: 0;
   opacity: .5;
-  position: fixed;
+  position: absolute;
   top: 0;
   width: 100%;
   z-index: 1000;
 }
 
-.pointer {
+th[aria-sort] {
   cursor: pointer;
 }

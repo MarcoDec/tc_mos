@@ -5,7 +5,6 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Traits\FileTrait;
-use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,29 +15,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\MappedSuperclass]
 abstract class Family extends Entity implements FileEntity {
     use FileTrait;
-    use NameTrait;
 
-    /** @var Collection<int, mixed> */
+    /** @var Collection<int, static> */
     protected Collection $children;
 
-    #[
-        ApiProperty(description: 'Nom', required: true),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
     protected ?string $name = null;
 
-    /** @var null|self */
-    #[
-        ApiProperty(description: 'Famille parente', readableLink: false),
-        Serializer\Groups(['read:family', 'write:family'])
-    ]
+    /** @var null|static */
     protected $parent;
 
     #[
         ApiProperty(description: 'Code douanier', example: '8544300089'),
-        ORM\Column(nullable: true),
+        Assert\Length(min: 4, max: 10),
+        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $customsCode = null;
@@ -48,6 +37,9 @@ abstract class Family extends Entity implements FileEntity {
         $this->children = new ArrayCollection();
     }
 
+    /**
+     * @param static $children
+     */
     final public function addChildren(self $children): self {
         if (!$this->children->contains($children)) {
             $this->children->add($children);
@@ -57,7 +49,7 @@ abstract class Family extends Entity implements FileEntity {
     }
 
     /**
-     * @return Collection<int, self>
+     * @return Collection<int, static>
      */
     final public function getChildren(): Collection {
         return $this->children;
@@ -75,6 +67,17 @@ abstract class Family extends Entity implements FileEntity {
         return $this->parent;
     }
 
+    #[
+        Pure,
+        Serializer\Groups(['read:family'])
+    ]
+    final public function getParentId(): int {
+        return $this->parent?->getId() ?? 0;
+    }
+
+    /**
+     * @param static $children
+     */
     final public function removeChildren(self $children): self {
         if ($this->children->contains($children)) {
             $this->children->removeElement($children);
@@ -95,6 +98,9 @@ abstract class Family extends Entity implements FileEntity {
         return $this;
     }
 
+    /**
+     * @param null|static $parent
+     */
     final public function setParent(?self $parent): self {
         $this->parent = $parent;
         return $this;

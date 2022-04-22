@@ -1,24 +1,26 @@
-<script lang="ts" setup>
-    import type {FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps, inject, ref} from 'vue'
-    import type {Ref} from 'vue'
-    import type {Violation} from '../../../types/types'
+<script setup>
+    import AppLabel from './AppLabel'
+    import {FiniteStateMachineRepository} from '../../../store/modules'
+    import {computed} from 'vue'
+    import {useRepo} from '../../../composition'
 
-    const emit = defineEmits<{
-        (e: 'update:modelValue', value: FormValue): void
-        (e: 'input', payload: {value: FormValue, name: string}): void
-    }>()
-    const props = defineProps<{field: FormField, form: string, modelValue?: FormValue}>()
-    const inputFields = computed<FormField>(() => ({
+    const emit = defineEmits(['input', 'update:modelValue'])
+    const repo = useRepo(FiniteStateMachineRepository)
+    const props = defineProps({
+        field: {required: true, type: Object},
+        form: {required: true, type: String},
+        modelValue: {default: null},
+        stateMachine: {required: true, type: String}
+    })
+    const normalizedField = computed(() => ({
         ...props.field,
         id: props.field.id ?? `${props.form}-${props.field.name}`
     }))
-    const labelCols = computed(() => props.field.labelCols ?? 2)
-    const violations = inject<Ref<Violation[]>>('violations', ref([]))
-    const violation = computed(() => violations.value.find(({propertyPath}) => propertyPath === props.field.name) ?? null)
+    const state = computed(() => repo.find(props.stateMachine))
+    const violation = computed(() => state.value?.findViolation(props.field) ?? null)
     const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
 
-    function input(value: FormValue): void {
+    function input(value) {
         emit('update:modelValue', value)
         emit('input', {name: props.field.name, value})
     }
@@ -26,15 +28,15 @@
 
 <template>
     <AppRow class="mb-3">
-        <AppLabel :cols="labelCols">
-            {{ field.label }}
+        <AppLabel>
+            {{ normalizedField.label }}
         </AppLabel>
         <AppCol>
             <AppInputGuesser
                 :class="isInvalid"
-                :field="inputFields"
+                :field="normalizedField"
+                :form="form"
                 :model-value="modelValue"
-                no-label
                 @update:model-value="input"/>
             <AppInvalidFeedback v-if="violation !== null">
                 {{ violation.message }}

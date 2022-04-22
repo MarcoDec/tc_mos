@@ -28,14 +28,15 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Modifie une devise',
                     'summary' => 'Modifie une devise',
-                ]
+                ],
+                'validate' => false
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:currency', 'write:currency'],
+            'groups' => ['write:currency'],
             'openapi_definition_name' => 'Currency-write'
         ],
         normalizationContext: [
@@ -44,11 +45,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity(repositoryClass: CurrencyRepository::class),
-    ORM\Table
+    ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
 class Currency extends AbstractUnit {
-    /** @var Collection<int, Unit> */
     #[
         ApiProperty(description: 'Enfants ', readableLink: false, example: ['/api/currencies/2', '/api/currencies/3']),
         ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
@@ -56,13 +55,19 @@ class Currency extends AbstractUnit {
     ]
     protected Collection $children;
 
-    #[ORM\Column(nullable: true)]
+    #[
+        ApiProperty(description: 'Code ', required: true, example: 'EUR'),
+        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
+        Serializer\Groups(['read:unit', 'write:unit'])
+    ]
+    protected ?string $code = null;
+
     protected ?string $name = null;
 
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/currencies/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:currency', 'write:currency'])
+        Serializer\Groups(['read:currency'])
     ]
     protected $parent;
 

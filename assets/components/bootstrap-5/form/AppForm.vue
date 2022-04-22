@@ -1,44 +1,70 @@
-<script lang="ts" setup>
-    import type {FormField, FormValue, FormValues} from '../../../types/bootstrap-5'
-    import {defineEmits, defineProps, ref, withDefaults} from 'vue'
-    import clone from 'clone'
+<script setup>
+    import {computed, ref} from 'vue'
+    import AppFormGroup from './AppFormGroup.vue'
+    import {FiniteStateMachineRepository} from '../../../store/modules'
+    import {useRepo} from '../../../composition'
 
-    const form = ref<HTMLFormElement>()
-    const emit = defineEmits<{
-        (e: 'submit', values: FormData): void
-        (e: 'update:modelValue', values: FormValues): void
-    }>()
-    const props = withDefaults(
-        defineProps<{fields: FormField[], id: string, modelValue?: FormValues}>(),
-        {modelValue: () => ({})}
-    )
+    const emit = defineEmits(['submit', 'update:modelValue'])
+    const form = ref()
+    const props = defineProps({
+        fields: {default: () => [], type: Array},
+        id: {required: true, type: String},
+        inline: {required: false, type: Boolean},
+        modelValue: {default: () => ({}), type: Object},
+        multipart: {type: Boolean},
+        stateMachine: {required: true, type: String}
+    })
+    const displayInline = computed(() => ({'d-inline': props.inline, 'm-0': props.inline, 'p-0': props.inline}))
+    const repo = useRepo(FiniteStateMachineRepository)
+    const state = computed(() => repo.find(props.stateMachine))
+    const error = computed(() => state.value?.error ?? null)
+    const loading = computed(() => state.value?.loading ?? false)
+    const status = computed(() => state.value?.status ?? 200)
 
-    function input(value: {value: FormValue, name: string}): void {
-        const cloned = clone(props.modelValue)
-        cloned[value.name] = value.value
-        emit('update:modelValue', cloned)
+    function input(value) {
+        emit('update:modelValue', {...props.modelValue, [value.name]: value.value})
     }
 
-    function submit(): void {
-        if (typeof form.value !== 'undefined')
-            emit('submit', new FormData(form.value))
+    function submit() {
+        const data = new FormData(form.value)
+        if (props.multipart) {
+            emit('submit', data)
+            return
+        }
+
+        const json = {}
+        for (const [key, value] of data.entries())
+            json[key] = value
+        emit('submit', json)
     }
 </script>
 
 <template>
-    <form :id="id" ref="form" autocomplete="off" @submit.prevent="submit">
-        <AppFormGroup
-            v-for="field in fields"
-            :key="field.name"
-            :field="field"
-            :form="id"
-            :model-value="modelValue[field.name]"
-            @input="input"/>
-        <div class="float-start">
-            <slot name="start"/>
-        </div>
-        <div class="float-end">
-            <slot/>
-        </div>
-    </form>
+    <AppOverlay :css="displayInline" :loading="loading">
+        <AppAlert v-if="error !== null">
+            <AppBadge>{{ status }}</AppBadge>
+            {{ error }}
+        </AppAlert>
+        <form :id="id" ref="form" :class="displayInline" autocomplete="off" @submit.prevent="submit">
+            <slot v-if="inline"/>
+            <template v-else>
+                <AppFormGroup
+                    v-for="field in fields"
+                    :key="field.name"
+                    :field="field"
+                    :form="id"
+                    :model-value="modelValue[field.name]"
+                    :state-machine="stateMachine"
+                    @input="input"/>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <slot name="start"/>
+                    </div>
+                    <div>
+                        <slot/>
+                    </div>
+                </div>
+            </template>
+        </form>
+    </AppOverlay>
 </template>

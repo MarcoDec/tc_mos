@@ -9,7 +9,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use App\Filter\NumericFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -33,7 +32,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un délai de paiement des factures',
                     'summary' => 'Créer un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -41,18 +41,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un délai de paiement des factures',
                     'summary' => 'Supprime un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un délai de paiement des factures',
                     'summary' => 'Modifie un délai de paiement des factures',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:invoice-time-due', 'write:name'],
@@ -69,20 +71,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('name')
 ]
 class InvoiceTimeDue extends Entity {
-    use NameTrait;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name']),
-        Assert\NotBlank
-    ]
-    protected ?string $name = null;
-
     #[
         ApiProperty(description: 'Jours ', example: 30),
         Assert\Length(min: 0, max: 31),
-        ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
+        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
     private ?int $days = 0;
@@ -90,7 +82,7 @@ class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
         Assert\Length(min: 0, max: 31),
-        ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
+        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
     private ?int $daysAfterEndOfMonth = 0;
@@ -101,6 +93,15 @@ class InvoiceTimeDue extends Entity {
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
     private ?bool $endOfMonth = false;
+
+    #[
+        ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:name', 'write:name']),
+        Assert\Length(min: 3, max: 30),
+        Assert\NotBlank
+    ]
+    private ?string $name = null;
 
     final public function getDays(): ?int {
         return $this->days;
@@ -114,6 +115,10 @@ class InvoiceTimeDue extends Entity {
         return $this->endOfMonth;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function setDays(?int $days): self {
         $this->days = $days;
         return $this;
@@ -121,11 +126,17 @@ class InvoiceTimeDue extends Entity {
 
     final public function setDaysAfterEndOfMonth(?int $daysAfterEndOfMonth): self {
         $this->daysAfterEndOfMonth = $daysAfterEndOfMonth;
+        $this->setEndOfMonth();
         return $this;
     }
 
-    final public function setEndOfMonth(?bool $endOfMonth): self {
-        $this->endOfMonth = $endOfMonth;
+    final public function setEndOfMonth(?bool $endOfMonth = false): self {
+        $this->endOfMonth = $endOfMonth || $this->daysAfterEndOfMonth > 0;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 }

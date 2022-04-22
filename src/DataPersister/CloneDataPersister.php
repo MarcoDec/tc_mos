@@ -3,11 +3,20 @@
 namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
+use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
+use ApiPlatform\Core\Util\RequestAttributesExtractor;
+use ApiPlatform\Core\Validator\ValidatorInterface;
 use App\Entity\Entity;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class CloneDataPersister implements ContextAwareDataPersisterInterface {
-    final public function __construct(protected EntityManagerInterface $em) {
+    final public function __construct(
+        protected readonly EntityManagerInterface $em,
+        private readonly ResourceMetadataFactoryInterface $metadataFactory,
+        private readonly RequestStack $requestStack,
+        private readonly ValidatorInterface $validator
+    ) {
     }
 
     /**
@@ -16,7 +25,8 @@ class CloneDataPersister implements ContextAwareDataPersisterInterface {
      */
     final public function persist($data, array $context = []): Entity {
         $this->em->detach($data);
-        $this->em->persist($clone = clone $data);
+        $this->validate($clone = clone $data);
+        $this->em->persist($clone);
         $this->update($data, $clone);
         $this->em->flush();
         return $clone;
@@ -44,5 +54,20 @@ class CloneDataPersister implements ContextAwareDataPersisterInterface {
      * @param Entity $clone
      */
     protected function update($data, $clone): void {
+    }
+
+    private function validate(Entity $data): void {
+        if (empty($request = $this->requestStack->getCurrentRequest())) {
+            return;
+        }
+        $attributes = RequestAttributesExtractor::extractAttributes($request);
+        $this->validator->validate(
+            data: $data,
+            context: ['groups' => $this->metadataFactory->create($attributes['resource_class'])->getOperationAttribute(
+                attributes: $attributes,
+                key: 'validation_groups',
+                resourceFallback: true
+            )]
+        );
     }
 }

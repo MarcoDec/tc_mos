@@ -119,28 +119,31 @@ final class MeasureTest extends TestCase {
     }
 
     protected function setUp(): void {
+        /** @var Unit $h */
         $h = (new Unit())->setBase(3600)->setCode('h');
+        /** @var Unit $s */
+        $s = (new Unit())->setBase(1)->setCode('s')->addChild($h);
+
+        /** @var Unit $mg */
         $mg = (new Unit())->setBase(0.001)->setCode('mg');
+        /** @var Unit $kg */
         $kg = (new Unit())->setBase(1000)->setCode('kg');
+        /** @var Unit $g */
+        $g = (new Unit())->setBase(1)->setCode('g')->addChild($kg)->addChild($mg);
+
+        /** @var Unit $km */
         $km = (new Unit())->setBase(1000)->setCode('km');
+        /** @var Unit $m */
+        $m = (new Unit())->setBase(1)->setCode('m')->addChild($km);
+
         $this->units = [
             'h' => $h,
-            'g' => (new Unit())
-                ->setBase(1)
-                ->setCode('g')
-                ->addChild($kg)
-                ->addChild($mg),
+            'g' => $g,
             'kg' => $kg,
             'km' => $km,
-            'm' => (new Unit())
-                ->setBase(1)
-                ->setCode('m')
-                ->addChild($km),
+            'm' => $m,
             'mg' => $mg,
-            's' => (new Unit())
-                ->setBase(1)
-                ->setCode('s')
-                ->addChild($h),
+            's' => $s
         ];
     }
 }

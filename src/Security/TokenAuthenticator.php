@@ -18,10 +18,13 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
 final class TokenAuthenticator extends AbstractAuthenticator {
-    public function __construct(private AccessMapInterface $map, private TokenRepository $tokenRepo) {
+    public function __construct(private readonly AccessMapInterface $map, private readonly TokenRepository $tokenRepo) {
     }
 
     private static function getBearer(Request $request): ?string {
+        if ($request->cookies->has('token')) {
+            return $request->cookies->get('token');
+        }
         $authorization = $request->headers->get('Authorization');
         if (empty($authorization)) {
             return null;
@@ -59,6 +62,6 @@ final class TokenAuthenticator extends AbstractAuthenticator {
 
     public function supports(Request $request): ?bool {
         $roles = $this->map->getPatterns($request)[0];
-        return empty($roles) || !in_array('IS_AUTHENTICATED_ANONYMOUSLY', $roles);
+        return empty($roles) || !in_array('IS_AUTHENTICATED_ANONYMOUSLY', $roles) || $request->cookies->has('token');
     }
 }

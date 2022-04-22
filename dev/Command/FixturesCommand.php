@@ -14,19 +14,22 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * @method static string getDefaultName()
+ *
+ * @phpstan-import-type CodeJson from Configurations
+ * @phpstan-import-type Entity from Configurations
  */
 final class FixturesCommand extends AbstractCommand {
     private const DOCTRINE_FIXTURES_COMMAND = 'doctrine:fixtures:load';
 
     protected static $defaultDescription = 'Transfert les données de l\'ancien système vers le nouveau.';
     protected static $defaultName = 'gpao:fixtures:load';
-    private Configurations $configurations;
+    private readonly Configurations $configurations;
 
     public function __construct(
-        private string $configDir,
+        private readonly string $configDir,
         EntityManagerInterface $em,
-        private string $jsonDir,
-        private string $jsonPrefix
+        private readonly string $jsonDir,
+        private readonly string $jsonPrefix
     ) {
         parent::__construct();
         $this->configurations = new Configurations($em);
@@ -100,7 +103,9 @@ final class FixturesCommand extends AbstractCommand {
             throw new RuntimeException("Invalid $json.");
         }
 
-        $this->configurations->setCountries(json_decode($json, true));
+        /** @var CodeJson[] $countries */
+        $countries = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->configurations->setCountries($countries);
     }
 
     private function loadCustomscode(): void {
@@ -108,7 +113,9 @@ final class FixturesCommand extends AbstractCommand {
             throw new RuntimeException("Invalid $json.");
         }
 
-        $this->configurations->setCustomscode(json_decode($json, true));
+        /** @var CodeJson[] $customscode */
+        $customscode = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->configurations->setCustomscode($customscode);
     }
 
     private function loadJSON(): void {
@@ -152,10 +159,9 @@ final class FixturesCommand extends AbstractCommand {
                 throw new RuntimeException("Invalid $json.");
             }
 
-            $this->configurations->setData(
-                name: $name,
-                data: json_decode($json, true)
-            );
+            /** @var Entity[] $entities */
+            $entities = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            $this->configurations->setData(name: $name, data: $entities);
         }
 
         $processed->push($file);

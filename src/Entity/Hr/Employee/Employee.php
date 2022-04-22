@@ -7,7 +7,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -29,9 +28,6 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
         ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
-        ],
         normalizationContext: [
             'groups' => ['read:id', 'read:employee', 'read:name', 'read:user'],
             'openapi_definition_name' => 'Employee-read'
@@ -40,12 +36,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
-    use NameTrait;
-
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Super'),
+        Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 30),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
@@ -59,12 +54,13 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[ORM\Embedded]
     private Roles $embRoles;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'char', length: 60, options: ['charset' => 'ascii'])]
     private ?string $password = null;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
-        ORM\Column(length: 180),
+        Assert\Length(min: 3, max: 20),
+        ORM\Column(length: 20, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:employee'])
     ]
     private ?string $username = null;
@@ -113,6 +109,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
 
     final public function getEmbRoles(): Roles {
         return $this->embRoles;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     /**
@@ -176,6 +176,11 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
 
     final public function removeRole(string $role): self {
         $this->embRoles->removeRole($role);
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 

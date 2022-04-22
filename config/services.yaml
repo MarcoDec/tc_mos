@@ -58,6 +58,13 @@ services:
         event: postLoad
         name: doctrine.orm.entity_listener
 
+  App\EventListener\Hr\Employee\NotificationListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Hr\Employee\Notification
+        event: preRemove
+        name: doctrine.orm.entity_listener
+
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'
@@ -80,6 +87,13 @@ services:
       - dispatcher: security.event_dispatcher.main
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
+
+  App\EventListener\WriteListener:
+    autoconfigure: false
+    tags:
+      - event: kernel.view
+        name: kernel.event_listener
+        priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::PRE_WRITE
 
   App\Filesystem\FileManager:
     arguments:
