@@ -28,9 +28,6 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
         ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
-        ],
         normalizationContext: [
             'groups' => ['read:id', 'read:employee', 'read:name', 'read:user'],
             'openapi_definition_name' => 'Employee-read'
