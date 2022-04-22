@@ -11,6 +11,7 @@
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         id: {required: true, type: String},
+        method: {default: null, type: String},
         modelValue: {default: null},
         noLabel: {required: false, type: Boolean},
         size: {default: 'sm', type: String}
@@ -42,6 +43,7 @@
         :id="id"
         :disabled="disabled"
         :field="field"
+        :method="method"
         :model-value="modelValue"
         :no-label="noLabel"
         :size="size"

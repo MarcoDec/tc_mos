@@ -29,6 +29,7 @@
             :field="searchField"
             :form="form"
             :model-value="modelValue"
+            method="optionsId"
             @update:model-value="input"/>
     </td>
 </template>

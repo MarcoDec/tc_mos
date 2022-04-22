@@ -7,11 +7,12 @@
     const props = defineProps({
         field: {required: true, type: Object},
         id: {required: true, type: String},
+        method: {default: null, type: String},
         modelValue: {default: null},
         size: {default: 'sm', type: String}
     })
     const repo = useRepo(props.field.repo)
-    const options = computed(() => repo.options)
+    const options = computed(() => repo[props.method ?? 'options'])
     const sizeClass = computed(() => `form-select-${props.size}`)
     const value = computed(() => (props.modelValue !== null && typeof props.modelValue === 'object'
         ? props.modelValue['@id']

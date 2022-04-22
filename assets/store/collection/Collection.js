@@ -16,7 +16,7 @@ export default class Collection extends Model {
     }
 
     get order() {
-        return this.sort === null ? {} : {[`order[${this.sort}]`]: this.asc ? 'asc' : 'desc'}
+        return this.sort === null ? {} : {[`order[${this.sortName}]`]: this.asc ? 'asc' : 'desc'}
     }
 
     get pages() {
@@ -36,6 +36,7 @@ export default class Collection extends Model {
             prev: this.number(1),
             search: this.attr({}),
             sort: this.string(null),
+            sortName: this.string(null),
             total: this.number(0)
         }
     }

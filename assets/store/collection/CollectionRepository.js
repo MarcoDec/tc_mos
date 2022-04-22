@@ -48,6 +48,7 @@ export default class CollectionRepository extends Repository {
         else {
             clone.asc = false
             clone.sort = field.name
+            clone.sortName = field.sortName ?? field.name
         }
         this.save(clone)
     }

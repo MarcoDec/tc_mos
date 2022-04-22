@@ -5,7 +5,11 @@ export default class UnitRepository extends EntityRepository {
     use = Unit
 
     get options() {
-        return [...this.withAll().get().map(unit => unit.option)].sort((a, b) => a.text.localeCompare(b.text))
+        return [...this.all().map(unit => unit.option)].sort((a, b) => a.text.localeCompare(b.text))
+    }
+
+    get optionsId() {
+        return [...this.all().map(unit => unit.optionId)].sort((a, b) => a.text.localeCompare(b.text))
     }
 
     async create(body, vue) {

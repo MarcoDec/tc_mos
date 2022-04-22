@@ -20,6 +20,7 @@ use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
+use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
 use App\Repository\Project\Product\ProductRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -34,8 +35,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['expirationDate']),
+    ApiFilter(filterClass: EnumFilter::class, properties: ['currentPlace.name']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['index', 'kind', 'ref']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['currentPlace' => 'name', 'family' => 'name']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'index' => 'partial',
         'kind' => 'partial',

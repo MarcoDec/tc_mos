@@ -122,6 +122,7 @@ export default [
                     name: 'parent',
                     repo: UnitRepository,
                     sort: true,
+                    sortName: 'parent.code',
                     type: 'select',
                     update: true
                 }

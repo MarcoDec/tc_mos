@@ -23,7 +23,8 @@ class CurrentPlace extends AbstractCurrentPlace {
     ];
 
     #[
-        ApiProperty(description: 'Nom', required: true),
+        ApiProperty(description: 'Nom', required: true, openapiContext: ['enum' => CurrentPlaceType::TYPES]),
+        Assert\Choice(choices: CurrentPlaceType::TYPES),
         Assert\NotBlank,
         ORM\Column(type: 'product_current_place', options: ['charset' => 'ascii', 'default' => CurrentPlaceType::TYPE_DRAFT]),
         Serializer\Groups(['read:current-place'])

@@ -7,6 +7,10 @@ export default class Unit extends Entity {
         return {text: this.code, value: this['@id']}
     }
 
+    get optionId() {
+        return {text: this.code, value: this.id}
+    }
+
     get parentLabel() {
         return this.parentInstance?.code ?? null
     }
