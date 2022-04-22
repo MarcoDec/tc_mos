@@ -58,7 +58,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:incoterms', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'Incoterms-read'
+            'openapi_definition_name' => 'Incoterms-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity,

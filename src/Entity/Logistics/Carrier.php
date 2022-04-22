@@ -5,6 +5,7 @@ namespace App\Entity\Logistics;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -15,6 +16,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
+    ApiFilter(filterClass: OrderFilter::class, id: 'address-sorter', properties: Address::sorter),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: Address::filter),
     ApiResource(
@@ -60,7 +63,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:address', 'read:carrier', 'read:id'],
-            'openapi_definition_name' => 'Carrier-read'
+            'openapi_definition_name' => 'Carrier-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity

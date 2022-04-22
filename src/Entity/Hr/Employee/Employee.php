@@ -30,7 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:employee', 'read:name', 'read:user'],
-            'openapi_definition_name' => 'Employee-read'
+            'openapi_definition_name' => 'Employee-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity

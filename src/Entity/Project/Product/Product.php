@@ -164,7 +164,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:current-place', 'read:measure', 'read:product'],
-            'openapi_definition_name' => 'Product-read'
+            'openapi_definition_name' => 'Product-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity(repositoryClass: ProductRepository::class),

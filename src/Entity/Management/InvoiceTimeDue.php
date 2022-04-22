@@ -65,7 +65,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:invoice-time-due', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'InvoiceTimeDue-read'
+            'openapi_definition_name' => 'InvoiceTimeDue-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity(repositoryClass: InvoiceTimeDueRepository::class),

@@ -6,8 +6,8 @@ export default class Color extends Entity {
     static fields() {
         return {
             ...super.fields(),
-            name: this.string(null),
-            rgb: this.string(null)
+            name: this.string(null).nullable(),
+            rgb: this.string(null).nullable()
         }
     }
 }

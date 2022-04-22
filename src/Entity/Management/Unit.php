@@ -61,7 +61,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:name', 'read:unit'],
-            'openapi_definition_name' => 'Unit-read'
+            'openapi_definition_name' => 'Unit-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,

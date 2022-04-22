@@ -72,7 +72,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:family', 'read:file', 'read:id'],
-            'openapi_definition_name' => 'ComponentFamily-read'
+            'openapi_definition_name' => 'ComponentFamily-read',
+            'skip_null_values' => false
         ],
         paginationEnabled: false
     ),

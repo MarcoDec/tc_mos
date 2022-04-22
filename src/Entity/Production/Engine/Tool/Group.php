@@ -43,7 +43,8 @@ use Doctrine\ORM\Mapping as ORM;
         ],
         normalizationContext: [
             'groups' => ['read:engine-group', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'ToolGroup-read'
+            'openapi_definition_name' => 'ToolGroup-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,

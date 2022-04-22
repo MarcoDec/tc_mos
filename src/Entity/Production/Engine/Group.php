@@ -55,7 +55,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:engine-group', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'EngineGroup-read'
+            'openapi_definition_name' => 'EngineGroup-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'engine_type'),

@@ -9,7 +9,7 @@ export default class InvoiceTimeDue extends Entity {
             days: this.number(0),
             daysAfterEndOfMonth: this.number(0),
             endOfMonth: this['boolean'](false),
-            name: this.string(null)
+            name: this.string(null).nullable()
         }
     }
 }

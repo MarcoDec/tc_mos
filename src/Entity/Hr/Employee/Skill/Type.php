@@ -59,7 +59,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:name'],
-            'openapi_definition_name' => 'SkillType-read'
+            'openapi_definition_name' => 'SkillType-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,

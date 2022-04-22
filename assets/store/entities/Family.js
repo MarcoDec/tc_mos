@@ -21,7 +21,7 @@ export default class Family extends Entity {
             code: this.string(null).nullable(),
             copperable: this['boolean'](false),
             customsCode: this.string(null).nullable(),
-            name: this.string(null),
+            name: this.string(null).nullable(),
             node: this.belongsTo(Node, 'nodeId'),
             nodeId: this.string(null).nullable(),
             parentId: this.number(0)

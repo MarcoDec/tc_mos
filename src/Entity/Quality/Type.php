@@ -58,7 +58,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:name'],
-            'openapi_definition_name' => 'QualityType-read'
+            'openapi_definition_name' => 'QualityType-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity,

@@ -60,7 +60,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:color', 'read:id'],
-            'openapi_definition_name' => 'Color-read'
+            'openapi_definition_name' => 'Color-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity,

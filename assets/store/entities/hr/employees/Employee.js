@@ -7,6 +7,18 @@ export default class Employee extends Entity {
         return this.has('ROLE_IT_ADMIN')
     }
 
+    get isLogisticsAdmin() {
+        return this.has('ROLE_LOGISTICS_ADMIN')
+    }
+
+    get isLogisticsReader() {
+        return this.isLogisticsWriter || this.has('ROLE_LOGISTICS_READER')
+    }
+
+    get isLogisticsWriter() {
+        return this.isLogisticsAdmin || this.has('ROLE_LOGISTICS_WRITER')
+    }
+
     get isManagementAdmin() {
         return this.has('ROLE_MANAGEMENT_ADMIN')
     }
@@ -46,7 +58,7 @@ export default class Employee extends Entity {
     static fields() {
         return {
             ...super.fields(),
-            name: this.string(null),
+            name: this.string(null).nullable(),
             roles: this.attr([])
         }
     }

@@ -63,6 +63,9 @@
                     </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
+                    <AppNavbarLink disabled icon="laptop-code" to="it-requests" variant="danger">
+                        Demandes
+                    </AppNavbarLink>
                     <AppDropdownItem variant="warning">
                         Administrateur
                     </AppDropdownItem>
@@ -74,6 +77,14 @@
                         <Fa icon="database"/>
                         Base de données
                     </a>
+                </AppNavbarItem>
+                <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
+                    <AppDropdownItem variant="success">
+                        Lecteur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">
+                        Transporteurs
+                    </AppNavbarLink>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isProjectReader" id="project" icon="industry" title="Projet">
                     <template v-if="user.isProjectAdmin">

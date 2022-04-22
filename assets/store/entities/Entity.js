@@ -1,4 +1,5 @@
 import {Model} from '../modules'
+import {get} from 'lodash'
 
 export default class Entity extends Model {
     static entity = 'entities'
@@ -6,16 +7,16 @@ export default class Entity extends Model {
     static fields() {
         return {
             ...super.fields(),
-            '@context': this.string(null),
-            '@id': this.string(null),
-            '@type': this.string(null)
+            '@context': this.string(null).nullable(),
+            '@id': this.string(null).nullable(),
+            '@type': this.string(null).nullable()
         }
     }
 
     tableItem(fields) {
         const item = {delete: true, id: this.id, update: true}
         for (const field of fields)
-            item[field.name] = this[field.name]
+            item[field.name] = get(this, field.name)
         return item
     }
 }

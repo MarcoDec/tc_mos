@@ -35,8 +35,8 @@ export default class Collection extends Model {
             perPage: this.number(15),
             prev: this.number(1),
             search: this.attr({}),
-            sort: this.string(null),
-            sortName: this.string(null),
+            sort: this.string(null).nullable(),
+            sortName: this.string(null).nullable(),
             total: this.number(0)
         }
     }

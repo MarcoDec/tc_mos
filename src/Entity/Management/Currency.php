@@ -41,7 +41,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'groups' => ['read:currency', 'read:id'],
-            'openapi_definition_name' => 'Currency-read'
+            'openapi_definition_name' => 'Currency-read',
+            'skip_null_values' => false
         ],
         paginationEnabled: false
     ),
