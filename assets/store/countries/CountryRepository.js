@@ -26,7 +26,7 @@ export default class CountryRepository extends Repository {
     }
 
     async load() {
-        const response = await fetchApi('/api/countries', 'GET', null)
+        const response = await fetchApi('/api/countries', 'get', {})
         this.fresh(response['hydra:member'])
     }
 }

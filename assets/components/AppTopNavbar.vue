@@ -82,8 +82,19 @@
                     <AppDropdownItem variant="success">
                         Lecteur
                     </AppDropdownItem>
+                    <AppNavbarLink icon="file-contract" to="incoterms" variant="success">
+                        Incoterms
+                    </AppNavbarLink>
                     <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">
                         Transporteurs
+                    </AppNavbarLink>
+                </AppNavbarItem>
+                <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
+                    <AppDropdownItem variant="success">
+                        Lecteur
+                    </AppDropdownItem>
+                    <AppNavbarLink disabled icon="map-marked" to="zones" variant="danger">
+                        Zones
                     </AppNavbarLink>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isProjectReader" id="project" icon="industry" title="Projet">

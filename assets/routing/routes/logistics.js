@@ -1,4 +1,4 @@
-import {CarrierRepository, CountryRepository} from '../../store/modules'
+import {CarrierRepository, CountryRepository, IncotermsRepository} from '../../store/modules'
 
 export default [
     {
@@ -92,6 +92,37 @@ export default [
             icon: 'shuttle-van',
             repo: CarrierRepository,
             title: 'Transporteurs'
+        }
+    },
+    {
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'incoterms',
+        path: '/incoterms',
+        props: {
+            fields: [
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Code',
+                    name: 'code',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                },
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Nom',
+                    name: 'name',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                }
+            ],
+            icon: 'file-contract',
+            repo: IncotermsRepository,
+            title: 'Incoterms'
         }
     }
 ]

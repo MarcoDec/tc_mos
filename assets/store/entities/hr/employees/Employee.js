@@ -31,6 +31,18 @@ export default class Employee extends Entity {
         return this.isManagementAdmin || this.has('ROLE_MANAGEMENT_WRITER')
     }
 
+    get isProductionAdmin() {
+        return this.has('ROLE_PRODUCTION_ADMIN')
+    }
+
+    get isProductionReader() {
+        return this.isProductionWriter || this.has('ROLE_PRODUCTION_READER')
+    }
+
+    get isProductionWriter() {
+        return this.isProductionAdmin || this.has('ROLE_PRODUCTION_WRITER')
+    }
+
     get isProjectAdmin() {
         return this.has('ROLE_PROJECT_ADMIN')
     }
