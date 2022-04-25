@@ -18,7 +18,7 @@
     "@babel/core": "^7.17.9",
     "@babel/eslint-parser": "^7.17.0",
     "@vitejs/plugin-vue": "^2.3.1",
-    "eslint": "^8.13.0",
+    "eslint": "^8.14.0",
     "eslint-plugin-vue": "^8.7.1",
     "humps": "^2.0.1",
     "sass": "^1.50.1",

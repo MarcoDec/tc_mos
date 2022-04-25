@@ -42,7 +42,7 @@
 
     async function update(item) {
         await repoInstance.update(item, id.value)
-        emitter.emit(`${route.name}-update-${item.get('id')}`)
+        emitter.emit(`${route.name}-update-${item.id ?? item.get('id')}`)
     }
 
     onMounted(async () => {

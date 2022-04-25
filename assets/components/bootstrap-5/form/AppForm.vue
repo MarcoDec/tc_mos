@@ -2,6 +2,7 @@
     import {computed, ref} from 'vue'
     import AppFormGroup from './AppFormGroup.vue'
     import {FiniteStateMachineRepository} from '../../../store/modules'
+    import {set} from 'lodash'
     import {useRepo} from '../../../composition'
 
     const emit = defineEmits(['submit', 'update:modelValue'])
@@ -36,7 +37,7 @@
         for (const [key, value] of data.entries()) {
             const normalizedValue = props.fields.find(field => field.name === key)?.type === 'number' ? parseFloat(value) : value
             if (typeof normalizedValue !== 'string' || normalizedValue.length > 0)
-                json[key] = normalizedValue
+                set(json, key, normalizedValue)
         }
         emit('submit', json)
     }

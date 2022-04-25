@@ -72,6 +72,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Carrier extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
+        Assert\Valid,
         ORM\Embedded,
         Serializer\Groups(['read:carrier', 'write:carrier'])
     ]
