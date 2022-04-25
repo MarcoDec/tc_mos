@@ -1,7 +1,7 @@
 <script setup>
-    import AppSelectOption from './AppSelectOption'
+    import AppSelectContent from './AppSelectContent.vue'
     import {computed} from 'vue'
-    import {useRepo} from '../../../../composition'
+    import {useRepo} from '../../../../../composition'
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
@@ -32,6 +32,6 @@
         :value="value"
         class="form-select"
         @input="input">
-        <AppSelectOption v-for="option in options" :key="option.value" :option="option"/>
+        <AppSelectContent v-for="option in options" :key="option.value" :option="option"/>
     </select>
 </template>

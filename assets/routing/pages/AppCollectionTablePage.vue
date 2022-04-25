@@ -1,5 +1,5 @@
 <script setup>
-    import {CollectionRepository, FiniteStateMachineRepository} from '../../store/modules'
+    import {CollectionRepository, CountryRepository, FiniteStateMachineRepository} from '../../store/modules'
     import {computed, onMounted, onUnmounted, ref} from 'vue'
     import {useRepo, useRouter} from '../../composition'
     import emitter from '../../emitter'
@@ -12,6 +12,7 @@
     })
     const {route} = useRouter()
     const collRepo = useRepo(CollectionRepository)
+    const countryRepo = useRepo(CountryRepository)
     const id = computed(() => route.name)
     const coll = computed(() => collRepo.find(id.value))
     const tableId = computed(() => `${id.value}-table`)
@@ -47,6 +48,7 @@
 
     onMounted(async () => {
         stateRepo.create(id.value)
+        await countryRepo.load()
         await load()
         mount.value = true
     })

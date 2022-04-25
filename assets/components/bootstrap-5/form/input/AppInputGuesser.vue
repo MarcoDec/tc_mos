@@ -2,7 +2,7 @@
     import AppInput from './AppInput.vue'
     import AppRadioGroup from './AppRadioGroup.vue'
     import AppSearchBool from './AppSearchBool.vue'
-    import AppSelect from './AppSelect.vue'
+    import AppSelect from './select/AppSelect.vue'
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
 

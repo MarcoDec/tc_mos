@@ -19,7 +19,7 @@ export default async function fetchApi(url, method, body) {
         for (const [key, value] of body.entries())
             if (generatedUrl.includes(`{${key}}`))
                 generatedUrl = generatedUrl.replace(`{${key}}`, value)
-    } else {
+    } else if (body !== null) {
         for (const key in body)
             if (body[key] === null)
                 delete body[key]

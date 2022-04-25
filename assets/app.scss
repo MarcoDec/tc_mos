@@ -28,6 +28,16 @@
   min-width: 100%;
 }
 
+.dropdown-item {
+  &.bg-success {
+    background-color: #57ec57 !important;
+  }
+
+  &.text-success {
+    color: #57ec57 !important;
+  }
+}
+
 .overlay {
   background-color: #EFEFEF;
   height: 100%;
