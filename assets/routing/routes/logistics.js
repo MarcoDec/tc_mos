@@ -31,9 +31,9 @@ export default [
                     create: true,
                     filter: true,
                     label: 'Complément d\'adresse',
-                    name: 'address.address',
+                    name: 'address.address2',
                     sort: true,
-                    sortName: 'address.address',
+                    sortName: 'address.address2',
                     type: 'text',
                     update: true
                 },
