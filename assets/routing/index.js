@@ -4,6 +4,7 @@ import AppLogin from './pages/AppLogin.vue'
 import {EmployeeRepository} from '../store/modules'
 import logistics from './routes/logistics'
 import management from './routes/management'
+import production from './routes/production'
 import project from './routes/project'
 import purchase from './routes/purchase'
 import store from '../store'
@@ -25,6 +26,7 @@ const router = createRouter({
         },
         ...logistics,
         ...management,
+        ...production,
         ...project,
         ...purchase
     ]
