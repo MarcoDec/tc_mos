@@ -1,4 +1,4 @@
-import {CountryRepository, EventTypeRepository, OutTrainerRepository} from '../../store/modules'
+import {CountryRepository, EventTypeRepository, OutTrainerRepository, TimeSlotRepository} from '../../store/modules'
 
 export default [
     {
@@ -124,6 +124,64 @@ export default [
             icon: 'user-graduate',
             repo: OutTrainerRepository,
             title: 'Formateurs extérieurs'
+        }
+    },
+    {
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'time-slots',
+        path: '/time-slots',
+        props: {
+            fields: [
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Nom',
+                    name: 'name',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                },
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Début',
+                    name: 'start',
+                    sort: true,
+                    type: 'time',
+                    update: true
+                },
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Début de la pause',
+                    name: 'startBreak',
+                    sort: true,
+                    type: 'time',
+                    update: true
+                },
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Fin de la pause',
+                    name: 'endBreak',
+                    sort: true,
+                    type: 'time',
+                    update: true
+                },
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Fin',
+                    name: 'end',
+                    sort: true,
+                    type: 'time',
+                    update: true
+                }
+            ],
+            icon: 'clock',
+            repo: TimeSlotRepository,
+            title: 'Plages horaires'
         }
     }
 ]

@@ -151,6 +151,9 @@
                         <AppNavbarLink icon="user-graduate" to="out-trainers" variant="warning">
                             Formateurs extérieurs
                         </AppNavbarLink>
+                        <AppNavbarLink icon="clock" to="time-slots" variant="warning">
+                            Plages horaires
+                        </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
             </AppNavbarCollapse>

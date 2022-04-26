@@ -5,6 +5,7 @@ namespace App\Entity\Production\Engine\Tool;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Production\Engine\Group as EngineGroup;
@@ -12,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['safetyDevice']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Groupe d\'outil',
