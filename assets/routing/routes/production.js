@@ -1,4 +1,5 @@
 import {GroupRepository} from '../../store/modules'
+import {engineGroupOptions} from '../../utils'
 
 export default [
     {
@@ -31,8 +32,9 @@ export default [
                     filter: true,
                     label: 'Type',
                     name: '@type',
+                    options: engineGroupOptions(),
                     sort: false,
-                    type: 'text',
+                    type: 'select',
                     update: false
                 }
             ],

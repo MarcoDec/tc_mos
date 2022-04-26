@@ -11,8 +11,8 @@
         modelValue: {default: null},
         size: {default: 'sm', type: String}
     })
-    const repo = useRepo(props.field.repo)
-    const options = computed(() => repo[props.method ?? 'options'])
+    const repo = typeof props.field.repo === 'string' ? useRepo(props.field.repo) : null
+    const options = computed(() => props.field.options ?? repo[props.method ?? 'options'])
     const sizeClass = computed(() => `form-select-${props.size}`)
     const value = computed(() => (props.modelValue !== null && typeof props.modelValue === 'object'
         ? props.modelValue['@id']
