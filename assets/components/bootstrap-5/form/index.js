@@ -1,5 +1,3 @@
-import {defineAsyncComponent} from 'vue'
-
-export const AppForm = defineAsyncComponent(async () => import('./AppForm.vue'))
-export const AppInputGuesser = defineAsyncComponent(async () => import('./AppInputGuesser.vue'))
-export const AppInvalidFeedback = defineAsyncComponent(async () => import('./AppInvalidFeedback'))
+export {default as AppForm} from './AppForm.vue'
+export {default as AppInputGuesser} from './input/AppInputGuesser.vue'
+export {default as AppInvalidFeedback} from './AppInvalidFeedback'

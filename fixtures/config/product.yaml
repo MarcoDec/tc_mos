@@ -104,6 +104,12 @@ App\Entity\Project\Product\Product:
       new_name: transfert_price_work_code
     typeconditionnement:
       new_name: packaging_kind
+    unit_id:
+      force_value: 1
+      new: true
+      new_name: unit_id
+      new_ref: App\Entity\Logistics\Incoterms
+      old_ref: unit
     volume_previsionnel:
       new_name: forecast_volume_value
     volume_previsionnel_unit:

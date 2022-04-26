@@ -2,9 +2,10 @@
 
 namespace App\Symfony\Component\Stopwatch;
 
+use Stringable;
 use Symfony\Component\Stopwatch\StopwatchEvent as SymfonyStopwatchEvent;
 
-final class StopwatchEvent extends SymfonyStopwatchEvent {
+final class StopwatchEvent extends SymfonyStopwatchEvent implements Stringable {
     public function __toString(): string {
         $string = "{$this->getCategory()}: {$this->getStrMemory()} bytes — ";
         if ($this->hasMinutes()) {

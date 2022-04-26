@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {
-    public const TRANSITIONS = [
+    final public const TRANSITIONS = [
         self::TR_BLOCK,
         self::TR_DISABLE,
         self::TR_PARTIALLY_UNLOCK,
@@ -23,9 +23,10 @@ class CurrentPlace extends AbstractCurrentPlace {
     ];
 
     #[
-        ApiProperty(description: 'Nom', required: true),
+        ApiProperty(description: 'Nom', required: true, openapiContext: ['enum' => CurrentPlaceType::TYPES]),
+        Assert\Choice(choices: CurrentPlaceType::TYPES),
         Assert\NotBlank,
-        ORM\Column(type: 'product_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
+        ORM\Column(type: 'product_current_place', options: ['charset' => 'ascii', 'default' => CurrentPlaceType::TYPE_DRAFT]),
         Serializer\Groups(['read:current-place'])
     ]
     protected ?string $name = null;
@@ -45,5 +46,9 @@ class CurrentPlace extends AbstractCurrentPlace {
 
     final public function isDeletable(): bool {
         return in_array($this->name, [CurrentPlaceType::TYPE_DISABLED, CurrentPlaceType::TYPE_DRAFT]);
+    }
+
+    final public function isFrozen(): bool {
+        return $this->name === CurrentPlaceType::TYPE_DISABLED;
     }
 }

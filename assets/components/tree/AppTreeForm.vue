@@ -1,43 +1,58 @@
 <script setup>
-    import {computed, inject, provide} from 'vue'
-    import {useNamespacedActions, useNamespacedState} from 'vuex-composition-helpers'
+    import {FiniteStateMachineRepository, NodeRepository} from '../../store/modules'
+    import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
+    import {useRepo, useRouter} from '../../composition'
 
     const emit = defineEmits(['submit'])
-    const fields = inject('fields', computed(() => []))
-    const moduleName = inject('moduleName', '')
-    const create = useNamespacedActions(moduleName, ['create']).create
+    const {id: route} = useRouter()
     const props = defineProps({
-        id: {required: true, type: String},
-        state: {default: () => ({}), required: false, type: Object},
-        title: {default: 'Créer une famille', required: false, type: String},
-        update: {required: false, type: Boolean}
+        fields: {required: true, type: Array},
+        id: {default: null, type: String},
+        modelValue: {default: () => ({}), type: Object},
+        repo: {required: true, type: Function},
+        success: {default: 'Créer', type: String},
+        title: {default: 'Créer une famille', type: String},
+        update: {type: Boolean}
     })
-    const formdId = computed(() => `${props.id}-form`)
-    const violations = useNamespacedState(moduleName, ['violations']).violations
+    const safeId = computed(() => props.id ?? route)
+    const form = computed(() => `${safeId.value}-form`)
+    const stateRepo = useRepo(FiniteStateMachineRepository)
+    const state = computed(() => stateRepo.find(form.value))
+    const isOnError = computed(() => state.value?.isOnError ?? false)
+    const value = ref({...props.modelValue})
 
-    async function submit(data) {
+    async function submit(body) {
         if (props.update)
-            emit('submit', data)
+            await NodeRepository.create(body, props.repo, form.value)
         else
-            await create(data)
+            emit('submit', body)
     }
 
-    if (!props.update)
-        provide('violations', violations)
+    onMounted(() => {
+        stateRepo.create(form.value)
+    })
+
+    onUnmounted(() => {
+        stateRepo.destroy(form.value, form.value)
+    })
+
+    watch(() => props.modelValue, modelValue => {
+        if (!isOnError.value)
+            value.value = modelValue
+    })
 </script>
 
 <template>
-    <AppCard :id="id" :title="title" class="bg-blue">
-        <AppForm :id="formdId" :fields="fields" :model-value="state" @submit="submit">
+    <AppCard :id="safeId" :title="title" class="bg-blue">
+        <AppForm :id="form" :fields="fields" :model-value="value" :state-machine="form" multipart @submit="submit">
             <template #start>
                 <slot name="start"/>
             </template>
-            <slot>
-                <AppBtn type="submit" variant="success">
-                    <Fa icon="plus"/>
-                    Créer
-                </AppBtn>
-            </slot>
+            <AppBtn type="submit" variant="success">
+                <Fa icon="plus"/>
+                {{ success }}
+            </AppBtn>
+            <slot/>
         </AppForm>
     </AppCard>
 </template>

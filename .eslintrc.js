@@ -147,7 +147,7 @@ module.exports = {
         'no-self-compare': 'error',
         'no-sequences': ['error', {allowInParentheses: false}],
         'no-setter-return': 'error',
-        'no-shadow': ['error', {allow: ['name'], builtinGlobals: true, hoist: 'all'}],
+        'no-shadow': ['error', {hoist: 'all'}],
         'no-shadow-restricted-names': 'error',
         'no-sparse-arrays': 'error',
         'no-tabs': 'error',

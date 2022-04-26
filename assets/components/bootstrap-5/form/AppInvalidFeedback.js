@@ -1,6 +1,10 @@
 import {h} from 'vue'
-import {useSlots} from '../../../composition/slots'
+import {useSlots} from '../../../composition'
 
-export default function AppInvalidFeedback(props, context) {
+function AppInvalidFeedback(props, context) {
     return h('div', {class: 'invalid-feedback'}, useSlots(context))
 }
+
+AppInvalidFeedback.displayName = 'AppInvalidFeedback'
+
+export default AppInvalidFeedback

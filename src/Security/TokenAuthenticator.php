@@ -11,17 +11,19 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 use Symfony\Component\Security\Core\Exception\TokenNotFoundException;
-use Symfony\Component\Security\Http\AccessMapInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
 final class TokenAuthenticator extends AbstractAuthenticator {
-    public function __construct(private AccessMapInterface $map, private TokenRepository $tokenRepo) {
+    public function __construct(private readonly TokenRepository $tokenRepo) {
     }
 
     private static function getBearer(Request $request): ?string {
+        if ($request->cookies->has('token')) {
+            return $request->cookies->get('token');
+        }
         $authorization = $request->headers->get('Authorization');
         if (empty($authorization)) {
             return null;
@@ -58,7 +60,6 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     }
 
     public function supports(Request $request): ?bool {
-        $roles = $this->map->getPatterns($request)[0];
-        return empty($roles) || !in_array('IS_AUTHENTICATED_ANONYMOUSLY', $roles);
+        return str_starts_with($request->getRequestUri(), '/api');
     }
 }

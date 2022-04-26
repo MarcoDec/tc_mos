@@ -1,6 +1,5 @@
 import * as Cookies from './cookie'
 
-// eslint-disable-next-line consistent-return
 export default async function fetchApi(url, method, body) {
     const headers = {Accept: 'application/ld+json'}
     const token = Cookies.get('token')
@@ -24,7 +23,7 @@ export default async function fetchApi(url, method, body) {
         for (const key in body)
             if (body[key] === null)
                 delete body[key]
-        init.headers['Content-Type'] = 'application/json'
+        init.headers['Content-Type'] = method === 'patch' ? 'application/merge-patch+json' : 'application/json'
         if (!['delete', 'get'].includes(method))
             init.body = JSON.stringify(body)
         for (const key in body)
@@ -43,4 +42,5 @@ export default async function fetchApi(url, method, body) {
         const json = await response.json()
         return json
     }
+    return null
 }

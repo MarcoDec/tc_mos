@@ -1,47 +1,74 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppFormGroup from './AppFormGroup.vue'
-    import clone from 'clone'
+    import {FiniteStateMachineRepository} from '../../../store/modules'
+    import {set} from 'lodash'
+    import {useRepo} from '../../../composition'
 
-    const form = ref()
     const emit = defineEmits(['submit', 'update:modelValue'])
+    const form = ref()
     const props = defineProps({
         fields: {default: () => [], type: Array},
         id: {required: true, type: String},
         inline: {required: false, type: Boolean},
-        modelValue: {default: () => ({}), type: Object}
+        modelValue: {default: () => ({}), type: Object},
+        multipart: {type: Boolean},
+        stateMachine: {default: null, type: String}
     })
     const displayInline = computed(() => ({'d-inline': props.inline, 'm-0': props.inline, 'p-0': props.inline}))
+    const repo = useRepo(FiniteStateMachineRepository)
+    const state = computed(() => (props.inline ? null : repo.find(props.stateMachine)))
+    const error = computed(() => state.value?.error ?? null)
+    const loading = computed(() => state.value?.loading ?? false)
+    const status = computed(() => state.value?.status ?? 200)
 
     function input(value) {
-        const cloned = clone(props.modelValue)
-        cloned[value.name] = value.value
-        emit('update:modelValue', cloned)
+        emit('update:modelValue', {...props.modelValue, [value.name]: value.value})
     }
 
     function submit() {
-        if (typeof form.value !== 'undefined')
-            emit('submit', new FormData(form.value))
+        const data = new FormData(form.value)
+        if (props.multipart) {
+            emit('submit', data)
+            return
+        }
+
+        const json = {}
+        for (const [key, value] of data.entries()) {
+            const normalizedValue = props.fields.find(field => field.name === key)?.type === 'number' ? parseFloat(value) : value
+            if (typeof normalizedValue !== 'string' || normalizedValue.length > 0)
+                set(json, key, normalizedValue)
+        }
+        emit('submit', json)
     }
 </script>
 
 <template>
-    <form :id="id" ref="form" :class="displayInline" autocomplete="off" @submit.prevent="submit">
-        <slot v-if="inline"/>
-        <template v-else>
+    <form v-if="inline" :id="id" ref="form" :class="displayInline" autocomplete="off" @submit.prevent="submit">
+        <slot/>
+    </form>
+    <AppOverlay v-else :loading="loading">
+        <AppAlert v-if="error !== null">
+            <AppBadge>{{ status }}</AppBadge>
+            {{ error }}
+        </AppAlert>
+        <form :id="id" ref="form" autocomplete="off" @submit.prevent="submit">
             <AppFormGroup
                 v-for="field in fields"
                 :key="field.name"
                 :field="field"
                 :form="id"
                 :model-value="modelValue[field.name]"
+                :state-machine="stateMachine"
                 @input="input"/>
-            <div class="float-start">
-                <slot name="start"/>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <slot name="start"/>
+                </div>
+                <div>
+                    <slot/>
+                </div>
             </div>
-            <div class="float-end">
-                <slot/>
-            </div>
-        </template>
-    </form>
+        </form>
+    </AppOverlay>
 </template>

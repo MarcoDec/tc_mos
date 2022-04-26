@@ -1,18 +1,36 @@
 <script setup>
-    import {useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
-    import AppTreeClickableItem from './AppTreeClickableItem.vue'
-    import AppTreeItem from './AppTreeItem.vue'
-    import {computed} from 'vue'
+    import {FiniteStateMachineRepository, NodeRepository} from '../../store/modules'
+    import {computed, onMounted, onUnmounted} from 'vue'
+    import {useRepo, useRouter} from '../../composition'
+    import AppTreeForm from './AppTreeForm.vue'
+    import AppTreeFormVertex from './AppTreeFormVertex.vue'
+    import AppTreeNode from './AppTreeNode.vue'
 
-    const props = defineProps({modulePath: {required: true, type: String}})
-    const {children, hasChildren} = useNamespacedGetters(props.modulePath, ['children', 'hasChildren'])
-    const opened = useNamespacedState(props.modulePath, ['opened']).opened
-    const tag = computed(() => (hasChildren.value ? AppTreeClickableItem : AppTreeItem))
+    const {id} = useRouter()
+    const nodeRepo = useRepo(NodeRepository)
+    const props = defineProps({fields: {required: true, type: Array}, repo: {required: true, type: Function}})
+    const form = computed(() => (nodeRepo.hasSelected ? AppTreeFormVertex : AppTreeForm))
+    const stateRepo = useRepo(FiniteStateMachineRepository)
+    const state = computed(() => stateRepo.find(id))
+    const loading = computed(() => state.value?.loading ?? false)
+    const tree = computed(() => [...nodeRepo.tree].sort((a, b) => a.label.localeCompare(b.label)))
+
+    onMounted(async () => {
+        await NodeRepository.load(props.repo, id)
+    })
+
+    onUnmounted(() => {
+        nodeRepo.destroyAll(id, props.repo)
+    })
 </script>
 
 <template>
-    <div>
-        <component :is="tag" :module-path="modulePath"/>
-        <AppTree v-for="child in children" v-show="opened" :key="child" :module-path="child" class="ms-4"/>
-    </div>
+    <AppRow :id="id">
+        <div class="col">
+            <AppOverlay :loading="loading">
+                <AppTreeNode v-for="node in tree" :key="node.id" :node="node"/>
+            </AppOverlay>
+        </div>
+        <component :is="form" :fields="fields" :repo="repo" class="col"/>
+    </AppRow>
 </template>

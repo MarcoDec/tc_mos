@@ -8,8 +8,9 @@
         title: {required: true, type: String}
     })
     const dropdown = ref(null)
-    const dropdownId = computed(() => `${props.id}-dropdown`)
     const el = ref()
+    const liId = computed(() => `nav-${props.id}`)
+    const dropdownId = computed(() => `${liId.value}-dropdown`)
 
     function dispose() {
         if (dropdown.value !== null) {
@@ -30,7 +31,7 @@
 </script>
 
 <template>
-    <li :id="id" ref="el" class="dropdown nav-item">
+    <li :id="liId" ref="el" class="dropdown nav-item">
         <a
             :id="dropdownId"
             aria-expanded="false"

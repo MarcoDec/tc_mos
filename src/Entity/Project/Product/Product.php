@@ -2,26 +2,28 @@
 
 namespace App\Entity\Project\Product;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\PlaceholderAction;
+use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
-use App\Entity\Traits\NameTrait;
-use App\Entity\Traits\RefTrait;
-use App\Entity\Traits\WorkflowTrait;
+use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
+use App\Repository\Project\Product\ProductRepository;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -33,8 +35,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['expirationDate']),
+    ApiFilter(filterClass: EnumFilter::class, properties: ['currentPlace.name']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['index', 'kind', 'ref']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['currentPlace' => 'name', 'family' => 'name']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'index' => 'partial',
         'kind' => 'partial',
@@ -51,7 +54,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'normalization_context' => [
                     'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
                     'openapi_definition_name' => 'Product-collection'
-                ]
+                ],
+                'write' => false
             ],
             'post' => [
                 'denormalization_context' => [
@@ -80,7 +84,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'path' => '/products/{id}/clone',
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
-                'validate' => false
+                'validation_groups' => ['Product-clone']
             ],
             'delete' => [
                 'openapi_context' => [
@@ -128,10 +132,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                             'type' => 'string'
                         ]
                     ]],
-                    'requestBody' => [
-                        'content' => [],
-                        'required' => false
-                    ],
+                    'requestBody' => null,
                     'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
                 'path' => '/products/{id}/promote/{transition}',
@@ -151,7 +152,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'path' => '/products/{id}/upgrade',
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
-                'validate' => false
+                'validation_groups' => ['Product-clone']
             ]
         ],
         attributes: [
@@ -163,51 +164,15 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:current-place', 'read:measure', 'read:product'],
-            'openapi_definition_name' => 'Product-read'
+            'openapi_definition_name' => 'Product-read',
+            'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: ProductRepository::class),
+    UniqueEntity(fields: ['index', 'ref'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends Entity implements BarCodeInterface, MeasuredInterface {
+class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
-    use NameTrait, RefTrait {
-        RefTrait::__toString insteadof NameTrait;
-    }
-    use WorkflowTrait;
-
-    public const KIND_EI = 'EI';
-    public const KIND_PROTOTYPE = 'Prototype';
-    public const KIND_SERIES = 'Série';
-    public const KIND_SPARE = 'Pièce de rechange';
-    public const PRODUCT_KINDS = [
-        self::KIND_EI,
-        self::KIND_PROTOTYPE,
-        self::KIND_SERIES,
-        self::KIND_SPARE,
-    ];
-
-    /** @var CurrentPlace */
-    #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:product', 'read:product:collection'])
-    ]
-    protected $currentPlace;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
-        Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
-        ORM\Column,
-        Serializer\Groups(['create:product', 'read:product', 'write:product', 'write:product:admin'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Référence', example: '54587F'),
-        ORM\Column,
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
-    ]
-    protected ?string $ref = null;
 
     #[
         ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
@@ -232,25 +197,35 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     private Measure $costingManualDuration;
 
     #[
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded(CurrentPlace::class),
+        Serializer\Groups(['read:product', 'read:product:collection'])
+    ]
+    private CurrentPlace $currentPlace;
+
+    #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
-        ORM\Column(nullable: true),
+        Assert\Length(min: 4, max: 10),
+        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
-    private ?string $customsCode;
+    private ?string $customsCode = null;
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
+        Assert\GreaterThan(value: 'today', groups: ['Product-create', 'Product-project']),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product:project'])
     ]
-    private ?DateTimeImmutable $expirationDate;
+    private ?DateTimeImmutable $expirationDate = null;
 
     #[
         ApiProperty(description: 'Famille de produit', readableLink: false, example: '/api/product-families/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection'])
     ]
-    private ?Family $family;
+    private ?Family $family = null;
 
     #[
         ApiProperty(description: 'Volume prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -265,12 +240,12 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\ManyToOne,
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
-    private ?Incoterms $incoterms;
+    private ?Incoterms $incoterms = null;
 
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
-        Assert\Length(max: 255, groups: ['Product-admin', 'Product-create']),
-        ORM\Column(name: '`index`'),
+        Assert\Length(min: 1, max: 3, groups: ['Product-admin', 'Product-create']),
+        ORM\Column(name: '`index`', length: 3, options: ['charset' => 'ascii']),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $index = null;
@@ -279,18 +254,18 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Indice interne', required: true, example: 1),
         Assert\NotNull,
         Assert\PositiveOrZero,
-        ORM\Column(type: 'smallint', options: ['default' => 1, 'unsigned' => true]),
+        ORM\Column(type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
         Serializer\Groups(['read:product'])
     ]
     private int $internalIndex = 1;
 
     #[
-        ApiProperty(description: 'Type', example: self::KIND_PROTOTYPE, openapiContext: ['enum' => self::PRODUCT_KINDS]),
-        Assert\Choice(choices: self::PRODUCT_KINDS, groups: ['Product-admin', 'Product-create', 'Product-project']),
-        ORM\Column(options: ['default' => self::KIND_PROTOTYPE]),
+        ApiProperty(description: 'Type', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
+        Assert\Choice(choices: KindType::TYPES, groups: ['Product-admin', 'Product-create', 'Product-project']),
+        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:project'])
     ]
-    private ?string $kind = self::KIND_PROTOTYPE;
+    private ?string $kind = KindType::TYPE_PROTOTYPE;
 
     #[
         ApiProperty(description: 'Gestion cuivre', required: false, example: true),
@@ -337,6 +312,15 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     private Measure $minStock;
 
     #[
+        ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
+        Assert\Length(min: 3, max: 80),
+        Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
+        ORM\Column(length: 80),
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
+    ]
+    private ?string $name = null;
+
+    #[
         ApiProperty(description: 'Notes', required: false, example: 'Produit préféré des clients'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'write:product:main'])
@@ -353,8 +337,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Type de packaging'),
-        Assert\Length(max: 255, groups: ['Product-create', 'Product-production']),
-        ORM\Column(nullable: true),
+        Assert\Length(max: 30, groups: ['Product-create', 'Product-production']),
+        ORM\Column(length: 30),
         Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
     ]
     private ?string $packagingKind = null;
@@ -388,6 +372,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     private Measure $productionDelay;
 
     #[
+        ApiProperty(description: 'Référence', example: '54587F'),
+        Assert\Length(min: 3, max: 30),
+        ORM\Column(length: 30),
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
+    ]
+    private ?string $ref = null;
+
+    #[
         ApiProperty(description: 'Prix de cession des composants', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:product'])
@@ -403,10 +395,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:product', 'read:product'])
     ]
-    private ?Unit $unit;
+    private ?Unit $unit = null;
 
     #[
         ApiProperty(description: 'Poids', openapiContext: ['$ref' => '#/components/schemas/Measure-mass']),
@@ -439,6 +432,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     public function __clone() {
         parent::__clone();
         $this->children = new ArrayCollection();
+        $this->currentPlace = new CurrentPlace();
+        $this->internalIndex = 1;
         $this->parent = null;
     }
 
@@ -471,6 +466,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getCostingManualDuration(): Measure {
         return $this->costingManualDuration;
+    }
+
+    final public function getCurrentPlace(): CurrentPlace {
+        return $this->currentPlace;
     }
 
     final public function getCustomsCode(): ?string {
@@ -546,6 +545,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->minStock;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function getNotes(): ?string {
         return $this->notes;
     }
@@ -574,6 +577,15 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->productionDelay;
     }
 
+    final public function getRef(): ?string {
+        return $this->ref;
+    }
+
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
     final public function getTransfertPriceSupplies(): Measure {
         return $this->transfertPriceSupplies;
     }
@@ -593,6 +605,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[Pure]
     final public function isDeletable(): bool {
         return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
     }
 
     final public function isManagedCopper(): bool {
@@ -621,6 +638,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setCostingManualDuration(Measure $costingManualDuration): self {
         $this->costingManualDuration = $costingManualDuration;
+        return $this;
+    }
+
+    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
+        $this->currentPlace = $currentPlace;
         return $this;
     }
 
@@ -694,6 +716,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
+    }
+
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
         return $this;
@@ -726,6 +753,16 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setProductionDelay(Measure $productionDelay): self {
         $this->productionDelay = $productionDelay;
+        return $this;
+    }
+
+    final public function setRef(?string $ref): self {
+        $this->ref = $ref;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 

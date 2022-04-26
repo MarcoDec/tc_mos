@@ -1,25 +1,27 @@
 <script setup>
-    import {ref} from 'vue'
-    import router from '../router'
-    import {useNamespacedActions} from 'vuex-composition-helpers'
+    import {useRepo, useRouter} from '../../composition'
+    import {EmployeeRepository} from '../../store/modules'
+    import {computed} from 'vue'
 
     const fields = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
-    const formData = ref({password: null, username: null})
-    const login = useNamespacedActions('security', ['login']).login
 
-    async function handleClick() {
-        await login(formData.value)
-        await router.push({name: 'home'})
+    const {id, router} = useRouter()
+    const repo = useRepo(EmployeeRepository)
+    const form = computed(() => `${id}-form`)
+
+    async function submit(body) {
+        await repo.login(id, body)
+        router.push({name: 'home'})
     }
 </script>
 
 <template>
-    <AppRow>
+    <AppRow :id="id">
         <AppCard class="bg-blue col" title="Connexion">
-            <AppForm id="login" v-model="formData" :fields="fields" @submit="handleClick">
+            <AppForm :id="form" :fields="fields" :state-machine="id" @submit="submit">
                 <AppBtn type="submit">
                     Connexion
                 </AppBtn>

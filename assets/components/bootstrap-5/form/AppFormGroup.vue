@@ -1,20 +1,20 @@
 <script setup>
-    import {computed, inject, ref} from 'vue'
-    import AppLabel from './AppLabel.vue'
+    import AppLabel from './AppLabel'
+    import {FiniteStateMachineRepository} from '../../../store/modules'
+    import {computed} from 'vue'
+    import {useRepo} from '../../../composition'
 
     const emit = defineEmits(['input', 'update:modelValue'])
+    const repo = useRepo(FiniteStateMachineRepository)
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
-        modelValue: {default: null}
+        modelValue: {default: null},
+        stateMachine: {required: true, type: String}
     })
-    const inputFields = computed(() => ({
-        ...props.field,
-        id: props.field.id ?? `${props.form}-${props.field.name}`
-    }))
-    const labelCols = computed(() => props.field.labelCols ?? 2)
-    const violations = inject('violations', ref([]))
-    const violation = computed(() => violations.value.find(({propertyPath}) => propertyPath === props.field.name) ?? null)
+    const inputId = computed(() => `${props.form}-${props.field.name}`)
+    const state = computed(() => repo.find(props.stateMachine))
+    const violation = computed(() => state.value?.findViolation(props.field) ?? null)
     const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
 
     function input(value) {
@@ -25,15 +25,16 @@
 
 <template>
     <AppRow class="mb-3">
-        <AppLabel :cols="labelCols">
+        <AppLabel>
             {{ field.label }}
         </AppLabel>
         <AppCol>
             <AppInputGuesser
+                :id="inputId"
                 :class="isInvalid"
-                :field="inputFields"
+                :field="field"
+                :form="form"
                 :model-value="modelValue"
-                no-label
                 @update:model-value="input"/>
             <AppInvalidFeedback v-if="violation !== null">
                 {{ violation.message }}
