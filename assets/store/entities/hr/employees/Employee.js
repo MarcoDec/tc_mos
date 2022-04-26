@@ -3,6 +3,18 @@ import {Entity} from '../../../modules'
 export default class Employee extends Entity {
     static entity = 'employees'
 
+    get isHrAdmin() {
+        return this.has('ROLE_HR_ADMIN')
+    }
+
+    get isHrReader() {
+        return this.isHrWriter || this.has('ROLE_HR_READER')
+    }
+
+    get isHrWriter() {
+        return this.isHrAdmin || this.has('ROLE_HR_WRITER')
+    }
+
     get isItAdmin() {
         return this.has('ROLE_IT_ADMIN')
     }

@@ -140,6 +140,16 @@
                         </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
+                <AppNavbarItem v-if="user.isHrReader" id="hr" icon="male" title="RH">
+                    <template v-if="user.isHrAdmin">
+                        <AppDropdownItem variant="warning">
+                            Administrateur
+                        </AppDropdownItem>
+                        <AppNavbarLink icon="user-graduate" to="out-trainers" variant="warning">
+                            Formateurs extérieurs
+                        </AppNavbarLink>
+                    </template>
+                </AppNavbarItem>
             </AppNavbarCollapse>
             <div class="text-white">
                 <Fa icon="user-circle"/>
