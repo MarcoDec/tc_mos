@@ -132,6 +132,9 @@
                         <AppNavbarLink brands icon="elementor" to="reject-types" variant="warning">
                             Catégories de rejets de production
                         </AppNavbarLink>
+                        <AppNavbarLink brands icon="elementor" to="quality-types" variant="warning">
+                            Critères qualités
+                        </AppNavbarLink>
                         <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
                             Relevés qualités composants
                         </AppNavbarLink>
