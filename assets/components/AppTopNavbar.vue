@@ -145,6 +145,9 @@
                         <AppDropdownItem variant="warning">
                             Administrateur
                         </AppDropdownItem>
+                        <AppNavbarLink brands icon="elementor" to="event-types" variant="warning">
+                            Catégories d'événements des employés
+                        </AppNavbarLink>
                         <AppNavbarLink icon="user-graduate" to="out-trainers" variant="warning">
                             Formateurs extérieurs
                         </AppNavbarLink>

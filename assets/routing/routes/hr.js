@@ -1,6 +1,29 @@
-import {CountryRepository, OutTrainerRepository} from '../../store/modules'
+import {CountryRepository, EventTypeRepository, OutTrainerRepository} from '../../store/modules'
 
 export default [
+    {
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'event-types',
+        path: '/event-types',
+        props: {
+            brands: true,
+            fields: [
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Nom',
+                    name: 'name',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                }
+            ],
+            icon: 'elementor',
+            repo: EventTypeRepository,
+            title: 'Catégories d\'événements des employés'
+        }
+    },
     {
         component: async () => import('../pages/AppCollectionTablePage.vue'),
         meta: {requiresAuth: true},
