@@ -67,6 +67,18 @@ export default class Employee extends Entity {
         return this.isPurchaseAdmin || this.has('ROLE_PURCHASE_WRITER')
     }
 
+    get isQualityAdmin() {
+        return this.has('ROLE_QUALITY_ADMIN')
+    }
+
+    get isQualityReader() {
+        return this.isQualityWriter || this.has('ROLE_QUALITY_READER')
+    }
+
+    get isQualityWriter() {
+        return this.isQualityAdmin || this.has('ROLE_QUALITY_WRITER')
+    }
+
     static fields() {
         return {
             ...super.fields(),

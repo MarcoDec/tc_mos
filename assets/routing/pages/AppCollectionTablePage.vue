@@ -5,6 +5,7 @@
     import emitter from '../../emitter'
 
     const props = defineProps({
+        brands: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
         repo: {required: true, type: Function},
@@ -62,7 +63,7 @@
     <AppOverlay :loading="loading">
         <div :id="id">
             <h1>
-                <Fa :icon="icon"/>
+                <Fa :brands="brands" :icon="icon"/>
                 {{ title }}
             </h1>
             <AppCollectionTable

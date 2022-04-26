@@ -7,6 +7,7 @@ import management from './routes/management'
 import production from './routes/production'
 import project from './routes/project'
 import purchase from './routes/purchase'
+import quality from './routes/quality'
 import store from '../store'
 
 const router = createRouter({
@@ -28,7 +29,8 @@ const router = createRouter({
         ...management,
         ...production,
         ...project,
-        ...purchase
+        ...purchase,
+        ...quality
     ]
 })
 

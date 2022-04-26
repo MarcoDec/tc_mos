@@ -100,6 +100,9 @@
                         <AppDropdownItem variant="warning">
                             Administrateur
                         </AppDropdownItem>
+                        <AppNavbarLink disabled icon="calendar-day" to="engine-events" variant="danger">
+                            Catégories d'événements des équipements
+                        </AppNavbarLink>
                         <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
                             Groupes d'équipements
                         </AppNavbarLink>
@@ -110,8 +113,27 @@
                         <AppDropdownItem variant="warning">
                             Administrateur
                         </AppDropdownItem>
+                        <AppNavbarLink disabled icon="atom" to="operations" variant="danger">
+                            Opérations
+                        </AppNavbarLink>
                         <AppNavbarLink icon="layer-group" to="product-families" variant="warning">
                             Familles de produits
+                        </AppNavbarLink>
+                        <AppNavbarLink brands disabled icon="elementor" to="operation-types" variant="danger">
+                            Types d'opérations
+                        </AppNavbarLink>
+                    </template>
+                </AppNavbarItem>
+                <AppNavbarItem v-if="user.isQualityReader" id="quality" icon="certificate" title="Qualité">
+                    <template v-if="user.isQualityAdmin">
+                        <AppDropdownItem variant="warning">
+                            Administrateur
+                        </AppDropdownItem>
+                        <AppNavbarLink brands icon="elementor" to="reject-types" variant="warning">
+                            Catégories de rejets de production
+                        </AppNavbarLink>
+                        <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
+                            Relevés qualités composants
                         </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
