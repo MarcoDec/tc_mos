@@ -2,18 +2,18 @@
     import {onMounted, onUnmounted, ref} from 'vue'
     import AppShowGui from './AppShowGui.vue'
     import {gui} from '../../store/gui'
-    import {useActions} from 'vuex-composition-helpers'
+    import {useStore} from 'vuex'
 
-    const {registerModule, unregisterModule} = useActions(['registerModule', 'unregisterModule'])
+    const store = useStore()
     const wrapper = ref(false)
 
     onMounted(async () => {
-        await registerModule({module: gui, path: 'gui'})
+        store.registerModule('gui', gui)
         wrapper.value = true
     })
 
     onUnmounted(async () => {
-        await unregisterModule('gui')
+        store.unregisterModule('gui')
     })
 </script>
 
