@@ -4,6 +4,7 @@
     import AppNavbar from './bootstrap-5/navbar/AppNavbar'
     import AppNavbarBrand from './bootstrap-5/navbar/AppNavbarBrand'
     import AppNavbarCollapse from './bootstrap-5/navbar/AppNavbarCollapse'
+    import AppNavbarHamburger from './bootstrap-5/navbar/AppNavbarHamburger.vue'
     import AppNavbarItem from './bootstrap-5/navbar/AppNavbarItem.vue'
     import AppNavbarLink from './bootstrap-5/navbar/AppNavbarLink'
     import {EmployeeRepository} from '../store/modules'
@@ -22,11 +23,12 @@
 
 <template>
     <AppNavbar>
+        <AppNavbarHamburger/>
         <AppNavbarBrand to="home">
             T-Concept
         </AppNavbarBrand>
         <template v-if="hasUser">
-            <AppNavbarCollapse>
+            <AppNavbarCollapse id="app-top-navbar-collapse">
                 <AppNavbarItem v-if="user.isPurchaseReader" id="purchase" icon="shopping-bag" title="Achats">
                     <AppDropdownItem variant="success">
                         Lecteur
