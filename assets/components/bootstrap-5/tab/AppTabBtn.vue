@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <li class="nav-item" role="presentation">
+    <li :title="tab.title" class="nav-item" role="presentation">
         <button
             :id="tab.labelledby"
             :aria-controls="tab.id"

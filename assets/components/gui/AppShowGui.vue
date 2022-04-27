@@ -41,7 +41,7 @@
                 :width="gui.startWidthPx"
                 class="gui-card"
                 variant="info">
-                <AppTabs id="gui-start" class="gui-start-content">
+                <AppTabs id="gui-start" :icon="gui.icon" :vertical="gui.vertical" class="gui-start-content">
                     <AppTab id="gui-start-main" active icon="bars" title="Généralités"/>
                     <AppTab id="gui-start-files" icon="folder" title="Fichiers"/>
                     <AppTab id="gui-start-quality" icon="certificate" title="Qualité"/>
@@ -66,7 +66,7 @@
             :width="gui.innerWidthPx"
             class="gui-card"
             variant="danger">
-            <AppTabs id="gui-bottom" class="gui-bottom-content" icon-switch vertical>
+            <AppTabs id="gui-bottom" :icon="gui.icon" :icon-switch="!gui.icon" class="gui-bottom-content" vertical>
                 <AppTab id="gui-bottom-components" active icon="puzzle-piece" title="Fournitures"/>
                 <AppTab id="gui-bottom-receipts" icon="receipt" title="Réceptions"/>
                 <AppTab id="gui-bottom-orders" icon="shopping-cart" title="Commandes"/>

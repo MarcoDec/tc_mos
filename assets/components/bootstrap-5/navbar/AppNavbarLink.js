@@ -17,8 +17,8 @@ function AppNavbarLink(props, context) {
 
 AppNavbarLink.displayName = 'AppNavbarLink'
 AppNavbarLink.props = {
-    brands: {required: false, type: Boolean},
-    disabled: {required: false, type: Boolean},
+    brands: {type: Boolean},
+    disabled: {type: Boolean},
     icon: {required: true, type: String},
     to: {required: true, type: String},
     variant: {default: 'white', type: String}

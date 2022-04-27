@@ -13,7 +13,7 @@
         id: {required: true, type: String},
         method: {default: null, type: String},
         modelValue: {default: null},
-        noLabel: {required: false, type: Boolean},
+        noLabel: {type: Boolean},
         size: {default: 'sm', type: String}
     })
     const type = computed(() => props.field.type ?? 'text')

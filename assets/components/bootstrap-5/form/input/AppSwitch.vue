@@ -7,7 +7,7 @@
         field: {required: true, type: Object},
         id: {required: true, type: String},
         modelValue: {type: Boolean},
-        noLabel: {required: false, type: Boolean}
+        noLabel: {type: Boolean}
     })
     const checkClass = computed(() => ({'form-check': !props.noLabel}))
 

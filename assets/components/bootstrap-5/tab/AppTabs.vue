@@ -4,9 +4,10 @@
     import {Tab as BTab} from 'bootstrap'
 
     const props = defineProps({
-        iconSwitch: {required: false, type: Boolean},
+        icon: {type: Boolean},
+        iconSwitch: {type: Boolean},
         id: {required: true, type: String},
-        vertical: {required: false, type: Boolean}
+        vertical: {type: Boolean}
     })
     const bTab = ref(null)
     const divFlex = computed(() => `flex-${props.vertical ? 'row' : 'column'}`)
@@ -35,7 +36,12 @@
 
     onMounted(instantiate)
     onUnmounted(dispose)
+
     watch(tabs, instantiate)
+
+    watch(() => props.icon, icon => {
+        iconMode.value = icon
+    })
 </script>
 
 <template>

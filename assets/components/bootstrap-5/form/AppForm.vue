@@ -10,7 +10,7 @@
     const props = defineProps({
         fields: {default: () => [], type: Array},
         id: {required: true, type: String},
-        inline: {required: false, type: Boolean},
+        inline: {type: Boolean},
         modelValue: {default: () => ({}), type: Object},
         multipart: {type: Boolean},
         stateMachine: {default: null, type: String}

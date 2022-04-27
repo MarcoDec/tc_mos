@@ -7,11 +7,11 @@
     const emit = defineEmits(['create', 'delete', 'page', 'search', 'show', 'update'])
     const props = defineProps({
         coll: {required: true, type: Object},
-        create: {required: false, type: Boolean},
+        create: {type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         items: {required: true, type: Array},
-        pagination: {required: false, type: Boolean},
+        pagination: {type: Boolean},
         stateMachine: {required: true, type: String},
         violations: {default: () => [], type: Array}
     })

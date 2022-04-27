@@ -3,7 +3,7 @@
 
     const tabs = inject('tabs')
     const props = defineProps({
-        active: {required: false, type: Boolean},
+        active: {type: Boolean},
         icon: {required: true, type: String},
         id: {required: true, type: String},
         title: {required: true, type: String}

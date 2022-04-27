@@ -27,6 +27,10 @@ export default class Gui extends Model {
         return `${this.height}px`
     }
 
+    get icon() {
+        return this.windowWidth <= 800
+    }
+
     get innerBottomHeight() {
         return this.bottomHeight - 2 * this.padding
     }
@@ -89,6 +93,10 @@ export default class Gui extends Model {
 
     get topHeightPx() {
         return `${this.topHeight}px`
+    }
+
+    get vertical() {
+        return this.windowWidth <= 950
     }
 
     get widthPx() {
