@@ -37,7 +37,11 @@ export default class GuiRepository extends Repository {
         const gui = {id, top: rect.top}
         if (window.top !== null) {
             gui.height = window.top.innerHeight - rect.top - 5
+            if (gui.height < 500)
+                gui.height = 500
             gui.width = window.top.innerWidth - 25
+            if (gui.width < 250)
+                gui.width = 250
             gui.windowWidth = window.top.innerWidth
             if (gui.windowWidth < 1140)
                 gui.ratio = 0.5
