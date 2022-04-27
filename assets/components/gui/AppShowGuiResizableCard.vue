@@ -1,25 +1,35 @@
 <script setup>
-    import {useNamespacedActions, useNamespacedMutations} from 'vuex-composition-helpers'
+    import {useRepo, useRouter} from '../../composition'
     import AppShowGuiCard from './AppShowGuiCard.vue'
+    import {GuiRepository} from '../../store/modules'
     import {defineProps} from 'vue'
 
     defineProps({
-        bgVariant: {required: true, type: String},
         height: {required: true, type: String},
         marginEnd: {default: null, type: String},
         marginTop: {default: null, type: String},
+        variant: {required: true, type: String},
         width: {required: true, type: String}
     })
-    const drag = useNamespacedActions('gui', ['drag']).drag
-    const enableDrag = useNamespacedMutations('gui', ['enableDrag']).enableDrag
+
+    const {id} = useRouter()
+    const repo = useRepo(GuiRepository)
+
+    function drag() {
+        repo.drag(id)
+    }
+
+    function enableDrag() {
+        repo.enableDrag(id)
+    }
 </script>
 
 <template>
     <AppShowGuiCard
-        :bg-variant="bgVariant"
         :height="height"
         :margin-end="marginEnd"
         :margin-top="marginTop"
+        :variant="variant"
         :width="width">
         <hr class="resizer" @click="enableDrag" @mousedown="drag"/>
         <slot/>

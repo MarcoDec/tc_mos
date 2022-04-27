@@ -19,7 +19,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/purchase/supplier/AppSupplierShow.vue'),
+        component: async () => import('../pages/AppShowGuiPage.vue'),
         meta: {requiresAuth: true},
         name: 'supplier-show',
         path: '/supplier/show'

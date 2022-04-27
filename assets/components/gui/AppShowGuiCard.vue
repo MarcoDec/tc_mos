@@ -2,14 +2,14 @@
     import {computed} from 'vue'
 
     const props = defineProps({
-        bgVariant: {required: true, type: String},
         height: {required: true, type: String},
         innerWidth: {required: true, type: String},
         marginEnd: {default: '0px', type: String},
         marginTop: {default: '0px', type: String},
+        variant: {required: true, type: String},
         width: {required: true, type: String}
     })
-    const bg = computed(() => `bg-${props.bgVariant}`)
+    const bg = computed(() => `bg-${props.variant}`)
 </script>
 
 <template>
