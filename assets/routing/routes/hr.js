@@ -35,7 +35,7 @@ export default [
                     create: true,
                     filter: true,
                     label: 'Nom',
-                    name: 'name',
+                    name: 'surname',
                     sort: true,
                     type: 'text',
                     update: true
@@ -44,7 +44,7 @@ export default [
                     create: true,
                     filter: true,
                     label: 'Prénom',
-                    name: 'surname',
+                    name: 'name',
                     sort: true,
                     type: 'text',
                     update: true

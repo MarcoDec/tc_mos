@@ -7,7 +7,8 @@ export default class OutTrainer extends Entity {
         return {
             ...super.fields(),
             address: this.hasOne(Address, 'outTrainerId'),
-            name: this.string(null).nullable()
+            name: this.string(null).nullable(),
+            surname: this.string(null).nullable()
         }
     }
 }

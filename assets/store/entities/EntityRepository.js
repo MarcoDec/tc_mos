@@ -15,6 +15,19 @@ export default class EntityRepository extends Repository {
         return this.repo(FiniteStateMachineRepository)
     }
 
+    static sorter(first, second, coll) {
+        const a = get(first, coll.sort)
+        const b = get(second, coll.sort)
+        switch (typeof a) {
+        case 'number':
+            return a - b
+        case 'string':
+            return a.localeCompare(b)
+        default:
+            return typeof first.id === 'number' ? first.id - second.id : first.id.localCompare(second.id)
+        }
+    }
+
     async create(body, vue) {
         this.loading(vue)
         const entity = await this.fetch(vue, this.url, 'post', body)
@@ -72,13 +85,16 @@ export default class EntityRepository extends Repository {
 
     tableItems(fields, vue) {
         const entities = this.where(entity => entity.vues.includes(vue))
+            .withAll()
+            .get()
+            .map(entity => entity.tableItem(fields))
         const coll = store.$repo(CollectionRepository).find(vue)
         if (coll !== null && coll.isSorted)
-            entities.orderBy(entity => {
-                const field = get(entity, coll.sort)
-                return typeof field === 'string' ? field.toLocaleLowerCase() : field
-            }, coll.direction)
-        return entities.withAll().get().map(entity => entity.tableItem(fields))
+            entities.sort((first, second) =>
+                (coll.direction === 'asc'
+                    ? EntityRepository.sorter(first, second, coll)
+                    : EntityRepository.sorter(second, first, coll)))
+        return entities
     }
 
     async update(body, vue) {
