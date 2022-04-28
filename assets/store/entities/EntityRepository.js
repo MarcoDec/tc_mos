@@ -1,11 +1,26 @@
-import {Entity, FiniteStateMachineRepository, Repository} from '../modules'
+import {CollectionRepository, Entity, FiniteStateMachineRepository, Repository} from '../modules'
 import fetchApi from '../../api'
+import {get} from 'lodash'
+import store from '../index'
 
 export default class EntityRepository extends Repository {
     use = Entity
+    url = '/api/entities'
+
+    get idUrl() {
+        return `${this.url}/{id}`
+    }
 
     get stateMachineRepo() {
         return this.repo(FiniteStateMachineRepository)
+    }
+
+    async create(body, vue) {
+        this.loading(vue)
+        const entity = await this.fetch(vue, this.url, 'post', body)
+        this.destroyAll(vue)
+        this.save(entity, vue)
+        this.finish(vue)
     }
 
     error(vue, error, status) {
@@ -30,7 +45,46 @@ export default class EntityRepository extends Repository {
         }
     }
 
+    async load(vue) {
+        this.loading(vue)
+        const response = await this.fetch(
+            vue,
+            this.url,
+            'get',
+            store.$repo(CollectionRepository).find(vue)?.body ?? {}
+        )
+        this.destroyAll(vue)
+        this.save(response['hydra:member'], vue)
+        store.$repo(CollectionRepository).save(response, vue)
+        this.finish(vue)
+    }
+
     loading(vue) {
         this.stateMachineRepo.load(vue)
+    }
+
+    async remove(id, vue) {
+        this.loading(vue)
+        await this.fetch(vue, this.idUrl, 'delete', {id})
+        this.destroy(id, vue)
+        this.finish(vue)
+    }
+
+    tableItems(fields, vue) {
+        const entities = this.where(entity => entity.vues.includes(vue))
+        const coll = store.$repo(CollectionRepository).find(vue)
+        if (coll !== null && coll.isSorted)
+            entities.orderBy(entity => {
+                const field = get(entity, coll.sort)
+                return typeof field === 'string' ? field.toLocaleLowerCase() : field
+            }, coll.direction)
+        return entities.withAll().get().map(entity => entity.tableItem(fields))
+    }
+
+    async update(body, vue) {
+        this.loading(vue)
+        const entity = await this.fetch(vue, this.idUrl, 'patch', body)
+        this.save(entity, vue)
+        this.finish(vue)
     }
 }
