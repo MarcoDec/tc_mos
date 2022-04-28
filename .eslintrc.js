@@ -73,7 +73,7 @@ module.exports = {
         'no-const-assign': 'error',
         'no-constant-condition': 'error',
         'no-constructor-return': 'error',
-        'no-continue': 'error',
+        'no-continue': 'off',
         'no-control-regex': 'error',
         'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
         'no-delete-var': 'error',

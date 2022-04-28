@@ -8,7 +8,7 @@
     const emit = defineEmits(['submit', 'update:modelValue'])
     const form = ref()
     const props = defineProps({
-        fields: {default: () => [], type: Array},
+        fields: {required: true, type: Array},
         id: {required: true, type: String},
         inline: {required: false, type: Boolean},
         modelValue: {default: () => ({}), type: Object},
@@ -36,8 +36,13 @@
         const json = {}
         for (const [key, value] of data.entries()) {
             const normalizedValue = props.fields.find(field => field.name === key)?.type === 'number' ? parseFloat(value) : value
-            if (typeof normalizedValue !== 'string' || normalizedValue.length > 0)
-                set(json, key, normalizedValue)
+            if (normalizedValue === null || typeof normalizedValue === 'undefined')
+                continue
+            if (typeof normalizedValue === 'number' && isNaN(normalizedValue))
+                continue
+            if (typeof normalizedValue === 'string' && normalizedValue.length === 0)
+                continue
+            set(json, key, normalizedValue)
         }
         emit('submit', json)
     }

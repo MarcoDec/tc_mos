@@ -26,7 +26,7 @@
         </td>
         <td>
             <AppBtn icon="filter" title="Basculer en mode recherche" variant="secondary" @click="toggle"/>
-            <AppForm :id="formId" :state-machine="stateMachine" inline @submit="create">
+            <AppForm :id="formId" :fields="fields" :state-machine="stateMachine" inline @submit="create">
                 <AppBtn icon="plus" title="Ajouter" type="submit" variant="success"/>
             </AppForm>
         </td>

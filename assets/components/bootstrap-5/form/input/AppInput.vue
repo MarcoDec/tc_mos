@@ -10,6 +10,7 @@
     })
     const sizeClass = computed(() => `form-control-${props.size}`)
     const type = computed(() => props.field.type ?? 'text')
+    const normalizedType = computed(() => (type.value === 'number' ? 'text' : type.value))
 
     function input(e) {
         emit('update:modelValue', e.target.value)
@@ -22,7 +23,7 @@
         :class="sizeClass"
         :name="field.name"
         :placeholder="field.label"
-        :type="type"
+        :type="normalizedType"
         :value="modelValue"
         autocomplete="off"
         class="form-control"
