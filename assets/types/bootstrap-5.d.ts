@@ -23,6 +23,8 @@ export declare type FormInput =
     | 'search-boolean'
     | 'select'
     | 'text'
+    | 'checkbox'
+
 
 export declare type FormOption = {text: string, value: FormValue}
 export declare type FormOptions = FormOption[]

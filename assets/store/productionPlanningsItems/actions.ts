@@ -10,7 +10,7 @@ type ActionContext = DeepReadonly<VuexActionContext<State, RootState>>
 export const actions = {
     async fetchItem({dispatch}: ActionContext): Promise<void> {
         const response: Items[] = [
-            {   
+            {
                 201347: '20',
                 201357: '20',
                 201447: '20',

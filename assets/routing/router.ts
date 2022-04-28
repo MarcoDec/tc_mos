@@ -45,7 +45,7 @@ const router = createRouter({
             path: '/manufacturingSchedule',
             props: {
                 fields: [
-                   
+
                     {
                         label: 'Produit',
                         name: 'produit',
@@ -79,6 +79,182 @@ const router = createRouter({
                 ],
                 icon: 'table-list',
                 title: 'Planning de production'
+            }
+        },
+        {
+            component: async (): Promise<RouteComponent> => import('./pages/AppManufacturingOrderNeeds.vue'),
+            meta: {requiresAuth: true},
+            name: 'manufacturing-order-needs',
+            path: '/manufacturingOrderNeeds',
+            props: {
+                fieldsCollapsenewOfs: [
+
+                    {
+                        label: 'Client',
+                        name: 'client',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Produit',
+                        name: 'produit',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Cmde',
+                        name: 'cmde',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Minimum de lancement',
+                        name: 'minDeLancement',
+                        type: 'number'
+                    },
+                    {
+                        label: 'Qté demandée',
+                        name: 'qteDemandee',
+                        type: 'number'
+                    },
+                    {
+                        label: 'OFs associés',
+                        name: 'ofsAssocies',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Début Prod.',
+                        name: 'debutProd',
+                        type: 'date'
+                    },
+                    {
+                        label: 'Fin Prod.',
+                        name: 'finProd',
+                        type: 'date'
+                    },
+                    {
+                        label: 'Quantité',
+                        name: 'quantite',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Site de production',
+                        name: 'siteDeProduction',
+                        options: [{text: 'auto', value: 'auto'}, {text: 'TUNISIE CONCEPT', value: 'TunisieConcept'}],
+                        type: 'select'
+                    },
+                    {
+                        label: 'Etat initial OF',
+                        name: 'etatInitialOF',
+                        options: [{text: 'confirmé', value: 'confirmé'}, {text: 'brouillon', value: 'brouillon'}],
+                        type: 'select'
+                    },
+                    {
+                        label: 'Lancer OF',
+                        name: 'lancerOF',
+                        type: 'boolean'
+                    }
+                ],
+                fieldsCollapseOfsToConfirm: [
+
+                    {
+                        label: 'Client',
+                        name: 'client',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Produit',
+                        name: 'produit',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Cmde',
+                        name: 'cmde',
+                        type: 'text'
+                    },
+                    {
+                        label: 'OF',
+                        name: 'of',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Début Prod.',
+                        name: 'debutProd',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Fin Prod.',
+                        name: 'finProd',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Quantité',
+                        name: 'quantite',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Site de production',
+                        name: 'siteDeProduction',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Quantité produite',
+                        name: 'quantiteProduite',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Confirmer OF',
+                        name: 'confirmerOF',
+                        type: 'text'
+                    }
+                ],
+                fieldsCollapseOnGoingLocalOf: [
+
+                    {
+                        label: 'Client',
+                        name: 'client',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Produit',
+                        name: 'produit',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Cmde',
+                        name: 'cmde',
+                        type: 'text'
+                    },
+                    {
+                        label: 'OF',
+                        name: 'of',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Début Prod.',
+                        name: 'debutProd',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Fin Prod.',
+                        name: 'finProd',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Quantité',
+                        name: 'quantite',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Quantité Produite',
+                        name: 'quantiteProduite',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Etat',
+                        name: 'etat',
+                        type: 'text'
+                    }
+                ],
+                icon: 'table-list',
+                title: 'Calcul des besoins'
             }
         }
     ]

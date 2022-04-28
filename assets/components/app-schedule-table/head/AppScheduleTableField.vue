@@ -1,18 +1,16 @@
 <script lang="ts" setup>
-    import type {TableField} from '../../../types/app-schedule-table'
     import {computed, defineProps} from 'vue'
-    const props= defineProps<{field: TableField, lengthFields: Number, index: Number}>()
-    // console.log('index', props.index);
-    // console.log('lengthFields', props.lengthFields);
-    const leftField = computed(()=> props.index *100 + 'px')
-    console.log('iiiiiiiiiiiiii', leftField.value);
+    import type {TableField} from '../../../types/app-schedule-table'
+
+    const props = defineProps<{field: TableField, lengthFields: number, index: number}>()
+    const leftField = computed(() => `${props.index * 100}px`)
 </script>
 
 <template>
-    <th v-if="props.index < lengthFields" class="sticky-col-field first-col-field" >
+    <th v-if="props.index < lengthFields" class="first-col-field sticky-col-field">
         {{ field.label }}
     </th>
-    <th v-else >
+    <th v-else>
         {{ field.label }}
     </th>
 </template>

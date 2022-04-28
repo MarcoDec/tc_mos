@@ -2,23 +2,16 @@
     import type {TableField, TableItem} from '../../../types/app-schedule-table'
     import {computed, defineProps} from 'vue'
 
-    const props = defineProps<{field: TableField, item: TableItem, index:Number, lengthFields: Number}>()
+    const props = defineProps<{field: TableField, item: TableItem, index: number, lengthFields: number}>()
     const value = computed(() => props.item[props.field.name])
-    console.log('index', props.index);
-    
-    const left = computed(()=> props.index *100 + 'px')
-    
-    console.log('lengthFields', props.lengthFields);
-    console.log('ii', left.value);
-
-
+    const left = computed(() => `${props.index * 100}px`)
 </script>
 
 <template>
-    <td v-if="props.index < lengthFields" class="sticky-col first-col" >
+    <td v-if="props.index < lengthFields" class="first-col sticky-col">
         {{ value }}
     </td>
-    <td v-else >
+    <td v-else>
         {{ value }}
     </td>
 </template>

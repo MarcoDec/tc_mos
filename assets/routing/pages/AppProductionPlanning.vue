@@ -5,9 +5,9 @@
     import type {TableField} from '../../../types/app-collection-table'
     import {useRoute} from 'vue-router'
 
-    const props= defineProps<{fields: TableField[], icon: string, title: string}>()
+    const props = defineProps<{fields: TableField[], icon: string, title: string}>()
     const route = useRoute()
-    const lengthFields =  props.fields.length
+    const lengthFields = props.fields.length
 
     const fetchField = useNamespacedActions<Actions>('productionPlannings', ['fetchField']).fetchField
     const {apiFields} = useNamespacedGetters<Getters>('productionPlannings', ['apiFields'])
@@ -26,6 +26,6 @@
         {{ title }}
     </h1>
     <div class="tableFixHead">
-        <AppScheduleTable :id="route.name" :lengthFields="lengthFields" :fields="fields" :api-fields="apiFields" :items="items"/>
+        <AppScheduleTable :id="route.name" :length-fields="lengthFields" :fields="fields" :api-fields="apiFields" :items="items"/>
     </div>
 </template>
