@@ -40,6 +40,7 @@ export default [
             ],
             icon: 'wrench',
             repo: GroupRepository,
+            role: 'isProductionAdmin',
             title: 'Groupes d\'équipements'
         }
     }

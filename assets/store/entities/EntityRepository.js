@@ -1,7 +1,7 @@
 import {CollectionRepository, Entity, FiniteStateMachineRepository, Repository} from '../modules'
 import fetchApi from '../../api'
 import {get} from 'lodash'
-import store from '../index'
+import store from '..'
 
 export default class EntityRepository extends Repository {
     use = Entity

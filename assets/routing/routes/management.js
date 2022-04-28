@@ -29,6 +29,7 @@ export default [
             ],
             icon: 'palette',
             repo: ColorRepository,
+            role: 'isManagementAdmin',
             title: 'Couleurs'
         }
     },
@@ -78,6 +79,7 @@ export default [
             ],
             icon: 'hourglass-half',
             repo: InvoiceTimeDueRepository,
+            role: 'isManagementAdmin',
             title: 'Délais de paiement des factures'
         }
     },
@@ -129,6 +131,7 @@ export default [
             ],
             icon: 'ruler-horizontal',
             repo: UnitRepository,
+            role: 'isManagementAdmin',
             title: 'Unités'
         }
     },
@@ -149,6 +152,7 @@ export default [
             }],
             icon: 'comments-dollar',
             repo: VatMessageRepository,
+            role: 'isManagementAdmin',
             title: 'Messages TVA'
         }
     }

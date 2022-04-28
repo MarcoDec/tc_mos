@@ -1,6 +1,6 @@
 import {CollectionRepository, EntityRepository, Group} from '../../../modules'
 import {ENGINE_GROUPS_API} from '../../../../utils'
-import store from '../../../index'
+import store from '../../..'
 
 export default class GroupRepository extends EntityRepository {
     use = Group

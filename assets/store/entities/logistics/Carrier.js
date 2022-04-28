@@ -2,6 +2,8 @@ import {Address, Entity} from '../../modules'
 
 export default class Carrier extends Entity {
     static entity = 'carriers'
+    roleAdmin = 'isLogisticsAdmin'
+    roleWriter = 'isLogisticsWriter'
 
     static fields() {
         return {

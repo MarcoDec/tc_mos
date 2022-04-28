@@ -1,5 +1,10 @@
 <script setup>
-    import {CollectionRepository, CountryRepository, FiniteStateMachineRepository} from '../../store/modules'
+    import {
+        CollectionRepository,
+        CountryRepository,
+        EmployeeRepository,
+        FiniteStateMachineRepository
+    } from '../../store/modules'
     import {computed, onMounted, onUnmounted, ref} from 'vue'
     import {useRepo, useRouter} from '../../composition'
     import emitter from '../../emitter'
@@ -9,6 +14,7 @@
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
         repo: {required: true, type: Function},
+        role: {required: true, type: String},
         title: {required: true, type: String}
     })
     const {route} = useRouter()
@@ -24,6 +30,9 @@
     const loading = computed(() => state.value?.loading ?? false)
     const violations = computed(() => state.value?.violations ?? [])
     const mount = ref(false)
+    const userRepo = useRepo(EmployeeRepository)
+    const user = computed(() => userRepo.user)
+    const hasRole = computed(() => user.value[props.role])
 
     async function create(createOptions) {
         await repoInstance.create(createOptions, id.value)
@@ -70,11 +79,11 @@
                 v-if="mount"
                 :id="tableId"
                 :coll="coll"
+                :create="hasRole"
                 :fields="fields"
                 :items="items"
                 :state-machine="id"
                 :violations="violations"
-                create
                 pagination
                 @create="create"
                 @delete="deleteHandler"

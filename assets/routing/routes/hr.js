@@ -21,6 +21,7 @@ export default [
             ],
             icon: 'elementor',
             repo: EventTypeRepository,
+            role: 'isHrAdmin',
             title: 'Catégories d\'événements des employés'
         }
     },
@@ -123,6 +124,7 @@ export default [
             ],
             icon: 'user-graduate',
             repo: OutTrainerRepository,
+            role: 'isHrWriter',
             title: 'Formateurs extérieurs'
         }
     },
@@ -181,6 +183,7 @@ export default [
             ],
             icon: 'clock',
             repo: TimeSlotRepository,
+            role: 'isHrAdmin',
             title: 'Plages horaires'
         }
     }

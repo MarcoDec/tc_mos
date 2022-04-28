@@ -91,6 +91,7 @@ export default [
             ],
             icon: 'shuttle-van',
             repo: CarrierRepository,
+            role: 'isLogisticsWriter',
             title: 'Transporteurs'
         }
     },
@@ -122,6 +123,7 @@ export default [
             ],
             icon: 'file-contract',
             repo: IncotermsRepository,
+            role: 'isLogisticsAdmin',
             title: 'Incoterms'
         }
     }

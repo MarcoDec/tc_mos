@@ -2,6 +2,8 @@ import {Address, Entity} from '../../modules'
 
 export default class OutTrainer extends Entity {
     static entity = 'out-trainers'
+    roleAdmin = 'isHrAdmin'
+    roleWriter = 'isHrWriter'
 
     static fields() {
         return {
