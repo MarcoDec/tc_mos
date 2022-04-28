@@ -1,30 +1,18 @@
 <script setup>
-    import {CollectionRepository} from '../../../store/modules'
+    import AppCollectionTableFieldSimple from './AppCollectionTableFieldSimple'
+    import AppCollectionTableFieldSorter from './AppCollectionTableFieldSorter.vue'
     import {computed} from 'vue'
-    import {useRepo} from '../../../composition'
 
     const emit = defineEmits(['click'])
     const props = defineProps({coll: {required: true, type: Object}, field: {required: true, type: Object}})
-    const down = computed(() => ({'text-secondary': props.field.name !== props.coll.sort || props.coll.asc}))
-    const up = computed(() => ({'text-secondary': props.field.name !== props.coll.sort || !props.coll.asc}))
-    const order = computed(() => (props.coll.asc ? 'ascending' : 'descending'))
-    const ariaSort = computed(() => (props.coll.sort ? order.value : 'none'))
-    const repo = useRepo(CollectionRepository)
+    const tag = computed(() => (props.field.sort ? AppCollectionTableFieldSorter : AppCollectionTableFieldSimple))
 
     function click() {
-        repo.sort(props.coll, props.field)
-        emit('click')
+        if (props.field.sort)
+            emit('click')
     }
 </script>
 
 <template>
-    <th :aria-sort="ariaSort" @click="click">
-        <span class="d-flex justify-content-between">
-            <span>{{ field.label }}</span>
-            <span v-if="field.sort" class="d-flex flex-column">
-                <Fa :class="down" icon="caret-up"/>
-                <Fa :class="up" icon="caret-down"/>
-            </span>
-        </span>
-    </th>
+    <component :is="tag" :coll="coll" :field="field" @click="click"/>
 </template>
