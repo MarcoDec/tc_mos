@@ -9,6 +9,7 @@
     import {EmployeeRepository} from '../store/modules'
     import {computed} from 'vue'
 
+    const database = `${location.protocol}//${location.hostname}:8080`
     const repo = useRepo(EmployeeRepository)
     const {router} = useRouter()
     const hasUser = computed(() => repo.hasUser)
@@ -73,7 +74,7 @@
                         <Fa icon="server"/>
                         API
                     </a>
-                    <a class="dropdown-item text-warning" href="http://localhost:8080" target="_blank">
+                    <a :href="database" class="dropdown-item text-warning" target="_blank">
                         <Fa icon="database"/>
                         Base de données
                     </a>
