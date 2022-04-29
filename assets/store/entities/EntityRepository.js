@@ -36,6 +36,11 @@ export default class EntityRepository extends Repository {
         this.finish(vue)
     }
 
+    destroyAll(vue) {
+        super.destroyAll(vue)
+        store.$repo(CollectionRepository).destroyAll(vue)
+    }
+
     error(vue, error, status) {
         this.stateMachineRepo.error(vue, error, status)
     }

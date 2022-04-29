@@ -17,16 +17,15 @@
         role: {required: true, type: String},
         title: {required: true, type: String}
     })
-    const {route} = useRouter()
+    const {id, route} = useRouter()
     const collRepo = useRepo(CollectionRepository)
     const countryRepo = useRepo(CountryRepository)
-    const id = computed(() => route.name)
-    const coll = computed(() => collRepo.find(id.value))
-    const tableId = computed(() => `${id.value}-table`)
+    const coll = computed(() => collRepo.find(id))
+    const tableId = computed(() => `${id}-table`)
     const repoInstance = useRepo(props.repo)
-    const items = computed(() => repoInstance.tableItems(props.fields, id.value))
+    const items = computed(() => repoInstance.tableItems(props.fields, id))
     const stateRepo = useRepo(FiniteStateMachineRepository)
-    const state = computed(() => stateRepo.find(id.value))
+    const state = computed(() => stateRepo.find(id))
     const loading = computed(() => state.value?.loading ?? false)
     const violations = computed(() => state.value?.violations ?? [])
     const mount = ref(false)
@@ -35,36 +34,38 @@
     const hasRole = computed(() => user.value[props.role])
 
     async function create(createOptions) {
-        await repoInstance.create(createOptions, id.value)
+        await repoInstance.create(createOptions, id)
     }
 
     async function deleteHandler(entityId) {
-        await repoInstance.remove(entityId, id.value)
+        await repoInstance.remove(entityId, id)
     }
 
     async function load() {
-        await repoInstance.load(id.value)
+        await repoInstance.load(id)
     }
 
     async function pageHandler(page) {
-        collRepo.setPage(page, id.value)
+        collRepo.setPage(page, id)
         await load()
     }
 
     async function update(item) {
-        await repoInstance.update(item, id.value)
+        await repoInstance.update(item, id)
         emitter.emit(`${route.name}-update-${item.id ?? item.get('id')}`)
     }
 
     onMounted(async () => {
-        stateRepo.create(id.value)
+        stateRepo.create(id)
         await countryRepo.load()
         await load()
         mount.value = true
     })
 
     onUnmounted(() => {
-        stateRepo.destroy(id.value, id.value)
+        repoInstance.destroyAll(id)
+        countryRepo.flush()
+        stateRepo.destroy(id, id)
     })
 </script>
 
