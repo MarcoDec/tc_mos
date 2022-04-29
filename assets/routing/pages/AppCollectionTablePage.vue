@@ -1,13 +1,9 @@
 <script setup>
-    import {
-        CollectionRepository,
-        CountryRepository,
-        EmployeeRepository,
-        FiniteStateMachineRepository
-    } from '../../store/modules'
+    import {CollectionRepository, EmployeeRepository, FiniteStateMachineRepository} from '../../store/modules'
     import {computed, onMounted, onUnmounted, ref} from 'vue'
     import {useRepo, useRouter} from '../../composition'
     import emitter from '../../emitter'
+    import {useStore} from 'vuex'
 
     const props = defineProps({
         brands: {type: Boolean},
@@ -19,7 +15,6 @@
     })
     const {id, route} = useRouter()
     const collRepo = useRepo(CollectionRepository)
-    const countryRepo = useRepo(CountryRepository)
     const coll = computed(() => collRepo.find(id))
     const tableId = computed(() => `${id}-table`)
     const repoInstance = useRepo(props.repo)
@@ -32,6 +27,15 @@
     const userRepo = useRepo(EmployeeRepository)
     const user = computed(() => userRepo.user)
     const hasRole = computed(() => user.value[props.role])
+    const optionRepos = computed(() => {
+        const repos = []
+        for (const field of props.fields)
+            if (typeof field.repo === 'function')
+                repos.push(field.repo)
+        return repos
+    })
+    const optionId = computed(() => `${id}-options`)
+    const store = useStore()
 
     async function create(createOptions) {
         await repoInstance.create(createOptions, id)
@@ -57,14 +61,23 @@
 
     onMounted(async () => {
         stateRepo.create(id)
-        await countryRepo.load()
+        const options = []
+        for (const repo of optionRepos.value)
+            options.push(store.$repo(repo).load(optionId.value))
+        await Promise.all(options)
         await load()
         mount.value = true
     })
 
     onUnmounted(() => {
         repoInstance.destroyAll(id)
-        countryRepo.flush()
+        for (const repo of optionRepos.value) {
+            const optionRepo = store.$repo(repo)
+            if (typeof optionRepo.destroyAll === 'function')
+                optionRepo.destroyAll(optionId.value)
+            else
+                optionRepo.flush()
+        }
         stateRepo.destroy(id, id)
     })
 </script>
