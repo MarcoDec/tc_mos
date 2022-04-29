@@ -5,16 +5,17 @@ namespace App\Entity\Management;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Message TVA',
@@ -29,7 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un message TVA',
                     'summary' => 'Créer un message TVA',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -37,23 +39,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un message TVA',
                     'summary' => 'Supprime un message TVA',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un message TVA',
-                    'summary' => 'Récupère un message TVA'
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un message TVA',
                     'summary' => 'Modifie un message TVA',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:name'],
@@ -61,7 +60,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:name', 'read:id'],
-            'openapi_definition_name' => 'VatMessage-read'
+            'openapi_definition_name' => 'VatMessage-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
@@ -69,24 +69,13 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity('name')
 ]
 class VatMessage extends Entity {
-    use NameTrait;
-
-    public const FORCE_CHOICES = [
-        'TVA par défaut selon le pays du client' => self::FORCE_DEFAULT,
-        'Force SANS TVA' => self::FORCE_WITH,
-        'Force AVEC TVA' => self::FORCE_WITHOUT,
-    ];
-    public const FORCE_DEFAULT = 0;
-    public const FORCE_WITH = 1;
-    public const FORCE_WITHOUT = 2;
-
     #[
         ApiProperty(description: 'Message', required: true, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 120),
         Serializer\Groups(['read:name', 'write:name'])
     ]
-    protected ?string $name = null;
+    private ?string $name = null;
 
     final public function getName(): ?string {
         return $this->name;

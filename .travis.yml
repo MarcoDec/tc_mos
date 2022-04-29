@@ -9,9 +9,10 @@ script:
   - GROUP_ID=$(id -g) USER_ID=$(id -u) USER_NAME=$USER docker-compose up -d
   - sleep 60s # Laisse les conteneurs se charger.
   - docker exec tconcept_gpao_php composer install
-  - docker exec tconcept_gpao_php /var/www/html/TConcept-GPAO/vendor/bin/phpstan analyse --memory-limit=1G
+  - docker exec tconcept_gpao_php ./vendor/bin/phpstan analyse --memory-limit=1G
+  - docker exec tconcept_gpao_php php bin/phpunit
   - docker exec tconcept_gpao_php yarn
-  - docker exec tconcept_gpao_php yarn eslint ./assets/
+  - docker exec tconcept_gpao_php yarn eslint
 
 services:
   - docker

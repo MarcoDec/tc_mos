@@ -3,13 +3,10 @@
 namespace App\Entity\Project\Product;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
-use App\Filter\RelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,8 +14,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Famille de produit',
         collectionOperations: [
@@ -34,7 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer une famille de produit',
                     'summary' => 'Créer une famille de produit',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -42,7 +38,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une famille de produit',
                     'summary' => 'Supprime une famille de produit',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'post' => [
@@ -54,12 +51,13 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une famille de produit',
                 ],
                 'path' => '/product-families/{id}',
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')',
                 'status' => 200
             ]
         ],
         shortName: 'ProductFamily',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:family', 'write:file', 'write:name'],
@@ -67,7 +65,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'ProductFamily-read'
+            'openapi_definition_name' => 'ProductFamily-read',
+            'skip_null_values' => false
         ],
         paginationEnabled: false
     ),
@@ -76,19 +75,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['name', 'parent'])
 ]
 class Family extends AbstractFamily {
-    /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     protected Collection $children;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
+        Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(length: 30),
         Serializer\Groups(['read:name', 'write:name'])
     ]
     protected ?string $name = null;
 
-    /** @var null|self */
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/product-families/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),

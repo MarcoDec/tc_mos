@@ -1,0 +1,13 @@
+--- a/vendor/symfony/validator/Context/ExecutionContext.php	2022-03-31 19:18:25.000000000 +0200
++++ b/vendor/symfony/validator/Context/ExecutionContext.php	2022-04-25 14:20:03.842000920 +0200
+@@ -44,8 +44,8 @@
+      */
+     private mixed $root;
+ 
+-    private $translator;
+-    private ?string $translationDomain;
++    public $translator;
++    public ?string $translationDomain;
+ 
+     /**
+      * The violations generated in the current context.

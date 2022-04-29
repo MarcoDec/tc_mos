@@ -2,40 +2,52 @@
 
 namespace App\OpenApi;
 
+use Illuminate\Support\Collection;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Tightenco\Collect\Support\Collection;
 
+/**
+ * @phpstan-type Paths array<string, array<'delete'|'get'|'patch'|'post', array{parameters?: mixed[], tags: string[]}>>
+ */
 final class OpenApiNormalizer implements NormalizerInterface {
     private const METHODS = ['delete', 'get', 'patch', 'post'];
 
-    public function __construct(private NormalizerInterface $decorated) {
+    public function __construct(private readonly NormalizerInterface $decorated) {
     }
 
     /**
-     * @param mixed[] $paths
+     * @param Paths $paths
      *
      * @return mixed[]
      */
     private static function sortPaths(array $paths): array {
-        $sorted = collect(['hidden' => collect()]);
+        $hidden = new Collection();
+        /** @var Collection<string, Collection<string, mixed>> $sorted */
+        $sorted = new Collection(['hidden' => $hidden]);
         foreach ($paths as $path => $item) {
             $tag = 'hidden';
             foreach (self::METHODS as $method) {
+                /** @phpstan-ignore-next-line */
                 if (!isset($item[$method]) || empty($operation = $item[$method])) {
                     continue;
                 }
 
                 if (isset($operation['parameters']) && !empty($operation['parameters'])) {
-                    $operation['parameters'] = collect($operation['parameters'])->sortBy('name')->values()->all();
+                    /** @var mixed[] $parameters */
+                    $parameters = $operation['parameters'];
+                    $operation['parameters'] = collect($parameters)->sortBy('name')->values()->all();
                 }
 
                 $item[$method] = $operation;
                 $tag = $operation['tags'][0];
             }
             if (!$sorted->offsetExists($tag)) {
-                $sorted->put($tag, collect());
+                /** @var Collection<string, mixed> $empty */
+                $empty = new Collection();
+                $sorted->put($tag, $empty);
             }
-            $sorted->get($tag)->put($path, $item);
+            if (!empty($sortedItem = $sorted->get($tag))) {
+                $sortedItem->put($path, $item);
+            }
         }
         return $sorted
             ->map(static fn (Collection $paths): array => $paths->sortKeys()->all())
@@ -48,7 +60,7 @@ final class OpenApiNormalizer implements NormalizerInterface {
      * @return mixed[]
      */
     public function normalize($object, ?string $format = null, array $context = []): array {
-        /** @var mixed[] $normalized */
+        /** @var array{components: array{schemas: array<string, mixed>}, paths: Paths} $normalized */
         $normalized = $this->decorated->normalize($object, $format, $context);
         $normalized['components']['schemas'] = collect($normalized['components']['schemas'])->sortKeys()->all();
         $normalized['paths'] = self::sortPaths($normalized['paths']);
