@@ -11,8 +11,6 @@ use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Logistics\Incoterms;
-use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Traits\SocietyTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -78,23 +76,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class Society extends Entity {
-    use SocietyTrait;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'TConcept'),
-        Assert\NotBlank,
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name', 'read:society:collection'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Compte de comptabilité', required: false, example: 'D554DZ5'),
-        Assert\Length(max: 50),
-        ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:society'])
-    ]
-    private ?string $accountingAccount = null;
+    use SocietyTrait {
+        __construct as private societyConstruct;
+    }
 
     #[
         ApiProperty(description: 'Adresse'),
@@ -106,7 +90,7 @@ class Society extends Entity {
 
     #[
         ApiProperty(description: 'Détails bancaires', required: false, example: 'IBAN/RIB/Nom de banque'),
-        ORM\Column(type: 'text'),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $bankDetails = null;
@@ -126,25 +110,19 @@ class Society extends Entity {
     private ?string $fax = null;
 
     #[
-        ApiProperty(description: 'Incoterms', readableLink: false, required: false, example: '/api/incoterms/1'),
-        ORM\ManyToOne(targetEntity: Incoterms::class, fetch: 'EAGER'),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
-    ]
-    private ?Incoterms $incoterms = null;
-
-    #[
-        ApiProperty(description: 'Délai de paiement des facture', required: false),
-        ORM\ManyToOne(targetEntity: InvoiceTimeDue::class, fetch: 'EAGER'),
-        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
-    ]
-    private ?InvoiceTimeDue $invoiceTimeDue = null;
-
-    #[
         ApiProperty(description: 'Forme juridique', required: false, example: 'SARL'),
         ORM\Column(type: 'string', length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $legalForm = null;
+
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'TConcept'),
+        Assert\NotBlank,
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:name', 'write:name', 'read:society:collection'])
+    ]
+    private ?string $name = null;
 
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Notes libres sur la société'),
@@ -154,28 +132,11 @@ class Society extends Entity {
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Taux ppm', required: false, example: '10'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(type: 'smallint', options: ['default' => 10, 'unsigned' => true]),
-        Serializer\Groups(['read:society', 'write:society'])
-    ]
-    private ?int $ppmRate = 10;
-
-    #[
         ApiProperty(description: 'SIREN', required: false, example: '123 456 789'),
         ORM\Column(type: 'string', length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $siren = null;
-
-    #[
-        ApiProperty(description: 'TVA', required: false, example: 'FR'),
-        Assert\Length(max: 255),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
-    ]
-    private ?string $vat = null;
 
     #[
         ApiProperty(description: 'Site internet', required: false, example: 'https://www.societe.fr'),
@@ -186,6 +147,7 @@ class Society extends Entity {
     private ?string $web = null;
 
     public function __construct() {
+        $this->societyConstruct();
         $this->address = new Address();
         $this->copper = new Copper();
     }
@@ -231,7 +193,7 @@ class Society extends Entity {
         return $this;
     }
 
-    final public function setBankDetails(string $bankDetails): self {
+    final public function setBankDetails(?string $bankDetails): self {
         $this->bankDetails = $bankDetails;
         return $this;
     }
