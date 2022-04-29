@@ -1,12 +1,12 @@
-@use 'v3-infinite-loading/lib/style.css';
+@use "v3-infinite-loading/lib/style.css";
 
-@use 'bootstrap/scss/bootstrap' with (
+@use "bootstrap/scss/bootstrap" with (
   $container-max-widths: (
     sm: 540px,
     md: 720px,
     lg: 960px,
     xl: 1140px,
-    xxl: 1900px
+    xxl: 1900px,
   )
 );
 
@@ -15,10 +15,10 @@
 }
 
 .overlay {
-  background-color: #EFEFEF;
+  background-color: #efefef;
   height: 100%;
   left: 0;
-  opacity: .5;
+  opacity: 0.5;
   position: fixed;
   top: 0;
   width: 100%;
@@ -27,4 +27,16 @@
 
 .pointer {
   cursor: pointer;
+}
+.container {
+  min-width: 100%;
+}
+
+.needs {
+  overflow: hidden !important;
+}
+@media (min-width: 1140px) {
+  .needs {
+    overflow: hidden;
+  }
 }

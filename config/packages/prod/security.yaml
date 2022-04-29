@@ -1,2 +1,2 @@
 parameters:
-  access_control_api_doc_role: '%ROLE_IT_ADMIN%'
+  access_control_api_doc_role: IS_AUTHENTICATED_ANONYMOUSLY
