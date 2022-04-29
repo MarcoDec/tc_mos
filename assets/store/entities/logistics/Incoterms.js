@@ -2,6 +2,8 @@ import {Entity} from '../../modules'
 
 export default class Incoterms extends Entity {
     static entity = 'incoterms'
+    roleAdmin = 'isLogisticsAdmin'
+    roleWriter = 'isLogisticsAdmin'
 
     static fields() {
         return {

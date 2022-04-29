@@ -21,6 +21,7 @@ export default [
             ],
             icon: 'elementor',
             repo: EventTypeRepository,
+            role: 'isHrAdmin',
             title: 'Catégories d\'événements des employés'
         }
     },
@@ -35,7 +36,7 @@ export default [
                     create: true,
                     filter: true,
                     label: 'Nom',
-                    name: 'name',
+                    name: 'surname',
                     sort: true,
                     type: 'text',
                     update: true
@@ -44,7 +45,7 @@ export default [
                     create: true,
                     filter: true,
                     label: 'Prénom',
-                    name: 'surname',
+                    name: 'name',
                     sort: true,
                     type: 'text',
                     update: true
@@ -123,6 +124,7 @@ export default [
             ],
             icon: 'user-graduate',
             repo: OutTrainerRepository,
+            role: 'isHrWriter',
             title: 'Formateurs extérieurs'
         }
     },
@@ -181,6 +183,7 @@ export default [
             ],
             icon: 'clock',
             repo: TimeSlotRepository,
+            role: 'isHrAdmin',
             title: 'Plages horaires'
         }
     }

@@ -1,8 +1,11 @@
-import {Model} from '../modules'
+import {EmployeeRepository, Model} from '../modules'
 import {get} from 'lodash'
+import store from '..'
 
 export default class Entity extends Model {
     static entity = 'entities'
+    roleAdmin = null
+    roleWriter = null
 
     static fields() {
         return {
@@ -14,7 +17,8 @@ export default class Entity extends Model {
     }
 
     tableItem(fields) {
-        const item = {delete: true, id: this.id, update: true}
+        const user = store.$repo(EmployeeRepository).user
+        const item = {delete: user[this.roleAdmin], id: this.id, update: user[this.roleWriter]}
         for (const field of fields)
             item[field.name] = get(this, field.name)
         return item

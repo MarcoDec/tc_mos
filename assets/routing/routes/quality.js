@@ -21,6 +21,7 @@ export default [
             ],
             icon: 'elementor',
             repo: RejectTypeRepository,
+            role: 'isQualityAdmin',
             title: 'Catégories de rejets de production'
         }
     },
@@ -44,6 +45,7 @@ export default [
             ],
             icon: 'elementor',
             repo: QualityTypeRepository,
+            role: 'isQualityAdmin',
             title: 'Critères qualités'
         }
     }

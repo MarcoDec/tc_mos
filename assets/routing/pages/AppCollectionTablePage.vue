@@ -1,61 +1,84 @@
 <script setup>
-    import {CollectionRepository, CountryRepository, FiniteStateMachineRepository} from '../../store/modules'
+    import {CollectionRepository, EmployeeRepository, FiniteStateMachineRepository} from '../../store/modules'
     import {computed, onMounted, onUnmounted, ref} from 'vue'
     import {useRepo, useRouter} from '../../composition'
     import emitter from '../../emitter'
+    import {useStore} from 'vuex'
 
     const props = defineProps({
         brands: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
         repo: {required: true, type: Function},
+        role: {required: true, type: String},
         title: {required: true, type: String}
     })
-    const {route} = useRouter()
+    const {id, route} = useRouter()
     const collRepo = useRepo(CollectionRepository)
-    const countryRepo = useRepo(CountryRepository)
-    const id = computed(() => route.name)
-    const coll = computed(() => collRepo.find(id.value))
-    const tableId = computed(() => `${id.value}-table`)
+    const coll = computed(() => collRepo.find(id))
+    const tableId = computed(() => `${id}-table`)
     const repoInstance = useRepo(props.repo)
-    const items = computed(() => repoInstance.tableItems(props.fields, id.value))
+    const items = computed(() => repoInstance.tableItems(props.fields, id))
     const stateRepo = useRepo(FiniteStateMachineRepository)
-    const state = computed(() => stateRepo.find(id.value))
+    const state = computed(() => stateRepo.find(id))
     const loading = computed(() => state.value?.loading ?? false)
     const violations = computed(() => state.value?.violations ?? [])
     const mount = ref(false)
+    const userRepo = useRepo(EmployeeRepository)
+    const user = computed(() => userRepo.user)
+    const hasRole = computed(() => user.value[props.role])
+    const optionRepos = computed(() => {
+        const repos = []
+        for (const field of props.fields)
+            if (typeof field.repo === 'function')
+                repos.push(field.repo)
+        return repos
+    })
+    const optionId = computed(() => `${id}-options`)
+    const store = useStore()
 
     async function create(createOptions) {
-        await repoInstance.create(createOptions, id.value)
+        await repoInstance.create(createOptions, id)
     }
 
     async function deleteHandler(entityId) {
-        await repoInstance.remove(entityId, id.value)
+        await repoInstance.remove(entityId, id)
     }
 
     async function load() {
-        await repoInstance.load(id.value)
+        await repoInstance.load(id)
     }
 
     async function pageHandler(page) {
-        collRepo.setPage(page, id.value)
+        collRepo.setPage(page, id)
         await load()
     }
 
     async function update(item) {
-        await repoInstance.update(item, id.value)
+        await repoInstance.update(item, id)
         emitter.emit(`${route.name}-update-${item.id ?? item.get('id')}`)
     }
 
     onMounted(async () => {
-        stateRepo.create(id.value)
-        await countryRepo.load()
+        stateRepo.create(id)
+        const options = []
+        for (const repo of optionRepos.value)
+            options.push(store.$repo(repo).load(optionId.value))
+        await Promise.all(options)
         await load()
         mount.value = true
     })
 
     onUnmounted(() => {
-        stateRepo.destroy(id.value, id.value)
+        repoInstance.destroyAll(id)
+        for (const repo of optionRepos.value) {
+            const optionRepo = store.$repo(repo)
+            if (typeof optionRepo.destroyAll === 'function')
+                optionRepo.destroyAll(optionId.value)
+            else
+                optionRepo.flush()
+        }
+        stateRepo.destroy(id, id)
     })
 </script>
 
@@ -70,11 +93,11 @@
                 v-if="mount"
                 :id="tableId"
                 :coll="coll"
+                :create="hasRole"
                 :fields="fields"
                 :items="items"
                 :state-machine="id"
                 :violations="violations"
-                create
                 pagination
                 @create="create"
                 @delete="deleteHandler"

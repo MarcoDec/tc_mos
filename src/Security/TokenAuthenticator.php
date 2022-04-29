@@ -60,6 +60,6 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     }
 
     public function supports(Request $request): ?bool {
-        return str_starts_with($request->getRequestUri(), '/api');
+        return str_starts_with($request->getRequestUri(), '/api/');
     }
 }

@@ -43,7 +43,7 @@ class Address {
             example: 'ZA La charrière',
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
         ),
-        Assert\Length(min: 10, max: 50),
+        Assert\Length(min: 2, max: 50),
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]

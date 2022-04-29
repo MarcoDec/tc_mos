@@ -3,6 +3,8 @@ import {Entity} from '../../../modules'
 
 export default class Group extends Entity {
     static entity = 'engine-groups'
+    roleAdmin = 'isProductionAdmin'
+    roleWriter = 'isProductionAdmin'
 
     get '@typeLabel'() {
         return ENGINE_GROUPS[this['@type']]

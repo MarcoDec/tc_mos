@@ -10,6 +10,7 @@
     import {EmployeeRepository} from '../store/modules'
     import {computed} from 'vue'
 
+    const database = `${location.protocol}//${location.hostname}:8080`
     const repo = useRepo(EmployeeRepository)
     const {router} = useRouter()
     const hasUser = computed(() => repo.hasUser)
@@ -70,32 +71,39 @@
                         </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
-                <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
+                <AppNavbarItem id="it" icon="laptop" title="Informatique">
                     <AppNavbarLink disabled icon="laptop-code" to="it-requests" variant="danger">
                         Demandes
                     </AppNavbarLink>
-                    <AppDropdownItem variant="warning">
-                        Administrateur
-                    </AppDropdownItem>
-                    <a class="dropdown-item text-warning" href="/api" target="_blank">
-                        <Fa icon="server"/>
-                        API
-                    </a>
-                    <a class="dropdown-item text-warning" href="http://localhost:8080" target="_blank">
-                        <Fa icon="database"/>
-                        Base de données
-                    </a>
+                    <template v-if="user.isItAdmin">
+                        <AppDropdownItem variant="warning">
+                            Administrateur
+                        </AppDropdownItem>
+                        <a class="dropdown-item text-warning" href="/api" target="_blank">
+                            <Fa icon="server"/>
+                            API
+                        </a>
+                        <a :href="database" class="dropdown-item text-warning" target="_blank">
+                            <Fa icon="database"/>
+                            Base de données
+                        </a>
+                    </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
                     <AppDropdownItem variant="success">
                         Lecteur
                     </AppDropdownItem>
-                    <AppNavbarLink icon="file-contract" to="incoterms" variant="success">
-                        Incoterms
-                    </AppNavbarLink>
                     <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">
                         Transporteurs
                     </AppNavbarLink>
+                    <template v-if="user.isLogisticsAdmin">
+                        <AppDropdownItem variant="warning">
+                            Administrateur
+                        </AppDropdownItem>
+                        <AppNavbarLink icon="file-contract" to="incoterms" variant="warning">
+                            Incoterms
+                        </AppNavbarLink>
+                    </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                     <AppDropdownItem variant="success">
@@ -117,13 +125,16 @@
                     </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isProjectReader" id="project" icon="industry" title="Projet">
+                    <AppDropdownItem variant="success">
+                        Lecteur
+                    </AppDropdownItem>
+                    <AppNavbarLink disabled icon="atom" to="operations" variant="danger">
+                        Opérations
+                    </AppNavbarLink>
                     <template v-if="user.isProjectAdmin">
                         <AppDropdownItem variant="warning">
                             Administrateur
                         </AppDropdownItem>
-                        <AppNavbarLink disabled icon="atom" to="operations" variant="danger">
-                            Opérations
-                        </AppNavbarLink>
                         <AppNavbarLink icon="layer-group" to="product-families" variant="warning">
                             Familles de produits
                         </AppNavbarLink>
@@ -133,6 +144,12 @@
                     </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isQualityReader" id="quality" icon="certificate" title="Qualité">
+                    <AppDropdownItem variant="success">
+                        Lecteur
+                    </AppDropdownItem>
+                    <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
+                        Relevés qualités composants
+                    </AppNavbarLink>
                     <template v-if="user.isQualityAdmin">
                         <AppDropdownItem variant="warning">
                             Administrateur
@@ -143,21 +160,21 @@
                         <AppNavbarLink brands icon="elementor" to="quality-types" variant="warning">
                             Critères qualités
                         </AppNavbarLink>
-                        <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
-                            Relevés qualités composants
-                        </AppNavbarLink>
                     </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isHrReader" id="hr" icon="male" title="RH">
+                    <AppDropdownItem variant="success">
+                        Lecteur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="user-graduate" to="out-trainers" variant="success">
+                        Formateurs extérieurs
+                    </AppNavbarLink>
                     <template v-if="user.isHrAdmin">
                         <AppDropdownItem variant="warning">
                             Administrateur
                         </AppDropdownItem>
                         <AppNavbarLink brands icon="elementor" to="event-types" variant="warning">
                             Catégories d'événements des employés
-                        </AppNavbarLink>
-                        <AppNavbarLink icon="user-graduate" to="out-trainers" variant="warning">
-                            Formateurs extérieurs
                         </AppNavbarLink>
                         <AppNavbarLink icon="clock" to="time-slots" variant="warning">
                             Plages horaires

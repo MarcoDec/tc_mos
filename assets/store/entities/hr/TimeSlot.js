@@ -2,6 +2,8 @@ import {Entity} from '../../modules'
 
 export default class TimeSlot extends Entity {
     static entity = 'time-slots'
+    roleAdmin = 'isHrAdmin'
+    roleWriter = 'isHrAdmin'
 
     static fields() {
         return {

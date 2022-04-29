@@ -2,6 +2,8 @@ import {Entity} from '../../modules'
 
 export default class InvoiceTimeDue extends Entity {
     static entity = 'invoice-time-dues'
+    roleAdmin = 'isManagementAdmin'
+    roleWriter = 'isManagementAdmin'
 
     static fields() {
         return {

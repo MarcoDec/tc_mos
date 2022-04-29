@@ -16,11 +16,13 @@
     const tree = computed(() => [...nodeRepo.tree].sort((a, b) => a.label.localeCompare(b.label)))
 
     onMounted(async () => {
+        stateRepo.create(id)
         await NodeRepository.load(props.repo, id)
     })
 
     onUnmounted(() => {
         nodeRepo.destroyAll(id, props.repo)
+        stateRepo.destroy(id, id)
     })
 </script>
 

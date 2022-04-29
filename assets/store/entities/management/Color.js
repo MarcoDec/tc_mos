@@ -2,6 +2,8 @@ import {Entity} from '../../modules'
 
 export default class Color extends Entity {
     static entity = 'colors'
+    roleAdmin = 'isManagementAdmin'
+    roleWriter = 'isManagementAdmin'
 
     static fields() {
         return {

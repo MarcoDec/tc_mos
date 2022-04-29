@@ -33,7 +33,7 @@
         </td>
         <td>
             <AppBtn v-if="create" icon="plus-circle" title="Basculer en mode ajout" variant="success" @click="toggle"/>
-            <AppForm :id="form" inline @submit="search">
+            <AppForm :id="form" :fields="fields" inline @submit="search">
                 <AppBtn icon="search" title="Rechercher" type="submit" variant="secondary"/>
             </AppForm>
             <AppBtn icon="times" title="Annuler" variant="danger" @click="reset"/>

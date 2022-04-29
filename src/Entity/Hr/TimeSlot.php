@@ -69,21 +69,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table
 ]
 class TimeSlot extends Entity {
-    /**
-     * @ORM\Column(type="time_immutable")
-     */
     #[
-        ApiProperty(description: 'Fin', example: '17:30:00'),
+        ApiProperty(description: 'Fin', example: '17:30'),
         ORM\Column(type: 'time_immutable'),
-        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
+        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
     ]
     private ?DateTimeImmutable $end = null;
 
     #[
-        ApiProperty(description: 'Fin pause', example: '13:30:00'),
+        ApiProperty(description: 'Fin pause', example: '13:30'),
         ORM\Column(type: 'time_immutable', nullable: true),
-        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
+        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
     ]
     private ?DateTimeImmutable $endBreak = null;
@@ -97,17 +94,17 @@ class TimeSlot extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Début', example: '07:30:00'),
+        ApiProperty(description: 'Début', example: '07:30'),
         ORM\Column(type: 'time_immutable'),
-        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
+        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
     ]
     private ?DateTimeImmutable $start = null;
 
     #[
-        ApiProperty(description: 'Début pause', example: '12:30:00'),
+        ApiProperty(description: 'Début pause', example: '12:30'),
         ORM\Column(type: 'time_immutable', nullable: true),
-        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s']),
+        Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
     ]
     private ?DateTimeImmutable $startBreak = null;

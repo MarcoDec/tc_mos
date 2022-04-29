@@ -2,6 +2,8 @@ import {Entity} from '../../modules'
 
 export default class Unit extends Entity {
     static entity = 'units'
+    roleAdmin = 'isManagementAdmin'
+    roleWriter = 'isManagementAdmin'
 
     get option() {
         return {text: this.code, value: this['@id']}

@@ -12,12 +12,6 @@ export default class Repository extends VuexORMRepository {
         return this.all().length === 0
     }
 
-    static pushVue(record, vue) {
-        if (!Array.isArray(record.vues))
-            record.vues = []
-        record.vues.push(vue)
-    }
-
     destroy(ids, vue) {
         let collection = []
         if (Array.isArray(ids)) {
@@ -44,6 +38,12 @@ export default class Repository extends VuexORMRepository {
             this.unregisterModule(vue)
     }
 
+    pushVue(record, vue) {
+        if (!Array.isArray(record.vues))
+            record.vues = [...this.find(record.id)?.vues ?? []]
+        record.vues.push(vue)
+    }
+
     removeVue(id, removed) {
         const record = this.find(id)
         if (record === null)
@@ -68,9 +68,9 @@ export default class Repository extends VuexORMRepository {
         if (vue !== null && typeof records === 'object') {
             if (Array.isArray(records))
                 for (const record of records)
-                    Repository.pushVue(record, vue)
+                    this.pushVue(record, vue)
             else
-                Repository.pushVue(records, vue)
+                this.pushVue(records, vue)
         }
         return super.save(records)
     }
