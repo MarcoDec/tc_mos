@@ -22,7 +22,7 @@ abstract class AbstractUnit extends Entity {
         Assert\Length(min: 1, max: 6),
         Assert\NotBlank,
         ORM\Column(length: 6),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
     ]
     protected ?string $code = null;
 
@@ -43,7 +43,7 @@ abstract class AbstractUnit extends Entity {
         Assert\NotBlank,
         Assert\Positive,
         ORM\Column(options: ['default' => 1]),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
     ]
     private float $base = 1;
 
@@ -100,7 +100,7 @@ abstract class AbstractUnit extends Entity {
 
     #[
         Pure,
-        Serializer\Groups(['read:unit'])
+        Serializer\Groups(['read:currency', 'read:unit'])
     ]
     final public function getParentId(): int {
         return $this->parent?->getId() ?? 0;

@@ -12,7 +12,7 @@
     const checkClass = computed(() => ({'form-check': !props.noLabel}))
 
     function input(e) {
-        emit('update:modelValue', e.target.value)
+        emit('update:modelValue', e.target.checked)
     }
 </script>
 

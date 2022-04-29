@@ -34,7 +34,7 @@ export default [
         }
     },
     {
-        component: async () => import('../pages/management/AppCurrency.vue'),
+        component: async () => import('../pages/management/AppCurrenciesPage.vue'),
         meta: {requiresAuth: true},
         name: 'currencies',
         path: '/currencies'

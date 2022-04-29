@@ -8,6 +8,7 @@
     const emit = defineEmits(['submit', 'update:modelValue'])
     const form = ref()
     const props = defineProps({
+        dInline: {type: Boolean},
         fields: {required: true, type: Array},
         id: {required: true, type: String},
         inline: {type: Boolean},
@@ -21,6 +22,8 @@
     const error = computed(() => state.value?.error ?? null)
     const loading = computed(() => state.value?.loading ?? false)
     const status = computed(() => state.value?.status ?? 200)
+    const dInlineCss = computed(() => ({'d-flex': props.dInline}))
+    const dInlineCssGroup = computed(() => ({'flex-fill': props.dInline, 'm-1': props.dInline}))
 
     function input(value) {
         emit('update:modelValue', {...props.modelValue, [value.name]: value.value})
@@ -57,10 +60,11 @@
             <AppBadge>{{ status }}</AppBadge>
             {{ error }}
         </AppAlert>
-        <form :id="id" ref="form" autocomplete="off" @submit.prevent="submit">
+        <form :id="id" ref="form" :class="dInlineCss" autocomplete="off" @submit.prevent="submit">
             <AppFormGroup
                 v-for="field in fields"
                 :key="field.name"
+                :class="dInlineCssGroup"
                 :field="field"
                 :form="id"
                 :model-value="modelValue[field.name]"

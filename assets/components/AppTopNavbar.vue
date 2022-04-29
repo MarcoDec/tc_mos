@@ -60,6 +60,9 @@
                         <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
                             Délais de paiement des factures
                         </AppNavbarLink>
+                        <AppNavbarLink icon="euro-sign" to="currencies" variant="warning">
+                            Devises
+                        </AppNavbarLink>
                         <AppNavbarLink disabled icon="print" to="printers" variant="danger">
                             Imprimantes
                         </AppNavbarLink>

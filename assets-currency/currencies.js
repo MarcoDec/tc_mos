@@ -5,7 +5,7 @@ export const module = {
         async fetchCurrency({commit}) {
             const response = await fetchApi('/api/currencies', {
                 method: 'get',
-                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${Cookies.get('token')}`}
+                headers: {'Content-Type': 'application/json', Authorization: `Bearer ${Cookies.get('token')}`}
             })
             const list = response['hydra:member']
             commit('getCurrency', list)
@@ -21,7 +21,7 @@ export const module = {
                 method: 'patch',
                 headers: {
                     'Content-Type': ' application/merge-patch+json',
-                    'Authorization': `Bearer ${Cookies.get('token')}`
+                    Authorization: `Bearer ${Cookies.get('token')}`
                 }
             })
         }

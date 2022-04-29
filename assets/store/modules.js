@@ -23,6 +23,7 @@ export {default as RejectType} from './entities/quality/reject/RejectType'
 export {default as TimeSlot} from './entities/hr/TimeSlot'
 export {default as Unit} from './entities/management/Unit'
 export {default as VatMessage} from './entities/management/VatMessage'
+export {default as Currency} from './entities/management/Currency'
 // repositories
 export {default as Repository} from './Repository'
 export {default as EntityRepository} from './entities/EntityRepository'
@@ -47,3 +48,4 @@ export {default as RejectTypeRepository} from './entities/quality/reject/RejectT
 export {default as TimeSlotRepository} from './entities/hr/TimeSlotRepository'
 export {default as UnitRepository} from './entities/management/UnitRepository'
 export {default as VatMessageRepository} from './entities/management/VatMessageRepository'
+export {default as CurrencyRepository} from './entities/management/CurrencyRepository'
