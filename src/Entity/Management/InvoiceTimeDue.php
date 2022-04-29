@@ -47,12 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un délai de paiement des factures',
-                    'summary' => 'Récupère un délai de paiement des factures'
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un délai de paiement des factures',

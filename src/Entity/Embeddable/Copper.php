@@ -10,10 +10,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class Copper {
-    public const COPPER_TYPE_DELIVERY = 'à la livraison';
-    public const COPPER_TYPE_MONTHLY = 'mensuel';
-    public const COPPER_TYPE_SEMI_ANNUAL = 'semestriel';
-    public const COPPER_TYPES = [
+    final public const COPPER_TYPE_DELIVERY = 'à la livraison';
+    final public const COPPER_TYPE_MONTHLY = 'mensuel';
+    final public const COPPER_TYPE_SEMI_ANNUAL = 'semestriel';
+    final public const COPPER_TYPES = [
         self::COPPER_TYPE_DELIVERY,
         self::COPPER_TYPE_MONTHLY,
         self::COPPER_TYPE_SEMI_ANNUAL,
@@ -33,7 +33,7 @@ class Copper {
         ORM\Column(type: 'datetime', nullable: true),
         Serializer\Groups(['read:copper', 'write:copper'])
     ]
-    private ?DateTimeInterface $last;
+    private ?DateTimeInterface $last = null;
 
     #[
         ApiProperty(description: 'Activer le suivi du cuivre'),
@@ -48,7 +48,7 @@ class Copper {
         ORM\Column(type: 'datetime', nullable: true),
         Serializer\Groups(['read:copper', 'write:copper'])
     ]
-    private ?DateTimeInterface $next;
+    private ?DateTimeInterface $next = null;
 
     #[
         ApiProperty(description: 'Type de suivi', example: self::COPPER_TYPE_MONTHLY),
@@ -58,53 +58,48 @@ class Copper {
     ]
     private string $type = self::COPPER_TYPE_MONTHLY;
 
-    public function getIndex(): ?float {
+    final public function getIndex(): ?float {
         return $this->index;
     }
 
-    public function getLast(): ?DateTimeInterface {
+    final public function getLast(): ?DateTimeInterface {
         return $this->last;
     }
 
-    public function getManaged(): ?bool {
+    final public function getManaged(): ?bool {
         return $this->managed;
     }
 
-    public function getNext(): ?DateTimeInterface {
+    final public function getNext(): ?DateTimeInterface {
         return $this->next;
     }
 
-    public function getType(): ?string {
+    final public function getType(): ?string {
         return $this->type;
     }
 
-    public function setIndex(float $index): self {
+    final public function setIndex(float $index): self {
         $this->index = $index;
-
         return $this;
     }
 
-    public function setLast(?DateTimeInterface $last): self {
+    final public function setLast(?DateTimeInterface $last): self {
         $this->last = $last;
-
         return $this;
     }
 
-    public function setManaged(bool $managed): self {
+    final public function setManaged(bool $managed): self {
         $this->managed = $managed;
-
         return $this;
     }
 
-    public function setNext(?DateTimeInterface $next): self {
+    final public function setNext(?DateTimeInterface $next): self {
         $this->next = $next;
-
         return $this;
     }
 
-    public function setType(string $type): self {
+    final public function setType(string $type): self {
         $this->type = $type;
-
         return $this;
     }
 }

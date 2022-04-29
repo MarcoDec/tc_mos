@@ -17,7 +17,7 @@ trait SocietyTrait {
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society', 'write:society'])
     ]
-    private ?string $accountingAccount;
+    private ?string $accountingAccount = null;
 
     #[
         ApiProperty(description: 'Accusé de récéption', required: false),
@@ -28,39 +28,39 @@ trait SocietyTrait {
 
     #[
         ApiProperty(description: 'Forcer la TVA', required: true, example: 0),
-        ORM\Column(options: ['default' => VatMessage::FORCE_DEFAULT, 'unsigned' => true], type: 'smallint'),
+        ORM\Column(type: 'smallint', options: ['default' => VatMessage::FORCE_DEFAULT, 'unsigned' => true]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private int $forceVat = VatMessage::FORCE_DEFAULT;
 
     #[
         ApiProperty(description: 'Incoterms', required: false),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
+        ORM\ManyToOne(targetEntity: Incoterms::class, fetch: 'EAGER'),
         Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
-    private ?Incoterms $incoterms;
+    private ?Incoterms $incoterms = null;
 
     #[
         ApiProperty(description: 'Minimum de facturation', required: false, example: '2'),
         Assert\NotNull,
         Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?float $invoiceMin = 0;
 
     #[
         ApiProperty(description: 'Délai de paiement des facture', required: false),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: InvoiceTimeDue::class),
+        ORM\ManyToOne(targetEntity: InvoiceTimeDue::class, fetch: 'EAGER'),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?InvoiceTimeDue $invoiceTimeDue;
+    private ?InvoiceTimeDue $invoiceTimeDue = null;
 
     #[
         ApiProperty(description: 'Ordre minimum', required: false, example: '5'),
         Assert\NotNull,
         Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?float $orderMin = 0;
@@ -69,7 +69,7 @@ trait SocietyTrait {
         ApiProperty(description: 'Taux ppm', required: false, example: '10'),
         Assert\NotNull,
         Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint'),
+        ORM\Column(type: 'smallint', options: ['default' => 10, 'unsigned' => true]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?int $ppmRate = 10;
@@ -83,11 +83,11 @@ trait SocietyTrait {
     private ?string $vat = null;
 
     #[
-        ApiProperty(description: 'Message TVA', required: false, readableLink: false, example: '/api/vat-messages/5'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: VatMessage::class),
+        ApiProperty(description: 'Message TVA', readableLink: false, required: false, example: '/api/vat-messages/5'),
+        ORM\ManyToOne(targetEntity: VatMessage::class, fetch: 'EAGER'),
         Serializer\Groups(['read:name', 'write:name'])
     ]
-    private ?VatMessage $vatMessage;
+    private ?VatMessage $vatMessage = null;
 
     final public function getAccountingAccount(): ?string {
         return $this->accountingAccount;

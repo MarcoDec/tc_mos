@@ -13,19 +13,14 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\InvoiceTimeDue;
-use App\Entity\Traits\NameTrait;
 use App\Entity\Traits\SocietyTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial'
-    ]),
-    ApiFilter(OrderFilter::class, properties: [
-        'name',
-    ]),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Société',
         collectionOperations: [
@@ -83,7 +78,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class Society extends Entity {
-    use NameTrait;
     use SocietyTrait;
 
     #[
@@ -100,7 +94,7 @@ class Society extends Entity {
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
-    private ?string $accountingAccount;
+    private ?string $accountingAccount = null;
 
     #[
         ApiProperty(description: 'Adresse'),
@@ -114,7 +108,7 @@ class Society extends Entity {
         ORM\Column(type: 'text'),
         Serializer\Groups(['read:society'])
     ]
-    private ?string $bankDetails;
+    private ?string $bankDetails = null;
 
     #[
         ApiProperty(description: 'Cuivre'),
@@ -128,41 +122,41 @@ class Society extends Entity {
         ORM\Column(type: 'string', length: 255, nullable: true),
         Serializer\Groups(['read:society'])
     ]
-    private ?string $fax;
+    private ?string $fax = null;
 
     #[
-        ApiProperty(description: 'Incoterms', required: false, readableLink: false, example: '/api/incoterms/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
+        ApiProperty(description: 'Incoterms', readableLink: false, required: false, example: '/api/incoterms/1'),
+        ORM\ManyToOne(targetEntity: Incoterms::class, fetch: 'EAGER'),
         Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
-    private ?Incoterms $incoterms;
+    private ?Incoterms $incoterms = null;
 
     #[
         ApiProperty(description: 'Délai de paiement des facture', required: false),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: InvoiceTimeDue::class),
+        ORM\ManyToOne(targetEntity: InvoiceTimeDue::class, fetch: 'EAGER'),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?InvoiceTimeDue $invoiceTimeDue;
+    private ?InvoiceTimeDue $invoiceTimeDue = null;
 
     #[
         ApiProperty(description: 'Forme juridique', required: false, example: 'SARL'),
         ORM\Column(type: 'string', length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
-    private ?string $legalForm;
+    private ?string $legalForm = null;
 
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Notes libres sur la société'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:society'])
     ]
-    private ?string $notes;
+    private ?string $notes = null;
 
     #[
         ApiProperty(description: 'Taux ppm', required: false, example: '10'),
         Assert\NotNull,
         Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint'),
+        ORM\Column(type: 'smallint', options: ['default' => 10, 'unsigned' => true]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?int $ppmRate = 10;
@@ -172,7 +166,7 @@ class Society extends Entity {
         ORM\Column(type: 'string', length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
-    private ?string $siren;
+    private ?string $siren = null;
 
     #[
         ApiProperty(description: 'TVA', required: false, example: 'FR'),
@@ -188,14 +182,14 @@ class Society extends Entity {
         ORM\Column(type: 'string', length: 255, nullable: true),
         Serializer\Groups(['read:society', 'write:society'])
     ]
-    private ?string $web;
+    private ?string $web = null;
 
     public function __construct() {
         $this->address = new Address();
         $this->copper = new Copper();
     }
 
-    public function getAddress(): Address {
+    final public function getAddress(): Address {
         return $this->address;
     }
 
@@ -203,7 +197,7 @@ class Society extends Entity {
         return $this->bankDetails;
     }
 
-    public function getCopper(): Copper {
+    final public function getCopper(): Copper {
         return $this->copper;
     }
 
@@ -213,6 +207,10 @@ class Society extends Entity {
 
     final public function getLegalForm(): ?string {
         return $this->legalForm;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     final public function getNotes(): ?string {
@@ -227,51 +225,48 @@ class Society extends Entity {
         return $this->web;
     }
 
-    public function setAddress(Address $address): self {
+    final public function setAddress(Address $address): self {
         $this->address = $address;
-
         return $this;
     }
 
     final public function setBankDetails(string $bankDetails): self {
         $this->bankDetails = $bankDetails;
-
         return $this;
     }
 
-    public function setCopper(Copper $copper): self {
+    final public function setCopper(Copper $copper): self {
         $this->copper = $copper;
-
         return $this;
     }
 
     final public function setFax(?string $fax): self {
         $this->fax = $fax;
-
         return $this;
     }
 
     final public function setLegalForm(?string $legalForm): self {
         $this->legalForm = $legalForm;
+        return $this;
+    }
 
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
-
         return $this;
     }
 
     final public function setSiren(?string $siren): self {
         $this->siren = $siren;
-
         return $this;
     }
 
     final public function setWeb(?string $web): self {
         $this->web = $web;
-
         return $this;
     }
 }
