@@ -1,13 +1,97 @@
-@use 'bootstrap/scss/bootstrap';
-@use 'vue3-loading-overlay/dist/vue3-loading-overlay';
+@use 'bootstrap/scss/bootstrap' with (
+  $container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1900px
+  )
+);
 
 .bg-blue {
   background-color: #8ac2f1;
 }
-.container{
-  min-width: 100%;
-}
-.form-switch {
-  padding-left: 3.5em;
+
+.btn-icon {
+  height: 20px;
+  line-height: .8;
+  margin: 3.5px;
+  padding: 1px;
+  width: 20px;
+
+  i {
+    vertical-align: middle;
+  }
 }
 
+.card-body {
+  padding: 0 0 !important;
+}
+
+.container {
+  min-width: 100%;
+}
+
+.dropdown-item {
+  &.bg-success {
+    background-color: #57ec57 !important;
+  }
+
+  &.text-success {
+    color: #57ec57 !important;
+  }
+}
+
+.overlay {
+  background-color: #EFEFEF;
+  height: 100%;
+  left: 0;
+  opacity: .5;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.page-item {
+  cursor: pointer;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.resizer {
+  background-color: black;
+  cursor: row-resize;
+  margin: 0;
+  padding: 2px;
+}
+
+th[aria-sort] {
+  cursor: pointer;
+}
+
+@media (max-width: 1140px) {
+  .gui-left {
+    display: block;
+  }
+
+  .gui-top {
+    display: block;
+  }
+}
+
+@media (min-width: 1140px) {
+  .gui {
+    overflow: hidden;
+  }
+
+  .gui-left {
+    display: inline;
+  }
+
+  .gui-top {
+    display: flex;
+  }
+}

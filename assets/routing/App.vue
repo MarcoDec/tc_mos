@@ -1,20 +1,21 @@
-<script lang="ts" setup>
-    import {onMounted, ref} from 'vue'
-    import {ActionTypes} from '../store/security'
-    import type {Actions} from '../store/security'
-    import {useNamespacedActions} from 'vuex-composition-helpers'
+<script setup>
+    import {computed, onMounted} from 'vue'
+    import {useRepo, useRouter} from '../composition'
+    import AppTopNavbar from '../components/AppTopNavbar.vue'
+    import {FiniteStateMachineRepository} from '../store/modules'
 
-    const connected = ref(false)
+    const {route} = useRouter()
+    const safeId = computed(() => route.name)
+    const stateMachine = useRepo(FiniteStateMachineRepository)
 
-    onMounted(async () => {
-        await useNamespacedActions<Actions>('users', [ActionTypes.CONNECT])[ActionTypes.CONNECT]()
-        connected.value = true
+    onMounted(() => {
+        stateMachine.create('login')
     })
 </script>
 
 <template>
     <AppTopNavbar/>
     <AppContainer>
-        <RouterView v-if="connected"/>
+        <RouterView :key="safeId"/>
     </AppContainer>
 </template>
