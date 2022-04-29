@@ -2,11 +2,11 @@
     import type {TableField, TableItem} from '../../../types/app-manufacturing-table'
     import {computed, defineProps} from 'vue'
 
-    defineProps<{fields: TableField[], item: TableItem}>()
+    defineProps<{fields: TableField[], item: TableItem, title: string}>()
 </script>
 
 <template>
     <tr>
-        <component :is="field.name==='quantite' ? 'AppManufacturingTableItemQuantite' :'AppManufacturingTableItemField' " v-for="field in fields" :key="field.name" :field="field" :item="item" />
+        <component :is="field.name==='quantite'&& title === 'collapse new Ofs' ? 'AppManufacturingTableItemQuantite' :'AppManufacturingTableItemField' " v-for="field in fields" :key="field.name" :field="field" :item="item" :title="title"/>
     </tr>
 </template>

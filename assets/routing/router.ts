@@ -172,22 +172,22 @@ const router = createRouter({
                     {
                         label: 'OF',
                         name: 'of',
-                        type: 'text'
+                        type: 'number'
                     },
                     {
                         label: 'Début Prod.',
                         name: 'debutProd',
-                        type: 'text'
+                        type: 'date'
                     },
                     {
                         label: 'Fin Prod.',
                         name: 'finProd',
-                        type: 'text'
+                        type: 'date'
                     },
                     {
                         label: 'Quantité',
                         name: 'quantite',
-                        type: 'text'
+                        type: 'number'
                     },
                     {
                         label: 'Site de production',
@@ -197,12 +197,12 @@ const router = createRouter({
                     {
                         label: 'Quantité produite',
                         name: 'quantiteProduite',
-                        type: 'text'
+                        type: 'number'
                     },
                     {
                         label: 'Confirmer OF',
                         name: 'confirmerOF',
-                        type: 'text'
+                        type: 'boolean'
                     }
                 ],
                 fieldsCollapseOnGoingLocalOf: [
@@ -225,27 +225,27 @@ const router = createRouter({
                     {
                         label: 'OF',
                         name: 'of',
-                        type: 'text'
+                        type: 'number'
                     },
                     {
                         label: 'Début Prod.',
                         name: 'debutProd',
-                        type: 'text'
+                        type: 'date'
                     },
                     {
                         label: 'Fin Prod.',
                         name: 'finProd',
-                        type: 'text'
+                        type: 'date'
                     },
                     {
                         label: 'Quantité',
                         name: 'quantite',
-                        type: 'text'
+                        type: 'number'
                     },
                     {
                         label: 'Quantité Produite',
                         name: 'quantiteProduite',
-                        type: 'text'
+                        type: 'number'
                     },
                     {
                         label: 'Etat',

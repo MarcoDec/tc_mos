@@ -25,6 +25,11 @@
                     Familles de composants
                 </AppNavbarLink>
             </AppNavbarItem>
+            <AppNavbarItem id="nav-purchase" icon="shopping-bag" title="Vente">
+                <AppNavbarLink icon="layer-group" to="manufacturing-order-needs">
+                    Besoins lancement OFs
+                </AppNavbarLink>
+            </AppNavbarItem>
             <AppNavbarItem id="nav-purchase" icon="industry" title="Production">
                 <AppNavbarLink icon="layer-group" to="product-families">
                     Familles de produits

@@ -11,6 +11,8 @@ import {mutations} from './mutation'
 import {productionPlannings} from './productionPlannings'
 import {productionPlanningsItems} from './productionPlanningsItems'
 import {CollapseNewOfsItems} from './CollapseNewOfsItems'
+import {collapseOfsToConfirmItems} from './collapseOfsToConfirmItems'
+import {collapseOnGoingLocalOfItems} from './collapseOnGoingLocalOfItems'
 import {state} from './state'
 
 export type {Actions, Mutations, State, StoreActionContext}
@@ -18,7 +20,7 @@ export type {Actions, Mutations, State, StoreActionContext}
 export function generateStore(security: Security): Store<State> {
     return createStore<State>({
         actions,
-        modules: {CollapseNewOfsItems, productionPlannings, productionPlanningsItems, security: generateSecurity(security)},
+        modules: {CollapseNewOfsItems, collapseOfsToConfirmItems, collapseOnGoingLocalOfItems, productionPlannings, productionPlanningsItems, security: generateSecurity(security)},
         mutations,
         state,
         strict: process.env.NODE_ENV !== 'production'
