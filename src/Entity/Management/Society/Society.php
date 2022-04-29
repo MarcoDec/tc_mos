@@ -98,6 +98,7 @@ class Society extends Entity {
 
     #[
         ApiProperty(description: 'Adresse'),
+        Assert\Valid,
         ORM\Embedded,
         Serializer\Groups(['read:society', 'write:society'])
     ]
