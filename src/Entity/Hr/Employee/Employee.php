@@ -14,7 +14,6 @@ use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -29,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:employee', 'read:name', 'read:user'],
+            'groups' => ['read:id', 'read:employee', 'read:user'],
             'openapi_definition_name' => 'Employee-read',
             'skip_null_values' => false
         ]
@@ -37,30 +36,25 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'Super'),
-        Assert\Length(min: 3, max: 30),
-        Assert\NotBlank,
-        ORM\Column(length: 30),
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    /**
-     * @var Collection<int, Token>
-     */
+    /** @var Collection<int, Token> */
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
     private Collection $apiTokens;
 
     #[ORM\Embedded]
     private Roles $embRoles;
 
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Super'),
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:employee', 'write:employee'])
+    ]
+    private ?string $name = null;
+
     #[ORM\Column(type: 'char', length: 60, options: ['charset' => 'ascii'])]
     private ?string $password = null;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
-        Assert\Length(min: 3, max: 20),
         ORM\Column(length: 20, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:employee'])
     ]

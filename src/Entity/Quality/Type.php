@@ -55,11 +55,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name'],
+            'groups' => ['write:type'],
             'openapi_definition_name' => 'QualityType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name'],
+            'groups' => ['read:id', 'read:type'],
             'openapi_definition_name' => 'QualityType-read',
             'skip_null_values' => false
         ],
@@ -73,7 +73,7 @@ class Type extends Entity {
         Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
         ORM\Column(length: 40),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $name = null;
 

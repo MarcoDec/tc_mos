@@ -56,17 +56,16 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:time-slot', 'write:name'],
+            'groups' => ['write:time-slot'],
             'openapi_definition_name' => 'TimeSlot-write'
         ],
         normalizationContext: [
-            'groups' => ['read:time-slot', 'read:id', 'read:name'],
+            'groups' => ['read:time-slot', 'read:id'],
             'openapi_definition_name' => 'TimeSlot-read',
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class TimeSlot extends Entity {
     #[
@@ -87,6 +86,7 @@ class TimeSlot extends Entity {
 
     #[
         ApiProperty(description: 'Nom', example: 'Journée'),
+        Assert\Length(max: 10),
         Assert\NotBlank,
         ORM\Column(length: 10),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])

@@ -39,13 +39,13 @@ trait SocietyTrait {
     #[
         ApiProperty(description: 'Incoterms', readableLink: false, required: false, example: '/api/incoterms/1'),
         ORM\ManyToOne(targetEntity: Incoterms::class, fetch: 'EAGER'),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private ?Incoterms $incoterms = null;
 
     /** @noRector */
     #[
-        ApiProperty(description: 'Minimum de facturation', required: false, example: ['$ref' => '#/components/schemas/Measure-price']),
+        ApiProperty(description: 'Minimum de facturation', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:society', 'write:society'])
     ]
@@ -54,13 +54,13 @@ trait SocietyTrait {
     #[
         ApiProperty(description: 'Délai de paiement des facture', required: false),
         ORM\ManyToOne(targetEntity: InvoiceTimeDue::class, fetch: 'EAGER'),
-        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
+        Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?InvoiceTimeDue $invoiceTimeDue = null;
 
     /** @noRector */
     #[
-        ApiProperty(description: 'Ordre minimum', required: false, example: ['$ref' => '#/components/schemas/Measure-price']),
+        ApiProperty(description: 'Ordre minimum', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:society', 'write:society'])
     ]
@@ -68,25 +68,25 @@ trait SocietyTrait {
 
     #[
         ApiProperty(description: 'Taux ppm', required: false, example: '10'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
+        Assert\NotNull(groups: ['Default', 'Society-create']),
+        Assert\PositiveOrZero(groups: ['Default', 'Society-create']),
         ORM\Column(type: 'smallint', options: ['default' => 10, 'unsigned' => true]),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private int $ppmRate = 10;
 
     #[
         ApiProperty(description: 'TVA', required: false, example: 'FR'),
-        Assert\Length(max: 255),
+        Assert\Length(max: 255, groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private ?string $vat = null;
 
     #[
         ApiProperty(description: 'Message TVA', readableLink: false, required: false, example: '/api/vat-messages/1'),
         ORM\ManyToOne(targetEntity: VatMessage::class, fetch: 'EAGER'),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?VatMessage $vatMessage = null;
 

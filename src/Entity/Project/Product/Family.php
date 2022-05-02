@@ -60,11 +60,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:file', 'write:name'],
+            'groups' => ['write:family', 'write:file'],
             'openapi_definition_name' => 'ProductFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
+            'groups' => ['read:family', 'read:file', 'read:id'],
             'openapi_definition_name' => 'ProductFamily-read',
             'skip_null_values' => false
         ],
@@ -83,7 +83,7 @@ class Family extends AbstractFamily {
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:family', 'write:family'])
     ]
     protected ?string $name = null;
 

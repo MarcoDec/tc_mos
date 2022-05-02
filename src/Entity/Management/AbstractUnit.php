@@ -31,7 +31,7 @@ abstract class AbstractUnit extends Entity {
         Assert\Length(min: 5, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected ?string $name = null;
 

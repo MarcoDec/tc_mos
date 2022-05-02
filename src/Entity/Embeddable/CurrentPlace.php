@@ -21,7 +21,7 @@ abstract class CurrentPlace implements Stringable {
         ORM\Column(type: 'datetime_immutable', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP']),
         Serializer\Groups(['read:current-place'])
     ]
-    protected ?DateTimeImmutable $date;
+    protected DateTimeImmutable $date;
 
     public function __construct(protected ?string $name = null) {
         $this->date = new DateTimeImmutable();
@@ -37,7 +37,7 @@ abstract class CurrentPlace implements Stringable {
 
     abstract public function isFrozen(): bool;
 
-    final public function getDate(): ?DateTimeImmutable {
+    final public function getDate(): DateTimeImmutable {
         return $this->date;
     }
 

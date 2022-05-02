@@ -28,15 +28,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les sociétés',
                 ],
                 'normalization_context' => [
-                    'groups' => 'read:society:collection'
+                    'groups' => ['read:society:collection'],
+                    'openapi_definition_name' => 'Society-collection'
                 ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:society', 'write:address', 'write:copper'],
+                    'openapi_definition_name' => 'Society-create'
+                ],
                 'openapi_context' => [
                     'description' => 'Créer une société',
                     'summary' => 'Créer une société',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')',
+                'validation_groups' => ['Society-create']
             ]
         ],
         itemOperations: [
@@ -65,11 +71,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:society', 'write:name', 'write:address', 'write:incoterms', 'write:copper'],
+            'groups' => ['write:address', 'write:copper', 'write:society'],
             'openapi_definition_name' => 'Society-write'
         ],
         normalizationContext: [
-            'groups' => ['read:society', 'read:id', 'read:name', 'read:address', 'read:incoterms', 'read:invoice-time-due', 'read:copper'],
+            'groups' => ['read:address', 'read:copper', 'read:id', 'read:society'],
             'openapi_definition_name' => 'Society-read'
         ],
     ),
@@ -82,9 +88,9 @@ class Society extends Entity {
 
     #[
         ApiProperty(description: 'Adresse'),
-        Assert\Valid,
+        Assert\Valid(groups: ['Default', 'Society-create']),
         ORM\Embedded,
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private Address $address;
 
@@ -97,30 +103,31 @@ class Society extends Entity {
 
     #[
         ApiProperty(description: 'Cuivre'),
+        Assert\Valid(groups: ['Default', 'Society-create']),
         ORM\Embedded(Copper::class),
-        Serializer\Groups(['read:society', 'write:society'])
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private Copper $copper;
 
     #[
         ApiProperty(description: 'Numéro de fax', required: false, example: '02 17 21 11 11'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $fax = null;
 
     #[
         ApiProperty(description: 'Forme juridique', required: false, example: 'SARL'),
-        ORM\Column(type: 'string', length: 50, nullable: true),
+        ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $legalForm = null;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'TConcept'),
-        Assert\NotBlank,
+        Assert\NotBlank(groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name', 'read:society:collection'])
+        Serializer\Groups(['create:society', 'read:society', 'read:society:collection', 'write:society'])
     ]
     private ?string $name = null;
 
@@ -133,16 +140,16 @@ class Society extends Entity {
 
     #[
         ApiProperty(description: 'SIREN', required: false, example: '123 456 789'),
-        ORM\Column(type: 'string', length: 50, nullable: true),
+        ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $siren = null;
 
     #[
         ApiProperty(description: 'Site internet', required: false, example: 'https://www.societe.fr'),
-        Assert\Url,
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
+        Assert\Url(groups: ['Default', 'Society-create']),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private ?string $web = null;
 
