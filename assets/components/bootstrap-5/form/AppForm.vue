@@ -38,7 +38,16 @@
 
         const json = {}
         for (const [key, value] of data.entries()) {
-            const normalizedValue = props.fields.find(field => field.name === key)?.type === 'number' ? parseFloat(value) : value
+            let normalizedValue = value
+            const field = props.fields.find(f => f.name === key)
+            if (field)
+                switch (field.type) {
+                    case 'boolean':
+                        normalizedValue = normalizedValue === 'on'
+                        break
+                    case 'number':
+                        normalizedValue = parseFloat(normalizedValue)
+                }
             if (normalizedValue === null || typeof normalizedValue === 'undefined')
                 continue
             if (typeof normalizedValue === 'number' && isNaN(normalizedValue))
@@ -61,6 +70,7 @@
             {{ error }}
         </AppAlert>
         <form :id="id" ref="form" :class="dInlineCss" autocomplete="off" @submit.prevent="submit">
+            <slot name="before"/>
             <AppFormGroup
                 v-for="field in fields"
                 :key="field.name"
