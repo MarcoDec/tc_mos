@@ -149,7 +149,11 @@ final class EntityConfig {
             /** @var Collection<int, string> $sqlEntity */
             $sqlEntity = new Collection();
             foreach ($columns as $column) {
-                $sqlEntity[] = $entity[$column] === null || $entity[$column] === '' ? 'NULL' : $connection->quote($entity[$column]);
+                $sql = $entity[$column] === null || $entity[$column] === '' ? 'NULL' : $connection->quote($entity[$column]);
+                if (is_string($sql) && str_contains($sql, '%')) {
+                    $sql = str_replace('%', '%%', $sql);
+                }
+                $sqlEntity[] = $sql;
             }
             $sqlEntities->push("({$sqlEntity->implode(', ')})");
         }

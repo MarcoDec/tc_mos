@@ -65,7 +65,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ),
     ORM\Entity,
-    ORM\Table,
     UniqueEntity('name')
 ]
 class VatMessage extends Entity {
