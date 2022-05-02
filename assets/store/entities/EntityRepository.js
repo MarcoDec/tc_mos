@@ -36,9 +36,10 @@ export default class EntityRepository extends Repository {
         this.finish(vue)
     }
 
-    destroyAll(vue) {
+    destroyAll(vue, coll = true) {
         super.destroyAll(vue)
-        store.$repo(CollectionRepository).destroyAll(vue)
+        if (coll)
+            store.$repo(CollectionRepository).destroyAll(vue)
     }
 
     error(vue, error, status) {
@@ -71,7 +72,7 @@ export default class EntityRepository extends Repository {
             'get',
             store.$repo(CollectionRepository).find(vue)?.body ?? {}
         )
-        this.destroyAll(vue)
+        this.destroyAll(vue, false)
         this.save(response['hydra:member'], vue)
         store.$repo(CollectionRepository).save(response, vue)
         this.finish(vue)
