@@ -14,6 +14,10 @@ export default class NotificationRepository extends EntityRepository {
         return Object.entries(categories)
     }
 
+    get length() {
+        return this.where('read', false).get().length
+    }
+
     async load(vue) {
         this.loading(vue)
         const response = await this.fetch(vue, this.url, 'get')

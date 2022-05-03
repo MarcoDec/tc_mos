@@ -8,6 +8,7 @@
     const content = computed(() => `nav-notifications-${props.category}`)
     const target = computed(() => `#${content.value}`)
     const repo = useRepo(NotificationRepository)
+    const length = computed(() => props.notifications.filter(notification => !notification.read).length)
 
     async function read() {
         await repo.readCategory(props.category)
@@ -28,15 +29,16 @@
                 class="accordion-button collapsed"
                 data-bs-toggle="collapse"
                 type="button">
-                {{ category }}&nbsp;({{ notifications.length }})
+                {{ category }}
+                <AppBadge no-absolute tooltip>
+                    {{ length }}
+                </AppBadge>
+                <AppBtn icon="eye" title="Marquer comme lu" @click.prevent="read"/>
+                <AppBtn icon="trash" title="Supprimer" variant="danger" @click.prevent="remove"/>
             </button>
         </h6>
         <div :id="content" class="accordion-collapse collapse">
             <div class="accordion-body">
-                <div>
-                    <AppBtn icon="eye" title="Marquer comme lu" @click="read"/>
-                    <AppBtn icon="trash" title="Supprimer" variant="danger" @click="remove"/>
-                </div>
                 <AppNotification
                     v-for="notification in notifications"
                     :key="notification.id"

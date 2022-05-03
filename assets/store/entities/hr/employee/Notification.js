@@ -3,6 +3,10 @@ import {Entity} from '../../../modules'
 export default class Notification extends Entity {
     static entity = 'notifications'
 
+    get formattedCreatedAt() {
+        return new Date(this.createdAt).toLocaleString()
+    }
+
     static fields() {
         return {
             ...super.fields(),

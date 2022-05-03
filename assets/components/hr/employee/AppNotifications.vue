@@ -8,10 +8,11 @@
     defineProps({id: {required: true, type: String}})
     const repo = useRepo(NotificationRepository)
     const categories = computed(() => repo.findByCategories)
+    const length = computed(() => repo.length)
 </script>
 
 <template>
-    <AppDropdown :id="id" class="me-1">
+    <AppDropdown :id="id" class="me-1" end>
         <template #toggle="{id: dropdownId}">
             <AppBtn
                 :id="dropdownId"
@@ -20,6 +21,9 @@
                 data-bs-auto-close="outside"
                 data-bs-toggle="dropdown">
                 <Fa icon="bell"/>
+                <AppBadge tooltip>
+                    {{ length }}
+                </AppBadge>
             </AppBtn>
         </template>
         <AppNotificationCategory
