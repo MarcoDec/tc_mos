@@ -36,7 +36,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer une famille de composant',
                     'summary' => 'Créer une famille de composant',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -44,7 +45,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une famille de composant',
                     'summary' => 'Supprime une famille de composant',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'post' => [
@@ -56,20 +58,22 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une famille de composant',
                 ],
                 'path' => '/component-families/{id}',
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')',
                 'status' => 200
             ]
         ],
         shortName: 'ComponentFamily',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:family', 'write:file', 'write:name'],
+            'groups' => ['write:family', 'write:file'],
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:family', 'read:file', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'ComponentFamily-read'
+            'groups' => ['read:family', 'read:file', 'read:id'],
+            'openapi_definition_name' => 'ComponentFamily-read',
+            'skip_null_values' => false
         ],
         paginationEnabled: false
     ),
@@ -78,21 +82,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['name', 'parent'])
 ]
 class Family extends AbstractFamily {
-    /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     protected Collection $children;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
+        Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:family', 'write:family'])
     ]
-    protected ?string $name;
+    protected ?string $name = null;
 
-    /**
-     * @var null|self
-     */
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/component-families/2'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
@@ -101,8 +102,10 @@ class Family extends AbstractFamily {
     protected $parent;
 
     #[
-        ApiProperty(description: 'Code ', example: 'CAB'),
-        ORM\Column,
+        ApiProperty(description: 'Code ', required: true, example: 'CAB'),
+        Assert\Length(exactly: 3),
+        Assert\NotBlank,
+        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $code = null;

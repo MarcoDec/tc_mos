@@ -5,7 +5,6 @@ namespace App\EventListener;
 use ApiPlatform\Core\EventListener\DeserializeListener as ApiDeserializeListener;
 use ApiPlatform\Core\Serializer\SerializerContextBuilderInterface;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
-use App\Service\CouchDBManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -13,11 +12,10 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class DeserializeListener {
     public function __construct(
-        private ApiDeserializeListener $decorated,
-        private DenormalizerInterface $denormalizer,
-        private EntityManagerInterface $em,
-        private SerializerContextBuilderInterface $serializer,
-        private CouchDBManager $couchDBManager
+        private readonly ApiDeserializeListener $decorated,
+        private readonly DenormalizerInterface $denormalizer,
+        private readonly EntityManagerInterface $em,
+        private readonly SerializerContextBuilderInterface $serializer
     ) {
     }
 
@@ -27,7 +25,7 @@ final class DeserializeListener {
             return;
         }
 
-        if ($request->getContentType() !== 'multipart') {
+        if (!in_array($request->getContentType(), ['form', 'multipart'])) {
             $this->decorated->onKernelRequest($event);
         }
 
@@ -38,7 +36,7 @@ final class DeserializeListener {
         if (empty($attrs = RequestAttributesExtractor::extractAttributes($request))) {
             return;
         }
-
+        /** @var array{resource_class: string} $context */
         $context = $this->serializer->createFromRequest($request, false, $attrs);
         if (!empty($populated = $request->attributes->get('data'))) {
             $context['object_to_populate'] = $populated;
@@ -52,22 +50,16 @@ final class DeserializeListener {
     }
 
     /**
-     * @param mixed[] $context
+     * @param array{resource_class: string} $context
      *
      * @return mixed[]
      */
     private function getData(array $context, Request $request): array {
-        if (!$this->couchDBManager->isCouchdbDocument(new $context['resource_class']())) {
-            $metadata = $this->em->getClassMetadata($context['resource_class']);
-            return collect(array_merge($request->request->all(), $request->files->all()))
-                ->map(static function ($value, string $name) use ($metadata) {
-                    return $metadata->getTypeOfField($name) === 'boolean'
-                        ? is_string($value) && $value === 'true' || $value
-                        : $value;
-                })
-                ->all();
-        } else {
-            return collect(array_merge($request->request->all(), $request->files->all()))->all();
-        }
+        $metadata = $this->em->getClassMetadata($context['resource_class']);
+        return collect(array_merge($request->request->all(), $request->files->all()))
+            ->map(static fn ($value, string $name) => $metadata->getTypeOfField($name) === 'boolean'
+                ? is_string($value) && $value === 'true' || $value
+                : $value)
+            ->all();
     }
 }

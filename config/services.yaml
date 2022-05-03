@@ -1,25 +1,16 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
-parameters:
-
 services:
-  # default configuration for services in *this* file
   _defaults:
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true
+    autowire: true
 
-  # makes classes in src/ available to be used as services
-  # this creates a service per class whose id is the fully-qualified class name
   App\:
     exclude:
+      - ../src/Api/Resource/
+      - ../src/Controller/
       - ../src/DependencyInjection/
       - ../src/Entity/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
-      - ../src/OpenApi/OpenApiWrapper.php
       - ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
@@ -28,10 +19,17 @@ services:
     resource: ../src/Controller
     tags: [ controller.service_arguments ]
 
-  # add more service definitions when explicit configuration is needed
-  # please note that last definitions always *replace* previous ones
+  api_platform.openapi.factory:
+    arguments:
+      $filterLocator: '@api_platform.filter_locator'
+      $formats: '%api_platform.formats%'
+      $operationPathResolver: '@api_platform.operation_path_resolver'
+      $subresourceOperationFactory: '@api_platform.subresource_operation_factory'
+    autoconfigure: false
+    class: App\OpenApi\OpenApiFactory
 
   App\Doctrine\ORM\Decorator\EntityManagerDecorator:
+    autoconfigure: false
     decorates: doctrine.orm.default_entity_manager
 
   App\EventListener\DeserializeListener:
@@ -40,6 +38,20 @@ services:
     tags:
       - event: kernel.request
         name: kernel.event_listener
+
+  App\EventListener\Embeddable\MeasureListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Interfaces\EmbeddedInterface
+        event: postLoad
+        name: doctrine.orm.entity_listener
+
+  App\EventListener\Hr\Employee\NotificationListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Hr\Employee\Notification
+        event: preRemove
+        name: doctrine.orm.entity_listener
 
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
@@ -64,29 +76,29 @@ services:
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
 
+  App\EventListener\WriteListener:
+    autoconfigure: false
+    tags:
+      - event: kernel.view
+        name: kernel.event_listener
+        priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::PRE_WRITE
+
   App\Filesystem\FileManager:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
       $dir: '%kernel.project_dir%/public'
+    autoconfigure: false
 
-  App\OpenApi\OpenApiFactory:
+  App\OpenApi\SchemaFactory:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
     autoconfigure: false
-    decorates: api_platform.openapi.factory
+    decorates: api_platform.hydra.json_schema.schema_factory
 
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
 
-  App\Service\CouchDBManager:
-    arguments:
-      - '%env(COUCH_URL)%'
-      - '%env(COUCH_DBNAME)%'
-
-  App\DataCollector\CouchdbCollector:
-    tags:
-      -
-        name: data_collector
-        template: 'data_collector/couchdb_collector.html.twig'
-        id: App\DataCollector\CouchdbCollector
+  App\Serializer\ContextBuilderInterface:
+    autoconfigure: false
+    decorates: api_platform.serializer.context_builder

@@ -1,16 +1,25 @@
-<script lang="ts" setup>
-    import type {FormField, FormValue} from '../../../types/bootstrap-5'
-    import {defineEmits, defineProps} from 'vue'
+<script setup>
+    import AppLabel from './AppLabel'
+    import {FiniteStateMachineRepository} from '../../../store/modules'
+    import {computed} from 'vue'
+    import {useRepo} from '../../../composition'
 
-    const emit = defineEmits<{
-        (e: 'input', payload: Readonly<{name: string, value: FormValue}>): void
-        (e: 'update:modelValue', value: FormValue): void
-    }>()
-    const props = defineProps<{field: FormField, modelValue?: FormValue}>()
+    const emit = defineEmits(['input', 'update:modelValue'])
+    const repo = useRepo(FiniteStateMachineRepository)
+    const props = defineProps({
+        field: {required: true, type: Object},
+        form: {required: true, type: String},
+        modelValue: {default: null},
+        stateMachine: {required: true, type: String}
+    })
+    const inputId = computed(() => `${props.form}-${props.field.name}`)
+    const state = computed(() => repo.find(props.stateMachine))
+    const violation = computed(() => state.value?.findViolation(props.field) ?? null)
+    const isInvalid = computed(() => ({'is-invalid': violation.value !== null}))
 
-    function input(value: FormValue): void {
-        emit('input', {name: props.field.name, value})
+    function input(value) {
         emit('update:modelValue', value)
+        emit('input', {name: props.field.name, value})
     }
 </script>
 
@@ -20,7 +29,16 @@
             {{ field.label }}
         </AppLabel>
         <AppCol>
-            <AppInput :field="field" :model-value="modelValue" @update:model-value="input"/>
+            <AppInputGuesser
+                :id="inputId"
+                :class="isInvalid"
+                :field="field"
+                :form="form"
+                :model-value="modelValue"
+                @update:model-value="input"/>
+            <AppInvalidFeedback v-if="violation !== null">
+                {{ violation.message }}
+            </AppInvalidFeedback>
         </AppCol>
     </AppRow>
 </template>
