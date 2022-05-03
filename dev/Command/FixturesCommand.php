@@ -4,6 +4,8 @@ namespace App\Command;
 
 use App\Fixtures\Configurations;
 use Doctrine\ORM\EntityManagerInterface;
+use Illuminate\Support\Collection;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,22 +14,30 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * @method static string getDefaultName()
+ *
+ * @phpstan-import-type CodeJson from Configurations
+ * @phpstan-import-type Entity from Configurations
  */
 final class FixturesCommand extends AbstractCommand {
     private const DOCTRINE_FIXTURES_COMMAND = 'doctrine:fixtures:load';
 
     protected static $defaultDescription = 'Transfert les données de l\'ancien système vers le nouveau.';
     protected static $defaultName = 'gpao:fixtures:load';
-    private Configurations $configurations;
+    private readonly Configurations $configurations;
 
     public function __construct(
-        private string $configDir,
+        private readonly string $configDir,
         EntityManagerInterface $em,
-        private string $jsonDir,
-        private string $jsonPrefix
+        private readonly string $jsonDir,
+        private readonly string $jsonPrefix
     ) {
         parent::__construct();
         $this->configurations = new Configurations($em);
+    }
+
+    #[Pure]
+    public function getOldName(string $file): string {
+        return removeEnd(removeStart($file, $this->jsonPrefix), '.json');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
@@ -93,28 +103,67 @@ final class FixturesCommand extends AbstractCommand {
             throw new RuntimeException("Invalid $json.");
         }
 
-        $this->configurations->setCountries(json_decode($json, true));
+        /** @var CodeJson[] $countries */
+        $countries = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->configurations->setCountries($countries);
+    }
+
+    private function loadCustomscode(): void {
+        if (empty($json = file_get_contents("$this->jsonDir/{$this->jsonPrefix}customcode.json"))) {
+            throw new RuntimeException("Invalid $json.");
+        }
+
+        /** @var CodeJson[] $customscode */
+        $customscode = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->configurations->setCustomscode($customscode);
     }
 
     private function loadJSON(): void {
         $this->loadCountries();
+        $this->loadCustomscode();
 
         if (empty($jsonDir = scandir($this->jsonDir))) {
             throw new RuntimeException("Invalid or empty dir $this->jsonDir.");
         }
 
-        $excludes = ["{$this->jsonPrefix}country.json"];
-        foreach ($jsonDir as $file) {
-            if (!in_array($file, $excludes) && str_ends_with($file, '.json')) {
-                if (empty($json = file_get_contents("$this->jsonDir/$file"))) {
-                    throw new RuntimeException("Invalid $json.");
-                }
-
-                $this->configurations->setData(
-                    name: removeEnd(removeStart($file, $this->jsonPrefix), '.json'),
-                    data: json_decode($json, true)
-                );
+        $jsonDir = collect($jsonDir);
+        $excludes = ["{$this->jsonPrefix}country.json", "{$this->jsonPrefix}customcode.json"];
+        /** @var Collection<int, string> $processed */
+        $processed = new Collection();
+        while ($jsonDir->isNotEmpty()) {
+            foreach ($jsonDir as $file) {
+                $this->loadJSONFile($excludes, $file, $processed);
             }
+
+            $jsonDir = $jsonDir->filter(static fn (string $file): bool => $processed->doesntContain($file));
         }
+    }
+
+    /**
+     * @param string[]                $excludes
+     * @param Collection<int, string> $processed
+     */
+    private function loadJSONFile(array $excludes, string $file, Collection $processed): void {
+        $name = $this->getOldName($file);
+
+        if (!in_array($file, $excludes) && str_ends_with($file, '.json')) {
+            $dependencies = $this->configurations->getDependencies($name);
+            $oldProcessed = $processed->map([$this, 'getOldName']);
+            foreach ($dependencies as $dependency) {
+                if (!$oldProcessed->contains($dependency) && $dependency !== $name) {
+                    return;
+                }
+            }
+
+            if (empty($json = file_get_contents("$this->jsonDir/$file"))) {
+                throw new RuntimeException("Invalid $json.");
+            }
+
+            /** @var Entity[] $entities */
+            $entities = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            $this->configurations->setData(name: $name, data: $entities);
+        }
+
+        $processed->push($file);
     }
 }

@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class UserFixtures extends Fixture {
-    public function __construct(private UserPasswordHasherInterface $hasher) {
+    public function __construct(private readonly UserPasswordHasherInterface $hasher) {
     }
 
     public function load(ObjectManager $manager): void {
