@@ -26,10 +26,6 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Récupère les sociétés',
                     'summary' => 'Récupère les sociétés',
-                ],
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:society:collection'],
-                    'openapi_definition_name' => 'Society-collection'
                 ]
             ],
             'post' => [
@@ -53,12 +49,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère une société',
-                    'summary' => 'Récupère une société'
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une société',
