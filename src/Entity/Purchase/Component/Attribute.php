@@ -10,7 +10,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Unit;
-use App\Entity\Traits\NameTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -67,49 +66,44 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:attribute', 'write:name', 'write:family', 'write:unit'],
+            'groups' => ['write:attribute', 'write:family', 'write:unit'],
             'openapi_definition_name' => 'Attribute-write'
         ],
         normalizationContext: [
-            'groups' => ['read:attribute', 'read:id', 'read:name', 'read:family', 'read:unit'],
+            'groups' => ['read:attribute', 'read:family', 'read:id', 'read:unit'],
             'openapi_definition_name' => 'Attribute-read'
         ],
     ),
-    ORM\Entity,
-    ORM\Table(name: 'attribute'),
+    ORM\Entity
 ]
 class Attribute extends Entity {
-    use NameTrait;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'Longueur'),
-        Assert\NotBlank,
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
     #[
         ApiProperty(description: 'Nom', required: false, example: 'Longueur de l\'embout'),
         Assert\Length(min: 3, max: 255),
-        ORM\Column(type: 'string', length: 255, nullable: true),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:attribute', 'write:attribute'])
     ]
     private ?string $description = null;
 
-    /**
-     * @var Collection<int, Family>
-     */
+    /** @var Collection<int, Family> */
     #[
-        ApiProperty(description: 'Famille', required: true, readableLink: false, example: ['/api/units/7', '/api/units/15']),
+        ApiProperty(description: 'Famille', readableLink: false, required: true, example: ['/api/units/7', '/api/units/15']),
         ORM\ManyToMany(targetEntity: Family::class),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private Collection $families;
 
     #[
-        ApiProperty(description: 'Unité', required: false, readableLink: false, example: '/api/units/7'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Unit::class),
+        ApiProperty(description: 'Nom', required: true, example: 'Longueur'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:attribute', 'write:attribute'])
+    ]
+    private ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/7'),
+        ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     private ?Unit $unit;
@@ -118,44 +112,51 @@ class Attribute extends Entity {
         $this->families = new ArrayCollection();
     }
 
-    public function addFamily(Family $family): self {
+    final public function addFamily(Family $family): self {
         if (!$this->families->contains($family)) {
-            $this->families[] = $family;
+            $this->families->add($family);
         }
-
         return $this;
     }
 
-    public function getDescription(): ?string {
+    final public function getDescription(): ?string {
         return $this->description;
     }
 
     /**
      * @return Collection<int, Family>
      */
-    public function getFamilies(): Collection {
+    final public function getFamilies(): Collection {
         return $this->families;
     }
 
-    public function getUnit(): ?Unit {
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
+    final public function getUnit(): ?Unit {
         return $this->unit;
     }
 
-    public function removeFamily(Family $family): self {
-        $this->families->removeElement($family);
-
+    final public function removeFamily(Family $family): self {
+        if ($this->families->contains($family)) {
+            $this->families->removeElement($family);
+        }
         return $this;
     }
 
-    public function setDescription(?string $description): self {
+    final public function setDescription(?string $description): self {
         $this->description = $description;
-
         return $this;
     }
 
-    public function setUnit(?Unit $unit): self {
-        $this->unit = $unit;
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
+    }
 
+    final public function setUnit(?Unit $unit): self {
+        $this->unit = $unit;
         return $this;
     }
 }
