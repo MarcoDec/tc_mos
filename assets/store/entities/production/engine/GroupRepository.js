@@ -33,7 +33,7 @@ export default class GroupRepository extends EntityRepository {
         this.loading(vue)
         const body = store.$repo(CollectionRepository).find(vue)?.body ?? {}
         const response = await this.fetch(vue, GroupRepository.getUrl(body), 'get', body)
-        this.destroyAll(vue)
+        this.destroyAll(vue, false)
         this.save(response['hydra:member'], vue)
         store.$repo(CollectionRepository).save(response, vue)
         this.finish(vue)

@@ -7,25 +7,16 @@ export default class EntityRepository extends Repository {
     use = Entity
     url = '/api/entities'
 
+    get fields() {
+        return Object.keys(this.use.fields())
+    }
+
     get idUrl() {
         return `${this.url}/{id}`
     }
 
     get stateMachineRepo() {
         return this.repo(FiniteStateMachineRepository)
-    }
-
-    static sorter(first, second, coll) {
-        const a = get(first, coll.sort)
-        const b = get(second, coll.sort)
-        switch (typeof a) {
-        case 'number':
-            return a - b
-        case 'string':
-            return a.localeCompare(b)
-        default:
-            return typeof first.id === 'number' ? first.id - second.id : first.id.localCompare(second.id)
-        }
     }
 
     async create(body, vue) {
@@ -89,18 +80,39 @@ export default class EntityRepository extends Repository {
         this.finish(vue)
     }
 
+    sorter(first, second, coll) {
+        let sortName = coll.sortName
+        const matches = /(\w+)\.\w+/.exec(sortName)
+        if (Array.isArray(matches)) {
+            const instance = `${matches[1]}Instance`
+            if (this.fields.includes(instance))
+                sortName = sortName.replace(matches[1], instance)
+        }
+        const a = get(first, sortName)
+        if (typeof a === 'undefined' || a === null)
+            return -1
+        const b = get(second, sortName)
+        if (typeof b === 'undefined' || b === null)
+            return 1
+        switch (typeof a) {
+        case 'number':
+            return a - b
+        case 'string':
+            return a.localeCompare(b)
+        default:
+            return typeof first.id === 'number' ? first.id - second.id : first.id.localCompare(second.id)
+        }
+    }
+
     tableItems(fields, vue) {
-        const entities = this.where(entity => entity.vues.includes(vue))
-            .withAll()
-            .get()
-            .map(entity => entity.tableItem(fields))
+        const entities = this.where(entity => entity.vues.includes(vue)).withAllRecursive().get()
         const coll = store.$repo(CollectionRepository).find(vue)
         if (coll !== null && coll.isSorted)
-            entities.sort((first, second) =>
-                (coll.direction === 'asc'
-                    ? EntityRepository.sorter(first, second, coll)
-                    : EntityRepository.sorter(second, first, coll)))
-        return entities
+            entities.sort((first, second) => (coll.direction === 'asc'
+                ? this.sorter(first, second, coll)
+                : this.sorter(second, first, coll)
+            ))
+        return entities.map(entity => entity.tableItem(fields))
     }
 
     async update(body, vue) {

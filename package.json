@@ -11,18 +11,18 @@
     "lodash": "^4.17.21",
     "mitt": "^3.0.0",
     "vue": "^3.2.33",
-    "vue-router": "^4.0.14",
+    "vue-router": "^4.0.15",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.9",
+    "@babel/core": "^7.17.10",
     "@babel/eslint-parser": "^7.17.0",
     "@vitejs/plugin-vue": "^2.3.1",
     "eslint": "^8.14.0",
     "eslint-plugin-vue": "^8.7.1",
     "humps": "^2.0.1",
-    "sass": "^1.50.1",
-    "vite": "^2.9.5",
+    "sass": "^1.51.0",
+    "vite": "^2.9.7",
     "vite-plugin-checker": "^0.4.6",
     "vite-plugin-symfony": "^0.3.1"
   },
