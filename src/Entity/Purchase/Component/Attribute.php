@@ -10,6 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Unit;
+use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,18 +18,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial',
-        'description' => 'partial',
-        'families.name' => 'partial',
-        'unit.name' => 'partial'
-    ]),
-    ApiFilter(OrderFilter::class, properties: [
-        'name',
-        'description',
-        'families.name',
-        'unit.name'
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['unit']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['description' => 'partial', 'name' => 'partial']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['description', 'name', 'unit.name']),
     ApiResource(
         description: 'Attribut',
         collectionOperations: [
@@ -54,6 +46,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un attribut',
@@ -66,11 +59,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:attribute', 'write:family', 'write:unit'],
+            'groups' => ['write:attribute'],
             'openapi_definition_name' => 'Attribute-write'
         ],
         normalizationContext: [
-            'groups' => ['read:attribute', 'read:family', 'read:id', 'read:unit'],
+            'groups' => ['read:attribute', 'read:id'],
             'openapi_definition_name' => 'Attribute-read'
         ],
     ),
@@ -89,7 +82,7 @@ class Attribute extends Entity {
     #[
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: ['/api/units/7', '/api/units/15']),
         ORM\ManyToMany(targetEntity: Family::class),
-        Serializer\Groups(['read:family', 'write:family'])
+        Serializer\Groups(['read:attribute', 'write:attribute'])
     ]
     private Collection $families;
 
@@ -104,7 +97,7 @@ class Attribute extends Entity {
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/7'),
         ORM\ManyToOne(fetch: 'EAGER'),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        Serializer\Groups(['read:attribute', 'write:attribute'])
     ]
     private ?Unit $unit;
 
