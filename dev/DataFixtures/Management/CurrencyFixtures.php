@@ -13,12 +13,14 @@ final class CurrencyFixtures extends Fixture {
     public function load(ObjectManager $manager): void {
         $manager->persist($parent = (new Currency())->setActive(true)->setCode('EUR'));
         foreach (Currencies::getCurrencyCodes() as $code) {
-            $manager->persist(
-                (new Currency())
-                    ->setActive(in_array($code, self::ACTIVE_CURRENCIES))
-                    ->setCode($code)
-                    ->setParent($parent)
-            );
+            if ($code !== 'EUR') {
+                $manager->persist(
+                    (new Currency())
+                        ->setActive(in_array($code, self::ACTIVE_CURRENCIES))
+                        ->setCode($code)
+                        ->setParent($parent)
+                );
+            }
         }
         $manager->flush();
     }
