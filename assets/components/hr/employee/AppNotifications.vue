@@ -10,12 +10,13 @@
     const categories = computed(() => repo.findByCategories)
     const isEmpty = computed(() => repo.isEmpty)
     const length = computed(() => repo.length)
+    const variant = computed(() => (length.value > 0 ? 'danger' : 'dark'))
 </script>
 
 <template>
     <AppBtn v-if="isEmpty" :id="id" class="me-2" icon="bell" variant="secondary">
         <Fa icon="bell"/>
-        <AppBadge no-absolute tooltip variant="dark">
+        <AppBadge :variant="variant" no-absolute tooltip>
             {{ length }}
         </AppBadge>
     </AppBtn>
@@ -28,7 +29,7 @@
                 data-bs-auto-close="outside"
                 data-bs-toggle="dropdown">
                 <Fa icon="bell"/>
-                <AppBadge tooltip>
+                <AppBadge :variant="variant" tooltip>
                     {{ length }}
                 </AppBadge>
             </AppBtn>
