@@ -13,14 +13,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Copper {
     #[
         ApiProperty(description: 'Indice du cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
-        Assert\PositiveOrZero,
         ORM\Embedded,
         Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private Measure $index;
 
     #[
-        ApiProperty(description: 'Date du dernier indice', example: '2020-10-31 11:45:59'),
+        ApiProperty(description: 'Date du dernier indice'),
         Assert\DateTime,
         ORM\Column(type: 'datetime_immutable', nullable: true),
         Serializer\Groups(['read:copper', 'write:copper'])
@@ -35,7 +34,7 @@ class Copper {
     private bool $managed = false;
 
     #[
-        ApiProperty(description: 'Date du prochain indice', example: '2020-10-31 11:46:38'),
+        ApiProperty(description: 'Date du prochain indice'),
         Assert\DateTime,
         ORM\Column(type: 'datetime_immutable', nullable: true),
         Serializer\Groups(['read:copper', 'write:copper'])

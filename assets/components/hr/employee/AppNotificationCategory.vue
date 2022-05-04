@@ -9,6 +9,8 @@
     const target = computed(() => `#${content.value}`)
     const repo = useRepo(NotificationRepository)
     const length = computed(() => props.notifications.filter(notification => !notification.read).length)
+    const hasUnread = computed(() => length.value > 0)
+    const variant = computed(() => (hasUnread.value ? 'danger' : 'dark'))
 
     async function read() {
         await repo.readCategory(props.category)
@@ -30,10 +32,10 @@
                 data-bs-toggle="collapse"
                 type="button">
                 {{ category }}
-                <AppBadge no-absolute tooltip>
+                <AppBadge :variant="variant" no-absolute tooltip>
                     {{ length }}
                 </AppBadge>
-                <AppBtn icon="eye" title="Marquer comme lu" @click.prevent="read"/>
+                <AppBtn v-if="hasUnread" icon="eye" title="Marquer comme lu" @click.prevent="read"/>
                 <AppBtn icon="trash" title="Supprimer" variant="danger" @click.prevent="remove"/>
             </button>
         </h6>

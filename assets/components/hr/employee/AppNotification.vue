@@ -19,7 +19,7 @@
 <template>
     <div :class="bg" class="d-flex flex-column mb-2">
         <div>
-            <AppBtn icon="eye" title="Marquer comme lu" @click="read"/>
+            <AppBtn v-if="!notification.read" icon="eye" title="Marquer comme lu" @click="read"/>
             <AppBtn icon="trash" title="Supprimer" variant="danger" @click="remove"/>
         </div>
         <span>{{ notification.formattedCreatedAt }}</span>
