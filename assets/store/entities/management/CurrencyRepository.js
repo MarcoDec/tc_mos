@@ -12,7 +12,7 @@ export default class CurrencyRepository extends UnitRepository {
             query.orWhere(currency => currency.code.toUpperCase().startsWith(code.toUpperCase()))
         if (name)
             query.orWhere(currency => currency.name.toUpperCase().startsWith(name.toUpperCase()))
-        return query.withAll().get()
+        return this.split(query.orderBy('code').get())
     }
 
     async load(vue) {
@@ -23,8 +23,8 @@ export default class CurrencyRepository extends UnitRepository {
         this.finish(vue)
     }
 
-    split() {
-        const currencies = this.all()
+    split(toSplit = []) {
+        const currencies = toSplit.length > 0 ? toSplit : this.orderBy('code').get()
         const splitted = [[]]
         let i = 0
         for (const currency of currencies) {

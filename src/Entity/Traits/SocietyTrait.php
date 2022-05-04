@@ -37,7 +37,7 @@ trait SocietyTrait {
     private string $forceVat = VatMessageForce::TYPE_FORCE_DEFAULT;
 
     #[
-        ApiProperty(description: 'Incoterms', readableLink: false, required: false, example: '/api/incoterms/1'),
+        ApiProperty(description: 'Incoterms', required: false, example: '/api/incoterms/1'),
         ORM\ManyToOne(targetEntity: Incoterms::class, fetch: 'EAGER'),
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
@@ -52,7 +52,7 @@ trait SocietyTrait {
     private Measure $invoiceMin;
 
     #[
-        ApiProperty(description: 'Délai de paiement des facture', required: false),
+        ApiProperty(description: 'Délai de paiement des facture', required: false, example: '/api/invoice-time-dues/1'),
         ORM\ManyToOne(targetEntity: InvoiceTimeDue::class, fetch: 'EAGER'),
         Serializer\Groups(['read:society', 'write:society'])
     ]
@@ -84,7 +84,7 @@ trait SocietyTrait {
     private ?string $vat = null;
 
     #[
-        ApiProperty(description: 'Message TVA', readableLink: false, required: false, example: '/api/vat-messages/1'),
+        ApiProperty(description: 'Message TVA', required: false, example: '/api/vat-messages/1'),
         ORM\ManyToOne(targetEntity: VatMessage::class, fetch: 'EAGER'),
         Serializer\Groups(['read:society', 'write:society'])
     ]

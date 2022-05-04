@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
             'post' => [
                 'denormalization_context' => [
-                    'groups' => ['create:society', 'write:address', 'write:copper'],
+                    'groups' => ['create:society', 'write:address', 'write:copper', 'write:measure'],
                     'openapi_definition_name' => 'Society-create'
                 ],
                 'openapi_context' => [
@@ -71,11 +71,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:address', 'write:copper', 'write:society'],
+            'groups' => ['write:address', 'write:copper', 'write:measure', 'write:society'],
             'openapi_definition_name' => 'Society-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:copper', 'read:id', 'read:society'],
+            'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:society'],
             'openapi_definition_name' => 'Society-read'
         ],
     ),
