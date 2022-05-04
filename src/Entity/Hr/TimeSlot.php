@@ -87,6 +87,7 @@ class TimeSlot extends Entity {
 
     #[
         ApiProperty(description: 'Nom', example: 'Journée'),
+        Assert\Length(min: 3, max: 10),
         Assert\NotBlank,
         ORM\Column(length: 10),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])

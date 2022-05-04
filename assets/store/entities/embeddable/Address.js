@@ -1,7 +1,11 @@
-import {Entity} from '../../modules'
+import {Country, Entity} from '../../modules'
 
 export default class Address extends Entity {
     static entity = 'addresses'
+
+    get countryLabel() {
+        return this.countryInstance?.name ?? null
+    }
 
     static fields() {
         return {
@@ -11,6 +15,7 @@ export default class Address extends Entity {
             carrierId: this.number(0),
             city: this.string(null).nullable(),
             country: this.string(null).nullable(),
+            countryInstance: this.belongsTo(Country, 'country', Country.primaryKey),
             email: this.string(null).nullable(),
             id: this.string(null),
             outTrainerId: this.number(0),
