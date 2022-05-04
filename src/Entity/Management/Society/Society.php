@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les sociétés',
                 ],
                 'normalization_context' => [
-                    'groups' => ['read:society:collection'],
+                    'groups' => ['read:id', 'read:society:collection'],
                     'openapi_definition_name' => 'Society-collection'
                 ]
             ],

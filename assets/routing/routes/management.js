@@ -1,4 +1,10 @@
-import {ColorRepository, InvoiceTimeDueRepository, UnitRepository, VatMessageRepository} from '../../store/modules'
+import {
+    ColorRepository,
+    InvoiceTimeDueRepository,
+    SocietyRepository,
+    UnitRepository,
+    VatMessageRepository
+} from '../../store/modules'
 
 export default [
     {
@@ -85,8 +91,31 @@ export default [
             ],
             icon: 'hourglass-half',
             repo: InvoiceTimeDueRepository,
-            role: 'isManagementAdmin',
+            role: 'isManagementWriter',
             title: 'Délais de paiement des factures'
+        }
+    },
+    {
+        component: async () => import('../pages/AppCollectionTablePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'societies',
+        path: '/societies',
+        props: {
+            fields: [
+                {
+                    create: true,
+                    filter: true,
+                    label: 'Nom',
+                    name: 'name',
+                    sort: true,
+                    type: 'text',
+                    update: true
+                }
+            ],
+            icon: 'city',
+            repo: SocietyRepository,
+            role: 'isManagementReader',
+            title: 'Sociétés'
         }
     },
     {

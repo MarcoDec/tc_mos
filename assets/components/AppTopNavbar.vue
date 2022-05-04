@@ -60,6 +60,12 @@
                     </template>
                 </AppNavbarItem>
                 <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
+                    <AppDropdownItem variant="success">
+                        Lecteur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="city" to="societies" variant="success">
+                        Sociétés
+                    </AppNavbarLink>
                     <template v-if="user.isManagementAdmin">
                         <AppDropdownItem variant="warning">
                             Administrateur
