@@ -13,7 +13,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Copper {
     #[
         ApiProperty(description: 'Indice du cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
-        Assert\PositiveOrZero,
         ORM\Embedded,
         Serializer\Groups(['read:copper', 'write:copper'])
     ]
