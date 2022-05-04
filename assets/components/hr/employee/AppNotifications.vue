@@ -8,11 +8,18 @@
     defineProps({id: {required: true, type: String}})
     const repo = useRepo(NotificationRepository)
     const categories = computed(() => repo.findByCategories)
+    const isEmpty = computed(() => repo.isEmpty)
     const length = computed(() => repo.length)
 </script>
 
 <template>
-    <AppDropdown :id="id" class="me-1" end>
+    <AppBtn v-if="isEmpty" :id="id" class="me-2" icon="bell" variant="secondary">
+        <Fa icon="bell"/>
+        <AppBadge no-absolute tooltip variant="dark">
+            {{ length }}
+        </AppBadge>
+    </AppBtn>
+    <AppDropdown v-else :id="id" class="me-1" end>
         <template #toggle="{id: dropdownId}">
             <AppBtn
                 :id="dropdownId"

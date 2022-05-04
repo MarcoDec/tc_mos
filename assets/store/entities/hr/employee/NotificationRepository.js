@@ -14,6 +14,10 @@ export default class NotificationRepository extends EntityRepository {
         return Object.entries(categories)
     }
 
+    get isEmpty() {
+        return this.all().length === 0
+    }
+
     get length() {
         return this.where('read', false).get().length
     }
