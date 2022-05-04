@@ -1,1 +1,0 @@
-import{a as t,r as a,o as l,j as r,I as c,L as n}from"./vendor.744fbc74.js";const d=t({props:{cols:{default:2,type:Number,validator:o=>o>=1&&o<=12}},setup(o){return(e,p)=>{const s=a("AppCol");return l(),r(s,{cols:o.cols,class:"form-label",tag:"label"},{default:c(()=>[n(e.$slots,"default")]),_:3},8,["cols"])}}});export{d as default};

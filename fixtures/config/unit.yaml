@@ -1,0 +1,13 @@
+App\Entity\Management\Unit:
+  deleted: statut
+  properties:
+    base:
+      new_name: base
+    parent:
+      new_name: parent_id
+      new_ref: App\Entity\Management\Unit
+      old_ref: unit
+    unit_short_lbl:
+      new_name: code
+    unit_complete_lbl:
+      new_name: name

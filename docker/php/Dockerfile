@@ -1,12 +1,13 @@
 FROM tconcept/tc_php:latest
 
-RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
-    apt install -y nodejs && \
-    npm install -g yarn
-
 RUN ln -fs /var/www/html/TConcept-GPAO/docker/php/.zshrc-root ~/.zshrc && \
     ln -fs /var/www/html/TConcept-GPAO/.docker/php/php.ini /usr/local/etc/php/php.ini && \
-    ln -fs /var/www/html/TConcept-GPAO/.docker/php/php-fpm.conf /usr/local/etc/php/php-fpm.conf
+    ln -fs /var/www/html/TConcept-GPAO/.docker/php/php-fpm.conf /usr/local/etc/php/php-fpm.conf && \
+    touch /var/log/cron.log
+
+ADD crontab /tmp/crontab
+
+RUN crontab /tmp/crontab && rm /tmp/crontab
 
 ARG GROUP_ID
 ARG USER_ID

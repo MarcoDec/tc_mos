@@ -5,21 +5,21 @@ namespace App\Filesystem;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\ResourceMetadata;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
+use App\Entity\Family;
 use App\Entity\Interfaces\FileEntity;
-use App\Entity\Project\Product\Family;
 use Symfony\Component\Filesystem\Exception\InvalidArgumentException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class FileManager {
-    private string $uploadsDir;
+    private readonly string $uploadsDir;
 
     public function __construct(
-        private ResourceMetadataFactoryInterface $apiMetadatas,
-        private DashPathSegmentNameGenerator $dashGenerator,
-        private string $dir,
-        private Filesystem $fs
+        private readonly ResourceMetadataFactoryInterface $apiMetadatas,
+        private readonly DashPathSegmentNameGenerator $dashGenerator,
+        private readonly string $dir,
+        private readonly Filesystem $fs
     ) {
         $this->uploadsDir = "$this->dir/uploads";
     }
@@ -68,7 +68,7 @@ final class FileManager {
     }
 
     private function getMetadata(FileEntity $entity): ResourceMetadata {
-        return $this->apiMetadatas->create(get_class($entity));
+        return $this->apiMetadatas->create(removeStart($entity::class, 'Proxies\\__CG__\\'));
     }
 
     private function getShortName(FileEntity $entity): ?string {

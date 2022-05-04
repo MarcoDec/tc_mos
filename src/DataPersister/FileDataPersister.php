@@ -3,13 +3,13 @@
 namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
+use App\Entity\Family;
 use App\Entity\Interfaces\FileEntity;
-use App\Entity\Project\Product\Family;
 use App\Filesystem\FileManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class FileDataPersister implements ContextAwareDataPersisterInterface {
-    public function __construct(private EntityManagerInterface $em, private FileManager $fm) {
+    public function __construct(private readonly EntityManagerInterface $em, private readonly FileManager $fm) {
     }
 
     /**

@@ -1,1 +1,0 @@
-import{a as t,o as a,e as n,t as r}from"./vendor.744fbc74.js";const o=["href"],f=t({props:{href:null,title:null},setup(e){return(s,l)=>(a(),n("a",{href:e.href,class:"navbar-brand"},r(e.title),9,o))}});export{f as default};

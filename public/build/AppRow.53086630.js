@@ -1,1 +1,0 @@
-import{a,o,e as l,L as r,M as n}from"./vendor.744fbc74.js";const p=a({props:{cssClass:null},setup(s){return(e,t)=>(o(),l("div",{class:n([s.cssClass,"row"])},[r(e.$slots,"default")],2))}});export{p as default};
