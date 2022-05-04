@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-    import {computed, defineProps} from 'vue'
     import type {TableField} from '../../../types/app-manufacturing-table'
-
-    const props = defineProps<{field: TableField}>()
+    import {defineProps} from 'vue'
+    defineProps<{field: TableField}>()
 </script>
 
 <template>

@@ -5,6 +5,7 @@
     const props = defineProps<{field: TableField, item: TableItem, title: string}>()
     const value = computed(() => props.item[props.field.name])
 </script>
+
 <template>
     <template v-if="title === 'collapse new Ofs'">
         <td v-if="field.type === 'date' || field.type === 'select' || field.type === 'boolean' ">

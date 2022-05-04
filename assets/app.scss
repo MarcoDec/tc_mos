@@ -44,25 +44,14 @@ th     { background:#eee; }
   box-shadow: inset 1px 1px #000, 0 1px #000;
 }
 
-// .tableFixHead {
-//   width: 500px;
-//   table-layout: fixed;
-//   border-collapse: collapse;
-// }
-//   .tableFixHead tbody {
-//   display: block;
-//   width: 100%;
-//   overflow: auto;
-//   height: 100%;
-// }
-// .tableFixHead thead tr {
-//   display: block;
-// }
-// .tableFixHead th,
-// .tableFixHead  td {
-//   padding: 5px 10px;
-//   width: 100%;
-// }
-// th {
-//   background: #ABDD93;
-// }
+.bg-warn{
+  background-color: rgba(var(--bs-warning-rgb), var(--bs-bg-opacity)) !important;
+  display: flex;
+}
+.style-icon{
+  color: red; 
+  margin-right: 10px; 
+  position: relative; 
+  top: 5px; 
+  left: 5px;
+}

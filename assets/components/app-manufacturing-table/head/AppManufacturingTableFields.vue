@@ -10,7 +10,6 @@
         <AppManufacturingTableField
             v-for="field in fields"
             :key="field.name"
-            :field="field"
-        />
+            :field="field"/>
     </tr>
 </template>

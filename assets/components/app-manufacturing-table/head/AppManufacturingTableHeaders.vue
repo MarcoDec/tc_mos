@@ -5,7 +5,8 @@
 </script>
 
 <template>
-    <thead class="table-dark">>
+    <thead class="table-dark">
+        >
         <AppManufacturingTableFields :fields="fields"/>
     </thead>
 </template>

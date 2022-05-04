@@ -21,15 +21,15 @@ export type GettersValues = {
 }
 export const getters: Getters = {
     LocalOfItems: state => ({
-    client: state.client,
-    cmde: state.cmde,
-    debutProd: state.debutProd,
-    finProd: state.finProd,
-    id: state.id,
-    of: state.of,
-    produit: state.produit,
-    quantite: state.quantite,
-    quantiteProduite: state.quantiteProduite,
-    etat: state.etat
+        client: state.client,
+        cmde: state.cmde,
+        debutProd: state.debutProd,
+        etat: state.etat,
+        finProd: state.finProd,
+        id: state.id,
+        of: state.of,
+        produit: state.produit,
+        quantite: state.quantite,
+        quantiteProduite: state.quantiteProduite
     })
 }

@@ -1,5 +1,5 @@
-import type {State} from '.'
 import type {State as LocalOfItems} from './collapseOnGoingLocalOfItem'
+import type {State} from '.'
 
 export type Getters = {
     LocalOfItems: (state: State) => LocalOfItems[] | null

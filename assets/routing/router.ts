@@ -87,71 +87,6 @@ const router = createRouter({
             name: 'manufacturing-order-needs',
             path: '/manufacturingOrderNeeds',
             props: {
-                fieldsCollapsenewOfs: [
-
-                    {
-                        label: 'Client',
-                        name: 'client',
-                        type: 'text'
-                    },
-                    {
-                        label: 'Produit',
-                        name: 'produit',
-                        type: 'text'
-                    },
-                    {
-                        label: 'Cmde',
-                        name: 'cmde',
-                        type: 'text'
-                    },
-                    {
-                        label: 'Minimum de lancement',
-                        name: 'minDeLancement',
-                        type: 'number'
-                    },
-                    {
-                        label: 'Qté demandée',
-                        name: 'qteDemandee',
-                        type: 'number'
-                    },
-                    {
-                        label: 'OFs associés',
-                        name: 'ofsAssocies',
-                        type: 'text'
-                    },
-                    {
-                        label: 'Début Prod.',
-                        name: 'debutProd',
-                        type: 'date'
-                    },
-                    {
-                        label: 'Fin Prod.',
-                        name: 'finProd',
-                        type: 'date'
-                    },
-                    {
-                        label: 'Quantité',
-                        name: 'quantite',
-                        type: 'text'
-                    },
-                    {
-                        label: 'Site de production',
-                        name: 'siteDeProduction',
-                        options: [{text: 'auto', value: 'auto'}, {text: 'TUNISIE CONCEPT', value: 'TunisieConcept'}],
-                        type: 'select'
-                    },
-                    {
-                        label: 'Etat initial OF',
-                        name: 'etatInitialOF',
-                        options: [{text: 'confirmé', value: 'confirmé'}, {text: 'brouillon', value: 'brouillon'}],
-                        type: 'select'
-                    },
-                    {
-                        label: 'Lancer OF',
-                        name: 'lancerOF',
-                        type: 'boolean'
-                    }
-                ],
                 fieldsCollapseOfsToConfirm: [
 
                     {
@@ -251,6 +186,71 @@ const router = createRouter({
                         label: 'Etat',
                         name: 'etat',
                         type: 'text'
+                    }
+                ],
+                fieldsCollapsenewOfs: [
+
+                    {
+                        label: 'Client',
+                        name: 'client',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Produit',
+                        name: 'produit',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Cmde',
+                        name: 'cmde',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Minimum de lancement',
+                        name: 'minDeLancement',
+                        type: 'number'
+                    },
+                    {
+                        label: 'Qté demandée',
+                        name: 'qteDemandee',
+                        type: 'number'
+                    },
+                    {
+                        label: 'OFs associés',
+                        name: 'ofsAssocies',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Début Prod.',
+                        name: 'debutProd',
+                        type: 'date'
+                    },
+                    {
+                        label: 'Fin Prod.',
+                        name: 'finProd',
+                        type: 'date'
+                    },
+                    {
+                        label: 'Quantité',
+                        name: 'quantite',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Site de production',
+                        name: 'siteDeProduction',
+                        options: [{text: 'auto', value: 'auto'}, {text: 'TUNISIE CONCEPT', value: 'TunisieConcept'}],
+                        type: 'select'
+                    },
+                    {
+                        label: 'Etat initial OF',
+                        name: 'etatInitialOF',
+                        options: [{text: 'confirmé', value: 'confirmé'}, {text: 'brouillon', value: 'brouillon'}],
+                        type: 'select'
+                    },
+                    {
+                        label: 'Lancer OF',
+                        name: 'lancerOF',
+                        type: 'boolean'
                     }
                 ],
                 icon: 'table-list',

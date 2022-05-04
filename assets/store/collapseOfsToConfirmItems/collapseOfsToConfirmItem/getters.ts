@@ -22,16 +22,16 @@ export type GettersValues = {
 }
 export const getters: Getters = {
     toConfirmItems: state => ({
-    client: state.client,
-    cmde: state.cmde,
-    debutProd: state.debutProd,
-    finProd: state.finProd,
-    id: state.id,
-    of: state.of,
-    produit: state.produit,
-    quantite: state.quantite,
-    quantiteProduite: state.quantiteProduite,
-    siteDeProduction: state.siteDeProduction,
-    confirmerOF: state.confirmerOF
+        client: state.client,
+        cmde: state.cmde,
+        confirmerOF: state.confirmerOF,
+        debutProd: state.debutProd,
+        finProd: state.finProd,
+        id: state.id,
+        of: state.of,
+        produit: state.produit,
+        quantite: state.quantite,
+        quantiteProduite: state.quantiteProduite,
+        siteDeProduction: state.siteDeProduction
     })
 }

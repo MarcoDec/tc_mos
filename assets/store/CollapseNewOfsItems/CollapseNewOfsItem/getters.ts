@@ -25,19 +25,19 @@ export type GettersValues = {
 }
 export const getters: Getters = {
     items: state => ({
-    client: state.client,
-    cmde: state.cmde,
-    debutProd: state.debutProd,
-    finProd: state.finProd,
-    id: state.id,
-    minDeLancement: state.minDeLancement,
-    ofsAssocies: state.ofsAssocies,
-    produit: state.produit,
-    qteDemandee: state.qteDemandee,
-    quantite: state.quantite,
-    quantiteMin: state.quantiteMin,
-    siteDeProduction: state.siteDeProduction,
-    etatInitialOF: state.etatInitialOF,
-    lancerOF: state.lancerOF
+        client: state.client,
+        cmde: state.cmde,
+        debutProd: state.debutProd,
+        etatInitialOF: state.etatInitialOF,
+        finProd: state.finProd,
+        id: state.id,
+        lancerOF: state.lancerOF,
+        minDeLancement: state.minDeLancement,
+        ofsAssocies: state.ofsAssocies,
+        produit: state.produit,
+        qteDemandee: state.qteDemandee,
+        quantite: state.quantite,
+        quantiteMin: state.quantiteMin,
+        siteDeProduction: state.siteDeProduction
     })
 }

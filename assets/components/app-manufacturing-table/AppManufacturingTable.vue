@@ -9,7 +9,7 @@
         id: {required: true, type: String},
         items: {required: true, type: Array as PropType<TableItem[]>},
         pagination: {required: false, type: Boolean},
-        title: {required: false, type: String}
+        title: {required: true, type: String}
     })
     const count = computed(() => props.items.length)
     provide('fields', props.fields)
@@ -19,8 +19,8 @@
 
 <template>
     <table :id="id" class="table table-bordered table-hover table-striped">
-        <AppManufacturingTableHeaders :fields="fields" />
-        <AppManufacturingTableItems :items="items" :fields="fields" :title="title" />
+        <AppManufacturingTableHeaders :fields="fields"/>
+        <AppManufacturingTableItems :items="items" :fields="fields" :title="title"/>
     </table>
     <AppPagination v-if="pagination" :count="count" :current="currentPage" class="float-end"/>
 </template>
