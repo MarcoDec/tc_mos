@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -34,6 +35,22 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Créer une unité',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+            ],
+            'select-options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:unit:options', 'read:id'],
+                    'openapi_definition_name' => 'Unit-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les unités pour les select',
+                    'summary' => 'Récupère les unités pour les select',
+                ],
+                'pagination_enabled' => false,
+                'path' => '/units/options'
             ]
         ],
         itemOperations: [
@@ -78,7 +95,7 @@ class Unit extends AbstractUnit {
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/units/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        Serializer\Groups(['read:unit', 'read:unit:options', 'write:unit'])
     ]
     protected $parent;
 }

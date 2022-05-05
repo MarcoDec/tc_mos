@@ -78,7 +78,7 @@ class OutTrainer extends Entity {
     private Address $address;
 
     #[
-        ApiProperty(description: 'Prénom', required: true, example: 'Rawaa'),
+        ApiProperty(description: 'Prénom', example: 'Rawaa'),
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
@@ -87,7 +87,7 @@ class OutTrainer extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'CHRAIET'),
+        ApiProperty(description: 'Nom', example: 'CHRAIET'),
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),

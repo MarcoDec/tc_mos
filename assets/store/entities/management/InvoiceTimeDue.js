@@ -5,6 +5,10 @@ export default class InvoiceTimeDue extends Entity {
     roleAdmin = 'isManagementAdmin'
     roleWriter = 'isManagementAdmin'
 
+    get option() {
+        return {text: this.name, value: this['@id']}
+    }
+
     static fields() {
         return {
             ...super.fields(),

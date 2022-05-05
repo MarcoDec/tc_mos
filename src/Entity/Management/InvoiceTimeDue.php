@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -37,6 +38,22 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Créer un délai de paiement des factures',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+            ],
+            'select-options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:invoice-time-due:options', 'read:id'],
+                    'openapi_definition_name' => 'InvoiceTimeDue-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les délais de paiement des factures pour les select',
+                    'summary' => 'Récupère les délais de paiement des factures pour les select',
+                ],
+                'pagination_enabled' => false,
+                'path' => '/invoice-time-dues/options'
             ]
         ],
         itemOperations: [
@@ -98,9 +115,9 @@ class InvoiceTimeDue extends Entity {
     private ?bool $endOfMonth = false;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
+        ApiProperty(description: 'Nom', example: '30 jours fin de mois'),
         ORM\Column(length: 30),
-        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due']),
+        Serializer\Groups(['read:invoice-time-due', 'read:invoice-time-due:options', 'write:invoice-time-due']),
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank
     ]

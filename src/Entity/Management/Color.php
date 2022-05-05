@@ -70,7 +70,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Color extends Entity {
     #[
-        ApiProperty(description: 'nom', required: true, example: 'Gris'),
+        ApiProperty(description: 'nom', example: 'Gris'),
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
         ORM\Column(length: 20),

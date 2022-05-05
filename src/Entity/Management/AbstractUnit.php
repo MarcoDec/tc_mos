@@ -18,16 +18,16 @@ abstract class AbstractUnit extends Entity {
     protected Collection $children;
 
     #[
-        ApiProperty(description: 'Code ', required: true, example: 'g'),
+        ApiProperty(description: 'Code ', example: 'g'),
         Assert\Length(min: 1, max: 6),
         Assert\NotBlank,
         ORM\Column(length: 6),
-        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
+        Serializer\Groups(['read:currency', 'read:unit', 'read:unit:options', 'write:unit'])
     ]
     protected ?string $code = null;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
+        ApiProperty(description: 'Nom', example: 'Gramme'),
         Assert\Length(min: 5, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
@@ -39,7 +39,7 @@ abstract class AbstractUnit extends Entity {
     protected $parent;
 
     #[
-        ApiProperty(description: 'Base', required: true, example: 1),
+        ApiProperty(description: 'Base', example: 1),
         Assert\NotBlank,
         Assert\Positive,
         ORM\Column(options: ['default' => 1]),

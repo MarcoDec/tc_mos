@@ -64,14 +64,15 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:attribute', 'read:id'],
-            'openapi_definition_name' => 'Attribute-read'
+            'openapi_definition_name' => 'Attribute-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
 class Attribute extends Entity {
     #[
-        ApiProperty(description: 'Nom', required: false, example: 'Longueur de l\'embout'),
+        ApiProperty(description: 'Nom', example: 'Longueur de l\'embout'),
         Assert\Length(min: 3, max: 255),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:attribute', 'write:attribute'])
@@ -80,14 +81,14 @@ class Attribute extends Entity {
 
     /** @var Collection<int, Family> */
     #[
-        ApiProperty(description: 'Famille', readableLink: false, required: true, example: ['/api/units/7', '/api/units/15']),
+        ApiProperty(description: 'Famille', readableLink: false, example: ['/api/units/7', '/api/units/15']),
         ORM\ManyToMany(targetEntity: Family::class),
         Serializer\Groups(['read:attribute', 'write:attribute'])
     ]
     private Collection $families;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Longueur'),
+        ApiProperty(description: 'Nom', example: 'Longueur'),
         Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:attribute', 'write:attribute'])
@@ -95,7 +96,7 @@ class Attribute extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/7'),
+        ApiProperty(description: 'Unité', readableLink: false, example: '/api/units/7'),
         ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['read:attribute', 'write:attribute'])
     ]

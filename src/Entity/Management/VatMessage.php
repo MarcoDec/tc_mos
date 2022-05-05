@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -32,6 +33,22 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Créer un message TVA',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
+            ],
+            'select-options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:vat-message:options', 'read:id'],
+                    'openapi_definition_name' => 'VatMessage-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les messages TVA pour les select',
+                    'summary' => 'Récupère les messages TVA pour les select',
+                ],
+                'pagination_enabled' => false,
+                'path' => '/vat-messages/options'
             ]
         ],
         itemOperations: [
@@ -69,10 +86,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class VatMessage extends Entity {
     #[
-        ApiProperty(description: 'Message', required: true, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
+        ApiProperty(description: 'Message', example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
         Assert\NotBlank,
         ORM\Column(length: 120),
-        Serializer\Groups(['read:vat-message', 'write:vat-message'])
+        Serializer\Groups(['read:vat-message', 'read:vat-message:options', 'write:vat-message'])
     ]
     private ?string $name = null;
 

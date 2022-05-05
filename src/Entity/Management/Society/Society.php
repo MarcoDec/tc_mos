@@ -67,7 +67,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:society'],
-            'openapi_definition_name' => 'Society-read'
+            'openapi_definition_name' => 'Society-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
@@ -86,7 +87,7 @@ class Society extends Entity {
     private Address $address;
 
     #[
-        ApiProperty(description: 'Détails bancaires', required: false, example: 'IBAN/RIB/Nom de banque'),
+        ApiProperty(description: 'Détails bancaires', example: 'IBAN/RIB/Nom de banque'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:society'])
     ]
@@ -101,21 +102,21 @@ class Society extends Entity {
     private Copper $copper;
 
     #[
-        ApiProperty(description: 'Numéro de fax', required: false, example: '02 17 21 11 11'),
+        ApiProperty(description: 'Numéro de fax', example: '02 17 21 11 11'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $fax = null;
 
     #[
-        ApiProperty(description: 'Forme juridique', required: false, example: 'SARL'),
+        ApiProperty(description: 'Forme juridique', example: 'SARL'),
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $legalForm = null;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'TConcept'),
+        ApiProperty(description: 'Nom', example: 'TConcept'),
         Assert\NotBlank(groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:society', 'read:society', 'read:society:collection', 'write:society'])
@@ -123,21 +124,21 @@ class Society extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Notes', required: false, example: 'Notes libres sur la société'),
+        ApiProperty(description: 'Notes', example: 'Notes libres sur la société'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'SIREN', required: false, example: '123 456 789'),
+        ApiProperty(description: 'SIREN', example: '123 456 789'),
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $siren = null;
 
     #[
-        ApiProperty(description: 'Site internet', required: false, example: 'https://www.societe.fr'),
+        ApiProperty(description: 'Site internet', example: 'https://www.societe.fr'),
         Assert\Url(groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:society', 'read:society', 'write:society'])

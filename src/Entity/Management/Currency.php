@@ -53,7 +53,7 @@ class Currency extends AbstractUnit {
     protected Collection $children;
 
     #[
-        ApiProperty(description: 'Code ', required: true, example: 'EUR'),
+        ApiProperty(description: 'Code ', example: 'EUR'),
         ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]

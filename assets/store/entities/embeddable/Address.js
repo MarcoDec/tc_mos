@@ -20,6 +20,7 @@ export default class Address extends Entity {
             id: this.string(null),
             outTrainerId: this.number(0),
             phoneNumber: this.string(null).nullable(),
+            societyId: this.number(0),
             zipCode: this.string(null).nullable()
         }
     }

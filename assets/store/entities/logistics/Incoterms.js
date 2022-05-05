@@ -5,6 +5,10 @@ export default class Incoterms extends Entity {
     roleAdmin = 'isLogisticsAdmin'
     roleWriter = 'isLogisticsAdmin'
 
+    get option() {
+        return {text: this.code, value: this['@id']}
+    }
+
     static fields() {
         return {
             ...super.fields(),

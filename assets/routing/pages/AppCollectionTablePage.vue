@@ -63,7 +63,7 @@
         stateRepo.create(id)
         const options = []
         for (const repo of optionRepos.value)
-            options.push(store.$repo(repo).load(optionId.value))
+            options.push(store.$repo(repo).loadOptions(optionId.value))
         await Promise.all(options)
         await load()
         mount.value = true
@@ -85,25 +85,35 @@
 <template>
     <AppOverlay :loading="loading">
         <div :id="id">
-            <h1>
-                <Fa :brands="brands" :icon="icon"/>
-                {{ title }}
-            </h1>
-            <AppCollectionTable
-                v-if="mount"
-                :id="tableId"
-                :coll="coll"
-                :create="hasRole"
-                :fields="fields"
-                :items="items"
-                :state-machine="id"
-                :violations="violations"
-                pagination
-                @create="create"
-                @delete="deleteHandler"
-                @page="pageHandler"
-                @search="load"
-                @update="update"/>
+            <AppRow>
+                <AppCol class="d-flex justify-content-between">
+                    <h1>
+                        <Fa :brands="brands" :icon="icon"/>
+                        {{ title }}
+                    </h1>
+                    <slot name="top"/>
+                </AppCol>
+            </AppRow>
+            <AppRow>
+                <AppCol>
+                    <AppCollectionTable
+                        v-if="mount"
+                        :id="tableId"
+                        :coll="coll"
+                        :create="hasRole"
+                        :fields="fields"
+                        :items="items"
+                        :state-machine="id"
+                        :violations="violations"
+                        pagination
+                        @create="create"
+                        @delete="deleteHandler"
+                        @page="pageHandler"
+                        @search="load"
+                        @update="update"/>
+                </AppCol>
+                <slot/>
+            </AppRow>
         </div>
     </AppOverlay>
 </template>

@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 trait SocietyTrait {
     #[
-        ApiProperty(description: 'Compte de comptabilité', required: false, example: 'D554DZ5'),
+        ApiProperty(description: 'Compte de comptabilité', example: 'D554DZ5'),
         Assert\Length(max: 50),
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society', 'write:society'])
@@ -22,14 +22,14 @@ trait SocietyTrait {
     private ?string $accountingAccount = null;
 
     #[
-        ApiProperty(description: 'Accusé de récéption', required: false),
+        ApiProperty(description: 'Accusé de réception'),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private bool $ar = false;
 
     #[
-        ApiProperty(description: 'Forcer la TVA', required: true, example: VatMessageForce::TYPE_FORCE_DEFAULT, openapiContext: ['enum' => VatMessageForce::TYPES]),
+        ApiProperty(description: 'Forcer la TVA', example: VatMessageForce::TYPE_FORCE_DEFAULT, openapiContext: ['enum' => VatMessageForce::TYPES]),
         Assert\Choice(choices: VatMessageForce::TYPES),
         ORM\Column(type: 'vat_message_force', options: ['default' => VatMessageForce::TYPE_FORCE_DEFAULT]),
         Serializer\Groups(['read:society', 'write:society'])
@@ -37,7 +37,7 @@ trait SocietyTrait {
     private string $forceVat = VatMessageForce::TYPE_FORCE_DEFAULT;
 
     #[
-        ApiProperty(description: 'Incoterms', required: false, example: '/api/incoterms/1'),
+        ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/1'),
         ORM\ManyToOne(targetEntity: Incoterms::class, fetch: 'EAGER'),
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
@@ -45,14 +45,14 @@ trait SocietyTrait {
 
     /** @noRector */
     #[
-        ApiProperty(description: 'Minimum de facturation', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ApiProperty(description: 'Minimum de facturation', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private Measure $invoiceMin;
 
     #[
-        ApiProperty(description: 'Délai de paiement des facture', required: false, example: '/api/invoice-time-dues/1'),
+        ApiProperty(description: 'Délai de paiement des factures', readableLink: false, example: '/api/invoice-time-dues/1'),
         ORM\ManyToOne(targetEntity: InvoiceTimeDue::class, fetch: 'EAGER'),
         Serializer\Groups(['read:society', 'write:society'])
     ]
@@ -60,14 +60,14 @@ trait SocietyTrait {
 
     /** @noRector */
     #[
-        ApiProperty(description: 'Ordre minimum', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ApiProperty(description: 'Ordre minimum', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private Measure $orderMin;
 
     #[
-        ApiProperty(description: 'Taux ppm', required: false, example: '10'),
+        ApiProperty(description: 'Taux ppm', example: '10'),
         Assert\NotNull(groups: ['Default', 'Society-create']),
         Assert\PositiveOrZero(groups: ['Default', 'Society-create']),
         ORM\Column(type: 'smallint', options: ['default' => 10, 'unsigned' => true]),
@@ -76,7 +76,7 @@ trait SocietyTrait {
     private int $ppmRate = 10;
 
     #[
-        ApiProperty(description: 'TVA', required: false, example: 'FR'),
+        ApiProperty(description: 'TVA', example: 'FR'),
         Assert\Length(max: 255, groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
@@ -84,7 +84,7 @@ trait SocietyTrait {
     private ?string $vat = null;
 
     #[
-        ApiProperty(description: 'Message TVA', required: false, example: '/api/vat-messages/1'),
+        ApiProperty(description: 'Message TVA', readableLink: false, example: '/api/vat-messages/1'),
         ORM\ManyToOne(targetEntity: VatMessage::class, fetch: 'EAGER'),
         Serializer\Groups(['read:society', 'write:society'])
     ]
@@ -107,12 +107,22 @@ trait SocietyTrait {
         return $this->incoterms;
     }
 
+    #[Serializer\Groups(['read:society'])]
+    final public function getIncotermsId(): int {
+        return $this->incoterms?->getId() ?? 0;
+    }
+
     final public function getInvoiceMin(): Measure {
         return $this->invoiceMin;
     }
 
     final public function getInvoiceTimeDue(): ?InvoiceTimeDue {
         return $this->invoiceTimeDue;
+    }
+
+    #[Serializer\Groups(['read:society'])]
+    final public function getInvoiceTimeDueId(): int {
+        return $this->invoiceTimeDue?->getId() ?? 0;
     }
 
     final public function getOrderMin(): Measure {
@@ -129,6 +139,11 @@ trait SocietyTrait {
 
     final public function getVatMessage(): ?VatMessage {
         return $this->vatMessage;
+    }
+
+    #[Serializer\Groups(['read:society'])]
+    final public function getVatMessageId(): int {
+        return $this->vatMessage?->getId() ?? 0;
     }
 
     final public function isAr(): bool {

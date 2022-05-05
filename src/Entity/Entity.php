@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[ORM\MappedSuperclass]
 abstract class Entity {
     #[
-        ApiProperty(description: 'id', required: true, identifier: true, example: 1),
+        ApiProperty(description: 'id', identifier: true, example: 1),
         ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
         ORM\Id,

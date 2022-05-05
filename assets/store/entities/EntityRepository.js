@@ -69,6 +69,14 @@ export default class EntityRepository extends Repository {
         this.finish(vue)
     }
 
+    async loadOptions(vue) {
+        this.loading(vue)
+        const response = await this.fetch(vue, `${this.url}/options`, 'get', {})
+        this.destroyAll(vue)
+        this.save(response['hydra:member'], vue)
+        this.finish(vue)
+    }
+
     loading(vue) {
         this.stateMachineRepo.load(vue)
     }
