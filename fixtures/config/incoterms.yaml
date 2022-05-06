@@ -1,7 +1,0 @@
-App\Entity\Logistics\Incoterms:
-  deleted: statut
-  properties:
-    code:
-      new_name: code
-    label:
-      new_name: name

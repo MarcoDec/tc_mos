@@ -89,6 +89,12 @@ services:
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
 
+  App\Migrations\Factory:
+    autoconfigure: false
+    arguments:
+      $decorated: '@App\Migrations\Factory.inner'
+    decorates: doctrine.migrations.migrations_factory
+
   App\OpenApi\SchemaFactory:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
