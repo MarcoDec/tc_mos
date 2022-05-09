@@ -1,6 +1,6 @@
 import './app.scss'
 import App from './App'
-import AppContainer from './libs/bootstrap-5/layout/AppContainer'
+import AppContainer from './components/layout/AppContainer'
 import {createApp} from 'vue'
 import router from './router'
 
