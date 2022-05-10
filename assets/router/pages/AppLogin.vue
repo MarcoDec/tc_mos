@@ -4,7 +4,6 @@
     import AppAlert from '../../components/AppAlert'
     import AppCard from '../../components/AppCard'
     import AppForm from '../../components/form/AppForm'
-    import AppOverlay from '../../components/AppOverlay'
     import {useMachine} from '@xstate/vue'
     import useUserStore from '../../stores/hr/employee/user'
 
@@ -38,21 +37,13 @@
 
     async function submit(data) {
         send('submit')
-        const response = await fetch('/api/login', {
-            body: JSON.stringify(Object.fromEntries(data)),
-            headers: {
-                Accept: 'application/ld+json',
-                'Content-Type': 'application/json'
-            },
-            method: 'POST'
-        })
-        const content = await response.json()
-        if (response.status === 200) {
-            user.connect(content)
+        try {
+            await user.connect(data)
             send('success')
             await router.push({name: 'home'})
-        } else
-            send('fail', {error: content})
+        } catch (error) {
+            send('fail', {error})
+        }
     }
 </script>
 

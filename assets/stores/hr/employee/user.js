@@ -1,27 +1,22 @@
 import * as Cookies from '../../../cookie'
 import {defineStore} from 'pinia'
+import fetchApi from '../../../api'
 
 export default defineStore('user', {
     actions: {
-        connect(user) {
-            this.id = user.id
-            this.name = user.name
-            this.roles = user.roles
-            Cookies.set(user.id, user.token)
+        async connect(data) {
+            const response = await fetchApi('/api/login', 'POST', data)
+            if (response.status === 200)
+                this.save(response.content)
+            else
+                throw response.content
         },
         async fetchUser() {
             if (Cookies.has()) {
                 try {
-                    const response = await fetch(`/api/employees/${Cookies.get('id')}`, {
-                        headers: {
-                            Accept: 'application/ld+json',
-                            'Content-Type': 'application/json'
-                        },
-                        method: 'GET'
-                    })
+                    const response = await fetchApi(`/api/employees/${Cookies.get('id')}`)
                     if (response.status === 200) {
-                        const user = await response.json()
-                        this.connect(user)
+                        this.save(response.content)
                         return
                     }
                     // eslint-disable-next-line no-empty
@@ -29,7 +24,21 @@ export default defineStore('user', {
                 }
             }
             Cookies.remove()
+        },
+        async logout() {
+            await fetchApi('/api/logout', 'POST')
+            this.$reset()
+            Cookies.remove()
+        },
+        save(user) {
+            this.id = user.id
+            this.name = user.name
+            this.roles = user.roles
+            Cookies.set(user.id, user.token)
         }
+    },
+    getters: {
+        isLogged: state => state.id > 0
     },
     state: () => ({id: 0, name: null, roles: []})
 })

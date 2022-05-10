@@ -1,7 +1,6 @@
-import AppBtn from '../AppBtn'
+import {h, resolveComponent} from 'vue'
 import AppFormGroup from './field/AppFormGroup'
 import {fieldValidator} from '../validators'
-import {h} from 'vue'
 
 function AppForm(props, context) {
     const groups = []
@@ -13,7 +12,11 @@ function AppForm(props, context) {
         h(
             'div',
             {class: 'col d-inline-flex justify-content-end'},
-            h(AppBtn, {disabled: props.disabled, form: props.id, type: 'submit'}, () => 'Connexion')
+            h(
+                resolveComponent('AppBtn'),
+                {disabled: props.disabled, form: props.id, type: 'submit'},
+                () => 'Connexion'
+            )
         )
     ))
     return h('form', {

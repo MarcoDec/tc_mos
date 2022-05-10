@@ -1,16 +1,25 @@
+import {h, resolveComponent} from 'vue'
 import {generateVariant} from './validators'
-import {h} from 'vue'
 
 function AppBtn(props, context) {
+    let css = `btn btn-${props.variant}`
+    const children = []
+    if (typeof context.slots['default'] === 'function')
+        children.push(context.slots['default']())
+    if (props.icon) {
+        css += ' btn-icon'
+        children.push(h(resolveComponent('Fa'), {icon: props.icon}))
+    }
     return h(
         'button',
-        {class: `btn btn-${props.variant}`, disabled: props.disabled, type: props.type},
-        context.slots['default']()
+        {class: css, disabled: props.disabled, type: props.type},
+        children
     )
 }
 
 AppBtn.props = {
     disabled: {type: Boolean},
+    icon: {default: null, type: String},
     type: {default: 'button', type: String},
     variant: generateVariant('primary')
 }

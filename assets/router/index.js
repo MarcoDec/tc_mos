@@ -24,9 +24,9 @@ const router = createRouter({
 // eslint-disable-next-line consistent-return
 router.beforeEach(to => {
     const user = useUserStore()
-    if (to.matched.some(record => record.name === 'login') && user.id !== 0)
+    if (to.matched.some(record => record.name === 'login') && user.isLogged)
         return {name: 'home'}
-    if (to.matched.some(record => record.meta.requiresAuth) && user.id === 0)
+    if (to.matched.some(record => record.meta.requiresAuth) && !user.isLogged)
         return {name: 'login'}
 })
 
