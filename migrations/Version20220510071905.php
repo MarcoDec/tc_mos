@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220506091930 extends AbstractMigration {
+final class Version20220510071905 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -20,6 +20,7 @@ final class Version20220506091930 extends AbstractMigration {
     }
 
     public function down(Schema $schema): void {
+        $this->addSql('DROP TABLE token');
         $this->addSql('DROP TABLE employee');
     }
 
@@ -49,14 +50,13 @@ final class Version20220506091930 extends AbstractMigration {
         $this->addSql(
             <<<'SQL'
 CREATE TABLE employee (
-id INT UNSIGNED AUTO_INCREMENT NOT NULL,
-deleted TINYINT(1) DEFAULT 0 NOT NULL,
-name VARCHAR(30) NOT NULL,
-password CHAR(60) CHARACTER SET ascii NOT NULL,
-username VARCHAR(20) CHARACTER SET ascii NOT NULL,
-emb_roles_roles TEXT CHARACTER SET ascii NOT NULL COMMENT '(DC2Type:simple_array)',
-PRIMARY KEY(id)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    deleted TINYINT(1) DEFAULT 0 NOT NULL,
+    emb_roles_roles TEXT CHARACTER SET ascii NOT NULL COMMENT '(DC2Type:simple_array)',
+    name VARCHAR(30) NOT NULL,
+    password CHAR(60) CHARACTER SET ascii NOT NULL,
+    username VARCHAR(20) CHARACTER SET ascii NOT NULL
+)
 SQL
         );
         $this->addSql(sprintf(
@@ -66,5 +66,16 @@ SQL
             /** @phpstan-ignore-next-line */
             $this->connection->quote(implode(',', $user->getRoles()))
         ));
+        $this->addSql(
+            <<<'SQL'
+CREATE TABLE token (
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    employee_id INT UNSIGNED NOT NULL,
+    expire_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    token CHAR(120) CHARACTER SET ascii NOT NULL,
+    CONSTRAINT token_employee_id_employee_id FOREIGN KEY (employee_id) REFERENCES employee (id)
+)
+SQL
+        );
     }
 }

@@ -6,12 +6,14 @@
     import AppOverlay from '../../components/AppOverlay'
     import {useMachine} from '@xstate/vue'
     import {useRoute} from 'vue-router'
+    import useUser from '../../stores/hr/employee/user'
 
     const fields = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
     const route = useRoute()
+    const user = useUser()
     const form = `${route.name}-form`
     const {send, state} = useMachine(createMachine({
         context: {error: null},
@@ -43,10 +45,12 @@
             },
             method: 'POST'
         })
-        if (response.status !== 200) {
-            const error = await response.json()
-            send('fail', {error})
-        }
+        const content = await response.json()
+        if (response.status === 200) {
+            user.connect(content)
+            send('success')
+        } else
+            send('fail', {error: content})
     }
 </script>
 
