@@ -1,19 +1,20 @@
 <script setup>
     import {assign, createMachine} from 'xstate'
+    import {useRoute, useRouter} from 'vue-router'
     import AppAlert from '../../components/AppAlert'
     import AppCard from '../../components/AppCard'
     import AppForm from '../../components/form/AppForm'
     import AppOverlay from '../../components/AppOverlay'
     import {useMachine} from '@xstate/vue'
-    import {useRoute} from 'vue-router'
-    import useUser from '../../stores/hr/employee/user'
+    import useUserStore from '../../stores/hr/employee/user'
 
     const fields = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
     const route = useRoute()
-    const user = useUser()
+    const router = useRouter()
+    const user = useUserStore()
     const form = `${route.name}-form`
     const {send, state} = useMachine(createMachine({
         context: {error: null},
@@ -49,6 +50,7 @@
         if (response.status === 200) {
             user.connect(content)
             send('success')
+            await router.push({name: 'home'})
         } else
             send('fail', {error: content})
     }
