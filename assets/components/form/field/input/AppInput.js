@@ -5,6 +5,7 @@ function AppInput(props) {
     return h('input', {
         autocomplete: 'off',
         class: 'form-control',
+        disabled: props.disabled,
         form: props.form,
         id: props.id,
         name: props.field.name,
@@ -13,6 +14,11 @@ function AppInput(props) {
     })
 }
 
-AppInput.props = {field: generateField(), form: {required: true, type: String}, id: {required: true, type: String}}
+AppInput.props = {
+    disabled: {type: Boolean},
+    field: generateField(),
+    form: {required: true, type: String},
+    id: {required: true, type: String}
+}
 
 export default AppInput

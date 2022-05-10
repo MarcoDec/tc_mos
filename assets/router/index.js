@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import AppLogin from './pages/AppLogin'
+import AppLogin from './pages/AppLogin.vue'
 
 export default createRouter({
     history: createWebHistory(),

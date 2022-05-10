@@ -1,24 +1,36 @@
+import AppBtn from '../AppBtn'
 import AppFormGroup from './field/AppFormGroup'
 import {fieldValidator} from '../validators'
 import {h} from 'vue'
 
-function AppForm(props) {
+function AppForm(props, context) {
     const groups = []
     for (const field of props.fields)
-        groups.push(h(AppFormGroup, {field, form: props.id, key: field.name}))
+        groups.push(h(AppFormGroup, {disabled: props.disabled, field, form: props.id, key: field.name}))
     groups.push(h(
         'div',
         {class: 'row'},
         h(
             'div',
             {class: 'col d-inline-flex justify-content-end'},
-            h('button', {class: 'btn btn-primary', form: props.id, type: 'submit'}, 'Connexion')
+            h(AppBtn, {disabled: props.disabled, form: props.id, type: 'submit'}, () => 'Connexion')
         )
     ))
-    return h('form', {autocomplete: 'off', id: props.id}, groups)
+    return h('form', {
+        autocomplete: 'off',
+        enctype: 'multipart/form-data',
+        id: props.id,
+        method: 'POST',
+        onSubmit(e) {
+            e.preventDefault()
+            context.emit('submit', new FormData(e.target))
+        }
+    }, groups)
 }
 
+AppForm.emits = ['submit']
 AppForm.props = {
+    disabled: {type: Boolean},
     fields: {
         required: true,
         type: Array,
