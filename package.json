@@ -4,6 +4,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
+    "@popperjs/core": "^2.11.5",
     "@xstate/vue": "^2.0.0",
     "bootstrap": "^5.1.3",
     "js-cookie": "^3.0.1",
@@ -15,12 +16,12 @@
   "devDependencies": {
     "@babel/core": "^7.17.10",
     "@babel/eslint-parser": "^7.17.0",
-    "@vitejs/plugin-vue": "^2.3.2",
+    "@vitejs/plugin-vue": "^2.3.3",
     "eslint": "^8.15.0",
     "eslint-plugin-vue": "^8.7.1",
     "humps": "^2.0.1",
     "sass": "^1.51.0",
-    "vite": "^2.9.8",
+    "vite": "^2.9.9",
     "vite-plugin-checker": "^0.4.6",
     "vite-plugin-symfony": "^0.3.1"
   },

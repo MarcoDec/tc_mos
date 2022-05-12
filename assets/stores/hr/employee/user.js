@@ -38,7 +38,17 @@ export default defineStore('user', {
         }
     },
     getters: {
-        isLogged: state => state.id > 0
+        has: state => role => state.roles.includes(role),
+        isLogged: state => state.id > 0,
+        isPurchaseAdmin() {
+            return this.has('ROLE_PURCHASE_ADMIN')
+        },
+        isPurchaseReader() {
+            return this.isPurchaseWriter || this.has('ROLE_PURCHASE_READER')
+        },
+        isPurchaseWriter() {
+            return this.isPurchaseAdmin || this.has('ROLE_PURCHASE_WRITER')
+        }
     },
     state: () => ({id: 0, name: null, roles: []})
 })

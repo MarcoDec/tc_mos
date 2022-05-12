@@ -1,4 +1,4 @@
-@use 'bootstrap/scss/bootstrap';
+@use 'bootstrap/scss/bootstrap' as *;
 
 .bg-primary.card {
   background-color: #8ac2f1 !important;
@@ -16,6 +16,14 @@
   }
 }
 
+.bg-warning.text-dark .disabled.dropdown-item {
+  color: $black !important;
+}
+
+.router-link {
+  cursor: pointer;
+}
+
 .text-white .navbar-text {
-  color: #fff !important;
+  color: $white !important;
 }

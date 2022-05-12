@@ -9,6 +9,12 @@ const router = createRouter({
         {
             component: AppHome,
             meta: {requiresAuth: true},
+            name: 'component-families',
+            path: '/component-families'
+        },
+        {
+            component: AppHome,
+            meta: {requiresAuth: true},
             name: 'home',
             path: '/'
         },

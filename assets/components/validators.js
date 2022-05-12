@@ -18,7 +18,7 @@ export function generateField() {
     return {required: true, type: Object, validator: fieldValidator}
 }
 
-const variants = ['danger', 'dark', 'info', 'light', 'primary', 'secondary', 'success', 'warning']
+const variants = ['danger', 'dark', 'info', 'light', 'none', 'primary', 'secondary', 'success', 'warning']
 
 function variantValidator(value) {
     return variants.includes(value)
