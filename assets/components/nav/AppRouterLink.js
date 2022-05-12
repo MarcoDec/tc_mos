@@ -6,7 +6,7 @@ function AppRouterLink(props, context) {
         {custom: true, to: {name: props.to}},
         {
             default({navigate: onClick}) {
-                const attrs = {class: 'router-link', onClick}
+                const attrs = {class: 'pointer', onClick}
                 if (props.css)
                     attrs['class'] += ` ${props.css}`
                 return h('span', attrs, context.slots['default']())

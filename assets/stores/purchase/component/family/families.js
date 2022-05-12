@@ -16,6 +16,16 @@ export default defineStore('component-family', {
                     this.families.push(generateFamily(family, this))
         }
     },
-    getters: {find: state => iri => state.families.find(family => family['@id'] === iri)},
+    getters: {
+        find: state => iri => state.families.find(family => family['@id'] === iri),
+        findByParent: state => iri => {
+            const children = []
+            for (const family of state.families)
+                if (family.parent === iri)
+                    children.push(family)
+            return children
+        },
+        roots: state => state.families.filter(family => family.isRoot)
+    },
     state: () => ({families: []})
 })
