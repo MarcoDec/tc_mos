@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e35a54639f79c1c5c75e1fb920bff7ff",
+    "content-hash": "68edbf2e2ffbcb7f68dcc5e49f0fcb0d",
     "packages": [
         {
             "name": "api-platform/core",
@@ -2392,16 +2392,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v9.12.1",
+            "version": "v9.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "7c8bf052ef4919b8ffa7f25ec6f8648c4a36fc57"
+                "reference": "b5b5c635f1a93f277b5248725a1f7ffc97e20810"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/7c8bf052ef4919b8ffa7f25ec6f8648c4a36fc57",
-                "reference": "7c8bf052ef4919b8ffa7f25ec6f8648c4a36fc57",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/b5b5c635f1a93f277b5248725a1f7ffc97e20810",
+                "reference": "b5b5c635f1a93f277b5248725a1f7ffc97e20810",
                 "shasum": ""
             },
             "require": {
@@ -2567,7 +2567,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2022-05-10T19:32:47+00:00"
+            "time": "2022-05-11T13:38:26+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -5137,6 +5137,69 @@
                 }
             ],
             "time": "2022-01-02T09:55:41+00:00"
+        },
+        {
+            "name": "symfony/expression-language",
+            "version": "v6.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/expression-language.git",
+                "reference": "7affe5d5e579cd89c664b364f74ce2d01d57cf29"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/expression-language/zipball/7affe5d5e579cd89c664b364f74ce2d01d57cf29",
+                "reference": "7affe5d5e579cd89c664b364f74ce2d01d57cf29",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.2",
+                "symfony/cache": "^5.4|^6.0",
+                "symfony/service-contracts": "^1.1|^2|^3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\ExpressionLanguage\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides an engine that can compile and evaluate expressions",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/expression-language/tree/v6.0.8"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-04-12T16:11:42+00:00"
         },
         {
             "name": "symfony/filesystem",

@@ -67,14 +67,6 @@ abstract class Family extends Entity implements FileEntity {
         return $this->parent;
     }
 
-    #[
-        Pure,
-        Serializer\Groups(['read:family'])
-    ]
-    final public function getParentId(): int {
-        return $this->parent?->getId() ?? 0;
-    }
-
     /**
      * @param static $children
      */

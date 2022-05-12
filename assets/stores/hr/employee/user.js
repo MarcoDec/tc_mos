@@ -11,7 +11,7 @@ export default defineStore('user', {
             else
                 throw response.content
         },
-        async fetchUser() {
+        async fetch() {
             if (Cookies.has()) {
                 try {
                     const response = await fetchApi(`/api/employees/${Cookies.get('id')}`)

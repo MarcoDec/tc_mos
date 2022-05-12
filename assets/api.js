@@ -1,3 +1,5 @@
+import * as Cookies from './cookie'
+
 export default async function fetchApi(url, method = 'GET', body = null) {
     const init = {
         headers: {
@@ -6,6 +8,9 @@ export default async function fetchApi(url, method = 'GET', body = null) {
         },
         method
     }
+    const token = Cookies.get('token')
+    if (token)
+        init.headers.Authorization = `Bearer ${token}`
     if (body instanceof FormData)
         init.body = JSON.stringify(Object.fromEntries(body))
     const response = await fetch(url, init)

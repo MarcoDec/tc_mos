@@ -27,7 +27,7 @@ const app = createApp(App)
     .use(createPinia())
 
 async function fetchUser() {
-    await useUserStore().fetchUser()
+    await useUserStore().fetch()
 }
 
 fetchUser().then(() => app.use(router).mount('#vue'))

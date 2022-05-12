@@ -7,7 +7,7 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            component: AppHome,
+            component: () => import('./pages/AppTreePage.vue'),
             meta: {requiresAuth: true},
             name: 'component-families',
             path: '/component-families'

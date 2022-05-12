@@ -87,9 +87,9 @@ class Family extends AbstractFamily {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
-        Assert\Length(min: 3, max: 20),
+        Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
-        ORM\Column(length: 30),
+        ORM\Column(length: 40),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     protected ?string $name = null;
