@@ -1,5 +1,5 @@
 <script setup>
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
     import useFamiliesStore from '../../stores/purchase/component/family/families'
 
     const families = useFamiliesStore()
@@ -13,10 +13,16 @@
     ])
     const props = defineProps({id: {required: true, type: String}})
     const form = computed(() => `${props.id}-create`)
+    const value = ref({file: '/img/no-image.png'})
 </script>
 
 <template>
     <AppCard :id="id" title="Ajouter une famille">
-        <AppForm :id="form" :fields="fields"/>
+        <div class="row">
+            <AppForm :id="form" v-model="value" :fields="fields" class="col"/>
+            <div class="col-4 position-relative">
+                <img :src="value.file" class="img-thumbnail position-absolute start-50 top-50 translate-middle"/>
+            </div>
+        </div>
     </AppCard>
 </template>

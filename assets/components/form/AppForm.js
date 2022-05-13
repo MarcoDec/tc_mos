@@ -5,7 +5,17 @@ import {fieldValidator} from '../validators'
 function AppForm(props, context) {
     const groups = []
     for (const field of props.fields)
-        groups.push(h(AppFormGroup, {disabled: props.disabled, field, form: props.id, key: field.name}))
+        groups.push(h(AppFormGroup, {
+            disabled: props.disabled,
+            field,
+            form: props.id,
+            key: field.name,
+            modelValue: props.modelValue[field.name],
+            'onUpdate:modelValue': value => context.emit('update:modelValue', {
+                ...props.modelValue,
+                [field.name]: value
+            })
+        }))
     groups.push(h(
         'div',
         {class: 'row'},
@@ -31,7 +41,7 @@ function AppForm(props, context) {
     }, groups)
 }
 
-AppForm.emits = ['submit']
+AppForm.emits = ['submit', 'update:modelValue']
 AppForm.props = {
     disabled: {type: Boolean},
     fields: {
@@ -46,7 +56,8 @@ AppForm.props = {
             return true
         }
     },
-    id: {required: true, type: String}
+    id: {required: true, type: String},
+    modelValue: {type: Object}
 }
 
 export default AppForm

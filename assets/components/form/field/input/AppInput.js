@@ -1,7 +1,7 @@
 import {generateField} from '../../../validators'
 import {h} from 'vue'
 
-function AppInput(props) {
+function AppInput(props, context) {
     return h('input', {
         autocomplete: 'off',
         class: 'form-control form-control-sm',
@@ -9,16 +9,20 @@ function AppInput(props) {
         form: props.form,
         id: props.id,
         name: props.field.name,
+        onInput: e => context.emit('update:modelValue', e.target.value),
         placeholder: props.field.label,
-        type: props.field.type ?? 'text'
+        type: props.field.type ?? 'text',
+        value: props.modelValue
     })
 }
 
+AppInput.emits = ['update:modelValue']
 AppInput.props = {
     disabled: {type: Boolean},
     field: generateField(),
     form: {required: true, type: String},
-    id: {required: true, type: String}
+    id: {required: true, type: String},
+    modelValue: {}
 }
 
 export default AppInput
