@@ -9,8 +9,9 @@ export default defineStore('component-family', {
                 family.blur()
         },
         dispose() {
+            this.$reset()
             for (const family of this.families)
-                family.$dispose()
+                family.dispose()
             this.$dispose()
         },
         async fetch() {

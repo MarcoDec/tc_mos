@@ -8,6 +8,10 @@ export default function generateFamily(family, root) {
                 this.opened = false
                 this.selected = false
             },
+            dispose() {
+                this.$reset()
+                this.$dispose()
+            },
             focus() {
                 this.root.blur()
                 this.selected = true
