@@ -5,6 +5,7 @@ import AppContainer from './components/layout/AppContainer'
 import AppDropdownItem from './components/nav/AppDropdownItem'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/AppRouterLink'
+import AppTreeLabel from './components/tree/AppTreeLabel'
 import Fa from './components/Fa'
 import {createApp} from 'vue'
 import {createPinia} from 'pinia'
@@ -23,6 +24,7 @@ const app = createApp(App)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppOverlay', AppOverlay)
     .component('AppRouterLink', AppRouterLink)
+    .component('AppTreeLabel', AppTreeLabel)
     .component('Fa', Fa)
     .use(createPinia())
 

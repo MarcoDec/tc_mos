@@ -4,6 +4,10 @@ import generateFamily from './family'
 
 export default defineStore('component-family', {
     actions: {
+        blur() {
+            for (const family of this.families)
+                family.blur()
+        },
         dispose() {
             for (const family of this.families)
                 family.$dispose()
