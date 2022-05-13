@@ -9,7 +9,8 @@ function AppBtn(props, context) {
     if (props.icon) {
         css += ' btn-icon'
         children.push(h(resolveComponent('Fa'), {icon: props.icon}))
-    }
+    } else
+        css += ' btn-sm'
     return h(
         'button',
         {class: css, disabled: props.disabled, type: props.type},

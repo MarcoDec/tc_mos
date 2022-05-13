@@ -16,6 +16,7 @@
             loading: {on: {success: {target: 'display'}}}
         }
     }))
+    const tree = `${route.name}-tree`
 
     onMounted(async () => {
         await families.fetch()
@@ -28,13 +29,13 @@
 </script>
 
 <template>
-    <AppOverlay :id="route.name" :spinner="state.matches('loading')" class="row">
+    <AppOverlay :id="route.name" :spinner="state.matches('loading')">
         <div class="row">
             <h1 class="col">
                 <Fa icon="layer-group"/>
                 Familles de composants
             </h1>
         </div>
-        <AppTree :items="families.roots"/>
+        <AppTree :id="tree" :items="families.roots"/>
     </AppOverlay>
 </template>

@@ -2,8 +2,6 @@
     import {assign, createMachine} from 'xstate'
     import {useRoute, useRouter} from 'vue-router'
     import AppAlert from '../../components/AppAlert'
-    import AppCard from '../../components/AppCard'
-    import AppForm from '../../components/form/AppForm'
     import {useMachine} from '@xstate/vue'
     import useUserStore from '../../stores/hr/employee/user'
 

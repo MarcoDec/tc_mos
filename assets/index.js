@@ -1,8 +1,10 @@
 import './app.scss'
 import App from './App'
 import AppBtn from './components/AppBtn'
+import AppCard from './components/AppCard'
 import AppContainer from './components/layout/AppContainer'
 import AppDropdownItem from './components/nav/AppDropdownItem'
+import AppForm from './components/form/AppForm'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/AppRouterLink'
 import AppTreeLabel from './components/tree/AppTreeLabel'
@@ -20,8 +22,10 @@ library.add(fas)
 
 const app = createApp(App)
     .component('AppBtn', AppBtn)
+    .component('AppCard', AppCard)
     .component('AppContainer', AppContainer)
     .component('AppDropdownItem', AppDropdownItem)
+    .component('AppForm', AppForm)
     .component('AppOverlay', AppOverlay)
     .component('AppRouterLink', AppRouterLink)
     .component('AppTreeLabel', AppTreeLabel)

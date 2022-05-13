@@ -1,4 +1,4 @@
-const types = ['password', 'text']
+const types = ['file', 'password', 'text']
 
 export function fieldValidator(field) {
     if (typeof field !== 'object' || field === null)

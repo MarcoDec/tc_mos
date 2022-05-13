@@ -4,7 +4,7 @@ import {h} from 'vue'
 function AppInput(props) {
     return h('input', {
         autocomplete: 'off',
-        class: 'form-control',
+        class: 'form-control form-control-sm',
         disabled: props.disabled,
         form: props.form,
         id: props.id,
