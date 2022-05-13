@@ -1,4 +1,4 @@
-import AppTreeForm from './AppTreeForm'
+import AppTreeForm from './AppTreeForm.vue'
 import AppTreeNode from './AppTreeNode'
 import {h} from 'vue'
 

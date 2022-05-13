@@ -31,6 +31,7 @@ export default function generateFamily(family, root) {
                 return this.children.length > 0
             },
             isRoot: state => !state.parent,
+            option: state => ({text: state.fullName, value: state['@id']}),
             parentStore: state => state.root.find(state.parent)
         },
         state: () => ({opened: false, root, selected: false, ...family})

@@ -30,6 +30,7 @@ export default defineStore('component-family', {
                     children.push(family)
             return children
         },
+        options: state => state.families.map(family => family.option).sort((a, b) => a.text.localeCompare(b.text)),
         roots: state => state.families.filter(family => family.isRoot)
     },
     state: () => ({families: []})

@@ -1,4 +1,4 @@
-const types = ['file', 'password', 'text']
+const types = ['file', 'password', 'select', 'text']
 
 export function fieldValidator(field) {
     if (typeof field !== 'object' || field === null)
@@ -10,6 +10,16 @@ export function fieldValidator(field) {
             return false
         if (!types.includes(field.type))
             return false
+        if (field.type === 'select') {
+            if (!Array.isArray(field.options))
+                return false
+            for (const option of field.options)
+                if (
+                    typeof option.text === 'undefined' || option.text === null
+                    || typeof option.value === 'undefined' || option.value === null
+                )
+                    return false
+        }
     }
     return true
 }
