@@ -16,7 +16,11 @@
     const selectedForm = computed(() => selected.value?.form(fields.value) ?? {file: '/img/no-image.png'})
     const title = computed(() => selected.value?.fullName ?? 'Ajouter une famille')
     const value = ref(null)
-    const form = computed(() => `${props.id}-create`)
+    const formId = computed(() => `${props.id}-create`)
+
+    function blur() {
+        families.blur()
+    }
 
     async function submit(data) {
         props.machine.send('submit')
@@ -42,14 +46,31 @@
     <AppCard :id="id" :title="title">
         <div class="row">
             <AppForm
-                :id="form"
+                :id="formId"
                 v-model="value"
                 :disabled="machine.state.value.matches('loading')"
                 :fields="fields"
                 :violations="machine.state.value.context.violations"
                 class="col"
                 submit-label="Créer"
-                @submit="submit"/>
+                @submit="submit">
+                <template #default="{disabled, form, submitLabel, type}">
+                    <template v-if="selected">
+                        <AppBtn :disabled="disabled" :form="form" :type="type" class="me-2">
+                            Modifier
+                        </AppBtn>
+                        <AppBtn :disabled="disabled" class="me-2" variant="warning" @click="blur">
+                            Annuler
+                        </AppBtn>
+                        <AppBtn :disabled="disabled" variant="danger">
+                            Supprimer
+                        </AppBtn>
+                    </template>
+                    <AppBtn v-else :disabled="disabled" :form="form" :type="type">
+                        {{ submitLabel }}
+                    </AppBtn>
+                </template>
+            </AppForm>
             <div class="col-4 position-relative">
                 <img :src="value.file" class="img-thumbnail position-absolute start-50 top-50 translate-middle"/>
             </div>

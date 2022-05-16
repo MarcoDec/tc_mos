@@ -23,11 +23,18 @@ function AppForm(props, context) {
         h(
             'div',
             {class: 'col d-inline-flex justify-content-end'},
-            h(
-                resolveComponent('AppBtn'),
-                {disabled: props.disabled, form: props.id, type: 'submit'},
-                () => props.submitLabel
-            )
+            typeof context.slots['default'] === 'function'
+                ? context.slots['default']({
+                    disabled: props.disabled,
+                    form: props.id,
+                    submitLabel: props.submitLabel,
+                    type: 'submit'
+                })
+                : h(
+                    resolveComponent('AppBtn'),
+                    {disabled: props.disabled, form: props.id, type: 'submit'},
+                    () => props.submitLabel
+                )
         )
     ))
     return h('form', {
@@ -67,7 +74,7 @@ AppForm.props = {
     },
     id: {required: true, type: String},
     modelValue: {default: () => ({}), type: Object},
-    submitLabel: {required: true, type: String},
+    submitLabel: {default: null, type: String},
     violations: {default: () => [], type: Array}
 }
 
