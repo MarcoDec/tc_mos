@@ -11,15 +11,33 @@
         {label: 'Code douanier', name: 'customsCode'},
         {label: 'Icône', name: 'file', type: 'file'}
     ])
-    const props = defineProps({id: {required: true, type: String}})
-    const form = computed(() => `${props.id}-create`)
+    const props = defineProps({id: {required: true, type: String}, machine: {required: true, type: Object}})
     const value = ref({file: '/img/no-image.png'})
+    const form = computed(() => `${props.id}-create`)
+
+    async function submit(data) {
+        props.machine.send('submit')
+        try {
+            await families.create(data)
+            props.machine.send('success')
+        } catch (violations) {
+            props.machine.send('fail', {violations})
+        }
+    }
 </script>
 
 <template>
     <AppCard :id="id" title="Ajouter une famille">
         <div class="row">
-            <AppForm :id="form" v-model="value" :fields="fields" class="col"/>
+            <AppForm
+                :id="form"
+                v-model="value"
+                :disabled="machine.state.value.matches('loading')"
+                :fields="fields"
+                :violations="machine.state.value.context.violations"
+                class="col"
+                submit-label="Créer"
+                @submit="submit"/>
             <div class="col-4 position-relative">
                 <img :src="value.file" class="img-thumbnail position-absolute start-50 top-50 translate-middle"/>
             </div>

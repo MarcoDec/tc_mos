@@ -14,7 +14,8 @@ function AppForm(props, context) {
             'onUpdate:modelValue': value => context.emit('update:modelValue', {
                 ...props.modelValue,
                 [field.name]: value
-            })
+            }),
+            violation: props.violations.find(violation => violation.propertyPath === field.name)
         }))
     groups.push(h(
         'div',
@@ -25,7 +26,7 @@ function AppForm(props, context) {
             h(
                 resolveComponent('AppBtn'),
                 {disabled: props.disabled, form: props.id, type: 'submit'},
-                () => 'Connexion'
+                () => props.submitLabel
             )
         )
     ))
@@ -34,9 +35,17 @@ function AppForm(props, context) {
         enctype: 'multipart/form-data',
         id: props.id,
         method: 'POST',
+        novalidate: true,
         onSubmit(e) {
             e.preventDefault()
-            context.emit('submit', new FormData(e.target))
+            const data = new FormData(e.target)
+            for (const [key, value] of Object.entries(Object.fromEntries(data)))
+                if (
+                    typeof value === 'undefined' || value === null
+                    || typeof value === 'string' && value.length === 0
+                )
+                    data['delete'](key)
+            context.emit('submit', data)
         }
     }, groups)
 }
@@ -57,7 +66,9 @@ AppForm.props = {
         }
     },
     id: {required: true, type: String},
-    modelValue: {type: Object}
+    modelValue: {default: () => ({}), type: Object},
+    submitLabel: {required: true, type: String},
+    violations: {default: () => [], type: Array}
 }
 
 export default AppForm

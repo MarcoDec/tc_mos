@@ -51,7 +51,12 @@
             <AppAlert v-if="state.matches('error')">
                 {{ state.context.error }}
             </AppAlert>
-            <AppForm :id="form" :disabled="state.matches('loading')" :fields="fields" @submit="submit"/>
+            <AppForm
+                :id="form"
+                :disabled="state.matches('loading')"
+                :fields="fields"
+                submit-label="Connexion"
+                @submit="submit"/>
         </AppCard>
     </AppOverlay>
 </template>

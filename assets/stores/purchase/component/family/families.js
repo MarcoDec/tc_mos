@@ -8,6 +8,11 @@ export default defineStore('component-family', {
             for (const family of this.families)
                 family.blur()
         },
+        async create(data) {
+            const response = await fetchApi('/api/component-families', 'POST', data, false)
+            if (response.status === 422)
+                throw response.content.violations
+        },
         dispose() {
             this.$reset()
             for (const family of this.families)
