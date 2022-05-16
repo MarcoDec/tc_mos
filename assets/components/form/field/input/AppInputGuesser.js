@@ -1,11 +1,14 @@
 import AppInput from './AppInput'
 import AppInputFile from './AppInputFile'
 import AppSelect from './select/AppSelect'
+import AppSwitch from './AppSwitch'
 import {generateField} from '../../../validators'
 import {h} from 'vue'
 
 function getType(field) {
     switch (field.type) {
+    case 'boolean':
+        return AppSwitch
     case 'file':
         return AppInputFile
     case 'select':

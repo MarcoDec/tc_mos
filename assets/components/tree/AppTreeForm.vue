@@ -7,7 +7,7 @@
         {label: 'Parent', name: 'parent', options: families.options, type: 'select'},
         {label: 'Code', name: 'code'},
         {label: 'Nom', name: 'name'},
-        {label: 'Cuivre', name: 'copperable'},
+        {label: 'Cuivre', name: 'copperable', type: 'boolean'},
         {label: 'Code douanier', name: 'customsCode'},
         {label: 'Icône', name: 'file', type: 'file'}
     ])
