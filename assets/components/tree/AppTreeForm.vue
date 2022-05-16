@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, onMounted, ref, watch} from 'vue'
     import useFamiliesStore from '../../stores/purchase/component/family/families'
 
     const families = useFamiliesStore()
@@ -12,7 +12,10 @@
         {label: 'Icône', name: 'file', type: 'file'}
     ])
     const props = defineProps({id: {required: true, type: String}, machine: {required: true, type: Object}})
-    const value = ref({file: '/img/no-image.png'})
+    const selected = computed(() => families.selected)
+    const selectedForm = computed(() => selected.value?.form(fields.value) ?? {file: '/img/no-image.png'})
+    const title = computed(() => selected.value?.fullName ?? 'Ajouter une famille')
+    const value = ref(null)
     const form = computed(() => `${props.id}-create`)
 
     async function submit(data) {
@@ -24,10 +27,19 @@
             props.machine.send('fail', {violations})
         }
     }
+
+    function updateValue() {
+        value.value = {...selectedForm.value}
+    }
+
+    updateValue()
+
+    onMounted(updateValue)
+    watch(selectedForm, updateValue)
 </script>
 
 <template>
-    <AppCard :id="id" title="Ajouter une famille">
+    <AppCard :id="id" :title="title">
         <div class="row">
             <AppForm
                 :id="form"

@@ -62,10 +62,10 @@ services:
         name: kernel.event_listener
         priority: 2
 
-  App\EventListener\Project\Product\FamilyListener:
+  App\EventListener\FamilyListener:
     autoconfigure: false
     tags:
-      - entity: App\Entity\Project\Product\Family
+      - entity: App\Entity\Family
         event: postLoad
         name: doctrine.orm.entity_listener
 

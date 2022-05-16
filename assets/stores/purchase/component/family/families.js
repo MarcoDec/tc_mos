@@ -12,6 +12,8 @@ export default defineStore('component-family', {
             const response = await fetchApi('/api/component-families', 'POST', data, false)
             if (response.status === 422)
                 throw response.content.violations
+            else
+                this.families.push(generateFamily(response.content, this))
         },
         dispose() {
             this.$reset()
@@ -36,7 +38,8 @@ export default defineStore('component-family', {
             return children
         },
         options: state => state.families.map(family => family.option).sort((a, b) => a.text.localeCompare(b.text)),
-        roots: state => state.families.filter(family => family.isRoot)
+        roots: state => state.families.filter(family => family.isRoot).sort((a, b) => a.name.localeCompare(b.name)),
+        selected: state => state.families.find(family => family.selected)
     },
     state: () => ({families: []})
 })

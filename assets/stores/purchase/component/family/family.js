@@ -23,7 +23,14 @@ export default function generateFamily(family, root) {
             }
         },
         getters: {
-            children: state => state.root.findByParent(state['@id']),
+            children: state => state.root.findByParent(state['@id']).sort((a, b) => a.name.localeCompare(b.name)),
+            form: state => fields => {
+                const form = {}
+                for (const field of fields)
+                    form[field.name] = state[field.name]
+                form.file = state.filepath ?? '/img/no-image.png'
+                return form
+            },
             fullName(state) {
                 return this.parentStore ? `${this.parentStore.fullName}\\${state.name}` : state.name
             },
