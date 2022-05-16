@@ -13,8 +13,8 @@
         id: route.name,
         initial: 'loading',
         states: {
-            error: {on: {submit: {actions: [assign(() => ({violations: []}))], target: 'loading'}}},
-            form: {on: {submit: {actions: [assign(() => ({violations: []}))], target: 'loading'}}},
+            error: {on: {submit: {actions: [assign({violations: []})], target: 'loading'}}},
+            form: {on: {submit: {actions: [assign({violations: []})], target: 'loading'}}},
             loading: {
                 on: {
                     fail: {actions: [assign((context, {violations}) => ({violations}))], target: 'error'},

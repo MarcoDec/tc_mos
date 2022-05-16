@@ -23,7 +23,7 @@
             loading: {
                 on: {
                     fail: {
-                        actions: [assign((context, {error}) => ({error}))],
+                        actions: [assign({error: (context, {error}) => error})],
                         target: 'error'
                     },
                     success: {target: 'logged'}

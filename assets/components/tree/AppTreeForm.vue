@@ -19,7 +19,9 @@
     const formId = computed(() => `${props.id}-create`)
 
     function blur() {
+        props.machine.send('submit')
         families.blur()
+        props.machine.send('success')
     }
 
     async function submit(data) {

@@ -1,7 +1,13 @@
 import {h, resolveComponent} from 'vue'
 
 function AppTreeLabel(props, context) {
-    const attrs = {onClick: () => props.item.focus()}
+    const attrs = {
+        onClick() {
+            props.machine.send('submit')
+            props.item.focus()
+            props.machine.send('success')
+        }
+    }
     if (props.item.selected)
         attrs['class'] = 'bg-warning'
     return h(
@@ -15,6 +21,6 @@ function AppTreeLabel(props, context) {
     )
 }
 
-AppTreeLabel.props = {item: {required: true, type: Object}}
+AppTreeLabel.props = {item: {required: true, type: Object}, machine: {required: true, type: Object}}
 
 export default AppTreeLabel
