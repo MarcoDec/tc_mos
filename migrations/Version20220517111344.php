@@ -7,14 +7,13 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-final class Version20220512091445 extends AbstractMigration {
+final class Version20220517111344 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
 
     public function up(Schema $schema): void {
-        $this->addSql(
-            <<<'SQL'
+        $this->addSql(<<<'SQL'
 CREATE TABLE `component_family` (
   `id` tinyint(3) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `family_name` varchar(25) NOT NULL,
@@ -24,10 +23,8 @@ CREATE TABLE `component_family` (
   `icon` int(11) DEFAULT NULL,
   `prefix` varchar(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
-SQL
-        );
-        $this->addSql(
-            <<<'SQL'
+SQL);
+        $this->addSql(<<<'SQL'
 INSERT INTO `component_family` (`id`, `family_name`, `statut`, `copperable`, `customsCode`, `icon`, `prefix`) VALUES
 (1, 'Cables', 0, 0, NULL, NULL, 'Cab'),
 (2, 'Fixations', 0, 0, NULL, NULL, 'Fix'),
@@ -42,10 +39,8 @@ INSERT INTO `component_family` (`id`, `family_name`, `statut`, `copperable`, `cu
 (11, 'Outillage', 0, 0, NULL, NULL, 'Out'),
 (12, 'Sous Faisceau', 0, 0, NULL, NULL, 'Sou'),
 (13, 'Sous-Produit', 0, 0, NULL, NULL, 'Sou')
-SQL
-        );
-        $this->addSql(
-            <<<'SQL'
+SQL);
+        $this->addSql(<<<'SQL'
 CREATE TABLE `component_subfamily` (
   `id` smallint(6) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `subfamily_name` varchar(50) NOT NULL,
@@ -53,10 +48,8 @@ CREATE TABLE `component_subfamily` (
   `statut` tinyint(4) NOT NULL DEFAULT '0',
   CONSTRAINT `unic` UNIQUE (`subfamily_name`,`id_family`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
-SQL
-        );
-        $this->addSql(
-            <<<'SQL'
+SQL);
+        $this->addSql(<<<'SQL'
 INSERT INTO `component_subfamily` (`id`, `subfamily_name`, `id_family`, `statut`) VALUES
 (1, 'Fil', 1, 0),
 (2, 'Cordons', 1, 0),
@@ -101,7 +94,31 @@ INSERT INTO `component_subfamily` (`id`, `subfamily_name`, `id_family`, `statut`
 (45, 'SPD', 13, 0),
 (46, 'Sous-famille KUHN', 12, 0),
 (47, 'Matière découpe', 8, 0)
-SQL
-        );
+SQL);
+        $this->addSql(<<<'SQL'
+CREATE TABLE `couleur` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL COMMENT 'Nom de la couleur',
+  `ral` varchar(10) DEFAULT NULL COMMENT 'Code couleur RAL',
+  `rgb` varchar(7) DEFAULT NULL COMMENT 'Code couleur RGB'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des couleurs que peuvent avoir les fils';
+SQL);
+        $this->addSql(<<<'SQL'
+INSERT INTO `couleur` (`id`, `name`, `ral`, `rgb`) VALUES
+(1, 'Rouge', '', '#FF0000'),
+(2, 'Bleu', '', '#0000CC'),
+(3, 'Vert', '', '#00cc00'),
+(4, 'Jaune', '', '#ffff33'),
+(5, 'Blanc', '', '#ffffff'),
+(6, 'Noir', '', '#000000'),
+(7, 'Rose', '', '#ff9999'),
+(8, 'Violet', '', '#cc00cc'),
+(9, 'Marron', '', '#994c00'),
+(10, 'Beige', '', '#ffb266'),
+(11, 'Bleu clair', '', '#3399ff'),
+(12, 'chocolat', '2014', '#6E2C00'),
+(13, 'Gris', '17122018', '#848484'),
+(14, 'Orange', '', '#EAA717');
+SQL);
     }
 }

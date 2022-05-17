@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220512091550 extends AbstractMigration {
+final class Version20220517111346 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -29,12 +29,24 @@ final class Version20220512091550 extends AbstractMigration {
 
     public function up(Schema $schema): void {
         $this->upComponentFamilies();
+        $this->upColors();
         $this->upUsers();
     }
 
+    private function upColors(): void {
+        $this->addSql('RENAME TABLE `couleur` TO `color`');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `color`
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `name` `name` VARCHAR(20) NOT NULL,
+    CHANGE `rgb` `rgb` CHAR(7) CHARACTER SET ascii NOT NULL,
+    DROP `ral`
+SQL);
+    }
+
     private function upComponentFamilies(): void {
-        $this->addSql(
-            <<<'SQL'
+        $this->addSql(<<<'SQL'
 ALTER TABLE `component_family`
     ADD `parent_id` INT UNSIGNED DEFAULT NULL,
     DROP `icon`,
@@ -43,11 +55,9 @@ ALTER TABLE `component_family`
     CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
     CHANGE `prefix` `code` CHAR(3) CHARACTER SET ascii NOT NULL,
     CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
-SQL
-        );
+SQL);
         $this->addSql('ALTER TABLE `component_family` ADD CONSTRAINT `component_family_parent_id_component_family` FOREIGN KEY (`parent_id`) REFERENCES `component_family` (`id`)');
-        $this->addSql(
-            <<<'SQL'
+        $this->addSql(<<<'SQL'
 INSERT INTO `component_family` (`name`, `deleted`, `parent_id`, `code`)
 SELECT
     `component_subfamily`.`subfamily_name`,
@@ -56,8 +66,7 @@ SELECT
     `component_family`.`code`
 FROM `component_subfamily`
 INNER JOIN `component_family` ON `component_subfamily`.`id_family` = `component_family`.`id`
-SQL
-        );
+SQL);
         $this->addSql('DROP TABLE `component_subfamily`');
         $this->addSql('UPDATE `component_family` SET `code` = UPPER(`code`)');
     }
@@ -77,8 +86,7 @@ SQL
             ->addRole(Roles::ROLE_PURCHASE_ADMIN)
             ->addRole(Roles::ROLE_QUALITY_ADMIN)
             ->addRole(Roles::ROLE_SELLING_ADMIN);
-        $this->addSql(
-            <<<'SQL'
+        $this->addSql(<<<'SQL'
 CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
@@ -87,8 +95,7 @@ CREATE TABLE `employee` (
     `password` CHAR(60) CHARACTER SET ascii NOT NULL,
     `username` VARCHAR(20) CHARACTER SET ascii NOT NULL
 )
-SQL
-        );
+SQL);
         $this->addSql(sprintf(
             'INSERT INTO employee (name, password, username, emb_roles_roles) VALUES (\'Super\', %s, \'super\', %s)',
             /** @phpstan-ignore-next-line */
@@ -96,8 +103,7 @@ SQL
             /** @phpstan-ignore-next-line */
             $this->connection->quote(implode(',', $user->getRoles()))
         ));
-        $this->addSql(
-            <<<'SQL'
+        $this->addSql(<<<'SQL'
 CREATE TABLE `token` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `employee_id` INT UNSIGNED NOT NULL,
@@ -105,7 +111,6 @@ CREATE TABLE `token` (
     `token` CHAR(120) CHARACTER SET ascii NOT NULL,
     CONSTRAINT `token_employee_id_employee_id` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
 )
-SQL
-        );
+SQL);
     }
 }
