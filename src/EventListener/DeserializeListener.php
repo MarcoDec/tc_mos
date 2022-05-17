@@ -57,9 +57,15 @@ final class DeserializeListener {
     private function getData(array $context, Request $request): array {
         $metadata = $this->em->getClassMetadata($context['resource_class']);
         return collect(array_merge($request->request->all(), $request->files->all()))
-            ->map(static fn ($value, string $name) => $metadata->getTypeOfField($name) === 'boolean'
-                ? is_string($value) && $value === 'true' || $value
-                : $value)
+            ->map(static function ($value, string $name) use ($metadata) {
+                if ($metadata->getTypeOfField($name) === 'boolean' && $value === 'on') {
+                    return true;
+                }
+                if (is_string($value) && strlen($value) === 0) {
+                    return;
+                }
+                return $value;
+            })
             ->all();
     }
 }

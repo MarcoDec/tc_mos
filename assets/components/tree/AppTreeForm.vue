@@ -27,7 +27,10 @@
     async function submit(data) {
         props.machine.send('submit')
         try {
-            await families.create(data)
+            if (selected.value)
+                await selected.value.update(data)
+            else
+                await families.create(data)
             props.machine.send('success')
         } catch (violations) {
             props.machine.send('fail', {violations})
@@ -52,12 +55,13 @@
                 v-model="value"
                 :disabled="machine.state.value.matches('loading')"
                 :fields="fields"
+                :no-ignore-null="families.hasSelected"
                 :violations="machine.state.value.context.violations"
                 class="col"
                 submit-label="Créer"
                 @submit="submit">
                 <template #default="{disabled, form, submitLabel, type}">
-                    <template v-if="selected">
+                    <template v-if="families.hasSelected">
                         <AppBtn :disabled="disabled" :form="form" :type="type" class="me-2">
                             Modifier
                         </AppBtn>

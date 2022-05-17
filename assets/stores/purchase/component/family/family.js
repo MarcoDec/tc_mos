@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia'
+import fetchApi from '../../../../api'
 
 export default function generateFamily(family, root) {
     const name = `component-family/${family.id}`
@@ -20,6 +21,12 @@ export default function generateFamily(family, root) {
             open() {
                 this.opened = true
                 this.parentStore?.open()
+            },
+            async update(data) {
+                const response = await fetchApi(`/api/component-families/${this.id}`, 'POST', data, false)
+                if (response.status === 422)
+                    throw response.content.violations
+                this.$state = {opened: this.opened, root: this.root, selected: this.selected, ...response.content}
             }
         },
         getters: {

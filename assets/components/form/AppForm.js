@@ -46,12 +46,15 @@ function AppForm(props, context) {
         onSubmit(e) {
             e.preventDefault()
             const data = new FormData(e.target)
-            for (const [key, value] of Object.entries(Object.fromEntries(data)))
-                if (
-                    typeof value === 'undefined' || value === null
-                    || typeof value === 'string' && value.length === 0
-                )
+            for (const [key, value] of Object.entries(Object.fromEntries(data))) {
+                if (typeof value === 'undefined' || value === null)
                     data['delete'](key)
+                if (typeof value === 'string') {
+                    data.set(key, value.trim())
+                    if (!props.noIgnoreNull && data.get(key).length === 0)
+                        data['delete'](key)
+                }
+            }
             context.emit('submit', data)
         }
     }, groups)
@@ -74,6 +77,7 @@ AppForm.props = {
     },
     id: {required: true, type: String},
     modelValue: {default: () => ({}), type: Object},
+    noIgnoreNull: {type: Boolean},
     submitLabel: {default: null, type: String},
     violations: {default: () => [], type: Array}
 }

@@ -12,8 +12,7 @@ export default defineStore('component-family', {
             const response = await fetchApi('/api/component-families', 'POST', data, false)
             if (response.status === 422)
                 throw response.content.violations
-            else
-                this.families.push(generateFamily(response.content, this))
+            this.families.push(generateFamily(response.content, this))
         },
         dispose() {
             this.$reset()
@@ -36,6 +35,9 @@ export default defineStore('component-family', {
                 if (family.parent === iri)
                     children.push(family)
             return children
+        },
+        hasSelected() {
+            return Boolean(this.selected)
         },
         options: state => state.families.map(family => family.option).sort((a, b) => a.text.localeCompare(b.text)),
         roots: state => state.families.filter(family => family.isRoot).sort((a, b) => a.name.localeCompare(b.name)),
