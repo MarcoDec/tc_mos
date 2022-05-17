@@ -1,17 +1,13 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import AppHome from './pages/AppHome'
 import AppLogin from './pages/AppLogin.vue'
+import management from './routes/management'
+import purchase from './routes/purchase'
 import useUserStore from '../stores/hr/employee/user'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        {
-            component: () => import('./pages/AppTreePage.vue'),
-            meta: {requiresAuth: true},
-            name: 'component-families',
-            path: '/component-families'
-        },
         {
             component: AppHome,
             meta: {requiresAuth: true},
@@ -23,7 +19,9 @@ const router = createRouter({
             meta: {requiresAuth: false},
             name: 'login',
             path: '/login'
-        }
+        },
+        ...management,
+        ...purchase
     ]
 })
 

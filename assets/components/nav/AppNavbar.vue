@@ -34,6 +34,16 @@
                             </AppNavbarLink>
                         </template>
                     </AppNavbarItem>
+                    <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
+                        <template v-if="user.isManagementAdmin">
+                            <AppDropdownItem disabled variant="warning">
+                                Administrateur
+                            </AppDropdownItem>
+                            <AppNavbarLink icon="palette" to="colors" variant="warning">
+                                Couleurs
+                            </AppNavbarLink>
+                        </template>
+                    </AppNavbarItem>
                 </ul>
             </div>
             <AppNavbarUser v-if="user.isLogged"/>
