@@ -22,6 +22,11 @@ export default function generateFamily(family, root) {
                 this.opened = true
                 this.parentStore?.open()
             },
+            async remove() {
+                await fetchApi(`/api/component-families/${this.id}`, 'DELETE')
+                this.root.remove(this['@id'])
+                this.dispose()
+            },
             async update(data) {
                 const response = await fetchApi(`/api/component-families/${this.id}`, 'POST', data, false)
                 if (response.status === 422)

@@ -25,6 +25,9 @@ export default defineStore('component-family', {
             if (response.status === 200)
                 for (const family of response.content['hydra:member'])
                     this.families.push(generateFamily(family, this))
+        },
+        remove(removed) {
+            this.families = this.families.filter(family => family['@id'] !== removed)
         }
     },
     getters: {

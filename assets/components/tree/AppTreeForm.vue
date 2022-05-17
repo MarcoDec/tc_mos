@@ -24,6 +24,11 @@
         props.machine.send('success')
     }
 
+    async function remove() {
+        if (selected.value)
+            await selected.value.remove()
+    }
+
     async function submit(data) {
         props.machine.send('submit')
         try {
@@ -68,7 +73,7 @@
                         <AppBtn :disabled="disabled" class="me-2" variant="warning" @click="blur">
                             Annuler
                         </AppBtn>
-                        <AppBtn :disabled="disabled" variant="danger">
+                        <AppBtn :disabled="disabled" variant="danger" @click="remove">
                             Supprimer
                         </AppBtn>
                     </template>
