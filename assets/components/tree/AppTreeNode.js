@@ -8,7 +8,7 @@ function AppTreeNode(props) {
     )]
     if (props.item.opened)
         for (const child of props.item.children)
-            children.push(h(AppTreeNode, {class: 'ms-4', item: child, key: child.id, machine: props.machine}))
+            children.push(h(AppTreeNode, {class: 'ms-4', item: child, key: child['@id'], machine: props.machine}))
     return h('div', children)
 }
 

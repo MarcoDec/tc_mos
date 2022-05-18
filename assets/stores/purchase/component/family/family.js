@@ -2,8 +2,7 @@ import {defineStore} from 'pinia'
 import fetchApi from '../../../../api'
 
 export default function generateFamily(family, root) {
-    const name = `component-family/${family.id}`
-    return defineStore(name, {
+    return defineStore(`component-family/${family.id}`, {
         actions: {
             blur() {
                 this.opened = false

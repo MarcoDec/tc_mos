@@ -298,7 +298,7 @@ module.exports = {
         'vue/no-empty-component-block': 'error',
         'vue/no-empty-pattern': 'error',
         'vue/no-export-in-script-setup': 'error',
-        'vue/no-expose-after-await': 'error',
+        'vue/no-expose-after-await': 'off',
         'vue/no-extra-parens': ['error', 'all', {enforceForArrowConditionals: false}],
         'vue/no-invalid-model-keys': 'error',
         'vue/no-irregular-whitespace': ['error', {

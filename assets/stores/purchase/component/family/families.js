@@ -5,18 +5,18 @@ import generateFamily from './family'
 export default defineStore('component-family', {
     actions: {
         blur() {
-            for (const family of this.families)
+            for (const family of this.items)
                 family.blur()
         },
         async create(data) {
             const response = await fetchApi('/api/component-families', 'POST', data, false)
             if (response.status === 422)
                 throw response.content.violations
-            this.families.push(generateFamily(response.content, this))
+            this.items.push(generateFamily(response.content, this))
         },
         dispose() {
             this.$reset()
-            for (const family of this.families)
+            for (const family of this.items)
                 family.dispose()
             this.$dispose()
         },
@@ -24,17 +24,17 @@ export default defineStore('component-family', {
             const response = await fetchApi('/api/component-families')
             if (response.status === 200)
                 for (const family of response.content['hydra:member'])
-                    this.families.push(generateFamily(family, this))
+                    this.items.push(generateFamily(family, this))
         },
         remove(removed) {
-            this.families = this.families.filter(family => family['@id'] !== removed)
+            this.items = this.items.filter(family => family['@id'] !== removed)
         }
     },
     getters: {
-        find: state => iri => state.families.find(family => family['@id'] === iri),
+        find: state => iri => state.items.find(family => family['@id'] === iri),
         findByParent: state => iri => {
             const children = []
-            for (const family of state.families)
+            for (const family of state.items)
                 if (family.parent === iri)
                     children.push(family)
             return children
@@ -42,9 +42,9 @@ export default defineStore('component-family', {
         hasSelected() {
             return Boolean(this.selected)
         },
-        options: state => state.families.map(family => family.option).sort((a, b) => a.text.localeCompare(b.text)),
-        roots: state => state.families.filter(family => family.isRoot).sort((a, b) => a.name.localeCompare(b.name)),
-        selected: state => state.families.find(family => family.selected)
+        options: state => state.items.map(family => family.option).sort((a, b) => a.text.localeCompare(b.text)),
+        roots: state => state.items.filter(family => family.isRoot).sort((a, b) => a.name.localeCompare(b.name)),
+        selected: state => state.items.find(family => family.selected)
     },
-    state: () => ({families: []})
+    state: () => ({items: []})
 })

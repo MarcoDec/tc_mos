@@ -1,28 +1,13 @@
 <script setup>
-    import {assign, createMachine} from 'xstate'
     import {onMounted, onUnmounted} from 'vue'
     import AppTree from '../../components/tree/AppTree'
     import useFamiliesStore from '../../stores/purchase/component/family/families'
-    import {useMachine} from '@xstate/vue'
+    import {useMachine} from '../../machine'
     import {useRoute} from 'vue-router'
 
     const families = useFamiliesStore()
     const route = useRoute()
-    const machine = useMachine(createMachine({
-        context: {violations: []},
-        id: route.name,
-        initial: 'loading',
-        states: {
-            error: {on: {submit: {actions: [assign({violations: []})], target: 'loading'}}},
-            form: {on: {submit: {actions: [assign({violations: []})], target: 'loading'}}},
-            loading: {
-                on: {
-                    fail: {actions: [assign((context, {violations}) => ({violations}))], target: 'error'},
-                    success: {target: 'form'}
-                }
-            }
-        }
-    }))
+    const machine = useMachine(route.name)
     const tree = `${route.name}-tree`
 
     onMounted(async () => {
