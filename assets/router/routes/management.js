@@ -1,9 +1,9 @@
 export default [
     {
-        component: () => import('../pages/AppCollectionTablePage'),
+        component: () => import('../pages/AppTablePage'),
         meta: {requiresAuth: true},
         name: 'colors',
         path: '/colors',
-        props: {icon: 'palette', title: 'Couleurs'}
+        props: {fields: [{label: 'Nom', name: 'name'}, {label: 'RGB', name: 'rgb'}], icon: 'palette', title: 'Couleurs'}
     }
 ]
