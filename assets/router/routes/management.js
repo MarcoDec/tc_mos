@@ -5,9 +5,9 @@ export default [
         name: 'colors',
         path: '/colors',
         props: {
-            component: () => import('../pages/AppTablePage.vue'),
+            component: () => import('../pages/management/AppTablePageColor'),
             properties: {
-                fields: [{label: 'Nom', name: 'name'}, {label: 'RGB', name: 'rgb'}],
+                fields: [{label: 'Nom', name: 'name'}, {label: 'RGB', name: 'rgb', type: 'color'}],
                 icon: 'palette',
                 store: () => import('../../stores/management/colors.js'),
                 title: 'Couleurs'
