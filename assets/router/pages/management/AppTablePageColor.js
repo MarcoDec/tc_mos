@@ -8,6 +8,7 @@ function AppTablePageColor(props) {
         'cell(rgb)': ({field, item, value}) => h('span', {class: 'd-flex'}, [
             h('span', {class: 'me-2'}, value),
             h(resolveComponent('AppInputGuesser'), {
+                disabled: true,
                 field,
                 form: 'none',
                 id: `${useRoute().name}-${item.id}-${field.name}`,

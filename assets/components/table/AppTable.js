@@ -4,23 +4,33 @@ import {generateTableFields} from '../validators'
 import {h} from 'vue'
 
 function AppTable(props, context) {
-    const children = {}
-    for (const field of props.fields) {
-        const slotName = `cell(${field.name})`
+    function generateSlot(field, slots, type) {
+        const slotName = `${type}(${field.name})`
         const slot = context.slots[slotName]
         if (typeof slot === 'function')
-            children[slotName] = args => slot(args)
+            slots[slotName] = args => slot(args)
+    }
+
+    const cellSlots = {}
+    const searchSlots = {}
+    for (const field of props.fields) {
+        generateSlot(field, cellSlots, 'cell')
+        generateSlot(field, searchSlots, 'search')
     }
     return h(
         'div',
-        {class: 'row'},
+        {class: 'row', id: props.id},
         h('table', {class: 'col table table-bordered table-hover table-striped'}, [
-            h(AppTableHeaders, {fields: props.fields}),
-            h(AppTableItems, {fields: props.fields, items: props.items}, children)
+            h(AppTableHeaders, {fields: props.fields, id: `${props.id}-headers`, store: props.store}, searchSlots),
+            h(AppTableItems, {fields: props.fields, items: props.store.items}, cellSlots)
         ])
     )
 }
 
-AppTable.props = {fields: generateTableFields(), items: {required: true, type: Object}}
+AppTable.props = {
+    fields: generateTableFields(),
+    id: {required: true, type: String},
+    store: {required: true, type: Object}
+}
 
 export default AppTable

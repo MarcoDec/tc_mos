@@ -3,41 +3,50 @@ import AppFormGroup from './field/AppFormGroup'
 import {fieldValidator} from '../validators'
 
 function AppForm(props, context) {
-    const groups = []
-    for (const field of props.fields)
-        groups.push(h(AppFormGroup, {
+    function generateSlot() {
+        return context.slots['default']({
             disabled: props.disabled,
-            field,
             form: props.id,
-            key: field.name,
-            modelValue: props.modelValue[field.name],
-            'onUpdate:modelValue': value => context.emit('update:modelValue', {
-                ...props.modelValue,
-                [field.name]: value
-            }),
-            violation: props.violations.find(violation => violation.propertyPath === field.name)
-        }))
-    groups.push(h(
-        'div',
-        {class: 'row'},
-        h(
+            submitLabel: props.submitLabel,
+            type: 'submit'
+        })
+    }
+
+    const groups = []
+    if (props.noContent) {
+        if (typeof context.slots['default'] === 'function')
+            groups.push(generateSlot())
+    } else {
+        for (const field of props.fields)
+            groups.push(h(AppFormGroup, {
+                disabled: props.disabled,
+                field,
+                form: props.id,
+                key: field.name,
+                modelValue: props.modelValue[field.name],
+                'onUpdate:modelValue': value => context.emit('update:modelValue', {
+                    ...props.modelValue,
+                    [field.name]: value
+                }),
+                violation: props.violations.find(violation => violation.propertyPath === field.name)
+            }))
+        groups.push(h(
             'div',
-            {class: 'col d-inline-flex justify-content-end'},
-            typeof context.slots['default'] === 'function'
-                ? context.slots['default']({
-                    disabled: props.disabled,
-                    form: props.id,
-                    submitLabel: props.submitLabel,
-                    type: 'submit'
-                })
-                : h(
-                    resolveComponent('AppBtn'),
-                    {disabled: props.disabled, form: props.id, type: 'submit'},
-                    () => props.submitLabel
-                )
-        )
-    ))
-    return h('form', {
+            {class: 'row'},
+            h(
+                'div',
+                {class: 'col d-inline-flex justify-content-end'},
+                typeof context.slots['default'] === 'function'
+                    ? generateSlot()
+                    : h(
+                        resolveComponent('AppBtn'),
+                        {disabled: props.disabled, form: props.id, type: 'submit'},
+                        () => props.submitLabel
+                    )
+            )
+        ))
+    }
+    const attrs = {
         autocomplete: 'off',
         enctype: 'multipart/form-data',
         id: props.id,
@@ -57,7 +66,10 @@ function AppForm(props, context) {
             }
             context.emit('submit', data)
         }
-    }, groups)
+    }
+    if (props.inline)
+        attrs['class'] = 'd-inline m-0 p-0'
+    return h('form', attrs, groups)
 }
 
 AppForm.emits = ['submit', 'update:modelValue']
@@ -76,7 +88,9 @@ AppForm.props = {
         }
     },
     id: {required: true, type: String},
+    inline: {type: Boolean},
     modelValue: {default: () => ({}), type: Object},
+    noContent: {type: Boolean},
     noIgnoreNull: {type: Boolean},
     submitLabel: {default: null, type: String},
     violations: {default: () => [], type: Array}

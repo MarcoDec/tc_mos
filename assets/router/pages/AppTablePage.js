@@ -29,11 +29,17 @@ export default {
 
         return () => {
             const children = {}
-            for (const field of props.fields) {
-                const slotName = `cell(${field.name})`
+
+            function generateSlot(field, type) {
+                const slotName = `${type}(${field.name})`
                 const slot = context.slots[slotName]
                 if (typeof slot === 'function')
                     children[slotName] = args => slot(args)
+            }
+
+            for (const field of props.fields) {
+                generateSlot(field, 'cell')
+                generateSlot(field, 'search')
             }
             return h(
                 resolveComponent('AppOverlay'),
@@ -41,9 +47,9 @@ export default {
                 () => [
                     h('div', {class: 'row'}, h('h1', {class: 'col'}, [
                         h(resolveComponent('Fa'), {icon: props.icon}),
-                        h('span', {class: 'me-2'}, props.title)
+                        h('span', {class: 'ms-2'}, props.title)
                     ])),
-                    h(AppTable, {fields: props.fields, items: store.items}, children)
+                    h(AppTable, {fields: props.fields, id: `${route.name}-table`, store}, children)
                 ]
             )
         }

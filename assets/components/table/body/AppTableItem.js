@@ -11,7 +11,7 @@ function AppTableItem(props, context) {
             return h(
                 AppTableItemField,
                 {field, item: props.item, key: field.name},
-                typeof slot === 'function' ? {default: args => slot(args)} : null
+                typeof slot === 'function' ? args => slot(args) : null
             )
         })
     ])
