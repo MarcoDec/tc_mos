@@ -29,6 +29,8 @@ export default {
         const store = module['default']()
         const variant = computed(() => `text-${store.length > 0 ? 'dark' : 'white'}`)
 
+        machine.send('submit')
+
         return () => {
             const children = {}
 

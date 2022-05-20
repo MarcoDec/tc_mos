@@ -44,7 +44,7 @@ export function useTableMachine(id) {
                 }
             },
             search: {
-                initial: 'loading',
+                initial: 'form',
                 on: {
                     create: {actions: ['reset'], internal: false, target: 'create'},
                     submit: {actions: ['resetViolations'], internal: false, target: 'search.loading'},

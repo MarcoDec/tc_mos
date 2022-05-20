@@ -8,6 +8,7 @@ import AppForm from './components/form/AppForm'
 import AppInputGuesser from './components/form/field/input/AppInputGuesser'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/AppRouterLink'
+import AppTableHeaderForm from './components/table/head/AppTableHeaderForm'
 import AppTreeLabel from './components/tree/AppTreeLabel'
 import Fa from './components/Fa'
 import {createApp} from 'vue'
@@ -30,6 +31,7 @@ const app = createApp(App)
     .component('AppInputGuesser', AppInputGuesser)
     .component('AppOverlay', AppOverlay)
     .component('AppRouterLink', AppRouterLink)
+    .component('AppTableHeaderForm', AppTableHeaderForm)
     .component('AppTreeLabel', AppTreeLabel)
     .component('Fa', Fa)
     .use(createPinia())

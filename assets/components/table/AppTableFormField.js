@@ -1,6 +1,6 @@
 import {h, resolveComponent} from 'vue'
 
-function AppTableSearchField(props, context) {
+function AppTableFormField(props, context) {
     const attrs = {
         field: props.field,
         form: props.form,
@@ -17,12 +17,12 @@ function AppTableSearchField(props, context) {
     )
 }
 
-AppTableSearchField.emits = ['update:modelValue']
-AppTableSearchField.props = {
+AppTableFormField.emits = ['update:modelValue']
+AppTableFormField.props = {
     field: {required: true, type: Object},
     form: {required: true, type: String},
     id: {required: true, type: String},
     modelValue: {}
 }
 
-export default AppTableSearchField
+export default AppTableFormField

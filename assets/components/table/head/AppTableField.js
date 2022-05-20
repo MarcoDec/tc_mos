@@ -14,6 +14,7 @@ export default {
         const up = computed(() => ({'text-secondary': !sorted.value || !props.store.asc}))
 
         async function onClick() {
+            props.machine.send('search')
             props.machine.send('submit')
             await props.store.sort(props.field)
             props.machine.send('success')
