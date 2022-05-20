@@ -28,7 +28,7 @@
   color: $black !important;
 }
 
-.pointer {
+.pointer, th[aria-sort] {
   cursor: pointer;
 }
 

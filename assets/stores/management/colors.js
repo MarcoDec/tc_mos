@@ -11,7 +11,7 @@ export default defineStore('color', {
         },
         async fetch() {
             this.resetItems()
-            const response = await fetchApi('/api/colors', 'GET', this.search)
+            const response = await fetchApi('/api/colors', 'GET', this.fetchBody)
             if (response.status === 200)
                 for (const color of response.content['hydra:member'])
                     this.items.push(generateColor(color, this))
@@ -27,10 +27,31 @@ export default defineStore('color', {
         async resetSearch() {
             this.search = {}
             await this.fetch()
+        },
+        async sort(field) {
+            if (this.sorted === field.name)
+                this.asc = !this.asc
+            else {
+                this.asc = true
+                this.sorted = field.name
+            }
+            await this.fetch()
         }
     },
     getters: {
-        length: state => state.items.length
+        ariaSort() {
+            return field => (this.isSorter(field) ? this.order : 'none')
+        },
+        fetchBody() {
+            return {...this.search, ...this.orderBody}
+        },
+        isSorter: state => field => field.name === state.sorted,
+        length: state => state.items.length,
+        order: state => (state.asc ? 'ascending' : 'descending'),
+        orderBody(state) {
+            return state.sorted === null ? {} : {[`order[${state.sorted}]`]: this.orderParam}
+        },
+        orderParam: state => (state.asc ? 'asc' : 'desc')
     },
-    state: () => ({items: [], search: {}})
+    state: () => ({asc: true, items: [], search: {}, sorted: null})
 })

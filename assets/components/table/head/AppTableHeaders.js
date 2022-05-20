@@ -15,14 +15,19 @@ function AppTableHeaders(props, context) {
 
     props.fields.forEach(generateSlot)
     return h('thead', {class: 'table-dark', id: props.id}, [
-        h(AppTableFields, {fields: props.fields}),
-        h(AppTableSearch, {fields: props.fields, id: `${props.id}-search`, store: props.store}, children)
+        h(AppTableFields, {fields: props.fields, machine: props.machine, store: props.store}),
+        h(
+            AppTableSearch,
+            {fields: props.fields, id: `${props.id}-search`, machine: props.machine, store: props.store},
+            children
+        )
     ])
 }
 
 AppTableHeaders.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
+    machine: {required: true, type: Object},
     store: {required: true, type: Object}
 }
 

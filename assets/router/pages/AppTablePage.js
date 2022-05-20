@@ -49,7 +49,7 @@ export default {
                         h(resolveComponent('Fa'), {icon: props.icon}),
                         h('span', {class: 'ms-2'}, props.title)
                     ])),
-                    h(AppTable, {fields: props.fields, id: `${route.name}-table`, store}, children)
+                    h(AppTable, {fields: props.fields, id: `${route.name}-table`, machine, store}, children)
                 ]
             )
         }

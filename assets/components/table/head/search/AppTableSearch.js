@@ -14,8 +14,10 @@ function AppTableSearch(props, context) {
                     id: formId,
                     inline: true,
                     noContent: true,
-                    onSubmit: async () => {
+                    async onSubmit() {
+                        props.machine.send('submit')
                         await props.store.fetch()
+                        props.machine.send('success')
                     },
                     submitLabel: 'Rechercher'
                 },
@@ -31,7 +33,9 @@ function AppTableSearch(props, context) {
             h(resolveComponent('AppBtn'), {
                 icon: 'times',
                 async onClick() {
+                    props.machine.send('submit')
                     await props.store.resetSearch()
+                    props.machine.send('success')
                 },
                 title: 'Annuler',
                 variant: 'danger'
@@ -59,6 +63,7 @@ function AppTableSearch(props, context) {
 AppTableSearch.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
+    machine: {required: true, type: Object},
     store: {required: true, type: Object}
 }
 
