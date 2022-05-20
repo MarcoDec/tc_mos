@@ -1,8 +1,10 @@
 import {computed, h, onMounted, onUnmounted, resolveComponent} from 'vue'
 import AppTable from '../../components/table/AppTable'
 import {generateTableFields} from '../../components/validators'
-import {useMachine} from '../../machine'
 import {useRoute} from 'vue-router'
+import {useTableMachine} from '../../machine'
+
+const loading = ['create.loading', 'search.loading', 'update.loading']
 
 export default {
     props: {
@@ -22,7 +24,7 @@ export default {
         })
 
         const route = useRoute()
-        const machine = useMachine(route.name)
+        const machine = useTableMachine(route.name)
         const module = await props.store()
         const store = module['default']()
         const variant = computed(() => `text-${store.length > 0 ? 'dark' : 'white'}`)
@@ -43,7 +45,7 @@ export default {
             }
             return h(
                 resolveComponent('AppOverlay'),
-                {class: variant.value, id: route.name, spinner: machine.state.value.matches('loading')},
+                {class: variant.value, id: route.name, spinner: loading.some(machine.state.value.matches)},
                 () => [
                     h('div', {class: 'row'}, h('h1', {class: 'col'}, [
                         h(resolveComponent('Fa'), {icon: props.icon}),
