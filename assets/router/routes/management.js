@@ -9,8 +9,28 @@ export default [
             properties: {
                 fields: [{label: 'Nom', name: 'name'}, {label: 'RGB', name: 'rgb', type: 'color'}],
                 icon: 'palette',
-                store: () => import('../../stores/management/colors.js'),
+                store: () => import('../../stores/management/colors'),
                 title: 'Couleurs'
+            }
+        }
+    },
+    {
+        component: () => import('../pages/AppSuspenseWrapper'),
+        meta: {requiresAuth: true},
+        name: 'invoice-time-dues',
+        path: '/invoice-time-dues',
+        props: {
+            component: () => import('../pages/AppTablePage'),
+            properties: {
+                fields: [
+                    {label: 'Nom', name: 'name'},
+                    {label: 'Jours', name: 'days'},
+                    {label: 'Fin du mois', name: 'endOfMonth'},
+                    {label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth'}
+                ],
+                icon: 'hourglass-half',
+                store: () => import('../../stores/management/invoiceTimeDues'),
+                title: 'Délais de paiement des factures'
             }
         }
     }
