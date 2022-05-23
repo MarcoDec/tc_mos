@@ -1,11 +1,10 @@
-import {make} from './ComponentBuilder'
+import {generateVariant} from './validators'
+import {h} from 'vue'
 
-export default make({
-    exposedProps: {variant: 'danger'},
-    name: 'AppAlert',
-    props() {
-        return {class: `alert alert-${this.variant}`, role: 'alert'}
-    },
-    slots: ['default'],
-    tag: 'div'
-})
+function AppAlert(props, context) {
+    return h('div', {class: `alert alert-${props.variant}`, role: 'alert'}, context.slots['default']())
+}
+
+AppAlert.props = {variant: generateVariant('danger')}
+
+export default AppAlert
