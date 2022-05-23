@@ -52,12 +52,12 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[ORM\Embedded]
     private Roles $embRoles;
 
-    #[ORM\Column(type: 'char', length: 60, options: ['charset' => 'ascii'])]
+    #[ORM\Column(type: 'char', length: 60)]
     private ?string $password = null;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
-        ORM\Column(length: 20, options: ['charset' => 'ascii']),
+        ORM\Column(length: 20),
         Serializer\Groups(['read:employee'])
     ]
     private ?string $username = null;

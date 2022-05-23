@@ -20,7 +20,7 @@ class Token {
     ]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'char', length: 120, options: ['charset' => 'ascii'])]
+    #[ORM\Column(type: 'char', length: 120)]
     private string $token;
 
     final public function __construct(

@@ -99,9 +99,9 @@ class InvoiceTimeDue extends Entity {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
-        ORM\Column(length: 30),
+        ORM\Column(length: 40),
         Serializer\Groups(['read:name', 'write:name']),
-        Assert\Length(min: 3, max: 30),
+        Assert\Length(min: 3, max: 40),
         Assert\NotBlank
     ]
     private ?string $name = null;

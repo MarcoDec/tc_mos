@@ -27,7 +27,7 @@ abstract class Family extends Entity implements FileEntity {
     #[
         ApiProperty(description: 'Code douanier', example: '8544300089'),
         Assert\Length(min: 4, max: 10),
-        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
+        ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $customsCode = null;
