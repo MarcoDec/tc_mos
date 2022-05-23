@@ -4,9 +4,15 @@ import generateColor from './color'
 
 export default defineStore('color', {
     actions: {
+        async create(data) {
+            this.reset()
+            const response = await fetchApi('/api/colors', 'POST', data)
+            if (response.status === 422)
+                throw response.content.violations
+            this.items.push(generateColor(response.content, this))
+        },
         dispose() {
-            this.resetItems()
-            this.$reset()
+            this.reset()
             this.$dispose()
         },
         async fetch() {
@@ -18,6 +24,10 @@ export default defineStore('color', {
         },
         replaceSearch(field, value) {
             this.search[field] = value
+        },
+        reset() {
+            this.resetItems()
+            this.$reset()
         },
         resetItems() {
             this.items = []

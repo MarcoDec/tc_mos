@@ -53,7 +53,8 @@ function AppTableHeaderForm(props, context) {
             modelValue: props.store.search[field.name],
             'onUpdate:modelValue': value => {
                 props.store.search[field.name] = value
-            }
+            },
+            violation: props.violations.find(violation => violation.propertyPath === field.name)
         }, typeof slot === 'function' ? args => slot(args) : null))
     }
 
@@ -74,7 +75,8 @@ AppTableHeaderForm.props = {
     submit: {required: true, type: Function},
     submitVariant: generateVariant('secondary'),
     type: {required: true, type: String},
-    variant: generateVariant('dark')
+    variant: generateVariant('dark'),
+    violations: {default: () => [], type: Array}
 }
 
 export default AppTableHeaderForm

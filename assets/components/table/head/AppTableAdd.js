@@ -13,11 +13,18 @@ function AppTableAdd(props) {
         reverseMode: 'search',
         store: props.store,
         async submit(data) {
-            await props.store.create(data)
+            props.machine.send('submit')
+            try {
+                await props.store.create(data)
+                props.machine.send('success')
+            } catch (violations) {
+                props.machine.send('fail', {violations})
+            }
         },
         submitVariant: 'success',
         type: 'form',
-        variant: 'success'
+        variant: 'success',
+        violations: props.machine.state.value.context.violations
     })
 }
 
