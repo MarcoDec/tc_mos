@@ -19,6 +19,8 @@ export function useMachine(id) {
     }))
 }
 
+export const tableLoading = ['create.loading', 'search.loading', 'update.loading']
+
 export function useTableMachine(id) {
     return useXMachine(createMachine({
         context: {updated: null, violations: []},
@@ -29,12 +31,11 @@ export function useTableMachine(id) {
                 initial: 'form',
                 on: {
                     search: {actions: ['reset'], internal: false, target: 'search'},
-                    submit: {actions: ['resetViolations'], internal: false, target: 'create.loading'},
                     update: {actions: ['update'], internal: false, target: 'update'}
                 },
                 states: {
-                    error: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}},
-                    form: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}},
+                    error: {on: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}}},
+                    form: {on: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}}},
                     loading: {
                         on: {
                             fail: {actions: ['violate'], internal: true, target: 'error'},
@@ -47,12 +48,11 @@ export function useTableMachine(id) {
                 initial: 'form',
                 on: {
                     create: {actions: ['reset'], internal: false, target: 'create'},
-                    submit: {actions: ['resetViolations'], internal: false, target: 'search.loading'},
                     update: {actions: ['update'], internal: false, target: 'update'}
                 },
                 states: {
-                    form: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}},
-                    loading: {on: {success: {internal: false, target: 'form'}}}
+                    form: {on: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}}},
+                    loading: {on: {success: {internal: true, target: 'form'}}}
                 }
             },
             update: {
@@ -60,15 +60,15 @@ export function useTableMachine(id) {
                 on: {
                     create: {actions: ['reset'], internal: false, target: 'create'},
                     search: {actions: ['reset'], internal: false, target: 'search'},
-                    submit: {actions: ['resetViolations'], internal: false, target: 'update.loading'}
+                    update: {actions: ['update'], internal: false, target: 'update.form'}
                 },
                 states: {
-                    error: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}},
-                    form: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}},
+                    error: {on: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}}},
+                    form: {on: {submit: {actions: ['resetViolations'], internal: true, target: 'loading'}}},
                     loading: {
                         on: {
                             fail: {actions: ['violate'], internal: true, target: 'error'},
-                            success: {internal: false, target: 'form'}
+                            success: {internal: true, target: 'form'}
                         }
                     }
                 }

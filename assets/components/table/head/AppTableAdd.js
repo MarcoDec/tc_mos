@@ -8,11 +8,7 @@ function AppTableAdd(props) {
         id: props.id,
         label: 'Ajouter',
         machine: props.machine,
-        reverseIcon: 'search',
-        reverseLabel: 'recherche',
-        reverseMode: 'search',
-        store: props.store,
-        async submit(data) {
+        async onSubmit(data) {
             props.machine.send('submit')
             try {
                 await props.store.create(data)
@@ -21,6 +17,10 @@ function AppTableAdd(props) {
                 props.machine.send('fail', {violations})
             }
         },
+        reverseIcon: 'search',
+        reverseLabel: 'recherche',
+        reverseMode: 'search',
+        store: props.store,
         submitVariant: 'success',
         type: 'form',
         variant: 'success',

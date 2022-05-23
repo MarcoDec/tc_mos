@@ -3,7 +3,9 @@ import * as Cookies from './cookie'
 export default async function fetchApi(url, method = 'GET', body = null, json = true) {
     const init = {headers: {Accept: 'application/ld+json'}, method}
     let normalizedUrl = url
-    if (json)
+    if (method === 'PATCH')
+        init.headers['Content-Type'] = 'application/merge-patch+json'
+    else if (json)
         init.headers['Content-Type'] = 'application/json'
     const token = Cookies.get('token')
     if (token)

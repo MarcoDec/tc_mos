@@ -1,10 +1,8 @@
 import {computed, h, onMounted, onUnmounted, resolveComponent} from 'vue'
+import {tableLoading, useTableMachine} from '../../machine'
 import AppTable from '../../components/table/AppTable'
 import {generateTableFields} from '../../components/validators'
 import {useRoute} from 'vue-router'
-import {useTableMachine} from '../../machine'
-
-const loading = ['create.loading', 'search.loading', 'update.loading']
 
 export default {
     props: {
@@ -47,7 +45,7 @@ export default {
             }
             return h(
                 resolveComponent('AppOverlay'),
-                {class: variant.value, id: route.name, spinner: loading.some(machine.state.value.matches)},
+                {class: variant.value, id: route.name, spinner: tableLoading.some(machine.state.value.matches)},
                 () => [
                     h('div', {class: 'row'}, h('h1', {class: 'col'}, [
                         h(resolveComponent('Fa'), {icon: props.icon}),

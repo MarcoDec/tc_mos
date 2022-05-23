@@ -1,6 +1,5 @@
 import {generateTableFields, generateVariant} from '../../validators'
 import {h, resolveComponent} from 'vue'
-import AppTableFormField from '../AppTableFormField'
 
 function AppTableHeaderForm(props, context) {
     const formId = `${props.id}-form`
@@ -46,10 +45,11 @@ function AppTableHeaderForm(props, context) {
 
     function generateField(field) {
         const slot = context.slots[`${props.type}(${field.name})`]
-        children.push(h(AppTableFormField, {
+        children.push(h(resolveComponent('AppTableFormField'), {
             field,
             form: formId,
             id: `${props.id}-${field.name}`,
+            machine: props.machine,
             modelValue: props.store.search[field.name],
             'onUpdate:modelValue': value => {
                 props.store.search[field.name] = value

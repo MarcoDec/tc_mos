@@ -1,4 +1,5 @@
 import AppTableItem from './AppTableItem'
+import AppTableItemUpdate from './AppTableItemUpdate'
 import {generateTableFields} from '../../validators'
 import {h} from 'vue'
 
@@ -13,13 +14,20 @@ function AppTableItems(props, context) {
     }
 
     props.fields.forEach(generateSlot)
-    return h('tbody', props.items.map((item, index) => h(
-        AppTableItem,
-        {fields: props.fields, index, item, key: item['@id']},
+    return h('tbody', {id: props.id}, props.items.map((item, index) => h(
+        props.machine.state.value.matches('update') && props.machine.state.value.context.updated === item['@id']
+            ? AppTableItemUpdate
+            : AppTableItem,
+        {fields: props.fields, id: `${props.id}-${item.id}`, index, item, key: item['@id'], machine: props.machine},
         children
     )))
 }
 
-AppTableItems.props = {fields: generateTableFields(), items: {required: true, type: Object}}
+AppTableItems.props = {
+    fields: generateTableFields(),
+    id: {required: true, type: String},
+    items: {required: true, type: Object},
+    machine: {required: true, type: Object}
+}
 
 export default AppTableItems

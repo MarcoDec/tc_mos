@@ -26,7 +26,11 @@ function AppTable(props, context) {
                 {fields: props.fields, id: `${props.id}-headers`, machine: props.machine, store: props.store},
                 searchSlots
             ),
-            h(AppTableItems, {fields: props.fields, items: props.store.items}, cellSlots)
+            h(
+                AppTableItems,
+                {fields: props.fields, id: `${props.id}-items`, items: props.store.items, machine: props.machine},
+                cellSlots
+            )
         ])
     )
 }

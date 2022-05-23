@@ -1,4 +1,5 @@
 import {h, resolveComponent} from 'vue'
+import {tableLoading} from '../../machine'
 
 function AppTableFormField(props, context) {
     function input(inputAttrs) {
@@ -8,6 +9,7 @@ function AppTableFormField(props, context) {
     }
 
     const attrs = {
+        disabled: tableLoading.some(props.machine.state.value.matches),
         field: props.field,
         form: props.form,
         id: `${props.id}-input`,
@@ -29,6 +31,7 @@ AppTableFormField.props = {
     field: {required: true, type: Object},
     form: {required: true, type: String},
     id: {required: true, type: String},
+    machine: {required: true, type: Object},
     modelValue: {},
     violation: {default: null, type: Object}
 }
