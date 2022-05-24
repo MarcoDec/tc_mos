@@ -6,6 +6,7 @@
     import AppNavbarCollapse from './bootstrap-5/navbar/AppNavbarCollapse'
     import AppNavbarItem from './bootstrap-5/navbar/AppNavbarItem.vue'
     import AppNavbarLink from './bootstrap-5/navbar/AppNavbarLink'
+    import AppNavbarLinkTime from './bootstrap-5/navbar/AppNavbarLinkTime.vue'
     import {EmployeeRepository} from '../store/modules'
     import {computed} from 'vue'
 
@@ -13,7 +14,6 @@
     const {router} = useRouter()
     const hasUser = computed(() => repo.hasUser)
     const user = computed(() => repo.user)
-
     async function logout() {
         await repo.logout('login')
         router.push({name: 'login'})
@@ -58,12 +58,28 @@
                 </AppNavbarItem>
             </AppNavbarCollapse>
             <div class="text-white">
-                <Fa icon="user-circle"/>
-                {{ user.name }}
-                <AppBtn variant="danger" @click="logout">
-                    <Fa icon="sign-out-alt"/>
-                </AppBtn>
+                <AppNavbarCollapse>
+                    <AppNavbarItem id="user" icon="user-circle" :title="user.name">
+                        <div class="timelink">
+                            <AppNavbarLinkTime country="Africa/Tunis" state="Tunis"/>
+                        </div>
+                        <div class="timelink">
+                            <AppNavbarLinkTime country="Europe/Paris" state="France"/>
+                        </div>
+                    </AppNavbarItem>
+                    <AppBtn variant="danger" @click="logout">
+                        <Fa icon="sign-out-alt"/>
+                    </AppBtn>
+                </AppNavbarCollapse>
             </div>
         </template>
     </AppNavbar>
 </template>
+
+<style>
+.timelink{
+    width: 130px;
+    height: 50px;
+    margin-top:2px;
+}
+</style>

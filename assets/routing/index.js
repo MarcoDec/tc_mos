@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import AppAnalogClock from './pages/AppAnalogClock.vue'
 import AppHome from './pages/AppHome'
 import AppLogin from './pages/AppLogin.vue'
 import {EmployeeRepository} from '../store/modules'
@@ -22,7 +23,14 @@ const router = createRouter({
             path: '/login'
         },
         ...project,
-        ...purchase
+        ...purchase,
+        {
+            component: AppAnalogClock,
+            meta: {requiresAuth: true},
+            name: 'AppAnalogClock',
+            path: '/appanalogclock'
+        }
+
     ]
 })
 
