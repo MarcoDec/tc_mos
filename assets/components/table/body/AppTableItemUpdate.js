@@ -52,7 +52,8 @@ function AppTableItemUpdate(props, context) {
                     item: props.item,
                     key: field.name,
                     machine: props.machine,
-                    modelValue: props.item[field.name]
+                    modelValue: props.item[field.name],
+                    violation: props.machine.state.value.context.violations.find(violation => violation.propertyPath === field.name)
                 },
                 typeof slot === 'function' ? args => slot(args) : null
             )

@@ -5,6 +5,7 @@ import AppCard from './components/AppCard'
 import AppContainer from './components/layout/AppContainer'
 import AppDropdownItem from './components/nav/AppDropdownItem'
 import AppForm from './components/form/AppForm'
+import AppInput from './components/form/field/input/AppInput'
 import AppInputGuesser from './components/form/field/input/AppInputGuesser'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/AppRouterLink'
@@ -29,6 +30,7 @@ const app = createApp(App)
     .component('AppContainer', AppContainer)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppForm', AppForm)
+    .component('AppInput', AppInput)
     .component('AppInputGuesser', AppInputGuesser)
     .component('AppOverlay', AppOverlay)
     .component('AppRouterLink', AppRouterLink)

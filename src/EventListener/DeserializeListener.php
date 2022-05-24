@@ -25,18 +25,18 @@ final class DeserializeListener {
             return;
         }
 
-        if (!in_array($request->getContentType(), ['form', 'multipart'])) {
+        if (in_array($request->getContentType(), ['form', 'multipart'])) {
+            $this->denormalizeMultipart($request);
+        } else {
             $this->decorated->onKernelRequest($event);
         }
-
-        $this->denormalizeMultipart($request);
     }
 
     private function denormalizeMultipart(Request $request): void {
         if (empty($attrs = RequestAttributesExtractor::extractAttributes($request))) {
             return;
         }
-        /** @var array{resource_class: string} $context */
+        /** @var array{resource_class: class-string} $context */
         $context = $this->serializer->createFromRequest($request, false, $attrs);
         if (!empty($populated = $request->attributes->get('data'))) {
             $context['object_to_populate'] = $populated;
@@ -50,7 +50,7 @@ final class DeserializeListener {
     }
 
     /**
-     * @param array{resource_class: string} $context
+     * @param array{resource_class: class-string} $context
      *
      * @return mixed[]
      */
@@ -58,8 +58,8 @@ final class DeserializeListener {
         $metadata = $this->em->getClassMetadata($context['resource_class']);
         return collect(array_merge($request->request->all(), $request->files->all()))
             ->map(static function ($value, string $name) use ($metadata) {
-                if ($metadata->getTypeOfField($name) === 'boolean' && $value === 'on') {
-                    return true;
+                if ($metadata->getTypeOfField($name) === 'boolean') {
+                    return $value === 'true';
                 }
                 if (is_string($value) && strlen($value) === 0) {
                     return;

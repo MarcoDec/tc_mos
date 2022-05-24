@@ -24,9 +24,9 @@ export default [
             properties: {
                 fields: [
                     {label: 'Nom', name: 'name'},
-                    {label: 'Jours', name: 'days'},
-                    {label: 'Fin du mois', name: 'endOfMonth'},
-                    {label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth'}
+                    {label: 'Jours', name: 'days', type: 'number'},
+                    {label: 'Fin du mois', name: 'endOfMonth', type: 'boolean'},
+                    {label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth', type: 'number'}
                 ],
                 icon: 'hourglass-half',
                 store: () => import('../../stores/management/invoiceTimeDues'),

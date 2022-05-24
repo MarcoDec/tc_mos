@@ -17,7 +17,7 @@ function AppTableItem(props, context) {
             const slot = context.slots[`cell(${field.name})`]
             return h(
                 AppTableItemField,
-                {field, id: `${props.id}-${field.name}`, item: props.item, key: field.name},
+                {field, id: `${props.id}-${field.name}`, item: props.item, key: field.name, machine: props.machine},
                 typeof slot === 'function' ? args => slot(args) : null
             )
         })

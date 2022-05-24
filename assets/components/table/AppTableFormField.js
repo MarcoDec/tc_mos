@@ -9,7 +9,7 @@ function AppTableFormField(props, context) {
     }
 
     const attrs = {
-        disabled: tableLoading.some(props.machine.state.value.matches),
+        disabled: props.disabled || tableLoading.some(props.machine.state.value.matches),
         field: props.field,
         form: props.form,
         id: `${props.id}-input`,
@@ -28,6 +28,7 @@ function AppTableFormField(props, context) {
 
 AppTableFormField.emits = ['update:modelValue']
 AppTableFormField.props = {
+    disabled: {type: Boolean},
     field: {required: true, type: Object},
     form: {required: true, type: String},
     id: {required: true, type: String},

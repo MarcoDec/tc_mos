@@ -1,9 +1,9 @@
-import AppInput from './AppInput'
+import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
+import AppInputNumber from './AppInputNumber'
 import AppSelect from './select/AppSelect'
-import AppSwitch from './AppSwitch'
+import AppSwitch from './AppSwitch.vue'
 import {generateField} from '../../../validators'
-import {h} from 'vue'
 
 function getType(field) {
     switch (field.type) {
@@ -11,10 +11,12 @@ function getType(field) {
         return AppSwitch
     case 'file':
         return AppInputFile
+    case 'number':
+        return AppInputNumber
     case 'select':
         return AppSelect
     default:
-        return AppInput
+        return resolveComponent('AppInput')
     }
 }
 
