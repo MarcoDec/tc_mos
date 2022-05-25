@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220523163511 extends AbstractMigration {
+final class Version20220525132531 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -31,6 +31,7 @@ final class Version20220523163511 extends AbstractMigration {
         $this->upComponentFamilies();
         $this->upColors();
         $this->upInvoiceTimeDue();
+        $this->upUnits();
         $this->upUsers();
         $this->upVatMessages();
     }
@@ -137,6 +138,19 @@ FROM `invoice_time_due`
 SQL);
         $this->addSql('DROP TABLE `invoice_time_due`');
         $this->addSql('RENAME TABLE `invoice_time_due_copy` TO `invoice_time_due`');
+    }
+
+    private function upUnits(): void {
+        $this->alterTable('unit', 'Unité');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `unit`
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `parent` `parent_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `unit_complete_lbl` `name` VARCHAR(50) NOT NULL,
+    CHANGE `unit_short_lbl` `code` VARCHAR(6) NOT NULL
+SQL);
+        $this->addSql('ALTER TABLE `unit` ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`)');
     }
 
     private function upUsers(): void {

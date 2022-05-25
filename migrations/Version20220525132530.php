@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220523163510 extends AbstractMigration {
+final class Version20220525132530 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -86,6 +86,17 @@ CREATE TABLE `messagetva` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('messagetva');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `unit` (
+  `id` tinyint(4) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
+  `unit_short_lbl` varchar(15) NOT NULL,
+  `unit_complete_lbl` varchar(40) NOT NULL,
+  `base` DOUBLE PRECISION DEFAULT '1' NOT NULL,
+  `parent` tinyint(4) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='liste des unites de mesure pour composant';
+SQL);
+        $this->insert('unit');
     }
 
     private function insert(string $table): void {

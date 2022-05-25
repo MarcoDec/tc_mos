@@ -20,7 +20,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ApiFilter(filterClass: OrderFilter::class, properties: ['base', 'code', 'name', 'parent.code']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
-        description: 'Unit',
+        description: 'Unité',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
