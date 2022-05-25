@@ -1,6 +1,7 @@
 import {computed, h, onMounted, onUnmounted, resolveComponent} from 'vue'
 import {tableLoading, useTableMachine} from '../../machine'
 import AppTable from '../../components/table/AppTable'
+import generateItems from '../../stores/table/items'
 import {generateTableFields} from '../../components/validators'
 import {useRoute} from 'vue-router'
 
@@ -8,10 +9,9 @@ export default {
     props: {
         fields: generateTableFields(),
         icon: {required: true, type: String},
-        store: {required: true, type: Function},
         title: {required: true, type: String}
     },
-    async setup(props, context) {
+    setup(props, context) {
         onMounted(async () => {
             await store.fetch()
             machine.send('success')
@@ -23,8 +23,7 @@ export default {
 
         const route = useRoute()
         const machine = useTableMachine(route.name)
-        const module = await props.store()
-        const store = module['default']()
+        const store = generateItems(route.name)
         const variant = computed(() => `text-${store.length > 0 ? 'dark' : 'white'}`)
 
         machine.send('submit')

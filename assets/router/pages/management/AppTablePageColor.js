@@ -22,7 +22,6 @@ AppTablePageColor.displayName = 'AppTablePageColor'
 AppTablePageColor.props = {
     fields: generateTableFields(),
     icon: {required: true, type: String},
-    store: {required: true, type: Function},
     title: {required: true, type: String}
 }
 
