@@ -33,5 +33,20 @@ export default [
                 title: 'Délais de paiement des factures'
             }
         }
+    },
+    {
+        component: () => import('../pages/AppSuspenseWrapper'),
+        meta: {requiresAuth: true},
+        name: 'vat-messages',
+        path: '/vat-messages',
+        props: {
+            component: () => import('../pages/AppTablePage'),
+            properties: {
+                fields: [{label: 'Nom', name: 'name'}],
+                icon: 'comments-dollar',
+                store: () => import('../../stores/management/vatMessages'),
+                title: 'Messages TVA'
+            }
+        }
     }
 ]
