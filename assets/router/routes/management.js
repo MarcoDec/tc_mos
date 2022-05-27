@@ -27,19 +27,13 @@ export default [
         }
     },
     {
-        component: () => import('../pages/AppTablePage'),
+        component: () => import('../pages/AppSuspenseWrapper'),
         meta: {requiresAuth: true},
         name: 'units',
         path: '/units',
         props: {
-            fields: [
-                {label: 'Code', name: 'code'},
-                {label: 'Nom', name: 'name'},
-                {label: 'Base', name: 'base'},
-                {label: 'Parent', name: 'parent'}
-            ],
-            icon: 'ruler-horizontal',
-            title: 'Unités'
+            component: () => import('../pages/management/AppTablePageUnit.vue'),
+            properties: {icon: 'ruler-horizontal', title: 'Unités'}
         }
     },
     {

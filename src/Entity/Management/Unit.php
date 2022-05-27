@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -18,7 +19,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['base', 'code', 'name', 'parent.code']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Unité',
         collectionOperations: [
@@ -27,6 +28,23 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les unités',
                     'summary' => 'Récupère les unités',
                 ]
+            ],
+            'get-options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:unit:option'],
+                    'openapi_definition_name' => 'Unit-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les unités pour les select',
+                    'summary' => 'Récupère les unités pour les select',
+                ],
+                'order' => ['code' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/units/options'
             ],
             'post' => [
                 'openapi_context' => [

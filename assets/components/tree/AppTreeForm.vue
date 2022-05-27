@@ -4,7 +4,7 @@
 
     const families = useFamiliesStore()
     const fields = computed(() => [
-        {label: 'Parent', name: 'parent', options: families.options, type: 'select'},
+        {label: 'Parent', name: 'parent', options: families, type: 'select'},
         {label: 'Code', name: 'code'},
         {label: 'Nom', name: 'name'},
         {label: 'Cuivre', name: 'copperable', type: 'boolean'},

@@ -14,7 +14,7 @@ function AppSelect(props, context) {
             onInput: e => context.emit('update:modelValue', e.target.value),
             value: props.modelValue
         },
-        props.field.options.map(option => h(AppOption, {key: option.value, option}))
+        props.field.options.options.map(option => h(AppOption, {key: option.value, option}))
     )
 }
 

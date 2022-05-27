@@ -2,6 +2,7 @@ import {h, resolveComponent} from 'vue'
 
 function AppTableItemField(props, context) {
     const value = props.item[props.field.name]
+    const label = props.field.type === 'select' ? props.field.options.label(value) : value
     return props.field.type === 'boolean'
         ? h(resolveComponent('AppTableFormField'), {
             disabled: true,
@@ -16,7 +17,7 @@ function AppTableItemField(props, context) {
             {id: props.id},
             typeof context.slots['default'] === 'function'
                 ? context.slots['default']({field: props.field, item: props.item, value})
-                : value
+                : label
         )
 }
 

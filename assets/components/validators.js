@@ -19,11 +19,15 @@ export function fieldValidator(field) {
             return false
         }
         if (field.type === 'select') {
-            if (!Array.isArray(field.options)) {
-                console.error('field.options must be defined and an array if type of field is select')
+            if (typeof field.options !== 'object' || field.options === null) {
+                console.error('field.options must be defined and not null')
                 return false
             }
-            for (const option of field.options)
+            if (!Array.isArray(field.options.options)) {
+                console.error('field.options.options must be defined and an array')
+                return false
+            }
+            for (const option of field.options.options)
                 if (
                     typeof option.text === 'undefined' || option.text === null
                     || typeof option.value === 'undefined' || option.value === null
