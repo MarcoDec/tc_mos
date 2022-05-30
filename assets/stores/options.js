@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import fetchApi from '../api'
 
-export default function generateOptions(type) {
+export default function generateOptions(type, valueProp = '@id') {
     return defineStore(`options/${type}`, {
         actions: {
             dispose() {
@@ -15,8 +15,8 @@ export default function generateOptions(type) {
             }
         },
         getters: {
-            label: state => value => state.items.find(item => item['@id'] === value)?.text ?? null,
-            options: state => state.items.map(item => ({text: item.text, value: item['@id']})),
+            label: state => value => state.items.find(item => item[valueProp] === value)?.text ?? null,
+            options: state => state.items.map(item => ({text: item.text, value: item[valueProp]})),
             url: state => `/api/${state.type}/options`
         },
         state: () => ({items: [], type})

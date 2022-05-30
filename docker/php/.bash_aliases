@@ -26,6 +26,8 @@ gpao_fix_code() {
     cache:clear && \
     /var/www/html/TConcept-GPAO/vendor/bin/rector process && \
     cache:clear && \
-    /var/www/html/TConcept-GPAO/vendor/bin/phpstan analyse --memory-limit=1G
+    /var/www/html/TConcept-GPAO/vendor/bin/phpstan analyse --memory-limit=1G && \
+    cache:clear && \
+    php /var/www/html/TConcept-GPAO/bin/phpunit
 }
 alias gpao:fix:code='gpao_fix_code'

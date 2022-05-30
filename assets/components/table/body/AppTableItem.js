@@ -1,5 +1,5 @@
 import {h, resolveComponent} from 'vue'
-import AppTableItemField from './AppTableItemField'
+import AppTableItemField from './AppTableItemField.vue'
 import {generateTableFields} from '../../validators'
 
 function AppTableItem(props, context) {

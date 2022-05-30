@@ -8,6 +8,8 @@
   )
 );
 
+$dropdown-success: #57ec57 !default;
+
 .bg-primary.card {
   background-color: #8ac2f1 !important;
 }
@@ -24,8 +26,18 @@
   }
 }
 
-.bg-warning.text-dark .disabled.dropdown-item {
-  color: $black !important;
+.bg-success .dropdown-item {
+  background-color: $dropdown-success !important;
+}
+
+@each $color, $value in $theme-colors {
+  .bg-#{$color}.text-dark .disabled.dropdown-item {
+    color: $black !important;
+  }
+}
+
+.dropdown-item .text-success {
+  color: $dropdown-success !important;
 }
 
 .pointer, th[aria-sort] {

@@ -1,19 +1,24 @@
 import {
+    faBoxes,
     faCaretDown,
     faCaretUp,
     faCheck,
     faChevronDown,
     faChevronUp,
     faCommentsDollar,
+    faDatabase,
     faExclamationTriangle,
     faHourglass,
+    faLaptop,
     faLayerGroup,
     faPalette,
     faPencil,
     faPlus,
     faRulerHorizontal,
     faSearch,
+    faServer,
     faShoppingBag,
+    faShuttleVan,
     faSignOutAlt,
     faSitemap,
     faTimes,
@@ -21,21 +26,26 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
+library.add(faBoxes)
 library.add(faCaretDown)
 library.add(faCaretUp)
 library.add(faCheck)
 library.add(faChevronDown)
 library.add(faChevronUp)
 library.add(faCommentsDollar)
+library.add(faDatabase)
 library.add(faExclamationTriangle)
 library.add(faHourglass)
+library.add(faLaptop)
 library.add(faLayerGroup)
 library.add(faPalette)
 library.add(faPencil)
 library.add(faPlus)
 library.add(faRulerHorizontal)
 library.add(faSearch)
+library.add(faServer)
 library.add(faShoppingBag)
+library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faTimes)

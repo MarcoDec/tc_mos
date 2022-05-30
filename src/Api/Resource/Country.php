@@ -14,7 +14,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_context' => [
                 'description' => 'Récupère les pays',
                 'summary' => 'Récupère les pays',
-            ]
+            ],
+            'path' => '/countries/options'
         ]
     ],
     itemOperations: ['get' => NO_ITEM_GET_OPERATION],
@@ -52,5 +53,10 @@ final class Country {
     #[Serializer\Groups(['read:country'])]
     public function getName(): string {
         return Countries::getName($this->code);
+    }
+
+    #[Serializer\Groups(['read:country'])]
+    public function getText(): string {
+        return $this->getCode();
     }
 }

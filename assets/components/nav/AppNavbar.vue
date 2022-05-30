@@ -7,6 +7,7 @@
     import {generateVariant} from '../validators'
     import useUserStore from '../../stores/hr/employee/user'
 
+    const database = `${location.protocol}//${location.hostname}:8080`
     const props = defineProps({variant: generateVariant('dark')})
     const user = useUserStore()
     const css = computed(() => `bg-${props.variant} navbar-${props.variant}`)
@@ -18,47 +19,75 @@
             <span class="m-0 navbar-brand p-0">
                 <AppRouterLink to="home">T-Concept</AppRouterLink>
             </span>
-            <AppCollapse/>
-            <div id="top-navbar" class="collapse navbar-collapse">
-                <ul class="me-auto navbar-nav">
-                    <AppNavbarItem v-if="user.isPurchaseReader" id="purchase" icon="shopping-bag" title="Achats">
-                        <template v-if="user.isPurchaseAdmin">
-                            <AppDropdownItem disabled variant="warning">
-                                Administrateur
+            <template v-if="user.isLogged">
+                <AppCollapse/>
+                <div id="top-navbar" class="collapse navbar-collapse">
+                    <ul class="me-auto navbar-nav">
+                        <AppNavbarItem v-if="user.isPurchaseReader" id="purchase" icon="shopping-bag" title="Achats">
+                            <template v-if="user.isPurchaseAdmin">
+                                <AppDropdownItem disabled variant="warning">
+                                    Administrateur
+                                </AppDropdownItem>
+                                <AppNavbarLink disabled icon="magnet" to="attributes" variant="danger">
+                                    Attributs
+                                </AppNavbarLink>
+                                <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
+                                    Familles de composants
+                                </AppNavbarLink>
+                            </template>
+                        </AppNavbarItem>
+                        <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
+                            <template v-if="user.isManagementAdmin">
+                                <AppDropdownItem disabled variant="warning">
+                                    Administrateur
+                                </AppDropdownItem>
+                                <AppNavbarLink icon="palette" to="colors" variant="warning">
+                                    Couleurs
+                                </AppNavbarLink>
+                                <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
+                                    Délais de paiement des factures
+                                </AppNavbarLink>
+                                <AppNavbarLink disabled icon="print" to="printers" variant="danger">
+                                    Imprimantes
+                                </AppNavbarLink>
+                                <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">
+                                    Messages TVA
+                                </AppNavbarLink>
+                                <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">
+                                    Unités
+                                </AppNavbarLink>
+                            </template>
+                        </AppNavbarItem>
+                        <AppNavbarItem id="it" icon="laptop" title="Informatique">
+                            <AppNavbarLink disabled icon="laptop-code" to="it-requests" variant="danger">
+                                Demandes
+                            </AppNavbarLink>
+                            <template v-if="user.isItAdmin">
+                                <AppDropdownItem disabled variant="warning">
+                                    Administrateur
+                                </AppDropdownItem>
+                                <a class="dropdown-item text-warning" href="/api" target="_blank">
+                                    <Fa icon="server"/>
+                                    API
+                                </a>
+                                <a :href="database" class="dropdown-item text-warning" target="_blank">
+                                    <Fa icon="database"/>
+                                    Base de données
+                                </a>
+                            </template>
+                        </AppNavbarItem>
+                        <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
+                            <AppDropdownItem disabled variant="success">
+                                Lecteur
                             </AppDropdownItem>
-                            <AppNavbarLink disabled icon="magnet" to="attributes" variant="danger">
-                                Attributs
+                            <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">
+                                Transporteurs
                             </AppNavbarLink>
-                            <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
-                                Familles de composants
-                            </AppNavbarLink>
-                        </template>
-                    </AppNavbarItem>
-                    <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
-                        <template v-if="user.isManagementAdmin">
-                            <AppDropdownItem disabled variant="warning">
-                                Administrateur
-                            </AppDropdownItem>
-                            <AppNavbarLink icon="palette" to="colors" variant="warning">
-                                Couleurs
-                            </AppNavbarLink>
-                            <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
-                                Délais de paiement des factures
-                            </AppNavbarLink>
-                            <AppNavbarLink disabled icon="print" to="printers" variant="danger">
-                                Imprimantes
-                            </AppNavbarLink>
-                            <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">
-                                Messages TVA
-                            </AppNavbarLink>
-                            <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">
-                                Unités
-                            </AppNavbarLink>
-                        </template>
-                    </AppNavbarItem>
-                </ul>
-            </div>
-            <AppNavbarUser v-if="user.isLogged"/>
+                        </AppNavbarItem>
+                    </ul>
+                </div>
+                <AppNavbarUser/>
+            </template>
         </AppContainer>
     </nav>
 </template>

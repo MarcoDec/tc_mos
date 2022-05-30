@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220525132531 extends AbstractMigration {
+final class Version20220527152146 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -28,6 +28,7 @@ final class Version20220525132531 extends AbstractMigration {
     }
 
     public function up(Schema $schema): void {
+        $this->upCarriers();
         $this->upComponentFamilies();
         $this->upColors();
         $this->upInvoiceTimeDue();
@@ -43,6 +44,27 @@ final class Version20220525132531 extends AbstractMigration {
         $this->addSql("ALTER TABLE `$table` DEFAULT COLLATE `utf8mb4_unicode_ci`");
         $this->addSql("ALTER TABLE `$table` COLLATE `utf8mb4_unicode_ci`");
         $this->addSql("ALTER TABLE `$table` ENGINE = InnoDB");
+    }
+
+    private function upCarriers(): void {
+        $this->alterTable('carrier', 'Transporteur');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `carrier`
+    ADD `address_address` VARCHAR(50) DEFAULT NULL,
+    ADD `address_address2` VARCHAR(50) DEFAULT NULL,
+    ADD `address_city` VARCHAR(50) DEFAULT NULL,
+    ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    ADD `address_email` VARCHAR(60) DEFAULT NULL,
+    ADD `address_phone_number` VARCHAR(20) DEFAULT NULL,
+    ADD `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    DROP `date_creation`,
+    DROP `date_modification`,
+    DROP `id_user_creation`,
+    DROP `id_user_modification`,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `nom` `name` VARCHAR(50) NOT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+SQL);
     }
 
     private function upColors(): void {

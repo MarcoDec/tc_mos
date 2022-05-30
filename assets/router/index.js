@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import AppHome from './pages/AppHome'
 import AppLogin from './pages/AppLogin.vue'
+import logistics from './routes/logistics'
 import management from './routes/management'
 import purchase from './routes/purchase'
 import useUserStore from '../stores/hr/employee/user'
@@ -20,6 +21,7 @@ const router = createRouter({
             name: 'login',
             path: '/login'
         },
+        ...logistics,
         ...management,
         ...purchase
     ]

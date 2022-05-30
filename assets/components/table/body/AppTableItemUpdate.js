@@ -1,4 +1,5 @@
 import {h, resolveComponent} from 'vue'
+import AppTableItemUpdateField from './AppTableItemUpdateField'
 import {generateTableFields} from '../../validators'
 
 function AppTableItemUpdate(props, context) {
@@ -44,16 +45,14 @@ function AppTableItemUpdate(props, context) {
         props.fields.map(field => {
             const slot = context.slots[`form(${field.name})`]
             return h(
-                resolveComponent('AppTableFormField'),
+                AppTableItemUpdateField,
                 {
                     field,
                     form: formId,
                     id: `${props.id}-field`,
                     item: props.item,
                     key: field.name,
-                    machine: props.machine,
-                    modelValue: props.item[field.name],
-                    violation: props.machine.state.value.context.violations.find(violation => violation.propertyPath === field.name)
+                    machine: props.machine
                 },
                 typeof slot === 'function' ? args => slot(args) : null
             )
