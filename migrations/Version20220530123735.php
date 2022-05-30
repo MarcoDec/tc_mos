@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220527152146 extends AbstractMigration {
+final class Version20220530123735 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -31,6 +31,7 @@ final class Version20220527152146 extends AbstractMigration {
         $this->upCarriers();
         $this->upComponentFamilies();
         $this->upColors();
+        $this->upIncoterms();
         $this->upInvoiceTimeDue();
         $this->upUnits();
         $this->upUsers();
@@ -113,6 +114,18 @@ SET `f`.`code` = `parent`.`code`
 WHERE `f`.`code` IS NULL
 SQL);
         $this->addSql('ALTER TABLE `component_family` CHANGE `code` `code` CHAR(3) NOT NULL COMMENT \'(DC2Type:char)\'');
+    }
+
+    private function upIncoterms(): void {
+        $this->addSql('DROP INDEX uk_c_input_reason ON incoterms');
+        $this->alterTable('incoterms', 'Incoterms');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `incoterms`
+    CHANGE `code` `code` VARCHAR(11) NOT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `label` `name` VARCHAR(50) NOT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+SQL);
     }
 
     private function upInvoiceTimeDue(): void {

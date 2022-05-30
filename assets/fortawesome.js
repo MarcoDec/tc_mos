@@ -8,6 +8,7 @@ import {
     faCommentsDollar,
     faDatabase,
     faExclamationTriangle,
+    faFileContract,
     faHourglass,
     faLaptop,
     faLayerGroup,
@@ -35,6 +36,7 @@ library.add(faChevronUp)
 library.add(faCommentsDollar)
 library.add(faDatabase)
 library.add(faExclamationTriangle)
+library.add(faFileContract)
 library.add(faHourglass)
 library.add(faLaptop)
 library.add(faLayerGroup)

@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220527152145 extends AbstractMigration {
+final class Version20220530123734 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -58,6 +58,16 @@ CREATE TABLE `couleur` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Liste des couleurs que peuvent avoir les fils';
 SQL);
         $this->insert('couleur');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `incoterms` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `code` varchar(30) DEFAULT NULL,
+  `label` varchar(60) DEFAULT NULL,
+  `statut` tinyint(4) NOT NULL DEFAULT '0',
+  CONSTRAINT `uk_c_input_reason` UNIQUE (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL);
+        $this->insert('incoterms');
         $this->addSql(<<<'SQL'
 CREATE TABLE `invoicetimedue` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
