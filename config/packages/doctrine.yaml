@@ -1,5 +1,7 @@
 doctrine:
   dbal:
+    mapping_types:
+      enum: string
     types:
       char: App\Doctrine\DBAL\Types\CharType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType

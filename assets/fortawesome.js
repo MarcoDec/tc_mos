@@ -10,6 +10,7 @@ import {
     faExclamationTriangle,
     faFileContract,
     faHourglass,
+    faIndustry,
     faLaptop,
     faLayerGroup,
     faPalette,
@@ -23,7 +24,8 @@ import {
     faSignOutAlt,
     faSitemap,
     faTimes,
-    faUserCircle
+    faUserCircle,
+    faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
@@ -38,6 +40,7 @@ library.add(faDatabase)
 library.add(faExclamationTriangle)
 library.add(faFileContract)
 library.add(faHourglass)
+library.add(faIndustry)
 library.add(faLaptop)
 library.add(faLayerGroup)
 library.add(faPalette)
@@ -52,3 +55,4 @@ library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faTimes)
 library.add(faUserCircle)
+library.add(faWrench)

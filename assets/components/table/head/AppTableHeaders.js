@@ -7,6 +7,10 @@ import {h} from 'vue'
 function AppTableHeaders(props, context) {
     function generateFormRow(tag, type) {
         const children = {}
+        if (type === 'form' && typeof context.slots.create === 'function')
+            children['default'] = args => context.slots.create(args)
+        if (type === 'search' && typeof context.slots.search === 'function')
+            children['default'] = args => context.slots.search(args)
 
         function generateSlot(field) {
             const slotName = `${type}(${field.name})`

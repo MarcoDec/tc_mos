@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220530123735 extends AbstractMigration {
+final class Version20220530141409 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -31,6 +31,7 @@ final class Version20220530123735 extends AbstractMigration {
         $this->upCarriers();
         $this->upComponentFamilies();
         $this->upColors();
+        $this->upEngineGroups();
         $this->upIncoterms();
         $this->upInvoiceTimeDue();
         $this->upUnits();
@@ -39,7 +40,8 @@ final class Version20220530123735 extends AbstractMigration {
     }
 
     private function alterTable(string $table, string $comment): void {
-        $this->addSql("ALTER TABLE `$table` COMMENT '$comment'");
+        /** @phpstan-ignore-next-line */
+        $this->addSql("ALTER TABLE `$table` COMMENT {$this->connection->quote($comment)}");
         $this->addSql("ALTER TABLE `$table` DEFAULT CHARACTER SET utf8mb4");
         $this->addSql("ALTER TABLE `$table` CHARACTER SET utf8mb4");
         $this->addSql("ALTER TABLE `$table` DEFAULT COLLATE `utf8mb4_unicode_ci`");
@@ -116,8 +118,25 @@ SQL);
         $this->addSql('ALTER TABLE `component_family` CHANGE `code` `code` CHAR(3) NOT NULL COMMENT \'(DC2Type:char)\'');
     }
 
+    private function upEngineGroups(): void {
+        $this->addSql('DROP INDEX `code` ON `engine_group`');
+        $this->alterTable('engine_group', 'Groupe d\'équipement');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `engine_group`
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    ADD `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine_type)',
+    DROP formation_specifique,
+    CHANGE `code` `code` VARCHAR(3) NOT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `libelle` `name` VARCHAR(35) NOT NULL,
+    CHANGE `organe_securite` `safety_device` TINYINT(1) DEFAULT 0 NOT NULL
+SQL);
+        $this->addSql('UPDATE `engine_group` SET `type` = IF(`id_family_group` = 1, \'workstation\', \'tool\')');
+        $this->addSql('ALTER TABLE `engine_group` DROP `id_family_group`');
+    }
+
     private function upIncoterms(): void {
-        $this->addSql('DROP INDEX uk_c_input_reason ON incoterms');
+        $this->addSql('DROP INDEX `uk_c_input_reason` ON `incoterms`');
         $this->alterTable('incoterms', 'Incoterms');
         $this->addSql(<<<'SQL'
 ALTER TABLE `incoterms`

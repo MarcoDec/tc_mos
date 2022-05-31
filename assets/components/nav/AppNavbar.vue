@@ -92,6 +92,25 @@
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
+                        <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
+                            <AppDropdownItem disabled variant="success">
+                                Lecteur
+                            </AppDropdownItem>
+                            <AppNavbarLink disabled icon="map-marked" to="zones" variant="danger">
+                                Zones
+                            </AppNavbarLink>
+                            <template v-if="user.isProductionAdmin">
+                                <AppDropdownItem disabled variant="warning">
+                                    Administrateur
+                                </AppDropdownItem>
+                                <AppNavbarLink disabled icon="calendar-day" to="engine-events" variant="danger">
+                                    Catégories d'événements des équipements
+                                </AppNavbarLink>
+                                <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
+                                    Groupes d'équipements
+                                </AppNavbarLink>
+                            </template>
+                        </AppNavbarItem>
                     </ul>
                 </div>
                 <AppNavbarUser/>

@@ -3,7 +3,6 @@
 namespace App\Doctrine\DBAL\Types\Production\Engine;
 
 use App\Doctrine\DBAL\Types\EnumType;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 final class EngineType extends EnumType {
     public const TYPE_COUNTER_PART = 'counter-part';
@@ -17,9 +16,5 @@ final class EngineType extends EnumType {
 
     public function getName(): string {
         return 'engine_type';
-    }
-
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
-        return parent::getSQLDeclaration($column, $platform).' CHARACTER SET ascii';
     }
 }

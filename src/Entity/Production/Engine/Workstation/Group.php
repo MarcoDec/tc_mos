@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
     ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
-        description: 'WorkstationGroup',
+        description: 'Poste de travail',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [

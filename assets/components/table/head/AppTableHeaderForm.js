@@ -4,29 +4,41 @@ import {h, resolveComponent} from 'vue'
 function AppTableHeaderForm(props, context) {
     const formId = `${props.id}-form`
     const formTd = [
-        h(
-            resolveComponent('AppForm'),
-            {
+        typeof context.slots.submit === 'function'
+            ? context.slots.submit({
                 fields: props.fields,
+                icon: props.icon,
                 id: formId,
                 inline: true,
+                machine: props.machine,
                 noContent: true,
-                async onSubmit(data) {
-                    props.machine.send('submit')
-                    await props.submit(data)
-                    props.machine.send('success')
-                },
-                submitLabel: props.label
-            },
-            ({disabled, form, submitLabel, type}) => h(resolveComponent('AppBtn'), {
-                disabled,
-                form,
-                icon: props.icon,
-                title: submitLabel,
-                type,
+                store: props.store,
+                submitLabel: props.label,
                 variant: props.submitVariant
             })
-        )
+            : h(
+                resolveComponent('AppForm'),
+                {
+                    fields: props.fields,
+                    id: formId,
+                    inline: true,
+                    noContent: true,
+                    async onSubmit(data) {
+                        props.machine.send('submit')
+                        await props.submit(data)
+                        props.machine.send('success')
+                    },
+                    submitLabel: props.label
+                },
+                ({disabled, form, submitLabel, type}) => h(resolveComponent('AppBtn'), {
+                    disabled,
+                    form,
+                    icon: props.icon,
+                    title: submitLabel,
+                    type,
+                    variant: props.submitVariant
+                })
+            )
     ]
     if (typeof context.slots['default'] === 'function')
         formTd.push(context.slots['default']())

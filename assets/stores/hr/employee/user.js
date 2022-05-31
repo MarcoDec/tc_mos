@@ -61,6 +61,15 @@ export default defineStore('user', {
         isManagementWriter() {
             return this.isManagementAdmin || this.has('ROLE_MANAGEMENT_WRITER')
         },
+        isProductionAdmin() {
+            return this.has('ROLE_PRODUCTION_ADMIN')
+        },
+        isProductionReader() {
+            return this.isProductionWriter || this.has('ROLE_PRODUCTION_READER')
+        },
+        isProductionWriter() {
+            return this.isProductionAdmin || this.has('ROLE_PRODUCTION_WRITER')
+        },
         isPurchaseAdmin() {
             return this.has('ROLE_PURCHASE_ADMIN')
         },

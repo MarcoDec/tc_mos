@@ -5,9 +5,9 @@ import generateItem from './item'
 export default function generateItems(iriType) {
     return defineStore(iriType, {
         actions: {
-            async create(data) {
+            async create(data, url = null) {
                 this.reset()
-                const response = await fetchApi(this.iri, 'POST', data)
+                const response = await fetchApi(url ?? this.iri, 'POST', data)
                 if (response.status === 422)
                     throw response.content.violations
                 this.items.push(generateItem(this.iriType, response.content, this))
@@ -16,9 +16,9 @@ export default function generateItems(iriType) {
                 this.reset()
                 this.$dispose()
             },
-            async fetch() {
+            async fetch(url = null) {
                 this.resetItems()
-                const response = await fetchApi(this.iri, 'GET', this.fetchBody)
+                const response = await fetchApi(url ?? this.iri, 'GET', this.fetchBody)
                 if (response.status === 200)
                     for (const item of response.content['hydra:member'])
                         this.items.push(generateItem(this.iriType, item, this))

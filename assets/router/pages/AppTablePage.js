@@ -30,6 +30,10 @@ export default {
 
         return () => {
             const children = {}
+            if (typeof context.slots.create === 'function')
+                children.create = args => context.slots.create(args)
+            if (typeof context.slots.search === 'function')
+                children.search = args => context.slots.search(args)
 
             function generateSlot(field, type) {
                 const slotName = `${type}(${field.name})`

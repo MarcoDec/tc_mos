@@ -28,11 +28,8 @@ export function fieldValidator(field) {
                 return false
             }
             for (const option of field.options.options)
-                if (
-                    typeof option.text === 'undefined' || option.text === null
-                    || typeof option.value === 'undefined' || option.value === null
-                ) {
-                    console.error('field.options', 'field.text and field.value must be defined and not null')
+                if (typeof option.text === 'undefined' || option.text === null || typeof option.value === 'undefined') {
+                    console.error('field.options', 'field.text and field.value must be defined')
                     return false
                 }
         }
