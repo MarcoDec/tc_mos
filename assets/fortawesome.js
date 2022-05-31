@@ -2,6 +2,7 @@ import {
     faBoxes,
     faCaretDown,
     faCaretUp,
+    faCertificate,
     faCheck,
     faChevronDown,
     faChevronUp,
@@ -28,16 +29,19 @@ import {
     faUserCircle,
     faWrench
 } from '@fortawesome/free-solid-svg-icons'
+import {faElementor} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
 library.add(faBoxes)
 library.add(faCaretDown)
 library.add(faCaretUp)
+library.add(faCertificate)
 library.add(faCheck)
 library.add(faChevronDown)
 library.add(faChevronUp)
 library.add(faCommentsDollar)
 library.add(faDatabase)
+library.add(faElementor)
 library.add(faExclamationTriangle)
 library.add(faFileContract)
 library.add(faHourglass)

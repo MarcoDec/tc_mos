@@ -87,6 +87,15 @@ export default defineStore('user', {
         },
         isPurchaseWriter() {
             return this.isPurchaseAdmin || this.has('ROLE_PURCHASE_WRITER')
+        },
+        isQualityAdmin() {
+            return this.has('ROLE_QUALITY_ADMIN')
+        },
+        isQualityReader() {
+            return this.isQualityWriter || this.has('ROLE_QUALITY_READER')
+        },
+        isQualityWriter() {
+            return this.isQualityAdmin || this.has('ROLE_QUALITY_WRITER')
         }
     },
     state: () => ({id: 0, name: null, roles: []})

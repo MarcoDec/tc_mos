@@ -7,6 +7,7 @@ import {useRoute} from 'vue-router'
 
 export default {
     props: {
+        brands: {type: Boolean},
         fields: generateTableFields(),
         icon: {required: true, type: String},
         title: {required: true, type: String}
@@ -51,7 +52,7 @@ export default {
                 {class: variant.value, id: route.name, spinner: tableLoading.some(machine.state.value.matches)},
                 () => [
                     h('div', {class: 'row'}, h('h1', {class: 'col'}, [
-                        h(resolveComponent('Fa'), {icon: props.icon}),
+                        h(resolveComponent('Fa'), {brands: props.brands, icon: props.icon}),
                         h('span', {class: 'ms-2'}, props.title)
                     ])),
                     h(AppTable, {fields: props.fields, id: `${route.name}-table`, machine, store}, children)

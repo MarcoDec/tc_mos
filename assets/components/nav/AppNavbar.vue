@@ -92,9 +92,7 @@
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
-                        <AppNavbarItem
-                            v-if="user.isProductionReader" id="production" icon="industry"
-                            title="Production">
+                        <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
@@ -129,6 +127,22 @@
                                 </AppNavbarLink>
                                 <AppNavbarLink brands disabled icon="elementor" to="operation-types" variant="danger">
                                     Types d'opérations
+                                </AppNavbarLink>
+                            </template>
+                        </AppNavbarItem>
+                        <AppNavbarItem v-if="user.isQualityReader" id="quality" icon="certificate" title="Qualité">
+                            <AppDropdownItem disabled variant="success">
+                                Lecteur
+                            </AppDropdownItem>
+                            <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
+                                Relevés qualités composants
+                            </AppNavbarLink>
+                            <template v-if="user.isQualityAdmin">
+                                <AppDropdownItem disabled variant="warning">
+                                    Administrateur
+                                </AppDropdownItem>
+                                <AppNavbarLink brands icon="elementor" to="reject-types" variant="warning">
+                                    Catégories de rejets de production
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>

@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220531111417 extends AbstractMigration {
+final class Version20220531134935 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -35,6 +35,7 @@ final class Version20220531111417 extends AbstractMigration {
         $this->upIncoterms();
         $this->upInvoiceTimeDue();
         $this->upProductFamilies();
+        $this->upRejectTypes();
         $this->upUnits();
         $this->upUsers();
         $this->upVatMessages();
@@ -213,6 +214,32 @@ SELECT `subfamily_name`, `id_family`
 FROM `product_subfamily`
 SQL);
         $this->addSql('DROP TABLE `product_subfamily`');
+    }
+
+    private function upRejectTypes(): void {
+        $this->addSql('RENAME TABLE `production_rejectlist` TO `reject_type`');
+        $this->alterTable('reject_type', 'Type de rebus');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `reject_type`
+    DROP `id_user_creation`,
+    DROP `date_creation`,
+    DROP `id_user_modification`,
+    DROP `date_modification`,
+    CHANGE `libelle` `name` VARCHAR(40) NOT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+SQL);
+        $this->addSql('DELETE FROM `reject_type` WHERE `deleted` = 1');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `reject_type_copy` (
+  `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE `utf8mb4_unicode_ci` COMMENT='Type de rebus'
+SQL);
+        $this->addSql('INSERT INTO `reject_type_copy` (`deleted`, `name`) SELECT `deleted`, `name` FROM `reject_type`');
+        $this->addSql('DROP TABLE `reject_type`');
+        $this->addSql('RENAME TABLE `reject_type_copy` TO `reject_type`');
     }
 
     private function upUnits(): void {
