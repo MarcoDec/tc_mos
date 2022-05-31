@@ -70,6 +70,15 @@ export default defineStore('user', {
         isProductionWriter() {
             return this.isProductionAdmin || this.has('ROLE_PRODUCTION_WRITER')
         },
+        isProjectAdmin() {
+            return this.has('ROLE_PROJECT_ADMIN')
+        },
+        isProjectReader() {
+            return this.isProjectWriter || this.has('ROLE_PROJECT_READER')
+        },
+        isProjectWriter() {
+            return this.isProjectAdmin || this.has('ROLE_PROJECT_WRITER')
+        },
         isPurchaseAdmin() {
             return this.has('ROLE_PURCHASE_ADMIN')
         },

@@ -16,6 +16,7 @@ import {
     faPalette,
     faPencil,
     faPlus,
+    faProjectDiagram,
     faRulerHorizontal,
     faSearch,
     faServer,
@@ -46,6 +47,7 @@ library.add(faLayerGroup)
 library.add(faPalette)
 library.add(faPencil)
 library.add(faPlus)
+library.add(faProjectDiagram)
 library.add(faRulerHorizontal)
 library.add(faSearch)
 library.add(faServer)

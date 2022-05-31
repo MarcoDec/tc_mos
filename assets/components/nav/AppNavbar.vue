@@ -92,7 +92,9 @@
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
-                        <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
+                        <AppNavbarItem
+                            v-if="user.isProductionReader" id="production" icon="industry"
+                            title="Production">
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
@@ -108,6 +110,25 @@
                                 </AppNavbarLink>
                                 <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
                                     Groupes d'équipements
+                                </AppNavbarLink>
+                            </template>
+                        </AppNavbarItem>
+                        <AppNavbarItem v-if="user.isProjectReader" id="project" icon="project-diagram" title="Projet">
+                            <AppDropdownItem disabled variant="success">
+                                Lecteur
+                            </AppDropdownItem>
+                            <AppNavbarLink disabled icon="atom" to="operations" variant="danger">
+                                Opérations
+                            </AppNavbarLink>
+                            <template v-if="user.isProjectAdmin">
+                                <AppDropdownItem disabled variant="warning">
+                                    Administrateur
+                                </AppDropdownItem>
+                                <AppNavbarLink icon="layer-group" to="product-families" variant="warning">
+                                    Familles de produits
+                                </AppNavbarLink>
+                                <AppNavbarLink brands disabled icon="elementor" to="operation-types" variant="danger">
+                                    Types d'opérations
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>

@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia'
-import fetchApi from '../../../../api'
+import fetchApi from '../../api'
 
-export default function generateFamily(family, root) {
-    return defineStore(`component-family/${family.id}`, {
+export default function generateFamily(iriType, family, root) {
+    return defineStore(`${iriType}/${family.id}`, {
         actions: {
             blur() {
                 this.opened = false
@@ -22,12 +22,12 @@ export default function generateFamily(family, root) {
                 this.parentStore?.open()
             },
             async remove() {
-                await fetchApi(`/api/component-families/${this.id}`, 'DELETE')
+                await fetchApi(this.iri, 'DELETE')
                 this.root.remove(this['@id'])
                 this.dispose()
             },
             async update(data) {
-                const response = await fetchApi(`/api/component-families/${this.id}`, 'POST', data, false)
+                const response = await fetchApi(this.iri, 'POST', data, false)
                 if (response.status === 422)
                     throw response.content.violations
                 this.$state = {opened: this.opened, root: this.root, selected: this.selected, ...response.content}
@@ -48,10 +48,11 @@ export default function generateFamily(family, root) {
             hasChildren() {
                 return this.children.length > 0
             },
+            iri: state => `/api/${state.iriType}/${state.id}`,
             isRoot: state => !state.parent,
             option: state => ({text: state.fullName, value: state['@id']}),
             parentStore: state => state.root.find(state.parent)
         },
-        state: () => ({opened: false, root, selected: false, ...family})
+        state: () => ({iriType, opened: false, root, selected: false, ...family})
     })()
 }

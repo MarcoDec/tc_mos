@@ -1,18 +1,18 @@
 <script setup>
     import {computed, onMounted, ref, watch} from 'vue'
-    import useFamiliesStore from '../../stores/purchase/component/family/families'
+    import {generateFields} from '../validators'
 
-    const families = useFamiliesStore()
+    const props = defineProps({
+        families: {required: true, type: Object},
+        fields: generateFields(),
+        id: {required: true, type: String},
+        machine: {required: true, type: Object}
+    })
     const fields = computed(() => [
-        {label: 'Parent', name: 'parent', options: families, type: 'select'},
-        {label: 'Code', name: 'code'},
-        {label: 'Nom', name: 'name'},
-        {label: 'Cuivre', name: 'copperable', type: 'boolean'},
-        {label: 'Code douanier', name: 'customsCode'},
-        {label: 'Icône', name: 'file', type: 'file'}
+        {label: 'Parent', name: 'parent', options: props.families, type: 'select'},
+        ...props.fields
     ])
-    const props = defineProps({id: {required: true, type: String}, machine: {required: true, type: Object}})
-    const selected = computed(() => families.selected)
+    const selected = computed(() => props.families.selected)
     const selectedForm = computed(() => selected.value?.form(fields.value) ?? {file: '/img/no-image.png'})
     const title = computed(() => selected.value?.fullName ?? 'Ajouter une famille')
     const value = ref(null)
@@ -20,7 +20,7 @@
 
     function blur() {
         props.machine.send('submit')
-        families.blur()
+        props.families.blur()
         props.machine.send('success')
     }
 
@@ -35,7 +35,7 @@
             if (selected.value)
                 await selected.value.update(data)
             else
-                await families.create(data)
+                await props.families.create(data)
             props.machine.send('success')
         } catch (violations) {
             props.machine.send('fail', {violations})
