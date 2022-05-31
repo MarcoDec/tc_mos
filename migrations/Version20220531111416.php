@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220530141408 extends AbstractMigration {
+final class Version20220531111416 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -120,6 +120,25 @@ CREATE TABLE `messagetva` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('messagetva');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `product_family` (
+  `id` tinyint(3) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `family_name` varchar(25) NOT NULL,
+  `statut` int(11) NOT NULL DEFAULT '0',
+  `customsCode` varchar(255) DEFAULT NULL,
+  `icon` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL);
+        $this->insert('product_family');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `product_subfamily` (
+  `id` smallint(6) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `subfamily_name` varchar(50) NOT NULL,
+  `id_family` tinyint(3) UNSIGNED NOT NULL,
+  CONSTRAINT `unic` UNIQUE (`subfamily_name`,`id_family`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL);
+        $this->insert('product_subfamily');
         $this->addSql(<<<'SQL'
 CREATE TABLE `unit` (
   `id` tinyint(4) NOT NULL PRIMARY KEY AUTO_INCREMENT,

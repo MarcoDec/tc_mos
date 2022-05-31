@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220530141409 extends AbstractMigration {
+final class Version20220531111417 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -34,6 +34,7 @@ final class Version20220530141409 extends AbstractMigration {
         $this->upEngineGroups();
         $this->upIncoterms();
         $this->upInvoiceTimeDue();
+        $this->upProductFamilies();
         $this->upUnits();
         $this->upUsers();
         $this->upVatMessages();
@@ -192,6 +193,26 @@ FROM `invoice_time_due`
 SQL);
         $this->addSql('DROP TABLE `invoice_time_due`');
         $this->addSql('RENAME TABLE `invoice_time_due_copy` TO `invoice_time_due`');
+    }
+
+    private function upProductFamilies(): void {
+        $this->alterTable('product_family', 'Famille de produit');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `product_family`
+    ADD `parent_id` INT UNSIGNED DEFAULT NULL,
+    DROP `icon`,
+    CHANGE `customsCode` `customs_code` VARCHAR(10) DEFAULT NULL,
+    CHANGE `family_name` `name` VARCHAR(30) NOT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+SQL);
+        $this->addSql('ALTER TABLE `product_family` ADD CONSTRAINT `IDX_C79A60FF727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `product_family` (`id`)');
+        $this->addSql(<<<'SQL'
+INSERT INTO `product_family` (`name`, `parent_id`)
+SELECT `subfamily_name`, `id_family`
+FROM `product_subfamily`
+SQL);
+        $this->addSql('DROP TABLE `product_subfamily`');
     }
 
     private function upUnits(): void {
