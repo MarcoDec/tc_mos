@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220531134934 extends AbstractMigration {
+final class Version20220531142540 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -151,6 +151,14 @@ CREATE TABLE `production_rejectlist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('production_rejectlist');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `qualitycontrol` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `qualitycontrol` varchar(255) NOT NULL,
+  `statut` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('qualitycontrol');
         $this->addSql(<<<'SQL'
 CREATE TABLE `unit` (
   `id` tinyint(4) NOT NULL PRIMARY KEY AUTO_INCREMENT,

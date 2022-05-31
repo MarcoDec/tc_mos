@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220531134935 extends AbstractMigration {
+final class Version20220531142541 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -35,6 +35,7 @@ final class Version20220531134935 extends AbstractMigration {
         $this->upIncoterms();
         $this->upInvoiceTimeDue();
         $this->upProductFamilies();
+        $this->upQualityTypes();
         $this->upRejectTypes();
         $this->upUnits();
         $this->upUsers();
@@ -214,6 +215,17 @@ SELECT `subfamily_name`, `id_family`
 FROM `product_subfamily`
 SQL);
         $this->addSql('DROP TABLE `product_subfamily`');
+    }
+
+    private function upQualityTypes(): void {
+        $this->addSql('RENAME TABLE `qualitycontrol` TO `quality_type`');
+        $this->alterTable('quality_type', 'Type qualité');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `quality_type`
+    CHANGE `qualitycontrol` `name` VARCHAR(40) NOT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+SQL);
     }
 
     private function upRejectTypes(): void {
