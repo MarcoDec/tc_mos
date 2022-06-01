@@ -92,9 +92,7 @@
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
-                        <AppNavbarItem
-                            v-if="user.isProductionReader" id="production" icon="industry"
-                            title="Production">
+                        <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
@@ -136,9 +134,7 @@
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
-                            <AppNavbarLink
-                                disabled icon="check-circle" to="component-reference-values"
-                                variant="danger">
+                            <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
                                 Relevés qualités composants
                             </AppNavbarLink>
                             <template v-if="user.isQualityAdmin">
@@ -157,7 +153,7 @@
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
-                            <AppNavbarLink disabled icon="user-graduate" to="out-trainers" variant="danger">
+                            <AppNavbarLink icon="user-graduate" to="out-trainers" variant="success">
                                 Formateurs extérieurs
                             </AppNavbarLink>
                             <template v-if="user.isHrAdmin">

@@ -28,6 +28,7 @@ import {
     faSitemap,
     faTimes,
     faUserCircle,
+    faUserGraduate,
     faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
@@ -63,4 +64,5 @@ library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faTimes)
 library.add(faUserCircle)
+library.add(faUserGraduate)
 library.add(faWrench)

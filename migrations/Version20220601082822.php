@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220601065612 extends AbstractMigration {
+final class Version20220601082822 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -29,12 +29,12 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `component_family` (
   `id` tinyint(3) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `family_name` varchar(25) NOT NULL,
-  `statut` tinyint(4) NOT NULL DEFAULT '0',
+  `prefix` varchar(3) DEFAULT NULL,
   `copperable` tinyint(4) NOT NULL DEFAULT '0',
   `customsCode` varchar(255) DEFAULT NULL,
-  `icon` int(11) DEFAULT NULL,
-  `prefix` varchar(3) DEFAULT NULL
+  `statut` tinyint(4) NOT NULL DEFAULT '0',
+  `family_name` varchar(25) NOT NULL,
+  `icon` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 SQL);
         $this->insert('component_family');
@@ -59,6 +59,23 @@ CREATE TABLE `couleur` (
 SQL);
         $this->insert('couleur');
         $this->addSql(<<<'SQL'
+CREATE TABLE `country` (
+  `id` int(11) NOT NULL,
+  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
+  `code` varchar(2) NOT NULL,
+  `code_iso` varchar(3) DEFAULT NULL,
+  `libelle` text,
+  `in_eu` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Si le pays appartient a l''union europeenne',
+  `active` tinyint(4) NOT NULL DEFAULT '1',
+  `phone_prefix` varchar(255) DEFAULT NULL,
+  `date_creation` datetime DEFAULT NULL COMMENT 'date de création',
+  `date_modification` timestamp DEFAULT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'date modification',
+  `id_user_creation` int(11) DEFAULT NULL,
+  `id_user_modification` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL);
+        $this->insert('country');
+        $this->addSql(<<<'SQL'
 CREATE TABLE `employee_eventlist` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `motif` varchar(255) NOT NULL
@@ -66,10 +83,26 @@ CREATE TABLE `employee_eventlist` (
 SQL);
         $this->insert('employee_eventlist');
         $this->addSql(<<<'SQL'
+CREATE TABLE `employee_extformateur` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `address` varchar(255) NOT NULL,
+  `ville` varchar(255) NOT NULL,
+  `tel` varchar(255) NOT NULL,
+  `code_postal` int(11) NOT NULL,
+  `prenom` varchar(255) NOT NULL,
+  `nom` varchar(255) NOT NULL,
+  `id_phone_prefix` int(11) NOT NULL,
+  `society` varchar(255) NOT NULL,
+  `id_user_creation` int(11) NOT NULL,
+  `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('employee_extformateur');
+        $this->addSql(<<<'SQL'
 CREATE TABLE `engine_group` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `libelle` varchar(255) NOT NULL,
   `code` varchar(3) NOT NULL,
+  `libelle` varchar(255) NOT NULL,
   `id_family_group` int(11) NOT NULL,
   `organe_securite` int(1) NOT NULL DEFAULT '0',
   `formation_specifique` int(11) NOT NULL DEFAULT '0',
@@ -81,8 +114,8 @@ SQL);
 CREATE TABLE `incoterms` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `code` varchar(30) DEFAULT NULL,
-  `label` varchar(60) DEFAULT NULL,
   `statut` tinyint(4) NOT NULL DEFAULT '0',
+  `label` varchar(60) DEFAULT NULL,
   CONSTRAINT `uk_c_input_reason` UNIQUE (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL);
@@ -130,9 +163,9 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `product_family` (
   `id` tinyint(3) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `family_name` varchar(25) NOT NULL,
-  `statut` int(11) NOT NULL DEFAULT '0',
   `customsCode` varchar(255) DEFAULT NULL,
+  `statut` int(11) NOT NULL DEFAULT '0',
+  `family_name` varchar(25) NOT NULL,
   `icon` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL);
@@ -149,8 +182,8 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `production_rejectlist` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `libelle` varchar(255) NOT NULL,
   `statut` int(1) NOT NULL DEFAULT '0',
+  `libelle` varchar(255) NOT NULL,
   `id_user_creation` int(11) NOT NULL,
   `date_creation` datetime DEFAULT NULL,
   `id_user_modification` int(11) NOT NULL,
@@ -161,18 +194,18 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `qualitycontrol` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `qualitycontrol` varchar(255) NOT NULL,
-  `statut` int(11) NOT NULL
+  `statut` int(11) NOT NULL,
+  `qualitycontrol` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('qualitycontrol');
         $this->addSql(<<<'SQL'
 CREATE TABLE `unit` (
   `id` tinyint(4) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
-  `unit_short_lbl` varchar(15) NOT NULL,
-  `unit_complete_lbl` varchar(40) NOT NULL,
   `base` DOUBLE PRECISION DEFAULT '1' NOT NULL,
+  `unit_short_lbl` varchar(15) NOT NULL,
+  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
+  `unit_complete_lbl` varchar(40) NOT NULL,
   `parent` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='liste des unites de mesure pour composant';
 SQL);

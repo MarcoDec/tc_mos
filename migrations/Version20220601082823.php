@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220601065613 extends AbstractMigration {
+final class Version20220601082823 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -40,6 +40,7 @@ SQL);
         $this->upEventTypes();
         $this->upIncoterms();
         $this->upInvoiceTimeDue();
+        $this->upOutTrainers();
         $this->upProductFamilies();
         $this->upQualityTypes();
         $this->upRejectTypes();
@@ -47,6 +48,7 @@ SQL);
         $this->upUsers();
         $this->upVatMessages();
         $this->addSql('DROP FUNCTION UCFIRST');
+        $this->addSql('DROP TABLE `country`');
     }
 
     private function alterTable(string $table, string $comment): void {
@@ -63,13 +65,13 @@ SQL);
         $this->alterTable('carrier', 'Transporteur');
         $this->addSql(<<<'SQL'
 ALTER TABLE `carrier`
-    ADD `address_address` VARCHAR(50) DEFAULT NULL,
-    ADD `address_address2` VARCHAR(50) DEFAULT NULL,
-    ADD `address_city` VARCHAR(50) DEFAULT NULL,
-    ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    ADD `address_email` VARCHAR(60) DEFAULT NULL,
-    ADD `address_phone_number` VARCHAR(20) DEFAULT NULL,
-    ADD `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    ADD `address_address` VARCHAR(50) DEFAULT NULL AFTER `id`,
+    ADD `address_address2` VARCHAR(50) DEFAULT NULL AFTER `address_address`,
+    ADD `address_city` VARCHAR(50) DEFAULT NULL AFTER `address_address2`,
+    ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)' AFTER `address_city`,
+    ADD `address_email` VARCHAR(60) DEFAULT NULL AFTER `address_country`,
+    ADD `address_phone_number` VARCHAR(20) DEFAULT NULL AFTER `address_email`,
+    ADD `address_zip_code` VARCHAR(10) DEFAULT NULL AFTER `address_phone_number`,
     DROP `date_creation`,
     DROP `date_modification`,
     DROP `id_user_creation`,
@@ -85,7 +87,7 @@ SQL);
         $this->alterTable('color', 'Couleur');
         $this->addSql(<<<'SQL'
 ALTER TABLE `color`
-    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL AFTER `id`,
     CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
     CHANGE `name` `name` VARCHAR(20) NOT NULL,
     CHANGE `rgb` `rgb` CHAR(7) NOT NULL COMMENT '(DC2Type:char)',
@@ -135,7 +137,7 @@ SQL);
         $this->alterTable('engine_group', 'Groupe d\'équipement');
         $this->addSql(<<<'SQL'
 ALTER TABLE `engine_group`
-    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL AFTER `code`,
     ADD `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine_type)',
     DROP formation_specifique,
     CHANGE `code` `code` VARCHAR(3) NOT NULL,
@@ -156,7 +158,7 @@ SQL);
         $this->alterTable('event_type', 'Type d\'événements');
         $this->addSql(<<<'SQL'
 ALTER TABLE `event_type`
-    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL AFTER `id`,
     ADD `to_status` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_current_place)',
     CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
     CHANGE `motif` `name` VARCHAR(30) NOT NULL
@@ -209,11 +211,11 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `invoice_time_due_copy` (
   `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `deleted` TINYINT(1) NOT NULL DEFAULT '0',
-  `name` VARCHAR(40) NOT NULL,
   `days` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '(DC2Type:tinyint)',
+  `days_after_end_of_month` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '(DC2Type:tinyint)',
+  `deleted` TINYINT(1) NOT NULL DEFAULT '0',
   `end_of_month` TINYINT UNSIGNED NOT NULL DEFAULT '0',
-  `days_after_end_of_month` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '(DC2Type:tinyint)'
+  `name` VARCHAR(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE `utf8mb4_unicode_ci` COMMENT='Délai de paiement des factures'
 SQL);
         $this->addSql(<<<'SQL'
@@ -223,6 +225,40 @@ FROM `invoice_time_due`
 SQL);
         $this->addSql('DROP TABLE `invoice_time_due`');
         $this->addSql('RENAME TABLE `invoice_time_due_copy` TO `invoice_time_due`');
+    }
+
+    private function upOutTrainers(): void {
+        $this->addSql('RENAME TABLE `employee_extformateur` TO `out_trainer`');
+        $this->alterTable('out_trainer', 'Formateur extérieur');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `out_trainer`
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL AFTER `address_zip_code`,
+    ADD `address_address2` VARCHAR(50) DEFAULT NULL AFTER `address_address`,
+    ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)' AFTER `address_city`,
+    ADD `address_email` VARCHAR(60) DEFAULT NULL AFTER `address_country`,
+    DROP `id_user_creation`,
+    DROP `date_creation`,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `prenom` `name` VARCHAR(30) NOT NULL,
+    CHANGE `nom` `surname` VARCHAR(30) NOT NULL,
+    CHANGE `address` `address_address` VARCHAR(50) DEFAULT NULL,
+    CHANGE `ville` `address_city` VARCHAR(50) DEFAULT NULL,
+    CHANGE `code_postal` `address_zip_code` VARCHAR(10) DEFAULT NULL
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `out_trainer`
+INNER JOIN `country` ON `out_trainer`.`id_phone_prefix` = `country`.`id`
+SET `out_trainer`.`tel` = CONCAT(`country`.`phone_prefix`, `out_trainer`.`tel`),
+`out_trainer`.`address_country` = UCASE(`country`.`code`),
+`out_trainer`.`surname` = UCASE(`out_trainer`.`surname`),
+`out_trainer`.`name` = UCFIRST(`out_trainer`.`name`)
+SQL);
+        $this->addSql(<<<'SQL'
+ALTER TABLE `out_trainer`
+    DROP `id_phone_prefix`,
+    DROP `society`,
+    CHANGE `tel` `address_phone_number` VARCHAR(20) DEFAULT NULL
+SQL);
     }
 
     private function upProductFamilies(): void {
@@ -276,8 +312,8 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `reject_type_copy` (
   `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `name` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `deleted` tinyint(1) NOT NULL DEFAULT 0
+  `deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `name` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE `utf8mb4_unicode_ci` COMMENT='Type de rebus'
 SQL);
         $this->addSql('INSERT INTO `reject_type_copy` (`deleted`, `name`) SELECT `deleted`, `name` FROM `reject_type`');
