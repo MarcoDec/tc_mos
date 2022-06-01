@@ -39,6 +39,15 @@ export default defineStore('user', {
     },
     getters: {
         has: state => role => state.roles.includes(role),
+        isHrAdmin() {
+            return this.has('ROLE_HR_ADMIN')
+        },
+        isHrReader() {
+            return this.isHrWriter || this.has('ROLE_HR_READER')
+        },
+        isHrWriter() {
+            return this.isHrAdmin || this.has('ROLE_HR_WRITER')
+        },
         isItAdmin() {
             return this.has('ROLE_IT_ADMIN')
         },

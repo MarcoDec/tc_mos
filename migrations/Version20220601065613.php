@@ -12,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220531142541 extends AbstractMigration {
+final class Version20220601065613 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
@@ -28,10 +28,16 @@ final class Version20220531142541 extends AbstractMigration {
     }
 
     public function up(Schema $schema): void {
+        $this->addSql(<<<'SQL'
+CREATE FUNCTION UCFIRST (s VARCHAR(255))
+    RETURNS VARCHAR(255) DETERMINISTIC
+    RETURN CONCAT(UCASE(LEFT(s, 1)), LCASE(SUBSTRING(s, 2)))
+SQL);
         $this->upCarriers();
         $this->upComponentFamilies();
         $this->upColors();
         $this->upEngineGroups();
+        $this->upEventTypes();
         $this->upIncoterms();
         $this->upInvoiceTimeDue();
         $this->upProductFamilies();
@@ -40,6 +46,7 @@ final class Version20220531142541 extends AbstractMigration {
         $this->upUnits();
         $this->upUsers();
         $this->upVatMessages();
+        $this->addSql('DROP FUNCTION UCFIRST');
     }
 
     private function alterTable(string $table, string $comment): void {
@@ -85,6 +92,7 @@ ALTER TABLE `color`
     DROP `ral`
 SQL);
         $this->addSql('DROP INDEX `couleur_id_uindex` ON `color`');
+        $this->addSql('UPDATE `color` SET `name` = UCFIRST(`name`)');
     }
 
     private function upComponentFamilies(): void {
@@ -118,6 +126,7 @@ INNER JOIN `component_family` `parent` ON `f`.`parent_id` = `parent`.`id`
 SET `f`.`code` = `parent`.`code`
 WHERE `f`.`code` IS NULL
 SQL);
+        $this->addSql('UPDATE `component_family` SET `name` = UCFIRST(`name`)');
         $this->addSql('ALTER TABLE `component_family` CHANGE `code` `code` CHAR(3) NOT NULL COMMENT \'(DC2Type:char)\'');
     }
 
@@ -134,8 +143,25 @@ ALTER TABLE `engine_group`
     CHANGE `libelle` `name` VARCHAR(35) NOT NULL,
     CHANGE `organe_securite` `safety_device` TINYINT(1) DEFAULT 0 NOT NULL
 SQL);
-        $this->addSql('UPDATE `engine_group` SET `type` = IF(`id_family_group` = 1, \'workstation\', \'tool\')');
+        $this->addSql(<<<'SQL'
+UPDATE `engine_group` SET
+    `name` = UCFIRST(`name`),
+    `type` = IF(`id_family_group` = 1, 'workstation', 'tool')
+SQL);
         $this->addSql('ALTER TABLE `engine_group` DROP `id_family_group`');
+    }
+
+    private function upEventTypes(): void {
+        $this->addSql('RENAME TABLE `employee_eventlist` TO `event_type`');
+        $this->alterTable('event_type', 'Type d\'événements');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `event_type`
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    ADD `to_status` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_current_place)',
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `motif` `name` VARCHAR(30) NOT NULL
+SQL);
+        $this->addSql('UPDATE `event_type` SET `name` = UCFIRST(`name`)');
     }
 
     private function upIncoterms(): void {
@@ -148,6 +174,7 @@ ALTER TABLE `incoterms`
     CHANGE `label` `name` VARCHAR(50) NOT NULL,
     CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
 SQL);
+        $this->addSql('UPDATE `incoterms` SET `name` = UCFIRST(`name`)');
     }
 
     private function upInvoiceTimeDue(): void {
@@ -178,6 +205,7 @@ FROM `invoice_time_due` as `i1`, `invoice_time_due` as `i2`
 WHERE `i1`.`id` > `i2`.`id`
 AND `i1`.`name` = `i2`.`name`
 SQL);
+        $this->addSql('UPDATE `invoice_time_due` SET `name` = UCFIRST(`name`)');
         $this->addSql(<<<'SQL'
 CREATE TABLE `invoice_time_due_copy` (
   `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -215,6 +243,7 @@ SELECT `subfamily_name`, `id_family`
 FROM `product_subfamily`
 SQL);
         $this->addSql('DROP TABLE `product_subfamily`');
+        $this->addSql('UPDATE `product_family` SET `name` = UCFIRST(`name`)');
     }
 
     private function upQualityTypes(): void {
@@ -226,6 +255,7 @@ ALTER TABLE `quality_type`
     CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
     CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
 SQL);
+        $this->addSql('UPDATE `quality_type` SET `name` = UCFIRST(`name`)');
     }
 
     private function upRejectTypes(): void {
@@ -242,6 +272,7 @@ ALTER TABLE `reject_type`
     CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
 SQL);
         $this->addSql('DELETE FROM `reject_type` WHERE `deleted` = 1');
+        $this->addSql('UPDATE `reject_type` SET `name` = UCFIRST(`name`)');
         $this->addSql(<<<'SQL'
 CREATE TABLE `reject_type_copy` (
   `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -265,6 +296,7 @@ ALTER TABLE `unit`
     CHANGE `unit_short_lbl` `code` VARCHAR(6) NOT NULL
 SQL);
         $this->addSql('ALTER TABLE `unit` ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`)');
+        $this->addSql('UPDATE `unit` SET `name` = UCFIRST(`name`)');
     }
 
     private function upUsers(): void {

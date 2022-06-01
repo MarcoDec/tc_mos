@@ -14,6 +14,7 @@ import {
     faIndustry,
     faLaptop,
     faLayerGroup,
+    faMale,
     faPalette,
     faPencil,
     faPlus,
@@ -48,6 +49,7 @@ library.add(faHourglass)
 library.add(faIndustry)
 library.add(faLaptop)
 library.add(faLayerGroup)
+library.add(faMale)
 library.add(faPalette)
 library.add(faPencil)
 library.add(faPlus)

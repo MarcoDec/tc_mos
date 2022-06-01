@@ -92,7 +92,9 @@
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
-                        <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
+                        <AppNavbarItem
+                            v-if="user.isProductionReader" id="production" icon="industry"
+                            title="Production">
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
@@ -134,7 +136,9 @@
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
-                            <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
+                            <AppNavbarLink
+                                disabled icon="check-circle" to="component-reference-values"
+                                variant="danger">
                                 Relevés qualités composants
                             </AppNavbarLink>
                             <template v-if="user.isQualityAdmin">
@@ -146,6 +150,22 @@
                                 </AppNavbarLink>
                                 <AppNavbarLink brands icon="elementor" to="quality-types" variant="warning">
                                     Critères qualités
+                                </AppNavbarLink>
+                            </template>
+                        </AppNavbarItem>
+                        <AppNavbarItem v-if="user.isHrReader" id="hr" icon="male" title="RH">
+                            <AppDropdownItem disabled variant="success">
+                                Lecteur
+                            </AppDropdownItem>
+                            <AppNavbarLink disabled icon="user-graduate" to="out-trainers" variant="danger">
+                                Formateurs extérieurs
+                            </AppNavbarLink>
+                            <template v-if="user.isHrAdmin">
+                                <AppDropdownItem disabled variant="warning">
+                                    Administrateur
+                                </AppDropdownItem>
+                                <AppNavbarLink brands icon="elementor" to="event-types" variant="warning">
+                                    Catégories d'événements des employés
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
