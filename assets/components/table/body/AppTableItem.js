@@ -11,6 +11,16 @@ function AppTableItem(props, context) {
                 onClick: () => props.machine.send('update', {updated: props.item['@id']}),
                 title: 'Modifier',
                 variant: 'primary'
+            }),
+            h(resolveComponent('AppBtn'), {
+                icon: 'trash',
+                async onClick() {
+                    props.machine.send('submit')
+                    await props.item.remove()
+                    props.machine.send('success')
+                },
+                title: 'Supprimer',
+                variant: 'danger'
             })
         ]),
         props.fields.map(field => {

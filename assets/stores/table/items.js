@@ -23,6 +23,9 @@ export default function generateItems(iriType) {
                     for (const item of response.content['hydra:member'])
                         this.items.push(generateItem(this.iriType, item, this))
             },
+            remove(removed) {
+                this.items = this.items.filter(item => item['@id'] !== removed)
+            },
             replaceSearch(field, value) {
                 this.search[field] = value
             },

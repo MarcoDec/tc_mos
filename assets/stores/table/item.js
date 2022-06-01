@@ -8,6 +8,11 @@ export default function generateItem(iriType, item, root) {
                 this.$reset()
                 this.$dispose()
             },
+            async remove() {
+                await fetchApi(this.iri, 'DELETE')
+                this.root.remove(this['@id'])
+                this.dispose()
+            },
             async update(data) {
                 const response = await fetchApi(this.iri, 'PATCH', data)
                 if (response.status === 422)

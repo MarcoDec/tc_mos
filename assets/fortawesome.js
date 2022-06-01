@@ -28,6 +28,7 @@ import {
     faSignOutAlt,
     faSitemap,
     faTimes,
+    faTrash,
     faUserCircle,
     faUserGraduate,
     faWrench
@@ -65,6 +66,7 @@ library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faTimes)
+library.add(faTrash)
 library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faWrench)
