@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220601082822 extends AbstractMigration {
+final class Version20220601145330 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -60,7 +60,7 @@ SQL);
         $this->insert('couleur');
         $this->addSql(<<<'SQL'
 CREATE TABLE `country` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
   `code` varchar(2) NOT NULL,
   `code_iso` varchar(3) DEFAULT NULL,
@@ -75,6 +75,19 @@ CREATE TABLE `country` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL);
         $this->insert('country');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `customcode` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
+  `code` varchar(255) NOT NULL,
+  `libelle` text NOT NULL,
+  `date_creation` datetime DEFAULT NULL COMMENT 'date de création',
+  `date_modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'date modification',
+  `id_user_creation` int(11) DEFAULT NULL,
+  `id_user_modification` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('customcode');
         $this->addSql(<<<'SQL'
 CREATE TABLE `employee_eventlist` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -161,6 +174,68 @@ CREATE TABLE `messagetva` (
 SQL);
         $this->insert('messagetva');
         $this->addSql(<<<'SQL'
+CREATE TABLE `product` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
+  `freeze` int(1) NOT NULL DEFAULT '0',
+  `id_customer` int(11) NOT NULL,
+  `id_product_family` int(11) NOT NULL,
+  `id_product_subfamily` int(11) NOT NULL,
+  `id_factory` int(11) DEFAULT NULL,
+  `id_country` int(11) NOT NULL,
+  `id_society` int(11) NOT NULL DEFAULT '0',
+  `id_productstatus` int(11) NOT NULL DEFAULT '1',
+  `ref` varchar(255) NOT NULL,
+  `designation` varchar(255) NOT NULL,
+  `commande_ouverte` varchar(100) NOT NULL,
+  `price_without_cu` double(24,5) NOT NULL COMMENT 'inutilisé, uniquement pour besoin de sauvegarde',
+  `price` double(24,5) NOT NULL,
+  `transfert_price_work` double(24,5) NOT NULL DEFAULT '0.00000' COMMENT 'prix de cession main d''oeuvre',
+  `transfert_price_supplies` double(24,5) NOT NULL DEFAULT '0.00000' COMMENT 'prix de cession matière',
+  `nb_pcs_h_auto` float NOT NULL DEFAULT 0,
+  `nb_pcs_h_manu` float NOT NULL DEFAULT 0,
+  `weight` double(10,2) NOT NULL,
+  `indice` varchar(15) NOT NULL,
+  `indice_interne` int(3) NOT NULL DEFAULT '1',
+  `id_product_child` int(11) NOT NULL,
+  `gestion_cu` tinyint(4) NOT NULL,
+  `qtcu` decimal(10,3) NOT NULL,
+  `id_customcode` int(11) NOT NULL DEFAULT '0',
+  `date_expiration` date DEFAULT NULL,
+  `conditionnement` varchar(255) NOT NULL COMMENT 'quantite par carton',
+  `typeconditionnement` varchar(255) NOT NULL COMMENT 'bac, palette, carton ...',
+  `min_prod_quantity` int(11) NOT NULL COMMENT 'minimum de mise en production',
+  `stock_minimum` int(11) NOT NULL COMMENT 'quantite minimum en stock',
+  `production_delay` int(11) NOT NULL COMMENT 'delai de réappro (jours)',
+  `livraison_minimum` int(11) NOT NULL COMMENT 'equivalent de la MOQ',
+  `volume_previsionnel` int(11) NOT NULL COMMENT 'volume de vente prévu annuellement pour le client',
+  `id_incoterms` int(11) DEFAULT NULL COMMENT 'cas particulier',
+  `info_public` text NOT NULL,
+  `is_prototype` tinyint(4) DEFAULT NULL COMMENT '0=série, 1=proto, 2=echantillon',
+  `c_200` tinyint(4) DEFAULT '0' COMMENT 'validation DIRECTION',
+  `c_300` tinyint(4) DEFAULT '0' COMMENT 'validation qualité',
+  `c_600` tinyint(4) DEFAULT '0' COMMENT 'validation production',
+  `c_700` tinyint(4) DEFAULT '0' COMMENT 'validation logistique',
+  `c_800` tinyint(4) DEFAULT '0' COMMENT 'validation achat',
+  `date_creation` datetime DEFAULT NULL COMMENT 'date de création',
+  `date_modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'date modification',
+  `id_user_creation` int(11) DEFAULT NULL,
+  `id_user_modification` int(11) DEFAULT NULL,
+  `price_old` double(24,5) NOT NULL DEFAULT '0.00000',
+  `temps_auto` varchar(255) DEFAULT NULL,
+  `temps_manu` varchar(255) DEFAULT NULL,
+  `temps_inertie` float DEFAULT NULL,
+  `price_tn` float DEFAULT NULL,
+  `price_md` float DEFAULT NULL,
+  `imds` tinyint(1) NOT NULL DEFAULT '0',
+  `tps_chiff_auto` float UNSIGNED NOT NULL DEFAULT '0',
+  `tps_chiff_manu` float UNSIGNED NOT NULL DEFAULT '0',
+  `isBrokenLinkSolved` tinyint(1) NOT NULL DEFAULT '0',
+  `max_proto_quantity` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('product');
+        $this->addSql(<<<'SQL'
 CREATE TABLE `product_family` (
   `id` tinyint(3) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `customsCode` varchar(255) DEFAULT NULL,
@@ -235,7 +310,7 @@ SQL);
                                 if (is_string($value)) {
                                     $value = trim($value);
                                 }
-                                return $value === null || $value === '0000-00-00 00:00:00'
+                                return $value === null || $value === '0000-00-00 00:00:00' || $value === '0000-00-00'
                                     ? 'NULL'
                                     : $this->connection->quote($value);
                             })

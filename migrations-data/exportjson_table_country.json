@@ -1,19 +1,5 @@
 [
   {
-    "id": "0",
-    "statut": "0",
-    "code": "",
-    "code_iso": null,
-    "libelle": "-",
-    "in_eu": "0",
-    "active": "1",
-    "phone_prefix": "",
-    "date_creation": "0000-00-00 00:00:00",
-    "date_modification": "0000-00-00 00:00:00",
-    "id_user_creation": null,
-    "id_user_modification": null
-  },
-  {
     "id": "1",
     "statut": "0",
     "code": "FR",

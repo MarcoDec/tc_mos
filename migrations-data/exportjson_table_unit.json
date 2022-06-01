@@ -78,5 +78,29 @@
     "unit_complete_lbl": "Mètre",
     "base": "1",
     "parent": null
+  },
+  {
+    "id": "11",
+    "statut": "0",
+    "unit_short_lbl": "s",
+    "unit_complete_lbl": "Seconde",
+    "base": "1",
+    "parent": null
+  },
+  {
+    "id": "12",
+    "statut": "0",
+    "unit_short_lbl": "h",
+    "unit_complete_lbl": "Heure",
+    "base": "3600",
+    "parent": "11"
+  },
+  {
+    "id": "13",
+    "statut": "0",
+    "unit_short_lbl": "j",
+    "unit_complete_lbl": "Jour",
+    "base": "86400",
+    "parent": "11"
   }
 ]
