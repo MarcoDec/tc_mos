@@ -44,6 +44,7 @@ SQL);
         $this->upProductFamilies();
         $this->upQualityTypes();
         $this->upRejectTypes();
+        $this->upTimeSlots();
         $this->upUnits();
         $this->upUsers();
         $this->upVatMessages();
@@ -319,6 +320,27 @@ SQL);
         $this->addSql('INSERT INTO `reject_type_copy` (`deleted`, `name`) SELECT `deleted`, `name` FROM `reject_type`');
         $this->addSql('DROP TABLE `reject_type`');
         $this->addSql('RENAME TABLE `reject_type_copy` TO `reject_type`');
+    }
+
+    private function upTimeSlots(): void {
+        $this->addSql(<<<'SQL'
+CREATE TABLE `time_slot` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `end` TIME NOT NULL COMMENT '(DC2Type:time_immutable)',
+    `end_break` TIME DEFAULT NULL COMMENT '(DC2Type:time_immutable)',
+    `name` VARCHAR(10) NOT NULL,
+    `start` TIME NOT NULL COMMENT '(DC2Type:time_immutable)',
+    `start_break` TIME DEFAULT NULL COMMENT '(DC2Type:time_immutable)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE `utf8mb4_unicode_ci` COMMENT='Plages horaires'
+SQL);
+        $this->addSql(<<<'SQL'
+INSERT INTO `time_slot` (`end`, `end_break`, `name`, `start`, `start_break`) VALUES
+('13:30:00', NULL, 'Matin', '05:30:00', NULL),
+('17:30:00', '13:30:00', 'Journée', '07:30:00', '12:30:00'),
+('21:30:00',  NULL, 'Après-midi', '13:30:00', NULL),
+('08:00:00',  NULL, 'Samedi', '13:00:00', NULL)
+SQL);
     }
 
     private function upUnits(): void {
