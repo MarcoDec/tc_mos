@@ -33,6 +33,8 @@ export default {
             const children = {}
             if (typeof context.slots.create === 'function')
                 children.create = args => context.slots.create(args)
+            if (typeof context.slots.pagination === 'function')
+                children.pagination = args => context.slots.pagination(args)
             if (typeof context.slots.search === 'function')
                 children.search = args => context.slots.search(args)
 

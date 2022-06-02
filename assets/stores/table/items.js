@@ -2,6 +2,16 @@ import {defineStore} from 'pinia'
 import fetchApi from '../../api'
 import generateItem from './item'
 
+function extractPage(view, hydra) {
+    if (typeof view !== 'object')
+        return 1
+    const subject = view[`hydra:${hydra}`]
+    if (typeof subject === 'undefined')
+        return 1
+    const extracted = subject.match(/page=(\d+)/)
+    return parseInt(extracted[1] ?? 1)
+}
+
 export default function generateItems(iriType) {
     return defineStore(iriType, {
         actions: {
@@ -19,9 +29,24 @@ export default function generateItems(iriType) {
             async fetch(url = null) {
                 this.resetItems()
                 const response = await fetchApi(url ?? this.iri, 'GET', this.fetchBody)
-                if (response.status === 200)
+                if (response.status === 200) {
+                    const view = response.content['hydra:view']
+                    this.first = extractPage(view, 'first')
+                    this.last = extractPage(view, 'last')
+                    this.next = extractPage(view, 'next')
+                    this.prev = extractPage(view, 'prev')
+                    this.total = response.content['hydra:totalItems']
                     for (const item of response.content['hydra:member'])
                         this.items.push(generateItem(this.iriType, item, this))
+                }
+                if (this.current > this.pages) {
+                    this.current = this.pages
+                    await this.fetch(url)
+                }
+            },
+            async goTo(index, url = null) {
+                this.current = index
+                await this.fetch(url)
             },
             remove(removed) {
                 this.items = this.items.filter(item => item['@id'] !== removed)
@@ -57,7 +82,7 @@ export default function generateItems(iriType) {
                 return field => (this.isSorter(field) ? this.order : 'none')
             },
             fetchBody() {
-                return {...this.search, ...this.orderBody}
+                return {page: this.current, ...this.search, ...this.orderBody}
             },
             iri: state => `/api/${state.iriType}`,
             isSorter: state => field => field.name === state.sorted,
@@ -66,8 +91,21 @@ export default function generateItems(iriType) {
             orderBody(state) {
                 return state.sorted === null ? {} : {[`order[${state.sorted}]`]: this.orderParam}
             },
-            orderParam: state => (state.asc ? 'asc' : 'desc')
+            orderParam: state => (state.asc ? 'asc' : 'desc'),
+            pages: state => Math.ceil(state.total / 15)
         },
-        state: () => ({asc: true, iriType, items: [], search: {}, sorted: null})
+        state: () => ({
+            asc: true,
+            current: 1,
+            first: 1,
+            iriType,
+            items: [],
+            last: 1,
+            next: 1,
+            prev: 1,
+            search: {},
+            sorted: null,
+            total: 0
+        })
     })()
 }

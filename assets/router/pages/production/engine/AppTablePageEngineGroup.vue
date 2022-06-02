@@ -33,6 +33,12 @@
         }
     }
 
+    async function goTo(index, machine, store) {
+        machine.send('submit')
+        await store.goTo(index, store.search['@type'] ?? null)
+        machine.send('success')
+    }
+
     async function search(data, machine, store) {
         machine.send('submit')
         await store.fetch(data.get('@type'))
@@ -60,6 +66,14 @@
                         :variant="variant"/>
                 </template>
             </AppForm>
+        </template>
+        <template #pagination="{machine, range, store}">
+            <AppPaginationItem
+                v-for="index in range"
+                :key="index"
+                :index="index"
+                :store="store"
+                @click="() => goTo(index, machine, store)"/>
         </template>
         <template #search="{fields, icon: btnIcon, id, inline, machine, noContent, store, submitLabel, variant}">
             <AppForm

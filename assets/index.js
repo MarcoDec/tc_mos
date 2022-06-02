@@ -9,6 +9,7 @@ import AppForm from './components/form/AppForm'
 import AppInput from './components/form/field/input/AppInput'
 import AppInputGuesser from './components/form/field/input/AppInputGuesser'
 import AppOverlay from './components/AppOverlay'
+import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRouterLink from './components/nav/AppRouterLink'
 import AppTableFormField from './components/table/AppTableFormField'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm'
@@ -28,6 +29,7 @@ const app = createApp(App)
     .component('AppInput', AppInput)
     .component('AppInputGuesser', AppInputGuesser)
     .component('AppOverlay', AppOverlay)
+    .component('AppPaginationItem', AppPaginationItem)
     .component('AppRouterLink', AppRouterLink)
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)

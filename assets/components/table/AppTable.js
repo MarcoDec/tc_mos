@@ -1,3 +1,4 @@
+import AppPagination from './pagination/AppPagination'
 import AppTableHeaders from './head/AppTableHeaders'
 import AppTableItems from './body/AppTableItems'
 import {generateTableFields} from '../validators'
@@ -23,19 +24,38 @@ function AppTable(props, context) {
     }
     return h(
         'div',
-        {class: 'row', id: props.id},
-        h('table', {class: 'col table table-bordered table-hover table-striped'}, [
+        {id: props.id},
+        h(
+            'div',
+            {class: 'row'},
+            h('table', {class: 'col table table-bordered table-hover table-striped'}, [
+                h(
+                    AppTableHeaders,
+                    {fields: props.fields, id: `${props.id}-headers`, machine: props.machine, store: props.store},
+                    searchSlots
+                ),
+                h(
+                    AppTableItems,
+                    {fields: props.fields, id: `${props.id}-items`, items: props.store.items, machine: props.machine},
+                    cellSlots
+                )
+            ])
+        ),
+        h(
+            'div',
+            {class: 'row'},
             h(
-                AppTableHeaders,
-                {fields: props.fields, id: `${props.id}-headers`, machine: props.machine, store: props.store},
-                searchSlots
-            ),
-            h(
-                AppTableItems,
-                {fields: props.fields, id: `${props.id}-items`, items: props.store.items, machine: props.machine},
-                cellSlots
+                AppPagination,
+                {
+                    class: 'col d-inline-flex justify-content-end',
+                    machine: props.machine,
+                    store: props.store
+                },
+                typeof context.slots.pagination === 'function'
+                    ? args => context.slots.pagination(args)
+                    : null
             )
-        ])
+        )
     )
 }
 
