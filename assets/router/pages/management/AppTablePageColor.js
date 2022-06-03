@@ -1,6 +1,6 @@
 import {h, resolveComponent} from 'vue'
 import AppTablePage from '../AppTablePage'
-import {generateTableFields} from '../../../components/validators'
+import {generateTableFields} from '../../../components/props'
 import {useRoute} from 'vue-router'
 
 function AppTablePageColor(props) {

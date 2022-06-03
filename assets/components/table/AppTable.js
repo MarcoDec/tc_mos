@@ -1,7 +1,7 @@
 import AppPagination from './pagination/AppPagination'
 import AppTableHeaders from './head/AppTableHeaders'
 import AppTableItems from './body/AppTableItems'
-import {generateTableFields} from '../validators'
+import {generateTableFields} from '../props'
 import {h} from 'vue'
 
 function AppTable(props, context) {

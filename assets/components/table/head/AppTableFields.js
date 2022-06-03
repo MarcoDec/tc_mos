@@ -1,5 +1,5 @@
 import AppTableField from './AppTableField'
-import {generateTableFields} from '../../validators'
+import {generateTableFields} from '../../props'
 import {h} from 'vue'
 
 function AppTableFields(props) {

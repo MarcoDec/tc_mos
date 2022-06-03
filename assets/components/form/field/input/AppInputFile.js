@@ -1,4 +1,4 @@
-import {generateField} from '../../../validators'
+import {generateField} from '../../../props'
 import {h} from 'vue'
 
 function AppInputFile(props, context) {

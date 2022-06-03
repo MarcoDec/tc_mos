@@ -1,7 +1,7 @@
 import AppTableAdd from './AppTableAdd'
 import AppTableFields from './AppTableFields'
 import AppTableSearch from './AppTableSearch'
-import {generateTableFields} from '../../validators'
+import {generateTableFields} from '../../props'
 import {h} from 'vue'
 
 function AppTableHeaders(props, context) {

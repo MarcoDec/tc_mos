@@ -1,5 +1,5 @@
 import {h, resolveComponent} from 'vue'
-import {generateTableFields} from '../../validators'
+import {generateTableFields} from '../../props'
 
 function AppTableSearch(props, context) {
     const children = {

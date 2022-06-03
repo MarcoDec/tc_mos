@@ -1,6 +1,6 @@
 import AppTableItem from './AppTableItem'
 import AppTableItemUpdate from './AppTableItemUpdate'
-import {generateTableFields} from '../../validators'
+import {generateTableFields} from '../../props'
 import {h} from 'vue'
 
 function AppTableItems(props, context) {

@@ -1,4 +1,4 @@
-import {generateVariant} from './validators'
+import {generateVariant} from './props'
 import {h} from 'vue'
 
 function AppAlert(props, context) {

@@ -4,7 +4,7 @@
     import AppNavbarLink from './AppNavbarLink'
     import AppNavbarUser from './AppNavbarUser.vue'
     import {computed} from 'vue'
-    import {generateVariant} from '../validators'
+    import {generateVariant} from '../props'
     import useUserStore from '../../stores/hr/employee/user'
 
     const database = `${location.protocol}//${location.hostname}:8080`

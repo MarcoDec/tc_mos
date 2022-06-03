@@ -1,4 +1,4 @@
-import {generateTableFields, generateVariant} from '../../validators'
+import {generateTableFields, generateVariant} from '../../props'
 import {h, resolveComponent} from 'vue'
 
 function AppTableHeaderForm(props, context) {

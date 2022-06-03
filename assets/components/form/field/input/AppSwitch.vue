@@ -1,6 +1,6 @@
 <script setup>
     import {ref, watch} from 'vue'
-    import {generateField} from '../../../validators'
+    import {generateField} from '../../../props'
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({

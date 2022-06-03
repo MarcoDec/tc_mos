@@ -1,5 +1,5 @@
 import AppOption from './AppOption'
-import {generateField} from '../../../../validators'
+import {generateField} from '../../../../props'
 import {h} from 'vue'
 
 function AppSelect(props, context) {

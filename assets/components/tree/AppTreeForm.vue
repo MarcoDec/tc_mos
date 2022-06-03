@@ -1,6 +1,6 @@
 <script setup>
     import {computed, onMounted, ref, watch} from 'vue'
-    import {generateFields} from '../validators'
+    import {generateFields} from '../props'
 
     const props = defineProps({
         families: {required: true, type: Object},
@@ -63,6 +63,7 @@
                 :no-ignore-null="families.hasSelected"
                 :violations="machine.state.value.context.violations"
                 class="col"
+                label-cols="col-xl-3 col-lg-12"
                 submit-label="Créer"
                 @submit="submit">
                 <template #default="{disabled, form, submitLabel, type}">

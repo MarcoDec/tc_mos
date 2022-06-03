@@ -1,6 +1,6 @@
 import {h, resolveComponent} from 'vue'
 import AppTableItemField from './AppTableItemField.vue'
-import {generateTableFields} from '../../validators'
+import {generateTableFields} from '../../props'
 
 function AppTableItem(props, context) {
     return h('tr', {id: props.id}, [

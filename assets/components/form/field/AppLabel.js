@@ -1,10 +1,13 @@
-import {generateField} from '../../validators'
+import {generateField, generateLabelCols} from '../../props'
 import {h} from 'vue'
 
 function AppLabel(props) {
-    return h('label', {class: 'col-form-label col-md-3 col-xs-12', for: props['for']}, props.field.label)
+    return h('label', {class: `col-form-label ${props.cols}`, for: props['for']}, props.field.label)
 }
 
-AppLabel.props = {field: generateField(), for: {required: true, type: String}}
+AppLabel.props = {
+    cols: generateLabelCols(),
+    field: generateField(), for: {required: true, type: String}
+}
 
 export default AppLabel

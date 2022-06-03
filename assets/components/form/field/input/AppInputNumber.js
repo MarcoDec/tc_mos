@@ -1,5 +1,5 @@
 import {h, resolveComponent} from 'vue'
-import {generateField} from '../../../validators'
+import {generateField} from '../../../props'
 
 function AppInputNumber(props, context) {
     return h(resolveComponent('AppInput'), {

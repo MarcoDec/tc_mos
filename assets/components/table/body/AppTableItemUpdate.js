@@ -1,6 +1,6 @@
 import {h, resolveComponent} from 'vue'
 import AppTableItemUpdateField from './AppTableItemUpdateField'
-import {generateTableFields} from '../../validators'
+import {generateTableFields} from '../../props'
 
 function AppTableItemUpdate(props, context) {
     const formId = `${props.id}-update`

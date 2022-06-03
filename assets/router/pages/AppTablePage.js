@@ -2,7 +2,7 @@ import {computed, h, onMounted, onUnmounted, resolveComponent} from 'vue'
 import {tableLoading, useTableMachine} from '../../machine'
 import AppTable from '../../components/table/AppTable'
 import generateItems from '../../stores/table/items'
-import {generateTableFields} from '../../components/validators'
+import {generateTableFields} from '../../components/props'
 import {useRoute} from 'vue-router'
 
 export default {

@@ -2,7 +2,7 @@
     import {onMounted, onUnmounted} from 'vue'
     import AppTree from '../../components/tree/AppTree'
     import generateFamilies from '../../stores/family/families'
-    import {generateFields} from '../../components/validators'
+    import {generateFields} from '../../components/props'
     import {useMachine} from '../../machine'
     import {useRoute} from 'vue-router'
 

@@ -1,6 +1,6 @@
+import {generateField, generateLabelCols} from '../../props'
 import {h, resolveComponent} from 'vue'
 import AppLabel from './AppLabel'
-import {generateField} from '../../validators'
 
 function AppFormGroup(props, context) {
     const id = `${props.form}-${props.field.name}`
@@ -20,7 +20,7 @@ function AppFormGroup(props, context) {
     } else
         children.push(h(resolveComponent('AppInputGuesser'), attrs))
     return h('div', {class: 'row mb-3'}, [
-        h(AppLabel, {field: props.field, for: id}),
+        h(AppLabel, {cols: props.labelCols, field: props.field, for: id}),
         h('div', {class: 'col'}, children)
     ])
 }
@@ -30,6 +30,7 @@ AppFormGroup.props = {
     disabled: {type: Boolean},
     field: generateField(),
     form: {required: true, type: String},
+    labelCols: generateLabelCols(),
     modelValue: {},
     violation: {default: null, type: Object}
 }

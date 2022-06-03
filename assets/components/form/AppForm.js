@@ -1,6 +1,6 @@
+import {fieldValidator, generateLabelCols} from '../props'
 import {h, resolveComponent} from 'vue'
 import AppFormGroup from './field/AppFormGroup'
-import {fieldValidator} from '../validators'
 
 function AppForm(props, context) {
     function generateSlot() {
@@ -23,6 +23,7 @@ function AppForm(props, context) {
                 field,
                 form: props.id,
                 key: field.name,
+                labelCols: props.labelCols,
                 modelValue: props.modelValue[field.name],
                 'onUpdate:modelValue': value => context.emit('update:modelValue', {
                     ...props.modelValue,
@@ -89,6 +90,7 @@ AppForm.props = {
     },
     id: {required: true, type: String},
     inline: {type: Boolean},
+    labelCols: generateLabelCols(),
     modelValue: {default: () => ({}), type: Object},
     noContent: {type: Boolean},
     noIgnoreNull: {type: Boolean},

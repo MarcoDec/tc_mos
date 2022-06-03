@@ -58,6 +58,10 @@ export function generateFields() {
     }
 }
 
+export function generateLabelCols() {
+    return {default: 'col-md-3 col-xs-12', type: String}
+}
+
 export function generateTableField() {
     return generateField()
 }

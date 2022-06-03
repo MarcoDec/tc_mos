@@ -1,5 +1,5 @@
 import {h, resolveComponent} from 'vue'
-import {generateVariant} from '../validators'
+import {generateVariant} from '../props'
 
 function AppNavbarLink(props, context) {
     return h(

@@ -3,7 +3,7 @@ import AppInputFile from './AppInputFile'
 import AppInputNumber from './AppInputNumber'
 import AppSelect from './select/AppSelect'
 import AppSwitch from './AppSwitch.vue'
-import {generateField} from '../../../validators'
+import {generateField} from '../../../props'
 
 function getType(field) {
     switch (field.type) {
