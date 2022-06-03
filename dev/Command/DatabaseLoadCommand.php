@@ -21,8 +21,7 @@ final class DatabaseLoadCommand extends AbstractCommand {
 
         $run('doctrine:database:drop', ['--force' => true]);
         $run('doctrine:database:create');
-        $run(SchemaUpdateCommand::getDefaultName());
-        $run(FixturesCommand::getDefaultName());
+        $run('doctrine:migrations:migrate');
         return self::SUCCESS;
     }
 }

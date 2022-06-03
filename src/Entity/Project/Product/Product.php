@@ -206,7 +206,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 10),
-        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
+        ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
     private ?string $customsCode = null;
@@ -245,7 +245,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
         Assert\Length(min: 1, max: 3, groups: ['Product-admin', 'Product-create']),
-        ORM\Column(name: '`index`', length: 3, options: ['charset' => 'ascii']),
+        ORM\Column(name: '`index`', length: 3),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $index = null;

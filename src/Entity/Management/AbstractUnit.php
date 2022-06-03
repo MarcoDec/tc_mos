@@ -106,6 +106,11 @@ abstract class AbstractUnit extends Entity {
         return $this->parent?->getId() ?? 0;
     }
 
+    #[Serializer\Groups(['read:unit:option'])]
+    public function getText(): ?string {
+        return $this->getCode();
+    }
+
     /**
      * @param null|static $unit
      */

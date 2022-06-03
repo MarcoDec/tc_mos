@@ -5,13 +5,4 @@ services:
 
   App\:
     exclude:
-      - ../dev/ExpressionLanguage/
-      - ../dev/Fixtures/
-      - ../dev/PhpStan/
     resource: ../dev/
-
-  App\Command\FixturesCommand:
-    arguments:
-      $configDir: '%kernel.project_dir%/fixtures/config'
-      $jsonDir: '%kernel.project_dir%/fixtures/data'
-      $jsonPrefix: exportjson_table_

@@ -67,8 +67,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class OutTrainer extends Entity {
     #[

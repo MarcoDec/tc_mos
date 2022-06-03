@@ -16,11 +16,13 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     public function __construct(
         private readonly NormalizerInterface $normalizer,
         private readonly TokenRepository $tokenRepo,
+        private readonly TranslatorInterface $translator,
         private readonly UrlGeneratorInterface $urlGenerator
     ) {
     }
@@ -41,7 +43,10 @@ final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response {
         return new JsonResponse(
-            data: empty($exception->getMessage()) ? $exception->getMessageKey() : $exception->getMessage(),
+            data: $this->translator->trans(
+                id: empty($exception->getMessage()) ? $exception->getMessageKey() : $exception->getMessage(),
+                domain: 'security'
+            ),
             status: Response::HTTP_UNAUTHORIZED
         );
     }
