@@ -1,14 +1,12 @@
 export default [
     {
-        component: () => import('../pages/AppTablePage'),
+        component: () => import('../pages/AppSuspenseWrapper'),
         meta: {requiresAuth: true},
         name: 'event-types',
         path: '/event-types',
         props: {
-            brands: true,
-            fields: [{label: 'Nom', name: 'name'}],
-            icon: 'elementor',
-            title: 'Catégories d\'événements des employés'
+            component: () => import('../pages/hr/event/AppTablePageEventType.vue'),
+            properties: {brands: true, icon: 'elementor', title: 'Catégories d\'événements des employés'}
         }
     },
     {
@@ -17,7 +15,7 @@ export default [
         name: 'out-trainers',
         path: '/out-trainers',
         props: {
-            component: () => import('../pages/hr/event/AppTablePageEventType.vue'),
+            component: () => import('../pages/hr/AppTablePageOutTrainer.vue'),
             properties: {icon: 'user-graduate', title: 'Formateurs extérieurs'}
         }
     },
