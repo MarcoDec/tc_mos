@@ -28,7 +28,7 @@ function AppTable(props, context) {
         h(
             'div',
             {class: 'row'},
-            h('table', {class: 'col table table-bordered table-hover table-striped'}, [
+            h('table', {class: 'col table table-bordered table-hover table-responsive table-sm table-striped'}, [
                 h(
                     AppTableHeaders,
                     {fields: props.fields, id: `${props.id}-headers`, machine: props.machine, store: props.store},
