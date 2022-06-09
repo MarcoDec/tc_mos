@@ -14,5 +14,11 @@ export default [
             ],
             label: 'composants'
         }
+    },
+    {
+        component: async () => import('../pages/AppShowGui.vue'),
+        meta: {requiresAuth: true},
+        name: 'supplier-show',
+        path: '/supplier/show'
     }
 ]

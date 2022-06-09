@@ -14,6 +14,10 @@ $dropdown-success: #57ec57 !default;
   background-color: #8ac2f1 !important;
 }
 
+.bg-success .dropdown-item {
+  background-color: $dropdown-success !important;
+}
+
 .btn-icon {
   height: 20px;
   line-height: .8;
@@ -26,14 +30,14 @@ $dropdown-success: #57ec57 !default;
   }
 }
 
-.bg-success .dropdown-item {
-  background-color: $dropdown-success !important;
-}
-
 @each $color, $value in $theme-colors {
   .bg-#{$color}.text-dark .disabled.dropdown-item {
     color: $black !important;
   }
+}
+
+.container {
+  min-width: 100%;
 }
 
 .dropdown-item .text-success {
@@ -44,6 +48,37 @@ $dropdown-success: #57ec57 !default;
   cursor: pointer;
 }
 
+.resizer {
+  background-color: black;
+  cursor: row-resize;
+  margin: 0;
+  padding: 2px;
+}
+
 .text-white .navbar-text {
   color: $white !important;
+}
+
+@media (max-width: 1140px) {
+  .gui-left {
+    display: block;
+  }
+
+  .gui-top {
+    display: block;
+  }
+}
+
+@media (min-width: 1140px) {
+  .gui {
+    overflow: hidden;
+  }
+
+  .gui-left {
+    display: inline;
+  }
+
+  .gui-top {
+    display: flex;
+  }
 }
