@@ -7,7 +7,7 @@ function stringify(data) {
             obj[key] = true
         else if (value === 'false')
             obj[key] = false
-        else if (/^\d+$/.test(value))
+        else if (/^\d+(\.\d+)?$/.test(value))
             obj[key] = parseFloat(value)
     return JSON.stringify(obj)
 }

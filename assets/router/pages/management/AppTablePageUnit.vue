@@ -10,7 +10,7 @@
     const fields = [
         {label: 'Code', name: 'code', sort: true},
         {label: 'Nom', name: 'name', sort: true},
-        {label: 'Base', name: 'base', sort: true},
+        {label: 'Base', name: 'base', sort: true, type: 'number'},
         {label: 'Parent', name: 'parent', options, sort: true, sortName: 'parent.code', type: 'select'}
     ]
 
