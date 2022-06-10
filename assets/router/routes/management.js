@@ -14,6 +14,12 @@ export default [
         }
     },
     {
+        component: async () => import('../pages/management/AppCurrencies.vue'),
+        meta: {requiresAuth: true},
+        name: 'currencies',
+        path: '/currencies'
+    },
+    {
         component: () => import('../pages/AppTablePage'),
         meta: {requiresAuth: true},
         name: 'invoice-time-dues',
