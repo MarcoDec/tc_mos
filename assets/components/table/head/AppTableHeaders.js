@@ -1,5 +1,5 @@
 import AppTableAdd from './AppTableAdd'
-import AppTableFields from './AppTableFields'
+import AppTableFields from './fields/AppTableFields'
 import AppTableSearch from './AppTableSearch'
 import {generateTableFields} from '../../props'
 import {h} from 'vue'

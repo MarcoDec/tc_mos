@@ -14,6 +14,7 @@ import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRouterLink from './components/nav/AppRouterLink'
 import AppTableFormField from './components/table/AppTableFormField'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm'
+import AppTableItemField from './components/table/body/AppTableItemField.vue'
 import AppTreeLabel from './components/tree/AppTreeLabel'
 import Fa from './components/Fa'
 import {createPinia} from 'pinia'
@@ -34,6 +35,7 @@ const app = createApp(App)
     .component('AppShowGuiCard', defineAsyncComponent(() => import('./components/gui/AppShowGuiCard.vue')))
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)
+    .component('AppTableItemField', AppTableItemField)
     .component('AppTab', defineAsyncComponent(() => import('./components/tabs/AppTab.vue')))
     .component('AppTabs', defineAsyncComponent(() => import('./components/tabs/AppTabs.vue')))
     .component('AppTreeLabel', AppTreeLabel)

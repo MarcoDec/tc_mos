@@ -10,13 +10,15 @@
         {text: 'Outil', type: 'ToolGroup', value: '/api/tool-groups'}
     ]
     const groupFields = [
-        {label: 'Code', name: 'code'},
-        {label: 'Nom', name: 'name'},
+        {label: 'Code', name: 'code', sort: true, update: true},
+        {label: 'Nom', name: 'name', sort: true, update: true},
         {
             label: 'Type',
             name: '@type',
             options: {label: value => options.find(option => option.type === value)?.text ?? null, options},
-            type: 'select'
+            sort: false,
+            type: 'select',
+            update: false
         }
     ]
 

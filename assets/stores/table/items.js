@@ -41,7 +41,10 @@ export default function generateItems(iriType) {
                 }
                 if (this.current > this.pages) {
                     this.current = this.pages
-                    await this.fetch(url)
+                    if (this.current > 0)
+                        await this.fetch(url)
+                    else
+                        this.current = 1
                 }
             },
             async goTo(index, url = null) {
@@ -73,6 +76,7 @@ export default function generateItems(iriType) {
                 else {
                     this.asc = true
                     this.sorted = field.name
+                    this.sortName = field.sortName ?? field.name
                 }
                 await this.fetch()
             }
@@ -89,7 +93,7 @@ export default function generateItems(iriType) {
             length: state => state.items.length,
             order: state => (state.asc ? 'ascending' : 'descending'),
             orderBody(state) {
-                return state.sorted === null ? {} : {[`order[${state.sorted}]`]: this.orderParam}
+                return state.sortName === null ? {} : {[`order[${state.sortName}]`]: this.orderParam}
             },
             orderParam: state => (state.asc ? 'asc' : 'desc'),
             pages: state => Math.ceil(state.total / 15)
@@ -104,6 +108,7 @@ export default function generateItems(iriType) {
             next: 1,
             prev: 1,
             search: {},
+            sortName: null,
             sorted: null,
             total: 0
         })

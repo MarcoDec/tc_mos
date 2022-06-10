@@ -26,11 +26,11 @@ export default [
         path: '/time-slots',
         props: {
             fields: [
-                {label: 'Nom', name: 'name'},
-                {label: 'Début', name: 'start', type: 'time'},
-                {label: 'Début pause', name: 'startBreak', type: 'time'},
-                {label: 'Fin pause', name: 'endBreak', type: 'time'},
-                {label: 'Fin', name: 'end', type: 'time'}
+                {label: 'Nom', name: 'name', sort: true, update: true},
+                {label: 'Début', name: 'start', sort: true, type: 'time', update: true},
+                {label: 'Début pause', name: 'startBreak', sort: true, type: 'time', update: true},
+                {label: 'Fin pause', name: 'endBreak', sort: true, type: 'time', update: true},
+                {label: 'Fin', name: 'end', sort: true, type: 'time', update: true}
             ],
             icon: 'clock',
             title: 'Plages horaires'

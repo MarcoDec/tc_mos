@@ -1,5 +1,5 @@
 import {computed, h, resolveComponent} from 'vue'
-import {generateTableField} from '../../props'
+import {generateTableField} from '../../../props'
 
 export default {
     props: {

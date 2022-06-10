@@ -1,4 +1,4 @@
-import {computed, h, resolveComponent} from 'vue'
+import {computed, h, ref, resolveComponent, watch} from 'vue'
 import {generateTableField} from '../../props'
 import {get} from '../../../utils'
 
@@ -11,8 +11,16 @@ export default {
         machine: {required: true, type: Object}
     },
     setup(props, context) {
-        const value = computed(() => get(props.item, props.field.name))
-        const violations = computed(() => props.machine.state.value.context.violations.find(violation => violation.propertyPath === props.field.name))
+        const originalValue = computed(() => get(props.item, props.field.name))
+        const value = ref(originalValue.value)
+        const violation = computed(() => props.machine.state.value.context.violations.find(v => v.propertyPath === props.field.name))
+
+        function input(newValue) {
+            value.value = newValue
+        }
+
+        watch(originalValue, input)
+
         return () => {
             const slot = context.slots['default']
             return h(
@@ -24,7 +32,8 @@ export default {
                     item: props.item,
                     machine: props.machine,
                     modelValue: value.value,
-                    violations: violations.value
+                    'onUpdate:modelValue': input,
+                    violation: violation.value
                 },
                 typeof slot === 'function' ? args => slot(args) : null
             )

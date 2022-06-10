@@ -1,14 +1,21 @@
 import * as Cookies from './cookie'
+import {set} from './utils'
+
+function convertValue(value) {
+    if (value === 'true')
+        return true
+    if (value === 'false')
+        return false
+    if (/^\d+(\.\d+)?$/.test(value))
+        return parseFloat(value)
+    return value
+}
 
 function stringify(data) {
-    const obj = Object.fromEntries(data)
-    for (const [key, value] of Object.entries(obj))
-        if (value === 'true')
-            obj[key] = true
-        else if (value === 'false')
-            obj[key] = false
-        else if (/^\d+$/.test(value))
-            obj[key] = parseFloat(value)
+    const entries = Object.fromEntries(data)
+    const obj = {}
+    for (const [key, value] of Object.entries(entries))
+        set(obj, key, convertValue(value))
     return JSON.stringify(obj)
 }
 

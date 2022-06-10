@@ -7,15 +7,15 @@
     const options = generateOptions('countries', 'code')
     await options.fetch()
     const fields = [
-        {label: 'Nom', name: 'name'},
-        {label: 'Prénom', name: 'surname'},
-        {label: 'Adresse', name: 'address.address'},
-        {label: 'Complément d\'adresse', name: 'address.address2'},
-        {label: 'Ville', name: 'address.city'},
-        {label: 'Code postal', name: 'address.zipCode'},
-        {label: 'Pays', name: 'address.country', options, type: 'select'},
-        {label: 'Numéro de téléphone', name: 'address.phoneNumber'},
-        {label: 'E-mail', name: 'address.email'}
+        {label: 'Nom', name: 'name', sort: true, update: true},
+        {label: 'Prénom', name: 'surname', sort: true, update: true},
+        {label: 'Adresse', name: 'address.address', sort: true, update: true},
+        {label: 'Complément d\'adresse', name: 'address.address2', sort: true, update: true},
+        {label: 'Ville', name: 'address.city', sort: true, update: true},
+        {label: 'Code postal', name: 'address.zipCode', sort: false, update: true},
+        {label: 'Pays', name: 'address.country', options, sort: true, type: 'select', update: true},
+        {label: 'Numéro de téléphone', name: 'address.phoneNumber', sort: false, update: true},
+        {label: 'E-mail', name: 'address.email', sort: true, update: true}
     ]
 </script>
 
