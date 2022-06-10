@@ -1,5 +1,0 @@
-App\Entity\Quality\Reject\Type:
-  deleted: statut
-  properties:
-    libelle:
-      new_name: name
