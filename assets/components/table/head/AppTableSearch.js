@@ -24,6 +24,10 @@ function AppTableSearch(props, context) {
             id: props.id,
             label: 'Rechercher',
             machine: props.machine,
+            modelValue: props.store.search,
+            onInputValue({field, value}) {
+                props.store.search[field.name] = value
+            },
             reverseIcon: 'plus',
             reverseLabel: 'ajout',
             reverseMode: 'create',

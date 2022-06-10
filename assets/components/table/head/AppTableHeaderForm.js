@@ -62,10 +62,8 @@ function AppTableHeaderForm(props, context) {
             form: formId,
             id: `${props.id}-${field.name}`,
             machine: props.machine,
-            modelValue: props.store.search[field.name],
-            'onUpdate:modelValue': value => {
-                props.store.search[field.name] = value
-            },
+            modelValue: props.modelValue[field.name],
+            'onUpdate:modelValue': value => context.emit('inputValue', {field, value}),
             violation: props.violations.find(violation => violation.propertyPath === field.name)
         }, typeof slot === 'function' ? args => slot(args) : null))
     }
@@ -80,6 +78,7 @@ AppTableHeaderForm.props = {
     id: {required: true, type: String},
     label: {required: true, type: String},
     machine: {required: true, type: Object},
+    modelValue: {default: () => ({}), type: Object},
     reverseIcon: {required: true, type: String},
     reverseLabel: {required: true, type: String},
     reverseMode: {required: true, type: String},
