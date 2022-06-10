@@ -41,7 +41,10 @@ export default function generateItems(iriType) {
                 }
                 if (this.current > this.pages) {
                     this.current = this.pages
-                    await this.fetch(url)
+                    if (this.current > 0)
+                        await this.fetch(url)
+                    else
+                        this.current = 1
                 }
             },
             async goTo(index, url = null) {
