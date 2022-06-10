@@ -15,7 +15,7 @@ export default [
         name: 'incoterms',
         path: '/incoterms',
         props: {
-            fields: [{label: 'Code', name: 'code'}, {label: 'Nom', name: 'name'}],
+            fields: [{label: 'Code', name: 'code', sort: true}, {label: 'Nom', name: 'name', sort: true}],
             icon: 'file-contract',
             title: 'Incoterms'
         }

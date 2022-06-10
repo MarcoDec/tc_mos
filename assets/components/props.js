@@ -37,11 +37,11 @@ export function fieldValidator(field) {
     return true
 }
 
-export function generateField() {
-    return {required: true, type: Object, validator: fieldValidator}
+export function generateField(validator = fieldValidator) {
+    return {required: true, type: Object, validator}
 }
 
-export function generateFields() {
+export function generateFields(validator = fieldValidator) {
     return {
         required: true,
         type: Array,
@@ -51,7 +51,7 @@ export function generateFields() {
                 return false
             }
             for (const field of value)
-                if (!fieldValidator(field))
+                if (!validator(field))
                     return false
             return true
         }
@@ -62,12 +62,26 @@ export function generateLabelCols() {
     return {default: 'col-md-3 col-xs-12', type: String}
 }
 
+function tableFieldValidator(field) {
+    if (!fieldValidator(field))
+        return false
+    if (typeof field.sort !== 'boolean') {
+        console.error('field.sort must be defined and a boolean')
+        return false
+    }
+    if (typeof field.sortName !== 'undefined' && (typeof field.sortName !== 'string' || field.sortName.length === 0)) {
+        console.error('field.sortName must be a non empty string')
+        return false
+    }
+    return true
+}
+
 export function generateTableField() {
-    return generateField()
+    return generateField(tableFieldValidator)
 }
 
 export function generateTableFields() {
-    return generateFields()
+    return generateFields(tableFieldValidator)
 }
 
 const variants = ['danger', 'dark', 'info', 'light', 'none', 'primary', 'secondary', 'success', 'warning']
