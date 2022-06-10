@@ -13,6 +13,7 @@ import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRouterLink from './components/nav/AppRouterLink'
 import AppTableFormField from './components/table/AppTableFormField'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm'
+import AppTableItemField from './components/table/body/AppTableItemField.vue'
 import AppTreeLabel from './components/tree/AppTreeLabel'
 import Fa from './components/Fa'
 import {createApp} from 'vue'
@@ -33,6 +34,7 @@ const app = createApp(App)
     .component('AppRouterLink', AppRouterLink)
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)
+    .component('AppTableItemField', AppTableItemField)
     .component('AppTreeLabel', AppTreeLabel)
     .component('Fa', Fa)
     .use(createPinia())

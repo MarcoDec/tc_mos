@@ -7,8 +7,8 @@
     const options = generateOptions('employee-current-places', 'value')
     await options.fetch()
     const fields = [
-        {label: 'Nom', name: 'name', sort: true},
-        {label: 'Vers le statut', name: 'toStatus', options, sort: false, type: 'select'}
+        {label: 'Nom', name: 'name', sort: true, update: true},
+        {label: 'Vers le statut', name: 'toStatus', options, sort: false, type: 'select', update: true}
     ]
 </script>
 

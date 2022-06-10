@@ -69,6 +69,10 @@ function tableFieldValidator(field) {
         console.error('field.sort must be defined and a boolean')
         return false
     }
+    if (typeof field.update !== 'boolean') {
+        console.error('field.update must be defined and a boolean')
+        return false
+    }
     if (typeof field.sortName !== 'undefined' && (typeof field.sortName !== 'string' || field.sortName.length === 0)) {
         console.error('field.sortName must be a non empty string')
         return false

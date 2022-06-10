@@ -1,5 +1,4 @@
 import {h, resolveComponent} from 'vue'
-import AppTableItemField from './AppTableItemField.vue'
 import {generateTableFields} from '../../props'
 
 function AppTableItem(props, context) {
@@ -26,7 +25,7 @@ function AppTableItem(props, context) {
         props.fields.map(field => {
             const slot = context.slots[`cell(${field.name})`]
             return h(
-                AppTableItemField,
+                resolveComponent('AppTableItemField'),
                 {field, id: `${props.id}-${field.name}`, item: props.item, key: field.name, machine: props.machine},
                 typeof slot === 'function' ? args => slot(args) : null
             )

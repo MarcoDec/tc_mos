@@ -45,7 +45,7 @@ function AppTableItemUpdate(props, context) {
         props.fields.map(field => {
             const slot = context.slots[`form(${field.name})`]
             return h(
-                AppTableItemUpdateField,
+                field.update ? AppTableItemUpdateField : resolveComponent('AppTableItemField'),
                 {
                     field,
                     form: formId,
