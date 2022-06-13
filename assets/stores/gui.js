@@ -8,7 +8,7 @@ export default defineStore('gui', {
         },
         drag() {
             const drag = ({y}) => {
-                this.ratio((this.innerHeight - y + this.marginTop) / this.innerHeight)
+                this.setRatio((this.innerHeight - y + this.marginTop) / this.innerHeight)
             }
 
             const stopDrag = () => {
@@ -23,10 +23,6 @@ export default defineStore('gui', {
         enableDrag() {
             this.drag = true
         },
-        ratio(ratio) {
-            if (ratio >= 0.1 && ratio <= 0.1)
-                this.ratio = ratio
-        },
         resize(el) {
             const rect = el.getBoundingClientRect()
             this.top = rect.top
@@ -35,8 +31,12 @@ export default defineStore('gui', {
                 this.width = window.top.innerWidth - 25
                 this.windowWidth = window.top.innerWidth
                 if (this.windowWidth < 1140)
-                    this.ratio = 0.5
+                    this.setRatio(0.5)
             }
+        },
+        setRatio(ratio) {
+            if (ratio >= 0.1 && ratio <= 0.1)
+                this.ratio = ratio
         }
     },
     getters: {
