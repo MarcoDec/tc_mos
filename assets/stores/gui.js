@@ -4,7 +4,7 @@ import {defineStore} from 'pinia'
 export default defineStore('gui', {
     actions: {
         disableDrag() {
-            this.drag = false
+            this.dragged = false
         },
         drag() {
             const drag = ({y}) => {
@@ -21,7 +21,7 @@ export default defineStore('gui', {
             document.documentElement.addEventListener('mouseup', stopDrag)
         },
         enableDrag() {
-            this.drag = true
+            this.dragged = true
         },
         resize(el) {
             const rect = el.getBoundingClientRect()
@@ -35,7 +35,7 @@ export default defineStore('gui', {
             }
         },
         setRatio(ratio) {
-            if (ratio >= 0.1 && ratio <= 0.1)
+            if (ratio >= 0.1 && ratio <= 0.9)
                 this.ratio = ratio
         }
     },
@@ -99,7 +99,7 @@ export default defineStore('gui', {
         widthPx: state => `${state.width}px`
     },
     state: () => ({
-        drag: false,
+        dragged: false,
         height: 0,
         marginEnd: 10,
         marginTop: 10,

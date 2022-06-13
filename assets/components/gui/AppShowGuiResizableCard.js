@@ -5,7 +5,7 @@ function AppShowGuiResizableCard(props, context) {
         const children = [h('hr', {
             class: 'resizer',
             onClick: () => props.gui.enableDrag(),
-            onMouseDrag: () => props.gui.drag()
+            onMousedown: () => props.gui.drag()
         })]
         if (typeof context.slots['default'] === 'function')
             children.push(context.slots['default']())
