@@ -17,7 +17,7 @@ function AppTableAdd(props, context) {
             async submit(data) {
                 props.machine.send('submit')
                 try {
-                    await props.store.create(data)
+                    await props.store.create(props.fields, data)
                     props.machine.send('success')
                 } catch (violations) {
                     props.machine.send('fail', {violations})

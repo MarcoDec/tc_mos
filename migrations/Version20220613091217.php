@@ -10,7 +10,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220601145331 extends AbstractMigration {
+final class Version20220613091217 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -773,7 +773,7 @@ ALTER TABLE `unit`
     CHANGE `parent` `parent_id` INT UNSIGNED DEFAULT NULL,
     CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
     CHANGE `unit_complete_lbl` `name` VARCHAR(50) NOT NULL,
-    CHANGE `unit_short_lbl` `code` VARCHAR(6) NOT NULL
+    CHANGE `unit_short_lbl` `code` VARCHAR(6) NOT NULL COLLATE `utf8_bin`
 SQL);
         $this->addSql('ALTER TABLE `unit` ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`)');
         $this->addSql('UPDATE `unit` SET `name` = UCFIRST(`name`)');

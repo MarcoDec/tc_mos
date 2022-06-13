@@ -21,7 +21,7 @@ abstract class AbstractUnit extends Entity {
         ApiProperty(description: 'Code ', required: true, example: 'g'),
         Assert\Length(min: 1, max: 6),
         Assert\NotBlank,
-        ORM\Column(length: 6),
+        ORM\Column(length: 6, options: ['collation' => 'utf8_bin']),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected ?string $code = null;

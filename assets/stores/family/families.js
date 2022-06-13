@@ -1,5 +1,5 @@
+import Api from '../../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../api'
 import generateFamily from './family'
 
 export default function generateFamilies(iriType) {
@@ -9,8 +9,8 @@ export default function generateFamilies(iriType) {
                 for (const family of this.items)
                     family.blur()
             },
-            async create(data) {
-                const response = await fetchApi(this.iri, 'POST', data, false)
+            async create(fields, data) {
+                const response = await new Api(fields).fetch(this.iri, 'POST', data, false)
                 if (response.status === 422)
                     throw response.content.violations
                 this.items.push(generateFamily(this.iriType, response.content, this))
@@ -22,7 +22,7 @@ export default function generateFamilies(iriType) {
                 this.$dispose()
             },
             async fetch() {
-                const response = await fetchApi(this.iri)
+                const response = await new Api().fetch(this.iri)
                 if (response.status === 200)
                     for (const family of response.content['hydra:member'])
                         this.items.push(generateFamily(this.iriType, family, this))

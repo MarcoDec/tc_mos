@@ -33,9 +33,9 @@
         props.machine.send('submit')
         try {
             if (selected.value)
-                await selected.value.update(data)
+                await selected.value.update(props.fields, data)
             else
-                await props.families.create(data)
+                await props.families.create(props.fields, data)
             props.machine.send('success')
         } catch (violations) {
             props.machine.send('fail', {violations})

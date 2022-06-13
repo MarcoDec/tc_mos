@@ -1,12 +1,12 @@
+import Api from '../../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../api'
 import generateMessage from './vatMessage'
 
 export default defineStore('vat-message', {
     actions: {
-        async create(data) {
+        async create(fields, data) {
             this.reset()
-            const response = await fetchApi('/api/vat-messages', 'POST', data)
+            const response = await new Api(fields).fetch('/api/vat-messages', 'POST', data)
             if (response.status === 422)
                 throw response.content.violations
             this.items.push(generateMessage(response.content, this))
@@ -17,7 +17,7 @@ export default defineStore('vat-message', {
         },
         async fetch() {
             this.resetItems()
-            const response = await fetchApi('/api/vat-messages', 'GET', this.fetchBody)
+            const response = await new Api().fetch('/api/vat-messages', 'GET', this.fetchBody)
             if (response.status === 200)
                 for (const message of response.content['hydra:member'])
                     this.items.push(generateMessage(message, this))

@@ -1,5 +1,5 @@
+import Api from '../../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../api'
 import generateItem from './item'
 
 function extractPage(view, hydra) {
@@ -15,9 +15,9 @@ function extractPage(view, hydra) {
 export default function generateItems(iriType) {
     return defineStore(iriType, {
         actions: {
-            async create(data, url = null) {
+            async create(fields, data, url = null) {
                 this.reset()
-                const response = await fetchApi(url ?? this.iri, 'POST', data)
+                const response = await new Api(fields).fetch(url ?? this.iri, 'POST', data)
                 if (response.status === 422)
                     throw response.content.violations
                 this.items.push(generateItem(this.iriType, response.content, this))
@@ -28,7 +28,7 @@ export default function generateItems(iriType) {
             },
             async fetch(url = null) {
                 this.resetItems()
-                const response = await fetchApi(url ?? this.iri, 'GET', this.fetchBody)
+                const response = await new Api().fetch(url ?? this.iri, 'GET', this.fetchBody)
                 if (response.status === 200) {
                     const view = response.content['hydra:view']
                     this.first = extractPage(view, 'first')
