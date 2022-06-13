@@ -44,6 +44,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Currency-read',
             'skip_null_values' => false
         ],
+        order: ['code' => 'asc'],
         paginationEnabled: false
     ),
     ORM\Entity(repositoryClass: CurrencyRepository::class)
