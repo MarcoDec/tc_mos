@@ -1,12 +1,12 @@
+import Api from '../../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../api'
 import generateInvoiceTimeDue from './invoiceTimeDue'
 
 export default defineStore('invoice-time-due', {
     actions: {
-        async create(data) {
+        async create(fields, data) {
             this.reset()
-            const response = await fetchApi('/api/invoice-time-dues', 'POST', data)
+            const response = await new Api(fields).fetch('/api/invoice-time-dues', 'POST', data)
             if (response.status === 422)
                 throw response.content.violations
             this.items.push(generateInvoiceTimeDue(response.content, this))
@@ -17,7 +17,7 @@ export default defineStore('invoice-time-due', {
         },
         async fetch() {
             this.resetItems()
-            const response = await fetchApi('/api/invoice-time-dues', 'GET', this.fetchBody)
+            const response = await new Api().fetch('/api/invoice-time-dues', 'GET', this.fetchBody)
             if (response.status === 200)
                 for (const invoiceTimeDue of response.content['hydra:member'])
                     this.items.push(generateInvoiceTimeDue(invoiceTimeDue, this))

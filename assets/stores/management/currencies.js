@@ -1,5 +1,5 @@
+import Api from '../../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../api'
 
 function split(currencies) {
     const splitted = [[]]
@@ -16,7 +16,7 @@ export default defineStore('currencies', {
     actions: {
         async fetch() {
             this.$reset()
-            const response = await fetchApi('/api/currencies', 'GET')
+            const response = await new Api().fetch('/api/currencies', 'GET')
             if (response.status === 200)
                 this.items = response.content['hydra:member']
         },
@@ -28,7 +28,8 @@ export default defineStore('currencies', {
         async update(currency, active) {
             const data = new FormData()
             data.append('active', active)
-            const response = await fetchApi(`/api/currencies/${currency.id}`, 'PATCH', data)
+            const response = await new Api([{name: 'active', type: 'boolean'}])
+                .fetch(`/api/currencies/${currency.id}`, 'PATCH', data)
             if (response.status === 200)
                 this.items[this.items.findIndex(item => item['@id'] === response.content['@id'])] = response.content
         }

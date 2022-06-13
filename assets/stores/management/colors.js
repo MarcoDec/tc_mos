@@ -1,12 +1,12 @@
+import Api from '../../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../api'
 import generateColor from './color'
 
 export default defineStore('color', {
     actions: {
-        async create(data) {
+        async create(fields, data) {
             this.reset()
-            const response = await fetchApi('/api/colors', 'POST', data)
+            const response = await new Api(fields).fetch('/api/colors', 'POST', data)
             if (response.status === 422)
                 throw response.content.violations
             this.items.push(generateColor(response.content, this))
@@ -17,7 +17,7 @@ export default defineStore('color', {
         },
         async fetch() {
             this.resetItems()
-            const response = await fetchApi('/api/colors', 'GET', this.fetchBody)
+            const response = await new Api().fetch('/api/colors', 'GET', this.fetchBody)
             if (response.status === 200)
                 for (const color of response.content['hydra:member'])
                     this.items.push(generateColor(color, this))

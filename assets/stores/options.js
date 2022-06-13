@@ -1,5 +1,5 @@
+import Api from '../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../api'
 
 export default function generateOptions(type, valueProp = '@id') {
     return defineStore(`options/${type}`, {
@@ -10,7 +10,7 @@ export default function generateOptions(type, valueProp = '@id') {
             },
             async fetch() {
                 this.$reset()
-                const response = await fetchApi(this.url)
+                const response = await new Api().fetch(this.url)
                 this.items = response.content['hydra:member']
             }
         },
