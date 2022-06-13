@@ -17,7 +17,7 @@ function AppTableItemUpdate(props, context) {
                     async onSubmit(data) {
                         props.machine.send('submit')
                         try {
-                            await props.item.update(data)
+                            await props.item.update(props.fields, data)
                             props.machine.send('success')
                             props.machine.send('search')
                         } catch (violations) {

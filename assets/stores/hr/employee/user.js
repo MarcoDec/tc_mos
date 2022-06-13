@@ -1,11 +1,11 @@
 import * as Cookies from '../../../cookie'
+import Api from '../../../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../../api'
 
 export default defineStore('user', {
     actions: {
-        async connect(data) {
-            const response = await fetchApi('/api/login', 'POST', data)
+        async connect(fields, data) {
+            const response = await new Api(fields).fetch('/api/login', 'POST', data)
             if (response.status === 200)
                 this.save(response.content)
             else
@@ -14,7 +14,7 @@ export default defineStore('user', {
         async fetch() {
             if (Cookies.has()) {
                 try {
-                    const response = await fetchApi(`/api/employees/${Cookies.get('id')}`)
+                    const response = await new Api().fetch(`/api/employees/${Cookies.get('id')}`)
                     if (response.status === 200) {
                         this.save(response.content)
                         return
@@ -26,7 +26,7 @@ export default defineStore('user', {
             Cookies.remove()
         },
         async logout() {
-            await fetchApi('/api/logout', 'POST')
+            await new Api().fetch('/api/logout', 'POST')
             this.$reset()
             Cookies.remove()
         },

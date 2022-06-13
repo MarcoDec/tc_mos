@@ -1,5 +1,5 @@
+import Api from '../../Api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../api'
 
 export default function generateFamily(iriType, family, root) {
     return defineStore(`${iriType}/${family.id}`, {
@@ -22,12 +22,12 @@ export default function generateFamily(iriType, family, root) {
                 this.parentStore?.open()
             },
             async remove() {
-                await fetchApi(this.iri, 'DELETE')
+                await new Api().fetch(this.iri, 'DELETE')
                 this.root.remove(this['@id'])
                 this.dispose()
             },
-            async update(data) {
-                const response = await fetchApi(this.iri, 'POST', data, false)
+            async update(fields, data) {
+                const response = await new Api(fields).fetch(this.iri, 'POST', data, false)
                 if (response.status === 422)
                     throw response.content.violations
                 this.$state = {opened: this.opened, root: this.root, selected: this.selected, ...response.content}

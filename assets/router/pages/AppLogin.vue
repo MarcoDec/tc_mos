@@ -36,7 +36,7 @@
     async function submit(data) {
         send('submit')
         try {
-            await user.connect(data)
+            await user.connect(fields, data)
             send('success')
             await router.push({name: 'home'})
         } catch (error) {
