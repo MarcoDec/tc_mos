@@ -46,7 +46,7 @@
 
 <template>
     <div :id="id" :class="divFlex" class="d-flex">
-        <ul :class="ulCss" class="bg-white d-flex nav nav-tabs" role="tablist">
+        <ul ref="el" :class="ulCss" class="bg-white d-flex nav nav-tabs" role="tablist">
             <li v-show="iconSwitch" class="form-check form-switch nav-item" role="presentation">
                 <input :id="iconSwitchId" v-model="iconMode" class="form-check-input" type="checkbox"/>
                 <label :for="iconSwitchId" class="form-check-label">

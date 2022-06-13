@@ -12,8 +12,8 @@ function AppTabBtn(props) {
         {
             ariaControls: props.tab.id,
             class: css,
-            dataBsTarget: props.tab.target,
-            dataBsToggle: 'tab',
+            'data-bs-target': props.tab.target,
+            'data-bs-toggle': 'tab',
             id: props.tab.labelledby,
             role: 'button',
             type: 'button'
