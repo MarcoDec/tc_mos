@@ -4,7 +4,6 @@ namespace App\Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
 
 abstract class EnumType extends Type {
     /**

@@ -1,5 +1,0 @@
-App\Entity\Logistics\Carrier:
-  deleted: statut
-  properties:
-    nom:
-      new_name: name

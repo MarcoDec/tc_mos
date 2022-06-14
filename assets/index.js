@@ -1,24 +1,49 @@
 import './app.scss'
-import * as components from './components'
-import App from './routing/App.vue'
-import {EmployeeRepository} from './store/modules'
-import {createApp} from 'vue'
-import {fab} from '@fortawesome/free-brands-svg-icons'
-import {fas} from '@fortawesome/free-solid-svg-icons'
-import {library} from '@fortawesome/fontawesome-svg-core'
-import router from './routing'
-import store from './store'
-
-library.add(fab)
-library.add(fas)
+import './fortawesome'
+import {createApp, defineAsyncComponent} from 'vue'
+import App from './App'
+import AppBtn from './components/AppBtn'
+import AppCard from './components/AppCard'
+import AppContainer from './components/layout/AppContainer'
+import AppDropdownItem from './components/nav/AppDropdownItem'
+import AppForm from './components/form/AppForm'
+import AppInput from './components/form/field/input/AppInput'
+import AppInputGuesser from './components/form/field/input/AppInputGuesser'
+import AppOverlay from './components/AppOverlay'
+import AppPaginationItem from './components/table/pagination/AppPaginationItem'
+import AppRouterLink from './components/nav/AppRouterLink'
+import AppTableFormField from './components/table/AppTableFormField'
+import AppTableHeaderForm from './components/table/head/AppTableHeaderForm'
+import AppTableItemField from './components/table/body/AppTableItemField.vue'
+import AppTreeLabel from './components/tree/AppTreeLabel'
+import Fa from './components/Fa'
+import {createPinia} from 'pinia'
+import router from './router'
+import useUserStore from './stores/hr/employee/user'
 
 const app = createApp(App)
-for (const [name, component] of Object.entries(components))
-    app.component(name, component)
+    .component('AppBtn', AppBtn)
+    .component('AppCard', AppCard)
+    .component('AppContainer', AppContainer)
+    .component('AppDropdownItem', AppDropdownItem)
+    .component('AppForm', AppForm)
+    .component('AppInput', AppInput)
+    .component('AppInputGuesser', AppInputGuesser)
+    .component('AppOverlay', AppOverlay)
+    .component('AppPaginationItem', AppPaginationItem)
+    .component('AppRouterLink', AppRouterLink)
+    .component('AppShowGuiCard', defineAsyncComponent(() => import('./components/gui/AppShowGuiCard.vue')))
+    .component('AppTableFormField', AppTableFormField)
+    .component('AppTableHeaderForm', AppTableHeaderForm)
+    .component('AppTableItemField', AppTableItemField)
+    .component('AppTab', defineAsyncComponent(() => import('./components/tabs/AppTab.vue')))
+    .component('AppTabs', defineAsyncComponent(() => import('./components/tabs/AppTabs.vue')))
+    .component('AppTreeLabel', AppTreeLabel)
+    .component('Fa', Fa)
+    .use(createPinia())
 
-async function initStore() {
-    await store.$repo(EmployeeRepository).fetchUser('login')
-    app.use(store)
+async function fetchUser() {
+    await useUserStore().fetch()
 }
 
-initStore().then(() => app.use(router).mount('#vue'))
+fetchUser().then(() => app.use(router).mount('#vue'))

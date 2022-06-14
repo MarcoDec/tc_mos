@@ -21,7 +21,7 @@ abstract class AbstractUnit extends Entity {
         ApiProperty(description: 'Code ', required: true, example: 'g'),
         Assert\Length(min: 1, max: 6),
         Assert\NotBlank,
-        ORM\Column(length: 6),
+        ORM\Column(length: 6, options: ['collation' => 'utf8_bin']),
         Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
     ]
     protected ?string $code = null;
@@ -104,6 +104,11 @@ abstract class AbstractUnit extends Entity {
     ]
     final public function getParentId(): int {
         return $this->parent?->getId() ?? 0;
+    }
+
+    #[Serializer\Groups(['read:unit:option'])]
+    public function getText(): ?string {
+        return $this->getCode();
     }
 
     /**
