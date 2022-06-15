@@ -8,14 +8,22 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220613133135 extends AbstractMigration {
+final class Version20220615093118 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
         return 'Migration initiale : transfert selon le nouveau modèle de données.';
+    }
+
+    public function postUp(Schema $schema): void {
+        $this->upPhoneNumbers('out_trainer', 'tel');
+        $this->upPhoneNumbers('society', 'phone');
     }
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -29,6 +37,7 @@ CREATE FUNCTION UCFIRST (s VARCHAR(255))
     RETURN CONCAT(UCASE(LEFT(s, 1)), LCASE(SUBSTRING(s, 2)))
 SQL);
         $this->upUsers();
+        // rank 1
         $this->upCarriers();
         $this->upComponentFamilies();
         $this->upColors();
@@ -47,7 +56,11 @@ SQL);
         $this->upTimeSlots();
         $this->upUnits();
         $this->upVatMessages();
+        // rank 2
         $this->upProducts();
+        $this->upSocieties();
+        // old_id
+        $this->addSql('ALTER TABLE `invoice_time_due` DROP `old_id`');
         $this->addSql('DROP FUNCTION UCFIRST');
         $this->addSql('DROP TABLE `country`');
         $this->addSql('DROP TABLE `customcode`');
@@ -67,12 +80,12 @@ SQL);
         $this->alterTable('carrier', 'Transporteur');
         $this->addSql(<<<'SQL'
 ALTER TABLE `carrier`
-    ADD `address_address` VARCHAR(50) DEFAULT NULL AFTER `id`,
-    ADD `address_address2` VARCHAR(50) DEFAULT NULL AFTER `address_address`,
+    ADD `address_address` VARCHAR(70) DEFAULT NULL AFTER `id`,
+    ADD `address_address2` VARCHAR(58) DEFAULT NULL AFTER `address_address`,
     ADD `address_city` VARCHAR(50) DEFAULT NULL AFTER `address_address2`,
     ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)' AFTER `address_city`,
     ADD `address_email` VARCHAR(60) DEFAULT NULL AFTER `address_country`,
-    ADD `address_phone_number` VARCHAR(20) DEFAULT NULL AFTER `address_email`,
+    ADD `address_phone_number` VARCHAR(18) DEFAULT NULL AFTER `address_email`,
     ADD `address_zip_code` VARCHAR(10) DEFAULT NULL AFTER `address_phone_number`,
     DROP `date_creation`,
     DROP `date_modification`,
@@ -256,6 +269,7 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `invoice_time_due_copy` (
   `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `old_id` INT UNSIGNED NOT NULL,
   `days` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '(DC2Type:tinyint)',
   `days_after_end_of_month` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '(DC2Type:tinyint)',
   `deleted` TINYINT(1) NOT NULL DEFAULT '0',
@@ -264,8 +278,8 @@ CREATE TABLE `invoice_time_due_copy` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE `utf8mb4_unicode_ci` COMMENT='Délai de paiement des factures'
 SQL);
         $this->addSql(<<<'SQL'
-INSERT INTO `invoice_time_due_copy` (`deleted`, `name`, `days`, `end_of_month`, `days_after_end_of_month`)
-SELECT `deleted`, `name`, `days`, `end_of_month`, `days_after_end_of_month`
+INSERT INTO `invoice_time_due_copy` (`old_id`, `deleted`, `name`, `days`, `end_of_month`, `days_after_end_of_month`)
+SELECT `id`, `deleted`, `name`, `days`, `end_of_month`, `days_after_end_of_month`
 FROM `invoice_time_due`
 SQL);
         $this->addSql('DROP TABLE `invoice_time_due`');
@@ -293,7 +307,7 @@ SQL);
         $this->addSql(<<<'SQL'
 ALTER TABLE `out_trainer`
     ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL AFTER `address_zip_code`,
-    ADD `address_address2` VARCHAR(50) DEFAULT NULL AFTER `address_address`,
+    ADD `address_address2` VARCHAR(58) DEFAULT NULL AFTER `address_address`,
     ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)' AFTER `address_city`,
     ADD `address_email` VARCHAR(60) DEFAULT NULL AFTER `address_country`,
     DROP `id_user_creation`,
@@ -301,7 +315,7 @@ ALTER TABLE `out_trainer`
     CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
     CHANGE `prenom` `name` VARCHAR(30) NOT NULL,
     CHANGE `nom` `surname` VARCHAR(30) NOT NULL,
-    CHANGE `address` `address_address` VARCHAR(50) DEFAULT NULL,
+    CHANGE `address` `address_address` VARCHAR(70) DEFAULT NULL,
     CHANGE `ville` `address_city` VARCHAR(50) DEFAULT NULL,
     CHANGE `code_postal` `address_zip_code` VARCHAR(10) DEFAULT NULL
 SQL);
@@ -313,12 +327,32 @@ SET `out_trainer`.`tel` = CONCAT(`country`.`phone_prefix`, `out_trainer`.`tel`),
 `out_trainer`.`surname` = UCASE(`out_trainer`.`surname`),
 `out_trainer`.`name` = UCFIRST(`out_trainer`.`name`)
 SQL);
-        $this->addSql(<<<'SQL'
-ALTER TABLE `out_trainer`
-    DROP `id_phone_prefix`,
-    DROP `society`,
-    CHANGE `tel` `address_phone_number` VARCHAR(20) DEFAULT NULL
+        $this->addSql('ALTER TABLE `out_trainer` DROP `id_phone_prefix`, DROP `society`');
+    }
+
+    private function upPhoneNumbers(string $table, string $phoneProp): void {
+        $items = $this->connection->executeQuery(<<<SQL
+SELECT `id`, `$phoneProp`, `address_country`
+FROM `$table`
+WHERE `$phoneProp` IS NOT NULL
 SQL);
+        $util = PhoneNumberUtil::getInstance();
+        while ($item = $items->fetchAssociative()) {
+            /** @var string[] $item */
+            $phone = null;
+            try {
+                $phone = $util->parse($item[$phoneProp], $item['address_country']);
+            } catch (NumberParseException) {
+            }
+            $this->connection->prepare("UPDATE `$table` SET `$phoneProp` = :phone WHERE `id` = :id")
+                ->executeQuery([
+                    'id' => $item['id'],
+                    'phone' => !empty($phone) && $util->isValidNumber($phone)
+                        ? $util->format($phone, PhoneNumberFormat::INTERNATIONAL)
+                        : null
+                ]);
+        }
+        $this->connection->executeQuery("ALTER TABLE `$table` CHANGE `$phoneProp` `address_phone_number` VARCHAR(18) DEFAULT NULL");
     }
 
     private function upProductFamilies(): void {
@@ -345,7 +379,7 @@ SQL);
     private function upProducts(): void {
         $this->alterTable('product', 'Produit');
         $this->addSql('DELETE FROM `product` WHERE `statut` = 1');
-        $this->addSql('UPDATE `product` SET `conditionnement` = 1 WHERE `conditionnement` = \'\'');
+        $this->addSql('UPDATE `product` SET `conditionnement` = 1 WHERE `conditionnement` IS NULL');
         $this->addSql(<<<'SQL'
 ALTER TABLE `product`
     ADD `auto_duration_code` VARCHAR(3) DEFAULT NULL,
@@ -727,6 +761,7 @@ SQL);
     private function upRejectTypes(): void {
         $this->addSql('RENAME TABLE `production_rejectlist` TO `reject_type`');
         $this->alterTable('reject_type', 'Type de rebus');
+        $this->addSql('DELETE FROM `reject_type` WHERE `statut` = 1 OR `libelle` IS NULL');
         $this->addSql(<<<'SQL'
 ALTER TABLE `reject_type`
     DROP `id_user_creation`,
@@ -737,7 +772,6 @@ ALTER TABLE `reject_type`
     CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
     CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
 SQL);
-        $this->addSql('DELETE FROM `reject_type` WHERE `deleted` = 1');
         $this->addSql('UPDATE `reject_type` SET `name` = UCFIRST(`name`)');
         $this->addSql(<<<'SQL'
 CREATE TABLE `reject_type_copy` (
@@ -758,6 +792,276 @@ CREATE TABLE `skill_type` (
     `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
     `name` VARCHAR(50) NOT NULL
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+SQL);
+    }
+
+    private function upSocieties(): void {
+        $this->alterTable('society', 'Société');
+        $this->addSql('DELETE FROM `society` WHERE `statut` = 1');
+        $this->addSql('UPDATE `society` SET `ar_enabled` = `ar_enabled` = 1 OR `ar_customer_enabled` = 1');
+        $this->addSql('UPDATE `society` SET `indice_cu` = 0 WHERE `indice_cu` IS NULL');
+        $this->addSql('UPDATE `society` SET `invoice_minimum` = 0 WHERE `invoice_minimum` IS NULL');
+        $this->addSql('UPDATE `society` SET `info_public` = `info_private` WHERE `info_public` IS NULL');
+        $this->addSql(<<<'SQL'
+UPDATE `society`
+SET `info_public` = CONCAT(`info_public`, `info_private`)
+WHERE `info_public` IS NOT NULL
+AND `info_private` IS NOT NULL
+SQL);
+        $this->addSql(<<<'SQL'
+ALTER TABLE `society`
+    ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    ADD `bank_details` VARCHAR(255) DEFAULT NULL,
+    ADD `copper_index_code` VARCHAR(3) DEFAULT NULL,
+    ADD `copper_index_denominator` VARCHAR(3) DEFAULT NULL,
+    ADD `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper_type)',
+    ADD `invoice_min_code` VARCHAR(3) DEFAULT NULL,
+    ADD `invoice_min_denominator` VARCHAR(3) DEFAULT NULL,
+    ADD `order_min_code` VARCHAR(3) DEFAULT NULL,
+    ADD `order_min_denominator` VARCHAR(3) DEFAULT NULL,
+    ADD `ppm_rate` SMALLINT UNSIGNED DEFAULT 10 NOT NULL,
+    DROP `ar_customer_enabled`,
+    DROP `blocked`,
+    DROP `capital`,
+    DROP `city_timezone`,
+    DROP `comptaPortal`,
+    DROP `confidenceCriteria`,
+    DROP `currency`,
+    DROP `date_creation`,
+    DROP `date_modification`,
+    DROP `delai_livraison`,
+    DROP `deliveryTimeOpenDays`,
+    DROP `fax`,
+    DROP `generalMargin`,
+    DROP `gest_quality`,
+    DROP `id_customer_group`,
+    DROP `id_locale`,
+    DROP `id_soc_gest`,
+    DROP `id_soc_gest_customer`,
+    DROP `id_societystatus`,
+    DROP `id_user_creation`,
+    DROP `id_user_modification`,
+    DROP `invoicecustomer_by_email`,
+    DROP `info_private`,
+    DROP `ip`,
+    DROP `is_company`,
+    DROP `is_customer`,
+    DROP `is_secured`,
+    DROP `is_supplier`,
+    DROP `isBrokenLinkSolved`,
+    DROP `logisticPortal`,
+    DROP `managementFees`,
+    DROP `maxOutstanding`,
+    DROP `monthlyOutstanding`,
+    DROP `nbBL`,
+    DROP `nbInvoice`,
+    DROP `numberOfTeamPerDay`,
+    DROP `pied_page_achat`,
+    DROP `pied_page_vente`,
+    DROP `pied_page_achat_en`,
+    DROP `pied_page_vente_en`,
+    DROP `pied_page_documents`,
+    DROP `pied_page_avoir`,
+    DROP `pied_page_avoir_en`,
+    DROP `quality`,
+    DROP `qualityPortal`,
+    DROP `rib`,
+    DROP `sujet_email_facture`,
+    DROP `taux_operation_auto`,
+    DROP `taux_operation_auto_md`,
+    DROP `taux_operation_manu`,
+    DROP `taux_operation_manu_md`,
+    DROP `workTimetable`,
+    CHANGE `address1` `address_address` VARCHAR(70) DEFAULT NULL,
+    CHANGE `address2` `address_address2` VARCHAR(58) DEFAULT NULL,
+    CHANGE `ar_enabled` `ar` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `city` `address_city` VARCHAR(50) DEFAULT NULL,
+    CHANGE `compte_compta` `accounting_account` VARCHAR(50) DEFAULT NULL,
+    CHANGE `email` `address_email` VARCHAR(60) DEFAULT NULL,
+    CHANGE `force_tva` `force_vat` VARCHAR(255) DEFAULT NULL,
+    CHANGE `formejuridique` `legal_form` VARCHAR(50) DEFAULT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `id_incoterms` `incoterms_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `id_invoicetimedue` `invoice_time_due_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `id_messagetva` `vat_message_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `indice_cu` `copper_index_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    CHANGE `indice_cu_date` `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    CHANGE `indice_cu_date_fin` `copper_next` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    CHANGE `indice_cu_enabled` `copper_managed` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `info_public` `notes` TEXT DEFAULT NULL,
+    CHANGE `invoice_minimum` `invoice_min_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    CHANGE `nom` `name` VARCHAR(255) DEFAULT NULL,
+    CHANGE `order_minimum` `order_min_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    CHANGE `siren` `siren` VARCHAR(50) DEFAULT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `tva` `vat` VARCHAR(255) DEFAULT NULL,
+    CHANGE `web` `web` VARCHAR(255) DEFAULT NULL,
+    CHANGE `zip` `address_zip_code` VARCHAR(10) DEFAULT NULL
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `society`
+INNER JOIN `country` ON `society`.`id_country` = `country`.`id`
+SET `society`.`address_country` = UCASE(`country`.`code`)
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `society`
+SET `force_vat` = CASE
+    WHEN `force_vat` = 1 THEN 'Force AVEC TVA'
+    WHEN `force_vat` = 2 THEN 'Force SANS TVA'
+    ELSE 'TVA par défaut selon le pays du client'
+END
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `society`
+SET `society`.`incoterms_id` = NULL
+WHERE NOT EXISTS (SELECT * FROM `incoterms` WHERE `incoterms`.`id` = `society`.`incoterms_id`)
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `society`
+SET `society`.`invoice_time_due_id` = (
+    SELECT `invoice_time_due`.`id`
+    FROM `invoice_time_due`
+    WHERE `invoice_time_due`.`old_id` = `society`.`invoice_time_due_id`
+    OR `invoice_time_due`.`old_id` = `society`.`id_invoicetimeduesupplier`
+    LIMIT 1
+)
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `society`
+SET `society`.`vat_message_id` = NULL
+WHERE NOT EXISTS (SELECT * FROM `vat_message` WHERE `vat_message`.`id` = `society`.`vat_message_id`)
+SQL);
+        $this->addSql(<<<'SQL'
+ALTER TABLE `society`
+    ADD CONSTRAINT `IDX_D6461F243D02C80` FOREIGN KEY (`incoterms_id`) REFERENCES `incoterms` (`id`),
+    ADD CONSTRAINT `IDX_D6461F2C8D5B586` FOREIGN KEY (`invoice_time_due_id`) REFERENCES `invoice_time_due` (`id`),
+    ADD CONSTRAINT `IDX_D6461F26C896AD9` FOREIGN KEY (`vat_message_id`) REFERENCES `vat_message` (`id`),
+    CHANGE `force_vat` `force_vat` ENUM('TVA par défaut selon le pays du client', 'Force AVEC TVA', 'Force SANS TVA') DEFAULT 'TVA par défaut selon le pays du client' NOT NULL COMMENT '(DC2Type:vat_message_force)',
+    DROP `id_invoicetimeduesupplier`,
+    DROP `id_country`
+SQL);
+        $this->addSql(<<<'SQL'
+CREATE TABLE `society_copy` (
+  `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `accounting_account` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_address` varchar(70) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_address2` varchar(58) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_city` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_country` char(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '(DC2Type:char)',
+  `address_email` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_zip_code` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ar` tinyint(1) NOT NULL DEFAULT '0',
+  `bank_details` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `copper_index_code` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `copper_index_denominator` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `copper_index_value` double NOT NULL DEFAULT '0',
+  `copper_last` datetime DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+  `copper_managed` tinyint(1) NOT NULL DEFAULT '0',
+  `copper_next` datetime DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+  `copper_type` enum('à la livraison','mensuel','semestriel') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'mensuel' COMMENT '(DC2Type:copper_type)',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `force_vat` enum('TVA par défaut selon le pays du client','Force AVEC TVA','Force SANS TVA') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'TVA par défaut selon le pays du client' COMMENT '(DC2Type:vat_message_force)',
+  `incoterms_id` int UNSIGNED DEFAULT NULL,
+  `invoice_min_code` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `invoice_min_denominator` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `invoice_min_value` double NOT NULL DEFAULT '0',
+  `invoice_time_due_id` int UNSIGNED DEFAULT NULL,
+  `legal_form` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `order_min_code` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_min_denominator` varchar(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_min_value` double NOT NULL DEFAULT '0',
+  `ppm_rate` smallint UNSIGNED NOT NULL DEFAULT '10',
+  `siren` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `vat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `vat_message_id` int UNSIGNED DEFAULT NULL,
+  `web` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Société';
+SQL);
+        $this->addSql(<<<'SQL'
+INSERT INTO `society_copy` (
+    `accounting_account`,
+    `address_address`,
+    `address_address2`,
+    `address_city`,
+    `address_country`,
+    `address_email`,
+    `phone`,
+    `address_zip_code`,
+    `ar`,
+    `bank_details`,
+    `copper_index_code`,
+    `copper_index_denominator`,
+    `copper_index_value`,
+    `copper_last`,
+    `copper_managed`,
+    `copper_next`,
+    `copper_type`,
+    `deleted`,
+    `force_vat`,
+    `incoterms_id`,
+    `invoice_min_code`,
+    `invoice_min_denominator`,
+    `invoice_min_value`,
+    `invoice_time_due_id`,
+    `legal_form`,
+    `name`,
+    `notes`,
+    `order_min_code`,
+    `order_min_denominator`,
+    `order_min_value`,
+    `ppm_rate`,
+    `siren`,
+    `vat`,
+    `vat_message_id`,
+    `web`
+) SELECT
+    `accounting_account`,
+    `address_address`,
+    `address_address2`,
+    `address_city`,
+    `address_country`,
+    `address_email`,
+    `phone`,
+    `address_zip_code`,
+    `ar`,
+    `bank_details`,
+    `copper_index_code`,
+    `copper_index_denominator`,
+    `copper_index_value`,
+    `copper_last`,
+    `copper_managed`,
+    `copper_next`,
+    `copper_type`,
+    `deleted`,
+    `force_vat`,
+    `incoterms_id`,
+    `invoice_min_code`,
+    `invoice_min_denominator`,
+    `invoice_min_value`,
+    `invoice_time_due_id`,
+    `legal_form`,
+    `name`,
+    `notes`,
+    `order_min_code`,
+    `order_min_denominator`,
+    `order_min_value`,
+    `ppm_rate`,
+    `siren`,
+    `vat`,
+    `vat_message_id`,
+    `web`
+FROM `society`
+SQL);
+        $this->addSql('DROP TABLE `society`');
+        $this->addSql('RENAME TABLE `society_copy` TO `society`');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `society`
+  ADD CONSTRAINT `IDX_D6461F243D02C80` FOREIGN KEY (`incoterms_id`) REFERENCES `incoterms` (`id`),
+  ADD CONSTRAINT `IDX_D6461F2C8D5B586` FOREIGN KEY (`invoice_time_due_id`) REFERENCES `invoice_time_due` (`id`),
+  ADD CONSTRAINT `IDX_D6461F26C896AD9` FOREIGN KEY (`vat_message_id`) REFERENCES `vat_message` (`id`)
 SQL);
     }
 

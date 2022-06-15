@@ -31,8 +31,8 @@ class Address {
             example: '5 rue Alfred Nobel',
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
         ),
-        Assert\Length(min: 10, max: 65),
-        ORM\Column(length: 65, nullable: true),
+        Assert\Length(min: 10, max: 70),
+        ORM\Column(length: 70, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $address = null;
@@ -90,8 +90,8 @@ class Address {
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/telephone'], 'format' => 'telephone']
         ),
         AppAssert\PhoneNumber,
-        Assert\Length(min: 10, max: 54),
-        ORM\Column(length: 54, nullable: true),
+        Assert\Length(min: 10, max: 18),
+        ORM\Column(length: 18, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $phoneNumber = null;
