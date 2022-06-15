@@ -120,6 +120,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
                 $definitions[$key]['properties']['@id']['example'] = "/api/{$this->dashGenerator->getSegmentName($resourceName)}/1";
                 $definitions[$key]['properties']['@type']['example'] = $resourceName;
                 if ($type === Schema::TYPE_OUTPUT) {
+                    /** @phpstan-ignore-next-line */
                     if (!isset($definitions[$key]['required'])) {
                         $definitions[$key]['required'] = [];
                     }
@@ -136,6 +137,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
                 foreach (array_keys($definitions[$key]['properties']) as $property) {
                     /** @var string $property */
                     if (self::isRequired($className, $property)) {
+                        /** @phpstan-ignore-next-line */
                         if (!isset($definitions[$key]['required'])) {
                             $definitions[$key]['required'] = [];
                         }

@@ -10,9 +10,7 @@ export default defineConfig({
         emptyOutDir: true,
         manifest: true,
         outDir: './public/build/',
-        rollupOptions: {
-            input: {index: './assets/index.js'}
-        }
+        rollupOptions: {input: {index: './assets/index.js'}}
     },
     plugins: [
         symfonyPlugin(),
@@ -22,14 +20,9 @@ export default defineConfig({
     root: './',
     server: {
         force: true,
-        fs: {
-            allow: ['..'],
-            strict: false
-        },
+        fs: {allow: ['..'], strict: false},
         host: '0.0.0.0',
         port: 8001,
-        watch: {
-            disableGlobbing: false
-        }
+        watch: {disableGlobbing: false}
     }
 })

@@ -1,5 +1,18 @@
 doctrine:
   dbal:
+    connections:
+      default:
+        driver: pdo_mysql
+        mapping_types:
+          enum: string
+        url: '%env(resolve:DATABASE_URL)%'
+        wrapper_class: App\Doctrine\DBAL\Connection
+      migrations:
+        driver: pdo_mysql
+        mapping_types:
+          enum: string
+        url: '%env(resolve:DATABASE_ROOT_URL)%'
+    default_connection: default
     types:
       char: App\Doctrine\DBAL\Types\CharType
       copper_type: App\Doctrine\DBAL\Types\Embeddable\CopperType
@@ -12,22 +25,36 @@ doctrine:
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
       tinyint: App\Doctrine\DBAL\Types\Tinyint
       vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce
-    url: '%env(resolve:DATABASE_URL)%'
-    wrapper_class: App\Doctrine\DBAL\Connection
   orm:
     auto_generate_proxy_classes: true
-    auto_mapping: true
-    dql:
-      datetime_functions:
-        now: App\Doctrine\DQL\Now
-    mappings:
-      App:
-        alias: App
-        dir: '%kernel.project_dir%/src/Entity'
-        is_bundle: false
-        prefix: App\Entity
-        type: attribute
-    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    default_entity_manager: default
+    entity_managers:
+      default:
+        connection: default
+        dql:
+          datetime_functions:
+            now: App\Doctrine\DQL\Now
+        mappings:
+          App:
+            alias: App
+            dir: '%kernel.project_dir%/src/Entity'
+            is_bundle: false
+            prefix: App\Entity
+            type: attribute
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+      migrations:
+        connection: migrations
+        dql:
+          datetime_functions:
+            now: App\Doctrine\DQL\Now
+        mappings:
+          App:
+            alias: App
+            dir: '%kernel.project_dir%/src/Entity'
+            is_bundle: false
+            prefix: App\Entity
+            type: attribute
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
 
 when@prod:
   doctrine:

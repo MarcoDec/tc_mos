@@ -3,7 +3,6 @@
 namespace App\Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
 
 final class CharType extends Type {
     public function getName(): string {
