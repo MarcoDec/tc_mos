@@ -1,7 +1,7 @@
-import {defineConfig} from 'vite'
 import checker from 'vite-plugin-checker'
-import vue from '@vitejs/plugin-vue'
+import {defineConfig} from 'vite'
 import symfonyPlugin from 'vite-plugin-symfony'
+import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
     base: '/build/',
@@ -11,28 +11,27 @@ export default defineConfig({
         manifest: true,
         outDir: './public/build/',
         rollupOptions: {
-            input: {index: './assets/index.ts'}
+            input: {index: './assets/index.js'},
+            output: {
+                // eslint-disable-next-line consistent-return
+                manualChunks(id) {
+                    if (id.includes('AppSuspenseWrapper') || id.includes('stores/options'))
+                        return 'vendor'
+                }
+            }
         }
     },
     plugins: [
         symfonyPlugin(),
         vue(),
-        checker({
-            eslint: {lintCommand: 'eslint -c .eslintrc.js ./assets/**/*.{ts,vue}'},
-           
-        })
+        checker({eslint: {lintCommand: 'eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}'}})
     ],
     root: './',
     server: {
         force: true,
-        fs: {
-            allow: ['..'],
-            strict: false
-        },
+        fs: {allow: ['..'], strict: false},
         host: '0.0.0.0',
         port: 8001,
-        watch: {
-            disableGlobbing: false
-        }
+        watch: {disableGlobbing: false}
     }
 })

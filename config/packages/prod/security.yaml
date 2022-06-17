@@ -1,2 +1,0 @@
-parameters:
-  access_control_api_doc_role: IS_AUTHENTICATED_ANONYMOUSLY

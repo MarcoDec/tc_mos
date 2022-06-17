@@ -8,7 +8,7 @@ use App\Entity\Management\Unit;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class MeasureHydrator {
-    public function __construct(private EntityManagerInterface $em) {
+    public function __construct(private readonly EntityManagerInterface $em) {
     }
 
     public function hydrate(Measure $measure): Measure {
