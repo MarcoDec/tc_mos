@@ -1,6 +1,8 @@
+import AppTablePage from '../pages/AppTablePage'
+
 export default [
     {
-        component: () => import('../pages/AppTablePage'),
+        component: AppTablePage,
         meta: {requiresAuth: true},
         name: 'reject-types',
         path: '/reject-types',
@@ -12,7 +14,7 @@ export default [
         }
     },
     {
-        component: () => import('../pages/AppTablePage'),
+        component: AppTablePage,
         meta: {requiresAuth: true},
         name: 'quality-types',
         path: '/quality-types',
