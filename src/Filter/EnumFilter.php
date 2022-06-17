@@ -8,9 +8,27 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\QueryBuilder;
+use Illuminate\Support\Collection;
+use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionProperty;
 
 final class EnumFilter extends AbstractFilter {
+    /**
+     * @param ReflectionClass<object> $class
+     */
+    private static function getReflectionProperty(ReflectionClass $class, string $property): ReflectionProperty {
+        $matches = [];
+        if (preg_match('/(\w+)\.(.+)/', $property, $matches) === 1) {
+            /** @var ReflectionNamedType $type */
+            $type = $class->getProperty($matches[1])->getType();
+            /** @var class-string<object> $name */
+            $name = $type->getName();
+            return self::getReflectionProperty(new ReflectionClass($name), $matches[2]);
+        }
+        return $class->getProperty($property);
+    }
+
     /**
      * @return mixed[]
      */
@@ -23,7 +41,7 @@ final class EnumFilter extends AbstractFilter {
                 'property' => $property,
                 'required' => false,
                 'schema' => [
-                    'enum' => $this->getEnum($reflClass->getProperty($property)),
+                    'enum' => $this->getEnum(self::getReflectionProperty($reflClass, $property)),
                     'type' => $this->getType($metadata->getTypeOfField($property))
                 ]
             ];
@@ -49,7 +67,8 @@ final class EnumFilter extends AbstractFilter {
      * @return mixed[]
      */
     private function getEnum(ReflectionProperty $property): array {
-        $enum = collect();
+        /** @var Collection<int, mixed> $enum */
+        $enum = new Collection();
         foreach ($property->getAttributes(ApiProperty::class) as $attribute) {
             /** @var ApiProperty $apiProperty */
             $apiProperty = $attribute->newInstance();
