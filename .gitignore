@@ -17,3 +17,7 @@
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+###> OS files ###
+**/.DS_Store
+###< OS files ###

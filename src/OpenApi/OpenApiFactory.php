@@ -42,17 +42,17 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
      */
     public function __construct(
         ContainerInterface $filterLocator,
-        private array $formats,
-        private IdentifiersExtractorInterface $identifiersExtractor,
-        private SchemaFactoryInterface $jsonSchemaFactory,
-        private TypeFactoryInterface $jsonSchemaTypeFactory,
-        private Options $openApiOptions,
-        private OperationPathResolverInterface $operationPathResolver,
-        private PaginationOptions $paginationOptions,
-        private ResourceMetadataFactoryInterface $resourceMetadataFactory,
-        private ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
-        private SubresourceOperationFactoryInterface $subresourceOperationFactory,
-        private UrlGeneratorInterface $urlGenerator
+        private readonly array $formats,
+        private readonly IdentifiersExtractorInterface $identifiersExtractor,
+        private readonly SchemaFactoryInterface $jsonSchemaFactory,
+        private readonly TypeFactoryInterface $jsonSchemaTypeFactory,
+        private readonly Options $openApiOptions,
+        private readonly OperationPathResolverInterface $operationPathResolver,
+        private readonly PaginationOptions $paginationOptions,
+        private readonly ResourceMetadataFactoryInterface $resourceMetadataFactory,
+        private readonly ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
+        private readonly SubresourceOperationFactoryInterface $subresourceOperationFactory,
+        private readonly UrlGeneratorInterface $urlGenerator
     ) {
         $this->setFilterLocator($filterLocator, true);
     }
@@ -296,6 +296,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         $content = new ArrayObject();
 
         foreach ($responseMimeTypes as $mimeType => $format) {
+            /** @phpstan-ignore-next-line */
             $content[$mimeType] = new Model\MediaType(new ArrayObject($operationSchemas[$format]->getArrayCopy(false)));
         }
 
@@ -442,6 +443,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 $responses['404'] = new Model\Response('Resource not found');
             }
 
+            /** @phpstan-ignore-next-line */
             if (!$responses) {
                 $responses['default'] = new Model\Response('Unexpected error');
             }
@@ -453,8 +455,10 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             }
 
             $requestBody = null;
-            if ($contextRequestBody = $operation['openapi_context']['requestBody'] ?? false) {
-                $requestBody = new Model\RequestBody($contextRequestBody['description'] ?? '', new ArrayObject($contextRequestBody['content']), $contextRequestBody['required'] ?? false);
+            if (isset($operation['openapi_context']) && array_key_exists('requestBody', $operation['openapi_context'])) {
+                if ($contextRequestBody = $operation['openapi_context']['requestBody'] ?? false) {
+                    $requestBody = new Model\RequestBody($contextRequestBody['description'] ?? '', new ArrayObject($contextRequestBody['content']), $contextRequestBody['required'] ?? false);
+                }
             } elseif ('PUT' === $method || 'POST' === $method || 'PATCH' === $method) {
                 $operationInputSchemas = [];
                 foreach ($requestMimeTypes as $operationFormat) {
@@ -479,7 +483,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 $operation['openapi_context']['deprecated'] ?? (bool) $resourceMetadata->getTypedOperationAttribute($operationType, $operationName, 'deprecation_reason', false, true),
                 $operation['openapi_context']['security'] ?? null,
                 $operation['openapi_context']['servers'] ?? null,
-                array_filter($operation['openapi_context'] ?? [], static fn ($item) => preg_match('/^x-.*$/i', $item), ARRAY_FILTER_USE_KEY)
+                array_filter($operation['openapi_context'] ?? [], static fn ($item) => preg_match('/^x-.*$/i', (string) $item), ARRAY_FILTER_USE_KEY)
             );
 
             $pathItem = $pathItem->{'with'.ucfirst($method)}($modelOperation->withSecurity([['bearerAuth' => []]]));

@@ -1,20 +1,11 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
-parameters:
-
 services:
-  # default configuration for services in *this* file
   _defaults:
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true
+    autowire: true
 
-  # makes classes in src/ available to be used as services
-  # this creates a service per class whose id is the fully-qualified class name
   App\:
     exclude:
+      - ../src/Api/Resource/
       - ../src/Controller/
       - ../src/DependencyInjection/
       - ../src/Entity/
@@ -27,9 +18,6 @@ services:
   App\Controller\:
     resource: ../src/Controller
     tags: [ controller.service_arguments ]
-
-  # add more service definitions when explicit configuration is needed
-  # please note that last definitions always *replace* previous ones
 
   api_platform.openapi.factory:
     arguments:
@@ -58,6 +46,13 @@ services:
         event: postLoad
         name: doctrine.orm.entity_listener
 
+  App\EventListener\Hr\Employee\NotificationListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Hr\Employee\Notification
+        event: preRemove
+        name: doctrine.orm.entity_listener
+
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'
@@ -67,10 +62,10 @@ services:
         name: kernel.event_listener
         priority: 2
 
-  App\EventListener\Project\Product\FamilyListener:
+  App\EventListener\FamilyListener:
     autoconfigure: false
     tags:
-      - entity: App\Entity\Project\Product\Family
+      - entity: App\Entity\Family
         event: postLoad
         name: doctrine.orm.entity_listener
 
@@ -81,11 +76,24 @@ services:
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
 
+  App\EventListener\WriteListener:
+    autoconfigure: false
+    tags:
+      - event: kernel.view
+        name: kernel.event_listener
+        priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::PRE_WRITE
+
   App\Filesystem\FileManager:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
+
+  App\Migrations\Factory:
+    autoconfigure: false
+    arguments:
+      $decorated: '@App\Migrations\Factory.inner'
+    decorates: doctrine.migrations.migrations_factory
 
   App\OpenApi\SchemaFactory:
     arguments:
@@ -96,10 +104,6 @@ services:
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
-
-  App\Security\TokenAuthenticator:
-    arguments:
-      $map: '@security.access_map'
 
   App\Serializer\ContextBuilderInterface:
     autoconfigure: false

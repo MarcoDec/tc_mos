@@ -10,12 +10,12 @@ final class ExceptionListener {
     /**
      * @param int[] $exceptionToStatus
      */
-    public function __construct(private array $exceptionToStatus) {
+    public function __construct(private readonly array $exceptionToStatus) {
     }
 
     public function __invoke(ExceptionEvent $event): void {
         $exception = $event->getThrowable();
-        $exceptionClass = get_class($exception);
+        $exceptionClass = $exception::class;
         $statusCode = $exception instanceof HttpExceptionInterface
             ? $exception->getStatusCode()
             : Response::HTTP_UNPROCESSABLE_ENTITY;
