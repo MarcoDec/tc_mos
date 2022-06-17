@@ -9,22 +9,25 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CronJobRepository::class)]
 class CronJob extends Entity {
-    #[ORM\Column]
-    private string $command;
-
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $last = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $next;
 
-    #[ORM\Column]
-    private string $period;
-
-    final public function __construct(string $command, string $period) {
-        $this->command = $command;
-        $this->period = $period;
+    final public function __construct(
+        #[ORM\Column(type: 'char', length: 20)] private string $command,
+        #[ORM\Column(type: 'char', length: 6)] private string $period
+    ) {
         $this->setNext();
+    }
+
+    final public function getCommand(): string {
+        return $this->command;
+    }
+
+    final public function getLast(): ?DateTimeImmutable {
+        return $this->last;
     }
 
     final public function getNext(): DateTimeImmutable {

@@ -1,5 +1,0 @@
-App\Entity\Hr\Employee\Skill\Type:
-  deleted: statut
-  properties:
-    designation:
-      new_name: name
