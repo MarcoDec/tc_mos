@@ -1,3 +1,5 @@
+import AppTablePage from '../pages/AppTablePage'
+
 export default [
     {
         component: () => import('../pages/management/AppTablePageColor'),
@@ -14,7 +16,7 @@ export default [
         }
     },
     {
-        component: () => import('../pages/AppTablePage'),
+        component: AppTablePage,
         meta: {requiresAuth: true},
         name: 'invoice-time-dues',
         path: '/invoice-time-dues',
@@ -46,7 +48,7 @@ export default [
         }
     },
     {
-        component: () => import('../pages/AppTablePage'),
+        component: AppTablePage,
         meta: {requiresAuth: true},
         name: 'vat-messages',
         path: '/vat-messages',
