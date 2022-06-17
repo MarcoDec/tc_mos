@@ -1,3 +1,5 @@
+import AppShowGui from '../pages/AppShowGui.vue'
+
 export default [
     {
         component: () => import('../pages/AppTreePage.vue'),
@@ -14,5 +16,11 @@ export default [
             ],
             label: 'composants'
         }
+    },
+    {
+        component: AppShowGui,
+        meta: {requiresAuth: true},
+        name: 'supplier-show',
+        path: '/supplier/show'
     }
 ]

@@ -24,6 +24,12 @@
                 <div id="top-navbar" class="collapse navbar-collapse">
                     <ul class="me-auto navbar-nav">
                         <AppNavbarItem v-if="user.isPurchaseReader" id="purchase" icon="shopping-bag" title="Achats">
+                            <AppDropdownItem disabled variant="success">
+                                Lecteur
+                            </AppDropdownItem>
+                            <AppNavbarLink icon="user-tag" to="supplier-show" variant="success">
+                                Fournisseur
+                            </AppNavbarLink>
                             <template v-if="user.isPurchaseAdmin">
                                 <AppDropdownItem disabled variant="warning">
                                     Administrateur
@@ -92,7 +98,9 @@
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
-                        <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
+                        <AppNavbarItem
+                            v-if="user.isProductionReader" id="production" icon="industry"
+                            title="Production">
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
@@ -134,7 +142,9 @@
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
-                            <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
+                            <AppNavbarLink
+                                disabled icon="check-circle" to="component-reference-values"
+                                variant="danger">
                                 Relevés qualités composants
                             </AppNavbarLink>
                             <template v-if="user.isQualityAdmin">
