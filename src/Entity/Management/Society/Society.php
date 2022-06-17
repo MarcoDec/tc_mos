@@ -110,13 +110,6 @@ class Society extends Entity {
     private Copper $copper;
 
     #[
-        ApiProperty(description: 'Numéro de fax', required: false, example: '02 17 21 11 11'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:society'])
-    ]
-    private ?string $fax = null;
-
-    #[
         ApiProperty(description: 'Forme juridique', required: false, example: 'SARL'),
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society'])
@@ -171,10 +164,6 @@ class Society extends Entity {
         return $this->copper;
     }
 
-    final public function getFax(): ?string {
-        return $this->fax;
-    }
-
     final public function getLegalForm(): ?string {
         return $this->legalForm;
     }
@@ -207,11 +196,6 @@ class Society extends Entity {
 
     final public function setCopper(Copper $copper): self {
         $this->copper = $copper;
-        return $this;
-    }
-
-    final public function setFax(?string $fax): self {
-        $this->fax = $fax;
         return $this;
     }
 

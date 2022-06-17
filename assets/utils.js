@@ -1,24 +1,14 @@
-export const ENGINE_GROUPS = {
-    CounterPartGroup: 'Contrepartie de test',
-    ToolGroup: 'Outil',
-    WorkstationGroup: 'Poste de travail'
+export function get(obj, prop) {
+    const matches = prop.match(/(\w+)\.(.+)/)
+    return matches !== null && matches.length === 3 ? get(obj[matches[1]], matches[2]) : obj[prop]
 }
 
-export const ENGINE_GROUPS_API = {
-    CounterPartGroup: '/api/counter-part-groups',
-    ToolGroup: '/api/tool-groups',
-    WorkstationGroup: '/api/workstation-groups'
-}
-
-export function engineGroupOptions() {
-    const options = []
-    for (const [value, text] of Object.entries(ENGINE_GROUPS))
-        options.push({text, value})
-    return options
-}
-
-const formatter = new Intl.NumberFormat('fr')
-
-export function format(num) {
-    return formatter.format(num)
+export function set(obj, prop, value) {
+    const matches = prop.match(/(\w+)\.(.+)/)
+    if (matches !== null && matches.length === 3) {
+        if (typeof obj[matches[1]] === 'undefined')
+            obj[matches[1]] = {}
+        set(obj[matches[1]], matches[2], value)
+    } else
+        obj[prop] = value
 }

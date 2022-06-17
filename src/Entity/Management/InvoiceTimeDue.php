@@ -80,7 +80,7 @@ class InvoiceTimeDue extends Entity {
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?int $days = 0;
+    private int $days = 0;
 
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
@@ -88,52 +88,52 @@ class InvoiceTimeDue extends Entity {
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?int $daysAfterEndOfMonth = 0;
+    private int $daysAfterEndOfMonth = 0;
 
     #[
         ApiProperty(description: 'Fin du mois ', example: true),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?bool $endOfMonth = false;
+    private bool $endOfMonth = false;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
-        ORM\Column(length: 30),
+        ORM\Column(length: 40),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due']),
-        Assert\Length(min: 3, max: 30),
+        Assert\Length(min: 3, max: 40),
         Assert\NotBlank
     ]
     private ?string $name = null;
 
-    final public function getDays(): ?int {
+    final public function getDays(): int {
         return $this->days;
     }
 
-    final public function getDaysAfterEndOfMonth(): ?int {
+    final public function getDaysAfterEndOfMonth(): int {
         return $this->daysAfterEndOfMonth;
-    }
-
-    final public function getEndOfMonth(): ?bool {
-        return $this->endOfMonth;
     }
 
     final public function getName(): ?string {
         return $this->name;
     }
 
-    final public function setDays(?int $days): self {
+    final public function isEndOfMonth(): bool {
+        return $this->endOfMonth;
+    }
+
+    final public function setDays(int $days): self {
         $this->days = $days;
         return $this;
     }
 
-    final public function setDaysAfterEndOfMonth(?int $daysAfterEndOfMonth): self {
+    final public function setDaysAfterEndOfMonth(int $daysAfterEndOfMonth): self {
         $this->daysAfterEndOfMonth = $daysAfterEndOfMonth;
-        $this->setEndOfMonth();
+        $this->setEndOfMonth($this->endOfMonth);
         return $this;
     }
 
-    final public function setEndOfMonth(?bool $endOfMonth = false): self {
+    final public function setEndOfMonth(bool $endOfMonth): self {
         $this->endOfMonth = $endOfMonth || $this->daysAfterEndOfMonth > 0;
         return $this;
     }

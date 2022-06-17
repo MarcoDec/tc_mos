@@ -1,9 +1,4 @@
-@use 'bootstrap/scss/bootstrap' with (
-  $accordion-bg: #212529,
-  $accordion-button-bg: #212529,
-  $accordion-button-color: #fff,
-  $accordion-button-active-bg: #343a40,
-  $accordion-button-active-color: #fff,
+@use 'bootstrap/scss/bootstrap' as * with (
   $container-max-widths: (
     sm: 540px,
     md: 720px,
@@ -13,12 +8,14 @@
   )
 );
 
-.bg-blue {
-  background-color: #8ac2f1;
+$dropdown-success: #57ec57 !default;
+
+.bg-primary.card {
+  background-color: #8ac2f1 !important;
 }
 
-.bg-gray-800 {
-  background-color: #343a40;
+.bg-success .dropdown-item {
+  background-color: $dropdown-success !important;
 }
 
 .btn-icon {
@@ -33,40 +30,21 @@
   }
 }
 
-.card-body {
-  padding: 0 0 !important;
+@each $color, $value in $theme-colors {
+  .bg-#{$color}.text-dark .disabled.dropdown-item {
+    color: $black !important;
+  }
 }
 
 .container {
   min-width: 100%;
 }
 
-.dropdown-item {
-  &.bg-success {
-    background-color: #57ec57 !important;
-  }
-
-  &.text-success {
-    color: #57ec57 !important;
-  }
+.dropdown-item .text-success {
+  color: $dropdown-success !important;
 }
 
-.overlay {
-  background-color: #EFEFEF;
-  height: 100%;
-  left: 0;
-  opacity: .5;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-.page-item {
-  cursor: pointer;
-}
-
-.pointer {
+.page-item, .pointer, th[aria-sort] {
   cursor: pointer;
 }
 
@@ -77,8 +55,8 @@
   padding: 2px;
 }
 
-th[aria-sort] {
-  cursor: pointer;
+.text-white .navbar-text {
+  color: $white !important;
 }
 
 @media (max-width: 1140px) {

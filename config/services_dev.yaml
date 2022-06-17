@@ -1,9 +1,3 @@
-parameters:
-  fixtures_config_dir: '%kernel.project_dir%/fixtures/config'
-  json_dir: '%kernel.project_dir%/fixtures/data'
-  json_prefix: exportjson_table_
-
-
 services:
   _defaults:
     autoconfigure: true
@@ -11,18 +5,4 @@ services:
 
   App\:
     exclude:
-      - ../dev/ExpressionLanguage/
-      - ../dev/Fixtures/
-      - ../dev/PhpStan/
     resource: ../dev/
-
-  App\Command\FixturesCommand:
-    arguments:
-      $configDir: '%fixtures_config_dir%'
-      $jsonDir: '%json_dir%'
-      $jsonPrefix: '%json_prefix%'
-
-  App\DataFixtures\Purchase\Component\AttributeFixtures:
-    arguments:
-      $attrJson: '%json_dir%/%json_prefix%attribut.json'
-      $familyJson: '%json_dir%/%json_prefix%component_family.json'

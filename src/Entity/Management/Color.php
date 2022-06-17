@@ -82,7 +82,7 @@ class Color extends Entity {
         ApiProperty(description: 'rgb', example: '#848484'),
         Assert\CssColor(formats: Assert\CssColor::HEX_LONG),
         Assert\NotBlank,
-        ORM\Column(type: 'char', length: 7, options: ['charset' => 'ascii']),
+        ORM\Column(type: 'char', length: 7),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $rgb = null;

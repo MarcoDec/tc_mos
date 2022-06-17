@@ -62,10 +62,10 @@ services:
         name: kernel.event_listener
         priority: 2
 
-  App\EventListener\Project\Product\FamilyListener:
+  App\EventListener\FamilyListener:
     autoconfigure: false
     tags:
-      - entity: App\Entity\Project\Product\Family
+      - entity: App\Entity\Family
         event: postLoad
         name: doctrine.orm.entity_listener
 
@@ -88,6 +88,12 @@ services:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
+
+  App\Migrations\Factory:
+    autoconfigure: false
+    arguments:
+      $decorated: '@App\Migrations\Factory.inner'
+    decorates: doctrine.migrations.migrations_factory
 
   App\OpenApi\SchemaFactory:
     arguments:

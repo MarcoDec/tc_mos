@@ -50,12 +50,12 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     ]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'char', length: 60, options: ['charset' => 'ascii'])]
+    #[ORM\Column(type: 'char', length: 60)]
     private ?string $password = null;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
-        ORM\Column(length: 20, options: ['charset' => 'ascii']),
+        ORM\Column(length: 20),
         Serializer\Groups(['read:employee'])
     ]
     private ?string $username = null;
@@ -142,7 +142,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     }
 
     #[
-        ApiProperty(description: 'Token', required: true, example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
+        ApiProperty(description: 'Token', example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
         Serializer\Groups(['read:employee'])
     ]
     final public function getToken(): ?string {
