@@ -28,7 +28,7 @@ final class MeasureValidator extends ConstraintValidator {
 
         if (!$this->getUnit()->has($value->getUnit())) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ unit }}', $this->getUnit())
+                ->setParameter('{{ unit }}', (string) $this->getUnit()->getName())
                 ->addViolation();
         }
     }

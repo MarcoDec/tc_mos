@@ -10,13 +10,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[ORM\Embeddable]
 class Measure {
     #[
-        ORM\Column(nullable: true),
+        ORM\Column(length: 3, nullable: true),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private ?string $code = null;
 
     #[
-        ORM\Column(nullable: true),
+        ORM\Column(length: 3, nullable: true),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private ?string $denominator = null;

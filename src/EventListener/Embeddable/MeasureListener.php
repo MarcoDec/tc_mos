@@ -6,7 +6,7 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Service\MeasureHydrator;
 
 final class MeasureListener {
-    public function __construct(private MeasureHydrator $hydrator) {
+    public function __construct(private readonly MeasureHydrator $hydrator) {
     }
 
     public function postLoad(MeasuredInterface $entity): void {

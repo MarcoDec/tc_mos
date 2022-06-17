@@ -10,12 +10,6 @@ use JetBrains\PhpStorm\Pure;
 
 #[ORM\Entity(repositoryClass: TokenRepository::class)]
 class Token {
-    #[
-        ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'apiTokens')
-    ]
-    private Employee $employee;
-
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $expireAt;
 
@@ -26,11 +20,14 @@ class Token {
     ]
     private ?int $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'char', length: 120)]
     private string $token;
 
-    final public function __construct(Employee $employee) {
-        $this->employee = $employee;
+    final public function __construct(
+        #[ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'apiTokens')]
+        private Employee $employee
+    ) {
         $this->expireAt = new DateTimeImmutable('+1 hour');
         $this->token = bin2hex(random_bytes(60));
     }

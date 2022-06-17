@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 
 final class LogoutListener {
-    public function __construct(private Security $security, private TokenRepository $tokenRepo) {
+    public function __construct(private readonly Security $security, private readonly TokenRepository $tokenRepo) {
     }
 
     public function __invoke(LogoutEvent $event): void {
