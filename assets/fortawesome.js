@@ -11,6 +11,7 @@ import {
     faClock,
     faCommentsDollar,
     faDatabase,
+    faEuroSign,
     faExclamationTriangle,
     faFileContract,
     faFileInvoiceDollar,
@@ -59,6 +60,7 @@ library.add(faClock)
 library.add(faCommentsDollar)
 library.add(faDatabase)
 library.add(faElementor)
+library.add(faEuroSign)
 library.add(faExclamationTriangle)
 library.add(faFileContract)
 library.add(faFileInvoiceDollar)

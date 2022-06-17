@@ -8,9 +8,10 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
+use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220613091217 extends AbstractMigration {
+final class Version20220613133135 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -137,7 +138,7 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `cron_job` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `command` CHAR(18) NOT NULL COMMENT '(DC2Type:char)',
+    `command` CHAR(20) NOT NULL COMMENT '(DC2Type:char)',
     `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
     `last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `next` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
@@ -158,6 +159,22 @@ CREATE TABLE `currency` (
     CONSTRAINT `IDX_6956883F727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `currency` (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
 SQL);
+        $currencies = collect(Currencies::getCurrencyCodes())
+            ->map(fn (string $code): string => sprintf(
+                /** @phpstan-ignore-next-line */
+                "(%s, {$this->connection->quote($code)}, %s)",
+                $code !== 'EUR' ? 1 : 'NULL',
+                in_array($code, ['CHF', 'EUR', 'MDL', 'RUB', 'TND', 'USD', 'VND']) ? 'TRUE' : 'FALSE'
+            ));
+        /** @var string $parent */
+        $parent = $currencies->first(static fn (string $query): bool => str_contains($query, 'EUR'));
+        $this->addSql(sprintf(
+            'INSERT INTO `currency` (`parent_id`, `code`, `active`) VALUES %s',
+            $currencies
+                ->filter(static fn (string $query): bool => !str_contains($query, 'EUR'))
+                ->prepend($parent)
+                ->join(',')
+        ));
     }
 
     private function upEngineGroups(): void {

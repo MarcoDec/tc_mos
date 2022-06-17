@@ -44,16 +44,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Currency-read',
             'skip_null_values' => false
         ],
+        order: ['code' => 'asc'],
         paginationEnabled: false
     ),
     ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
 class Currency extends AbstractUnit {
-    #[
-        ApiProperty(description: 'Enfants ', readableLink: false, example: ['/api/currencies/2', '/api/currencies/3']),
-        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class),
-        Serializer\Groups(['read:currency'])
-    ]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     protected Collection $children;
 
     #[
