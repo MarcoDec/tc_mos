@@ -59,11 +59,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:type'],
+            'groups' => ['write:type'],
             'openapi_definition_name' => 'EventType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:type'],
+            'groups' => ['read:id', 'read:type'],
             'openapi_definition_name' => 'EventType-read',
             'skip_null_values' => false
         ]
@@ -78,7 +78,7 @@ class Type extends Entity {
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $name = null;
 

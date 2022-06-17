@@ -77,11 +77,11 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:unit'],
+            'groups' => ['write:unit'],
             'openapi_definition_name' => 'Unit-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:unit'],
+            'groups' => ['read:id', 'read:unit'],
             'openapi_definition_name' => 'Unit-read',
             'skip_null_values' => false
         ]

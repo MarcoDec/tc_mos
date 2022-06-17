@@ -55,11 +55,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:incoterms', 'write:name'],
+            'groups' => ['write:incoterms'],
             'openapi_definition_name' => 'Incoterms-write'
         ],
         normalizationContext: [
-            'groups' => ['read:incoterms', 'read:id', 'read:name'],
+            'groups' => ['read:incoterms', 'read:id'],
             'openapi_definition_name' => 'Incoterms-read',
             'skip_null_values' => false
         ],
@@ -83,7 +83,7 @@ class Incoterms extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
     private ?string $name = null;
 

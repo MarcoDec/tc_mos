@@ -52,11 +52,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:engine-group', 'write:name'],
+            'groups' => ['write:engine-group'],
             'openapi_definition_name' => 'EngineGroup-write'
         ],
         normalizationContext: [
-            'groups' => ['read:engine-group', 'read:id', 'read:name'],
+            'groups' => ['read:engine-group', 'read:id'],
             'openapi_definition_name' => 'EngineGroup-read',
             'skip_null_values' => false
         ]
@@ -88,7 +88,7 @@ abstract class Group extends Entity {
         Assert\Length(min: 3, max: 35),
         Assert\NotBlank,
         ORM\Column(length: 35),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private ?string $name = null;
 

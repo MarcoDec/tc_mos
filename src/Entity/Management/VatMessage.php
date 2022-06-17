@@ -55,17 +55,16 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name'],
+            'groups' => ['write:vat-message'],
             'openapi_definition_name' => 'VatMessage-write'
         ],
         normalizationContext: [
-            'groups' => ['read:name', 'read:id'],
+            'groups' => ['read:vat-message', 'read:id'],
             'openapi_definition_name' => 'VatMessage-read',
             'skip_null_values' => false
         ]
     ),
     ORM\Entity,
-    ORM\Table,
     UniqueEntity('name')
 ]
 class VatMessage extends Entity {
@@ -73,7 +72,7 @@ class VatMessage extends Entity {
         ApiProperty(description: 'Message', required: true, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
         Assert\NotBlank,
         ORM\Column(length: 120),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:vat-message', 'write:vat-message'])
     ]
     private ?string $name = null;
 

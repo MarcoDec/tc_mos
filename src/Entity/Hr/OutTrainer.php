@@ -58,11 +58,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:address', 'write:name', 'write:out-trainer'],
+            'groups' => ['write:address', 'write:out-trainer'],
             'openapi_definition_name' => 'OutTrainer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:id', 'read:name', 'read:out-trainer'],
+            'groups' => ['read:address', 'read:id', 'read:out-trainer'],
             'openapi_definition_name' => 'OutTrainer-read',
             'skip_null_values' => false
         ]
@@ -82,7 +82,7 @@ class OutTrainer extends Entity {
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
     ]
     private ?string $name = null;
 

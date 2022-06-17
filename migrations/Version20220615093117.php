@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220613133134 extends AbstractMigration {
+final class Version20220615093117 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -187,7 +187,7 @@ CREATE TABLE `product` (
   `id_productstatus` int(11) NOT NULL DEFAULT '1',
   `ref` varchar(255) NOT NULL,
   `designation` varchar(255) NOT NULL,
-  `commande_ouverte` varchar(100) NOT NULL,
+  `commande_ouverte` varchar(100) DEFAULT NULL,
   `price_without_cu` double(24,5) NOT NULL COMMENT 'inutilisé, uniquement pour besoin de sauvegarde',
   `price` double(24,5) NOT NULL,
   `transfert_price_work` double(24,5) NOT NULL DEFAULT '0.00000' COMMENT 'prix de cession main d''oeuvre',
@@ -202,7 +202,7 @@ CREATE TABLE `product` (
   `qtcu` decimal(10,3) NOT NULL,
   `id_customcode` int(11) NOT NULL DEFAULT '0',
   `date_expiration` date DEFAULT NULL,
-  `conditionnement` varchar(255) NOT NULL COMMENT 'quantite par carton',
+  `conditionnement` varchar(255) DEFAULT NULL COMMENT 'quantite par carton',
   `typeconditionnement` varchar(255) NOT NULL COMMENT 'bac, palette, carton ...',
   `min_prod_quantity` int(11) NOT NULL COMMENT 'minimum de mise en production',
   `stock_minimum` int(11) NOT NULL COMMENT 'quantite minimum en stock',
@@ -210,7 +210,7 @@ CREATE TABLE `product` (
   `livraison_minimum` int(11) NOT NULL COMMENT 'equivalent de la MOQ',
   `volume_previsionnel` int(11) NOT NULL COMMENT 'volume de vente prévu annuellement pour le client',
   `id_incoterms` int(11) DEFAULT NULL COMMENT 'cas particulier',
-  `info_public` text NOT NULL,
+  `info_public` text DEFAULT NULL,
   `is_prototype` tinyint(4) DEFAULT NULL COMMENT '0=série, 1=proto, 2=echantillon',
   `c_200` tinyint(4) DEFAULT '0' COMMENT 'validation DIRECTION',
   `c_300` tinyint(4) DEFAULT '0' COMMENT 'validation qualité',
@@ -258,7 +258,7 @@ SQL);
 CREATE TABLE `production_rejectlist` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `statut` int(1) NOT NULL DEFAULT '0',
-  `libelle` varchar(255) NOT NULL,
+  `libelle` varchar(255) DEFAULT NULL,
   `id_user_creation` int(11) NOT NULL,
   `date_creation` datetime DEFAULT NULL,
   `id_user_modification` int(11) NOT NULL,
@@ -266,6 +266,91 @@ CREATE TABLE `production_rejectlist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('production_rejectlist');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `society` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
+  `id_soc_gest` int(11) NOT NULL COMMENT 'societé gérant le FOURNISSEUR',
+  `id_soc_gest_customer` int(11) NOT NULL COMMENT 'societé gérant le CLIENT',
+  `nom` varchar(255) NOT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `fax` varchar(255) DEFAULT NULL,
+  `capital` varchar(255) DEFAULT NULL,
+  `address1` text DEFAULT NULL,
+  `address2` text DEFAULT NULL,
+  `zip` varchar(255) DEFAULT NULL,
+  `city` varchar(255) DEFAULT NULL,
+  `city_timezone` varchar(255) DEFAULT NULL,
+  `id_customer_group` int(11) NOT NULL DEFAULT '0',
+  `id_country` int(11) NOT NULL,
+  `id_locale` int(11) NOT NULL,
+  `id_invoicetimedue` int(11) DEFAULT '0',
+  `id_societystatus` int(11) NOT NULL,
+  `id_invoicetimeduesupplier` int(11) NOT NULL DEFAULT '0',
+  `invoice_minimum` int(11) DEFAULT NULL COMMENT 'mini de facturation (client)',
+  `order_minimum` int(11) NOT NULL DEFAULT '0' COMMENT 'mini de commande (fournisseur)',
+  `web` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `formejuridique` varchar(255) DEFAULT NULL,
+  `siren` varchar(255) DEFAULT NULL,
+  `tva` varchar(255) DEFAULT NULL,
+  `compte_compta` varchar(50) DEFAULT NULL,
+  `info_public` text DEFAULT NULL,
+  `info_private` text DEFAULT NULL,
+  `blocked` tinyint(1) DEFAULT NULL,
+  `delai_livraison` int(11) DEFAULT NULL COMMENT 'délai d''acheminement en jours',
+  `ar_enabled` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'le fournisseur envoie des accusés de recepton (1=oui, 0=non)',
+  `gest_quality` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1=Oui / 0=Non',
+  `ar_customer_enabled` tinyint(4) NOT NULL DEFAULT '1',
+  `indice_cu_enabled` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Pour les fournisseurs. Pour les clients défini auto(0) ou manu (1)',
+  `indice_cu` double(24,4) DEFAULT NULL,
+  `indice_cu_date` date DEFAULT NULL,
+  `indice_cu_date_fin` date DEFAULT NULL,
+  `taux_operation_manu` double(10,2) DEFAULT NULL,
+  `id_incoterms` int(11) DEFAULT NULL COMMENT 'incoterms CLIENT cas général',
+  `taux_operation_auto` double(10,2) DEFAULT NULL,
+  `quality` int(11) DEFAULT NULL,
+  `rib` text,
+  `pied_page_achat` text DEFAULT NULL,
+  `pied_page_vente` text DEFAULT NULL,
+  `pied_page_achat_en` text DEFAULT NULL,
+  `pied_page_vente_en` text DEFAULT NULL,
+  `pied_page_documents` text DEFAULT NULL,
+  `pied_page_avoir` text DEFAULT NULL,
+  `pied_page_avoir_en` text DEFAULT NULL,
+  `date_creation` datetime DEFAULT NULL COMMENT 'date de création',
+  `date_modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'date modification',
+  `id_user_creation` int(11) DEFAULT NULL,
+  `id_user_modification` int(11) DEFAULT NULL,
+  `is_supplier` tinyint(4) DEFAULT NULL,
+  `is_customer` tinyint(4) DEFAULT NULL,
+  `is_company` tinyint(4) DEFAULT NULL,
+  `is_secured` int(1) NOT NULL DEFAULT '1' COMMENT 'si le client a une gestion securisee du stock de composant',
+  `force_tva` int(11) NOT NULL DEFAULT '0' COMMENT 'selecteur par defaut en création de facture',
+  `id_messagetva` int(11) NOT NULL DEFAULT '0' COMMENT 'selecteur par defaut en création de facture',
+  `invoicecustomer_by_email` tinyint(1) NOT NULL DEFAULT '0',
+  `sujet_email_facture` varchar(255) DEFAULT NULL,
+  `deliveryTimeOpenDays` tinyint(4) NOT NULL DEFAULT '1',
+  `generalMargin` float NOT NULL DEFAULT '0',
+  `ip` varchar(200) DEFAULT NULL,
+  `managementFees` float NOT NULL DEFAULT '0',
+  `numberOfTeamPerDay` int(11) NOT NULL DEFAULT '0',
+  `workTimetable` text DEFAULT NULL,
+  `comptaPortal` int(11) DEFAULT NULL,
+  `confidenceCriteria` int(11) NOT NULL DEFAULT '0',
+  `currency` varchar(20) NOT NULL DEFAULT '€',
+  `logisticPortal` int(11) DEFAULT NULL,
+  `maxOutstanding` int(11) NOT NULL DEFAULT '0',
+  `monthlyOutstanding` int(11) NOT NULL DEFAULT '0',
+  `nbBL` int(11) NOT NULL DEFAULT '0',
+  `nbInvoice` int(11) NOT NULL DEFAULT '0',
+  `qualityPortal` int(11) DEFAULT NULL DEFAULT '0',
+  `isBrokenLinkSolved` tinyint(1) NOT NULL DEFAULT '0',
+  `taux_operation_auto_md` int(11) DEFAULT NULL,
+  `taux_operation_manu_md` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('society');
         $this->addSql(<<<'SQL'
 CREATE TABLE `qualitycontrol` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -309,7 +394,11 @@ SQL);
                             ->map(function ($value) {
                                 if (is_string($value)) {
                                     $value = trim($value);
+                                    if (strlen($value) === 0) {
+                                        $value = null;
+                                    }
                                 }
+                                /** @phpstan-ignore-next-line */
                                 return $value === null || $value === '0000-00-00 00:00:00' || $value === '0000-00-00'
                                     ? 'NULL'
                                     : $this->connection->quote($value);

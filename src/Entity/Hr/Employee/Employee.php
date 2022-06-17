@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             ],
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:employee'],
+            'groups' => ['read:id', 'read:employee', 'read:user'],
             'openapi_definition_name' => 'Employee-read',
             'skip_null_values' => false
         ]
@@ -36,21 +36,19 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity
 ]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
-    #[
-        ApiProperty(description: 'Nom', example: 'Super'),
-        ORM\Column(length: 30),
-        Serializer\Groups(['read:employee', 'write:employee'])
-    ]
-    protected ?string $name = null;
-
-    /**
-     * @var Collection<int, Token>
-     */
+    /** @var Collection<int, Token> */
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
     private Collection $apiTokens;
 
     #[ORM\Embedded]
     private Roles $embRoles;
+
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Super'),
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:employee', 'write:employee'])
+    ]
+    private ?string $name = null;
 
     #[ORM\Column(type: 'char', length: 60)]
     private ?string $password = null;

@@ -15,6 +15,7 @@ doctrine:
     default_connection: default
     types:
       char: App\Doctrine\DBAL\Types\CharType
+      copper_type: App\Doctrine\DBAL\Types\Embeddable\CopperType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
       employee_current_place: App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType
@@ -23,6 +24,7 @@ doctrine:
       product_current_place: App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
       tinyint: App\Doctrine\DBAL\Types\Tinyint
+      vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce
   orm:
     auto_generate_proxy_classes: true
     default_entity_manager: default

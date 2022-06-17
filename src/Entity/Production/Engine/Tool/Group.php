@@ -40,11 +40,11 @@ use Doctrine\ORM\Mapping as ORM;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:engine-group', 'write:name'],
+            'groups' => ['write:engine-group'],
             'openapi_definition_name' => 'ToolGroup-write'
         ],
         normalizationContext: [
-            'groups' => ['read:engine-group', 'read:id', 'read:name'],
+            'groups' => ['read:engine-group', 'read:id'],
             'openapi_definition_name' => 'ToolGroup-read',
             'skip_null_values' => false
         ]

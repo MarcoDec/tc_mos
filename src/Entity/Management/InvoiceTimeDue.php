@@ -60,11 +60,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:invoice-time-due', 'write:name'],
+            'groups' => ['write:invoice-time-due'],
             'openapi_definition_name' => 'InvoiceTimeDue-write'
         ],
         normalizationContext: [
-            'groups' => ['read:invoice-time-due', 'read:id', 'read:name'],
+            'groups' => ['read:invoice-time-due', 'read:id'],
             'openapi_definition_name' => 'InvoiceTimeDue-read',
             'skip_null_values' => false
         ]
@@ -100,7 +100,7 @@ class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: '30 jours fin de mois'),
         ORM\Column(length: 40),
-        Serializer\Groups(['read:name', 'write:name']),
+        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due']),
         Assert\Length(min: 3, max: 40),
         Assert\NotBlank
     ]

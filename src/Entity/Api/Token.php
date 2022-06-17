@@ -24,10 +24,9 @@ class Token {
     private string $token;
 
     final public function __construct(
-        #[
-            ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'apiTokens')
-        ] private Employee $employee
+        #[ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'apiTokens')]
+        private Employee $employee
     ) {
         $this->expireAt = new DateTimeImmutable('+1 hour');
         $this->token = bin2hex(random_bytes(60));
