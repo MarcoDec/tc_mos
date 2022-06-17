@@ -1,4 +1,4 @@
-import {defineAsyncComponent} from 'vue'
+import AppShowGuiResizableCard from '../components/gui/AppShowGuiResizableCard'
 import {defineStore} from 'pinia'
 
 export default defineStore('gui', {
@@ -52,9 +52,7 @@ export default defineStore('gui', {
         endWidthPx() {
             return `${this.endWidth}px`
         },
-        guiBottom: state => (state.windowWidth >= 1140
-            ? defineAsyncComponent(() => import('../components/gui/AppShowGuiResizableCard'))
-            : 'AppShowGuiCard'),
+        guiBottom: state => (state.windowWidth >= 1140 ? AppShowGuiResizableCard : 'AppShowGuiCard'),
         heightPx: state => `${state.height}px`,
         icon: state => state.windowWidth <= 800,
         innerBottomHeight(state) {
