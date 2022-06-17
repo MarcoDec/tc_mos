@@ -5,6 +5,7 @@ namespace App\Entity\Hr\Event;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -16,6 +17,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiFilter(filterClass: EnumFilter::class, properties: ['toStatus']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
@@ -62,7 +64,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:name', 'read:type'],
-            'openapi_definition_name' => 'EventType-read'
+            'openapi_definition_name' => 'EventType-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
@@ -82,7 +85,7 @@ class Type extends Entity {
     #[
         ApiProperty(description: 'Status', example: 'blocked', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
-        ORM\Column(type: 'employee_current_place', nullable: true, options: ['charset' => 'ascii']),
+        ORM\Column(type: 'employee_current_place', nullable: true),
         Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $toStatus = null;

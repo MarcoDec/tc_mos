@@ -20,7 +20,9 @@ use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
+use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
+use App\Repository\Project\Product\ProductRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
@@ -33,8 +35,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['expirationDate']),
+    ApiFilter(filterClass: EnumFilter::class, properties: ['currentPlace.name']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['index', 'kind', 'ref']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['currentPlace' => 'name', 'family' => 'name']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'index' => 'partial',
         'kind' => 'partial',
@@ -161,10 +164,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:current-place', 'read:measure', 'read:product'],
-            'openapi_definition_name' => 'Product-read'
+            'openapi_definition_name' => 'Product-read',
+            'skip_null_values' => false
         ]
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['index', 'ref'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
 class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
@@ -202,7 +206,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 10),
-        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
+        ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
     private ?string $customsCode = null;
@@ -241,7 +245,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
         Assert\Length(min: 1, max: 3, groups: ['Product-admin', 'Product-create']),
-        ORM\Column(name: '`index`', length: 3, options: ['charset' => 'ascii']),
+        ORM\Column(name: '`index`', length: 3),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $index = null;

@@ -5,14 +5,17 @@ namespace App\Entity\Management;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'rgb']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'rgb' => 'partial']),
     ApiResource(
         description: 'Couleur',
@@ -57,10 +60,13 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:color', 'read:id'],
-            'openapi_definition_name' => 'Color-read'
+            'openapi_definition_name' => 'Color-read',
+            'skip_null_values' => false
         ],
     ),
-    ORM\Entity
+    ORM\Entity,
+    UniqueEntity('name'),
+    UniqueEntity('rgb')
 ]
 class Color extends Entity {
     #[
@@ -76,7 +82,7 @@ class Color extends Entity {
         ApiProperty(description: 'rgb', example: '#848484'),
         Assert\CssColor(formats: Assert\CssColor::HEX_LONG),
         Assert\NotBlank,
-        ORM\Column(type: 'char', length: 7, options: ['charset' => 'ascii']),
+        ORM\Column(type: 'char', length: 7),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $rgb = null;

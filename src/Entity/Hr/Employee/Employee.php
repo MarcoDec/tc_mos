@@ -14,7 +14,6 @@ use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -29,19 +28,18 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:employee', 'read:name', 'read:user'],
-            'openapi_definition_name' => 'Employee-read'
+            'groups' => ['read:id', 'read:employee'],
+            'openapi_definition_name' => 'Employee-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity
 ]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Super'),
-        Assert\Length(min: 3, max: 30),
-        Assert\NotBlank,
+        ApiProperty(description: 'Nom', example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:employee', 'write:employee'])
     ]
     protected ?string $name = null;
 
@@ -54,13 +52,12 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[ORM\Embedded]
     private Roles $embRoles;
 
-    #[ORM\Column(type: 'char', length: 60, options: ['charset' => 'ascii'])]
+    #[ORM\Column(type: 'char', length: 60)]
     private ?string $password = null;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
-        Assert\Length(min: 3, max: 20),
-        ORM\Column(length: 20, options: ['charset' => 'ascii']),
+        ORM\Column(length: 20),
         Serializer\Groups(['read:employee'])
     ]
     private ?string $username = null;
@@ -147,7 +144,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     }
 
     #[
-        ApiProperty(description: 'Token', required: true, example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
+        ApiProperty(description: 'Token', example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
         Serializer\Groups(['read:employee'])
     ]
     final public function getToken(): ?string {

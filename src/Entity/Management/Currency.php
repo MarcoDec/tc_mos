@@ -41,7 +41,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'groups' => ['read:currency', 'read:id'],
-            'openapi_definition_name' => 'Currency-read'
+            'openapi_definition_name' => 'Currency-read',
+            'skip_null_values' => false
         ],
         paginationEnabled: false
     ),
@@ -57,7 +58,7 @@ class Currency extends AbstractUnit {
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'EUR'),
-        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
+        ORM\Column(type: 'char', length: 3),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected ?string $code = null;

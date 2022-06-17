@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -18,6 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['safetyDevice']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Groupe d\'équipement',
@@ -55,7 +57,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:engine-group', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'EngineGroup-read'
+            'openapi_definition_name' => 'EngineGroup-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'engine_type'),
@@ -75,7 +78,7 @@ abstract class Group extends Entity {
         ApiProperty(description: 'Code ', required: true, example: 'TA'),
         Assert\Length(min: 2, max: 3),
         Assert\NotBlank,
-        ORM\Column(length: 3, options: ['charset' => 'ascii']),
+        ORM\Column(length: 3),
         Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private ?string $code = null;
