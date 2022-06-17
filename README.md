@@ -34,13 +34,6 @@ exécutez la commande `composer install` pour installer les différentes dépend
 
 Pour charger la base de données, exécutez la commande `gpao:database:load`.
 
-La commande ci-dessus est un raccourci pour les deux commandes ci-dessous&nbsp;:
-
-```sh
-gpao:schema:update # Charge les tables en fonction du schéma défini sur les entités
-gpao:fixtures:load # Transfère les anciennes données au format JSON dans le nouveau modèle
-```
-
 ### Vite & Vue
 
 La partie *front* est développée avec le *framework* Vue.js. Les différents fichiers composants les *assets* sont
@@ -87,10 +80,5 @@ Le taux de change des devises est mis à jour par une tâche cron selon la comma
 
 ## Qualité du code
 
-### PHP Coding Standards Fixer
-
-Pour modifier le code quant aux standards définis pour le projet, utilisez la commande&nbsp;: `gpao:fix:code`.
-
-### PHPStan-GPAO/vendor/bin/phpstan analyse'
-
-Pour contrôler le code de manière statique, utilisez la commande `gpao:stan`.
+Pour modifier et contrôler le code quant aux standards définis pour le projet, utilisez la
+commande&nbsp;: `gpao:fix:code`.
