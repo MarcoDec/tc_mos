@@ -7,19 +7,23 @@ use App\Entity\CronJob;
 use Doctrine\ORM\EntityManagerInterface;
 use ReflectionClass;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LazyCommand;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @method static string getDefaultName()
+ */
 final class CronCommand extends AbstractCommand {
-    private const OPTION_SCAN = 'scan';
+    public const OPTION_SCAN = 'scan';
 
     protected static $defaultDescription = 'Lance les CRON.';
     protected static $defaultName = 'gpao:cron';
 
-    public function __construct(private EntityManagerInterface $em) {
+    public function __construct(private readonly EntityManagerInterface $em) {
         parent::__construct();
     }
 
@@ -54,7 +58,7 @@ final class CronCommand extends AbstractCommand {
                     throw new LogicException('Undefined command name.');
                 }
 
-                $refl = new ReflectionClass($command);
+                $refl = new ReflectionClass($command instanceof LazyCommand ? $command->getCommand() : $command);
                 $attributes = $refl->getAttributes(CronJobAttribute::class);
                 if (empty($attributes)) {
                     return [];
