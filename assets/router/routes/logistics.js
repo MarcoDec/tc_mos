@@ -1,3 +1,5 @@
+import AppTablePage from '../pages/AppTablePage'
+
 export default [
     {
         component: () => import('../pages/AppSuspenseWrapper'),
@@ -10,7 +12,7 @@ export default [
         }
     },
     {
-        component: () => import('../pages/AppTablePage'),
+        component: AppTablePage,
         meta: {requiresAuth: true},
         name: 'incoterms',
         path: '/incoterms',
