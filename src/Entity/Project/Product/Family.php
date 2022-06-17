@@ -79,7 +79,7 @@ class Family extends AbstractFamily {
     protected Collection $children;
 
     #[
-        ApiProperty(description: 'Nom', example: 'Faisceaux'),
+        ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
         ORM\Column(length: 30),

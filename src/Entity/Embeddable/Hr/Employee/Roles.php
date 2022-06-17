@@ -120,7 +120,7 @@ class Roles {
     final public const ROLE_USER = 'ROLE_USER';
 
     /** @var string[] */
-    #[ORM\Column(type: 'simple_array', options: ['charset' => 'ascii'])]
+    #[ORM\Column(type: 'simple_array')]
     private array $roles = [self::ROLE_USER];
 
     final public function addRole(string $role): self {

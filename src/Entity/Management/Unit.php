@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Filter\NumericFilter;
 use App\Filter\RelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator\Management\Unit\Base;
@@ -17,11 +18,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: NumericFilter::class, properties: ['base']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['base', 'code', 'name', 'parent.code']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial']),
     ApiResource(
-        description: 'Unit',
+        description: 'Unité',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -29,19 +31,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Récupère les unités',
                 ]
             ],
-            'post' => [
-                'openapi_context' => [
-                    'description' => 'Créer une unité',
-                    'summary' => 'Créer une unité',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
-            ],
-            'select-options' => [
+            'get-options' => [
                 'controller' => PlaceholderAction::class,
                 'filters' => [],
                 'method' => 'GET',
                 'normalization_context' => [
-                    'groups' => ['read:unit:options', 'read:id'],
+                    'groups' => ['read:id', 'read:unit:option'],
                     'openapi_definition_name' => 'Unit-options',
                     'skip_null_values' => false
                 ],
@@ -49,8 +44,16 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les unités pour les select',
                     'summary' => 'Récupère les unités pour les select',
                 ],
+                'order' => ['code' => 'asc'],
                 'pagination_enabled' => false,
                 'path' => '/units/options'
+            ],
+            'post' => [
+                'openapi_context' => [
+                    'description' => 'Créer une unité',
+                    'summary' => 'Créer une unité',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -95,7 +98,7 @@ class Unit extends AbstractUnit {
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/units/1'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:unit', 'read:unit:options', 'write:unit'])
+        Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected $parent;
 }

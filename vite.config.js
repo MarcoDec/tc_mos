@@ -11,7 +11,14 @@ export default defineConfig({
         manifest: true,
         outDir: './public/build/',
         rollupOptions: {
-            input: {index: './assets/index.js'}
+            input: {index: './assets/index.js'},
+            output: {
+                // eslint-disable-next-line consistent-return
+                manualChunks(id) {
+                    if (id.includes('AppSuspenseWrapper') || id.includes('stores/options'))
+                        return 'vendor'
+                }
+            }
         }
     },
     plugins: [
@@ -22,14 +29,9 @@ export default defineConfig({
     root: './',
     server: {
         force: true,
-        fs: {
-            allow: ['..'],
-            strict: false
-        },
+        fs: {allow: ['..'], strict: false},
         host: '0.0.0.0',
         port: 8001,
-        watch: {
-            disableGlobbing: false
-        }
+        watch: {disableGlobbing: false}
     }
 })

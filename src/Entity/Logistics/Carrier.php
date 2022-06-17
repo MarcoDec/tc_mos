@@ -79,7 +79,7 @@ class Carrier extends Entity {
     private Address $address;
 
     #[
-        ApiProperty(description: 'Nom', example: 'DHL'),
+        ApiProperty(description: 'Nom', required: true, example: 'DHL'),
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),

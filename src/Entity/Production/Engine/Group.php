@@ -75,16 +75,16 @@ abstract class Group extends Entity {
     ];
 
     #[
-        ApiProperty(description: 'Code ', example: 'TA'),
+        ApiProperty(description: 'Code ', required: true, example: 'TA'),
         Assert\Length(min: 2, max: 3),
         Assert\NotBlank,
-        ORM\Column(length: 3, options: ['charset' => 'ascii']),
+        ORM\Column(length: 3),
         Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Nom', example: 'Table d\'assemblage'),
+        ApiProperty(description: 'Nom', required: true, example: 'Table d\'assemblage'),
         Assert\Length(min: 3, max: 35),
         Assert\NotBlank,
         ORM\Column(length: 35),

@@ -26,6 +26,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Récupère les sociétés',
                     'summary' => 'Récupère les sociétés',
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:society:collection'],
+                    'openapi_definition_name' => 'Society-collection'
                 ]
             ],
             'post' => [
@@ -49,7 +53,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une société',
+                    'summary' => 'Récupère une société'
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une société',
@@ -67,8 +76,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:society'],
-            'openapi_definition_name' => 'Society-read',
-            'skip_null_values' => false
+            'openapi_definition_name' => 'Society-read'
         ],
     ),
     ORM\Entity
@@ -87,7 +95,7 @@ class Society extends Entity {
     private Address $address;
 
     #[
-        ApiProperty(description: 'Détails bancaires', example: 'IBAN/RIB/Nom de banque'),
+        ApiProperty(description: 'Détails bancaires', required: false, example: 'IBAN/RIB/Nom de banque'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:society'])
     ]
@@ -102,21 +110,14 @@ class Society extends Entity {
     private Copper $copper;
 
     #[
-        ApiProperty(description: 'Numéro de fax', example: '02 17 21 11 11'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:society'])
-    ]
-    private ?string $fax = null;
-
-    #[
-        ApiProperty(description: 'Forme juridique', example: 'SARL'),
+        ApiProperty(description: 'Forme juridique', required: false, example: 'SARL'),
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $legalForm = null;
 
     #[
-        ApiProperty(description: 'Nom', example: 'TConcept'),
+        ApiProperty(description: 'Nom', required: true, example: 'TConcept'),
         Assert\NotBlank(groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:society', 'read:society', 'read:society:collection', 'write:society'])
@@ -124,21 +125,21 @@ class Society extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Notes', example: 'Notes libres sur la société'),
+        ApiProperty(description: 'Notes', required: false, example: 'Notes libres sur la société'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'SIREN', example: '123 456 789'),
+        ApiProperty(description: 'SIREN', required: false, example: '123 456 789'),
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society'])
     ]
     private ?string $siren = null;
 
     #[
-        ApiProperty(description: 'Site internet', example: 'https://www.societe.fr'),
+        ApiProperty(description: 'Site internet', required: false, example: 'https://www.societe.fr'),
         Assert\Url(groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
@@ -161,10 +162,6 @@ class Society extends Entity {
 
     final public function getCopper(): Copper {
         return $this->copper;
-    }
-
-    final public function getFax(): ?string {
-        return $this->fax;
     }
 
     final public function getLegalForm(): ?string {
@@ -199,11 +196,6 @@ class Society extends Entity {
 
     final public function setCopper(Copper $copper): self {
         $this->copper = $copper;
-        return $this;
-    }
-
-    final public function setFax(?string $fax): self {
-        $this->fax = $fax;
         return $this;
     }
 

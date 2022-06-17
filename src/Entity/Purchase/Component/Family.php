@@ -86,10 +86,10 @@ class Family extends AbstractFamily {
     protected Collection $children;
 
     #[
-        ApiProperty(description: 'Nom', example: 'Câbles'),
-        Assert\Length(min: 3, max: 20),
+        ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
+        Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
-        ORM\Column(length: 30),
+        ORM\Column(length: 40),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     protected ?string $name = null;
@@ -102,10 +102,10 @@ class Family extends AbstractFamily {
     protected $parent;
 
     #[
-        ApiProperty(description: 'Code ', example: 'CAB'),
+        ApiProperty(description: 'Code ', required: true, example: 'CAB'),
         Assert\Length(exactly: 3),
         Assert\NotBlank,
-        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
+        ORM\Column(type: 'char', length: 3),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $code = null;

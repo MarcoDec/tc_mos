@@ -70,7 +70,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Color extends Entity {
     #[
-        ApiProperty(description: 'nom', example: 'Gris'),
+        ApiProperty(description: 'nom', required: true, example: 'Gris'),
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
         ORM\Column(length: 20),
@@ -82,7 +82,7 @@ class Color extends Entity {
         ApiProperty(description: 'rgb', example: '#848484'),
         Assert\CssColor(formats: Assert\CssColor::HEX_LONG),
         Assert\NotBlank,
-        ORM\Column(type: 'char', length: 7, options: ['charset' => 'ascii']),
+        ORM\Column(type: 'char', length: 7),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $rgb = null;

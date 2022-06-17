@@ -20,7 +20,6 @@ class Copper {
 
     #[
         ApiProperty(description: 'Date du dernier indice'),
-        Assert\DateTime,
         ORM\Column(type: 'datetime_immutable', nullable: true),
         Serializer\Groups(['read:copper', 'write:copper'])
     ]
@@ -35,7 +34,6 @@ class Copper {
 
     #[
         ApiProperty(description: 'Date du prochain indice'),
-        Assert\DateTime,
         ORM\Column(type: 'datetime_immutable', nullable: true),
         Serializer\Groups(['read:copper', 'write:copper'])
     ]

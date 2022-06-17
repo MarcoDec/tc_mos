@@ -74,7 +74,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Type extends Entity {
     #[
-        ApiProperty(description: 'Nom', example: 'ABSENCE'),
+        ApiProperty(description: 'Nom', required: true, example: 'ABSENCE'),
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
@@ -85,7 +85,7 @@ class Type extends Entity {
     #[
         ApiProperty(description: 'Status', example: 'blocked', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
-        ORM\Column(type: 'employee_current_place', nullable: true, options: ['charset' => 'ascii']),
+        ORM\Column(type: 'employee_current_place', nullable: true),
         Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $toStatus = null;

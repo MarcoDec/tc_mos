@@ -8,6 +8,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @method static string getDefaultName()
+ */
 #[CronJob('@daily')]
 final class ExpirationDateCommand extends Command {
     protected static $defaultDescription = 'CRON de désactivation des produits expirés.';

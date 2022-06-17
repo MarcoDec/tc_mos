@@ -2,7 +2,6 @@
 
 namespace App\Entity\Logistics;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -33,23 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Créer un incoterms',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
-            ],
-            'select-options' => [
-                'controller' => PlaceholderAction::class,
-                'filters' => [],
-                'method' => 'GET',
-                'normalization_context' => [
-                    'groups' => ['read:incoterms:options', 'read:id'],
-                    'openapi_definition_name' => 'Incoterms-options',
-                    'skip_null_values' => false
-                ],
-                'openapi_context' => [
-                    'description' => 'Récupère les incoterms pour les select',
-                    'summary' => 'Récupère les incoterms pour les select',
-                ],
-                'pagination_enabled' => false,
-                'path' => '/incoterms/options'
-            ],
+            ]
         ],
         itemOperations: [
             'delete' => [
@@ -79,7 +62,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:incoterms', 'read:id'],
             'openapi_definition_name' => 'Incoterms-read',
             'skip_null_values' => false
-        ]
+        ],
     ),
     ORM\Entity,
     UniqueEntity('code'),
@@ -87,16 +70,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Incoterms extends Entity {
     #[
-        ApiProperty(description: 'Code ', example: 'DDP'),
+        ApiProperty(description: 'Code ', required: true, example: 'DDP'),
         Assert\Length(min: 3, max: 11),
         Assert\NotBlank,
         ORM\Column(length: 11),
-        Serializer\Groups(['read:incoterms', 'read:incoterms:options', 'write:incoterms'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Nom', example: 'Delivered Duty Paid'),
+        ApiProperty(description: 'Nom', required: true, example: 'Delivered Duty Paid'),
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),

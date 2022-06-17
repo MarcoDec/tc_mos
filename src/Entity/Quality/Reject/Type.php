@@ -69,7 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Type extends Entity {
     #[
-        ApiProperty(description: 'Nom', example: 'sertissage dimensionnelle'),
+        ApiProperty(description: 'Nom', required: true, example: 'sertissage dimensionnelle'),
         Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
         ORM\Column(length: 40),
