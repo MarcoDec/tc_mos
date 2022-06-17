@@ -9,6 +9,7 @@ use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
 use App\Entity\Embeddable\Measure;
+use ArrayObject;
 use Illuminate\Support\Collection;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -16,9 +17,9 @@ use ReflectionException;
 
 final class SchemaFactory implements SchemaFactoryInterface {
     public function __construct(
-        private DashPathSegmentNameGenerator $dashGenerator,
-        private SchemaFactoryInterface $decorated,
-        private ResourceMetadataFactoryInterface $resourceMetadataFactory
+        private readonly DashPathSegmentNameGenerator $dashGenerator,
+        private readonly SchemaFactoryInterface $decorated,
+        private readonly ResourceMetadataFactoryInterface $resourceMetadataFactory
     ) {
     }
 
@@ -31,11 +32,11 @@ final class SchemaFactory implements SchemaFactoryInterface {
         $attrs = new Collection();
         try {
             $attrs = $attrs->merge($refl->getProperty($propertyName)->getAttributes(ApiProperty::class));
-        } catch (ReflectionException $e) {
+        } catch (ReflectionException) {
         }
         try {
             $attrs = $attrs->merge($refl->getMethod('get'.ucfirst($propertyName))->getAttributes(ApiProperty::class));
-        } catch (ReflectionException $e) {
+        } catch (ReflectionException) {
         }
         foreach ($attrs as $attr) {
             /** @var ApiProperty $apiProperty */
@@ -48,9 +49,20 @@ final class SchemaFactory implements SchemaFactoryInterface {
     }
 
     /**
+     * @param array<string, mixed>|ArrayObject<string, mixed> $array
+     */
+    private static function ksort(array|ArrayObject &$array): void {
+        if ($array instanceof ArrayObject) {
+            $array->ksort();
+        } else {
+            ksort($array);
+        }
+    }
+
+    /**
      * @param class-string               $className
      * @param null|Schema<string, mixed> $schema
-     * @param mixed[]|null               $serializerContext
+     * @param mixed[]                    $serializerContext
      *
      * @return Schema<string, mixed>
      */
@@ -74,13 +86,23 @@ final class SchemaFactory implements SchemaFactoryInterface {
             serializerContext: $serializerContext,
             forceCollection: $forceCollection
         );
-
+        /** @var ArrayObject<string, array{properties?: array<string, mixed[]>, required: string[]}> $definitions */
         $definitions = $schema->getDefinitions();
         $key = $schema->getRootDefinitionKey();
 
         if ($className === Measure::class && !empty($key)) {
             unset($definitions[$key]);
             return $schema;
+        }
+
+        if (!empty($key) && in_array($format, ['json', 'jsonld']) && isset($definitions[$key]['properties'])) {
+            foreach (array_keys($definitions[$key]['properties']) as $property) {
+                if (isset($definitions[$key]['properties'][$property]['description'])) {
+                    $definitions[$key]['properties'][$property]['title'] = $definitions[$key]['properties'][$property]['description'];
+                }
+                self::ksort($definitions[$key]['properties'][$property]);
+            }
+            self::ksort($definitions[$key]['properties']);
         }
 
         if ('jsonld' !== $format) {
@@ -90,14 +112,15 @@ final class SchemaFactory implements SchemaFactoryInterface {
         if (!empty($key)) {
             try {
                 $resourceName = $this->resourceMetadataFactory->create($className)->getShortName();
-            } catch (ResourceClassNotFoundException $e) {
+            } catch (ResourceClassNotFoundException) {
                 return $schema;
             }
-            if (!empty($resourceName)) {
+            if (!empty($resourceName) && isset($definitions[$key]['properties'])) {
                 $definitions[$key]['properties']['@context']['example'] = "/api/contexts/$resourceName";
                 $definitions[$key]['properties']['@id']['example'] = "/api/{$this->dashGenerator->getSegmentName($resourceName)}/1";
                 $definitions[$key]['properties']['@type']['example'] = $resourceName;
                 if ($type === Schema::TYPE_OUTPUT) {
+                    /** @phpstan-ignore-next-line */
                     if (!isset($definitions[$key]['required'])) {
                         $definitions[$key]['required'] = [];
                     }
@@ -114,6 +137,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
                 foreach (array_keys($definitions[$key]['properties']) as $property) {
                     /** @var string $property */
                     if (self::isRequired($className, $property)) {
+                        /** @phpstan-ignore-next-line */
                         if (!isset($definitions[$key]['required'])) {
                             $definitions[$key]['required'] = [];
                         }
@@ -122,7 +146,9 @@ final class SchemaFactory implements SchemaFactoryInterface {
                         }
                         $definitions[$key]['properties'][$property]['nullable'] = false;
                     }
+                    self::ksort($definitions[$key]['properties'][$property]);
                 }
+                self::ksort($definitions[$key]['properties']);
             }
         }
 

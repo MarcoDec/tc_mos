@@ -16,18 +16,20 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     public function __construct(
-        private NormalizerInterface $normalizer,
-        private TokenRepository $tokenRepo,
-        private UrlGeneratorInterface $urlGenerator
+        private readonly NormalizerInterface $normalizer,
+        private readonly TokenRepository $tokenRepo,
+        private readonly TranslatorInterface $translator,
+        private readonly UrlGeneratorInterface $urlGenerator
     ) {
     }
 
     public function authenticate(Request $request): Passport {
         /** @var array{password?: string, username?: string}|null $content */
-        $content = json_decode($request->getContent(), true);
+        $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         if (empty($content)) {
             throw new BadCredentialsException();
         }
@@ -41,7 +43,10 @@ final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response {
         return new JsonResponse(
-            data: empty($exception->getMessage()) ? $exception->getMessageKey() : $exception->getMessage(),
+            data: $this->translator->trans(
+                id: empty($exception->getMessage()) ? $exception->getMessageKey() : $exception->getMessage(),
+                domain: 'security'
+            ),
             status: Response::HTTP_UNAUTHORIZED
         );
     }
