@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['unit']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['description' => 'partial', 'name' => 'partial']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['description', 'name', 'unit.name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'unit.name']),
     ApiResource(
         description: 'Attribut',
         collectionOperations: [
@@ -80,7 +80,7 @@ class Attribute extends Entity {
 
     /** @var Collection<int, Family> */
     #[
-        ApiProperty(description: 'Famille', readableLink: false, required: true, example: ['/api/units/7', '/api/units/15']),
+        ApiProperty(description: 'Famille', readableLink: false, required: true, example: ['/api/component-families/1', '/api/component-families/2']),
         ORM\ManyToMany(targetEntity: Family::class),
         Serializer\Groups(['read:attribute', 'write:attribute'])
     ]
@@ -95,7 +95,7 @@ class Attribute extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/7'),
+        ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['read:attribute', 'write:attribute'])
     ]

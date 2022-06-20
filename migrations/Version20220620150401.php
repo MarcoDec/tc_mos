@@ -15,7 +15,7 @@ use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220620143729 extends AbstractMigration {
+final class Version20220620150401 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -109,10 +109,28 @@ CREATE TABLE `attribute_family` (
     `attribute_id` INT UNSIGNED NOT NULL,
     `family_id` INT UNSIGNED NOT NULL,
     PRIMARY KEY(`attribute_id`, `family_id`),
-    CONSTRAINT `IDX_87070F01B6E62EFA` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`id`) ON DELETE CASCADE,
     CONSTRAINT `IDX_87070F01C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
 SQL);
+        $this->addSql(<<<'SQL'
+CREATE TABLE `attribute_copy` (
+  `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unit_id` int UNSIGNED DEFAULT NULL,
+  `attribut_id_family` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Attribut';
+SQL);
+        $this->addSql(<<<'SQL'
+INSERT INTO `attribute_copy` (`deleted`, `description`, `name`, `unit_id`, `attribut_id_family`)
+SELECT `deleted`, `description`, `name`, `unit_id`, `attribut_id_family`
+FROM `attribute`
+SQL);
+        $this->addSql('DROP TABLE `attribute`');
+        $this->addSql('RENAME TABLE `attribute_copy` TO `attribute`');
+        $this->addSql('ALTER TABLE `attribute` ADD CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`);');
+        $this->addSql('ALTER TABLE `attribute_family` ADD CONSTRAINT `IDX_87070F01B6E62EFA` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`id`) ON DELETE CASCADE;');
     }
 
     private function upCarriers(): void {
