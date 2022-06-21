@@ -3,6 +3,7 @@
     import AppNavbarItem from './AppNavbarItem.vue'
     import AppNavbarLink from './AppNavbarLink'
     import AppNavbarUser from './AppNavbarUser.vue'
+    import AppNotifications from '../notification/AppNotifications.vue'
     import {computed} from 'vue'
     import {generateVariant} from '../props'
     import useUserStore from '../../stores/hr/employee/user'
@@ -183,6 +184,7 @@
                         </AppNavbarItem>
                     </ul>
                 </div>
+                <AppNotifications id="nav-notifications"/>
                 <AppNavbarUser/>
             </template>
         </AppContainer>

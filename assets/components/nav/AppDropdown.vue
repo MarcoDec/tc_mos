@@ -12,7 +12,7 @@
     const direction = computed(() => ({'dropdown-menu-end': props.end}))
     const liId = computed(() => `nav-${props.id}`)
     const dropdownId = computed(() => `${liId.value}-dropdown`)
- 
+
     function dispose() {
         if (dropdown.value !== null) {
             dropdown.value.dispose()

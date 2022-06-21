@@ -1,28 +1,33 @@
 <script setup>
-    import {NotificationRepository} from '../../../store/modules'
     import {computed} from 'vue'
-    import {useRepo} from '../../../composition'
+    import useNotifications from '../../stores/notification/notifications'
 
     const props = defineProps({notification: {required: true, type: Object}})
-    const bg = computed(() => `bg-${props.notification.read ? 'secondary' : 'gray-800'}`)
-    const repo = useRepo(NotificationRepository)
-
+    const bg = computed(
+        () => `bg-${props.notification.read ? 'secondary' : 'gray-800'}`
+    )
     async function read() {
-        await repo.read(props.notification)
+        const notifications = useNotifications()
+        await notifications.read(props.notification.id)
     }
 
     async function remove() {
-        await repo.remove(props.notification.id)
+        const notifications = useNotifications()
+        await notifications.remove(props.notification.id)
     }
 </script>
 
 <template>
     <div :class="bg" class="d-flex flex-column mb-2">
         <div>
-            <AppBtn v-if="!notification.read" icon="eye" title="Marquer comme lu" @click="read"/>
+            <AppBtn
+                v-if="!notification.read"
+                icon="eye"
+                title="Marquer comme lu"
+                @click="read"/>
             <AppBtn icon="trash" title="Supprimer" variant="danger" @click="remove"/>
         </div>
-        <span>{{ notification.formattedCreatedAt }}</span>
+        <span>{{ notification.createdAt }}</span>
         <span> {{ notification.subject }}</span>
     </div>
 </template>

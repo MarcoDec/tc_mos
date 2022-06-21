@@ -21,7 +21,7 @@
     }
 </script>
 
-<template>
+<template> 
     <li class="accordion-item">
         <h6 class="accordion-header">
             <button

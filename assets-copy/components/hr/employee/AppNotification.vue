@@ -13,7 +13,7 @@
 
     async function remove() {
         await repo.remove(props.notification.id)
-    }
+    } 
 </script>
 
 <template>

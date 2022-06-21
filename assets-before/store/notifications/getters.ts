@@ -14,3 +14,4 @@ export const getters: Getters = {
     ids: state => Object.keys(state),
     cat: state => Object.values(state)
 }
+ 

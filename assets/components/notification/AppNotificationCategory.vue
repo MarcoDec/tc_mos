@@ -1,23 +1,27 @@
 <script setup>
     import AppNotification from './AppNotification.vue'
-    import {NotificationRepository} from '../../../store/modules'
     import {computed} from 'vue'
-    import {useRepo} from '../../../composition'
+    import useNotifications from '../../stores/notification/notifications'
 
-    const props = defineProps({category: {required: true, type: String}, notifications: {required: true, type: Object}})
+    const props = defineProps({
+        category: {required: true, type: String},
+        notifications: {required: true, type: Object}
+    })
+
     const content = computed(() => `nav-notifications-${props.category}`)
     const target = computed(() => `#${content.value}`)
-    const repo = useRepo(NotificationRepository)
-    const length = computed(() => props.notifications.filter(notification => !notification.read).length)
+    const length = computed(() => props.notifications.length)
     const hasUnread = computed(() => length.value > 0)
     const variant = computed(() => (hasUnread.value ? 'danger' : 'dark'))
 
     async function read() {
-        await repo.readCategory(props.category)
+        const notifications = useNotifications()
+        await notifications.readCategory(props.category)
     }
 
     async function remove() {
-        await repo.removeCategory(props.category)
+        const notifications = useNotifications()
+        await notifications.removeCategory(props.category)
     }
 </script>
 
@@ -31,7 +35,6 @@
                 class="accordion-button collapsed"
                 data-bs-toggle="collapse"
                 type="button">
-                {{ category }}
                 <AppBadge :variant="variant" no-absolute tooltip>
                     {{ length }}
                 </AppBadge>

@@ -1,16 +1,21 @@
 <script setup>
-    import AppDropdownItem from '../nav/AppDropdownItem'
+    import {computed, onMounted} from 'vue'
+    import AppDropdown from '../nav/AppDropdown.vue'
     import AppNotificationCategory from './AppNotificationCategory.vue'
-    import {NotificationRepository} from '../../../store/modules'
-    import {computed} from 'vue'
-    import {useRepo} from '../../../composition'
+    import useNotifications from '../../stores/notification/notifications'
 
     defineProps({id: {required: true, type: String}})
-    const repo = useRepo(NotificationRepository)
-    const categories = computed(() => repo.findByCategories)
-    const isEmpty = computed(() => repo.isEmpty)
-    const length = computed(() => 3)
+
+    const notifications = useNotifications()
+
+    const length = computed(() => notifications.length)
+    const isEmpty = computed(() => notifications.isEmpty)
+    const categories = computed(() => notifications.findByCategories)
     const variant = computed(() => (length.value > 0 ? 'danger' : 'dark'))
+
+    onMounted(async () => {
+        await notifications.fetch()
+    })
 </script>
 
 <template>
@@ -20,7 +25,7 @@
             {{ length }}
         </AppBadge>
     </AppBtn>
-    <AppDropdownItem v-else :id="id" class="me-1" end>
+    <AppDropdown v-else :id="id" class="me-1" end>
         <template #toggle="{id: dropdownId}">
             <AppBtn
                 :id="dropdownId"
@@ -35,9 +40,9 @@
             </AppBtn>
         </template>
         <AppNotificationCategory
-            v-for="[category, notifications] in categories"
+            v-for="[category, notification] in categories"
             :key="category"
             :category="category"
-            :notifications="notifications"/>
-    </AppDropdownItem>
+            :notifications="notification"/>
+    </AppDropdown>
 </template>

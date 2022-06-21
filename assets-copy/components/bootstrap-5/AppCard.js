@@ -10,5 +10,5 @@ function AppCard(props, context) {
 
 AppCard.displayName = 'AppCard'
 AppCard.props = {title: {required: true, type: String}, titleTag: {default: 'h2', type: String}}
-
+ 
 export default AppCard

@@ -1,8 +1,8 @@
 import Api from '../../Api'
 import {defineStore} from 'pinia'
 
-export default function generateNotification(iriType, notification, root) {
-    return defineStore(`${iriType}/${notification.id}`, {
+export default function generateNotification(notification) {
+    return defineStore(`/api/notifications/${notification.id}`, {
         actions: {
             blur() {
                 this.opened = false
@@ -25,12 +25,9 @@ export default function generateNotification(iriType, notification, root) {
                 await new Api().fetch(this.iri, 'DELETE')
                 this.root.remove(this['@id'])
                 this.dispose()
-            },
-           
+            }
+
         },
-        getters: {
-           
-        },
-        state: () => ({iriType, ...notification})
+        state: () => ({...notification})
     })()
 }
