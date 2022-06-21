@@ -64,7 +64,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:attribute', 'read:id'],
-            'openapi_definition_name' => 'Attribute-read'
+            'openapi_definition_name' => 'Attribute-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
@@ -121,6 +122,14 @@ class Attribute extends Entity {
      */
     final public function getFamilies(): Collection {
         return $this->families;
+    }
+
+    /**
+     * @return Collection<int, null|string>
+     */
+    #[Serializer\Groups(['read:attribute'])]
+    final public function getFamiliesName(): Collection {
+        return $this->families->map(static fn (Family $family): ?string => $family->getFullName());
     }
 
     final public function getName(): ?string {

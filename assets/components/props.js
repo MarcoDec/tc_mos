@@ -65,6 +65,10 @@ export function generateLabelCols() {
 function tableFieldValidator(field) {
     if (!fieldValidator(field))
         return false
+    if (typeof field.search !== 'boolean') {
+        console.error('field.search must be defined and a boolean')
+        return false
+    }
     if (typeof field.sort !== 'boolean') {
         console.error('field.sort must be defined and a boolean')
         return false

@@ -34,7 +34,7 @@
                                 <AppDropdownItem disabled variant="warning">
                                     Administrateur
                                 </AppDropdownItem>
-                                <AppNavbarLink disabled icon="magnet" to="attributes" variant="danger">
+                                <AppNavbarLink icon="magnet" to="attributes" variant="warning">
                                     Attributs
                                 </AppNavbarLink>
                                 <AppNavbarLink icon="layer-group" to="component-families" variant="warning">

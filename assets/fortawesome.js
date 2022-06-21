@@ -21,6 +21,7 @@ import {
     faIndustry,
     faLaptop,
     faLayerGroup,
+    faMagnet,
     faMale,
     faMapMarkedAlt,
     faPalette,
@@ -70,6 +71,7 @@ library.add(faIcons)
 library.add(faIndustry)
 library.add(faLaptop)
 library.add(faLayerGroup)
+library.add(faMagnet)
 library.add(faMale)
 library.add(faMapMarkedAlt)
 library.add(faPalette)
