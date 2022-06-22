@@ -1,9 +1,8 @@
 import {computed, h, resolveComponent} from 'vue'
-import {generateTableField} from '../../../props'
 
 export default {
     props: {
-        field: generateTableField(),
+        field: {required: true, type: Object},
         machine: {required: true, type: Object},
         store: {required: true, type: Object}
     },

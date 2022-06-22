@@ -1,7 +1,6 @@
 import AppTableAdd from './AppTableAdd'
 import AppTableFields from './fields/AppTableFields'
 import AppTableSearch from './AppTableSearch'
-import {generateTableFields} from '../../props'
 import {h} from 'vue'
 
 function AppTableHeaders(props, context) {
@@ -36,7 +35,7 @@ function AppTableHeaders(props, context) {
 }
 
 AppTableHeaders.props = {
-    fields: generateTableFields(),
+    fields: {required: true, type: Object},
     id: {required: true, type: String},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}

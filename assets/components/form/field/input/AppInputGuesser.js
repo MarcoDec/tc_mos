@@ -3,7 +3,6 @@ import AppInputFile from './AppInputFile'
 import AppInputNumber from './AppInputNumber'
 import AppSelect from './select/AppSelect'
 import AppSwitch from './AppSwitch.vue'
-import {generateField} from '../../../props'
 
 function getType(field) {
     switch (field.type) {
@@ -34,7 +33,7 @@ function AppInputGuesser(props, context) {
 AppInputGuesser.emits = ['update:modelValue']
 AppInputGuesser.props = {
     disabled: {type: Boolean},
-    field: generateField(),
+    field: {required: true, type: Object},
     form: {required: true, type: String},
     id: {required: true, type: String},
     modelValue: {}

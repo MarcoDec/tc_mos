@@ -1,5 +1,4 @@
 import AppTableField from './AppTableField'
-import {generateTableFields} from '../../../props'
 import {h} from 'vue'
 
 function AppTableFields(props) {
@@ -10,7 +9,7 @@ function AppTableFields(props) {
 }
 
 AppTableFields.props = {
-    fields: generateTableFields(),
+    fields: {required: true, type: Object},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}
 }

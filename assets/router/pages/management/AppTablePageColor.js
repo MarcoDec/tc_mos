@@ -1,6 +1,5 @@
 import {h, resolveComponent} from 'vue'
 import AppTablePage from '../AppTablePage'
-import {generateTableFields} from '../../../components/props'
 import {useRoute} from 'vue-router'
 
 function AppTablePageColor(props) {
@@ -20,7 +19,7 @@ function AppTablePageColor(props) {
 
 AppTablePageColor.displayName = 'AppTablePageColor'
 AppTablePageColor.props = {
-    fields: generateTableFields(),
+    fields: {required: true, type: Object},
     icon: {required: true, type: String},
     title: {required: true, type: String}
 }
