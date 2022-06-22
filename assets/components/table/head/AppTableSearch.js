@@ -16,6 +16,9 @@ function AppTableSearch(props, context) {
     }
     if (typeof context.slots['default'] === 'function')
         children.submit = args => context.slots['default'](args)
+    for (const field of props.fields)
+        if (!field.search)
+            children[`search(${field.name})`] = () => h('td')
     return h(
         resolveComponent('AppTableHeaderForm'),
         {

@@ -8,10 +8,10 @@
     const options = generateOptions('units')
     await options.fetch()
     const fields = [
-        {label: 'Code', name: 'code', search: true, sort: true, update: true},
-        {label: 'Nom', name: 'name', search: true, sort: true, update: true},
-        {label: 'Base', name: 'base', search: true, sort: true, type: 'number', update: true},
-        {label: 'Parent', name: 'parent', options, search: true, sort: true, sortName: 'parent.code', type: 'select', update: true}
+        {create: true, label: 'Code', name: 'code', search: true, sort: true, update: true},
+        {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},
+        {create: true, label: 'Base', name: 'base', search: true, sort: true, type: 'number', update: true},
+        {create: true, label: 'Parent', name: 'parent', options, search: true, sort: true, sortName: 'parent.code', type: 'select', update: true}
     ]
 
     onUnmounted(() => options.dispose())

@@ -14,6 +14,7 @@ use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,6 +32,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:attribute'],
+                    'openapi_definition_name' => 'Attribute-create'
+                ],
                 'openapi_context' => [
                     'description' => 'Créer un attribut',
                     'summary' => 'Créer un attribut',
@@ -67,6 +72,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Attribute-read',
             'skip_null_values' => false
         ],
+        order: ['name' => 'asc'],
+        paginationClientEnabled: true
     ),
     ORM\Entity
 ]
@@ -75,7 +82,7 @@ class Attribute extends Entity {
         ApiProperty(description: 'Nom', required: false, example: 'Longueur de l\'embout'),
         Assert\Length(min: 3, max: 255),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:attribute', 'write:attribute'])
+        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
     ]
     private ?string $description = null;
 
@@ -91,14 +98,14 @@ class Attribute extends Entity {
         ApiProperty(description: 'Nom', required: true, example: 'Longueur'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:attribute', 'write:attribute'])
+        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         ORM\ManyToOne(fetch: 'EAGER'),
-        Serializer\Groups(['read:attribute', 'write:attribute'])
+        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
     ]
     private ?Unit $unit;
 
@@ -125,11 +132,11 @@ class Attribute extends Entity {
     }
 
     /**
-     * @return Collection<int, null|string>
+     * @return LaravelCollection<int, null|string>
      */
     #[Serializer\Groups(['read:attribute'])]
-    final public function getFamiliesName(): Collection {
-        return $this->families->map(static fn (Family $family): ?string => $family->getFullName());
+    final public function getFamiliesName(): LaravelCollection {
+        return collect($this->families)->map->getFullName()->sort()->values();
     }
 
     final public function getName(): ?string {

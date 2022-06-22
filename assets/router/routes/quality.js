@@ -8,7 +8,7 @@ export default [
         path: '/reject-types',
         props: {
             brands: true,
-            fields: [{label: 'Nom', name: 'name', search: true, sort: true, update: true}],
+            fields: [{create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true}],
             icon: 'elementor',
             title: 'Catégories de rejets de production'
         }
@@ -20,7 +20,7 @@ export default [
         path: '/quality-types',
         props: {
             brands: true,
-            fields: [{label: 'Nom', name: 'name', search: true, sort: true, update: true}],
+            fields: [{create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true}],
             icon: 'elementor',
             title: 'Critères qualités'
         }

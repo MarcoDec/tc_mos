@@ -8,8 +8,8 @@ export default [
         path: '/colors',
         props: {
             fields: [
-                {label: 'Nom', name: 'name', search: true, sort: true, update: true},
-                {label: 'RGB', name: 'rgb', search: true, sort: true, type: 'color', update: true}
+                {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},
+                {create: true, label: 'RGB', name: 'rgb', search: true, sort: true, type: 'color', update: true}
             ],
             icon: 'palette',
             title: 'Couleurs'
@@ -28,10 +28,10 @@ export default [
         path: '/invoice-time-dues',
         props: {
             fields: [
-                {label: 'Nom', name: 'name', search: true, sort: true, update: true},
-                {label: 'Jours', name: 'days', search: true, sort: false, type: 'number', update: true},
-                {label: 'Fin du mois', name: 'endOfMonth', search: true, sort: false, type: 'boolean', update: true},
-                {label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth', search: true, sort: false, type: 'number', update: true}
+                {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},
+                {create: true, label: 'Jours', name: 'days', search: true, sort: false, type: 'number', update: true},
+                {create: true, label: 'Fin du mois', name: 'endOfMonth', search: true, sort: false, type: 'boolean', update: true},
+                {create: true, label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth', search: true, sort: false, type: 'number', update: true}
             ],
             icon: 'hourglass-half',
             title: 'Délais de paiement des factures'
@@ -53,7 +53,7 @@ export default [
         name: 'vat-messages',
         path: '/vat-messages',
         props: {
-            fields: [{label: 'Nom', name: 'name', search: true, sort: true, update: true}],
+            fields: [{create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true}],
             icon: 'comments-dollar',
             title: 'Messages TVA'
         }

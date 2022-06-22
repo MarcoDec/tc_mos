@@ -2,6 +2,17 @@ import {h, resolveComponent} from 'vue'
 import {generateTableFields} from '../../props'
 
 function AppTableAdd(props, context) {
+    const children = {}
+    let hasChildren = false
+    if (typeof context.slots['default'] === 'function') {
+        children.submit = args => context.slots['default'](args)
+        hasChildren = true
+    }
+    for (const field of props.fields)
+        if (!field.create) {
+            children[`form(${field.name})`] = () => h('td')
+            hasChildren = true
+        }
     return h(
         resolveComponent('AppTableHeaderForm'),
         {
@@ -28,9 +39,7 @@ function AppTableAdd(props, context) {
             variant: 'success',
             violations: props.machine.state.value.context.violations
         },
-        typeof context.slots['default'] === 'function'
-            ? {submit: args => context.slots['default'](args)}
-            : null
+        hasChildren ? children : null
     )
 }
 

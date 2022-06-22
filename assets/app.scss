@@ -64,6 +64,16 @@ $dropdown-success: #57ec57 !default;
   color: $white !important;
 }
 
+.tree-card-attributes {
+  height: 550px;
+  overflow: hidden;
+}
+
+.tree-card-body {
+  height: 570px;
+  overflow: hidden;
+}
+
 @media (max-width: 1140px) {
   .gui-left {
     display: block;
