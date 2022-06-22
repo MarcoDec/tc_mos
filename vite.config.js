@@ -10,16 +10,7 @@ export default defineConfig({
         emptyOutDir: true,
         manifest: true,
         outDir: './public/build/',
-        rollupOptions: {
-            input: {index: './assets/index.js'},
-            output: {
-                // eslint-disable-next-line consistent-return
-                manualChunks(id) {
-                    if (id.includes('AppSuspenseWrapper') || id.includes('stores/options'))
-                        return 'vendor'
-                }
-            }
-        }
+        rollupOptions: {input: {index: './assets/index.js'}}
     },
     plugins: [
         symfonyPlugin(),

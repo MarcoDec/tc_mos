@@ -8,12 +8,8 @@
         id: {required: true, type: String},
         machine: {required: true, type: Object}
     })
-    const fields = computed(() => [
-        {label: 'Parent', name: 'parent', options: props.families, type: 'select'},
-        ...props.fields
-    ])
     const selected = computed(() => props.families.selected)
-    const selectedForm = computed(() => selected.value?.form(fields.value) ?? {file: '/img/no-image.png'})
+    const selectedForm = computed(() => selected.value?.form(props.fields) ?? {file: '/img/no-image.png'})
     const title = computed(() => selected.value?.fullName ?? 'Ajouter une famille')
     const value = ref(null)
     const formId = computed(() => `${props.id}-create`)

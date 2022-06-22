@@ -6,14 +6,15 @@
     import {useMachine} from '../../machine'
     import {useRoute} from 'vue-router'
 
-    defineProps({fields: generateFields(), label: {required: true, type: String}})
-
+    const props = defineProps({fields: generateFields(), label: {required: true, type: String}})
     const route = useRoute()
     const families = generateFamilies(route.name)
     const machine = useMachine(route.name)
     const tree = `${route.name}-tree`
 
     onMounted(async () => {
+        // eslint-disable-next-line vue/no-mutating-props
+        props.fields.options = families
         await families.fetch()
         machine.send('success')
     })
