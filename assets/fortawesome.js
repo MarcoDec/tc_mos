@@ -1,6 +1,7 @@
 import {
     faAddressCard,
     faBars,
+    faBell,
     faBoxes,
     faCaretDown,
     faCaretUp,
@@ -13,6 +14,7 @@ import {
     faDatabase,
     faEuroSign,
     faExclamationTriangle,
+    faEye,
     faFileContract,
     faFileInvoiceDollar,
     faFolder,
@@ -92,3 +94,5 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faBell)
+library.add(faEye)
