@@ -1,4 +1,9 @@
 @use 'bootstrap/scss/bootstrap' as * with (
+  $accordion-bg: #212529,
+  $accordion-button-bg: #212529,
+  $accordion-button-color: #fff,
+  $accordion-button-active-bg: #343a40,
+  $accordion-button-active-color: #fff,
   $container-max-widths: (
     sm: 540px,
     md: 720px,

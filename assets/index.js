@@ -1,6 +1,7 @@
 import './app.scss'
 import './fortawesome'
 import App from './App'
+import AppBadge from './components/AppBadge'
 import AppBtn from './components/AppBtn'
 import AppCard from './components/AppCard'
 import AppContainer from './components/layout/AppContainer'
@@ -25,6 +26,7 @@ import router from './router'
 import useUserStore from './stores/hr/employee/user'
 
 const app = createApp(App)
+    .component('AppBadge', AppBadge)
     .component('AppBtn', AppBtn)
     .component('AppCard', AppCard)
     .component('AppContainer', AppContainer)
