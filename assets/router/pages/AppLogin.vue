@@ -2,14 +2,13 @@
     import {assign, createMachine} from 'xstate'
     import {useRoute, useRouter} from 'vue-router'
     import AppAlert from '../../components/AppAlert'
-    import Fields from '../../fields/Fields'
     import {useMachine} from '@xstate/vue'
     import useUserStore from '../../stores/hr/employee/user'
 
-    const fields = new Fields([
+    const fields = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
-    ])
+    ]
     const route = useRoute()
     const router = useRouter()
     const user = useUserStore()
