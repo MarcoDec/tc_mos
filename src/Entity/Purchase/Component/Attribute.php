@@ -32,10 +32,6 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'post' => [
-                'denormalization_context' => [
-                    'groups' => ['create:attribute'],
-                    'openapi_definition_name' => 'Attribute-create'
-                ],
                 'openapi_context' => [
                     'description' => 'Créer un attribut',
                     'summary' => 'Créer un attribut',
@@ -82,15 +78,15 @@ class Attribute extends Entity {
         ApiProperty(description: 'Nom', required: false, example: 'Longueur de l\'embout'),
         Assert\Length(min: 3, max: 255),
         ORM\Column(nullable: true),
-        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
+        Serializer\Groups(['read:attribute', 'write:attribute'])
     ]
     private ?string $description = null;
 
     /** @var Collection<int, Family> */
     #[
-        ApiProperty(description: 'Famille', readableLink: false, required: true, example: ['/api/component-families/1', '/api/component-families/2']),
-        ORM\ManyToMany(targetEntity: Family::class),
-        Serializer\Groups(['read:attribute', 'write:attribute'])
+        ApiProperty(description: 'Familles', readableLink: false, required: true, example: ['/api/component-families/1', '/api/component-families/2']),
+        ORM\ManyToMany(targetEntity: Family::class, inversedBy: 'attributes'),
+        Serializer\Groups(['read:attribute'])
     ]
     private Collection $families;
 
@@ -98,14 +94,14 @@ class Attribute extends Entity {
         ApiProperty(description: 'Nom', required: true, example: 'Longueur'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
+        Serializer\Groups(['read:attribute', 'write:attribute'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         ORM\ManyToOne(fetch: 'EAGER'),
-        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
+        Serializer\Groups(['read:attribute', 'write:attribute'])
     ]
     private ?Unit $unit;
 
@@ -116,6 +112,7 @@ class Attribute extends Entity {
     final public function addFamily(Family $family): self {
         if (!$this->families->contains($family)) {
             $this->families->add($family);
+            $family->addAttribute($this);
         }
         return $this;
     }
@@ -150,6 +147,7 @@ class Attribute extends Entity {
     final public function removeFamily(Family $family): self {
         if ($this->families->contains($family)) {
             $this->families->removeElement($family);
+            $family->removeAttribute($this);
         }
         return $this;
     }

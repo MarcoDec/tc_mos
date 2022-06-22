@@ -15,7 +15,7 @@ export default class Api {
         case 'number':
             return parseFloat(value)
         default:
-            return value
+            return typeof value === 'string' && value.startsWith('[') && value.endsWith(']') ? JSON.parse(value) : value
         }
     }
 

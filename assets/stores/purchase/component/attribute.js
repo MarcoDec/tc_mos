@@ -8,6 +8,9 @@ export default function generateAttribute(attribute) {
                 this.$dispose()
             }
         },
+        getters: {
+            includes: state => family => state.families.includes(family['@id'])
+        },
         state: () => ({...attribute})
     })()
 }

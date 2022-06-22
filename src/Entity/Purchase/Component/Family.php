@@ -12,6 +12,7 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
 use App\Filter\RelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -49,6 +50,17 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
+            'patch' => [
+                'denormalization_context' => [
+                    'groups' => ['patch:family'],
+                    'openapi_definition_name' => 'ComponentFamily-patch'
+                ],
+                'openapi_context' => [
+                    'description' => 'Modifie les attributs',
+                    'summary' => 'Modifie les attributs',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+            ],
             'post' => [
                 'controller' => PlaceholderAction::class,
                 'input_formats' => ['multipart'],
@@ -101,6 +113,14 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
+    /** @var Collection<int, Attribute> */
+    #[
+        ApiProperty(description: 'Attributs', readableLink: false, required: true, example: ['/api/attributes/1', '/api/attributes/2']),
+        ORM\ManyToMany(targetEntity: Attribute::class, mappedBy: 'families'),
+        Serializer\Groups(['patch:family'])
+    ]
+    private Collection $attributes;
+
     #[
         ApiProperty(description: 'Code ', required: true, example: 'CAB'),
         Assert\Length(exactly: 3),
@@ -117,6 +137,26 @@ class Family extends AbstractFamily {
     ]
     private bool $copperable = false;
 
+    public function __construct() {
+        parent::__construct();
+        $this->attributes = new ArrayCollection();
+    }
+
+    final public function addAttribute(Attribute $attribute): self {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes->add($attribute);
+            $attribute->addFamily($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Attribute>
+     */
+    final public function getAttributes(): Collection {
+        return $this->attributes;
+    }
+
     final public function getCode(): ?string {
         return $this->code;
     }
@@ -131,6 +171,14 @@ class Family extends AbstractFamily {
     ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
+    }
+
+    final public function removeAttribute(Attribute $attribute): self {
+        if ($this->attributes->contains($attribute)) {
+            $this->attributes->removeElement($attribute);
+            $attribute->removeFamily($this);
+        }
+        return $this;
     }
 
     final public function setCode(?string $code): self {

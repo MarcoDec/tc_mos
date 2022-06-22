@@ -1,5 +1,5 @@
 import {computed, h, onMounted, ref, resolveComponent, watch} from 'vue'
-import AppTreeAttribute from './AppTreeAttribute'
+import AppTreeAttributes from './AppTreeAttributes'
 import {generateFields} from '../props'
 
 export default {
@@ -131,25 +131,12 @@ export default {
                                 renderImg()
                             )
                         ),
-                        h(
-                            'div',
-                            {class: 'col tree-card-attributes'},
-                            [
-                                h(
-                                    'div',
-                                    {class: 'd-inline-flex justify-content-end mb-2 w-100'},
-                                    h(resolveComponent('AppBtn'), () => 'Enregistrer')
-                                ),
-                                h(
-                                    'div',
-                                    {class: 'h-100 overflow-auto'},
-                                    props.attributes.items.map(attribute => h(
-                                        AppTreeAttribute,
-                                        {attribute, form: attrFormId.value, key: attribute.id}
-                                    ))
-                                )
-                            ]
-                        )
+                        h(AppTreeAttributes, {
+                            attributes: props.attributes,
+                            family: selected.value,
+                            form: attrFormId.value,
+                            machine: props.machine
+                        })
                     )
                     : h('div', {class: 'row'}, [
                         renderedForm,
