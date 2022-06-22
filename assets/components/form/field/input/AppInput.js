@@ -1,3 +1,4 @@
+import {generateField} from '../../../props'
 import {h} from 'vue'
 
 function AppInput(props, context) {
@@ -18,7 +19,7 @@ function AppInput(props, context) {
 AppInput.emits = ['update:modelValue']
 AppInput.props = {
     disabled: {type: Boolean},
-    field: {required: true, type: Object},
+    field: generateField(),
     form: {required: true, type: String},
     id: {required: true, type: String},
     modelValue: {}

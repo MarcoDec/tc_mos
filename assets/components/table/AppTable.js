@@ -1,6 +1,7 @@
 import AppPagination from './pagination/AppPagination'
 import AppTableHeaders from './head/AppTableHeaders'
 import AppTableItems from './body/AppTableItems'
+import {generateTableFields} from '../props'
 import {h} from 'vue'
 
 function AppTable(props, context) {
@@ -59,7 +60,7 @@ function AppTable(props, context) {
 }
 
 AppTable.props = {
-    fields: {required: true, type: Object},
+    fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}

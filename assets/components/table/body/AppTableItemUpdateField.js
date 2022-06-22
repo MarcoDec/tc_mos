@@ -1,9 +1,10 @@
 import {computed, h, ref, resolveComponent, watch} from 'vue'
+import {generateTableField} from '../../props'
 import {get} from '../../../utils'
 
 export default {
     props: {
-        field: {required: true, type: Object},
+        field: generateTableField(),
         form: {required: true, type: String},
         id: {required: true, type: String},
         item: {required: true, type: Object},

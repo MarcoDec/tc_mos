@@ -1,5 +1,6 @@
 import AppTreeForm from './AppTreeForm.vue'
 import AppTreeNode from './AppTreeNode'
+import {generateFields} from '../props'
 import {h} from 'vue'
 
 function AppTree(props) {
@@ -21,7 +22,7 @@ function AppTree(props) {
 
 AppTree.props = {
     families: {required: true, type: Object},
-    fields: {required: true, type: Object},
+    fields: generateFields(),
     id: {required: true, type: String},
     items: {required: true, type: Array},
     machine: {required: true, type: Object}

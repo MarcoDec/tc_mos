@@ -1,4 +1,5 @@
 import {h, resolveComponent} from 'vue'
+import {generateField} from '../props'
 
 function AppCurrencySearch(props) {
     let css = 'd-flex pe-2 ps-2'
@@ -19,7 +20,7 @@ function AppCurrencySearch(props) {
 }
 
 AppCurrencySearch.props = {
-    field: {required: true, type: Object},
+    field: generateField(),
     id: {required: true, type: String},
     store: {required: true, type: Object}
 }

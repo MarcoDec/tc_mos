@@ -1,4 +1,5 @@
 import AppOption from './AppOption'
+import {generateField} from '../../../../props'
 import {h} from 'vue'
 
 function AppSelect(props, context) {
@@ -20,7 +21,7 @@ function AppSelect(props, context) {
 AppSelect.emits = ['update:modelValue']
 AppSelect.props = {
     disabled: {type: Boolean},
-    field: {required: true, type: Object},
+    field: generateField(),
     form: {required: true, type: String},
     id: {required: true, type: String},
     modelValue: {}

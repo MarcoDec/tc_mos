@@ -1,4 +1,5 @@
 import {h, resolveComponent} from 'vue'
+import {generateTableFields} from '../../props'
 
 function AppTableAdd(props, context) {
     return h(
@@ -34,7 +35,7 @@ function AppTableAdd(props, context) {
 }
 
 AppTableAdd.props = {
-    fields: {required: true, type: Object},
+    fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}

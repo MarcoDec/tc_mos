@@ -1,5 +1,6 @@
 import {h, resolveComponent} from 'vue'
 import AppTableItemUpdateField from './AppTableItemUpdateField'
+import {generateTableFields} from '../../props'
 
 function AppTableItemUpdate(props, context) {
     const formId = `${props.id}-update`
@@ -60,7 +61,7 @@ function AppTableItemUpdate(props, context) {
 }
 
 AppTableItemUpdate.props = {
-    fields: {required: true, type: Object},
+    fields: generateTableFields(),
     id: {required: true, type: String},
     index: {required: true, type: Number},
     item: {required: true, type: Object},

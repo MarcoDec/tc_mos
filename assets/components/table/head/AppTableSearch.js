@@ -1,4 +1,5 @@
 import {h, resolveComponent} from 'vue'
+import {generateTableFields} from '../../props'
 
 function AppTableSearch(props, context) {
     const children = {
@@ -43,7 +44,7 @@ function AppTableSearch(props, context) {
 }
 
 AppTableSearch.props = {
-    fields: {required: true, type: Object},
+    fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}

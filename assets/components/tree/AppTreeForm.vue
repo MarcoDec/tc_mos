@@ -1,9 +1,10 @@
 <script setup>
     import {computed, onMounted, ref, watch} from 'vue'
+    import {generateFields} from '../props'
 
     const props = defineProps({
         families: {required: true, type: Object},
-        fields: {required: true, type: Object},
+        fields: generateFields(),
         id: {required: true, type: String},
         machine: {required: true, type: Object}
     })

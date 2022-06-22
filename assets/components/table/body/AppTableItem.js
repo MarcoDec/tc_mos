@@ -1,4 +1,5 @@
 import {h, resolveComponent} from 'vue'
+import {generateTableFields} from '../../props'
 
 function AppTableItem(props, context) {
     return h('tr', {id: props.id}, [
@@ -33,7 +34,7 @@ function AppTableItem(props, context) {
 }
 
 AppTableItem.props = {
-    fields: {required: true, type: Object},
+    fields: generateTableFields(),
     id: {required: true, type: String},
     index: {required: true, type: Number},
     item: {required: true, type: Object},

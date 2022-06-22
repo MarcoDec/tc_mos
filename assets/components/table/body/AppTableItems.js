@@ -1,5 +1,6 @@
 import AppTableItem from './AppTableItem'
 import AppTableItemUpdate from './AppTableItemUpdate'
+import {generateTableFields} from '../../props'
 import {h} from 'vue'
 
 function AppTableItems(props, context) {
@@ -23,7 +24,7 @@ function AppTableItems(props, context) {
 }
 
 AppTableItems.props = {
-    fields: {required: true, type: Object},
+    fields: generateTableFields(),
     id: {required: true, type: String},
     items: {required: true, type: Object},
     machine: {required: true, type: Object}

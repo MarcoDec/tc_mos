@@ -1,5 +1,5 @@
+import {generateTableFields, generateVariant} from '../../props'
 import {h, resolveComponent} from 'vue'
-import {generateVariant} from '../../props'
 
 function AppTableHeaderForm(props, context) {
     const formId = `${props.id}-form`
@@ -73,7 +73,7 @@ function AppTableHeaderForm(props, context) {
 }
 
 AppTableHeaderForm.props = {
-    fields: {required: true, type: Object},
+    fields: generateTableFields(),
     icon: {required: true, type: String},
     id: {required: true, type: String},
     label: {required: true, type: String},

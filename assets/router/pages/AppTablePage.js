@@ -2,12 +2,13 @@ import {computed, h, onMounted, onUnmounted, resolveComponent} from 'vue'
 import {tableLoading, useTableMachine} from '../../machine'
 import AppTable from '../../components/table/AppTable'
 import generateItems from '../../stores/table/items'
+import {generateTableFields} from '../../components/props'
 import {useRoute} from 'vue-router'
 
 export default {
     props: {
         brands: {type: Boolean},
-        fields: {required: true, type: Object},
+        fields: generateTableFields(),
         icon: {required: true, type: String},
         title: {required: true, type: String}
     },

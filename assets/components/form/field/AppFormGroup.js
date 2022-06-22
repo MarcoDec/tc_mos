@@ -1,6 +1,6 @@
+import {generateField, generateLabelCols} from '../../props'
 import {h, resolveComponent} from 'vue'
 import AppLabel from './AppLabel'
-import {generateLabelCols} from '../../props'
 
 function AppFormGroup(props, context) {
     const id = `${props.form}-${props.field.name}`
@@ -28,7 +28,7 @@ function AppFormGroup(props, context) {
 AppFormGroup.emits = ['update:modelValue']
 AppFormGroup.props = {
     disabled: {type: Boolean},
-    field: {required: true, type: Object},
+    field: generateField(),
     form: {required: true, type: String},
     labelCols: generateLabelCols(),
     modelValue: {},

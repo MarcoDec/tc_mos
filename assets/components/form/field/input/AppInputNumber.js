@@ -1,4 +1,5 @@
 import {h, resolveComponent} from 'vue'
+import {generateField} from '../../../props'
 
 function AppInputNumber(props, context) {
     return h(resolveComponent('AppInput'), {
@@ -17,7 +18,7 @@ function AppInputNumber(props, context) {
 AppInputNumber.emits = ['update:modelValue']
 AppInputNumber.props = {
     disabled: {type: Boolean},
-    field: {required: true, type: Object},
+    field: generateField(),
     form: {required: true, type: String},
     id: {required: true, type: String},
     modelValue: {}
