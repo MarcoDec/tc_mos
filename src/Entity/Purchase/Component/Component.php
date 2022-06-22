@@ -7,8 +7,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Unit;
-use App\Entity\Traits\CodeTrait;
-use App\Entity\Traits\NameTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -74,9 +72,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class Component extends Entity {
-    use CodeTrait;
-    use NameTrait;
-
     #[
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
         Assert\Length(max: 10, groups: ['write:create']),
@@ -84,15 +79,7 @@ class Component extends Entity {
         ORM\Column(type: 'string', length: 10, nullable: true),
         Serializer\Groups(['read:code', 'write:code'])
     ]
-    protected ?string $code = null;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
-        Assert\NotBlank,
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
+    private ?string $code = null;
 
     #[
         ApiProperty(description: 'Poids cuivre', required: true, example: 0),
@@ -168,6 +155,14 @@ class Component extends Entity {
     private float $minStock = 0;
 
     #[
+        ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
+        Assert\NotBlank,
+        ORM\Column(type: 'string', nullable: true),
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    private ?string $name = null;
+
+    #[
         ApiProperty(description: 'Besoin de join', required: true, example: false),
         ORM\Column(type: 'boolean', options: ['default' => false]),
         Serializer\Groups(['read:component-details'])
@@ -211,6 +206,10 @@ class Component extends Entity {
     ]
     private float $weight = 0;
 
+    final public function getCode(): ?string {
+        return $this->code;
+    }
+
     final public function getCopperWeight(): float {
         return $this->copperWeight;
     }
@@ -243,6 +242,10 @@ class Component extends Entity {
         return $this->minStock;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function getNotes(): ?string {
         return $this->notes;
     }
@@ -269,6 +272,11 @@ class Component extends Entity {
 
     final public function isNeedGasket(): bool {
         return $this->needGasket;
+    }
+
+    final public function setCode(?string $code): self {
+        $this->code = $code;
+        return $this;
     }
 
     final public function setCopperWeight(float $copperWeight): self {
@@ -313,6 +321,11 @@ class Component extends Entity {
 
     final public function setMinStock(float $minStock): self {
         $this->minStock = $minStock;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 

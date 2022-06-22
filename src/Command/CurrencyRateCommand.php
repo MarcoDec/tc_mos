@@ -17,7 +17,7 @@ final class CurrencyRateCommand extends Command {
     protected static $defaultDescription = 'CRON de mise à jour des taux de change des devises.';
     protected static $defaultName = 'gpao:currency:rate';
 
-    public function __construct(private HttpClientInterface $client, private CurrencyRepository $currencyRepo) {
+    public function __construct(private readonly HttpClientInterface $client, private readonly CurrencyRepository $currencyRepo) {
         parent::__construct();
     }
 
