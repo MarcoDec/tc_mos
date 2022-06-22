@@ -1,4 +1,9 @@
 @use 'bootstrap/scss/bootstrap' as * with (
+  $accordion-bg: #212529,
+  $accordion-button-bg: #212529,
+  $accordion-button-color: #fff,
+  $accordion-button-active-bg: #343a40,
+  $accordion-button-active-color: #fff,
   $container-max-widths: (
     sm: 540px,
     md: 720px,
@@ -8,12 +13,15 @@
   )
 );
 
+$dropdown-success: #57ec57 !default;
 
 .bg-primary.card {
   background-color: #8ac2f1 !important;
 }
 
-
+.bg-success .dropdown-item {
+  background-color: $dropdown-success !important;
+}
 
 .btn-icon {
   height: 20px;
@@ -37,6 +45,9 @@
   min-width: 100%;
 }
 
+.dropdown-item .text-success {
+  color: $dropdown-success !important;
+}
 
 .page-item, .pointer, th[aria-sort] {
   cursor: pointer;
@@ -51,16 +62,6 @@
 
 .text-white .navbar-text {
   color: $white !important;
-}
-
-.dropdown-item {
-  &.bg-success {
-    background-color: #57ec57 !important;
-  }
-
-  &.text-success {
-    color: #57ec57 !important;
-  }
 }
 
 @media (max-width: 1140px) {
