@@ -15,7 +15,7 @@ use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220620150401 extends AbstractMigration {
+final class Version20220623091631 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -72,9 +72,11 @@ SQL);
         $this->upVatMessages();
         // rank 2
         $this->upAttributes();
+        $this->upComponents();
         $this->upProducts();
         $this->upSocieties();
         // old_id
+        $this->addSql('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addSql('ALTER TABLE `invoice_time_due` DROP `old_id`');
         $this->addSql('DROP FUNCTION UCFIRST');
         $this->addSql('DROP TABLE `country`');
@@ -173,6 +175,7 @@ SQL);
         $this->alterTable('component_family', 'Famille de composant');
         $this->addSql(<<<'SQL'
 ALTER TABLE `component_family`
+    ADD `old_subfamily_id` INT UNSIGNED DEFAULT NULL,
     ADD `parent_id` INT UNSIGNED DEFAULT NULL,
     DROP `icon`,
     CHANGE `customsCode` `customs_code` VARCHAR(10) DEFAULT NULL,
@@ -184,8 +187,9 @@ SQL);
         $this->addSql('ALTER TABLE `component_family` ADD CONSTRAINT `IDX_79FF2A21727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `component_family` (`id`)');
         $this->addSql('UPDATE `component_family` SET `code` = UPPER(SUBSTR(`name`, 1, 3))');
         $this->addSql(<<<'SQL'
-INSERT INTO `component_family` (`name`, `deleted`, `parent_id`, `code`)
+INSERT INTO `component_family` (`old_subfamily_id`, `name`, `deleted`, `parent_id`, `code`)
 SELECT
+    `component_subfamily`.`id`,
     `component_subfamily`.`subfamily_name`,
     `component_subfamily`.`statut`,
     `component_subfamily`.`id_family`,
@@ -202,6 +206,142 @@ WHERE `f`.`code` IS NULL
 SQL);
         $this->addSql('UPDATE `component_family` SET `name` = UCFIRST(`name`)');
         $this->addSql('ALTER TABLE `component_family` CHANGE `code` `code` CHAR(3) NOT NULL COMMENT \'(DC2Type:char)\'');
+    }
+
+    private function upComponents(): void {
+        $this->alterTable('component', 'Composant');
+        $this->addSql('DELETE FROM `component` WHERE `statut` = 1');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `component`
+    ADD `parent_id` INT UNSIGNED DEFAULT NULL,
+    DROP `customcode`,
+    DROP `c_200`,
+    DROP `c_300`,
+    DROP `c_600`,
+    DROP `c_700`,
+    DROP `c_800`,
+    DROP `date_creation`,
+    DROP `date_modification`,
+    DROP `flag_error_stock`,
+    DROP `id_componentstatus`,
+    DROP `id_component_family`,
+    DROP `id_society`,
+    DROP `id_supplier`,
+    DROP `id_supplier2`,
+    DROP `id_supplier3`,
+    DROP `id_user_creation`,
+    DROP `id_user_modification`,
+    DROP `newFieldsMarker`,
+    DROP `price`,
+    DROP `price_type`,
+    DROP `qc`,
+    DROP `quality`,
+    DROP `reach`,
+    DROP `reach_attachment`,
+    DROP `rohs`,
+    DROP `rohs_attachment`,
+    CHANGE `designation` `name` VARCHAR(255) NOT NULL,
+    CHANGE `endOfLife` `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    CHANGE `fabricant` `manufacturer` VARCHAR(255) DEFAULT NULL,
+    CHANGE `fabricant_reference` `manufacturer_code` VARCHAR(255) DEFAULT NULL,
+    CHANGE `gestion_stock` `managed_stock` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `indice` `index` VARCHAR(5) NOT NULL,
+    CHANGE `info_commande` `order_info` TEXT DEFAULT NULL,
+    CHANGE `info_public` `notes` TEXT DEFAULT NULL,
+    CHANGE `id_component_subfamily` `family_id` INT UNSIGNED NOT NULL,
+    CHANGE `id_unit` `unit_id` INT UNSIGNED NOT NULL,
+    CHANGE `need_joint` `need_gasket` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `poid_cu` `copper_weight` DOUBLE PRECISION UNSIGNED DEFAULT '0' NOT NULL,
+    CHANGE `ref` `code` VARCHAR(10) DEFAULT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `stock_minimum` `min_stock` DOUBLE PRECISION UNSIGNED DEFAULT '0' NOT NULL,
+    CHANGE `volume_previsionnel` `forecast_volume` DOUBLE PRECISION UNSIGNED DEFAULT '0' NOT NULL,
+    CHANGE `weight` `weight` DOUBLE PRECISION UNSIGNED DEFAULT '0' NOT NULL
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `component` `c`
+INNER JOIN `component_family` `f` ON `c`.`family_id` = `f`.`old_subfamily_id`
+SET `c`.`family_id` = `f`.`id`
+SQL);
+        $this->addSql(<<<'SQL'
+CREATE TABLE `component_copy` (
+  `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `code` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `copper_weight` double UNSIGNED NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `end_of_life` date DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+  `family_id` int UNSIGNED NOT NULL,
+  `forecast_volume` double UNSIGNED NOT NULL DEFAULT '0',
+  `index` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `managed_stock` tinyint(1) NOT NULL DEFAULT '0',
+  `manufacturer` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `manufacturer_code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `min_stock` double UNSIGNED NOT NULL DEFAULT '0',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `need_gasket` tinyint(1) NOT NULL DEFAULT '0',
+  `parent_id` int UNSIGNED DEFAULT NULL,
+  `order_info` text COLLATE utf8mb4_unicode_ci,
+  `unit_id` int UNSIGNED NOT NULL,
+  `weight` double UNSIGNED NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Composant';
+SQL);
+        $this->addSql(<<<'SQL'
+INSERT INTO `component_copy` (
+  `code`,
+  `copper_weight`,
+  `deleted`,
+  `end_of_life`,
+  `family_id`,
+  `forecast_volume`,
+  `index`,
+  `managed_stock`,
+  `manufacturer`,
+  `manufacturer_code`,
+  `min_stock`,
+  `name`,
+  `notes`,
+  `need_gasket`,
+  `parent_id`,
+  `order_info`,
+  `unit_id`,
+  `weight`
+) SELECT
+  `code`,
+  `copper_weight`,
+  `deleted`,
+  `end_of_life`,
+  `family_id`,
+  `forecast_volume`,
+  `index`,
+  `managed_stock`,
+  `manufacturer`,
+  `manufacturer_code`,
+  `min_stock`,
+  `name`,
+  `notes`,
+  `need_gasket`,
+  `parent_id`,
+  `order_info`,
+  `unit_id`,
+  `weight`
+FROM `component`
+SQL);
+        $this->addSql('DROP TABLE `component`');
+        $this->addSql('RENAME TABLE `component_copy` TO `component`');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `component`
+    ADD CONSTRAINT `IDX_49FEA157C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`),
+    ADD CONSTRAINT `IDX_49FEA157727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `component` (`id`),
+    ADD CONSTRAINT `IDX_49FEA157F8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `component` `c`
+INNER JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
+SET `c`.`code` = CONCAT(`f`.`code`, '-', `c`.`id`)
+SQL);
+        $this->addSql('ALTER TABLE `component` CHANGE `code` `code` VARCHAR(10) NOT NULL');
     }
 
     private function upCrons(): void {
