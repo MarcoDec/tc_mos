@@ -14,14 +14,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
 abstract class AbstractUnit extends Entity {
+    public const UNIT_CODE_MAX_LENGTH = 6;
+
     /** @var Collection<int, static> */
     protected Collection $children;
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'g'),
-        Assert\Length(min: 1, max: 6),
+        Assert\Length(min: 1, max: self::UNIT_CODE_MAX_LENGTH),
         Assert\NotBlank,
-        ORM\Column(length: 6, options: ['collation' => 'utf8_bin']),
+        ORM\Column(length: self::UNIT_CODE_MAX_LENGTH, options: ['collation' => 'utf8_bin']),
         Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
     ]
     protected ?string $code = null;

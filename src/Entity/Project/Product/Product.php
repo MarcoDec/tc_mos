@@ -34,28 +34,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: DateFilter::class, properties: ['expirationDate']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
     ApiFilter(filterClass: EnumFilter::class, properties: ['currentPlace.name']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['index', 'kind', 'ref']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'index' => 'partial',
-        'kind' => 'partial',
-        'ref' => 'partial'
-    ]),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'index' => 'partial', 'kind' => 'partial']),
     ApiResource(
         description: 'Produit',
         collectionOperations: [
             'get' => [
+                'normalization_context' => [
+                    'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
+                    'openapi_definition_name' => 'Product-collection',
+                    'skip_null_values' => false
+                ],
                 'openapi_context' => [
                     'description' => 'Récupère les produits',
                     'summary' => 'Récupère les produits'
-                ],
-                'normalization_context' => [
-                    'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
-                    'openapi_definition_name' => 'Product-collection'
-                ],
-                'write' => false
+                ]
             ],
             'post' => [
                 'denormalization_context' => [
@@ -169,7 +165,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ),
     ORM\Entity(repositoryClass: ProductRepository::class),
-    UniqueEntity(fields: ['index', 'ref'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
+    UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
 class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
@@ -183,6 +179,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private Collection $children;
+
+    #[
+        ApiProperty(description: 'Référence', example: '54587F'),
+        Assert\Length(min: 3, max: 30),
+        ORM\Column(length: 30),
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
+    ]
+    private ?string $code = null;
 
     #[
         ApiProperty(description: 'Temps auto chiffrage', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
@@ -205,7 +209,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
 
     #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
-        Assert\Length(min: 4, max: 10),
+        Assert\Length(min: 4, max: 10, groups: ['Product-logistics']),
         ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
@@ -217,7 +221,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product:project'])
     ]
-    private ?DateTimeImmutable $expirationDate = null;
+    private ?DateTimeImmutable $endOfLife = null;
 
     #[
         ApiProperty(description: 'Famille de produit', readableLink: false, example: '/api/product-families/1'),
@@ -372,14 +376,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     private Measure $productionDelay;
 
     #[
-        ApiProperty(description: 'Référence', example: '54587F'),
-        Assert\Length(min: 3, max: 30),
-        ORM\Column(length: 30),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
-    ]
-    private ?string $ref = null;
-
-    #[
         ApiProperty(description: 'Prix de cession des composants', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:product'])
@@ -460,6 +456,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this->children;
     }
 
+    final public function getCode(): ?string {
+        return $this->code;
+    }
+
     final public function getCostingAutoDuration(): Measure {
         return $this->costingAutoDuration;
     }
@@ -476,8 +476,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this->customsCode;
     }
 
-    final public function getExpirationDate(): ?DateTimeImmutable {
-        return $this->expirationDate;
+    final public function getEndOfLife(): ?DateTimeImmutable {
+        return $this->endOfLife;
     }
 
     final public function getFamily(): ?Family {
@@ -577,10 +577,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this->productionDelay;
     }
 
-    final public function getRef(): ?string {
-        return $this->ref;
-    }
-
     #[Pure]
     final public function getState(): ?string {
         return $this->currentPlace->getName();
@@ -631,6 +627,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this;
     }
 
+    final public function setCode(?string $code): self {
+        $this->code = $code;
+        return $this;
+    }
+
     final public function setCostingAutoDuration(Measure $costingAutoDuration): self {
         $this->costingAutoDuration = $costingAutoDuration;
         return $this;
@@ -651,8 +652,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this;
     }
 
-    final public function setExpirationDate(?DateTimeImmutable $expirationDate): self {
-        $this->expirationDate = $expirationDate;
+    final public function setEndOfLife(?DateTimeImmutable $endOfLife): self {
+        $this->endOfLife = $endOfLife;
         return $this;
     }
 
@@ -753,11 +754,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
 
     final public function setProductionDelay(Measure $productionDelay): self {
         $this->productionDelay = $productionDelay;
-        return $this;
-    }
-
-    final public function setRef(?string $ref): self {
-        $this->ref = $ref;
         return $this;
     }
 

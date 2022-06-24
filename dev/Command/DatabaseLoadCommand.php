@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Command\Project\Product\ExpirationDateCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

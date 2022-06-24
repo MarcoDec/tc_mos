@@ -154,6 +154,29 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 'type' => 'object'
             ]),
+            'Measure-linear-density' => new ArrayObject([
+                'description' => 'Masse linéique',
+                'properties' => [
+                    'code' => [
+                        'default' => 'kg',
+                        'description' => 'Code',
+                        'example' => 'kg',
+                        'type' => 'string'
+                    ],
+                    'denominator' => [
+                        'default' => 'm',
+                        'description' => 'Dénominateur',
+                        'example' => 'm',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
             'Measure-mass' => new ArrayObject([
                 'description' => 'Masse',
                 'properties' => [
