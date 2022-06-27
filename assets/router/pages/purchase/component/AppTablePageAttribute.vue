@@ -10,13 +10,32 @@
     const fields = [
         {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},
         {create: true, label: 'Description', name: 'description', search: true, sort: true, update: true},
-        {create: true, label: 'Unité', name: 'unit', options, search: true, sort: true, sortName: 'unit.name', type: 'select', update: true},
+        {
+            create: true,
+            label: 'Unité',
+            name: 'unit',
+            options,
+            search: true,
+            sort: true,
+            sortName: 'unit.name',
+            type: 'select',
+            update: true
+        },
         {create: false, label: 'Familles', name: 'familiesName', search: false, sort: false, update: false}
     ]
+
+    async function click(attribute, callback) {
+        if (confirm(`Voulez-vous vraiment supprimer « ${attribute.name} » ? Cet attribut est associé à des familles.`))
+            await callback()
+    }
 
     onUnmounted(() => options.dispose())
 </script>
 
 <template>
-    <AppTablePage :fields="fields" :icon="icon" :title="title"/>
+    <AppTablePage :fields="fields" :icon="icon" :title="title">
+        <template #remove="{icon: btnIcon, item, onClick, title: btnTitle, variant}">
+            <AppBtn :icon="btnIcon" :title="btnTitle" :variant="variant" @click="click(item, onClick)"/>
+        </template>
+    </AppTablePage>
 </template>

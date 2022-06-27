@@ -5,6 +5,8 @@ import {h} from 'vue'
 
 function AppTableItems(props, context) {
     const children = {}
+    if (typeof context.slots.remove === 'function')
+        children.remove = args => context.slots.remove(args)
 
     function generateSlot(field) {
         const slotName = `cell(${field.name})`

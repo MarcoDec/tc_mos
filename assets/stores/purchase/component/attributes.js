@@ -15,6 +15,10 @@ export default defineStore('attributes', {
             if (response.status === 200)
                 for (const attribute of response.content['hydra:member'])
                     this.items.push(generateAttribute(attribute))
+        },
+        update(attributes, family) {
+            for (const attribute of this.items)
+                attribute.update(attributes, family)
         }
     },
     state: () => ({items: []})

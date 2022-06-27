@@ -17,7 +17,8 @@ function AppTreeAttributes(props) {
                             attributes.push(attribute)
                     const data = new FormData()
                     data.append('attributes', JSON.stringify(attributes))
-                    await props.family.updateAttributes(data)
+                    const updated = await props.family.updateAttributes(data)
+                    props.attributes.update(updated, props.family)
                     props.machine.send('success')
                 }
             },

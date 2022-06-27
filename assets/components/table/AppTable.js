@@ -16,6 +16,8 @@ function AppTable(props, context) {
     const searchSlots = {}
     if (typeof context.slots.create === 'function')
         searchSlots.create = args => context.slots.create(args)
+    if (typeof context.slots.remove === 'function')
+        cellSlots.remove = args => context.slots.remove(args)
     if (typeof context.slots.search === 'function')
         searchSlots.search = args => context.slots.search(args)
     for (const field of props.fields) {
