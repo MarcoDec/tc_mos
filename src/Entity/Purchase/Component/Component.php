@@ -18,7 +18,6 @@ use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
-use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,9 +26,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'family', 'index', 'name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'index' => 'partial', 'name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Composant',
         collectionOperations: [
@@ -155,20 +154,10 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity,
-    UniqueEntity(fields: ['code', 'index'], groups: ['Component-admin'])
+    ORM\Entity
 ]
 class Component extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
-
-    #[
-        ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
-        Assert\Length(max: 10, groups: ['Component-admin']),
-        Assert\NotBlank,
-        ORM\Column(length: 10),
-        Serializer\Groups(['read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
-    ]
-    private ?string $code = null;
 
     #[
         ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
@@ -330,8 +319,12 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         return self::COMPONENT_BAR_CODE_TABLE_NUMBER;
     }
 
+    #[
+        ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
+        Serializer\Groups(['read:component', 'read:component:collection'])
+    ]
     final public function getCode(): ?string {
-        return $this->code;
+        return "{$this->family?->getCode()}-{$this->getId()}";
     }
 
     final public function getCopperWeight(): Measure {
@@ -398,6 +391,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         return $this->ppmRate;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
     final public function getUnit(): ?Unit {
         return $this->unit;
     }
@@ -422,11 +420,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
 
     final public function isNeedGasket(): bool {
         return $this->needGasket;
-    }
-
-    final public function setCode(?string $code): self {
-        $this->code = $code;
-        return $this;
     }
 
     final public function setCopperWeight(Measure $copperWeight): self {
@@ -511,6 +504,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
 
     final public function setPpmRate(int $ppmRate): self {
         $this->ppmRate = $ppmRate;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 

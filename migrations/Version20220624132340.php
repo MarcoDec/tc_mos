@@ -246,6 +246,7 @@ ALTER TABLE `component`
     DROP `quality`,
     DROP `reach`,
     DROP `reach_attachment`,
+    DROP `ref`,
     DROP `rohs`,
     DROP `rohs_attachment`,
     CHANGE `customcode` `customs_code` VARCHAR(16) DEFAULT NULL,
@@ -263,7 +264,6 @@ ALTER TABLE `component`
     CHANGE `id_unit` `unit_id` INT UNSIGNED NOT NULL,
     CHANGE `need_joint` `need_gasket` TINYINT(1) DEFAULT 0 NOT NULL,
     CHANGE `poid_cu` `copper_weight_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    CHANGE `ref` `code` VARCHAR(10) DEFAULT NULL,
     CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
     CHANGE `stock_minimum` `min_stock_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
     CHANGE `volume_previsionnel` `forecast_volume_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
@@ -291,7 +291,6 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `component_copy` (
   `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `code` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `copper_weight_code` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `copper_weight_denominator` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `copper_weight_value` double NOT NULL DEFAULT '0',
@@ -325,7 +324,6 @@ CREATE TABLE `component_copy` (
 SQL);
         $this->addSql(<<<'SQL'
 INSERT INTO `component_copy` (
-  `code`,
   `copper_weight_code`,
   `copper_weight_denominator`,
   `copper_weight_value`,
@@ -356,7 +354,6 @@ INSERT INTO `component_copy` (
   `weight_denominator`,
   `weight_value`
 ) SELECT
-  `code`,
   `copper_weight_code`,
   `copper_weight_denominator`,
   `copper_weight_value`,
@@ -396,12 +393,6 @@ ALTER TABLE `component`
     ADD CONSTRAINT `IDX_49FEA157727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `component` (`id`),
     ADD CONSTRAINT `IDX_49FEA157F8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
 SQL);
-        $this->addSql(<<<'SQL'
-UPDATE `component` `c`
-INNER JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
-SET `c`.`code` = CONCAT(`f`.`code`, '-', `c`.`id`)
-SQL);
-        $this->addSql('ALTER TABLE `component` CHANGE `code` `code` VARCHAR(10) NOT NULL');
     }
 
     private function upCrons(): void {
