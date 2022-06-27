@@ -6,6 +6,12 @@ export default function generateAttribute(attribute) {
             dispose() {
                 this.$reset()
                 this.$dispose()
+            },
+            update(attributes, family) {
+                if (this.includes(family) && !attributes.includes(this['@id']))
+                    this.families = this.families.filter(item => item !== family['@id'])
+                else if (!this.includes(family) && attributes.includes(this['@id']))
+                    this.families.push(family['@id'])
             }
         },
         getters: {

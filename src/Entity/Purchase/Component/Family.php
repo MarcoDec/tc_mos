@@ -53,7 +53,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'patch' => [
                 'denormalization_context' => [
                     'groups' => ['patch:family'],
-                    'openapi_definition_name' => 'ComponentFamily-patch'
+                    'openapi_definition_name' => 'ComponentFamily-patch-write'
+                ],
+                'normalization_context' => [
+                    'groups' => ['patch:family'],
+                    'openapi_definition_name' => 'ComponentFamily-patch-read'
                 ],
                 'openapi_context' => [
                     'description' => 'Modifie les attributs',

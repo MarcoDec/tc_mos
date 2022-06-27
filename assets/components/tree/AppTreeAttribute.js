@@ -5,6 +5,7 @@ function AppTreeAttribute(props) {
         field: {label: props.attribute.name, name: props.attribute['@id'], type: 'boolean'},
         form: props.form,
         id: `${props.form}-${props.attribute.id}`,
+        key: `${props.family.id}-${props.attribute.id}`,
         labelCols: 'col-sm-8',
         modelValue: props.attribute.includes(props.family)
     })

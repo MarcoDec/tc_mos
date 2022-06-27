@@ -58,7 +58,7 @@ module.exports = {
         'max-classes-per-file': 'error',
         'new-cap': 'error',
         'new-parens': 'error',
-        'no-alert': 'error',
+        'no-alert': 'off',
         'no-array-constructor': 'error',
         'no-async-promise-executor': 'error',
         'no-await-in-loop': 'error',

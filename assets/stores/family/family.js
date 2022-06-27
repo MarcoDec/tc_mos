@@ -34,7 +34,7 @@ export default function generateFamily(iriType, family, root) {
             },
             async updateAttributes(data) {
                 const response = await new Api().fetch(this.iri, 'PATCH', data)
-                this.$state = {opened: this.opened, root: this.root, selected: this.selected, ...response.content}
+                return response.content.attributes
             }
         },
         getters: {
