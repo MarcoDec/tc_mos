@@ -26,6 +26,7 @@ import {
     faMagnet,
     faMale,
     faMapMarkedAlt,
+    faOilWell,
     faPalette,
     faPencil,
     faPlus,
@@ -76,6 +77,7 @@ library.add(faLayerGroup)
 library.add(faMagnet)
 library.add(faMale)
 library.add(faMapMarkedAlt)
+library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencil)
 library.add(faPlus)

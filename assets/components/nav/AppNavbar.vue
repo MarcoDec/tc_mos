@@ -108,6 +108,9 @@
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
+                            <AppNavbarLink icon="oil-well" to="manufacturers" variant="success">
+                                Fabricants
+                            </AppNavbarLink>
                             <AppNavbarLink disabled icon="map-marked" to="zones" variant="danger">
                                 Zones
                             </AppNavbarLink>

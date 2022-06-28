@@ -42,12 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un fabricant',
-                    'summary' => 'Récupère un fabricant'
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un fabricant',

@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220624132339 extends AbstractMigration {
+final class Version20220628122401 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -171,6 +171,21 @@ CREATE TABLE `employee_extformateur` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('employee_extformateur');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `engine_fabricant_ou_contact` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `nom` varchar(255) DEFAULT NULL,
+  `prenom` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `code_postal` int(11) DEFAULT NULL,
+  `ville` varchar(255) DEFAULT NULL,
+  `id_phone_prefix` int(11) DEFAULT NULL,
+  `tel` varchar(255) DEFAULT NULL,
+  `id_user_creation` int(11) NOT NULL,
+  `date_creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('engine_fabricant_ou_contact');
         $this->addSql(<<<'SQL'
 CREATE TABLE `engine_group` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,

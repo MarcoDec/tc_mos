@@ -15,7 +15,7 @@ use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220624132340 extends AbstractMigration {
+final class Version20220628122402 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -75,6 +75,8 @@ SQL);
         $this->upComponents();
         $this->upProducts();
         $this->upSocieties();
+        // rank 3
+        $this->upManufacturers();
         // old_id
         $this->addSql('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addSql('ALTER TABLE `invoice_time_due` DROP `old_id`');
@@ -139,8 +141,8 @@ SQL);
         $this->alterTable('carrier', 'Transporteur');
         $this->addSql(<<<'SQL'
 ALTER TABLE `carrier`
-    ADD `address_address` VARCHAR(70) DEFAULT NULL AFTER `id`,
-    ADD `address_address2` VARCHAR(58) DEFAULT NULL AFTER `address_address`,
+    ADD `address_address` VARCHAR(80) DEFAULT NULL AFTER `id`,
+    ADD `address_address2` VARCHAR(60) DEFAULT NULL AFTER `address_address`,
     ADD `address_city` VARCHAR(50) DEFAULT NULL AFTER `address_address2`,
     ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)' AFTER `address_city`,
     ADD `address_email` VARCHAR(60) DEFAULT NULL AFTER `address_country`,
@@ -534,6 +536,64 @@ SQL);
         $this->addSql('RENAME TABLE `invoice_time_due_copy` TO `invoice_time_due`');
     }
 
+    private function upManufacturers(): void {
+        $this->addSql('RENAME TABLE `engine_fabricant_ou_contact` TO `manufacturer`');
+        $this->alterTable('manufacturer', 'Fabricant');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `manufacturer`
+    ADD `address_country` VARCHAR(255) NOT NULL,
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    ADD `society_id` INT UNSIGNED DEFAULT NULL,
+    DROP `date_creation`,
+    DROP `id_user_creation`,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `nom` `name` VARCHAR(255) DEFAULT NULL
+SQL);
+        $this->addSql('UPDATE `manufacturer` SET `name` = TRIM(CONCAT(`name`, \' \', `prenom`)) WHERE `prenom` IS NOT NULL');
+        $this->addSql(<<<'SQL'
+UPDATE `manufacturer`
+INNER JOIN `country` ON `manufacturer`.`id_phone_prefix` = `country`.`id`
+SET `manufacturer`.`address_country` = UCASE(`country`.`code`)
+SQL);
+        $this->addSql('ALTER TABLE `society` ADD `manufacturer_id` INT UNSIGNED DEFAULT NULL');
+        $this->addSql(<<<'SQL'
+INSERT INTO `society` (
+    `address_address`,
+    `address_city`,
+    `address_country`,
+    `address_zip_code`,
+    `manufacturer_id`,
+    `name`,
+    `phone`
+) SELECT
+    `address`,
+    `ville`,
+    `address_country`,
+    `code_postal`,
+    `id`,
+    `name`,
+    `tel`
+FROM `manufacturer`
+SQL);
+        $this->addSql(<<<'SQL'
+ALTER TABLE `manufacturer`
+    ADD CONSTRAINT `IDX_3D0AE6DCE6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`),
+    DROP `address`,
+    DROP `address_country`,
+    DROP `id_phone_prefix`,
+    DROP `code_postal`,
+    DROP `prenom`,
+    DROP `ville`,
+    DROP `tel`
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `manufacturer`
+INNER JOIN `society` ON `manufacturer`.`id` = `society`.`manufacturer_id`
+SET `manufacturer`.`society_id` = `society`.`id`
+SQL);
+        $this->addSql('ALTER TABLE `society` DROP `manufacturer_id`');
+    }
+
     private function upNotifications(): void {
         $this->addSql(<<<'SQL'
 CREATE TABLE `notification` (
@@ -555,7 +615,7 @@ SQL);
         $this->addSql(<<<'SQL'
 ALTER TABLE `out_trainer`
     ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL AFTER `address_zip_code`,
-    ADD `address_address2` VARCHAR(58) DEFAULT NULL AFTER `address_address`,
+    ADD `address_address2` VARCHAR(60) DEFAULT NULL AFTER `address_address`,
     ADD `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)' AFTER `address_city`,
     ADD `address_email` VARCHAR(60) DEFAULT NULL AFTER `address_country`,
     DROP `id_user_creation`,
@@ -563,7 +623,7 @@ ALTER TABLE `out_trainer`
     CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
     CHANGE `prenom` `name` VARCHAR(30) NOT NULL,
     CHANGE `nom` `surname` VARCHAR(30) NOT NULL,
-    CHANGE `address` `address_address` VARCHAR(70) DEFAULT NULL,
+    CHANGE `address` `address_address` VARCHAR(80) DEFAULT NULL,
     CHANGE `ville` `address_city` VARCHAR(50) DEFAULT NULL,
     CHANGE `code_postal` `address_zip_code` VARCHAR(10) DEFAULT NULL
 SQL);
@@ -1120,8 +1180,8 @@ ALTER TABLE `society`
     DROP `taux_operation_manu`,
     DROP `taux_operation_manu_md`,
     DROP `workTimetable`,
-    CHANGE `address1` `address_address` VARCHAR(70) DEFAULT NULL,
-    CHANGE `address2` `address_address2` VARCHAR(58) DEFAULT NULL,
+    CHANGE `address1` `address_address` VARCHAR(80) DEFAULT NULL,
+    CHANGE `address2` `address_address2` VARCHAR(60) DEFAULT NULL,
     CHANGE `ar_enabled` `ar` TINYINT(1) DEFAULT 0 NOT NULL,
     CHANGE `city` `address_city` VARCHAR(50) DEFAULT NULL,
     CHANGE `compte_compta` `accounting_account` VARCHAR(50) DEFAULT NULL,
@@ -1192,8 +1252,8 @@ SQL);
 CREATE TABLE `society_copy` (
   `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `accounting_account` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address_address` varchar(70) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address_address2` varchar(58) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_address` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_address2` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `address_city` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `address_country` char(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '(DC2Type:char)',
   `address_email` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,

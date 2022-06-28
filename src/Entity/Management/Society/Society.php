@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management\Society;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -31,6 +32,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'groups' => ['read:society:collection'],
                     'openapi_definition_name' => 'Society-collection'
                 ]
+            ],
+            'get-options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:society:option'],
+                    'openapi_definition_name' => 'Society-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les sociétés pour les select',
+                    'summary' => 'Récupère les sociétés pour les select',
+                ],
+                'order' => ['name' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/societies/options'
             ],
             'post' => [
                 'denormalization_context' => [
@@ -178,6 +196,11 @@ class Society extends Entity {
 
     final public function getSiren(): ?string {
         return $this->siren;
+    }
+
+    #[Serializer\Groups(['read:society:option'])]
+    final public function getText(): ?string {
+        return $this->getName();
     }
 
     final public function getWeb(): ?string {

@@ -109,7 +109,7 @@ abstract class AbstractUnit extends Entity {
     }
 
     #[Serializer\Groups(['read:unit:option'])]
-    public function getText(): ?string {
+    final public function getText(): ?string {
         return $this->getCode();
     }
 
