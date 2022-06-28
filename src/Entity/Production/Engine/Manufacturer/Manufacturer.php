@@ -2,28 +2,21 @@
 
 namespace App\Entity\Production\Engine\Manufacturer;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Management\Society\Society;
-use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Entity;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Traits\NameTrait;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Entity;
+use App\Entity\Management\Society\Society;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial',
-        'society.name' => 'partial'
-    ]),
-    ApiFilter(OrderFilter::class, properties: [
-        'name',
-        'society.name'
-    ]),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'society.name']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.name' => 'partial']),
     ApiResource(
         description: 'Fabricant',
         collectionOperations: [
@@ -67,44 +60,48 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:manufacturer'],
+            'groups' => ['write:manufacturer'],
             'openapi_definition_name' => 'Manufacturer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:manufacturer'],
-            'openapi_definition_name' => 'Manufacturer-read'
+            'groups' => ['read:id', 'read:manufacturer'],
+            'openapi_definition_name' => 'Manufacturer-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
-class Manufacturer extends Entity
-{
-    use NameTrait;
-
+class Manufacturer extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Peugeot'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:manufacturer', 'write:manufacturer'])
     ]
-    protected ?string $name = null;
+    private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Société', required: false, readableLink: false, example: '/api/societies/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Society::class),
+        ApiProperty(description: 'Société', readableLink: false, required: false, example: '/api/societies/1'),
+        ORM\ManyToOne(targetEntity: Society::class, fetch: 'EAGER'),
         Serializer\Groups(['read:manufacturer', 'write:manufacturer'])
     ]
     private ?Society $society;
 
-    public function getSociety(): ?Society
-    {
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
+    final public function getSociety(): ?Society {
         return $this->society;
     }
 
-    public function setSociety(?Society $society): self
-    {
-        $this->society = $society;
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
+    }
 
+    final public function setSociety(?Society $society): self {
+        $this->society = $society;
         return $this;
     }
 }
