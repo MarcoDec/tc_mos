@@ -7,27 +7,41 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
+use Illuminate\Support\Collection;
+use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionProperty;
-use Symfony\Component\Intl\Countries;
 
 final class EnumFilter extends AbstractFilter {
+    /**
+     * @param ReflectionClass<object> $class
+     */
+    private static function getReflectionProperty(ReflectionClass $class, string $property): ReflectionProperty {
+        $matches = [];
+        if (preg_match('/(\w+)\.(.+)/', $property, $matches) === 1) {
+            /** @var ReflectionNamedType $type */
+            $type = $class->getProperty($matches[1])->getType();
+            /** @var class-string<object> $name */
+            $name = $type->getName();
+            return self::getReflectionProperty(new ReflectionClass($name), $matches[2]);
+        }
+        return $class->getProperty($property);
+    }
+
     /**
      * @return mixed[]
      */
     public function getDescription(string $resourceClass): array {
         $description = [];
-        /** @var ClassMetadata<object> $metadata */
         $metadata = $this->getClassMetadata($resourceClass);
+        $reflClass = $metadata->getReflectionClass();
         foreach ($this->properties as $property => $strategy) {
-            /** @var ReflectionProperty $reflProp */
-            $reflProp = $metadata->reflFields[$property];
             $description[$property] = [
                 'property' => $property,
                 'required' => false,
                 'schema' => [
-                    'enum' => $this->getEnum($reflProp),
+                    'enum' => $this->getEnum(self::getReflectionProperty($reflClass, $property)),
                     'type' => $this->getType($metadata->getTypeOfField($property))
                 ]
             ];
@@ -53,7 +67,8 @@ final class EnumFilter extends AbstractFilter {
      * @return mixed[]
      */
     private function getEnum(ReflectionProperty $property): array {
-        $enum = collect();
+        /** @var Collection<int, mixed> $enum */
+        $enum = new Collection();
         foreach ($property->getAttributes(ApiProperty::class) as $attribute) {
             /** @var ApiProperty $apiProperty */
             $apiProperty = $attribute->newInstance();
@@ -61,12 +76,10 @@ final class EnumFilter extends AbstractFilter {
                 !empty($apiProperty->attributes)
                 && isset($apiProperty->attributes['openapi_context'])
                 && !empty($context = $apiProperty->attributes['openapi_context'])
+                && isset($context['enum'])
+                && !empty($context['enum'])
             ) {
-                if (isset($context['enum']) && !empty($context['enum'])) {
-                    $enum = $enum->merge($context['enum']);
-                } elseif (isset($context['countries']) && $context['countries']) {
-                    $enum = $enum->merge(Countries::getCountryCodes());
-                }
+                $enum = $enum->merge($context['enum']);
             }
         }
         return $enum->values()->all();
