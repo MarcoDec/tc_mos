@@ -2,11 +2,12 @@ import Api from '../../../Api'
 import {defineStore} from 'pinia'
 import generateAttribute from './attribute'
 
-export default defineStore('attributes', {
+export default defineStore('attributes-store', {
     actions: {
         dispose() {
+            const items = [...this.items]
             this.$reset()
-            for (const attribute of this.items)
+            for (const attribute of items)
                 attribute.dispose()
             this.$dispose()
         },
