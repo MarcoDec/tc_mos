@@ -10,13 +10,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Society;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'society.name']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.name' => 'partial']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['society']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Fabricant',
         collectionOperations: [
