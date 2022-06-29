@@ -16,8 +16,9 @@ export default function generateFamilies(iriType) {
                 this.items.push(generateFamily(this.iriType, response.content, this))
             },
             dispose() {
+                const items = [...this.items]
                 this.$reset()
-                for (const family of this.items)
+                for (const family of items)
                     family.dispose()
                 this.$dispose()
             },
