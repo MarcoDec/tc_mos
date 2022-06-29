@@ -2,27 +2,18 @@
 
 namespace App\Entity\Project\Product;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
-use App\Filter\RelationFilter;
+use App\Entity\Purchase\Component\Component;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: BooleanFilter::class, properties: [
-        'mandated'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'product' => ['name', 'required' => true],
-        'quantity' => 'value'
-    ]),
     ApiResource(
-        description: 'Produit',
+        description: 'Nomenclature',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -46,12 +37,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère une nomenclature',
-                    'summary' => 'Récupère une nomenclature',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une nomenclature',
@@ -64,35 +50,46 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:product', 'write:nomenclature', 'write:measure'],
+            'groups' => ['write:nomenclature', 'write:measure'],
             'openapi_definition_name' => 'Nomenclature-write'
         ],
         normalizationContext: [
-            'groups' => ['read:product', 'read:id', 'read:nomenclature', 'read:measure'],
-            'openapi_definition_name' => 'Nomenclature-read'
+            'groups' => ['read:id', 'read:nomenclature', 'read:measure'],
+            'openapi_definition_name' => 'Nomenclature-read',
+            'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity
 ]
 class Nomenclature extends Entity {
     #[
+        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
+    ]
+    private ?Component $component;
+
+    #[
         ApiProperty(description: 'Obligatoire', required: false, example: true),
-        ORM\Column(options: ['default' => true], type: 'boolean'),
+        ORM\Column(options: ['default' => true]),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
     private bool $mandated = true;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/58'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Product::class),
-        Serializer\Groups(['read:product', 'write:product'])
+        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
     private ?Product $product;
 
     #[
         ApiProperty(description: 'Quantité', example: '54'),
         ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
     private Measure $quantity;
 
@@ -100,8 +97,8 @@ class Nomenclature extends Entity {
         $this->quantity = new Measure();
     }
 
-    final public function getMandated(): ?bool {
-        return $this->mandated;
+    final public function getComponent(): ?Component {
+        return $this->component;
     }
 
     final public function getProduct(): ?Product {
@@ -112,21 +109,27 @@ class Nomenclature extends Entity {
         return $this->quantity;
     }
 
+    final public function isMandated(): bool {
+        return $this->mandated;
+    }
+
+    final public function setComponent(?Component $component): self {
+        $this->component = $component;
+        return $this;
+    }
+
     final public function setMandated(bool $mandated): self {
         $this->mandated = $mandated;
-
         return $this;
     }
 
     final public function setProduct(?Product $product): self {
         $this->product = $product;
-
         return $this;
     }
 
     final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
-
         return $this;
     }
 }
