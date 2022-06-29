@@ -2,13 +2,9 @@
 
 namespace App\Doctrine\DBAL\Types\Hr\Employee;
 
-use App\Doctrine\DBAL\Types\Type;
+use App\Doctrine\DBAL\Types\CurrentPlaceType as AbstractCurrentPlaceType;
 
-final class CurrentPlaceType extends Type {
-    public const TYPE_BLOCKED = 'blocked';
-    public const TYPE_DISABLED = 'disabled';
-    public const TYPE_ENABLED = 'enabled';
-    public const TYPE_WARNING = 'warning';
+final class CurrentPlaceType extends AbstractCurrentPlaceType {
     public const TYPES = [
         self::TYPE_BLOCKED,
         self::TYPE_DISABLED,

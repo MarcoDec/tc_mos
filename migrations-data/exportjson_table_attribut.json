@@ -1,0 +1,338 @@
+[
+  {
+    "id": "2",
+    "statut": "0",
+    "libelle": "section admissible minimum (mm²)",
+    "description": "",
+    "attribut_id_family": "5"
+  },
+  {
+    "id": "3",
+    "statut": "0",
+    "libelle": "section admissible maximum (mm²)",
+    "description": "",
+    "attribut_id_family": "5"
+  },
+  {
+    "id": "4",
+    "statut": "0",
+    "libelle": "couleur",
+    "description": "",
+    "attribut_id_family": "1#3#4#8#9"
+  },
+  {
+    "id": "5",
+    "statut": "0",
+    "libelle": "type",
+    "description": "",
+    "attribut_id_family": "4#5"
+  },
+  {
+    "id": "6",
+    "statut": "0",
+    "libelle": "traitement de surface",
+    "description": "",
+    "attribut_id_family": "5"
+  },
+  {
+    "id": "7",
+    "statut": "0",
+    "libelle": "matière",
+    "description": "",
+    "attribut_id_family": "3#5#8"
+  },
+  {
+    "id": "8",
+    "statut": "0",
+    "libelle": "famille",
+    "description": "nom du type",
+    "attribut_id_family": "2#3#4#5#9"
+  },
+  {
+    "id": "9",
+    "statut": "0",
+    "libelle": "composition",
+    "description": "nombre de brins",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "10",
+    "statut": "1",
+    "libelle": "composition",
+    "description": "nombre de brins",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "11",
+    "statut": "0",
+    "libelle": "nombre de voies",
+    "description": "",
+    "attribut_id_family": "4"
+  },
+  {
+    "id": "12",
+    "statut": "0",
+    "libelle": "taille",
+    "description": "",
+    "attribut_id_family": "4#5"
+  },
+  {
+    "id": "13",
+    "statut": "0",
+    "libelle": "courant max",
+    "description": "",
+    "attribut_id_family": "9"
+  },
+  {
+    "id": "14",
+    "statut": "0",
+    "libelle": "etanche",
+    "description": "",
+    "attribut_id_family": "3#4"
+  },
+  {
+    "id": "15",
+    "statut": "0",
+    "libelle": "diametre interieur (mm)",
+    "description": "",
+    "attribut_id_family": "3"
+  },
+  {
+    "id": "16",
+    "statut": "0",
+    "libelle": "diametre exterieur (mm)",
+    "description": "",
+    "attribut_id_family": "3"
+  },
+  {
+    "id": "17",
+    "statut": "0",
+    "libelle": "T° maxi (°C)",
+    "description": "Classe de température maximale en °C",
+    "attribut_id_family": "1#2#3"
+  },
+  {
+    "id": "18",
+    "statut": "1",
+    "libelle": "Longueur",
+    "description": "Longueur de du collier",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "19",
+    "statut": "1",
+    "libelle": "largeur",
+    "description": "largeur du collier",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "20",
+    "statut": "0",
+    "libelle": "Nombre des brins",
+    "description": "",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "21",
+    "statut": "1",
+    "libelle": "Série",
+    "description": "",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "22",
+    "statut": "0",
+    "libelle": "Isolation",
+    "description": "",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "23",
+    "statut": "0",
+    "libelle": "Ratio",
+    "description": "Taux de réduction\/Coefficient de rétraction",
+    "attribut_id_family": "3"
+  },
+  {
+    "id": "24",
+    "statut": "0",
+    "libelle": "Voltage (V)",
+    "description": "Voltage du câble",
+    "attribut_id_family": "1#9"
+  },
+  {
+    "id": "25",
+    "statut": "0",
+    "libelle": "Puissance",
+    "description": "",
+    "attribut_id_family": "9"
+  },
+  {
+    "id": "26",
+    "statut": "0",
+    "libelle": "Résistance",
+    "description": "",
+    "attribut_id_family": "9"
+  },
+  {
+    "id": "27",
+    "statut": "0",
+    "libelle": "Dimension (mm)",
+    "description": "",
+    "attribut_id_family": "6"
+  },
+  {
+    "id": "28",
+    "statut": "0",
+    "libelle": "Diamètre Maxi d'isolant de fil  (mm)",
+    "description": "",
+    "attribut_id_family": "5"
+  },
+  {
+    "id": "29",
+    "statut": "0",
+    "libelle": "Diamètre Mini d'isolant de fil  (mm)",
+    "description": "",
+    "attribut_id_family": "5"
+  },
+  {
+    "id": "30",
+    "statut": "0",
+    "libelle": "polarité",
+    "description": "",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "31",
+    "statut": "1",
+    "libelle": "longueur de dénudage",
+    "description": "",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "32",
+    "statut": "0",
+    "libelle": "longueur de dénudage",
+    "description": "",
+    "attribut_id_family": ""
+  },
+  {
+    "id": "33",
+    "statut": "0",
+    "libelle": "Bornage",
+    "description": "",
+    "attribut_id_family": "5"
+  },
+  {
+    "id": "34",
+    "statut": "0",
+    "libelle": "longueur",
+    "description": "longueur de l'embout",
+    "attribut_id_family": "5"
+  },
+  {
+    "id": "35",
+    "statut": "0",
+    "libelle": "Couleur",
+    "description": "",
+    "attribut_id_family": "2#5#6#7"
+  },
+  {
+    "id": "36",
+    "statut": "0",
+    "libelle": "tolérance",
+    "description": "",
+    "attribut_id_family": "9"
+  },
+  {
+    "id": "37",
+    "statut": "0",
+    "libelle": "Diametre",
+    "description": "",
+    "attribut_id_family": "2"
+  },
+  {
+    "id": "38",
+    "statut": "0",
+    "libelle": "Longueur",
+    "description": "",
+    "attribut_id_family": "2"
+  },
+  {
+    "id": "39",
+    "statut": "0",
+    "libelle": "Largueur (mm)",
+    "description": "",
+    "attribut_id_family": "2#5"
+  },
+  {
+    "id": "40",
+    "statut": "0",
+    "libelle": "Dia ext maxi (mm)",
+    "description": "Diamètre extérieur d'isolant maximum",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "41",
+    "statut": "0",
+    "libelle": "Dia ext mini (mm)",
+    "description": "Diamètre extérieur d'isolant minimum",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "42",
+    "statut": "0",
+    "libelle": "Norme d'appellation",
+    "description": "Norme câble",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "43",
+    "statut": "0",
+    "libelle": "Nombre des conducteurs",
+    "description": "",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "44",
+    "statut": "0",
+    "libelle": "Matière des brins",
+    "description": "",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "45",
+    "statut": "0",
+    "libelle": "Section (mm²)",
+    "description": "Section de câble",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "46",
+    "statut": "0",
+    "libelle": "T° mini (°C)",
+    "description": "Classe de température minimale en °C",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "47",
+    "statut": "0",
+    "libelle": "Diamètre des brins (mm)",
+    "description": "",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "48",
+    "statut": "0",
+    "libelle": "Matière d'isolant",
+    "description": "",
+    "attribut_id_family": "1"
+  },
+  {
+    "id": "49",
+    "statut": "0",
+    "libelle": "Épaisseur (mm)",
+    "description": "Hauteur de cosse",
+    "attribut_id_family": "5"
+  }
+]
