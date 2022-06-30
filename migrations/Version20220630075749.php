@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220629074217 extends AbstractMigration {
+final class Version20220630075749 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -86,6 +86,15 @@ CREATE TABLE `component` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('component');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `component_attribut` (
+  `id_component` int(11) NOT NULL,
+  `id_attribut` int(11) NOT NULL,
+  `valeur_attribut` varchar(100) DEFAULT NULL,
+  PRIMARY KEY(`id_component`, `id_attribut`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('component_attribut');
         $this->addSql(<<<'SQL'
 CREATE TABLE `component_family` (
   `id` tinyint(3) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,

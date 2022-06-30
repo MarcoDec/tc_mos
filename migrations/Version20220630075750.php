@@ -15,7 +15,7 @@ use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220629074218 extends AbstractMigration {
+final class Version20220630075750 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -76,6 +76,7 @@ SQL);
         $this->upProducts();
         $this->upSocieties();
         // rank 3
+        $this->upComponentAttributes();
         $this->upManufacturers();
         $this->upNomenclatures();
         // old_id
@@ -174,6 +175,39 @@ ALTER TABLE `color`
 SQL);
         $this->addSql('DROP INDEX `couleur_id_uindex` ON `color`');
         $this->addSql('UPDATE `color` SET `name` = UCFIRST(`name`)');
+    }
+
+    private function upComponentAttributes(): void {
+        $this->addSql('RENAME TABLE `component_attribut` TO `component_attribute`');
+        $this->alterTable('component_attribute', 'Caractéristique d\'un composant');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `component_attribute`
+    ADD `color_id` INT UNSIGNED DEFAULT NULL,
+    ADD `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    ADD `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    ADD `measure_code` VARCHAR(6) DEFAULT NULL,
+    ADD `measure_denominator` VARCHAR(6) DEFAULT NULL,
+    ADD `measure_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    CHANGE `id_attribut` `attribute_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `id_component` `component_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `valeur_attribut` `value` VARCHAR(255) DEFAULT NULL,
+    DROP PRIMARY KEY,
+    ADD PRIMARY KEY (`id`)
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `component_attribute` SET
+`component_attribute`.`attribute_id` = (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`id` = `component_attribute`.`attribute_id`),
+`component_attribute`.`component_id` = (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_attribute`.`component_id`)
+SQL);
+        $this->addSql('DELETE FROM `component_attribute` WHERE `attribute_id` IS NULL OR `component_id` IS NULL OR `value` IS NULL');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `component_attribute`
+    CHANGE `attribute_id` `attribute_id` INT UNSIGNED NOT NULL,
+    CHANGE `component_id` `component_id` INT UNSIGNED NOT NULL,
+    ADD CONSTRAINT `IDX_248373AAB6E62EFA` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`id`),
+    ADD CONSTRAINT `IDX_248373AA7ADA1FB5` FOREIGN KEY (`color_id`) REFERENCES `color` (`id`),
+    ADD CONSTRAINT `IDX_248373AAE2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
+SQL);
     }
 
     private function upComponentFamilies(): void {
