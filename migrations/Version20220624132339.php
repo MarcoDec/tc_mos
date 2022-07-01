@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220620150400 extends AbstractMigration {
+final class Version20220624132339 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -37,6 +37,55 @@ CREATE TABLE `carrier` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('carrier');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `component` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
+  `id_componentstatus` int(11) NOT NULL DEFAULT '1',
+  `id_society` int(11) DEFAULT NULL,
+  `id_supplier` int(11) NOT NULL,
+  `id_supplier2` int(11) DEFAULT NULL,
+  `id_supplier3` int(11) DEFAULT '0',
+  `id_component_family` int(11) NOT NULL,
+  `id_component_subfamily` int(11) NOT NULL,
+  `id_unit` int(11) NOT NULL,
+  `ref` varchar(255) DEFAULT NULL,
+  `designation` varchar(255) NOT NULL,
+  `weight` decimal(24,4) NOT NULL,
+  `customcode` varchar(255) DEFAULT NULL,
+  `qc` tinyint(4) NOT NULL,
+  `poid_cu` double NOT NULL,
+  `price` double(24,5) NOT NULL COMMENT 'prix par defaut du composant, n''est pas le prix du fournisseur',
+  `price_type` varchar(10) DEFAULT NULL COMMENT 'savoir si un prix est sais manuellement ou depuis CPS (auto, manu)',
+  `need_joint` int(11) NOT NULL DEFAULT '0',
+  `info_public` text DEFAULT NULL,
+  `info_commande` text DEFAULT NULL,
+  `stock_minimum` int(11) NOT NULL,
+  `volume_previsionnel` int(11) NOT NULL,
+  `quality` int(11) NOT NULL COMMENT 'UNIQUEMENT POUR LES LISTES cf quality : insert_reception_ordersupplier ',
+  `fabricant` varchar(255) DEFAULT NULL,
+  `fabricant_reference` varchar(255) DEFAULT NULL,
+  `c_200` tinyint(4) DEFAULT '0' COMMENT 'validation DIRECTION',
+  `c_300` tinyint(4) DEFAULT '0' COMMENT 'validation qualité',
+  `c_600` tinyint(4) DEFAULT '0' COMMENT 'validation production',
+  `c_700` tinyint(4) DEFAULT '0' COMMENT 'validation logistique',
+  `c_800` tinyint(4) DEFAULT '0' COMMENT 'validation achat',
+  `flag_error_stock` int(11) NOT NULL DEFAULT '0',
+  `gestion_stock` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 = cas normal, 1 = pas géré en stock',
+  `reach` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=false / 1=true',
+  `reach_attachment` varchar(255) DEFAULT NULL,
+  `rohs` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=false / 1=true',
+  `rohs_attachment` varchar(255) DEFAULT NULL,
+  `date_creation` datetime DEFAULT NULL COMMENT 'date de création',
+  `date_modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'date modification',
+  `id_user_creation` int(11) DEFAULT NULL,
+  `id_user_modification` int(11) DEFAULT NULL,
+  `endOfLife` date DEFAULT NULL,
+  `indice` varchar(255) NOT NULL DEFAULT '0',
+  `newFieldsMarker` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('component');
         $this->addSql(<<<'SQL'
 CREATE TABLE `component_family` (
   `id` tinyint(3) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,

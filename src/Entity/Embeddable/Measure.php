@@ -2,6 +2,7 @@
 
 namespace App\Entity\Embeddable;
 
+use App\Entity\Management\AbstractUnit;
 use App\Entity\Management\Unit;
 use Doctrine\ORM\Mapping as ORM;
 use LogicException;
@@ -10,13 +11,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[ORM\Embeddable]
 class Measure {
     #[
-        ORM\Column(length: 3, nullable: true),
+        ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private ?string $code = null;
 
     #[
-        ORM\Column(length: 3, nullable: true),
+        ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private ?string $denominator = null;

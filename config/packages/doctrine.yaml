@@ -15,6 +15,7 @@ doctrine:
     default_connection: default
     types:
       char: App\Doctrine\DBAL\Types\CharType
+      component_current_place: App\Doctrine\DBAL\Types\Purchase\Component\CurrentPlaceType
       copper_type: App\Doctrine\DBAL\Types\Embeddable\CopperType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType

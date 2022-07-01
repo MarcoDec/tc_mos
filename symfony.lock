@@ -220,6 +220,9 @@
     "orchestra/testbench-core": {
         "version": "v7.1.0"
     },
+    "gollumsf/doctrine-tinyint": {
+        "version": "v1.0.2"
+    },
     "pentatrion/vite-bundle": {
         "version": "1.2",
         "recipe": {
