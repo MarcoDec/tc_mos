@@ -21,7 +21,9 @@ CREATE TABLE `attribut` (
   `description` varchar(200) DEFAULT NULL,
   `libelle` varchar(100) NOT NULL,
   `attribut_id_family` varchar(255) DEFAULT NULL,
-  `isBrokenLinkSolved` tinyint(1) NOT NULL DEFAULT '0'
+  `isBrokenLinkSolved` tinyint(1) NOT NULL DEFAULT '0',
+  `unit_id` int UNSIGNED DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('attribut');

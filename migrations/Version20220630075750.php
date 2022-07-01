@@ -180,7 +180,6 @@ SQL)->fetchAllAssociative();
         $this->alterTable('attribute', 'Attribut');
         $this->addSql(<<<'SQL'
 ALTER TABLE `attribute`
-    ADD `unit_id` INT UNSIGNED DEFAULT NULL,
     DROP `isBrokenLinkSolved`,
     CHANGE `description` `description` VARCHAR(255) DEFAULT NULL,
     CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
@@ -199,16 +198,18 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `attribute_copy` (
   `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `old_id` int UNSIGNED NOT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `unit_id` int UNSIGNED DEFAULT NULL,
-  `attribut_id_family` varchar(255) DEFAULT NULL
+  `attribut_id_family` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Attribut';
 SQL);
         $this->addSql(<<<'SQL'
-INSERT INTO `attribute_copy` (`deleted`, `description`, `name`, `unit_id`, `attribut_id_family`)
-SELECT `deleted`, `description`, `name`, `unit_id`, `attribut_id_family`
+INSERT INTO `attribute_copy` (`old_id`, `deleted`, `description`, `name`, `unit_id`, `attribut_id_family`, `type`)
+SELECT `id`, `deleted`, `description`, `name`, `unit_id`, `attribut_id_family`, `type`
 FROM `attribute`
 SQL);
         $this->addSql('DROP TABLE `attribute`');
@@ -272,7 +273,7 @@ ALTER TABLE `component_attribute`
 SQL);
         $this->addSql(<<<'SQL'
 UPDATE `component_attribute` SET
-`component_attribute`.`attribute_id` = (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`id` = `component_attribute`.`attribute_id`),
+`component_attribute`.`attribute_id` = (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`old_id` = `component_attribute`.`attribute_id`),
 `component_attribute`.`component_id` = (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_attribute`.`component_id`)
 SQL);
         $this->addSql('DELETE FROM `component_attribute` WHERE `attribute_id` IS NULL OR `component_id` IS NULL OR `value` IS NULL');
