@@ -2,6 +2,17 @@ import {h, resolveComponent} from 'vue'
 import {generateTableFields} from '../../props'
 
 function AppTableItem(props, context) {
+    const removeAttrs = {
+        icon: 'trash',
+        item: props.item,
+        async onClick() {
+            props.machine.send('submit')
+            await props.item.remove()
+            props.machine.send('success')
+        },
+        title: 'Supprimer',
+        variant: 'danger'
+    }
     return h('tr', {id: props.id}, [
         h('td', {class: 'text-center'}, props.index + 1),
         h('td', {class: 'text-center'}, [
@@ -11,16 +22,9 @@ function AppTableItem(props, context) {
                 title: 'Modifier',
                 variant: 'primary'
             }),
-            h(resolveComponent('AppBtn'), {
-                icon: 'trash',
-                async onClick() {
-                    props.machine.send('submit')
-                    await props.item.remove()
-                    props.machine.send('success')
-                },
-                title: 'Supprimer',
-                variant: 'danger'
-            })
+            typeof context.slots.remove === 'function'
+                ? context.slots.remove(removeAttrs)
+                : h(resolveComponent('AppBtn'), removeAttrs)
         ]),
         props.fields.map(field => {
             const slot = context.slots[`cell(${field.name})`]

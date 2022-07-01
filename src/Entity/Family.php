@@ -59,6 +59,17 @@ abstract class Family extends Entity implements FileEntity {
         return $this->customsCode;
     }
 
+    final public function getFullName(): ?string {
+        if (empty($this->parent)) {
+            return $this->name;
+        }
+        $parent = $this->parent->getFullName();
+        if (empty($parent) && empty($this->name)) {
+            return null;
+        }
+        return "$parent\\".($this->name ?? 'null');
+    }
+
     final public function getName(): ?string {
         return $this->name;
     }

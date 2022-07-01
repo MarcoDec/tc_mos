@@ -8,13 +8,14 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
+use Illuminate\Support\Collection;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220615093118 extends AbstractMigration {
+final class Version20220620150401 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -24,6 +25,19 @@ final class Version20220615093118 extends AbstractMigration {
     public function postUp(Schema $schema): void {
         $this->upPhoneNumbers('out_trainer', 'tel');
         $this->upPhoneNumbers('society', 'phone');
+
+        $attributes = $this->connection->executeQuery('SELECT `id`, `attribut_id_family` FROM `attribute` WHERE `attribut_id_family` IS NOT NULL');
+        /** @var Collection<int, string> $insert */
+        $insert = new Collection();
+        while ($attribute = $attributes->fetchAssociative()) {
+            /** @var array{attribut_id_family:string, id: int} $attribute */
+            $insert = $insert->merge(
+                collect(explode('#', $attribute['attribut_id_family']))
+                    ->map(static fn (string $id): string => "({$attribute['id']}, $id)")
+            );
+        }
+        $this->connection->executeQuery("INSERT INTO `attribute_family` (`attribute_id`, `family_id`) VALUES {$insert->join(',')}");
+        $this->connection->executeQuery('ALTER TABLE `attribute` DROP `attribut_id_family`');
     }
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -57,6 +71,7 @@ SQL);
         $this->upUnits();
         $this->upVatMessages();
         // rank 2
+        $this->upAttributes();
         $this->upProducts();
         $this->upSocieties();
         // old_id
@@ -74,6 +89,48 @@ SQL);
         $this->addSql("ALTER TABLE `$table` DEFAULT COLLATE `utf8mb4_unicode_ci`");
         $this->addSql("ALTER TABLE `$table` COLLATE `utf8mb4_unicode_ci`");
         $this->addSql("ALTER TABLE `$table` ENGINE = InnoDB");
+    }
+
+    private function upAttributes(): void {
+        $this->addSql('RENAME TABLE `attribut` TO `attribute`');
+        $this->alterTable('attribute', 'Attribut');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `attribute`
+    ADD `unit_id` INT UNSIGNED DEFAULT NULL,
+    DROP `isBrokenLinkSolved`,
+    CHANGE `description` `description` VARCHAR(255) DEFAULT NULL,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `libelle` `name` VARCHAR(255) NOT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+SQL);
+        $this->addSql('ALTER TABLE `attribute` ADD CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `attribute_family` (
+    `attribute_id` INT UNSIGNED NOT NULL,
+    `family_id` INT UNSIGNED NOT NULL,
+    PRIMARY KEY(`attribute_id`, `family_id`),
+    CONSTRAINT `IDX_87070F01C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE
+) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+SQL);
+        $this->addSql(<<<'SQL'
+CREATE TABLE `attribute_copy` (
+  `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unit_id` int UNSIGNED DEFAULT NULL,
+  `attribut_id_family` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Attribut';
+SQL);
+        $this->addSql(<<<'SQL'
+INSERT INTO `attribute_copy` (`deleted`, `description`, `name`, `unit_id`, `attribut_id_family`)
+SELECT `deleted`, `description`, `name`, `unit_id`, `attribut_id_family`
+FROM `attribute`
+SQL);
+        $this->addSql('DROP TABLE `attribute`');
+        $this->addSql('RENAME TABLE `attribute_copy` TO `attribute`');
+        $this->addSql('ALTER TABLE `attribute` ADD CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`);');
+        $this->addSql('ALTER TABLE `attribute_family` ADD CONSTRAINT `IDX_87070F01B6E62EFA` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`id`) ON DELETE CASCADE;');
     }
 
     private function upCarriers(): void {
@@ -164,11 +221,11 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `currency` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `parent_id` INT UNSIGNED DEFAULT NULL,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `active` TINYINT(1) DEFAULT 0 NOT NULL,
     `base` DOUBLE PRECISION DEFAULT '1' NOT NULL,
     `code` CHAR(3) NOT NULL COMMENT '(DC2Type:char)',
-    `active` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `parent_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_6956883F727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `currency` (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
 SQL);

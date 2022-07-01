@@ -62,8 +62,9 @@ export default function generateItems(iriType) {
                 this.$reset()
             },
             resetItems() {
+                const items = [...this.items]
                 this.items = []
-                for (const item of this.items)
+                for (const item of items)
                     item.dispose()
             },
             async resetSearch() {

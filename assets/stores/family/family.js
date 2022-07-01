@@ -31,6 +31,10 @@ export default function generateFamily(iriType, family, root) {
                 if (response.status === 422)
                     throw response.content.violations
                 this.$state = {opened: this.opened, root: this.root, selected: this.selected, ...response.content}
+            },
+            async updateAttributes(data) {
+                const response = await new Api().fetch(this.iri, 'PATCH', data)
+                return response.content.attributes
             }
         },
         getters: {

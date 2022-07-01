@@ -8,12 +8,23 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220615093117 extends AbstractMigration {
+final class Version20220620150400 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
 
     public function up(Schema $schema): void {
+        $this->addSql(<<<'SQL'
+CREATE TABLE `attribut` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` int(11) NOT NULL COMMENT '0 = Active, 1 = Deleted	',
+  `description` varchar(200) DEFAULT NULL,
+  `libelle` varchar(100) NOT NULL,
+  `attribut_id_family` varchar(255) DEFAULT NULL,
+  `isBrokenLinkSolved` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('attribut');
         $this->addSql(<<<'SQL'
 CREATE TABLE `carrier` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,

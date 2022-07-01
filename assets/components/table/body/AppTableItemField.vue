@@ -11,6 +11,7 @@
     const isBoolean = computed(() => props.field.type === 'boolean')
     const value = computed(() => get(props.item, props.field.name))
     const label = computed(() => (props.field.type === 'select' ? props.field.options.label(value.value) : value.value))
+    const isArray = computed(() => Array.isArray(label.value))
 </script>
 
 <template>
@@ -24,7 +25,14 @@
         form="none"/>
     <td v-else :id="id">
         <slot :field="field" :item="item" :value="value">
-            {{ label }}
+            <ul v-if="isArray">
+                <li v-for="(v, i) in label" :key="i">
+                    {{ v }}
+                </li>
+            </ul>
+            <template v-else>
+                {{ label }}
+            </template>
         </slot>
     </td>
 </template>
