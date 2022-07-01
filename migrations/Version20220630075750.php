@@ -6,6 +6,7 @@ namespace DoctrineMigrations;
 
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Hr\Employee\Employee;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Illuminate\Support\Collection;
@@ -38,6 +39,7 @@ final class Version20220630075750 extends AbstractMigration {
         }
         $this->connection->executeQuery("INSERT INTO `attribute_family` (`attribute_id`, `family_id`) VALUES {$insert->join(',')}");
         $this->connection->executeQuery('ALTER TABLE `attribute` DROP `attribut_id_family`');
+        $this->postUpComponentAttributes();
     }
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -97,6 +99,80 @@ SQL);
         $this->addSql("ALTER TABLE `$table` DEFAULT COLLATE `utf8mb4_unicode_ci`");
         $this->addSql("ALTER TABLE `$table` COLLATE `utf8mb4_unicode_ci`");
         $this->addSql("ALTER TABLE `$table` ENGINE = InnoDB");
+    }
+
+    private function postUpComponentAttributes(): void {
+        /** @var Collection<int, array{attribute: int, family: int, unit: string}> $definitions */
+        $definitions = collect($this->connection->executeQuery(<<<'SQL'
+SELECT `a`.`id` as `attribute`, `f`.`id` as `family`, `u`.`code` as `unit`
+FROM `attribute` `a`
+LEFT JOIN `unit` `u` ON `a`.`unit_id` = `u`.`id`
+INNER JOIN `attribute_family` `af` ON `a`.`id` = `af`.`attribute_id`
+INNER JOIN `component_family` `f` ON `af`.`family_id` = `f`.`id`
+SQL)->fetchAllAssociative());
+        /** @var Collection<int, int> $attributes */
+        $attributes = new Collection();
+        foreach ($definitions as $definition) {
+            $attributes->push($definition['attribute']);
+        }
+        $attributes = $attributes->unique()->sort();
+        if ($attributes->isEmpty()) {
+            $this->connection->executeQuery('DELETE FROM `component_attribute`');
+        } else {
+            $this->connection->executeQuery(
+                sql: 'DELETE FROM `component_attribute` WHERE `attribute_id` NOT IN (:attributes)',
+                params: ['attributes' => $attributes->all()],
+                types: ['attributes' => Connection::PARAM_INT_ARRAY]
+            );
+        }
+        /** @var Collection<int, Collection<int, array{attribute: int, family: int, unit: string}>> $families */
+        $families = $definitions->mapToGroups(static fn (array $definition): array => [$definition['family'] => $definition]);
+        /** @var array{id: int, family: int, parent: int}[] $components */
+        $components = $this->connection->executeQuery(<<<'SQL'
+SELECT `c`.`id`, `c`.`family_id` as `family`, `f`.`parent_id` as `parent`
+FROM `component` `c`
+INNER JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
+SQL)->fetchAllAssociative();
+        foreach ($components as $component) {
+            $family = $families->get($component['family']) ?? $families->get($component['parent']);
+            if (empty($family)) {
+                $this->connection->executeQuery(
+                    sql: 'DELETE FROM `component_attribute` WHERE `component_id` = :component',
+                    params: ['component' => $component['id']]
+                );
+            } else {
+                /** @var Collection<int, array{attribute_id: int, id: int}> $componentAttributes */
+                $componentAttributes = collect($this->connection->executeQuery(
+                    sql: 'SELECT `id`, `attribute_id` FROM `component_attribute` WHERE `component_id` = :component',
+                    params: ['component' => $component['id']]
+                )->fetchAllAssociative());
+                /** @var Collection<int, int> $familyAttributes */
+                $familyAttributes = new Collection();
+                foreach ($family as $attribute) {
+                    $compAttr = $componentAttributes->first(static fn (array $compAttr): bool => $compAttr['attribute_id'] === $attribute['attribute']);
+                    if (!empty($compAttr)) {
+                        $this->connection->executeQuery(
+                            sql: 'UPDATE `component_attribute` SET `measure_code` = :unit WHERE `id` = :id',
+                            params: ['id' => $compAttr['id'], 'unit' => $attribute['unit']]
+                        );
+                    }
+                    $familyAttributes->push($attribute['attribute']);
+                }
+                $familyAttributes = $familyAttributes->unique()->sort();
+                if ($familyAttributes->isEmpty()) {
+                    $this->connection->executeQuery(
+                        sql: 'DELETE FROM `component_attribute` WHERE `component_id` = :component',
+                        params: ['component' => $component['id']]
+                    );
+                } else {
+                    $this->connection->executeQuery(
+                        sql: 'DELETE FROM `component_attribute` WHERE `attribute_id` NOT IN (:attributes) AND `component_id` = :component',
+                        params: ['attributes' => $familyAttributes->all(), 'component' => $component['id']],
+                        types: ['attributes' => Connection::PARAM_INT_ARRAY]
+                    );
+                }
+            }
+        }
     }
 
     private function upAttributes(): void {
