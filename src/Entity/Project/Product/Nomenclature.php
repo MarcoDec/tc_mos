@@ -2,16 +2,23 @@
 
 namespace App\Entity\Project\Product;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Purchase\Component\Component;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: BooleanFilter::class, properties: ['mandated']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'product']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['component.id', 'product.code']),
     ApiResource(
         description: 'Nomenclature',
         collectionOperations: [
@@ -57,8 +64,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:nomenclature', 'read:measure'],
             'openapi_definition_name' => 'Nomenclature-read',
             'skip_null_values' => false
-        ],
-        paginationEnabled: false
+        ]
     ),
     ORM\Entity
 ]
@@ -87,7 +93,7 @@ class Nomenclature extends Entity {
     private ?Product $product;
 
     #[
-        ApiProperty(description: 'Quantité', example: '54'),
+        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded(Measure::class),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
