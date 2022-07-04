@@ -150,7 +150,12 @@ SQL)->fetchAllAssociative();
                 $familyAttributes = new Collection();
                 foreach ($family as $attribute) {
                     $compAttr = $componentAttributes->first(static fn (array $compAttr): bool => $compAttr['attribute_id'] === $attribute['attribute']);
-                    if (!empty($compAttr)) {
+                    if (empty($compAttr)) {
+                        $this->connection->executeQuery(
+                            sql: 'INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `measure_code`) VALUES (:component, :attribute, :unit)',
+                            params: ['attribute' => $attribute['attribute'], 'component' => $component['id'], 'unit' => $attribute['unit']]
+                        );
+                    } else {
                         $this->connection->executeQuery(
                             sql: 'UPDATE `component_attribute` SET `measure_code` = :unit WHERE `id` = :id',
                             params: ['id' => $compAttr['id'], 'unit' => $attribute['unit']]
