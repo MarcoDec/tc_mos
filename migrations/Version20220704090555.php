@@ -16,7 +16,7 @@ use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220630075750 extends AbstractMigration {
+final class Version20220704090555 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -82,6 +82,7 @@ SQL);
         $this->upManufacturers();
         $this->upNomenclatures();
         // old_id
+        $this->addSql('ALTER TABLE `attribute` DROP `old_id`');
         $this->addSql('ALTER TABLE `component` DROP `old_id`');
         $this->addSql('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addSql('ALTER TABLE `invoice_time_due` DROP `old_id`');
@@ -209,7 +210,7 @@ CREATE TABLE `attribute_copy` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `unit_id` int UNSIGNED DEFAULT NULL,
   `attribut_id_family` varchar(255) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL
+  `type` enum('bool', 'color', 'int', 'percent', 'text', 'unit') DEFAULT 'text' NOT NULL COMMENT '(DC2Type:attribute)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Attribut';
 SQL);
         $this->addSql(<<<'SQL'

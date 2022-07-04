@@ -7,9 +7,11 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\Purchase\Component\AttributeType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Unit;
+use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,9 +21,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: EnumFilter::class, properties: ['type']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['unit']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['description' => 'partial', 'name' => 'partial']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'unit.name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'type', 'unit.name']),
     ApiResource(
         description: 'Attribut',
         collectionOperations: [
@@ -99,6 +102,14 @@ class Attribute extends Entity {
     private ?string $name = null;
 
     #[
+        ApiProperty(description: 'Type', example: AttributeType::TYPE_TEXT, openapiContext: ['enum' => AttributeType::TYPES]),
+        Assert\Choice(choices: AttributeType::TYPES),
+        ORM\Column(type: 'attribute', options: ['default' => AttributeType::TYPE_TEXT]),
+        Serializer\Groups(['read:attribute', 'write:attribute'])
+    ]
+    private string $type = AttributeType::TYPE_TEXT;
+
+    #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['read:attribute', 'write:attribute'])
@@ -140,6 +151,10 @@ class Attribute extends Entity {
         return $this->name;
     }
 
+    final public function getType(): string {
+        return $this->type;
+    }
+
     final public function getUnit(): ?Unit {
         return $this->unit;
     }
@@ -159,6 +174,11 @@ class Attribute extends Entity {
 
     final public function setName(?string $name): self {
         $this->name = $name;
+        return $this;
+    }
+
+    final public function setType(string $type): self {
+        $this->type = $type;
         return $this;
     }
 
