@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
 
-final class Version20220628122401 extends AbstractMigration {
+final class Version20220629074217 extends AbstractMigration {
     public function getDescription(): string {
         return 'Migration initiale : récupération de la base de données sans aucun changement.';
     }
@@ -310,6 +310,23 @@ CREATE TABLE `product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SQL);
         $this->insert('product');
+        $this->addSql(<<<'SQL'
+CREATE TABLE `productcontent` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` tinyint(4) NOT NULL COMMENT '0 = Active, 1 = Deleted',
+  `id_product` int(11) DEFAULT NULL,
+  `id_component` int(11) DEFAULT NULL,
+  `id_operation` int(11) DEFAULT NULL,
+  `quantity` double(24,8) NOT NULL,
+  `mandat` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 = non mandaté, 1 = mandaté',
+  `date_creation` datetime DEFAULT NULL COMMENT 'date de création',
+  `date_modification` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'date modification',
+  `id_user_creation` int(11) DEFAULT NULL,
+  `id_user_modification` int(11) DEFAULT NULL,
+  `isBrokenLinkSolved` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+SQL);
+        $this->insert('productcontent');
         $this->addSql(<<<'SQL'
 CREATE TABLE `product_family` (
   `id` tinyint(3) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,

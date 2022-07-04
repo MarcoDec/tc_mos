@@ -15,7 +15,7 @@ use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20220628122402 extends AbstractMigration {
+final class Version20220629074218 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     public function getDescription(): string {
@@ -77,9 +77,12 @@ SQL);
         $this->upSocieties();
         // rank 3
         $this->upManufacturers();
+        $this->upNomenclatures();
         // old_id
+        $this->addSql('ALTER TABLE `component` DROP `old_id`');
         $this->addSql('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addSql('ALTER TABLE `invoice_time_due` DROP `old_id`');
+        $this->addSql('ALTER TABLE `product` DROP `old_id`');
         $this->addSql('DROP FUNCTION UCFIRST');
         $this->addSql('DROP TABLE `country`');
         $this->addSql('DROP TABLE `customcode`');
@@ -293,6 +296,7 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `component_copy` (
   `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `old_id` INT UNSIGNED NOT NULL,
   `copper_weight_code` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `copper_weight_denominator` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `copper_weight_value` double NOT NULL DEFAULT '0',
@@ -326,6 +330,7 @@ CREATE TABLE `component_copy` (
 SQL);
         $this->addSql(<<<'SQL'
 INSERT INTO `component_copy` (
+  `old_id`,
   `copper_weight_code`,
   `copper_weight_denominator`,
   `copper_weight_value`,
@@ -356,6 +361,7 @@ INSERT INTO `component_copy` (
   `weight_denominator`,
   `weight_value`
 ) SELECT
+  `id`,
   `copper_weight_code`,
   `copper_weight_denominator`,
   `copper_weight_value`,
@@ -592,6 +598,71 @@ INNER JOIN `society` ON `manufacturer`.`id` = `society`.`manufacturer_id`
 SET `manufacturer`.`society_id` = `society`.`id`
 SQL);
         $this->addSql('ALTER TABLE `society` DROP `manufacturer_id`');
+    }
+
+    private function upNomenclatures(): void {
+        $this->addSql('RENAME TABLE `productcontent` TO `nomenclature`');
+        $this->alterTable('nomenclature', 'Nomenclature');
+        $this->addSql('DELETE FROM `nomenclature` WHERE `statut` = 1');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `nomenclature`
+    ADD `quantity_code` VARCHAR(6) DEFAULT NULL,
+    ADD `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    DROP `date_creation`,
+    DROP `date_modification`,
+    DROP `id_operation`,
+    DROP `id_user_creation`,
+    DROP `id_user_modification`,
+    DROP `isBrokenLinkSolved`,
+    CHANGE `id` `id` INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    CHANGE `id_component` `component_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `id_product` `product_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `mandat` `mandated` TINYINT(1) DEFAULT 1 NOT NULL,
+    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `quantity` `quantity_value` DOUBLE PRECISION DEFAULT '0' NOT NULL
+SQL);
+        $this->addSql(<<<'SQL'
+UPDATE `nomenclature`
+SET `nomenclature`.`component_id` = (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `nomenclature`.`component_id`),
+`nomenclature`.`product_id` = (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `nomenclature`.`product_id`),
+`nomenclature`.`quantity_code` = (
+    SELECT `unit`.`code`
+    FROM `unit`
+    INNER JOIN `component`
+        ON `unit`.`id` = `component`.`unit_id`
+        AND `component`.`id` = `nomenclature`.`component_id`
+)
+SQL);
+        $this->addSql('DELETE FROM `nomenclature` WHERE `component_id` IS NULL OR `product_id` IS NULL OR `quantity_value` <= 0');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `nomenclature`
+    ADD CONSTRAINT `IDX_799A3652E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    ADD CONSTRAINT `IDX_799A36524584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+SQL);
+        $this->addSql(<<<'SQL'
+CREATE TABLE `nomenclature_copy` (
+  `id` int UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `product_id` int UNSIGNED NOT NULL,
+  `component_id` int UNSIGNED NOT NULL,
+  `quantity_value` double NOT NULL DEFAULT '0',
+  `mandated` tinyint(1) NOT NULL DEFAULT '1',
+  `quantity_code` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `quantity_denominator` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Nomenclature';
+SQL);
+        $this->addSql(<<<'SQL'
+INSERT INTO `nomenclature_copy` (`deleted`, `product_id`, `component_id`, `quantity_value`, `mandated`, `quantity_code`, `quantity_denominator`)
+SELECT `deleted`, `product_id`, `component_id`, `quantity_value`, `mandated`, `quantity_code`, `quantity_denominator`
+FROM `nomenclature`
+SQL);
+        $this->addSql('DROP TABLE `nomenclature`');
+        $this->addSql('RENAME TABLE `nomenclature_copy` TO `nomenclature`');
+        $this->addSql(<<<'SQL'
+ALTER TABLE `nomenclature`
+    ADD CONSTRAINT `IDX_799A3652E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    ADD CONSTRAINT `IDX_799A36524584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+SQL);
     }
 
     private function upNotifications(): void {
@@ -841,6 +912,7 @@ SQL);
         $this->addSql(<<<'SQL'
 CREATE TABLE `product_copy` (
   `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `old_id` INT UNSIGNED NOT NULL,
   `auto_duration_code` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `auto_duration_denominator` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `auto_duration_value` double NOT NULL DEFAULT '0',
@@ -910,6 +982,7 @@ CREATE TABLE `product_copy` (
 SQL);
         $this->addSql(<<<'SQL'
 INSERT INTO `product_copy` (
+  `old_id`,
   `auto_duration_code`,
   `auto_duration_denominator`,
   `auto_duration_value`,
@@ -976,6 +1049,7 @@ INSERT INTO `product_copy` (
   `weight_denominator`,
   `weight_value`
 ) SELECT
+  `id`,
   `auto_duration_code`,
   `auto_duration_denominator`,
   `auto_duration_value`,
