@@ -1,5 +1,7 @@
 import {
     faAddressCard,
+    faAngleDoubleLeft,
+    faAtom,
     faBars,
     faBoxes,
     faCaretDown,
@@ -8,13 +10,16 @@ import {
     faCheck,
     faChevronDown,
     faChevronUp,
+    faCity,
     faClock,
     faCommentsDollar,
     faDatabase,
     faEuroSign,
     faExclamationTriangle,
+    faEye,
     faFileContract,
     faFileInvoiceDollar,
+    faFilter,
     faFolder,
     faHourglass,
     faIcons,
@@ -92,3 +97,8 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faAtom)
+library.add(faFilter)
+library.add(faCity)
+library.add(faEye)
+library.add(faAngleDoubleLeft)

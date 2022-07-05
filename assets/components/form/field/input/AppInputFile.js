@@ -17,8 +17,8 @@ AppInputFile.emits = ['update:modelValue']
 AppInputFile.props = {
     disabled: {type: Boolean},
     field: generateField(),
-    form: {required: true, type: String},
-    id: {required: true, type: String}
+    form: {required: false, type: String},
+    id: {required: false, type: String}
 }
 
 export default AppInputFile

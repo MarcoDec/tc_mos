@@ -1,4 +1,5 @@
 import {h, resolveComponent} from 'vue'
+import AppGroupButton from './AppGroupButton.vue'
 import AppInputFile from './AppInputFile'
 import AppInputNumber from './AppInputNumber'
 import AppSelect from './select/AppSelect'
@@ -15,6 +16,8 @@ function getType(field) {
         return AppInputNumber
     case 'select':
         return AppSelect
+    case 'grpbutton':
+        return AppGroupButton
     default:
         return resolveComponent('AppInput')
     }
@@ -35,8 +38,8 @@ AppInputGuesser.emits = ['update:modelValue']
 AppInputGuesser.props = {
     disabled: {type: Boolean},
     field: generateField(),
-    form: {required: true, type: String},
-    id: {required: true, type: String},
+    form: {required: false, type: String},
+    id: {required: false, type: String},
     modelValue: {}
 }
 

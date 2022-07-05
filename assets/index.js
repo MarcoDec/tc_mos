@@ -3,6 +3,8 @@ import './fortawesome'
 import App from './App'
 import AppBtn from './components/AppBtn'
 import AppCard from './components/AppCard'
+import AppCol from './components/layout/AppCol'
+import AppCollectionTable from './components/app-collection-table/AppCollectionTable.vue'
 import AppContainer from './components/layout/AppContainer'
 import AppDropdownItem from './components/nav/AppDropdownItem'
 import AppForm from './components/form/AppForm'
@@ -11,6 +13,7 @@ import AppInputGuesser from './components/form/field/input/AppInputGuesser'
 import AppOverlay from './components/AppOverlay'
 import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRouterLink from './components/nav/AppRouterLink'
+import AppRow from './components/layout/AppRow'
 import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
 import AppTab from './components/tabs/AppTab.vue'
 import AppTableFormField from './components/table/AppTableFormField'
@@ -28,6 +31,9 @@ const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppCard', AppCard)
     .component('AppContainer', AppContainer)
+    .component('AppCol', AppCol)
+    .component('AppRow', AppRow)
+    .component('AppCollectionTable', AppCollectionTable)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppForm', AppForm)
     .component('AppInput', AppInput)
