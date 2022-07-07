@@ -14,6 +14,7 @@ use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\String\UnicodeString;
 
 final class Version20220704122123 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
@@ -51,12 +52,17 @@ SQL);
     }
 
     private function addQuery(string $query): void {
-        /** @phpstan-ignore-next-line */
-        $this->queries->push(preg_replace('/\s+/', ' ', $query));
+        $this->queries->push(
+            (new UnicodeString($query))
+                ->replaceMatches('/\s+/', ' ')
+                ->replace('( ', '(')
+                ->replace(' )', ')')
+                ->toString()
+        );
     }
 
     private function getQueries(): string {
-        return $this->queries->join(';');
+        return $this->queries->join('; ');
     }
 
     /**
@@ -175,6 +181,33 @@ CREATE TABLE `attribute_family` (
     CONSTRAINT `IDX_87070F01C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE
 )
 SQL);
+        $this->addQuery(<<<'SQL'
+SET @attribute_i = 0;
+SELECT COUNT(*) INTO @attribute_count FROM `attribute` WHERE `attribut_id_family` IS NOT NULL;
+WHILE @attribute_i < @attribute_count DO
+    SET @attribute_sql = CONCAT(
+        'SELECT `id`, `attribut_id_family` ',
+        'INTO @attribute_id, @attribute_families ',
+        'FROM `attribute` ',
+        'WHERE `attribut_id_family` IS NOT NULL ',
+        'LIMIT 1 OFFSET ',
+        @attribute_i
+    );
+    PREPARE attribute_stmt FROM @attribute_sql;
+    EXECUTE attribute_stmt;
+    WHILE LENGTH(@attribute_families) > 0 DO
+        SET @attribute_family = SUBSTRING(@attribute_families, 1, 1);
+        IF LENGTH(@attribute_families) >= 3 THEN
+            SET @attribute_families = SUBSTRING(@attribute_families, 3);
+        ELSE
+            SET @attribute_families = '';
+        END IF;
+        INSERT INTO `attribute_family` (`attribute_id`, `family_id`) VALUES (@attribute_id, @attribute_family);
+    END WHILE;
+    SET @attribute_i = @attribute_i + 1;
+END WHILE
+SQL);
+        $this->addQuery('ALTER TABLE `attribute` DROP `attribut_id_family`');
     }
 
     private function upCarriers(): void {
@@ -230,13 +263,44 @@ CREATE TABLE `component_attribute` (
     `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
     `component_id` INT UNSIGNED NOT NULL,
     `attribute_id` INT UNSIGNED NOT NULL,
-    `value` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `value` VARCHAR(255) DEFAULT NULL,
     `color_id` INT UNSIGNED DEFAULT NULL,
-    `measure_code` VARCHAR(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    `measure_denominator` VARCHAR(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `measure_code` VARCHAR(6) DEFAULT NULL,
+    `measure_denominator` VARCHAR(6) DEFAULT NULL,
     `measure_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
     UNIQUE KEY `UNIQ_248373AAB6E62EFAE2ABAFFF` (`attribute_id`, `component_id`)
 )
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `value`)
+SELECT
+    (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_attribut`.`id_component`),
+    (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`old_id` = `component_attribut`.`id_attribut`),
+    `valeur_attribut`
+FROM `component_attribut`
+WHERE `valeur_attribut` IS NOT NULL AND TRIM(`valeur_attribut`) != ''
+AND EXISTS (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_attribut`.`id_component`)
+AND EXISTS (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`old_id` = `component_attribut`.`id_attribut`)
+SQL);
+        $this->addQuery('DROP TABLE `component_attribut`');
+        $this->addQuery(<<<'SQL'
+INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `measure_code`)
+SELECT `c`.`id`, `a`.`id`, `u`.`code`
+FROM `component` `c`
+INNER JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
+INNER JOIN `attribute_family` `af` ON `f`.`parent_id` = `af`.`family_id`
+INNER JOIN `attribute` `a` ON `af`.`attribute_id` = `a`.`id`
+LEFT JOIN `unit` `u` ON `a`.`unit_id` = `u`.`id`
+ON DUPLICATE KEY UPDATE `measure_code` = `u`.`code`
+SQL);
+        $this->addQuery(<<<'SQL'
+DELETE `ca`
+FROM `component_attribute` `ca`
+LEFT JOIN `component` `c` ON `ca`.`component_id` = `c`.`id`
+LEFT JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
+LEFT JOIN `attribute` `a` ON `ca`.`attribute_id` = `a`.`id`
+LEFT JOIN `attribute_family` `af` ON `a`.`id` = `af`.`attribute_id` AND `f`.`parent_id` = `af`.`family_id`
+WHERE `af`.`attribute_id` IS NULL OR `af`.`family_id` IS NULL
 SQL);
     }
 
