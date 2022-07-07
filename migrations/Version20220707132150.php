@@ -11,19 +11,26 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220704122123 extends AbstractMigration {
+final class Version20220707132150 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
+
+    /** @var Collection<int, string> */
+    private Collection $phoneQueries;
 
     /** @var Collection<int, string> */
     private Collection $queries;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
         parent::__construct($connection, $logger);
+        $this->phoneQueries = new Collection();
         $this->queries = new Collection();
     }
 
@@ -31,6 +38,16 @@ final class Version20220704122123 extends AbstractMigration {
         $matches = [];
         preg_match('/Version\d+/', __CLASS__, $matches);
         return $matches[0];
+    }
+
+    public function postUp(Schema $schema): void {
+        $this->upPhoneNumbers('out_trainer', 'tel');
+        $this->upPhoneNumbers('society', 'phone');
+
+        $version = self::getVersion();
+        $this->connection->executeQuery("CREATE PROCEDURE postUp$version() BEGIN {$this->getPhoneQueries()}; END");
+        $this->connection->executeQuery("CALL postUp$version");
+        $this->connection->executeQuery("DROP PROCEDURE postUp$version");
     }
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -45,9 +62,9 @@ CREATE FUNCTION UCFIRST (s VARCHAR(255))
 SQL);
         $this->setProcedure();
         $version = self::getVersion();
-        $this->addSql("CREATE PROCEDURE $version() BEGIN {$this->getQueries()}; END");
-        $this->addSql("CALL $version");
-        $this->addSql("DROP PROCEDURE $version");
+        $this->addSql("CREATE PROCEDURE up$version() BEGIN {$this->getQueries()}; END");
+        $this->addSql("CALL up$version");
+        $this->addSql("DROP PROCEDURE up$version");
         $this->addSql('DROP FUNCTION UCFIRST');
     }
 
@@ -59,6 +76,10 @@ SQL);
                 ->replace(' )', ')')
                 ->toString()
         );
+    }
+
+    private function getPhoneQueries(): string {
+        return $this->phoneQueries->join('; ');
     }
 
     private function getQueries(): string {
@@ -136,6 +157,12 @@ SQL);
         $this->upManufacturers();
         $this->upNomenclatures();
         // clean
+        $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `component` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
+        $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
+        $this->addQuery('ALTER TABLE `product` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
         $this->addQuery('DROP TABLE `country`');
         $this->addQuery('DROP TABLE `customcode`');
     }
@@ -268,7 +295,10 @@ CREATE TABLE `component_attribute` (
     `measure_code` VARCHAR(6) DEFAULT NULL,
     `measure_denominator` VARCHAR(6) DEFAULT NULL,
     `measure_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    UNIQUE KEY `UNIQ_248373AAB6E62EFAE2ABAFFF` (`attribute_id`, `component_id`)
+    UNIQUE KEY `UNIQ_248373AAB6E62EFAE2ABAFFF` (`attribute_id`, `component_id`),
+    CONSTRAINT `IDX_248373AAB6E62EFA` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`id`),
+    CONSTRAINT `IDX_248373AA7ADA1FB5` FOREIGN KEY (`color_id`) REFERENCES `color` (`id`),
+    CONSTRAINT `IDX_248373AAE2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
@@ -824,22 +854,41 @@ CREATE TABLE `employee_extformateur` (
 SQL);
         $this->insert('employee_extformateur', ['id', 'address', 'ville', 'code_postal', 'prenom', 'nom', 'id_phone_prefix', 'tel']);
         $this->addQuery(<<<'SQL'
+UPDATE `employee_extformateur`
+INNER JOIN `country` ON `employee_extformateur`.`id_phone_prefix` = `country`.`id`
+SET `employee_extformateur`.`tel` = CONCAT(`country`.`phone_prefix`, `employee_extformateur`.`tel`),
+`employee_extformateur`.`address_country` = UCASE(`country`.`code`),
+`employee_extformateur`.`nom` = UCASE(`employee_extformateur`.`nom`),
+`employee_extformateur`.`prenom` = UCFIRST(`employee_extformateur`.`prenom`)
+SQL);
+        $this->addQuery(<<<'SQL'
 ALTER TABLE `employee_extformateur`
+    DROP `id_phone_prefix`,
     CHANGE `prenom` `name` VARCHAR(30) NOT NULL,
     CHANGE `nom` `surname` VARCHAR(30) NOT NULL,
     CHANGE `address` `address_address` VARCHAR(80) DEFAULT NULL,
     CHANGE `ville` `address_city` VARCHAR(50) DEFAULT NULL,
     CHANGE `code_postal` `address_zip_code` VARCHAR(10) DEFAULT NULL
 SQL);
-        $this->addQuery(<<<'SQL'
-UPDATE `employee_extformateur`
-INNER JOIN `country` ON `employee_extformateur`.`id_phone_prefix` = `country`.`id`
-SET `employee_extformateur`.`tel` = CONCAT(`country`.`phone_prefix`, `employee_extformateur`.`tel`),
-`employee_extformateur`.`address_country` = UCASE(`country`.`code`),
-`employee_extformateur`.`surname` = UCASE(`employee_extformateur`.`surname`),
-`employee_extformateur`.`name` = UCFIRST(`employee_extformateur`.`name`)
-SQL);
         $this->addQuery('RENAME TABLE `employee_extformateur` TO `out_trainer`');
+    }
+
+    private function upPhoneNumbers(string $table, string $phoneProp): void {
+        $items = $this->connection->executeQuery("SELECT `id`, `$phoneProp`, `address_country` FROM `$table` WHERE `$phoneProp` IS NOT NULL");
+        $util = PhoneNumberUtil::getInstance();
+        while ($item = $items->fetchAssociative()) {
+            /** @var string[] $item */
+            $phone = null;
+            try {
+                $phone = $util->parse($item[$phoneProp], $item['address_country']);
+            } catch (NumberParseException) {
+            }
+            $phone = !empty($phone) && $util->isValidNumber($phone)
+                ? $util->format($phone, PhoneNumberFormat::INTERNATIONAL)
+                : null;
+            $this->phoneQueries->push("UPDATE `$table` SET `$phoneProp` = '$phone' WHERE `id` = {$item['id']}");
+        }
+        $this->phoneQueries->push("ALTER TABLE `$table` CHANGE `$phoneProp` `address_phone_number` VARCHAR(18) DEFAULT NULL");
     }
 
     private function upProductFamilies(): void {
@@ -1144,6 +1193,7 @@ FROM `product_old`
 WHERE `statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `product_old`');
+        $this->addQuery('ALTER TABLE `product` DROP `id_product_child`');
     }
 
     private function upQualityTypes(): void {
