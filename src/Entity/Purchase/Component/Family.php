@@ -10,8 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
-use App\Entity\Traits\CodeTrait;
-use App\Filter\OldRelationFilter;
+use App\Filter\RelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['copperable']),
-    ApiFilter(filterClass: OldRelationFilter::class, properties: ['parent']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Famille de composant',
@@ -38,7 +37,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer une famille de composant',
                     'summary' => 'Créer une famille de composant',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ]
         ],
         itemOperations: [
@@ -46,9 +46,25 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une famille de composant',
                     'summary' => 'Supprime une famille de composant',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
+            'patch' => [
+                'denormalization_context' => [
+                    'groups' => ['patch:family'],
+                    'openapi_definition_name' => 'ComponentFamily-patch-write'
+                ],
+                'normalization_context' => [
+                    'groups' => ['patch:family'],
+                    'openapi_definition_name' => 'ComponentFamily-patch-read'
+                ],
+                'openapi_context' => [
+                    'description' => 'Modifie les attributs',
+                    'summary' => 'Modifie les attributs',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+            ],
             'post' => [
                 'controller' => PlaceholderAction::class,
                 'input_formats' => ['multipart'],
@@ -58,20 +74,22 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une famille de composant',
                 ],
                 'path' => '/component-families/{id}',
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')',
                 'status' => 200
             ]
         ],
         shortName: 'ComponentFamily',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:code', 'write:customs-code', 'write:family', 'write:file', 'write:name', 'write:attribute'],
+            'groups' => ['write:family', 'write:file'],
             'openapi_definition_name' => 'ComponentFamily-write'
         ],
         normalizationContext: [
-            'groups' => ['read:code', 'read:customs-code', 'read:family', 'read:file', 'read:id', 'read:name', 'read:attribute'],
-            'openapi_definition_name' => 'ComponentFamily-read'
+            'groups' => ['read:family', 'read:file', 'read:id'],
+            'openapi_definition_name' => 'ComponentFamily-read',
+            'skip_null_values' => false
         ],
         paginationEnabled: false
     ),
@@ -80,31 +98,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['name', 'parent'])
 ]
 class Family extends AbstractFamily {
-    use CodeTrait;
-
-    /** @var Collection<int, self> */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     protected Collection $children;
 
     #[
-        ApiProperty(description: 'Code', example: 'CAB'),
-        Assert\Length(max: 3),
-        ORM\Column(length: 3),
-        Serializer\Groups(['read:code', 'write:code'])
-    ]
-    protected ?string $code = null;
-
-    #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
+        Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        ORM\Column(length: 40),
+        Serializer\Groups(['read:family', 'write:family'])
     ]
-    protected ?string $name;
+    protected ?string $name = null;
 
-    /**
-     * @var null|self
-     */
     #[
         ApiProperty(description: 'Famille parente', readableLink: false, example: '/api/component-families/2'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
@@ -112,15 +117,22 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
-    /**
-     * @var Collection<int, Attribute>
-     */
+    /** @var Collection<int, Attribute> */
     #[
-        ApiProperty(description: 'Attributs', readableLink: false, example: ['/api/attributes/2', '/api/attributes/18']),
-        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Attribute::class, mappedBy: 'families'),
-        Serializer\Groups(['read:attributes', 'write:attributes'])
+        ApiProperty(description: 'Attributs', readableLink: false, required: true, example: ['/api/attributes/1', '/api/attributes/2']),
+        ORM\ManyToMany(targetEntity: Attribute::class, mappedBy: 'families'),
+        Serializer\Groups(['patch:family'])
     ]
     private Collection $attributes;
+
+    #[
+        ApiProperty(description: 'Code ', required: true, example: 'CAB'),
+        Assert\Length(exactly: 3),
+        Assert\NotBlank,
+        ORM\Column(type: 'char', length: 3),
+        Serializer\Groups(['read:family', 'write:family'])
+    ]
+    private ?string $code = null;
 
     #[
         ApiProperty(description: 'Cuivré ', example: true),
@@ -134,20 +146,23 @@ class Family extends AbstractFamily {
         $this->attributes = new ArrayCollection();
     }
 
-    public function addAttribute(Attribute $attribute): self {
+    final public function addAttribute(Attribute $attribute): self {
         if (!$this->attributes->contains($attribute)) {
-            $this->attributes[] = $attribute;
+            $this->attributes->add($attribute);
             $attribute->addFamily($this);
         }
-
         return $this;
     }
 
     /**
      * @return Collection<int, Attribute>
      */
-    public function getAttributes(): Collection {
+    final public function getAttributes(): Collection {
         return $this->attributes;
+    }
+
+    final public function getCode(): ?string {
+        return $this->code;
     }
 
     final public function getCopperable(): ?bool {
@@ -162,11 +177,16 @@ class Family extends AbstractFamily {
         return parent::getFilepath();
     }
 
-    public function removeAttribute(Attribute $attribute): self {
-        if ($this->attributes->removeElement($attribute)) {
+    final public function removeAttribute(Attribute $attribute): self {
+        if ($this->attributes->contains($attribute)) {
+            $this->attributes->removeElement($attribute);
             $attribute->removeFamily($this);
         }
+        return $this;
+    }
 
+    final public function setCode(?string $code): self {
+        $this->code = $code;
         return $this;
     }
 
