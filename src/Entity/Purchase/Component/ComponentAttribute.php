@@ -5,6 +5,7 @@ namespace App\Entity\Purchase\Component;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\Purchase\Component\AttributeType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -60,12 +61,12 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         ApiProperty(description: 'Attribut', readableLink: false, example: '/api/attributes/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
+        Serializer\Groups(['read:component-attribute'])
     ]
     private ?Attribute $attribute = null;
 
     #[
-        ApiProperty(description: 'Couleur'),
+        ApiProperty(description: 'Couleur', readableLink: false, example: '/api/colors/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
     ]
@@ -75,7 +76,7 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
+        Serializer\Groups(['read:component-attribute'])
     ]
     private ?Component $component = null;
 
@@ -91,7 +92,7 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         ORM\Column(nullable: true),
         Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
     ]
-    private ?string $value = null;
+    private bool|int|float|string|null $value = null;
 
     public function __construct() {
         $this->measure = new Measure();
@@ -117,11 +118,15 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         return [$this->measure];
     }
 
+    final public function getType(): string {
+        return $this->attribute?->getType() ?? AttributeType::TYPE_TEXT;
+    }
+
     final public function getUnit(): ?Unit {
         return $this->attribute?->getUnit();
     }
 
-    final public function getValue(): ?string {
+    final public function getValue(): bool|int|float|string|null {
         return $this->value;
     }
 
@@ -145,8 +150,13 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         return $this;
     }
 
-    final public function setValue(?string $value): self {
-        $this->value = $value;
+    final public function setValue(bool|int|float|string|null $value): self {
+        $this->value = match ($this->getType()) {
+            AttributeType::TYPE_BOOL => (bool) $value,
+            AttributeType::TYPE_INT => (int) $value,
+            AttributeType::TYPE_PERCENT => (float) $value,
+            default => $value,
+        };
         return $this;
     }
 }
