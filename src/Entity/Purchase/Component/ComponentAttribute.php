@@ -51,7 +51,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity
+    ORM\Entity,
+    ORM\UniqueConstraint(columns: ['attribute_id', 'component_id'])
 ]
 class ComponentAttribute extends Entity implements MeasuredInterface {
     #[

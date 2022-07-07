@@ -210,7 +210,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         ApiProperty(description: 'Indice', required: true, example: '1'),
         Assert\Length(max: 5, groups: ['Component-admin', 'Component-clone']),
         Assert\NotBlank(groups: ['Component-admin', 'Component-clone']),
-        ORM\Column(name: '`index`', length: 5, nullable: false),
+        ORM\Column(name: '`index`', length: 5, nullable: false, options: ['default' => '0']),
         Serializer\Groups(['read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
     ]
     private string $index = '0';
