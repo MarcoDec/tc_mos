@@ -12,6 +12,7 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Color;
 use App\Entity\Management\Unit;
 use App\Filter\RelationFilter;
+use App\Repository\Purchase\Component\ComponentAttributeRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -51,7 +52,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ComponentAttributeRepository::class),
     ORM\UniqueConstraint(columns: ['attribute_id', 'component_id'])
 ]
 class ComponentAttribute extends Entity implements MeasuredInterface {

@@ -80,6 +80,11 @@ services:
     autoconfigure: false
     tags:
       - event: kernel.view
+        method: onPost
+        name: kernel.event_listener
+        priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::POST_WRITE
+      - event: kernel.view
+        method: onPre
         name: kernel.event_listener
         priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::PRE_WRITE
 

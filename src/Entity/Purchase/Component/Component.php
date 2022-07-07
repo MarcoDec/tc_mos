@@ -18,6 +18,7 @@ use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -154,7 +155,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
 class Component extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
