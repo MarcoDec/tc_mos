@@ -104,7 +104,7 @@
             label: 'Attributs',
             mode: 'tab',
             name: 'attributs'
-        }
+        } 
     ])
     const hasNoAttribute = computed(() => listFields.value.length === 0)
 

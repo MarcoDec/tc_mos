@@ -26,7 +26,7 @@
     const tabs = computed(() => {
         for (const field of props.fields) if (field.mode === 'tab') return true
         return false
-    })
+    }) 
 
     const btn = computed(() => {
         for (const field of props.fields) if (field.btn === true) return true
@@ -41,7 +41,7 @@
     }
 </script>
 
-<template>
+<template> 
     <form :id="id" autocomplete="off" @submit.prevent="emit('submit')">
         <AppTabs v-if="tabs" id="gui-start" class="gui-start-content">
             <AppFormField

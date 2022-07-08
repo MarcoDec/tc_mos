@@ -1,7 +1,7 @@
 import {computed, h, onMounted, onUnmounted, resolveComponent} from 'vue'
 import {tableLoading, useTableMachine} from '../../machine'
 import AppTable from '../../components/table/AppTable'
-import generateItems from '../../stores/table/items'
+import generateItems from '../../stores/tables/items'
 import {generateTableFields} from '../../components/props'
 import {useRoute} from 'vue-router'
 
@@ -9,26 +9,26 @@ export default {
     props: {
         brands: {type: Boolean},
         fields: generateTableFields(),
-        icon: {required: true, type: String},
-        title: {required: true, type: String}
+        icon: {required: false, type: String},
+        machine: {default: null, type: Object},
+        store: {default: null, type: Object},
+        title: {required: false, type: String}
     },
     setup(props, context) {
+        const route = useRoute()
+        const machines = props.machine ?? useTableMachine(route.name)
+        const stores = props.store ?? generateItems(route.name)
+        const variant = computed(() => `text-${stores.length > 0 ? 'dark' : 'white'}`)
+
+        machines.send('submit')
         onMounted(async () => {
-            await store.fetch()
-            machine.send('success')
+            await stores.fetch()
+            machines.send('success')
         })
 
         onUnmounted(() => {
-            store.dispose()
+            stores.dispose()
         })
-
-        const route = useRoute()
-        const machine = useTableMachine(route.name)
-        const store = generateItems(route.name)
-        const variant = computed(() => `text-${store.length > 0 ? 'dark' : 'white'}`)
-
-        machine.send('submit')
-
         return () => {
             const children = {}
             if (typeof context.slots.create === 'function')
@@ -49,15 +49,18 @@ export default {
                 generateSlot(field, 'cell')
                 generateSlot(field, 'search')
             }
+            const head = [h('h1', {class: 'col'}, [
+                h(resolveComponent('Fa'), {brands: props.brands, icon: props.icon}),
+                h('span', {class: 'ms-2'}, props.title)
+            ])]
+            if (typeof context.slots.btn === 'function')
+                head.push(h('div', {class: 'col-1 justify-content-end'}, context.slots.btn()))
             return h(
                 resolveComponent('AppOverlay'),
-                {class: variant.value, id: route.name, spinner: tableLoading.some(machine.state.value.matches)},
+                {class: variant.value, id: route.name, spinner: tableLoading.some(machines.state.value.matches)},
                 () => [
-                    h('div', {class: 'row'}, h('h1', {class: 'col'}, [
-                        h(resolveComponent('Fa'), {brands: props.brands, icon: props.icon}),
-                        h('span', {class: 'ms-2'}, props.title)
-                    ])),
-                    h(AppTable, {fields: props.fields, id: `${route.name}-table`, machine, store}, children)
+                    h('div', {class: 'row'}, head),
+                    h(AppTable, {fields: props.fields, id: `${route.name}-table`, machine: machines, store: stores}, children)
                 ]
             )
         }

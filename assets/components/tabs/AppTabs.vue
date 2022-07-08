@@ -6,7 +6,7 @@
     const props = defineProps({
         icon: {type: Boolean},
         iconSwitch: {type: Boolean},
-        id: {required: true, type: String},
+        id: {required: false, type: String},
         vertical: {type: Boolean}
     })
     const bTab = ref(null)

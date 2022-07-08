@@ -10,6 +10,7 @@
     "js-cookie": "^3.0.1",
     "pinia": "^2.0.14",
     "vue": "^3.2.37",
+    "vue-country-flag-next": "^2.3.2",
     "vue-router": "^4.0.16",
     "xstate": "^4.32.1"
   },

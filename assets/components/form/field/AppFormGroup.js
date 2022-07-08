@@ -9,8 +9,8 @@ function AppFormGroup(props, context) {
         field: props.field,
         form: props.form,
         id,
-        modelValue: props.modelValue,
-        'onUpdate:modelValue': value => context.emit('update:modelValue', value)
+        modelValue: props.modelValue[props.field.name],
+        'onUpdate:modelValue': value => context.emit('update:modelValue', {...props.modelValue, [props.field.name]: value})
     }
     const children = []
     if (props.violation) {
@@ -24,7 +24,6 @@ function AppFormGroup(props, context) {
         h('div', {class: 'col'}, children)
     ])
 }
-
 AppFormGroup.emits = ['update:modelValue']
 AppFormGroup.props = {
     disabled: {type: Boolean},

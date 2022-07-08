@@ -30,6 +30,24 @@
                             <AppNavbarLink icon="user-tag" to="supplier-show" variant="success">
                                 Fournisseur
                             </AppNavbarLink>
+                            <AppNavbarLink icon="user-tag" to="supplier-list" variant="warning">
+                                Fournisseur List
+                            </AppNavbarLink>
+                            <AppNavbarLink icon="user-tag" to="component-list" variant="warning">
+                                Composant List
+                            </AppNavbarLink>
+                            <AppNavbarLink icon="user-tag" to="employee-list" variant="warning">
+                                Employee List
+                            </AppNavbarLink>
+                            <AppNavbarLink icon="user-tag" to="customer-list" variant="warning">
+                                Client List
+                            </AppNavbarLink>
+                            <AppNavbarLink icon="user-tag" to="product-list" variant="warning">
+                                Product List
+                            </AppNavbarLink>
+                            <AppNavbarLink icon="user-tag" to="manufacturingOrder-list" variant="warning">
+                                manufacturingOrder List
+                            </AppNavbarLink>
                             <template v-if="user.isPurchaseAdmin">
                                 <AppDropdownItem disabled variant="warning">
                                     Administrateur
