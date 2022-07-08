@@ -171,7 +171,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `attribut` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `description` VARCHAR(255) DEFAULT NULL,
     `libelle` VARCHAR(100) NOT NULL,
     `attribut_id_family` VARCHAR(255) DEFAULT NULL,
@@ -184,7 +184,7 @@ SQL);
 CREATE TABLE `attribute` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `description` VARCHAR(255) DEFAULT NULL,
     `name` VARCHAR(255) NOT NULL,
     `unit_id` INT UNSIGNED DEFAULT NULL,
@@ -241,7 +241,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `carrier` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) NOT NULL,
+    `statut` BOOLEAN NOT NULL,
     `address_address` VARCHAR(80) DEFAULT NULL,
     `address_address2` VARCHAR(60) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
@@ -256,7 +256,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 ALTER TABLE `carrier`
     CHANGE `nom` `name` VARCHAR(50) NOT NULL,
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
     }
 
@@ -264,7 +264,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `couleur` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(20) NOT NULL,
     `rgb` CHAR(7) NOT NULL COMMENT '(DC2Type:char)'
 )
@@ -287,14 +287,14 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component_attribute` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `component_id` INT UNSIGNED NOT NULL,
     `attribute_id` INT UNSIGNED NOT NULL,
     `value` VARCHAR(255) DEFAULT NULL,
     `color_id` INT UNSIGNED DEFAULT NULL,
     `measure_code` VARCHAR(6) DEFAULT NULL,
     `measure_denominator` VARCHAR(6) DEFAULT NULL,
-    `measure_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `measure_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     UNIQUE KEY `UNIQ_248373AAB6E62EFAE2ABAFFF` (`attribute_id`, `component_id`),
     CONSTRAINT `IDX_248373AAB6E62EFA` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`id`),
     CONSTRAINT `IDX_248373AA7ADA1FB5` FOREIGN KEY (`color_id`) REFERENCES `color` (`id`),
@@ -338,9 +338,9 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component_family` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) NOT NULL DEFAULT '0',
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `prefix` VARCHAR(3) DEFAULT NULL,
-    `copperable` TINYINT(1) NOT NULL DEFAULT '0',
+    `copperable` BOOLEAN DEFAULT FALSE NOT NULL,
     `customsCode` VARCHAR(255) DEFAULT NULL,
     `family_name` VARCHAR(25) NOT NULL,
     `old_subfamily_id` INT UNSIGNED DEFAULT NULL,
@@ -352,7 +352,7 @@ SQL);
 CREATE TABLE `component_subfamily` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `subfamily_name` VARCHAR(50) NOT NULL,
-    `id_family` TINYINT(3) UNSIGNED NOT NULL
+    `id_family` TINYINT UNSIGNED NOT NULL
 )
 SQL);
         $this->insert('component_subfamily', ['id', 'subfamily_name', 'id_family']);
@@ -377,7 +377,7 @@ ALTER TABLE `component_family`
     CHANGE `customsCode` `customs_code` VARCHAR(10) DEFAULT NULL,
     CHANGE `family_name` `name` VARCHAR(40) NOT NULL,
     CHANGE `prefix` `code` CHAR(3) NOT NULL COMMENT '(DC2Type:char)',
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     ADD CONSTRAINT `IDX_79FF2A21727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `component_family` (`id`)
 SQL);
     }
@@ -386,25 +386,25 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
-    `poid_cu` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `id_componentstatus` INT NOT NULL DEFAULT '1',
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `poid_cu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `id_componentstatus` INT NOT NULL DEFAULT 1,
     `customcode` VARCHAR(16) DEFAULT NULL,
     `endOfLife` DATE DEFAULT NULL,
     `id_component_subfamily` INT UNSIGNED NOT NULL,
-    `volume_previsionnel` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `volume_previsionnel` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `indice` VARCHAR(5) NOT NULL DEFAULT '0',
-    `gestion_stock` TINYINT(1) DEFAULT 0 NOT NULL,
+    `gestion_stock` BOOLEAN DEFAULT FALSE NOT NULL,
     `fabricant` VARCHAR(255) DEFAULT NULL,
     `fabricant_reference` VARCHAR(255) DEFAULT NULL,
-    `stock_minimum` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `stock_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `designation` VARCHAR(255) NOT NULL,
-    `need_joint` TINYINT(1) DEFAULT 0 NOT NULL,
+    `need_joint` BOOLEAN DEFAULT 0 NOT NULL,
     `info_public` TEXT DEFAULT NULL,
     `info_commande` TEXT DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     `id_unit` INT UNSIGNED NOT NULL,
-    `weight` DOUBLE PRECISION DEFAULT '0' NOT NULL
+    `weight` DOUBLE PRECISION DEFAULT 0 NOT NULL
 )
 SQL);
         $this->insert('component', [
@@ -433,10 +433,10 @@ SQL);
 CREATE TABLE `component` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `copper_weight_code` VARCHAR(6) DEFAULT NULL,
     `copper_weight_denominator` VARCHAR(6) DEFAULT NULL,
-    `copper_weight_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `copper_weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
     `current_place_name` ENUM('agreed', 'blocked', 'disabled', 'draft', 'under_exemption') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_current_place)',
     `customs_code` VARCHAR(16) DEFAULT NULL,
@@ -444,24 +444,24 @@ CREATE TABLE `component` (
     `family_id` INT UNSIGNED NOT NULL,
     `forecast_volume_code` VARCHAR(6) DEFAULT NULL,
     `forecast_volume_denominator` VARCHAR(6) DEFAULT NULL,
-    `forecast_volume_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `index` VARCHAR(5) NOT NULL DEFAULT '0',
+    `forecast_volume_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `index` VARCHAR(5) DEFAULT '0' NOT NULL,
     `manufacturer` VARCHAR(255) DEFAULT NULL,
     `manufacturer_code` VARCHAR(255) DEFAULT NULL,
-    `managed_stock` TINYINT(1) DEFAULT 0 NOT NULL,
+    `managed_stock` BOOLEAN DEFAULT FALSE NOT NULL,
     `min_stock_code` VARCHAR(6) DEFAULT NULL,
     `min_stock_denominator` VARCHAR(6) DEFAULT NULL,
-    `min_stock_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `min_stock_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `name` VARCHAR(255) NOT NULL,
-    `need_gasket` TINYINT(1) DEFAULT 0 NOT NULL,
+    `need_gasket` BOOLEAN DEFAULT 0 NOT NULL,
     `notes` TEXT,
     `order_info` TEXT,
     `parent_id` INT UNSIGNED DEFAULT NULL,
-    `ppm_rate` SMALLINT UNSIGNED NOT NULL DEFAULT '10',
+    `ppm_rate` SMALLINT UNSIGNED DEFAULT 10 NOT NULL,
     `unit_id` INT UNSIGNED NOT NULL,
     `weight_code` VARCHAR(6) DEFAULT NULL,
     `weight_denominator` VARCHAR(6) DEFAULT NULL,
-    `weight_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_49FEA157C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`),
     CONSTRAINT `IDX_49FEA157727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `component` (`id`),
     CONSTRAINT `IDX_49FEA157F8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
@@ -526,7 +526,7 @@ INSERT INTO `component` (
 FROM `component_old`
 INNER JOIN `component_family` ON `component_old`.`id_component_subfamily` = `component_family`.`old_subfamily_id`
 INNER JOIN `unit` ON `component_old`.`id_unit` = `unit`.`id`
-WHERE `component_old`.`statut` = 1
+WHERE `component_old`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `component_old`');
     }
@@ -535,7 +535,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `country` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) NOT NULL,
+    `statut` BOOLEAN NOT NULL,
     `code` VARCHAR(2) NOT NULL,
     `phone_prefix` VARCHAR(255) DEFAULT NULL
 )
@@ -547,12 +547,12 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `cron_job` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `command` CHAR(20) NOT NULL COMMENT '(DC2Type:char)',
     `last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `next` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
     `period` CHAR(6) NOT NULL COMMENT '(DC2Type:char)'
-) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+)
 SQL);
     }
 
@@ -560,13 +560,13 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `currency` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `active` TINYINT(1) DEFAULT 0 NOT NULL,
-    `base` DOUBLE PRECISION DEFAULT '1' NOT NULL,
-    `code` CHAR(3) NOT NULL COMMENT '(DC2Type:char)',
     `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `active` BOOLEAN DEFAULT FALSE NOT NULL,
+    `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
+    `code` CHAR(3) NOT NULL COMMENT '(DC2Type:char)',
     `parent_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_6956883F727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `currency` (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+)
 SQL);
         $currencies = collect(Currencies::getCurrencyCodes())
             ->map(fn (string $code): string => sprintf(
@@ -590,7 +590,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `customcode` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) NOT NULL,
+    `statut` BOOLEAN NOT NULL,
     `code` VARCHAR(255) NOT NULL
 )
 SQL);
@@ -601,25 +601,21 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine_group` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `code` VARCHAR(3) NOT NULL,
     `libelle` VARCHAR(35) NOT NULL,
     `id_family_group` INT NOT NULL,
-    `organe_securite` TINYINT(1) NOT NULL DEFAULT '0',
+    `organe_securite` BOOLEAN DEFAULT FALSE NOT NULL,
     `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine_type)'
 )
 SQL);
         $this->insert('engine_group', ['id', 'code', 'libelle', 'id_family_group', 'organe_securite']);
-        $this->addQuery(<<<'SQL'
-UPDATE `engine_group` SET
-    `libelle` = UCFIRST(`libelle`),
-    `type` = IF(`id_family_group` = 1, 'workstation', 'tool')
-SQL);
+        $this->addQuery('UPDATE `engine_group` SET `libelle` = UCFIRST(`libelle`), `type` = IF(`id_family_group` = 1, \'workstation\', \'tool\')');
         $this->addQuery(<<<'SQL'
 ALTER TABLE `engine_group`
     DROP `id_family_group`,
     CHANGE `libelle` `name` VARCHAR(35) NOT NULL,
-    CHANGE `organe_securite` `safety_device` TINYINT(1) DEFAULT 0 NOT NULL
+    CHANGE `organe_securite` `safety_device` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
     }
 
@@ -627,7 +623,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `employee_eventlist` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `motif` VARCHAR(30) NOT NULL,
     `to_status` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_current_place)'
 )
@@ -642,16 +638,16 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `incoterms` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
-    `code` varchar(11) NOT NULL,
-    `label` varchar(50) DEFAULT NULL
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(11) NOT NULL,
+    `label` VARCHAR(50) DEFAULT NULL
 )
 SQL);
         $this->insert('incoterms', ['id', 'statut', 'code', 'label']);
         $this->addQuery(<<<'SQL'
 ALTER TABLE `incoterms`
     CHANGE `label` `name` VARCHAR(50) NOT NULL,
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
         $this->addQuery('UPDATE `incoterms` SET `name` = UCFIRST(`name`)');
     }
@@ -662,9 +658,9 @@ CREATE TABLE `invoicetimedue` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `id_old_invoicetimedue` INT UNSIGNED DEFAULT NULL,
     `id_old_invoicetimeduesupplier` INT UNSIGNED DEFAULT NULL,
-    `statut` TINYINT(1) NOT NULL,
-    `days` TINYINT UNSIGNED DEFAULT '0' NOT NULL COMMENT '(DC2Type:tinyint)',
-    `endofmonth` TINYINT UNSIGNED DEFAULT '0' NOT NULL COMMENT '(DC2Type:tinyint)',
+    `statut` BOOLEAN NOT NULL,
+    `days` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `endofmonth` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
     `libelle` VARCHAR(255) NOT NULL
 )
 SQL);
@@ -673,9 +669,9 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `invoicetimeduesupplier` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) NOT NULL,
-    `days` TINYINT UNSIGNED DEFAULT '0' NOT NULL COMMENT '(DC2Type:tinyint)',
-    `endofmonth` TINYINT UNSIGNED DEFAULT '0' NOT NULL COMMENT '(DC2Type:tinyint)',
+    `statut` BOOLEAN NOT NULL,
+    `days` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `endofmonth` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
     `libelle` VARCHAR(255) NOT NULL
 )
 SQL);
@@ -696,10 +692,10 @@ CREATE TABLE `invoice_time_due` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `id_old_invoicetimedue` INT UNSIGNED DEFAULT NULL,
     `id_old_invoicetimeduesupplier` INT UNSIGNED DEFAULT NULL,
-    `deleted` TINYINT(1) NOT NULL DEFAULT '0',
-    `days` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '(DC2Type:tinyint)',
-    `days_after_end_of_month` TINYINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '(DC2Type:tinyint)',
-    `end_of_month` TINYINT UNSIGNED NOT NULL DEFAULT '0',
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `days` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `days_after_end_of_month` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `end_of_month` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(40) NOT NULL
 )
 SQL);
@@ -716,7 +712,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine_fabricant_ou_contact` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `nom` VARCHAR(255) DEFAULT NULL,
     `prenom` VARCHAR(255) DEFAULT NULL,
     `address` VARCHAR(255) DEFAULT NULL,
@@ -781,22 +777,22 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `productcontent` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_product` INT UNSIGNED DEFAULT NULL,
     `id_component` INT UNSIGNED DEFAULT NULL,
-    `quantity` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `mandat` TINYINT(1) DEFAULT 0 NOT NULL
+    `quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `mandat` BOOLEAN DEFAULT FALSE NOT NULL
 )
 SQL);
         $this->insert('productcontent', ['id', 'statut', 'id_product', 'id_component', 'quantity', 'mandat']);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `nomenclature` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `product_id` INT UNSIGNED NOT NULL,
     `component_id` INT UNSIGNED NOT NULL,
-    `quantity_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `mandated` TINYINT(1) DEFAULT 1 NOT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `mandated` BOOLEAN DEFAULT FALSE NOT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
     CONSTRAINT `IDX_799A3652E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
@@ -824,10 +820,10 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `notification` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `category` ENUM('default') DEFAULT 'default' NOT NULL COMMENT '(DC2Type:notification_category)',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `read` TINYINT(1) DEFAULT 0 NOT NULL,
+    `read` BOOLEAN DEFAULT FALSE NOT NULL,
     `subject` VARCHAR(50) DEFAULT NULL,
     `user_id` INT UNSIGNED NOT NULL,
     CONSTRAINT `IDX_BF5476CAA76ED395` FOREIGN KEY (`user_id`) REFERENCES `employee` (`id`)
@@ -839,7 +835,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `employee_extformateur` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `address` VARCHAR(80) NOT NULL,
     `address_address2` VARCHAR(60) DEFAULT NULL,
     `ville` VARCHAR(50) NOT NULL,
@@ -895,7 +891,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `product_family` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `customsCode` VARCHAR(10) DEFAULT NULL,
     `family_name` VARCHAR(30) NOT NULL,
     `old_subfamily_id` INT UNSIGNED DEFAULT NULL,
@@ -931,37 +927,37 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `product` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
-    `temps_auto` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `temps_auto` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `ref` VARCHAR(255) NOT NULL,
     `tps_chiff_auto` DOUBLE PRECISION DEFAULT NULL,
     `tps_chiff_manu` DOUBLE PRECISION DEFAULT NULL,
-    `id_productstatus` INT NOT NULL DEFAULT '1',
+    `id_productstatus` INT NOT NULL DEFAULT 1,
     `date_expiration` DATE DEFAULT NULL,
     `id_product_subfamily` INT UNSIGNED NOT NULL,
-    `volume_previsionnel` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `volume_previsionnel` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `id_customcode` INT UNSIGNED NOT NULL,
     `id_product_child` INT UNSIGNED NOT NULL,
     `id_incoterms` INT UNSIGNED NOT NULL,
     `indice` VARCHAR(3) NOT NULL,
-    `indice_interne` TINYINT UNSIGNED DEFAULT '1' NOT NULL,
-    `is_prototype` TINYINT UNSIGNED DEFAULT NULL,
-    `gestion_cu` TINYINT(1) DEFAULT 0 NOT NULL,
-    `temps_manu` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `indice_interne` TINYINT UNSIGNED DEFAULT 1 NOT NULL,
+    `is_prototype` BOOLEAN DEFAULT FALSE NOT NULL,
+    `gestion_cu` BOOLEAN DEFAULT FALSE NOT NULL,
+    `temps_manu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `max_proto_quantity` DOUBLE PRECISION DEFAULT NULL,
-    `livraison_minimum` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `min_prod_quantity` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `stock_minimum` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `livraison_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `min_prod_quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `stock_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `designation` VARCHAR(80) NOT NULL,
     `info_public` TEXT DEFAULT NULL,
     `typeconditionnement` VARCHAR(30) NOT NULL,
     `conditionnement` DOUBLE PRECISION DEFAULT NULL,
-    `price` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `price_without_cu` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `production_delay` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `transfert_price_supplies` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `transfert_price_work` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `weight` DOUBLE PRECISION DEFAULT '0' NOT NULL
+    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `price_without_cu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `production_delay` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `transfert_price_supplies` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `transfert_price_work` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `weight` DOUBLE PRECISION DEFAULT 0 NOT NULL
 )
 SQL);
         $this->insert('product', [
@@ -1003,72 +999,72 @@ SQL);
 CREATE TABLE `product` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `auto_duration_code` VARCHAR(6) DEFAULT NULL,
     `auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
-    `auto_duration_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `auto_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `code` VARCHAR(30) NOT NULL,
     `costing_auto_duration_code` VARCHAR(6) DEFAULT NULL,
     `costing_auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
-    `costing_auto_duration_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `costing_auto_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `costing_manual_duration_code` VARCHAR(6) DEFAULT NULL,
     `costing_manual_duration_denominator` VARCHAR(6) DEFAULT NULL,
-    `costing_manual_duration_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `costing_manual_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `current_place_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` enum('agreed','blocked','disabled','draft','to_validate','under_exemption') NOT NULL DEFAULT 'draft' COMMENT '(DC2Type:product_current_place)',
+    `current_place_name` ENUM('agreed','blocked','disabled','draft','to_validate','under_exemption') NOT NULL DEFAULT 'draft' COMMENT '(DC2Type:product_current_place)',
     `customs_code` VARCHAR(10) DEFAULT NULL,
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
     `forecast_volume_code` VARCHAR(6) DEFAULT NULL,
     `forecast_volume_denominator` VARCHAR(6) DEFAULT NULL,
-    `forecast_volume_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `forecast_volume_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `id_product_child` INT UNSIGNED NOT NULL,
     `incoterms_id` INT UNSIGNED DEFAULT NULL,
     `index` VARCHAR(3) NOT NULL,
-    `internal_index` TINYINT UNSIGNED NOT NULL DEFAULT '1' COMMENT '(DC2Type:tinyint)',
+    `internal_index` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
     `kind` enum('EI','Prototype','Série','Pièce de rechange') NOT NULL DEFAULT 'Prototype' COMMENT '(DC2Type:product_kind)',
     `managed_copper` TINYINT(1) DEFAULT 0 NOT NULL,
     `manual_duration_code` VARCHAR(6) DEFAULT NULL,
     `manual_duration_denominator` VARCHAR(6) DEFAULT NULL,
-    `manual_duration_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `manual_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `max_proto_code` VARCHAR(6) DEFAULT NULL,
     `max_proto_denominator` VARCHAR(6) DEFAULT NULL,
-    `max_proto_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `max_proto_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `min_delivery_code` VARCHAR(6) DEFAULT NULL,
     `min_delivery_denominator` VARCHAR(6) DEFAULT NULL,
-    `min_delivery_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `min_delivery_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `min_prod_code` VARCHAR(6) DEFAULT NULL,
     `min_prod_denominator` VARCHAR(6) DEFAULT NULL,
-    `min_prod_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `min_prod_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `min_stock_code` VARCHAR(6) DEFAULT NULL,
     `min_stock_denominator` VARCHAR(6) DEFAULT NULL,
-    `min_stock_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `min_stock_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `name` VARCHAR(80) NOT NULL,
     `notes` text DEFAULT NULL,
     `packaging_code` VARCHAR(6) DEFAULT NULL,
     `packaging_denominator` VARCHAR(6) DEFAULT NULL,
     `packaging_kind` VARCHAR(30) NOT NULL,
-    `packaging_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `packaging_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL,
     `price_code` VARCHAR(6) DEFAULT NULL,
     `price_denominator` VARCHAR(6) DEFAULT NULL,
-    `price_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `price_without_copper_code` VARCHAR(6) DEFAULT NULL,
     `price_without_copper_denominator` VARCHAR(6) DEFAULT NULL,
-    `price_without_copper_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `price_without_copper_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `production_delay_code` VARCHAR(6) DEFAULT NULL,
     `production_delay_denominator` VARCHAR(6) DEFAULT NULL,
-    `production_delay_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `production_delay_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `transfert_price_supplies_code` VARCHAR(6) DEFAULT NULL,
     `transfert_price_supplies_denominator` VARCHAR(6) DEFAULT NULL,
-    `transfert_price_supplies_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `transfert_price_supplies_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `transfert_price_work_code` VARCHAR(6) DEFAULT NULL,
     `transfert_price_work_denominator` VARCHAR(6) DEFAULT NULL,
-    `transfert_price_work_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `transfert_price_work_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `unit_id` INT UNSIGNED NOT NULL,
     `weight_code` VARCHAR(6) DEFAULT NULL,
     `weight_denominator` VARCHAR(6) DEFAULT NULL,
-    `weight_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_D34A04ADC35E566A` FOREIGN KEY (`family_id`) REFERENCES `product_family` (`id`),
     CONSTRAINT `IDX_D34A04AD43D02C80` FOREIGN KEY (`incoterms_id`) REFERENCES `incoterms` (`id`),
     CONSTRAINT `IDX_D34A04AD727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `product` (`id`),
@@ -1200,8 +1196,8 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `qualitycontrol` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
-    `qualitycontrol` varchar(40) NOT NULL
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `qualitycontrol` VARCHAR(40) NOT NULL
 )
 SQL);
         $this->insert('qualitycontrol', ['id', 'statut', 'qualitycontrol']);
@@ -1218,7 +1214,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `production_rejectlist` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `libelle` VARCHAR(255) DEFAULT NULL
 )
 SQL);
@@ -1227,8 +1223,8 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `reject_type` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
-    `name` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` varchar(40) NOT NULL
 )
 SQL);
         $this->addQuery('INSERT INTO `reject_type` (`name`) SELECT UCFIRST(`libelle`) FROM `production_rejectlist`');
@@ -1239,7 +1235,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `skill_type` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(50) NOT NULL
 )
 SQL);
@@ -1249,7 +1245,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `society` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` TINYINT(1) DEFAULT 0 NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `nom` VARCHAR(255) NOT NULL,
     `phone` VARCHAR(255) DEFAULT NULL,
     `address1` VARCHAR(80) DEFAULT NULL,
@@ -1260,7 +1256,7 @@ CREATE TABLE `society` (
     `id_invoicetimedue` INT UNSIGNED DEFAULT NULL,
     `id_invoicetimeduesupplier` INT UNSIGNED DEFAULT NULL,
     `invoice_minimum` DOUBLE PRECISION DEFAULT NULL,
-    `order_minimum` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `order_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `web` VARCHAR(255) DEFAULT NULL,
     `email` VARCHAR(60) DEFAULT NULL,
     `formejuridique` VARCHAR(50) DEFAULT NULL,
@@ -1269,9 +1265,9 @@ CREATE TABLE `society` (
     `compte_compta` VARCHAR(50) DEFAULT NULL,
     `info_public` TEXT DEFAULT NULL,
     `info_private` TEXT DEFAULT NULL,
-    `ar_enabled` TINYINT(1) DEFAULT 0 NOT NULL,
-    `ar_customer_enabled` TINYINT(1) DEFAULT 0 NOT NULL,
-    `indice_cu_enabled` TINYINT(1) DEFAULT 0 NOT NULL,
+    `ar_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
+    `ar_customer_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
+    `indice_cu_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
     `indice_cu` DOUBLE PRECISION DEFAULT NULL,
     `indice_cu_date` DATETIME DEFAULT NULL,
     `indice_cu_date_fin` DATETIME DEFAULT NULL,
@@ -1316,7 +1312,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `society` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `accounting_account` VARCHAR(50) DEFAULT NULL,
     `address_address` VARCHAR(80) DEFAULT NULL,
     `address_address2` VARCHAR(60) DEFAULT NULL,
@@ -1329,7 +1325,7 @@ CREATE TABLE `society` (
     `bank_details` VARCHAR(255) DEFAULT NULL,
     `copper_index_code` VARCHAR(6) DEFAULT NULL,
     `copper_index_denominator` VARCHAR(6) DEFAULT NULL,
-    `copper_index_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `copper_index_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `copper_managed` TINYINT(1) DEFAULT 0 NOT NULL,
     `copper_next` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
@@ -1338,15 +1334,15 @@ CREATE TABLE `society` (
     `incoterms_id` INT UNSIGNED DEFAULT NULL,
     `invoice_min_code` VARCHAR(6) DEFAULT NULL,
     `invoice_min_denominator` VARCHAR(6) DEFAULT NULL,
-    `invoice_min_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `invoice_min_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `invoice_time_due_id` INT UNSIGNED DEFAULT NULL,
     `legal_form` VARCHAR(50) DEFAULT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
     `notes` TEXT DEFAULT NULL,
     `order_min_code` VARCHAR(6) DEFAULT NULL,
     `order_min_denominator` VARCHAR(6) DEFAULT NULL,
-    `order_min_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `ppm_rate` SMALLINT UNSIGNED NOT NULL DEFAULT '10',
+    `order_min_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `ppm_rate` SMALLINT UNSIGNED NOT NULL DEFAULT 10,
     `siren` VARCHAR(50) DEFAULT NULL,
     `vat` VARCHAR(255) DEFAULT NULL,
     `vat_message_id` INT UNSIGNED DEFAULT NULL,
@@ -1432,13 +1428,13 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `time_slot` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `end` TIME NOT NULL COMMENT '(DC2Type:time_immutable)',
     `end_break` TIME DEFAULT NULL COMMENT '(DC2Type:time_immutable)',
     `name` VARCHAR(10) NOT NULL,
     `start` TIME NOT NULL COMMENT '(DC2Type:time_immutable)',
     `start_break` TIME DEFAULT NULL COMMENT '(DC2Type:time_immutable)'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE `utf8mb4_unicode_ci` COMMENT='Plages horaires'
+)
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `time_slot` (`end`, `end_break`, `name`, `start`, `start_break`) VALUES
@@ -1453,10 +1449,10 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `unit` (
   `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `statut` TINYINT(1) DEFAULT 0 NOT NULL,
-  `base` DOUBLE PRECISION DEFAULT '1' NOT NULL,
+  `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+  `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
   `unit_short_lbl` VARCHAR(6) NOT NULL,
-  `unit_complete_lbl` varchar(50) NOT NULL,
+  `unit_complete_lbl` VARCHAR(50) NOT NULL,
   `parent` INT UNSIGNED DEFAULT NULL
 )
 SQL);
@@ -1464,7 +1460,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 ALTER TABLE `unit`
     CHANGE `parent` `parent_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     CHANGE `unit_complete_lbl` `name` VARCHAR(50) NOT NULL,
     CHANGE `unit_short_lbl` `code` VARCHAR(6) NOT NULL COLLATE `utf8_bin`,
     ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`)
@@ -1490,7 +1486,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
     `name` VARCHAR(30) NOT NULL,
     `password` CHAR(60) NOT NULL  COMMENT '(DC2Type:char)',
@@ -1519,7 +1515,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `messagetva` (
   `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `statut` TINYINT(1) DEFAULT 0 NOT NULL,
+  `statut` BOOLEAN DEFAULT FALSE NOT NULL,
   `message` TEXT NOT NULL
 )
 SQL);
@@ -1527,7 +1523,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 ALTER TABLE `messagetva`
     CHANGE `message` `name` VARCHAR(120) NOT NULL,
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
         $this->addQuery('RENAME TABLE `messagetva` TO `vat_message`');
     }
