@@ -18,7 +18,7 @@ class ComponentReferenceField {
     private bool $required = true;
 
     #[
-        ApiProperty(description: 'Tolérance', example: 0),
+        ApiProperty(description: 'Tolérance'),
         ORM\Embedded,
         Assert\PositiveOrZero,
         Serializer\Groups(['read:component-reference-field', 'write:component-reference-field'])
@@ -26,7 +26,7 @@ class ComponentReferenceField {
     private Measure $tolerance;
 
     #[
-        ApiProperty(description: 'Valeur', example: 0),
+        ApiProperty(description: 'Valeur'),
         ORM\Embedded,
         Assert\PositiveOrZero,
         Serializer\Groups(['read:component-reference-field', 'write:component-reference-field'])

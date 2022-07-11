@@ -38,12 +38,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère la valeur de référence du composant',
-                    'summary' => 'Récupère la valeur de référence du composant',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie la valeur de référence du composant',
@@ -56,12 +51,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:component', 'write:component-reference-value', 'write:component-reference-field'],
+            'groups' => ['write:component-reference-field', 'write:component-reference-value'],
             'openapi_definition_name' => 'ComponentReferenceValue-write'
         ],
         normalizationContext: [
-            'groups' => ['read:component', 'read:component-reference-value', 'read:component-reference-field'],
-            'openapi_definition_name' => 'ComponentReferenceValue-read'
+            'groups' => ['read:component-reference-field', 'read:component-reference-value'],
+            'openapi_definition_name' => 'ComponentReferenceValue-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
@@ -70,7 +66,7 @@ class ComponentReferenceValue extends Entity {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/2'),
         ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
-        Serializer\Groups(['read:component', 'write:component'])
+        Serializer\Groups(['read:component-reference-value', 'write:component-reference-value'])
     ]
     private Component $component;
 
