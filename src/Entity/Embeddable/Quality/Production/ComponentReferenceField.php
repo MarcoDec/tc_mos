@@ -3,6 +3,7 @@
 namespace App\Entity\Embeddable\Quality\Production;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Entity\Embeddable\Measure;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,42 +11,49 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Embeddable]
 class ComponentReferenceField {
     #[
-        ApiProperty(description: 'Requis', example: false),
-        ORM\Column(options: ['default' => false], type: 'boolean'),
+        ApiProperty(description: 'Requis', example: true),
+        ORM\Column(options: ['default' => true]),
         Serializer\Groups(['read:component-reference-field', 'write:component-reference-field'])
     ]
-    private bool $required = false;
+    private bool $required = true;
 
     #[
         ApiProperty(description: 'Tolérance', example: 0),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ORM\Embedded,
         Assert\PositiveOrZero,
         Serializer\Groups(['read:component-reference-field', 'write:component-reference-field'])
     ]
-    private float $tolerance = 0;
+    private Measure $tolerance;
 
     #[
         ApiProperty(description: 'Valeur', example: 0),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ORM\Embedded,
         Assert\PositiveOrZero,
         Serializer\Groups(['read:component-reference-field', 'write:component-reference-field'])
     ]
-    private float $value = 0;
+    private Measure $value;
 
-    final public function getMax(): float {
-        return $this->value + $this->tolerance;
+    public function __construct() {
+        $this->tolerance = new Measure();
+        $this->value = new Measure();
     }
 
-    final public function getMin(): float {
-        $min = $this->value - $this->tolerance;
-        return $min >= 0 ? $min : 0;
+    final public function getMax(): Measure {
+        return $this->value->add($this->tolerance);
     }
 
-    final public function getTolerance(): float {
+    final public function getMin(): Measure {
+        $min = $this->value->substract($this->tolerance);
+        return $min->getValue() >= 0
+            ? $min
+            : (new Measure())->setCode($this->value->getCode())->setUnit($this->value->getUnit())->setValue(0);
+    }
+
+    final public function getTolerance(): Measure {
         return $this->tolerance;
     }
 
-    final public function getValue(): float {
+    final public function getValue(): Measure {
         return $this->value;
     }
 
@@ -53,8 +61,11 @@ class ComponentReferenceField {
         return $this->required;
     }
 
+    /**
+     * TODO use Measure.
+     */
     final public function isValid(float $value): bool {
-        return !$this->required || $this->getMin() <= $value && $this->getMax() >= $value;
+        return !$this->required || $this->getMin()->getValue() <= $value && $this->getMax()->getValue() >= $value;
     }
 
     final public function setRequired(bool $required): self {
@@ -62,12 +73,12 @@ class ComponentReferenceField {
         return $this;
     }
 
-    final public function setTolerance(float $tolerance): self {
+    final public function setTolerance(Measure $tolerance): self {
         $this->tolerance = $tolerance;
         return $this;
     }
 
-    final public function setValue(float $value): self {
+    final public function setValue(Measure $value): self {
         $this->value = $value;
         return $this;
     }

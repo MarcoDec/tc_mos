@@ -69,7 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ComponentReferenceValue extends Entity {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Component::class),
+        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
         Serializer\Groups(['read:component', 'write:component'])
     ]
     private Component $component;
@@ -83,7 +83,7 @@ class ComponentReferenceValue extends Entity {
 
     #[
         ApiProperty(description: 'Valeur', example: 0),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
         Serializer\Groups(['read:component-reference-value', 'write:component-reference-value'])
     ]
@@ -143,7 +143,6 @@ class ComponentReferenceValue extends Entity {
 
     public function setComponent(Component $component): self {
         $this->component = $component;
-
         return $this;
     }
 
