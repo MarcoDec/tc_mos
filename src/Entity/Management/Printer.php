@@ -9,7 +9,6 @@ use App\Entity\Entity;
 use App\Entity\Management\Society\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -28,32 +27,31 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:id', 'read:printer'],
             'openapi_definition_name' => 'Printer-read'
         ],
+        paginationEnabled: false
     ),
     ORM\Entity(readOnly: true)
 ]
 class Printer extends Entity {
     #[
         ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:printer'])
     ]
-    protected ?Company $company;
+    private ?Company $company;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Officejet 2022'),
-        Assert\NotBlank,
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:printer'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'IP', required: true, example: 'Officejet 2022'),
+        ApiProperty(description: 'IP', required: true, example: '192.168.2.115'),
         ORM\Column(type: 'string', length: 255, nullable: true),
-        Assert\Ip,
         Serializer\Groups(['read:printer'])
     ]
     private ?string $ip = null;
+
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'zpl'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:printer'])
+    ]
+    private ?string $name = null;
 
     final public function getCompany(): ?Company {
         return $this->company;
