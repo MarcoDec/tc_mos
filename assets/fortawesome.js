@@ -30,6 +30,7 @@ import {
     faPalette,
     faPencil,
     faPlus,
+    faPrint,
     faProjectDiagram,
     faPuzzlePiece,
     faReceipt,
@@ -81,6 +82,7 @@ library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencil)
 library.add(faPlus)
+library.add(faPrint)
 library.add(faProjectDiagram)
 library.add(faPuzzlePiece)
 library.add(faReceipt)

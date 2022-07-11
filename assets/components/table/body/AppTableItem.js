@@ -13,9 +13,9 @@ function AppTableItem(props, context) {
         title: 'Supprimer',
         variant: 'danger'
     }
-    return h('tr', {id: props.id}, [
-        h('td', {class: 'text-center'}, props.index + 1),
-        h('td', {class: 'text-center'}, [
+    const children = [h('td', {class: 'text-center'}, props.index + 1)]
+    if (!props.readonly)
+        children.push(h('td', {class: 'text-center'}, [
             h(resolveComponent('AppBtn'), {
                 icon: 'pencil-alt',
                 onClick: () => props.machine.send('update', {updated: props.item['@id']}),
@@ -25,16 +25,16 @@ function AppTableItem(props, context) {
             typeof context.slots.remove === 'function'
                 ? context.slots.remove(removeAttrs)
                 : h(resolveComponent('AppBtn'), removeAttrs)
-        ]),
-        props.fields.map(field => {
-            const slot = context.slots[`cell(${field.name})`]
-            return h(
-                resolveComponent('AppTableItemField'),
-                {field, id: `${props.id}-${field.name}`, item: props.item, key: field.name, machine: props.machine},
-                typeof slot === 'function' ? args => slot(args) : null
-            )
-        })
-    ])
+        ]))
+    children.push(props.fields.map(field => {
+        const slot = context.slots[`cell(${field.name})`]
+        return h(
+            resolveComponent('AppTableItemField'),
+            {field, id: `${props.id}-${field.name}`, item: props.item, key: field.name, machine: props.machine},
+            typeof slot === 'function' ? args => slot(args) : null
+        )
+    }))
+    return h('tr', {id: props.id}, children)
 }
 
 AppTableItem.props = {
@@ -42,7 +42,8 @@ AppTableItem.props = {
     id: {required: true, type: String},
     index: {required: true, type: Number},
     item: {required: true, type: Object},
-    machine: {required: true, type: Object}
+    machine: {required: true, type: Object},
+    readonly: {type: Boolean}
 }
 
 export default AppTableItem

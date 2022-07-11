@@ -103,7 +103,7 @@ module.exports = {
         'no-implicit-coercion': 'error',
         'no-implied-eval': 'error',
         'no-import-assign': 'error',
-        'no-inner-declarations': 'error',
+        'no-inner-declarations': 'off',
         'no-invalid-regexp': 'error',
         'no-invalid-this': 'error',
         'no-irregular-whitespace': ['error', {
