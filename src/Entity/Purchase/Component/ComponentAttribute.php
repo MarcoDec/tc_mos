@@ -60,7 +60,7 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Attribut', readableLink: false, example: '/api/attributes/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(inversedBy: 'attributes'),
         Serializer\Groups(['read:component-attribute'])
     ]
     private ?Attribute $attribute = null;

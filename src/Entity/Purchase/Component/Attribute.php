@@ -77,6 +77,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class Attribute extends Entity {
+    /** @var Collection<int, ComponentAttribute> */
+    #[ORM\OneToMany(mappedBy: 'attribute', targetEntity: ComponentAttribute::class, cascade: ['remove'])]
+    private Collection $attributes;
+
     #[
         ApiProperty(description: 'Nom', required: false, example: 'Longueur de l\'embout'),
         Assert\Length(min: 3, max: 255),
@@ -117,7 +121,16 @@ class Attribute extends Entity {
     private ?Unit $unit;
 
     public function __construct() {
+        $this->attributes = new ArrayCollection();
         $this->families = new ArrayCollection();
+    }
+
+    final public function addAttribute(ComponentAttribute $attribute): self {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes->add($attribute);
+            $attribute->setAttribute($this);
+        }
+        return $this;
     }
 
     final public function addFamily(Family $family): self {
@@ -126,6 +139,13 @@ class Attribute extends Entity {
             $family->addAttribute($this);
         }
         return $this;
+    }
+
+    /**
+     * @return Collection<int, ComponentAttribute>
+     */
+    final public function getAttributes(): Collection {
+        return $this->attributes;
     }
 
     final public function getDescription(): ?string {
@@ -157,6 +177,16 @@ class Attribute extends Entity {
 
     final public function getUnit(): ?Unit {
         return $this->unit;
+    }
+
+    final public function removeAttribute(ComponentAttribute $attribute): self {
+        if ($this->attributes->contains($attribute)) {
+            $this->attributes->removeElement($attribute);
+            if ($attribute->getAttribute() === $this) {
+                $attribute->setAttribute(null);
+            }
+        }
+        return $this;
     }
 
     final public function removeFamily(Family $family): self {

@@ -31,14 +31,14 @@ final class ComponentAttributeValidator extends ConstraintValidator {
                         ->setParameter('{{ type }}', 'un pourcentage')
                         ->addViolation();
                 }
-                break;
+            break;
             case AttributeType::TYPE_COLOR:
                 if (empty($value->getColor())) {
                     $this->context->buildViolation($constraint->message)
                         ->setParameter('{{ type }}', 'une couleur')
                         ->addViolation();
                 }
-                break;
+            break;
             case AttributeType::TYPE_UNIT:
                 if (empty($value->getMeasure()->getCode()) || empty($value->getMeasure()->getValue())) {
                     $this->context->buildViolation($constraint->message)

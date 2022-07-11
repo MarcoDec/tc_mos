@@ -194,7 +194,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Family::class),
+        ORM\ManyToOne(targetEntity: Family::class, inversedBy: 'components'),
         Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;

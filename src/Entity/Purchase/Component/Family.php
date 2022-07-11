@@ -134,6 +134,10 @@ class Family extends AbstractFamily {
     ]
     private ?string $code = null;
 
+    /** @var Collection<int, Component> */
+    #[ORM\OneToMany(mappedBy: 'family', targetEntity: Component::class, fetch: 'EXTRA_LAZY')]
+    private Collection $components;
+
     #[
         ApiProperty(description: 'Cuivré ', example: true),
         ORM\Column(options: ['default' => false]),
@@ -144,12 +148,21 @@ class Family extends AbstractFamily {
     public function __construct() {
         parent::__construct();
         $this->attributes = new ArrayCollection();
+        $this->components = new ArrayCollection();
     }
 
     final public function addAttribute(Attribute $attribute): self {
         if (!$this->attributes->contains($attribute)) {
             $this->attributes->add($attribute);
             $attribute->addFamily($this);
+        }
+        return $this;
+    }
+
+    final public function addComponent(Component $component): self {
+        if (!$this->components->contains($component)) {
+            $this->components->add($component);
+            $component->setFamily($this);
         }
         return $this;
     }
@@ -165,6 +178,13 @@ class Family extends AbstractFamily {
         return $this->code;
     }
 
+    /**
+     * @return Collection<int, Component>
+     */
+    final public function getComponents(): Collection {
+        return $this->components;
+    }
+
     final public function getCopperable(): ?bool {
         return $this->copperable;
     }
@@ -177,10 +197,32 @@ class Family extends AbstractFamily {
         return parent::getFilepath();
     }
 
+    final public function hasComponents(): bool {
+        if (!$this->components->isEmpty()) {
+            return true;
+        }
+        foreach ($this->children as $child) {
+            if ($child->hasComponents()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     final public function removeAttribute(Attribute $attribute): self {
         if ($this->attributes->contains($attribute)) {
             $this->attributes->removeElement($attribute);
             $attribute->removeFamily($this);
+        }
+        return $this;
+    }
+
+    final public function removeComponent(Component $component): self {
+        if ($this->components->contains($component)) {
+            $this->components->removeElement($component);
+            if ($component->getFamily() === $this) {
+                $component->setFamily(null);
+            }
         }
         return $this;
     }
