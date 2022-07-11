@@ -12,40 +12,32 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Purchase\Component\CurrentPlace;
 use App\Entity\Entity;
+use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Unit;
-use App\Entity\Quality\Reception\ComponentReference;
-use App\Entity\Traits\CodeTrait;
-use App\Entity\Traits\NameTrait;
-use App\Entity\Traits\RefTrait;
+use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Repository\Purchase\Component\ComponentRepository;
+use App\Validator as AppAssert;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'ref' => 'partial',
-        'index' => 'partial',
-        'name' => 'partial'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'family' => 'name',
-        'currentPlace' => 'name'
-    ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: [
-        'ref',
-        'index',
-        'name'
-    ]),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Composant',
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:name', 'read:component:collection']
+                    'groups' => ['read:current-place', 'read:component:collection', 'read:measure'],
+                    'openapi_definition_name' => 'Component-collection',
+                    'skip_null_values' => false
                 ],
                 'openapi_context' => [
                     'description' => 'Récupère les composants',
@@ -53,19 +45,40 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:component', 'write:measure'],
+                    'openapi_definition_name' => 'Component-create'
+                ],
                 'openapi_context' => [
                     'description' => 'Créer un composant',
                     'summary' => 'Créer un composant'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'validation_groups' => ['Component-create']
             ]
         ],
         itemOperations: [
+            'clone' => [
+                'controller' => PlaceholderAction::class,
+                'denormalization_context' => [
+                    'groups' => ['write:component:clone'],
+                    'openapi_definition_name' => 'Component-clone'
+                ],
+                'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Clone un composant',
+                    'summary' => 'Clone un composant',
+                ],
+                'path' => '/components/{id}/clone',
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validation_groups' => ['Component-clone']
+            ],
             'delete' => [
                 'openapi_context' => [
                     'description' => 'Supprime un composant',
                     'summary' => 'Supprime un composant'
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
@@ -74,313 +87,245 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
-                'path' => '/components/{id}/{process}',
-                'requirements' => ['process' => '\w+'],
                 'openapi_context' => [
-                    'description' => 'Modifier un composant',
-                    'summary' => 'Modifier un composant',
+                    'description' => 'Modifie un composant',
                     'parameters' => [[
                         'in' => 'path',
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'type' => 'string',
-                            'enum' => ['admin', 'quality', 'purchase', 'logistics', 'price']
+                            'enum' => ['admin', 'logistics', 'main', 'price', 'purchase', 'quality'],
+                            'type' => 'string'
                         ]
-                    ]]
-                ]
-            ],
-            'clone' => [
-                'method' => 'POST',
-                'path' => '/components/{id}/clone',
-                'controller' => PlaceholderAction::class,
-                'openapi_context' => [
-                    'description' => 'Clone un composant',
-                    'summary' => 'Clone un composant',
+                    ]],
+                    'summary' => 'Modifie un composant'
                 ],
-                'denormalization_context' => [
-                    'groups' => ['write:component:clone']
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
-            ],
-            'upgrade' => [
-                'method' => 'POST',
-                'path' => '/components/{id}/upgrade',
-                'controller' => PlaceholderAction::class,
-                'openapi_context' => [
-                    'description' => 'Dupliquer un composant en le reliant à son parent',
-                    'summary' => 'Dupliquer un composant en le reliant à son parent',
-                ],
-                'denormalization_context' => [
-                    'groups' => ['write:component:upgrade']
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'path' => '/components/{id}/{process}',
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
-                'method' => 'PATCH',
-                'path' => '/components/{id}/promote',
                 'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
                 'openapi_context' => [
-                    'description' => 'Passer un composant à un nouveau statut',
-                    'summary' => 'Passer un composant à un nouveau statut',
+                    'description' => 'Transite le composant à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite le composant à son prochain statut de workflow'
                 ],
+                'path' => '/components/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'validate' => false
+            ],
+            'upgrade' => [
+                'controller' => PlaceholderAction::class,
                 'denormalization_context' => [
-                    'groups' => ['write:component:promote']
+                    'groups' => ['write:component:clone'],
+                    'openapi_definition_name' => 'Component-upgrade'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+                'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Évolue le composant au prochain indice',
+                    'summary' => 'Évolue le composant au prochain indice'
+                ],
+                'path' => '/components/{id}/upgrade',
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'validation_groups' => ['Component-clone']
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:code', 'write:create', 'write:name', 'write:measure', 'writer:current_place', 'write:component', 'write:ref', 'write:equivalents', 'write:unit'],
+            'groups' => ['write:component', 'write:measure'],
             'openapi_definition_name' => 'Component-write'
         ],
         normalizationContext: [
-            'groups' => ['read:code', 'read:component', 'read:id', 'read:name', 'read:measure', 'read:current_place', 'read:ref', 'read:equivalents', 'read:unit'],
-            'openapi_definition_name' => 'Component-read'
+            'groups' => ['read:current-place', 'read:component', 'read:measure'],
+            'openapi_definition_name' => 'Component-read',
+            'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
-class Component extends Entity {
-    use CodeTrait;
-    use NameTrait;
-    use NameTrait, RefTrait {
-        RefTrait::__toString insteadof NameTrait;
-    }
+class Component extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
+    use BarCodeTrait;
 
     #[
-        ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
-        Assert\Length(max: 10, groups: ['write:create']),
-        Assert\NotBlank(groups: ['write:create']),
-        ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:code'])
-    ]
-    protected ?string $code = null;
-
-    #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'read:component:collection'])
-    ]
-    protected CurrentPlace $currentPlace;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name', 'read:component:collection'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Référence', example: '54587F'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'read:component', 'read:component:collection',  'write:component:clone', 'write:component:upgrade'])
-    ]
-    protected ?string $ref = null;
-
-    /**
-     * @var Collection<int, self>
-     */
-    #[
-        ApiProperty(description: 'Composant enfant', required: false, readableLink: false, example: ['/api/components/5', '/api/components/14']),
-        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['persist', 'remove']),
-        Serializer\Groups(['read:component'])
-    ]
-    private Collection $children;
-
-    #[
-        ApiProperty(description: 'Poids du cuivre', example: 0),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure'])
+        ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
+        ORM\Embedded,
+        Serializer\Groups(['read:component', 'write:component', 'write:component:price'])
     ]
     private Measure $copperWeight;
 
     #[
-        ApiProperty(description: 'Code frontière', required: false, example: '2022RK'),
-        Assert\Length(max: 255),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:component'])
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded(CurrentPlace::class),
+        Serializer\Groups(['read:component', 'read:product:component'])
+    ]
+    private CurrentPlace $currentPlace;
+
+    #[
+        ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
+        Assert\Length(min: 4, max: 16, groups: ['Component-logistics']),
+        ORM\Column(length: 16, nullable: true),
+        Serializer\Groups(['read:component', 'write:component:logistics'])
     ]
     private ?string $customsCode = null;
 
     #[
-        ApiProperty(description: 'Date de fin de vie', required: true, example: '2021-11-18'),
-        Assert\Date(groups: ['write:create']),
-        Assert\NotBlank(groups: ['write:create']),
+        ApiProperty(description: 'Date de fin de vie', required: false, example: '2021-11-18'),
+        Assert\GreaterThan(value: 'today', groups: ['Component-create', 'Component-logistics']),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:component'])
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component:logistics'])
     ]
     private ?DateTimeImmutable $endOfLife = null;
 
     #[
-        ApiProperty(description: 'Equivalents', readableLink: false, example: ['/api/equivalents/1', '/api/equivalents/2']),
-        ORM\ManyToOne(targetEntity: Equivalents::class, inversedBy: 'components'),
-        Serializer\Groups(['read:equivalents', 'write:requivalents', 'read:component'])
-    ]
-    private ?Equivalents $equivalents = null;
-
-    #[
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
-        Assert\NotBlank(groups: ['write:create']),
+        Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(targetEntity: Family::class),
-        Serializer\Groups(['read:component', 'write:component', 'read:component:collection'])
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;
 
     #[
-        ApiProperty(description: 'Volume prévisionnel', example: '2000'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure'])
+        ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure(groups: ['Component-logistics']),
+        ORM\Embedded,
+        Serializer\Groups(['read:component', 'write:component', 'write:component:logistics'])
     ]
     private Measure $forecastVolume;
 
     #[
         ApiProperty(description: 'Indice', required: true, example: '1'),
-        Assert\Length(max: 5),
-        ORM\Column(length: 5, name: 'component_index'),
-        Serializer\Groups(['read:component', 'read:component:collection', 'write:component:clone', 'write:component:upgrade'])
+        Assert\Length(max: 5, groups: ['Component-admin', 'Component-clone']),
+        Assert\NotBlank(groups: ['Component-admin', 'Component-clone']),
+        ORM\Column(name: '`index`', length: 5, nullable: false, options: ['default' => '0']),
+        Serializer\Groups(['read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
     ]
     private string $index = '0';
 
     #[
-        ApiProperty(description: 'Gestion en stock', example: true),
+        ApiProperty(description: 'Gestion en stock', required: true, example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:component', 'write:create'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private bool $managedStock = false;
 
     #[
-        ApiProperty(description: 'Fabricant', required: true, example: 'scapa'),
-        Assert\NotBlank(groups: ['write:create']),
+        ApiProperty(description: 'Fabricant', required: false, example: 'scapa'),
+        Assert\NotBlank(groups: ['Component-create', 'Component-purchase']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:component', 'write:create'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase'])
     ]
     private ?string $manufacturer = null;
 
     #[
-        ApiProperty(description: 'Référence fabricant', required: true, example: '103078'),
-        Assert\NotBlank(groups: ['write:create']),
+        ApiProperty(description: 'Référence fabricant', required: false, example: '103078'),
+        Assert\NotBlank(groups: ['Component-create', 'Component-purchase']),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:component'])
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:purchase'])
     ]
-    private ?string $manufacturerRef = null;
+    private ?string $manufacturerCode = null;
 
     #[
-        ApiProperty(description: 'Stock minimum', example: 221_492),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure'])
+        ApiProperty(description: 'Stock minimum', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure(groups: ['Component-logistics']),
+        ORM\Embedded,
+        Serializer\Groups(['read:component', 'write:component', 'write:component:logistics'])
     ]
     private Measure $minStock;
 
     #[
-        ApiProperty(description: 'Besoin de join', example: false),
+        ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
+        Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
+        ORM\Column,
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
+    ]
+    private ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Besoin de join', required: true, example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:component'])
+        Serializer\Groups(['read:component', 'write:component', 'write:component:main'])
     ]
     private bool $needGasket = false;
 
     #[
-        ApiProperty(description: 'Notes'),
+        ApiProperty(description: 'Notes', required: false, example: 'Lorem Ipsum'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:component'])
+        Serializer\Groups(['read:component', 'write:component', 'write:component:main'])
     ]
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Info commande'),
+        ApiProperty(description: 'Info commande', required: false, example: 'Ipsum Lorem id est'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:component'])
+        Serializer\Groups(['read:component', 'write:component', 'write:component:price'])
     ]
     private ?string $orderInfo = null;
 
     #[
-        ApiProperty(description: 'Equivalent', readableLink: false, example: '/api/components/1'),
-        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
+        ApiProperty(description: 'Parent', readableLink: false, required: false, example: '/api/components/1'),
+        ORM\ManyToOne(targetEntity: self::class),
         Serializer\Groups(['read:component'])
     ]
     private ?self $parent = null;
 
     #[
-        ApiProperty(description: 'Nouveau statut', required: false, example: 'draft'),
-        Serializer\Groups(['write:component:promote'])
-    ]
-    private ?string $place = null;
-
-    #[
         ApiProperty(description: 'Taux ppm', required: false, example: '10'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'smallint'),
-        Serializer\Groups(['read:component'])
+        Assert\NotNull(groups: ['Component-quality']),
+        Assert\PositiveOrZero(groups: ['Component-quality']),
+        ORM\Column(type: 'smallint', options: ['default' => 10, 'unsigned' => true]),
+        Serializer\Groups(['read:component', 'write:component', 'write:component:quality'])
     ]
-    private ?int $ppmRate = 0;
+    private int $ppmRate = 10;
 
     #[
-        ApiProperty(description: 'Qualité', example: 2),
-        ORM\Column(options: ['unsigned' => true], nullable: true),
-        Serializer\Groups(['read:component'])
-    ]
-    private ?int $quality = null;
-
-    /** @var Collection<int, ComponentReference> */
-    #[
-        ApiProperty(description: 'References'),
-        ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items'),
-        Serializer\Groups(['read:component'])
-    ]
-    private Collection $references;
-
-    #[
-        ApiProperty(description: 'Unité', readableLink: false, example: '/api/units/1'),
-        ORM\ManyToOne(targetEntity: Unit::class),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
+        Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?Unit $unit = null;
 
     #[
-        ApiProperty(description: 'Poids', example: '3.0378'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ApiProperty(description: 'Poids', openapiContext: ['$ref' => '#/components/schemas/Measure-mass']),
+        ORM\Embedded,
+        Serializer\Groups(['read:component', 'write:component', 'write:component:logistics'])
     ]
     private Measure $weight;
 
     public function __construct() {
-        $this->weight = new Measure();
+        $this->copperWeight = new Measure();
+        $this->currentPlace = new CurrentPlace();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
-        $this->copperWeight = new Measure();
-        $this->children = new ArrayCollection();
-        $this->currentPlace = new CurrentPlace();
-        $this->references = new ArrayCollection();
+        $this->weight = new Measure();
     }
 
-    final public function addChild(self $child): self {
-        if (!$this->children->contains($child)) {
-            $this->children[] = $child;
-            $child->setParent($this);
-        }
-
-        return $this;
+    public static function getBarCodeTableNumber(): string {
+        return self::COMPONENT_BAR_CODE_TABLE_NUMBER;
     }
 
-    final public function addReference(ComponentReference $references): self {
-        if (!$this->references->contains($references)) {
-            $this->references[] = $references;
-            $references->addItem($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, self>
-     */
-    final public function getChildren(): Collection {
-        return $this->children;
+    #[
+        ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
+        Serializer\Groups(['read:component', 'read:component:collection'])
+    ]
+    final public function getCode(): ?string {
+        return "{$this->family?->getCode()}-{$this->getId()}";
     }
 
     final public function getCopperWeight(): Measure {
@@ -399,10 +344,6 @@ class Component extends Entity {
         return $this->endOfLife;
     }
 
-    final public function getEquivalents(): ?Equivalents {
-        return $this->equivalents;
-    }
-
     final public function getFamily(): ?Family {
         return $this->family;
     }
@@ -419,12 +360,20 @@ class Component extends Entity {
         return $this->manufacturer;
     }
 
-    final public function getManufacturerRef(): ?string {
-        return $this->manufacturerRef;
+    final public function getManufacturerCode(): ?string {
+        return $this->manufacturerCode;
+    }
+
+    public function getMeasures(): array {
+        return [$this->copperWeight, $this->forecastVolume, $this->minStock, $this->weight];
     }
 
     final public function getMinStock(): Measure {
         return $this->minStock;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     final public function getNotes(): ?string {
@@ -439,23 +388,13 @@ class Component extends Entity {
         return $this->parent;
     }
 
-    final public function getPlace(): ?string {
-        return $this->place;
-    }
-
-    final public function getPpmRate(): ?int {
+    final public function getPpmRate(): int {
         return $this->ppmRate;
     }
 
-    final public function getQuality(): ?int {
-        return $this->quality;
-    }
-
-    /**
-     * @return Collection<int, ComponentReference>
-     */
-    final public function getReferences(): Collection {
-        return $this->references;
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
     }
 
     final public function getUnit(): ?Unit {
@@ -466,20 +405,22 @@ class Component extends Entity {
         return $this->weight;
     }
 
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
+    }
+
     final public function isManagedStock(): bool {
         return $this->managedStock;
     }
 
     final public function isNeedGasket(): bool {
         return $this->needGasket;
-    }
-
-    final public function removeReference(ComponentReference $references): self {
-        if ($this->references->removeElement($references)) {
-            $references->removeItem($this);
-        }
-
-        return $this;
     }
 
     final public function setCopperWeight(Measure $copperWeight): self {
@@ -489,23 +430,16 @@ class Component extends Entity {
 
     final public function setCurrentPlace(CurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
-
         return $this;
     }
 
     final public function setCustomsCode(?string $customsCode): self {
         $this->customsCode = $customsCode;
-
         return $this;
     }
 
     final public function setEndOfLife(?DateTimeImmutable $endOfLife): self {
         $this->endOfLife = $endOfLife;
-        return $this;
-    }
-
-    final public function setEquivalents(?Equivalents $equivalents): self {
-        $this->equivalents = $equivalents;
         return $this;
     }
 
@@ -534,13 +468,18 @@ class Component extends Entity {
         return $this;
     }
 
-    final public function setManufacturerRef(?string $manufacturerRef): self {
-        $this->manufacturerRef = $manufacturerRef;
+    final public function setManufacturerCode(?string $manufacturerCode): self {
+        $this->manufacturerCode = $manufacturerCode;
         return $this;
     }
 
     final public function setMinStock(Measure $minStock): self {
         $this->minStock = $minStock;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 
@@ -564,19 +503,13 @@ class Component extends Entity {
         return $this;
     }
 
-    final public function setPlace(?string $place): self {
-        $this->place = $place;
-
-        return $this;
-    }
-
-    final public function setPpmRate(?int $ppmRate): self {
+    final public function setPpmRate(int $ppmRate): self {
         $this->ppmRate = $ppmRate;
         return $this;
     }
 
-    final public function setQuality(int $quality): self {
-        $this->quality = $quality;
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 

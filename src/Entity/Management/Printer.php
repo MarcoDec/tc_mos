@@ -2,32 +2,16 @@
 
 namespace App\Entity\Management;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company;
-use App\Entity\Traits\CompanyTrait;
-use App\Entity\Traits\NameTrait;
-use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial',
-        'ip' => 'partial'
-    ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: [
-        'name', 'ip'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'company' => 'name',
-    ]),
     ApiResource(
         description: 'Imprimante',
         collectionOperations: [
@@ -39,23 +23,19 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
             ]
         ],
-        itemOperations: [
-        ],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:printer'],
+            'groups' => ['read:id', 'read:printer'],
             'openapi_definition_name' => 'Printer-read'
         ],
     ),
     ORM\Entity(readOnly: true)
 ]
 class Printer extends Entity {
-    use CompanyTrait;
-    use NameTrait;
-
     #[
         ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company'])
+        ORM\ManyToOne(fetch: 'EAGER'),
+        Serializer\Groups(['read:printer'])
     ]
     protected ?Company $company;
 
@@ -63,7 +43,7 @@ class Printer extends Entity {
         ApiProperty(description: 'Nom', required: true, example: 'Officejet 2022'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:name'])
+        Serializer\Groups(['read:printer'])
     ]
     protected ?string $name = null;
 
@@ -73,15 +53,32 @@ class Printer extends Entity {
         Assert\Ip,
         Serializer\Groups(['read:printer'])
     ]
-    private ?string $ip;
+    private ?string $ip = null;
 
-    public function getIp(): ?string {
+    final public function getCompany(): ?Company {
+        return $this->company;
+    }
+
+    final public function getIp(): ?string {
         return $this->ip;
     }
 
-    public function setIp(?string $ip): self {
-        $this->ip = $ip;
+    final public function getName(): ?string {
+        return $this->name;
+    }
 
+    final public function setCompany(?Company $company): self {
+        $this->company = $company;
+        return $this;
+    }
+
+    final public function setIp(?string $ip): self {
+        $this->ip = $ip;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 }

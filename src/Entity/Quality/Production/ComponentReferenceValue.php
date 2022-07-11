@@ -38,12 +38,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère la valeur de référence du composant',
-                    'summary' => 'Récupère la valeur de référence du composant',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie la valeur de référence du composant',
@@ -56,12 +51,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:component', 'write:component-reference-value', 'write:component-reference-field'],
+            'groups' => ['write:component-reference-field', 'write:component-reference-value'],
             'openapi_definition_name' => 'ComponentReferenceValue-write'
         ],
         normalizationContext: [
-            'groups' => ['read:component', 'read:component-reference-value', 'read:component-reference-field'],
-            'openapi_definition_name' => 'ComponentReferenceValue-read'
+            'groups' => ['read:component-reference-field', 'read:component-reference-value'],
+            'openapi_definition_name' => 'ComponentReferenceValue-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
@@ -69,8 +65,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ComponentReferenceValue extends Entity {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Component::class),
-        Serializer\Groups(['read:component', 'write:component'])
+        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
+        Serializer\Groups(['read:component-reference-value', 'write:component-reference-value'])
     ]
     private Component $component;
 
@@ -83,7 +79,7 @@ class ComponentReferenceValue extends Entity {
 
     #[
         ApiProperty(description: 'Valeur', example: 0),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
         Serializer\Groups(['read:component-reference-value', 'write:component-reference-value'])
     ]
@@ -143,7 +139,6 @@ class ComponentReferenceValue extends Entity {
 
     public function setComponent(Component $component): self {
         $this->component = $component;
-
         return $this;
     }
 
