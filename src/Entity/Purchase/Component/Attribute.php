@@ -35,6 +35,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:attribute'],
+                    'openapi_definition_name' => 'Attribute-create'
+                ],
                 'openapi_context' => [
                     'description' => 'Créer un attribut',
                     'summary' => 'Créer un attribut',
@@ -85,7 +89,7 @@ class Attribute extends Entity {
         ApiProperty(description: 'Nom', required: false, example: 'Longueur de l\'embout'),
         Assert\Length(min: 3, max: 255),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:attribute', 'write:attribute'])
+        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
     ]
     private ?string $description = null;
 
@@ -101,7 +105,7 @@ class Attribute extends Entity {
         ApiProperty(description: 'Nom', required: true, example: 'Longueur'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:attribute', 'write:attribute'])
+        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
     ]
     private ?string $name = null;
 
@@ -109,14 +113,14 @@ class Attribute extends Entity {
         ApiProperty(description: 'Type', example: AttributeType::TYPE_TEXT, openapiContext: ['enum' => AttributeType::TYPES]),
         Assert\Choice(choices: AttributeType::TYPES),
         ORM\Column(type: 'attribute', options: ['default' => AttributeType::TYPE_TEXT]),
-        Serializer\Groups(['read:attribute', 'write:attribute'])
+        Serializer\Groups(['create:attribute', 'read:attribute'])
     ]
     private string $type = AttributeType::TYPE_TEXT;
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         ORM\ManyToOne(fetch: 'EAGER'),
-        Serializer\Groups(['read:attribute', 'write:attribute'])
+        Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
     ]
     private ?Unit $unit;
 
