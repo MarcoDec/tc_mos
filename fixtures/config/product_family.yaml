@@ -1,5 +1,0 @@
-App\Entity\Project\Product\Family:
-  deleted: statut
-  properties:
-    family_name:
-      new_name: name

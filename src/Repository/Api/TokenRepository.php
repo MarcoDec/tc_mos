@@ -22,7 +22,8 @@ final class TokenRepository extends ServiceEntityRepository {
 
     public function connect(Employee $user): void {
         $this->disconnect($user);
-        $this->_em->persist(new Token($user));
+        $this->_em->persist($token = new Token($user));
+        $user->addApiToken($token);
         $this->_em->flush();
     }
 
@@ -32,5 +33,13 @@ final class TokenRepository extends ServiceEntityRepository {
                 $token->expire();
             }
         }
+        $this->_em->flush();
+    }
+
+    public function renew(Employee $user): void {
+        foreach ($this->findBy(['employee' => $user], ['expireAt' => 'DESC'], 1) as $token) {
+            $token->renew();
+        }
+        $this->_em->flush();
     }
 }

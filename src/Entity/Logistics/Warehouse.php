@@ -10,8 +10,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company;
-use App\Entity\Traits\CompanyTrait;
-use App\Entity\Traits\NameTrait;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -81,12 +79,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity
 ]
 class Warehouse extends Entity {
-    use CompanyTrait;
-    use NameTrait;
-
     #[
         ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
+        ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['read:company', 'write:company'])
     ]
     protected ?Company $company;
@@ -99,10 +94,10 @@ class Warehouse extends Entity {
     ]
     protected ?string $name = null;
 
-    /** @var mixed[] */
+    /** @var string[] */
     #[
         ApiProperty(description: 'Familles', required: false),
-        ORM\Column(nullable: true, type: 'warehouse_families'),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:warehouse', 'write:warehouse'])
     ]
     private array $families = [];
@@ -112,12 +107,11 @@ class Warehouse extends Entity {
             $this->families[] = $family;
             sort($this->families);
         }
-
         return $this;
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
     final public function getFamilies(): array {
         return $this->families;
@@ -128,7 +122,6 @@ class Warehouse extends Entity {
             /** @phpstan-ignore-next-line */
             array_splice($this->families, $key, 1);
         }
-
         return $this;
     }
 }
