@@ -6,7 +6,6 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Embeddable\Measure;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class ComponentReferenceField {
@@ -18,17 +17,15 @@ class ComponentReferenceField {
     private bool $required = true;
 
     #[
-        ApiProperty(description: 'Tolérance'),
+        ApiProperty(description: 'Tolérance', openapiContext: ['$ref' => '#/components/schemas/Measure-length']),
         ORM\Embedded,
-        Assert\PositiveOrZero,
         Serializer\Groups(['read:component-reference-field', 'write:component-reference-field'])
     ]
     private Measure $tolerance;
 
     #[
-        ApiProperty(description: 'Valeur'),
+        ApiProperty(description: 'Valeur', openapiContext: ['$ref' => '#/components/schemas/Measure-length']),
         ORM\Embedded,
-        Assert\PositiveOrZero,
         Serializer\Groups(['read:component-reference-field', 'write:component-reference-field'])
     ]
     private Measure $value;
@@ -36,17 +33,6 @@ class ComponentReferenceField {
     public function __construct() {
         $this->tolerance = new Measure();
         $this->value = new Measure();
-    }
-
-    final public function getMax(): Measure {
-        return $this->value->add($this->tolerance);
-    }
-
-    final public function getMin(): Measure {
-        $min = $this->value->substract($this->tolerance);
-        return $min->getValue() >= 0
-            ? $min
-            : (new Measure())->setCode($this->value->getCode())->setUnit($this->value->getUnit())->setValue(0);
     }
 
     final public function getTolerance(): Measure {
@@ -59,13 +45,6 @@ class ComponentReferenceField {
 
     final public function isRequired(): bool {
         return $this->required;
-    }
-
-    /**
-     * TODO use Measure.
-     */
-    final public function isValid(float $value): bool {
-        return !$this->required || $this->getMin()->getValue() <= $value && $this->getMax()->getValue() >= $value;
     }
 
     final public function setRequired(bool $required): self {

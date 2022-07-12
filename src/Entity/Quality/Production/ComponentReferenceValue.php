@@ -2,17 +2,20 @@
 
 namespace App\Entity\Quality\Production;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Quality\Production\ComponentReferenceField;
 use App\Entity\Entity;
 use App\Entity\Purchase\Component\Component;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['component']),
     ApiResource(
         description: 'Valeur de référence du composant',
         collectionOperations: [
@@ -51,11 +54,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:component-reference-field', 'write:component-reference-value'],
+            'groups' => ['write:component-reference-field', 'write:component-reference-value', 'write:measure'],
             'openapi_definition_name' => 'ComponentReferenceValue-write'
         ],
         normalizationContext: [
-            'groups' => ['read:component-reference-field', 'read:component-reference-value'],
+            'groups' => ['read:component-reference-field', 'read:component-reference-value', 'read:measure'],
             'openapi_definition_name' => 'ComponentReferenceValue-read',
             'skip_null_values' => false
         ],
@@ -78,12 +81,11 @@ class ComponentReferenceValue extends Entity {
     private ComponentReferenceField $height;
 
     #[
-        ApiProperty(description: 'Valeur', example: 0),
-        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
+        ApiProperty(description: 'Valeur', openapiContext: ['$ref' => '#/components/schemas/Measure-length']),
+        ORM\Embedded,
         Serializer\Groups(['read:component-reference-value', 'write:component-reference-value'])
     ]
-    private float $section = 0;
+    private Measure $section;
 
     #[
         ApiProperty(description: 'Résistance'),
@@ -101,11 +103,12 @@ class ComponentReferenceValue extends Entity {
 
     public function __construct() {
         $this->height = new ComponentReferenceField();
+        $this->section = new Measure();
         $this->tensile = new ComponentReferenceField();
         $this->width = new ComponentReferenceField();
     }
 
-    public function getComponent(): Component {
+    final public function getComponent(): Component {
         return $this->component;
     }
 
@@ -113,7 +116,7 @@ class ComponentReferenceValue extends Entity {
         return $this->height;
     }
 
-    final public function getSection(): float {
+    final public function getSection(): Measure {
         return $this->section;
     }
 
@@ -125,19 +128,7 @@ class ComponentReferenceValue extends Entity {
         return $this->width;
     }
 
-    final public function isHeightValid(float $value): bool {
-        return $this->height->isValid($value);
-    }
-
-    final public function isTensileValid(float $value): bool {
-        return $this->tensile->isValid($value);
-    }
-
-    final public function isWidthValid(float $value): bool {
-        return $this->width->isValid($value);
-    }
-
-    public function setComponent(Component $component): self {
+    final public function setComponent(Component $component): self {
         $this->component = $component;
         return $this;
     }
@@ -147,7 +138,7 @@ class ComponentReferenceValue extends Entity {
         return $this;
     }
 
-    final public function setSection(float $section): self {
+    final public function setSection(Measure $section): self {
         $this->section = $section;
         return $this;
     }

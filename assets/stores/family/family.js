@@ -22,9 +22,13 @@ export default function generateFamily(iriType, family, root) {
                 this.parentStore?.open()
             },
             async remove() {
-                await new Api().fetch(this.iri, 'DELETE')
-                this.root.remove(this['@id'])
-                this.dispose()
+                const response = await new Api().fetch(this.iri, 'DELETE')
+                if (response.status === 422)
+                    alert(response.content['hydra:description'])
+                else {
+                    this.root.remove(this['@id'])
+                    this.dispose()
+                }
             },
             async update(fields, data) {
                 const response = await new Api(fields).fetch(this.iri, 'POST', data, false)

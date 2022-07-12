@@ -40,6 +40,14 @@ final class Version20220711120320 extends AbstractMigration {
         return $matches[0];
     }
 
+    private static function trim(string $str): string {
+        return (new UnicodeString($str))
+            ->replaceMatches('/\s+/', ' ')
+            ->replace('( ', '(')
+            ->replace(' )', ')')
+            ->toString();
+    }
+
     public function postUp(Schema $schema): void {
         $this->upPhoneNumbers('out_trainer', 'tel');
         $this->upPhoneNumbers('society', 'phone');
@@ -60,6 +68,26 @@ CREATE FUNCTION UCFIRST (s VARCHAR(255))
     RETURNS VARCHAR(255) DETERMINISTIC
     RETURN CONCAT(UCASE(LEFT(s, 1)), LCASE(SUBSTRING(s, 2)))
 SQL);
+        $this->addSql(<<<'SQL'
+CREATE PROCEDURE LINK_COMPONENTS_ATTRIBUTES()
+BEGIN
+    INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `measure_code`)
+    SELECT `c`.`id`, `a`.`id`, `u`.`code`
+    FROM `component` `c`
+    INNER JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
+    INNER JOIN `attribute_family` `af` ON `f`.`id` = `af`.`family_id`
+    INNER JOIN `attribute` `a` ON `af`.`attribute_id` = `a`.`id`
+    LEFT JOIN `unit` `u` ON `a`.`unit_id` = `u`.`id`
+    ON DUPLICATE KEY UPDATE `deleted` = 0, `measure_code` = `u`.`code`;
+    UPDATE `component_attribute` `ca`
+    LEFT JOIN `component` `c` ON `ca`.`component_id` = `c`.`id`
+    LEFT JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
+    LEFT JOIN `attribute` `a` ON `ca`.`attribute_id` = `a`.`id`
+    LEFT JOIN `attribute_family` `af` ON `a`.`id` = `af`.`attribute_id` AND `f`.`id` = `af`.`family_id`
+    SET `ca`.`deleted` = 1
+    WHERE `af`.`attribute_id` IS NULL OR `af`.`family_id` IS NULL;
+END
+SQL);
         $this->setProcedure();
         $version = self::getVersion();
         $this->addSql("CREATE PROCEDURE up$version() BEGIN {$this->getQueries()}; END");
@@ -68,14 +96,12 @@ SQL);
         $this->addSql('DROP FUNCTION UCFIRST');
     }
 
+    protected function addSql(string $sql, array $params = [], array $types = []): void {
+        parent::addSql(self::trim($sql), $params, $types);
+    }
+
     private function addQuery(string $query): void {
-        $this->queries->push(
-            (new UnicodeString($query))
-                ->replaceMatches('/\s+/', ' ')
-                ->replace('( ', '(')
-                ->replace(' )', ')')
-                ->toString()
-        );
+        $this->queries->push(self::trim($query));
     }
 
     private function getPhoneQueries(): string {
@@ -233,6 +259,10 @@ WHILE @attribute_i < @attribute_count DO
             SET @attribute_families = '';
         END IF;
         INSERT INTO `attribute_family` (`attribute_id`, `family_id`) VALUES (@attribute_id, @attribute_family);
+        INSERT INTO `attribute_family` (`attribute_id`, `family_id`)
+        SELECT @attribute_id, `parent_id` FROM `component_family` WHERE `id` = @attribute_family AND `parent_id` IS NOT NULL;
+        INSERT INTO `attribute_family` (`attribute_id`, `family_id`)
+        SELECT @attribute_id, `id` FROM `component_family` WHERE `parent_id` = @attribute_family;
     END WHILE;
     SET @attribute_i = @attribute_i + 1;
 END WHILE
@@ -316,25 +346,7 @@ AND EXISTS (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` 
 AND EXISTS (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`old_id` = `component_attribut`.`id_attribut`)
 SQL);
         $this->addQuery('DROP TABLE `component_attribut`');
-        $this->addQuery(<<<'SQL'
-INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `measure_code`)
-SELECT `c`.`id`, `a`.`id`, `u`.`code`
-FROM `component` `c`
-INNER JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
-INNER JOIN `attribute_family` `af` ON `f`.`parent_id` = `af`.`family_id`
-INNER JOIN `attribute` `a` ON `af`.`attribute_id` = `a`.`id`
-LEFT JOIN `unit` `u` ON `a`.`unit_id` = `u`.`id`
-ON DUPLICATE KEY UPDATE `measure_code` = `u`.`code`
-SQL);
-        $this->addQuery(<<<'SQL'
-DELETE `ca`
-FROM `component_attribute` `ca`
-LEFT JOIN `component` `c` ON `ca`.`component_id` = `c`.`id`
-LEFT JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
-LEFT JOIN `attribute` `a` ON `ca`.`attribute_id` = `a`.`id`
-LEFT JOIN `attribute_family` `af` ON `a`.`id` = `af`.`attribute_id` AND `f`.`parent_id` = `af`.`family_id`
-WHERE `af`.`attribute_id` IS NULL OR `af`.`family_id` IS NULL
-SQL);
+        $this->addQuery('CALL LINK_COMPONENTS_ATTRIBUTES');
     }
 
     private function upComponentFamilies(): void {
@@ -398,6 +410,8 @@ CREATE TABLE `component_quality_values` (
     `height_value_code` VARCHAR(6) DEFAULT 'mm',
     `height_value_denominator` VARCHAR(6) DEFAULT NULL,
     `hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `section_code` VARCHAR(6) DEFAULT 'mm²',
+    `section_denominator` VARCHAR(6) DEFAULT NULL,
     `section` DOUBLE PRECISION UNSIGNED DEFAULT 0 NOT NULL,
     `obligation_traction` BOOLEAN DEFAULT TRUE NOT NULL,
     `tensile_tolerance_code` VARCHAR(6) DEFAULT 'mm²',
@@ -443,6 +457,8 @@ ALTER TABLE `component_quality_values`
     CHANGE `obligation_hauteur` `height_required` BOOLEAN DEFAULT TRUE NOT NULL,
     CHANGE `obligation_largeur` `width_required` BOOLEAN DEFAULT TRUE NOT NULL,
     CHANGE `obligation_traction` `tensile_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    CHANGE `section_code` `section_code` VARCHAR(6) DEFAULT NULL,
+    CHANGE `section` `section_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CHANGE `tensile_tolerance_code` `tensile_tolerance_code` VARCHAR(6) DEFAULT NULL,
     CHANGE `tensile_value_code` `tensile_value_code` VARCHAR(6) DEFAULT NULL,
     CHANGE `tolerance_hauteur` `height_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -855,7 +871,7 @@ CREATE TABLE `productcontent` (
     `id_product` INT UNSIGNED DEFAULT NULL,
     `id_component` INT UNSIGNED DEFAULT NULL,
     `quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `mandat` BOOLEAN DEFAULT FALSE NOT NULL
+    `mandat` BOOLEAN DEFAULT TRUE NOT NULL
 )
 SQL);
         $this->insert('productcontent', ['id', 'statut', 'id_product', 'id_component', 'quantity', 'mandat']);

@@ -26,7 +26,7 @@
             search: true,
             sort: true,
             type: 'select',
-            update: true
+            update: false
         },
         {
             create: true,
