@@ -155,6 +155,9 @@ class Family extends AbstractFamily {
         if (!$this->attributes->contains($attribute)) {
             $this->attributes->add($attribute);
             $attribute->addFamily($this);
+            foreach ($this->children as $child) {
+                $child->addAttribute($attribute);
+            }
         }
         return $this;
     }
@@ -213,6 +216,9 @@ class Family extends AbstractFamily {
         if ($this->attributes->contains($attribute)) {
             $this->attributes->removeElement($attribute);
             $attribute->removeFamily($this);
+            foreach ($this->children as $child) {
+                $child->removeAttribute($attribute);
+            }
         }
         return $this;
     }
