@@ -40,6 +40,14 @@ final class Version20220707132150 extends AbstractMigration {
         return $matches[0];
     }
 
+    private static function trim(string $str): string {
+        return (new UnicodeString($str))
+            ->replaceMatches('/\s+/', ' ')
+            ->replace('( ', '(')
+            ->replace(' )', ')')
+            ->toString();
+    }
+
     public function postUp(Schema $schema): void {
         $this->upPhoneNumbers('out_trainer', 'tel');
         $this->upPhoneNumbers('society', 'phone');
@@ -60,6 +68,53 @@ CREATE FUNCTION UCFIRST (s VARCHAR(255))
     RETURNS VARCHAR(255) DETERMINISTIC
     RETURN CONCAT(UCASE(LEFT(s, 1)), LCASE(SUBSTRING(s, 2)))
 SQL);
+        $this->addSql(<<<'SQL'
+CREATE PROCEDURE LINK_COMPONENT_ATTRIBUTES_BY_FAMILY(IN link_component INT UNSIGNED, IN link_family INT UNSIGNED)
+BEGIN
+    INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `measure_code`)
+    SELECT `c`.`id`, `a`.`id`, `u`.`code`
+    FROM `component` `c`
+    INNER JOIN `attribute_family` `af` ON `af`.`family_id` = link_family
+    INNER JOIN `attribute` `a` ON `af`.`attribute_id` = `a`.`id`
+    LEFT JOIN `unit` `u` ON `a`.`unit_id` = `u`.`id`
+    WHERE `c`.`id` = link_component
+    ON DUPLICATE KEY UPDATE `deleted` = 0, `measure_code` = `u`.`code`;
+    UPDATE `component_attribute` `ca`
+    LEFT JOIN `component` `c` ON `ca`.`component_id` = `c`.`id`
+    LEFT JOIN `attribute` `a` ON `ca`.`attribute_id` = `a`.`id`
+    LEFT JOIN `attribute_family` `af` ON `a`.`id` = `af`.`attribute_id` AND `af`.`family_id` = link_family
+    SET `ca`.`deleted` = 1
+    WHERE (`af`.`attribute_id` IS NULL OR `af`.`family_id` IS NULL)
+    AND `c`.`id` = link_component;
+END
+SQL);
+        $this->addSql(<<<'SQL'
+CREATE PROCEDURE LINK_COMPONENT_ATTRIBUTES_BY_COMPONENT(IN link_component INT UNSIGNED)
+BEGIN
+    SELECT `family_id` INTO @link_comp_attrs_comp_family FROM `component` WHERE `id` = link_component;
+    WHILE @link_comp_attrs_comp_family IS NOT NULL DO
+        CALL LINK_COMPONENT_ATTRIBUTES_BY_FAMILY(link_component, @link_comp_attrs_comp_family);
+        SELECT `parent_id` INTO @link_comp_attrs_comp_family FROM `component_family` WHERE `id` = @link_comp_attrs_comp_family;
+    END WHILE;
+END;
+SQL);
+        $this->addSql(<<<'SQL'
+CREATE PROCEDURE LINK_COMPONENTS_ATTRIBUTES()
+BEGIN
+    SET @link_comp_attr_i = 0;
+    SELECT COUNT(*) INTO @link_comp_attr_count FROM `component` WHERE `deleted` = 0;
+    WHILE @link_comp_attr_i < @link_comp_attr_count DO
+        SET @link_comp_attr_sql = CONCAT(
+            'SELECT `id` INTO @link_comp_attr_comp FROM `component` WHERE `deleted` = 0 LIMIT 1 OFFSET ',
+            @link_comp_attr_i
+        );
+        PREPARE link_comp_attr_stmt FROM @link_comp_attr_sql;
+        EXECUTE link_comp_attr_stmt;
+        CALL LINK_COMPONENT_ATTRIBUTES_BY_COMPONENT(@link_comp_attr_comp);
+        SET @link_comp_attr_i = @link_comp_attr_i + 1;
+    END WHILE;
+END;
+SQL);
         $this->setProcedure();
         $version = self::getVersion();
         $this->addSql("CREATE PROCEDURE up$version() BEGIN {$this->getQueries()}; END");
@@ -68,14 +123,12 @@ SQL);
         $this->addSql('DROP FUNCTION UCFIRST');
     }
 
+    protected function addSql(string $sql, array $params = [], array $types = []): void {
+        parent::addSql(self::trim($sql), $params, $types);
+    }
+
     private function addQuery(string $query): void {
-        $this->queries->push(
-            (new UnicodeString($query))
-                ->replaceMatches('/\s+/', ' ')
-                ->replace('( ', '(')
-                ->replace(' )', ')')
-                ->toString()
-        );
+        $this->queries->push(self::trim($query));
     }
 
     private function getPhoneQueries(): string {
@@ -313,25 +366,7 @@ AND EXISTS (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` 
 AND EXISTS (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`old_id` = `component_attribut`.`id_attribut`)
 SQL);
         $this->addQuery('DROP TABLE `component_attribut`');
-        $this->addQuery(<<<'SQL'
-INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `measure_code`)
-SELECT `c`.`id`, `a`.`id`, `u`.`code`
-FROM `component` `c`
-INNER JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
-INNER JOIN `attribute_family` `af` ON `f`.`parent_id` = `af`.`family_id`
-INNER JOIN `attribute` `a` ON `af`.`attribute_id` = `a`.`id`
-LEFT JOIN `unit` `u` ON `a`.`unit_id` = `u`.`id`
-ON DUPLICATE KEY UPDATE `measure_code` = `u`.`code`
-SQL);
-        $this->addQuery(<<<'SQL'
-DELETE `ca`
-FROM `component_attribute` `ca`
-LEFT JOIN `component` `c` ON `ca`.`component_id` = `c`.`id`
-LEFT JOIN `component_family` `f` ON `c`.`family_id` = `f`.`id`
-LEFT JOIN `attribute` `a` ON `ca`.`attribute_id` = `a`.`id`
-LEFT JOIN `attribute_family` `af` ON `a`.`id` = `af`.`attribute_id` AND `f`.`parent_id` = `af`.`family_id`
-WHERE `af`.`attribute_id` IS NULL OR `af`.`family_id` IS NULL
-SQL);
+        $this->addQuery('CALL LINK_COMPONENTS_ATTRIBUTES');
     }
 
     private function upComponentFamilies(): void {
@@ -781,7 +816,7 @@ CREATE TABLE `productcontent` (
     `id_product` INT UNSIGNED DEFAULT NULL,
     `id_component` INT UNSIGNED DEFAULT NULL,
     `quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `mandat` BOOLEAN DEFAULT FALSE NOT NULL
+    `mandat` BOOLEAN DEFAULT TRUE NOT NULL
 )
 SQL);
         $this->insert('productcontent', ['id', 'statut', 'id_product', 'id_component', 'quantity', 'mandat']);
@@ -792,7 +827,7 @@ CREATE TABLE `nomenclature` (
     `product_id` INT UNSIGNED NOT NULL,
     `component_id` INT UNSIGNED NOT NULL,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `mandated` BOOLEAN DEFAULT FALSE NOT NULL,
+    `mandated` BOOLEAN DEFAULT TRUE NOT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
     CONSTRAINT `IDX_799A3652E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),

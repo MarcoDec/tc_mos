@@ -21,6 +21,8 @@ use App\Filter\RelationFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -159,6 +161,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Component extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
+
+    /** @var Collection<int, ComponentAttribute> */
+    #[ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentAttribute::class, cascade: ['remove'])]
+    private Collection $attributes;
 
     #[
         ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
@@ -309,6 +315,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
     private Measure $weight;
 
     public function __construct() {
+        $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
         $this->currentPlace = new CurrentPlace();
         $this->forecastVolume = new Measure();
@@ -318,6 +325,21 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
 
     public static function getBarCodeTableNumber(): string {
         return self::COMPONENT_BAR_CODE_TABLE_NUMBER;
+    }
+
+    final public function addAttribute(ComponentAttribute $attribute): self {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes->add($attribute);
+            $attribute->setComponent($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ComponentAttribute>
+     */
+    final public function getAttributes(): Collection {
+        return $this->attributes;
     }
 
     #[
@@ -421,6 +443,16 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
 
     final public function isNeedGasket(): bool {
         return $this->needGasket;
+    }
+
+    final public function removeAttribute(ComponentAttribute $attribute): self {
+        if ($this->attributes->contains($attribute)) {
+            $this->attributes->removeElement($attribute);
+            if ($attribute->getComponent() === $this) {
+                $attribute->setComponent(null);
+            }
+        }
+        return $this;
     }
 
     final public function setCopperWeight(Measure $copperWeight): self {
