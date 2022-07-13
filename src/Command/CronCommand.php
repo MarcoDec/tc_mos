@@ -14,13 +14,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @method static string getDefaultName()
+ */
 final class CronCommand extends AbstractCommand {
-    private const OPTION_SCAN = 'scan';
+    public const OPTION_SCAN = 'scan';
 
     protected static $defaultDescription = 'Lance les CRON.';
     protected static $defaultName = 'gpao:cron';
 
-    public function __construct(private EntityManagerInterface $em) {
+    public function __construct(private readonly EntityManagerInterface $em) {
         parent::__construct();
     }
 
