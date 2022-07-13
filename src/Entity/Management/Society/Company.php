@@ -2,11 +2,15 @@
 
 namespace App\Entity\Management\Society;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[
+    ApiResource(description: 'Compagnie', collectionOperations: [], itemOperations: ['get' => NO_ITEM_GET_OPERATION]),
+    ORM\Entity
+]
 class Company extends Entity {
     #[
         Assert\NotBlank,

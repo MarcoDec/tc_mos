@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\Logistics\FamilyType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company;
@@ -16,17 +17,11 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial',
-    ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: [
-        'name'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'company' => 'name',
-    ]),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
-        description: 'Entrepôts',
+        description: 'Entrepôt',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -68,11 +63,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:company', 'write:warehouse'],
+            'groups' => ['write:warehouse'],
             'openapi_definition_name' => 'Warehouse-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:company', 'read:warehouse'],
+            'groups' => ['read:id', 'read:warehouse'],
             'openapi_definition_name' => 'Warehouse-read'
         ],
     ),
@@ -80,34 +75,39 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Warehouse extends Entity {
     #[
-        ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
         ORM\ManyToOne(fetch: 'EAGER'),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:warehouse', 'write:warehouse'])
     ]
-    protected ?Company $company;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'Entrepôt Victor Hugo'),
-        Assert\NotBlank,
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
+    private ?Company $company = null;
 
     /** @var string[] */
     #[
-        ApiProperty(description: 'Familles', required: false),
-        ORM\Column(nullable: true),
+        ApiProperty(
+            description: 'Familles',
+            example: [FamilyType::TYPE_PRODUCTION],
+            openapiContext: ['items' => ['enum' => FamilyType::TYPES, 'type' => 'string'], 'type' => 'array']
+        ),
+        ORM\Column(type: 'warehouse_families', nullable: true),
         Serializer\Groups(['read:warehouse', 'write:warehouse'])
     ]
     private array $families = [];
 
+    #[
+        ApiProperty(description: 'Nom', example: 'Magasin RIOZ'),
+        Assert\NotBlank,
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:warehouse', 'write:warehouse'])
+    ]
+    private ?string $name = null;
+
     final public function addFamily(string $family): self {
-        if (!in_array($family, $this->families)) {
-            $this->families[] = $family;
-            sort($this->families);
-        }
+        $this->families[] = $family;
         return $this;
+    }
+
+    final public function getCompany(): ?Company {
+        return $this->company;
     }
 
     /**
@@ -117,11 +117,25 @@ class Warehouse extends Entity {
         return $this->families;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function removeFamily(string $family): self {
         if (false !== $key = array_search($family, $this->families, true)) {
-            /** @phpstan-ignore-next-line */
+            /** @var int $key */
             array_splice($this->families, $key, 1);
         }
+        return $this;
+    }
+
+    final public function setCompany(?Company $company): self {
+        $this->company = $company;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 }

@@ -13,23 +13,31 @@ abstract class EnumType extends Type {
      */
     public const TYPES = [];
 
-    private static function getStrTypes(): string {
+    protected static function getStrTypes(): string {
         return collect(static::TYPES)
             ->map(static fn (string $type): string => "'$type'")
             ->implode(', ');
     }
 
     /**
-     * @param string $value
+     * @param string|string[] $value
      */
-    final public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed {
-        if (!empty($value) && !in_array($value, static::TYPES, true)) {
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed {
+        if (
+            !empty($value)
+            && is_string($value)
+            && !in_array($value, static::TYPES, true)
+        ) {
             throw new InvalidArgumentException(sprintf("Invalid value. Get \"$value\", but valid values are [%s].", self::getStrTypes()));
         }
         return parent::convertToDatabaseValue($value, $platform);
     }
 
+    public function getEnumType(): string {
+        return 'ENUM';
+    }
+
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
-        return sprintf('ENUM(%s)', self::getStrTypes());
+        return sprintf("{$this->getEnumType()}(%s)", self::getStrTypes());
     }
 }

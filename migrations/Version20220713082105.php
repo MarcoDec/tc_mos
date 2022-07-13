@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220711120320 extends AbstractMigration {
+final class Version20220713082105 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -184,6 +184,7 @@ SQL);
         $this->upManufacturers();
         $this->upNomenclatures();
         $this->upPrinters();
+        $this->upWarehouses();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
@@ -1668,5 +1669,54 @@ ALTER TABLE `messagetva`
     CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
         $this->addQuery('RENAME TABLE `messagetva` TO `vat_message`');
+    }
+
+    private function upWarehouses(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `warehouse` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `families` SET('prison', 'production', 'réception', 'magasin pièces finies', 'expédition', 'magasin matières premières', 'camion') DEFAULT NULL COMMENT '(DC2Type:warehouse_families)',
+    `warehouse_name` VARCHAR(255) NOT NULL
+)
+SQL);
+        $this->insert('warehouse', ['id', 'statut', 'id_society', 'warehouse_name']);
+        $this->addQuery('RENAME TABLE `warehouse` TO `warehouse_old`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `warehouse` (
+  `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+  `company_id` INT UNSIGNED DEFAULT NULL,
+  `families` SET('prison','production','réception','magasin pièces finies','expédition','magasin matières premières','camion') DEFAULT NULL COMMENT '(DC2Type:warehouse_families)',
+  `name` VARCHAR(255) DEFAULT NULL,
+  CONSTRAINT `IDX_ECB38BFC979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `warehouse` (`company_id`, `families`, `name`)
+SELECT
+    (
+        SELECT `company`.`id`
+        FROM `company`
+        WHERE `company`.`society_id` = (
+            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `warehouse_old`.`id_society`
+        )
+    ),
+    CASE
+        WHEN `warehouse_name` LIKE '%prison%' THEN 'prison'
+        WHEN `warehouse_name` LIKE '%fabrication%' OR `warehouse_name` LIKE '%production%' THEN 'production'
+        WHEN `warehouse_name` LIKE '%réception%' OR `warehouse_name` LIKE '%import%' THEN 'réception'
+        WHEN `warehouse_name` LIKE '%vente%' THEN 'magasin pièces finies'
+        WHEN `warehouse_name` LIKE '%expédition%' OR `warehouse_name` LIKE '%export%' THEN 'expédition'
+        WHEN `warehouse_name` LIKE '%besoin%' OR `warehouse_name` LIKE '%magasin%' THEN 'magasin matières premières'
+        WHEN `warehouse_name` LIKE '%camion%' THEN 'camion'
+        ELSE NULL
+    END,
+    `warehouse_name`
+FROM `warehouse_old`
+WHERE `statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `warehouse_old`');
     }
 }
