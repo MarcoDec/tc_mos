@@ -10,23 +10,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company;
-use App\Entity\Traits\CompanyTrait;
-use App\Entity\Traits\NameTrait;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial',
-    ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: [
-        'name'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'company' => 'name',
-    ]),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
     ApiResource(
         description: 'Zone',
         collectionOperations: [
@@ -64,32 +56,48 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:company', 'write:name'],
+            'groups' => ['write:zone'],
             'openapi_definition_name' => 'CompanySupply-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:company', 'read:name'],
-            'openapi_definition_name' => 'CompanySupply-read'
-        ],
+            'groups' => ['read:id', 'read:zone'],
+            'openapi_definition_name' => 'CompanySupply-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity
 ]
 class Zone extends Entity {
-    use CompanyTrait;
-    use NameTrait;
-
     #[
-        ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company', 'write:company'])
+        ApiProperty(description: 'Company', example: '/api/companies/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:zone', 'write:zone'])
     ]
-    protected ?Company $company;
+    private ?Company $company = null;
 
     #[
-        ApiProperty(description: 'Nom', required: true),
+        ApiProperty(description: 'Nom'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:zone', 'write:zone'])
     ]
-    protected ?string $name = null;
+    private ?string $name = null;
+
+    final public function getCompany(): ?Company {
+        return $this->company;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
+    final public function setCompany(?Company $company): self {
+        $this->company = $company;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
+    }
 }
