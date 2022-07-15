@@ -44,6 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une zone',
@@ -69,14 +70,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Zone extends Entity {
     #[
-        ApiProperty(description: 'Company', example: '/api/companies/1'),
+        ApiProperty(description: 'Company', readableLink: false, example: '/api/companies/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:zone', 'write:zone'])
     ]
     private ?Company $company = null;
 
     #[
-        ApiProperty(description: 'Nom'),
+        ApiProperty(description: 'Nom', example: 'Zone sertissage'),
         Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:zone', 'write:zone'])
