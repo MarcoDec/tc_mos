@@ -8,15 +8,13 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\TimeSlot;
 use App\Entity\Management\Society\Company;
-use App\Entity\Traits\CompanyTrait;
-use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
-        description: 'Equipe',
+        description: 'Équipe',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -58,44 +56,60 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:company', 'write:team', 'write:name', 'write:time-slot'],
+            'groups' => ['write:team'],
             'openapi_definition_name' => 'Team-write'
         ],
         normalizationContext: [
-            'groups' => ['read:company', 'read:id', 'read:name', 'read:time-slot', 'read:team'],
-            'openapi_definition_name' => 'Team-read'
+            'groups' => ['read:id', 'read:team'],
+            'openapi_definition_name' => 'Team-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
 class Team extends Entity {
-    use CompanyTrait;
-    use NameTrait;
-
     #[
-        ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company', 'write:company'])
+        ApiProperty(description: 'Company', readableLink: false, example: '/api/companies/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:team', 'write:team'])
     ]
-    protected ?Company $company;
+    private ?Company $company = null;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Groupe 1'),
+        ApiProperty(description: 'Nom', example: 'Groupe 1'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:team', 'write:team'])
     ]
-    protected ?string $name = null;
+    private ?string $name = null;
 
     #[
         ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/time-slots/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: TimeSlot::class),
-        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+        ORM\ManyToOne,
+        Serializer\Groups(['read:team', 'write:team'])
     ]
-    private ?TimeSlot $timeSlot;
+    private ?TimeSlot $timeSlot = null;
+
+    final public function getCompany(): ?Company {
+        return $this->company;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
+    }
 
     final public function getTimeSlot(): ?TimeSlot {
         return $this->timeSlot;
+    }
+
+    final public function setCompany(?Company $company): self {
+        $this->company = $company;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
     }
 
     final public function setTimeSlot(?TimeSlot $timeSlot): self {
