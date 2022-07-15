@@ -5,8 +5,6 @@ namespace App\Entity\Production\Company;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
@@ -18,9 +16,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: NumericFilter::class, properties: ['proportion']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'incoterms', 'product']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'product']),
     ApiResource(
         description: 'Fourniture',
         collectionOperations: [
@@ -67,12 +63,15 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Supply-read',
             'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity
 ]
 class Supply extends Entity {
     #[
         ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
+        Assert\NotBlank,
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:supply', 'write:supply'])
     ]
@@ -80,6 +79,7 @@ class Supply extends Entity {
 
     #[
         ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/2'),
+        Assert\NotBlank,
         ORM\ManyToOne,
         Serializer\Groups(['read:supply', 'write:supply'])
     ]
@@ -87,6 +87,8 @@ class Supply extends Entity {
 
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/4'),
+        Assert\NotBlank,
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:supply', 'write:supply'])
     ]
@@ -94,7 +96,6 @@ class Supply extends Entity {
 
     #[
         ApiProperty(description: 'Proportion', example: '99'),
-        Assert\NotNull,
         Assert\PositiveOrZero,
         ORM\Column(options: ['default' => 100, 'unsigned' => true]),
         Serializer\Groups(['read:supply', 'write:supply'])
