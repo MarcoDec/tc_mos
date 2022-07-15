@@ -19,6 +19,7 @@ import {
     faHourglass,
     faIcons,
     faIndustry,
+    faInfoCircle,
     faLaptop,
     faLayerGroup,
     faMale,
@@ -29,6 +30,7 @@ import {
     faProjectDiagram,
     faPuzzlePiece,
     faReceipt,
+    faRoute,
     faRulerHorizontal,
     faSearch,
     faServer,
@@ -92,3 +94,5 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faRoute)
+library.add(faInfoCircle)

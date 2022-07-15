@@ -13,7 +13,7 @@ export const mutations = {
         state.initiale = {...needs}
     },
     show(state) {
-        const needs = Object.entries(state.needs)
+        const needs = Object.entries(state.needs) 
         const components = Object.entries(state.needsComp)
         const leng = components.length
 

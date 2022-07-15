@@ -2,7 +2,6 @@ export const getters = {
   // eslint-disable-next-line  @typescript-eslint/no-unnecessary-condition
   hasNeeds: (state) => Object.values(state.needs).length > 0,
   hasNeedsCom: (state) => Object.values(state.needsComp).length > 0,
-
   hasDisplayed: (state) => Object.values(state.displayedComponent).length > 0,
   listDisplayed: (state) => Object.values(state.displayed),
   listDisplayedComp: (state) => Object.values(state.displayedComponent),

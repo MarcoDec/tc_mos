@@ -1,9 +1,10 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import AppHome from './pages/AppHome'
+import AppHome from './pages/AppHome.vue'
 import AppLogin from './pages/AppLogin.vue'
 import hr from './routes/hr'
 import logistics from './routes/logistics'
 import management from './routes/management'
+import needs from './routes/needs'
 import production from './routes/production'
 import project from './routes/project'
 import purchase from './routes/purchase'
@@ -28,6 +29,7 @@ const router = createRouter({
         ...hr,
         ...logistics,
         ...management,
+        ...needs,
         ...production,
         ...project,
         ...purchase,
