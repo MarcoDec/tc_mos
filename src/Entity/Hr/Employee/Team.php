@@ -8,6 +8,8 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\TimeSlot;
 use App\Entity\Management\Society\Company;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -69,14 +71,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Team extends Entity {
     #[
-        ApiProperty(description: 'Company', readableLink: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:team', 'write:team'])
     ]
     private ?Company $company = null;
 
+    /** @var Collection<int, Employee> */
     #[
-        ApiProperty(description: 'Nom', example: 'Groupe 1'),
+        ApiProperty(description: 'Employés', readableLink: false, example: ['/api/employees/1', '/api/employees/2']),
+        ORM\OneToMany(mappedBy: 'team', targetEntity: Employee::class),
+        Serializer\Groups(['read:team', 'write:team'])
+    ]
+    private Collection $employees;
+
+    #[
+        ApiProperty(description: 'Nom', example: 'Équipe du matin'),
         Assert\NotBlank,
         ORM\Column,
         Serializer\Groups(['read:team', 'write:team'])
@@ -84,14 +94,33 @@ class Team extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/time-slots/2'),
+        ApiProperty(description: 'Horaires', readableLink: false, example: '/api/time-slots/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:team', 'write:team'])
     ]
     private ?TimeSlot $timeSlot = null;
 
+    public function __construct() {
+        $this->employees = new ArrayCollection();
+    }
+
+    final public function addEmployee(Employee $employee): self {
+        if (!$this->employees->contains($employee)) {
+            $this->employees->add($employee);
+            $employee->setTeam($this);
+        }
+        return $this;
+    }
+
     final public function getCompany(): ?Company {
         return $this->company;
+    }
+
+    /**
+     * @return Collection<int, Employee>
+     */
+    final public function getEmployees(): Collection {
+        return $this->employees;
     }
 
     final public function getName(): ?string {
@@ -100,6 +129,16 @@ class Team extends Entity {
 
     final public function getTimeSlot(): ?TimeSlot {
         return $this->timeSlot;
+    }
+
+    final public function removeEmployee(Employee $employee): self {
+        if ($this->employees->contains($employee)) {
+            $this->employees->removeElement($employee);
+            if ($employee->getTeam() === $this) {
+                $employee->setTeam(null);
+            }
+        }
+        return $this;
     }
 
     final public function setCompany(?Company $company): self {

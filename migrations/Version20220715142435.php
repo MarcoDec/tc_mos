@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220715121944 extends AbstractMigration {
+final class Version20220715142435 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -185,6 +185,8 @@ SQL);
         $this->upNomenclatures();
         $this->upPrinters();
         $this->upSupplies();
+        $this->upTeams();
+        $this->addQuery('ALTER TABLE `employee` ADD CONSTRAINT `IDX_5D9F75A1296CD8AE` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)');
         $this->upWarehouses();
         $this->upZones();
         // clean
@@ -1637,6 +1639,20 @@ SQL);
         $this->addQuery('DROP TABLE `product_supplier`');
     }
 
+    private function upTeams(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `team` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `time_slot_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_C4E0A61F979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_C4E0A61FD62B0FA` FOREIGN KEY (`time_slot_id`) REFERENCES `time_slot` (`id`)
+)
+SQL);
+    }
+
     private function upTimeSlots(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `time_slot` (
@@ -1703,6 +1719,7 @@ CREATE TABLE `employee` (
     `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
     `name` VARCHAR(30) NOT NULL,
     `password` CHAR(60) NOT NULL  COMMENT '(DC2Type:char)',
+    `team_id` INT UNSIGNED DEFAULT NULL,
     `username` VARCHAR(20) NOT NULL
 )
 SQL);
