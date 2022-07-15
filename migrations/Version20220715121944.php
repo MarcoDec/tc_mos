@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220715083802 extends AbstractMigration {
+final class Version20220715121944 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -178,6 +178,7 @@ SQL);
         $this->upProducts();
         $this->upSocieties();
         // rank 3
+        $this->upCompanyEvents();
         $this->upComponentAttributes();
         $this->upComponentReferenceValues();
         $this->upManufacturers();
@@ -307,6 +308,23 @@ SQL);
         $this->insert('couleur', ['id', 'name', 'rgb']);
         $this->addQuery('UPDATE `couleur` SET `name` = UCFIRST(`name`)');
         $this->addQuery('RENAME TABLE `couleur` TO `color`');
+    }
+
+    private function upCompanyEvents(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `company_event` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `date` DATETIME DEFAULT NULL,
+    `done` BOOLEAN DEFAULT FALSE NOT NULL,
+    `kind` VARCHAR(255) DEFAULT 'holiday' NOT NULL,
+    `managing_company_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    CONSTRAINT `IDX_7C5FA8C2E7E23CE8` FOREIGN KEY (`managing_company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_7C5FA8C2979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+)
+SQL);
     }
 
     private function upComponentAttributes(): void {
