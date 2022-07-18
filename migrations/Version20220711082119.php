@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220707132150 extends AbstractMigration {
+final class Version20220711082119 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -180,6 +180,7 @@ SQL);
         $this->upSocieties();
         // rank 3
         $this->upComponentAttributes();
+        $this->upComponentReferenceValues();
         $this->upManufacturers();
         $this->upNomenclatures();
         // clean
@@ -392,6 +393,81 @@ ALTER TABLE `component_family`
     CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     ADD CONSTRAINT `IDX_79FF2A21727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `component_family` (`id`)
 SQL);
+    }
+
+    private function upComponentReferenceValues(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_quality_values` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_component` INT UNSIGNED DEFAULT NULL,
+    `obligation_hauteur` BOOLEAN DEFAULT TRUE NOT NULL,
+    `height_tolerance_code` VARCHAR(6) DEFAULT 'mm',
+    `height_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `tolerance_hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `height_value_code` VARCHAR(6) DEFAULT 'mm',
+    `height_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `section_code` VARCHAR(6) DEFAULT 'mm²',
+    `section_denominator` VARCHAR(6) DEFAULT NULL,
+    `section` DOUBLE PRECISION UNSIGNED DEFAULT 0 NOT NULL,
+    `obligation_traction` BOOLEAN DEFAULT TRUE NOT NULL,
+    `tensile_tolerance_code` VARCHAR(6) DEFAULT 'mm²',
+    `tensile_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `tolerance_traction` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tensile_value_code` VARCHAR(6) DEFAULT 'mm²',
+    `tensile_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `traction` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `obligation_largeur` BOOLEAN DEFAULT TRUE NOT NULL,
+    `width_tolerance_code` VARCHAR(6) DEFAULT 'mm',
+    `width_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `tolerance_largeur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `width_value_code` VARCHAR(6) DEFAULT 'mm',
+    `width_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `largeur` DOUBLE PRECISION DEFAULT 0 NOT NULL
+)
+SQL);
+        $this->insert('component_quality_values', [
+            'id',
+            'id_component',
+            'section',
+            'traction',
+            'tolerance_traction',
+            'obligation_traction',
+            'hauteur',
+            'tolerance_hauteur',
+            'obligation_hauteur',
+            'largeur',
+            'tolerance_largeur',
+            'obligation_largeur'
+        ]);
+        $this->addQuery(<<<'SQL'
+UPDATE `component_quality_values`
+SET `id_component` = (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_quality_values`.`id_component`)
+SQL);
+        $this->addQuery(<<<'SQL'
+ALTER TABLE `component_quality_values`
+    CHANGE `id_component` `component_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `hauteur` `height_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CHANGE `height_tolerance_code` `height_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    CHANGE `height_value_code` `height_value_code` VARCHAR(6) DEFAULT NULL,
+    CHANGE `largeur` `width_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CHANGE `obligation_hauteur` `height_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    CHANGE `obligation_largeur` `width_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    CHANGE `obligation_traction` `tensile_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    CHANGE `section_code` `section_code` VARCHAR(6) DEFAULT NULL,
+    CHANGE `section` `section_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CHANGE `tensile_tolerance_code` `tensile_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    CHANGE `tensile_value_code` `tensile_value_code` VARCHAR(6) DEFAULT NULL,
+    CHANGE `tolerance_hauteur` `height_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CHANGE `tolerance_largeur` `width_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CHANGE `tolerance_traction` `tensile_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CHANGE `traction` `tensile_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CHANGE `width_tolerance_code` `width_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    CHANGE `width_value_code` `width_value_code` VARCHAR(6) DEFAULT NULL,
+    ADD CONSTRAINT `IDX_648B6870E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
+SQL);
+        $this->addQuery('RENAME TABLE `component_quality_values` TO `component_reference_value`');
     }
 
     private function upComponents(): void {
