@@ -27,6 +27,7 @@ doctrine:
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
       tinyint: App\Doctrine\DBAL\Types\Tinyint
       vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce
+      warehouse_families: App\Doctrine\DBAL\Types\Logistics\FamilyType
   orm:
     auto_generate_proxy_classes: true
     default_entity_manager: default
