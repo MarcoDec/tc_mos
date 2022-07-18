@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220715142435 extends AbstractMigration {
+final class Version20220718141939 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -317,8 +317,8 @@ SQL);
 CREATE TABLE `company_event` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `company_id` INT UNSIGNED DEFAULT NULL,
-    `date` DATETIME DEFAULT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
     `done` BOOLEAN DEFAULT FALSE NOT NULL,
     `kind` VARCHAR(255) DEFAULT 'holiday' NOT NULL,
     `managing_company_id` INT UNSIGNED DEFAULT NULL,

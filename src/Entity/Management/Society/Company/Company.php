@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Entity\Management\Society;
+namespace App\Entity\Management\Society\Company;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
+use App\Entity\Management\Society\Society;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
