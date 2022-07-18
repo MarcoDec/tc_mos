@@ -21,6 +21,7 @@ export default defineConfig({
             }
         }
     },
+    optimizeDeps: {force: true},
     plugins: [
         symfonyPlugin(),
         vue(),
@@ -28,7 +29,6 @@ export default defineConfig({
     ],
     root: './',
     server: {
-        force: true,
         fs: {allow: ['..'], strict: false},
         host: '0.0.0.0',
         port: 8001,

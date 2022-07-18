@@ -109,7 +109,7 @@
                             <AppNavbarLink icon="oil-well" to="manufacturers" variant="success">
                                 Fabricants
                             </AppNavbarLink>
-                            <AppNavbarLink disabled icon="map-marked" to="zones" variant="danger">
+                            <AppNavbarLink icon="map-marked" to="zones" variant="success">
                                 Zones
                             </AppNavbarLink>
                             <template v-if="user.isProductionAdmin">

@@ -25,6 +25,7 @@ import {
     faLayerGroup,
     faMagnet,
     faMale,
+    faMapMarked,
     faMapMarkedAlt,
     faOilWell,
     faPalette,
@@ -54,6 +55,7 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 
 library.add(faAddressCard)
 library.add(faBars)
+library.add(faBell)
 library.add(faBoxes)
 library.add(faCaretDown)
 library.add(faCaretUp)
@@ -67,6 +69,7 @@ library.add(faDatabase)
 library.add(faElementor)
 library.add(faEuroSign)
 library.add(faExclamationTriangle)
+library.add(faEye)
 library.add(faFileContract)
 library.add(faFileInvoiceDollar)
 library.add(faFolder)
@@ -77,6 +80,7 @@ library.add(faLaptop)
 library.add(faLayerGroup)
 library.add(faMagnet)
 library.add(faMale)
+library.add(faMapMarked)
 library.add(faMapMarkedAlt)
 library.add(faOilWell)
 library.add(faPalette)
@@ -100,5 +104,3 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
-library.add(faBell)
-library.add(faEye)

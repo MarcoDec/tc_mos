@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220715070541 extends AbstractMigration {
+final class Version20220715083802 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -185,6 +185,7 @@ SQL);
         $this->upPrinters();
         $this->upSupplies();
         $this->upWarehouses();
+        $this->upZones();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
@@ -1769,5 +1770,34 @@ FROM `warehouse_old`
 WHERE `statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `warehouse_old`');
+    }
+
+    private function upZones(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `society_zone` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_society` INT UNSIGNED NOT NULL,
+    `nom` VARCHAR(255) NOT NULL
+)
+SQL);
+        $this->insert('society_zone', ['id', 'id_society', 'nom']);
+        $this->addQuery(<<<'SQL'
+UPDATE `society_zone`
+SET `id_society` = (
+    SELECT `company`.`id`
+    FROM `company`
+    WHERE `company`.`society_id` = (
+        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_zone`.`id_society`
+    )
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+ALTER TABLE `society_zone`
+    CHANGE `id_society` `company_id` INT UNSIGNED NOT NULL,
+    CHANGE `nom` `name` VARCHAR(255) NOT NULL,
+    ADD CONSTRAINT `IDX_A0EBC007979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+SQL);
+        $this->addQuery('RENAME TABLE `society_zone` TO `zone`');
     }
 }
