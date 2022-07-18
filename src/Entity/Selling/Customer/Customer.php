@@ -3,37 +3,23 @@
 namespace App\Entity\Selling\Customer;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Selling\Customer\CurrentPlace;
 use App\Entity\Embeddable\Selling\Customer\WebPortal;
+use App\Entity\Entity;
+use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company;
-use App\Entity\Management\Society\SubSociety;
-use App\Filter\RelationFilter;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Management\Society\Society;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
-// #[ApiResource]
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'currentPlace' => 'name'
-    ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: [
-        'name'
-    ]),
     ApiResource(
         description: 'Client',
         collectionOperations: [
@@ -117,178 +103,173 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Customer extends SubSociety {
+class Customer extends Entity {
     #[
-        ApiProperty(description: 'Portail de gestion', required: true),
-        ORM\Embedded(WebPortal::class),
+        ApiProperty(description: 'Portail de gestion'),
+        ORM\Embedded,
         Serializer\Groups(['read:webportal', 'write:webportal'])
     ]
     private WebPortal $accountingPortal;
 
     #[
-        ApiProperty(description: 'Compagnie dirigeante', required: true, readableLink: false, example: '/api/companies/2'),
-        ORM\ManyToOne(targetEntity: Company::class),
-        ORM\JoinColumn(nullable: false),
-        Serializer\Groups(['read:company', 'write:company'])
+        ApiProperty(description: 'Adresse'),
+        Assert\Valid(groups: ['Default', 'Society-create']),
+        ORM\Embedded,
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
-    private Company $administeredBy;
+    private Address $address;
 
     #[
-        ApiProperty(description: 'Temps de livraison', required: true, example: 7),
-        ORM\Column(type: 'tinyint', options: ['default' => 7, 'unsigned' => true]),
+        ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/companies/2'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:company', 'write:company'])
+    ]
+    private ?Company $administeredBy = null;
+
+    #[
+        ApiProperty(description: 'Temps de livraison', example: 7),
         Assert\PositiveOrZero,
+        ORM\Column(type: 'tinyint', options: ['default' => 7, 'unsigned' => true]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private int $conveyanceDuration = 7;
 
     #[
-        ApiProperty(description: 'Cuivre', required: true),
-        ORM\Embedded(Copper::class),
+        ApiProperty(description: 'Cuivre'),
+        ORM\Embedded,
         Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private Copper $copper;
 
     #[
-        ApiProperty(description: 'Statut', required: true),
-        ORM\Embedded(CurrentPlace::class),
+        ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/2'),
+        Assert\NotBlank,
+        ORM\ManyToOne,
+        Serializer\Groups(['read:currency', 'write:currency'])
+    ]
+    private ?Currency $currency;
+
+    #[
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded,
         Serializer\Groups(['read:customer', 'write:customer', 'read:customer:collection'])
     ]
     private CurrentPlace $currentPlace;
 
-    /**
-     * @var Collection<int, DeliveryAddress>
-     */
     #[
-        ApiProperty(description: 'Addresse de livraison', required: false, readableLink: false, example: ['/api/delivery-addresses/5', '/api/delivery-addresses/14']),
-        ORM\OneToMany(targetEntity: DeliveryAddress::class, mappedBy: 'customer'),
-        Serializer\Groups(['read:customer', 'write:customer']),
-    ]
-    private Collection $deliveryAddress;
-
-    #[
-        ApiProperty(description: 'Accepter un équivalent', required: true, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
+        ApiProperty(description: 'Acceptation des équivalents', example: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private bool $equivalentEnabled = false;
 
-    /**
-     * @var Collection<int, Event>
-     */
     #[
-        ApiProperty(description: 'Evénements', required: false, readableLink: false, example: ['/api/customer-events/5', '/api/customer-eventes/14']),
-        ORM\OneToMany(targetEntity: Event::class, mappedBy: 'customer'),
-        Serializer\Groups(['read:event', 'write:event']),
-    ]
-    private Collection $events;
-
-    #[
-        ApiProperty(description: 'Accepter les factures par email', required: true, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
+        ApiProperty(description: 'Factures par email', example: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private bool $invoiceByEmail = false;
 
     #[
-        ApiProperty(description: 'Langue', required: false, example: 'Français'),
+        ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private ?string $language = null;
 
     #[
-        ApiProperty(description: 'Encours mensuels', required: true, example: '2.66'),
-        ORM\Column(type: 'float', nullable: true),
+        ApiProperty(description: 'Encours mensuels', example: '2.66'),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private float $monthlyOutstanding = 0;
 
     #[
-        ApiProperty(description: 'Nombre de bons de livraison mensuel', required: true, example: 30),
+        ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
+        Assert\NotBlank,
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    private ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Nombre de bons de livraison mensuel', example: 30),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private int $nbDeliveries = 10;
 
     #[
-        ApiProperty(description: 'Nombre de factures mensuel', required: true, example: 30),
+        ApiProperty(description: 'Nombre de factures mensuel', example: 30),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private int $nbInvoices = 10;
 
     #[
-        ApiProperty(description: 'Notes', required: true, example: 'Lorem ipsum'),
+        ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Encours maximal souhaité par le client', required: true, example: '5'),
-        ORM\Column(type: 'float', nullable: true),
+        ApiProperty(description: 'Encours maximal souhaité par le client', example: '5'),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private float $outstandingMax = 0;
 
     #[
-        ApiProperty(description: 'Date de réglement de la facture', readableLink: false, required: true, example: '/api/invoice-time-dues/7'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: InvoiceTimeDue::class),
+        ApiProperty(description: 'Date de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/7'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
     private ?InvoiceTimeDue $paymentTerms;
 
     #[
-        ApiProperty(description: 'Nouveau statut', required: false, example: 'draft'),
+        ApiProperty(description: 'Nouveau statut', example: 'draft'),
         Serializer\Groups(['write:customer:promote'])
     ]
     private ?string $place = null;
 
     #[
         ApiProperty(description: 'Qualité', required: true, example: 0),
-        ORM\Column(type: 'integer', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
+        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private int $quality = 0;
 
     #[
+        ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/2'),
+        ORM\ManyToOne,
+        Assert\NotBlank,
+        Serializer\Groups(['read:subsociety', 'write:subsociety', 'read:society', 'write:society', 'write:customer_society'])
+    ]
+    private ?Society $society;
+
+    #[
         ApiProperty(description: 'Activer la TVA', required: true, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private bool $vatEnabled = false;
 
-    final public function __construct() {
-        parent::__construct();
+    public function __construct() {
         $this->accountingPortal = new WebPortal();
+        $this->address = new Address();
         $this->copper = new Copper();
         $this->currentPlace = new CurrentPlace();
-        $this->address = new Address();
-        $this->deliveryAddress = new ArrayCollection();
-        $this->events = new ArrayCollection();
-    }
-
-    final public function addDeliveryAddress(DeliveryAddress $deliveryAddress): self {
-        if (!$this->deliveryAddress->contains($deliveryAddress)) {
-            $this->deliveryAddress[] = $deliveryAddress;
-            $deliveryAddress->setCustomer($this);
-        }
-
-        return $this;
-    }
-
-    final public function addEvent(Event $event): self {
-        if (!$this->events->contains($event)) {
-            $this->events[] = $event;
-            $event->setCustomer($this);
-        }
-
-        return $this;
     }
 
     final public function getAccountingPortal(): WebPortal {
         return $this->accountingPortal;
+    }
+
+    final public function getAddress(): Address {
+        return $this->address;
     }
 
     final public function getAdministeredBy(): ?Company {
@@ -303,45 +284,31 @@ class Customer extends SubSociety {
         return $this->copper;
     }
 
+    final public function getCurrency(): ?Currency {
+        return $this->currency;
+    }
+
     final public function getCurrentPlace(): CurrentPlace {
         return $this->currentPlace;
-    }
-
-    /**
-     * @return Collection|DeliveryAddress[]
-     */
-    final public function getDeliveryAddress(): Collection {
-        return $this->deliveryAddress;
-    }
-
-    final public function getEquivalentEnabled(): ?bool {
-        return $this->equivalentEnabled;
-    }
-
-    /**
-     * @return Collection|Event[]
-     */
-    final public function getEvents(): Collection {
-        return $this->events;
-    }
-
-    final public function getInvoiceByEmail(): ?bool {
-        return $this->invoiceByEmail;
     }
 
     final public function getLanguage(): ?string {
         return $this->language;
     }
 
-    final public function getMonthlyOutstanding(): ?float {
+    final public function getMonthlyOutstanding(): float {
         return $this->monthlyOutstanding;
     }
 
-    final public function getNbDeliveries() {
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
+    final public function getNbDeliveries(): int {
         return $this->nbDeliveries;
     }
 
-    final public function getNbInvoices() {
+    final public function getNbInvoices(): int {
         return $this->nbInvoices;
     }
 
@@ -349,7 +316,7 @@ class Customer extends SubSociety {
         return $this->notes;
     }
 
-    final public function getOutstandingMax(): ?float {
+    final public function getOutstandingMax(): float {
         return $this->outstandingMax;
     }
 
@@ -361,134 +328,128 @@ class Customer extends SubSociety {
         return $this->place;
     }
 
-    final public function getQuality(): ?int {
+    final public function getQuality(): int {
         return $this->quality;
     }
 
-    final public function getVatEnabled(): ?bool {
+    final public function getSociety(): ?Society {
+        return $this->society;
+    }
+
+    final public function isEquivalentEnabled(): bool {
+        return $this->equivalentEnabled;
+    }
+
+    final public function isInvoiceByEmail(): bool {
+        return $this->invoiceByEmail;
+    }
+
+    final public function isVatEnabled(): bool {
         return $this->vatEnabled;
-    }
-
-    final public function removeDeliveryAddress(DeliveryAddress $deliveryAddress): self {
-        if ($this->deliveryAddress->removeElement($deliveryAddress)) {
-            // set the owning side to null (unless already changed)
-            if ($deliveryAddress->getCustomer() === $this) {
-                $deliveryAddress->setCustomer(null);
-            }
-        }
-
-        return $this;
-    }
-
-    final public function removeEvent(?Event $event): self {
-        if ($this->events->contains($event)) {
-            $this->events->removeElement($event);
-            if ($event->getCustomer() === $this) {
-                $event->setCustomer(null);
-            }
-        }
-        return $this;
     }
 
     final public function setAccountingPortal(WebPortal $accountingPortal): self {
         $this->accountingPortal = $accountingPortal;
+        return $this;
+    }
 
+    final public function setAddress(Address $address): self {
+        $this->address = $address;
         return $this;
     }
 
     final public function setAdministeredBy(?Company $administeredBy): self {
         $this->administeredBy = $administeredBy;
-
         return $this;
     }
 
-    final public function setConveyanceDuration($conveyanceDuration): self {
+    final public function setConveyanceDuration(int $conveyanceDuration): self {
         $this->conveyanceDuration = $conveyanceDuration;
-
         return $this;
     }
 
     final public function setCopper(Copper $copper): self {
         $this->copper = $copper;
+        return $this;
+    }
 
+    final public function setCurrency(?Currency $currency): self {
+        $this->currency = $currency;
         return $this;
     }
 
     final public function setCurrentPlace(CurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
-
         return $this;
     }
 
     final public function setEquivalentEnabled(bool $equivalentEnabled): self {
         $this->equivalentEnabled = $equivalentEnabled;
-
         return $this;
     }
 
     final public function setInvoiceByEmail(bool $invoiceByEmail): self {
         $this->invoiceByEmail = $invoiceByEmail;
-
         return $this;
     }
 
     final public function setLanguage(?string $language): self {
         $this->language = $language;
-
         return $this;
     }
 
     final public function setMonthlyOutstanding(float $monthlyOutstanding): self {
         $this->monthlyOutstanding = $monthlyOutstanding;
-
         return $this;
     }
 
-    final public function setNbDeliveries($nbDeliveries): self {
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
+    }
+
+    final public function setNbDeliveries(int $nbDeliveries): self {
         $this->nbDeliveries = $nbDeliveries;
-
         return $this;
     }
 
-    final public function setNbInvoices($nbInvoices): self {
+    final public function setNbInvoices(int $nbInvoices): self {
         $this->nbInvoices = $nbInvoices;
-
         return $this;
     }
 
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
-
         return $this;
     }
 
     final public function setOutstandingMax(float $outstandingMax): self {
         $this->outstandingMax = $outstandingMax;
-
         return $this;
     }
 
     final public function setPaymentTerms(?InvoiceTimeDue $paymentTerms): self {
         $this->paymentTerms = $paymentTerms;
-
         return $this;
     }
 
     final public function setPlace(?string $place): self {
         $this->place = $place;
-
         return $this;
     }
 
     final public function setQuality(int $quality): self {
         $this->quality = $quality;
+        return $this;
+    }
 
+    final public function setSociety(?Society $society): self {
+        $this->society = $society;
         return $this;
     }
 
     final public function setVatEnabled(bool $vatEnabled): self {
         $this->vatEnabled = $vatEnabled;
-
         return $this;
     }
 }
