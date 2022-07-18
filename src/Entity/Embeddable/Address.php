@@ -137,6 +137,14 @@ class Address {
         return $this->zipCode;
     }
 
+    final public function isEmpty(): bool {
+        return empty($this->address)
+            && empty($this->city)
+            && empty($this->country)
+            && empty($this->phone)
+            && empty($this->zip);
+    }
+
     final public function setAddress(?string $address): self {
         $this->address = $address;
         return $this;

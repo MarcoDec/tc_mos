@@ -20,7 +20,7 @@ function AppTableItems(props, context) {
         props.machine.state.value.matches('update') && props.machine.state.value.context.updated === item['@id']
             ? AppTableItemUpdate
             : AppTableItem,
-        {fields: props.fields, id: `${props.id}-${item.id}`, index, item, key: item['@id'], machine: props.machine},
+        {fields: props.fields, id: `${props.id}-${item.id}`, index, item, key: item['@id'], machine: props.machine, readonly: props.readonly},
         children
     )))
 }
@@ -29,7 +29,8 @@ AppTableItems.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     items: {required: true, type: Object},
-    machine: {required: true, type: Object}
+    machine: {required: true, type: Object},
+    readonly: {type: Boolean}
 }
 
 export default AppTableItems

@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220711082119 extends AbstractMigration {
+final class Version20220711120320 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -183,6 +183,7 @@ SQL);
         $this->upComponentReferenceValues();
         $this->upManufacturers();
         $this->upNomenclatures();
+        $this->upPrinters();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
@@ -190,6 +191,7 @@ SQL);
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `product` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
+        $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('DROP TABLE `country`');
         $this->addQuery('DROP TABLE `customcode`');
     }
@@ -975,6 +977,37 @@ SQL);
         $this->phoneQueries->push("ALTER TABLE `$table` CHANGE `$phoneProp` `address_phone_number` VARCHAR(18) DEFAULT NULL");
     }
 
+    private function upPrinters(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `printer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `ip` VARCHAR(255) DEFAULT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_8D4C79ED979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `printer` (`company_id`, `ip`, `name`) VALUES
+(
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 1)),
+    '192.168.2.115',
+    'zpl'
+),
+(
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 611)),
+    '192.168.3.21',
+    'zpl-tn'
+),
+(
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 5)),
+    '192.168.4.18',
+    'zpl-md'
+)
+SQL);
+    }
+
     private function upProductFamilies(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `product_family` (
@@ -1360,6 +1393,7 @@ CREATE TABLE `society` (
     `indice_cu_date` DATETIME DEFAULT NULL,
     `indice_cu_date_fin` DATETIME DEFAULT NULL,
     `id_incoterms` INT UNSIGNED DEFAULT NULL,
+    `is_company` BOOLEAN DEFAULT FALSE,
     `force_tva` TINYINT DEFAULT NULL,
     `id_messagetva` INT UNSIGNED DEFAULT NULL
 )
@@ -1393,6 +1427,7 @@ SQL);
             'indice_cu_date',
             'indice_cu_date_fin',
             'id_incoterms',
+            'is_company',
             'force_tva',
             'id_messagetva'
         ]);
@@ -1400,6 +1435,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `society` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `accounting_account` VARCHAR(50) DEFAULT NULL,
     `address_address` VARCHAR(80) DEFAULT NULL,
@@ -1442,6 +1478,7 @@ CREATE TABLE `society` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `society` (
+    `old_id`,
     `accounting_account`,
     `address_address`,
     `address_address2`,
@@ -1468,6 +1505,7 @@ INSERT INTO `society` (
     `vat_message_id`,
     `web`
 ) SELECT
+    `id`,
     `compte_compta`,
     `address1`,
     `address2`,
@@ -1508,6 +1546,22 @@ INSERT INTO `society` (
     (SELECT `vat_message`.`id` FROM `vat_message` WHERE `vat_message`.`id` = `society_old`.`id_messagetva`),
     `web`
 FROM `society_old`
+WHERE `statut` = 0
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `company` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
+    `society_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_4FBF094FE6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `company` (`name`, `society_id`)
+SELECT `nom`, (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)
+FROM `society_old`
+WHERE `is_company` = 1 AND `statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `society_old`');
     }

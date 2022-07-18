@@ -33,12 +33,12 @@ function AppTable(props, context) {
             h('table', {class: 'col table table-bordered table-hover table-responsive table-sm table-striped'}, [
                 h(
                     AppTableHeaders,
-                    {fields: props.fields, id: `${props.id}-headers`, machine: props.machine, store: props.store},
+                    {fields: props.fields, id: `${props.id}-headers`, machine: props.machine, readonly: props.readonly, store: props.store},
                     searchSlots
                 ),
                 h(
                     AppTableItems,
-                    {fields: props.fields, id: `${props.id}-items`, items: props.store.items, machine: props.machine},
+                    {fields: props.fields, id: `${props.id}-items`, items: props.store.items, machine: props.machine, readonly: props.readonly},
                     cellSlots
                 )
             ])
@@ -65,6 +65,7 @@ AppTable.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},
+    readonly: {type: Boolean},
     store: {required: true, type: Object}
 }
 

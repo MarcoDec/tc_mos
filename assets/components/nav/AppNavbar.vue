@@ -57,7 +57,7 @@
                                 <AppNavbarLink icon="euro-sign" to="currencies" variant="warning">
                                     Devises
                                 </AppNavbarLink>
-                                <AppNavbarLink disabled icon="print" to="printers" variant="danger">
+                                <AppNavbarLink icon="print" to="printers" variant="warning">
                                     Imprimantes
                                 </AppNavbarLink>
                                 <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">
@@ -102,9 +102,7 @@
                                 </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
-                        <AppNavbarItem
-                            v-if="user.isProductionReader" id="production" icon="industry"
-                            title="Production">
+                        <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
@@ -149,9 +147,7 @@
                             <AppDropdownItem disabled variant="success">
                                 Lecteur
                             </AppDropdownItem>
-                            <AppNavbarLink
-                                disabled icon="check-circle" to="component-reference-values"
-                                variant="danger">
+                            <AppNavbarLink disabled icon="check-circle" to="component-reference-values" variant="danger">
                                 Relevés qualités composants
                             </AppNavbarLink>
                             <template v-if="user.isQualityAdmin">

@@ -10,6 +10,7 @@ export default {
         brands: {type: Boolean},
         fields: generateTableFields(),
         icon: {required: true, type: String},
+        readonly: {type: Boolean},
         title: {required: true, type: String}
     },
     setup(props, context) {
@@ -59,7 +60,11 @@ export default {
                         h(resolveComponent('Fa'), {brands: props.brands, icon: props.icon}),
                         h('span', {class: 'ms-2'}, props.title)
                     ])),
-                    h(AppTable, {fields: props.fields, id: `${route.name}-table`, machine, store}, children)
+                    h(
+                        AppTable,
+                        {fields: props.fields, id: `${route.name}-table`, machine, readonly: props.readonly, store},
+                        children
+                    )
                 ]
             )
         }

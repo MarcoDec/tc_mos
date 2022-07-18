@@ -30,11 +30,42 @@ export default [
             fields: [
                 {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},
                 {create: true, label: 'Jours', name: 'days', search: true, sort: false, type: 'number', update: true},
-                {create: true, label: 'Fin du mois', name: 'endOfMonth', search: true, sort: false, type: 'boolean', update: true},
-                {create: true, label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth', search: true, sort: false, type: 'number', update: true}
+                {
+                    create: true,
+                    label: 'Fin du mois',
+                    name: 'endOfMonth',
+                    search: true,
+                    sort: false,
+                    type: 'boolean',
+                    update: true
+                },
+                {
+                    create: true,
+                    label: 'Jours après la fin du mois',
+                    name: 'daysAfterEndOfMonth',
+                    search: true,
+                    sort: false,
+                    type: 'number',
+                    update: true
+                }
             ],
             icon: 'hourglass-half',
             title: 'Délais de paiement des factures'
+        }
+    },
+    {
+        component: AppTablePage,
+        meta: {requiresAuth: true},
+        name: 'printers',
+        path: '/printers',
+        props: {
+            fields: [
+                {create: false, label: 'Nom', name: 'name', search: false, sort: false, update: false},
+                {create: false, label: 'IP', name: 'ip', search: false, sort: false, update: false}
+            ],
+            icon: 'print',
+            readonly: true,
+            title: 'Imprimantes'
         }
     },
     {
