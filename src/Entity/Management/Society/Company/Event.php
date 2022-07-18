@@ -6,7 +6,6 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Event as AbstractEvent;
-use App\Entity\Management\Society\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -68,11 +67,12 @@ class Event extends AbstractEvent {
     public const EVENT_KINDS = [self::EVENT_HOLIDAY];
 
     #[
-        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/2'),
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?Company $company;
+    private ?Company $company = null;
 
     #[
         ApiProperty(description: 'Type', example: self::EVENT_HOLIDAY),
