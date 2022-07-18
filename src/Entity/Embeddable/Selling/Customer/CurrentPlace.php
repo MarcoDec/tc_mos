@@ -3,7 +3,7 @@
 namespace App\Entity\Embeddable\Selling\Customer;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType;
+use App\Doctrine\DBAL\Types\Selling\Customer\CurrentPlaceType;
 use App\Entity\Embeddable\CurrentPlace as AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
@@ -12,11 +12,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {
+    final public const TRANSITIONS = [
+        self::TR_BLOCK,
+        self::TR_DISABLE,
+        self::TR_UNLOCK,
+        self::TR_VALIDATE
+    ];
+
     #[
         ApiProperty(description: 'Nom', required: true, openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
         Assert\NotBlank,
-        ORM\Column(type: 'product_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
+        ORM\Column(type: 'customer_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
         Serializer\Groups(['read:current-place'])
     ]
     protected ?string $name = null;

@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Customer\CurrentPlace;
 use App\Entity\Embeddable\Selling\Customer\WebPortal;
 use App\Entity\Entity;
@@ -15,9 +16,10 @@ use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company;
 use App\Entity\Management\Society\Society;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -113,27 +115,25 @@ class Customer extends Entity {
 
     #[
         ApiProperty(description: 'Adresse'),
-        Assert\Valid(groups: ['Default', 'Society-create']),
         ORM\Embedded,
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private Address $address;
 
+    /** @var Collection<int, Company> */
     #[
-        ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/companies/2'),
-        ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
+        ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'customers'),
         Serializer\Groups(['read:company', 'write:company'])
     ]
-    private ?Company $administeredBy = null;
+    private Collection $administeredBy;
 
     #[
-        ApiProperty(description: 'Temps de livraison', example: 7),
-        Assert\PositiveOrZero,
-        ORM\Column(type: 'tinyint', options: ['default' => 7, 'unsigned' => true]),
+        ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ORM\Embedded,
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
-    private int $conveyanceDuration = 7;
+    private Measure $conveyanceDuration;
 
     #[
         ApiProperty(description: 'Cuivre'),
@@ -143,12 +143,12 @@ class Customer extends Entity {
     private Copper $copper;
 
     #[
-        ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/2'),
-        Assert\NotBlank,
+        ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:currency', 'write:currency'])
     ]
-    private ?Currency $currency;
+    private ?Currency $currency = null;
 
     #[
         ApiProperty(description: 'Statut'),
@@ -179,29 +179,28 @@ class Customer extends Entity {
     private ?string $language = null;
 
     #[
-        ApiProperty(description: 'Encours mensuels', example: '2.66'),
-        ORM\Column(nullable: true),
+        ApiProperty(description: 'Encours mensuels', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
-    private float $monthlyOutstanding = 0;
+    private Measure $monthlyOutstanding;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
-        Assert\NotBlank,
-        ORM\Column(nullable: true),
+        ORM\Column,
         Serializer\Groups(['read:name', 'write:name'])
     ]
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Nombre de bons de livraison mensuel', example: 30),
+        ApiProperty(description: 'Nombre de bons de livraison mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private int $nbDeliveries = 10;
 
     #[
-        ApiProperty(description: 'Nombre de factures mensuel', example: 30),
+        ApiProperty(description: 'Nombre de factures mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
@@ -215,53 +214,45 @@ class Customer extends Entity {
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Encours maximal souhaité par le client', example: '5'),
-        ORM\Column(nullable: true),
+        ApiProperty(description: 'Encours maximal souhaité par le client', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:customer', 'write:customer'])
     ]
-    private float $outstandingMax = 0;
+    private Measure $outstandingMax;
 
     #[
-        ApiProperty(description: 'Date de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/7'),
+        ApiProperty(description: 'Date de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
-    private ?InvoiceTimeDue $paymentTerms;
+    private ?InvoiceTimeDue $paymentTerms = null;
 
     #[
-        ApiProperty(description: 'Nouveau statut', example: 'draft'),
-        Serializer\Groups(['write:customer:promote'])
-    ]
-    private ?string $place = null;
-
-    #[
-        ApiProperty(description: 'Qualité', required: true, example: 0),
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true]),
-        Serializer\Groups(['read:customer', 'write:customer'])
-    ]
-    private int $quality = 0;
-
-    #[
-        ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/2'),
+        ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Assert\NotBlank,
         Serializer\Groups(['read:subsociety', 'write:subsociety', 'read:society', 'write:society', 'write:customer_society'])
     ]
-    private ?Society $society;
-
-    #[
-        ApiProperty(description: 'Activer la TVA', required: true, example: false),
-        ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer', 'write:customer'])
-    ]
-    private bool $vatEnabled = false;
+    private ?Society $society = null;
 
     public function __construct() {
         $this->accountingPortal = new WebPortal();
         $this->address = new Address();
+        $this->administeredBy = new ArrayCollection();
+        $this->conveyanceDuration = new Measure();
         $this->copper = new Copper();
         $this->currentPlace = new CurrentPlace();
+        $this->monthlyOutstanding = new Measure();
+        $this->outstandingMax = new Measure();
+    }
+
+    final public function addAdministeredBy(Company $administeredBy): self {
+        if (!$this->administeredBy->contains($administeredBy)) {
+            $this->administeredBy->add($administeredBy);
+            $administeredBy->addCustomer($this);
+        }
+        return $this;
     }
 
     final public function getAccountingPortal(): WebPortal {
@@ -272,11 +263,14 @@ class Customer extends Entity {
         return $this->address;
     }
 
-    final public function getAdministeredBy(): ?Company {
+    /**
+     * @return Collection<int, Company>
+     */
+    final public function getAdministeredBy(): Collection {
         return $this->administeredBy;
     }
 
-    final public function getConveyanceDuration(): int {
+    final public function getConveyanceDuration(): Measure {
         return $this->conveyanceDuration;
     }
 
@@ -296,7 +290,7 @@ class Customer extends Entity {
         return $this->language;
     }
 
-    final public function getMonthlyOutstanding(): float {
+    final public function getMonthlyOutstanding(): Measure {
         return $this->monthlyOutstanding;
     }
 
@@ -316,20 +310,12 @@ class Customer extends Entity {
         return $this->notes;
     }
 
-    final public function getOutstandingMax(): float {
+    final public function getOutstandingMax(): Measure {
         return $this->outstandingMax;
     }
 
     final public function getPaymentTerms(): ?InvoiceTimeDue {
         return $this->paymentTerms;
-    }
-
-    final public function getPlace(): ?string {
-        return $this->place;
-    }
-
-    final public function getQuality(): int {
-        return $this->quality;
     }
 
     final public function getSociety(): ?Society {
@@ -344,8 +330,12 @@ class Customer extends Entity {
         return $this->invoiceByEmail;
     }
 
-    final public function isVatEnabled(): bool {
-        return $this->vatEnabled;
+    final public function removeAdministeredBy(Company $administeredBy): self {
+        if ($this->administeredBy->contains($administeredBy)) {
+            $this->administeredBy->removeElement($administeredBy);
+            $administeredBy->removeCustomer($this);
+        }
+        return $this;
     }
 
     final public function setAccountingPortal(WebPortal $accountingPortal): self {
@@ -358,12 +348,7 @@ class Customer extends Entity {
         return $this;
     }
 
-    final public function setAdministeredBy(?Company $administeredBy): self {
-        $this->administeredBy = $administeredBy;
-        return $this;
-    }
-
-    final public function setConveyanceDuration(int $conveyanceDuration): self {
+    final public function setConveyanceDuration(Measure $conveyanceDuration): self {
         $this->conveyanceDuration = $conveyanceDuration;
         return $this;
     }
@@ -398,7 +383,7 @@ class Customer extends Entity {
         return $this;
     }
 
-    final public function setMonthlyOutstanding(float $monthlyOutstanding): self {
+    final public function setMonthlyOutstanding(Measure $monthlyOutstanding): self {
         $this->monthlyOutstanding = $monthlyOutstanding;
         return $this;
     }
@@ -423,7 +408,7 @@ class Customer extends Entity {
         return $this;
     }
 
-    final public function setOutstandingMax(float $outstandingMax): self {
+    final public function setOutstandingMax(Measure $outstandingMax): self {
         $this->outstandingMax = $outstandingMax;
         return $this;
     }
@@ -433,23 +418,8 @@ class Customer extends Entity {
         return $this;
     }
 
-    final public function setPlace(?string $place): self {
-        $this->place = $place;
-        return $this;
-    }
-
-    final public function setQuality(int $quality): self {
-        $this->quality = $quality;
-        return $this;
-    }
-
     final public function setSociety(?Society $society): self {
         $this->society = $society;
-        return $this;
-    }
-
-    final public function setVatEnabled(bool $vatEnabled): self {
-        $this->vatEnabled = $vatEnabled;
         return $this;
     }
 }

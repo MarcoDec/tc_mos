@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220715142435 extends AbstractMigration {
+final class Version20220718095054 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -49,6 +49,7 @@ final class Version20220715142435 extends AbstractMigration {
     }
 
     public function postUp(Schema $schema): void {
+        $this->upPhoneNumbers('customer', 'address_phone_number');
         $this->upPhoneNumbers('out_trainer', 'tel');
         $this->upPhoneNumbers('society', 'phone');
 
@@ -152,6 +153,7 @@ SQL);
         // rank 0
         $this->upCountries();
         $this->upCustomCode();
+        $this->upLocales();
         $this->upUsers();
         // rank 1
         $this->upCarriers();
@@ -199,6 +201,7 @@ SQL);
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('DROP TABLE `country`');
         $this->addQuery('DROP TABLE `customcode`');
+        $this->addQuery('DROP TABLE `locale`');
     }
 
     private function upAttributes(): void {
@@ -820,6 +823,17 @@ SQL);
         $this->addQuery('DROP TABLE `invoicetimeduesupplier`');
     }
 
+    private function upLocales(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `locale` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN NOT NULL,
+    `code` CHAR(2) NOT NULL
+)
+SQL);
+        $this->insert('locale', ['id', 'statut', 'code']);
+    }
+
     private function upManufacturers(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine_fabricant_ou_contact` (
@@ -1398,6 +1412,10 @@ CREATE TABLE `society` (
     `id_country` INT UNSIGNED NOT NULL,
     `id_invoicetimedue` INT UNSIGNED DEFAULT NULL,
     `id_invoicetimeduesupplier` INT UNSIGNED DEFAULT NULL,
+    `id_locale` INT UNSIGNED NOT NULL,
+    `id_soc_gest_customer` INT UNSIGNED NOT NULL,
+    `id_societystatus` INT UNSIGNED NOT NULL,
+    `invoicecustomer_by_email` BOOLEAN DEFAULT FALSE NOT NULL,
     `invoice_minimum` DOUBLE PRECISION DEFAULT NULL,
     `order_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `web` VARCHAR(255) DEFAULT NULL,
@@ -1416,6 +1434,7 @@ CREATE TABLE `society` (
     `indice_cu_date_fin` DATETIME DEFAULT NULL,
     `id_incoterms` INT UNSIGNED DEFAULT NULL,
     `is_company` BOOLEAN DEFAULT FALSE,
+    `is_customer` BOOLEAN DEFAULT FALSE,
     `force_tva` TINYINT DEFAULT NULL,
     `id_messagetva` INT UNSIGNED DEFAULT NULL
 )
@@ -1432,7 +1451,11 @@ SQL);
             'id_country',
             'id_invoicetimedue',
             'id_invoicetimeduesupplier',
+            'id_locale',
+            'id_soc_gest_customer',
+            'id_societystatus',
             'invoice_minimum',
+            'invoicecustomer_by_email',
             'order_minimum',
             'web',
             'email',
@@ -1450,6 +1473,7 @@ SQL);
             'indice_cu_date_fin',
             'id_incoterms',
             'is_company',
+            'is_customer',
             'force_tva',
             'id_messagetva'
         ]);
@@ -1584,6 +1608,140 @@ INSERT INTO `company` (`name`, `society_id`)
 SELECT `nom`, (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)
 FROM `society_old`
 WHERE `is_company` = 1 AND `statut` = 0
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `customer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `accounting_portal_password` VARCHAR(255) DEFAULT NULL,
+    `accounting_portal_url` VARCHAR(255) DEFAULT NULL,
+    `accounting_portal_username` VARCHAR(255) DEFAULT NULL,
+    `address_address` VARCHAR(80) DEFAULT NULL,
+    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_city` VARCHAR(50) DEFAULT NULL,
+    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_phone_number` VARCHAR(255) DEFAULT NULL,
+    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `conveyance_duration_code` VARCHAR(6) DEFAULT NULL,
+    `conveyance_duration_denominator` VARCHAR(6) DEFAULT NULL,
+    `conveyance_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `copper_index_code` VARCHAR(6) DEFAULT NULL,
+    `copper_index_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_index_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `copper_managed` BOOLEAN DEFAULT FALSE NOT NULL,
+    `copper_next` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper_type)',
+    `currency_id` INT UNSIGNED NOT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('agreed', 'blocked', 'disabled', 'draft') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_current_place)',
+    `equivalent_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
+    `invoice_by_email` BOOLEAN DEFAULT FALSE NOT NULL,
+    `language` VARCHAR(255) DEFAULT NULL,
+    `monthly_outstanding_code` VARCHAR(6) DEFAULT NULL,
+    `monthly_outstanding_denominator` VARCHAR(6) DEFAULT NULL,
+    `monthly_outstanding_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `nb_deliveries` TINYINT UNSIGNED DEFAULT 10 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `nb_invoices` TINYINT UNSIGNED DEFAULT 10 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `notes` TEXT DEFAULT NULL,
+    `outstanding_max_code` VARCHAR(6) DEFAULT NULL,
+    `outstanding_max_denominator` VARCHAR(6) DEFAULT NULL,
+    `outstanding_max_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `payment_terms_id` INT UNSIGNED NOT NULL,
+    `society_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_81398E0938248176` FOREIGN KEY (`currency_id`) REFERENCES `currency` (`id`),
+    CONSTRAINT `IDX_81398E0913B26D4F` FOREIGN KEY (`payment_terms_id`) REFERENCES `invoice_time_due` (`id`),
+    CONSTRAINT `IDX_81398E09E6389D24` FOREIGN KEY (`society_id`) REFERENCES `society` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `customer` (
+    `address_address`,
+    `address_address2`,
+    `address_city`,
+    `address_country`,
+    `address_email`,
+    `address_phone_number`,
+    `address_zip_code`,
+    `conveyance_duration_code`,
+    `conveyance_duration_value`,
+    `copper_index_value`,
+    `copper_last`,
+    `copper_managed`,
+    `copper_next`,
+    `currency_id`,
+    `current_place_name`,
+    `invoice_by_email`,
+    `language`,
+    `name`,
+    `nb_deliveries`,
+    `nb_invoices`,
+    `notes`,
+    `payment_terms_id`,
+    `society_id`
+) SELECT
+    `address1`,
+    `address2`,
+    `city`,
+    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `society_old`.`id_country`),
+    `email`,
+    `phone`,
+    `zip`,
+    'j',
+    7,
+    IFNULL(`indice_cu`, 0),
+    `indice_cu_date`,
+    `indice_cu_enabled`,
+    `indice_cu_date_fin`,
+    (SELECT `currency`.`id` FROM `currency` WHERE `currency`.`code` = 'EUR'),
+    CASE
+        WHEN `id_societystatus` = 1 THEN 'draft'
+        WHEN `id_societystatus` = 2 THEN 'agreed'
+        WHEN `id_societystatus` = 3 THEN 'blocked'
+        ELSE 'draft'
+    END,
+    `invoicecustomer_by_email`,
+    (SELECT UCASE(`locale`.`code`) FROM `locale` WHERE `locale`.`id` = `society_old`.`id_locale`),
+    `nom`,
+    10,
+    10,
+    IF(
+        `info_public` IS NULL,
+        `info_private`,
+        IF(`info_private` IS NULL, NULL, CONCAT(`info_public`, `info_private`))
+    ),
+    (
+        SELECT `invoice_time_due`.`id`
+        FROM `invoice_time_due`
+        WHERE `invoice_time_due`.`id_old_invoicetimedue` = `society_old`.`id_invoicetimedue`
+        OR `invoice_time_due`.`id_old_invoicetimeduesupplier` = `society_old`.`id_invoicetimeduesupplier`
+        LIMIT 1
+    ),
+    (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)
+FROM `society_old`
+WHERE `is_customer` = 1 AND `statut` = 0
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `customer_company` (
+    `customer_id` INT UNSIGNED NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_5362ADF19395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_5362ADF1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`customer_id`, `company_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `customer_company` (`customer_id`, `company_id`)
+SELECT
+    (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)),
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id_soc_gest_customer`))
+FROM `society_old`
+WHERE `is_customer` = 1
+AND `statut` = 0
+AND EXISTS (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`))
+AND EXISTS (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id_soc_gest_customer`))
 SQL);
         $this->addQuery('DROP TABLE `society_old`');
     }
