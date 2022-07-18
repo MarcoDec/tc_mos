@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220713082105 extends AbstractMigration {
+final class Version20220715070541 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -138,7 +138,6 @@ SQL);
                                 $value = null;
                             }
                         }
-                        /** @phpstan-ignore-next-line */
                         $mapped[$column] = $value === null || $value === '0000-00-00 00:00:00' || $value === '0000-00-00'
                             ? 'NULL'
                             : $this->connection->quote($value);
@@ -184,6 +183,7 @@ SQL);
         $this->upManufacturers();
         $this->upNomenclatures();
         $this->upPrinters();
+        $this->upSupplies();
         $this->upWarehouses();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
@@ -1565,6 +1565,57 @@ FROM `society_old`
 WHERE `is_company` = 1 AND `statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `society_old`');
+    }
+
+    private function upSupplies(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_supplier` (
+  `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+  `id_product` INT UNSIGNED DEFAULT NULL,
+  `id_supplier` INT UNSIGNED NOT NULL,
+  `percentage` DOUBLE PRECISION UNSIGNED DEFAULT 100 NOT NULL,
+  `id_incoterms` INT UNSIGNED NOT NULL,
+  `refsupplier` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('product_supplier', [
+            'id',
+            'statut',
+            'id_product',
+            'id_supplier',
+            'percentage',
+            'id_incoterms',
+            'refsupplier'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `supply` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `product_id` INT UNSIGNED NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    `proportion` DOUBLE PRECISION UNSIGNED DEFAULT 100 NOT NULL,
+    `incoterms_id` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_D219948C979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_D219948C43D02C80` FOREIGN KEY (`incoterms_id`) REFERENCES `incoterms` (`id`),
+    CONSTRAINT `IDX_D219948C4584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `supply` (`product_id`, `company_id`, `proportion`, `incoterms_id`, `ref`)
+SELECT
+    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_supplier`.`id_product`),
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_supplier`.`id_supplier`)),
+    `percentage`,
+    (SELECT `incoterms`.`id` FROM `incoterms` WHERE `incoterms`.`id` = `product_supplier`.`id_incoterms`),
+    `refsupplier`
+FROM `product_supplier`
+WHERE `statut` = 0
+AND EXISTS (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_supplier`.`id_product`)
+AND EXISTS (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_supplier`.`id_supplier`))
+SQL);
+        $this->addQuery('DROP TABLE `product_supplier`');
     }
 
     private function upTimeSlots(): void {
