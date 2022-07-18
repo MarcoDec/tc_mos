@@ -31,21 +31,23 @@ function AppForm(props, context) {
                 }),
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
-        groups.push(h(
-            'div',
-            {class: 'row'},
-            h(
+        if (props.submitLabel !== null){
+            groups.push(h(
                 'div',
-                {class: 'col d-inline-flex justify-content-end'},
-                typeof context.slots['default'] === 'function'
-                    ? generateSlot()
-                    : h(
-                        resolveComponent('AppBtn'),
-                        {disabled: props.disabled, form: props.id, type: 'submit'},
-                        () => props.submitLabel
-                    )
-            )
-        ))
+                {class: 'row'},
+                h(
+                    'div',
+                    {class: 'col d-inline-flex justify-content-end'},
+                    typeof context.slots['default'] === 'function'
+                        ? generateSlot()
+                        : h(
+                            resolveComponent('AppBtn'),
+                            {disabled: props.disabled, form: props.id, type: 'submit'},
+                            () => props.submitLabel
+                        )
+                )
+            ))
+        }
     }
     const attrs = {
         autocomplete: 'off',

@@ -1,4 +1,4 @@
-import AppPagination from './pagination/AppPagination'
+// import AppPagination from './pagination/AppPagination'
 import AppTableHeaders from './head/AppTableHeaders'
 import AppTableItems from './body/AppTableItems'
 import {generateTableFields} from '../props'
@@ -36,32 +36,33 @@ function AppTable(props, context) {
                 ),
                 h(
                     AppTableItems,
-                    {fields: props.fields, id: `${props.id}-items`, items: props.store.items, machine: props.machine},
+                    {fields: props.fields, id: `${props.id}-items`, items: props.store[props.items], machine: props.machine},
                     cellSlots
                 )
             ])
-        ),
-        h(
-            'div',
-            {class: 'row'},
-            h(
-                AppPagination,
-                {
-                    class: 'col d-inline-flex justify-content-end',
-                    machine: props.machine,
-                    store: props.store
-                },
-                typeof context.slots.pagination === 'function'
-                    ? args => context.slots.pagination(args)
-                    : null
-            )
         )
+        // h(
+        //     'div',
+        //     {class: 'row'},
+        //     h(
+        //         AppPagination,
+        //         {
+        //             class: 'col d-inline-flex justify-content-end',
+        //             machine: props.machine,
+        //             store: props.store
+        //         },
+        //         typeof context.slots.pagination === 'function'
+        //             ? args => context.slots.pagination(args)
+        //             : null
+        //     )
+        // )
     )
 }
 
 AppTable.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
+    items: {default: 'items', type: String},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}
 }

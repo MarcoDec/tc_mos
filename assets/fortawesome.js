@@ -10,6 +10,7 @@ import {
     faChevronUp,
     faClock,
     faCommentsDollar,
+    faCubesStacked,
     faDatabase,
     faEuroSign,
     faExclamationTriangle,
@@ -30,6 +31,7 @@ import {
     faPuzzlePiece,
     faReceipt,
     faRulerHorizontal,
+    faRulerVertical,
     faSearch,
     faServer,
     faShoppingBag,
@@ -42,6 +44,7 @@ import {
     faUserCircle,
     faUserGraduate,
     faUserTag,
+    faWarehouse,
     faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
@@ -92,3 +95,6 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faWarehouse)
+library.add(faCubesStacked)
+library.add(faRulerVertical)
