@@ -3,8 +3,10 @@
 namespace App\Entity\Selling\Customer;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -16,33 +18,39 @@ use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company;
 use App\Entity\Management\Society\Society;
+use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Client',
         collectionOperations: [
             'get' => [
+                'normalization_context' => [
+                    'groups' => ['read:address', 'read:copper', 'read:current-place', 'read:customer:collection', 'read:id', 'read:measure'],
+                    'openapi_definition_name' => 'Customer-collection',
+                    'skip_null_values' => false
+                ],
                 'openapi_context' => [
                     'description' => 'Récupère les clients',
                     'summary' => 'Récupère les clients'
-                ],
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:name', 'read:customer:collection'],
-                ],
+                ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:customer', 'write:address', 'write:copper', 'write:measure'],
+                    'openapi_definition_name' => 'Customer-create'
+                ],
                 'openapi_context' => [
                     'description' => 'Créer un client',
                     'summary' => 'Créer un client'
                 ],
-                'denormalization_context' => [
-                    'groups' => ['write:name', 'write:address', 'write:customer_society', 'write:copper'],
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
+                'validation_groups' => ['Product-create']
             ]
         ],
         itemOperations: [
@@ -60,47 +68,57 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ],
             'patch' => [
-                'path' => '/customers/{id}/{process}',
-                'requirements' => ['process' => '\w+'],
                 'openapi_context' => [
-                    'description' => 'Modifier un client',
-                    'summary' => 'Modifier un client',
+                    'description' => 'Modifie un client',
                     'parameters' => [[
                         'in' => 'path',
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'type' => 'string',
-                            'enum' => ['admin', 'main', 'quality', 'logistics', 'accounting']
+                            'enum' => ['accounting', 'admin', 'logistics', 'main'],
+                            'type' => 'string'
                         ]
                     ]],
+                    'summary' => 'Modifie un client'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+                'path' => '/customers/{id}/{process}',
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
+                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
-                'method' => 'PATCH',
-                'path' => '/customers/{id}/promote',
                 'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
                 'openapi_context' => [
-                    'description' => 'Passer un client à un nouveau statut',
-                    'summary' => 'Passer un client à un nouveau statut',
+                    'description' => 'Transite le client à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite le client à son prochain statut de workflow'
                 ],
-                'denormalization_context' => [
-                    'groups' => ['write:customer:promote']
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+                'path' => '/customers/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
+                'validate' => false
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:customer', 'write:company', 'write:address', 'write:event', 'write:invoice-time-due', 'write:society', 'write:currency', 'write:webportal', 'write:copper'],
+            'groups' => ['write:address', 'write:copper', 'write:customer', 'write:measure'],
             'openapi_definition_name' => 'Customer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:customer', 'read:company', 'read:address', 'read:event', 'read:invoice-time-due', 'read:society', 'read:currency', 'read:webportal', 'read:copper'],
-            'openapi_definition_name' => 'Customer-read'
+            'groups' => ['read:address', 'read:copper', 'read:current-place', 'read:customer', 'read:id', 'read:measure'],
+            'openapi_definition_name' => 'Customer-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity
@@ -109,14 +127,14 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Portail de gestion'),
         ORM\Embedded,
-        Serializer\Groups(['read:webportal', 'write:webportal'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private WebPortal $accountingPortal;
 
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
-        Serializer\Groups(['create:society', 'read:society', 'write:society'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
     ]
     private Address $address;
 
@@ -124,21 +142,21 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'customers'),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:customer'])
     ]
     private Collection $administeredBy;
 
     #[
         ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer'])
     ]
     private Measure $conveyanceDuration;
 
     #[
         ApiProperty(description: 'Cuivre'),
         ORM\Embedded,
-        Serializer\Groups(['read:copper', 'write:copper'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
     ]
     private Copper $copper;
 
@@ -146,77 +164,77 @@ class Customer extends Entity {
         ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:currency', 'write:currency'])
+        Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private ?Currency $currency = null;
 
     #[
         ApiProperty(description: 'Statut'),
         ORM\Embedded,
-        Serializer\Groups(['read:customer', 'write:customer', 'read:customer:collection'])
+        Serializer\Groups(['read:customer'])
     ]
     private CurrentPlace $currentPlace;
 
     #[
         ApiProperty(description: 'Acceptation des équivalents', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer'])
     ]
     private bool $equivalentEnabled = false;
 
     #[
         ApiProperty(description: 'Factures par email', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer'])
     ]
     private bool $invoiceByEmail = false;
 
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer'])
     ]
     private ?string $language = null;
 
     #[
         ApiProperty(description: 'Encours mensuels', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer'])
     ]
     private Measure $monthlyOutstanding;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
         ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Nombre de bons de livraison mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private int $nbDeliveries = 10;
 
     #[
         ApiProperty(description: 'Nombre de factures mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private int $nbInvoices = 10;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private ?string $notes = null;
 
     #[
         ApiProperty(description: 'Encours maximal souhaité par le client', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:customer', 'write:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private Measure $outstandingMax;
 
@@ -224,7 +242,7 @@ class Customer extends Entity {
         ApiProperty(description: 'Date de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
+        Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private ?InvoiceTimeDue $paymentTerms = null;
 
@@ -232,7 +250,7 @@ class Customer extends Entity {
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:subsociety', 'write:subsociety', 'read:society', 'write:society', 'write:customer_society'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
     ]
     private ?Society $society = null;
 
