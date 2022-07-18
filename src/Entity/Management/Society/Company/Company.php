@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Entity\Management\Society;
+namespace App\Entity\Management\Society\Company;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
+use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Customer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

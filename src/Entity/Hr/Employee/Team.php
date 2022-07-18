@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\TimeSlot;
-use App\Entity\Management\Society\Company;
+use App\Entity\Management\Society\Company\Company;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

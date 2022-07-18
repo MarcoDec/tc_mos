@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
-use App\Entity\Management\Society\Company;
+use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;

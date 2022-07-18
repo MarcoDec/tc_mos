@@ -16,7 +16,7 @@ use App\Entity\Embeddable\Selling\Customer\WebPortal;
 use App\Entity\Entity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
-use App\Entity\Management\Society\Company;
+use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
