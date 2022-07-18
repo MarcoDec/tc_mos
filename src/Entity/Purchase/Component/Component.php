@@ -18,8 +18,11 @@ use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -154,10 +157,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
 class Component extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
+
+    /** @var Collection<int, ComponentAttribute> */
+    #[ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentAttribute::class, cascade: ['remove'])]
+    private Collection $attributes;
 
     #[
         ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
@@ -193,7 +200,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Family::class),
+        ORM\ManyToOne(targetEntity: Family::class, inversedBy: 'components'),
         Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;
@@ -210,7 +217,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         ApiProperty(description: 'Indice', required: true, example: '1'),
         Assert\Length(max: 5, groups: ['Component-admin', 'Component-clone']),
         Assert\NotBlank(groups: ['Component-admin', 'Component-clone']),
-        ORM\Column(name: '`index`', length: 5, nullable: false),
+        ORM\Column(name: '`index`', length: 5, nullable: false, options: ['default' => '0']),
         Serializer\Groups(['read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
     ]
     private string $index = '0';
@@ -308,6 +315,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
     private Measure $weight;
 
     public function __construct() {
+        $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
         $this->currentPlace = new CurrentPlace();
         $this->forecastVolume = new Measure();
@@ -317,6 +325,21 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
 
     public static function getBarCodeTableNumber(): string {
         return self::COMPONENT_BAR_CODE_TABLE_NUMBER;
+    }
+
+    final public function addAttribute(ComponentAttribute $attribute): self {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes->add($attribute);
+            $attribute->setComponent($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ComponentAttribute>
+     */
+    final public function getAttributes(): Collection {
+        return $this->attributes;
     }
 
     #[
@@ -420,6 +443,16 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
 
     final public function isNeedGasket(): bool {
         return $this->needGasket;
+    }
+
+    final public function removeAttribute(ComponentAttribute $attribute): self {
+        if ($this->attributes->contains($attribute)) {
+            $this->attributes->removeElement($attribute);
+            if ($attribute->getComponent() === $this) {
+                $attribute->setComponent(null);
+            }
+        }
+        return $this;
     }
 
     final public function setCopperWeight(Measure $copperWeight): self {

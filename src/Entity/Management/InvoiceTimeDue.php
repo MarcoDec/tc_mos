@@ -11,7 +11,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Filter\NumericFilter;
-use App\Repository\Management\InvoiceTimeDueRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -69,7 +68,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity(repositoryClass: InvoiceTimeDueRepository::class),
+    ORM\Entity,
     UniqueEntity(['days', 'daysAfterEndOfMonth', 'endOfMonth']),
     UniqueEntity('name')
 ]

@@ -102,5 +102,61 @@
     "unit_complete_lbl": "Jour",
     "base": "86400",
     "parent": "11"
+  },
+  {
+    "id": "14",
+    "statut": "0",
+    "unit_short_lbl": "mm²",
+    "unit_complete_lbl": "Millimètre carré",
+    "base": "1000000",
+    "parent": "3"
+  },
+  {
+    "id": "15",
+    "statut": "0",
+    "unit_short_lbl": "A",
+    "unit_complete_lbl": "Ampère",
+    "base": "1",
+    "parent": null
+  },
+  {
+    "id": "16",
+    "statut": "0",
+    "unit_short_lbl": "mm",
+    "unit_complete_lbl": "Millimètre",
+    "base": "1000",
+    "parent": "10"
+  },
+  {
+    "id": "17",
+    "statut": "0",
+    "unit_short_lbl": "°C",
+    "unit_complete_lbl": "Degré Celsius",
+    "base": "1",
+    "parent": null
+  },
+  {
+    "id": "18",
+    "statut": "0",
+    "unit_short_lbl": "V",
+    "unit_complete_lbl": "Volt",
+    "base": "1",
+    "parent": null
+  },
+  {
+    "id": "19",
+    "statut": "0",
+    "unit_short_lbl": "W",
+    "unit_complete_lbl": "Watt",
+    "base": "1",
+    "parent": null
+  },
+  {
+    "id": "20",
+    "statut": "0",
+    "unit_short_lbl": "Ω",
+    "unit_complete_lbl": "Ohm",
+    "base": "1",
+    "parent": null
   }
 ]

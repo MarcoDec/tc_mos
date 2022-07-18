@@ -5,16 +5,34 @@
 
     defineProps({icon: {required: true, type: String}, title: {required: true, type: String}})
 
-    const options = generateOptions('units')
-    await options.fetch()
+    const types = [
+        {text: 'Booléen', value: 'bool'},
+        {text: 'Couleur', value: 'color'},
+        {text: 'Entier', value: 'int'},
+        {text: 'Pourcentage', value: 'percent'},
+        {text: 'Texte', value: 'text'},
+        {text: 'Unité', value: 'unit'}
+    ]
+    const units = generateOptions('units')
+    await units.fetch()
     const fields = [
         {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},
         {create: true, label: 'Description', name: 'description', search: true, sort: true, update: true},
         {
             create: true,
+            label: 'Type',
+            name: 'type',
+            options: {label: value => types.find(option => option.value === value)?.text ?? null, options: types},
+            search: true,
+            sort: true,
+            type: 'select',
+            update: false
+        },
+        {
+            create: true,
             label: 'Unité',
             name: 'unit',
-            options,
+            options: units,
             search: true,
             sort: true,
             sortName: 'unit.name',
@@ -29,7 +47,7 @@
             await callback()
     }
 
-    onUnmounted(() => options.dispose())
+    onUnmounted(() => units.dispose())
 </script>
 
 <template>
