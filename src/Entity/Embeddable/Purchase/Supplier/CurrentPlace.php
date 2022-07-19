@@ -15,7 +15,9 @@ class CurrentPlace extends AbstractCurrentPlace {
     final public const TRANSITIONS = [
         self::TR_BLOCK,
         self::TR_DISABLE,
-        self::TR_UNLOCK,
+        self::TR_PARTIALLY_UNLOCK,
+        self::TR_PARTIALLY_VALIDATE,
+        self::TR_SUPERVISE,
         self::TR_VALIDATE
     ];
 
@@ -23,7 +25,7 @@ class CurrentPlace extends AbstractCurrentPlace {
         ApiProperty(description: 'Nom', required: true, openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
         Assert\NotBlank,
-        ORM\Column(type: 'customer_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
+        ORM\Column(type: 'supplier_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
         Serializer\Groups(['read:current-place'])
     ]
     protected ?string $name = null;
