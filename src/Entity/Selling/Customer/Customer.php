@@ -14,6 +14,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Customer\CurrentPlace;
 use App\Entity\Embeddable\Selling\Customer\WebPortal;
 use App\Entity\Entity;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
@@ -22,6 +23,7 @@ use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -123,7 +125,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class Customer extends Entity {
+class Customer extends Entity implements WorkflowInterface {
     #[
         ApiProperty(description: 'Portail de gestion'),
         ORM\Embedded,
@@ -340,8 +342,23 @@ class Customer extends Entity {
         return $this->society;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
     final public function isEquivalentEnabled(): bool {
         return $this->equivalentEnabled;
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
     }
 
     final public function isInvoiceByEmail(): bool {
@@ -438,6 +455,11 @@ class Customer extends Entity {
 
     final public function setSociety(?Society $society): self {
         $this->society = $society;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 }
