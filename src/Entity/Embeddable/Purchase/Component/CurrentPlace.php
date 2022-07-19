@@ -2,38 +2,52 @@
 
 namespace App\Entity\Embeddable\Purchase\Component;
 
-use App\Entity\Embeddable\AbstractCurrentPlace;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType;
+use App\Entity\Embeddable\CurrentPlace as AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {
-    public const WF_PLACE_ACCEPTED = 'accepted';
-    public const WF_PLACE_BLOCKED = 'blocked';
-    public const WF_PLACE_ENDED = 'ended';
-    public const WF_PLACE_EXEMPTIONED = 'exemptioned';
-    public const WF_PLACE_INACTIVED = 'inactived';
-    public const WF_PLACE_INVALIDATED = 'invalidated';
-    public const WF_TR_ACCEPT = 'accept';
-    public const WF_TR_BLOCK = 'block';
-    public const WF_TR_END = 'end';
-    public const WF_TR_EXEMPTION = 'exemption';
-    public const WF_TR_INACTIVE = 'inactive';
+    final public const TRANSITIONS = [
+        self::TR_BLOCK,
+        self::TR_DISABLE,
+        self::TR_PARTIALLY_UNLOCK,
+        self::TR_PARTIALLY_VALIDATE,
+        self::TR_UNLOCK,
+        self::TR_VALIDATE
+    ];
+
+    #[
+        ApiProperty(description: 'Nom', required: true, openapiContext: ['enum' => CurrentPlaceType::TYPES]),
+        Assert\Choice(choices: CurrentPlaceType::TYPES),
+        Assert\NotBlank,
+        ORM\Column(type: 'component_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
+        Serializer\Groups(['read:current-place'])
+    ]
+    protected ?string $name = null;
 
     final public function __construct(?string $name = null) {
-        parent::__construct(!empty($name) ? $name : self::WF_PLACE_INVALIDATED);
+        parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_DRAFT);
     }
 
+    #[Pure]
     final public function getTrafficLight(): int {
-        switch ($this->getName()) {
-            case self::WF_PLACE_BLOCKED:
-            case self::WF_PLACE_INACTIVED:
-            case self::WF_PLACE_INVALIDATED:
-            case self::WF_PLACE_ENDED:
-                return 3;
-            case self::WF_PLACE_ACCEPTED:
-                return 1;
-            default:
-                return 2;
-        }
+        return match ($this->getName()) {
+            CurrentPlaceType::TYPE_AGREED => 1,
+            CurrentPlaceType::TYPE_BLOCKED, CurrentPlaceType::TYPE_DISABLED => 3,
+            default => 2,
+        };
+    }
+
+    final public function isDeletable(): bool {
+        return in_array($this->name, [CurrentPlaceType::TYPE_DISABLED, CurrentPlaceType::TYPE_DRAFT]);
+    }
+
+    final public function isFrozen(): bool {
+        return $this->name === CurrentPlaceType::TYPE_DISABLED;
     }
 }
