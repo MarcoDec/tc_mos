@@ -53,6 +53,9 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[ORM\Column(type: 'char', length: 60)]
     private ?string $password = null;
 
+    #[ORM\ManyToOne(inversedBy: 'employees')]
+    private ?Team $team = null;
+
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 20),
@@ -141,6 +144,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         return null;
     }
 
+    final public function getTeam(): ?Team {
+        return $this->team;
+    }
+
     #[
         ApiProperty(description: 'Token', example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
         Serializer\Groups(['read:employee'])
@@ -181,6 +188,11 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
 
     final public function setPassword(?string $password): self {
         $this->password = $password;
+        return $this;
+    }
+
+    final public function setTeam(?Team $team): self {
+        $this->team = $team;
         return $this;
     }
 

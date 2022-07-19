@@ -22,8 +22,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer événement',
-                    'summary' => 'Créer événement',
+                    'description' => 'Créer un événement',
+                    'summary' => 'Créer un événement',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
@@ -31,16 +31,16 @@ use Symfony\Component\Validator\Constraints as Assert;
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime événement',
-                    'summary' => 'Supprime événement',
+                    'description' => 'Supprime un événement',
+                    'summary' => 'Supprime un événement',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie événement',
-                    'summary' => 'Modifie événement',
+                    'description' => 'Modifie un événement',
+                    'summary' => 'Modifie un événement',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
