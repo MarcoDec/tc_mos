@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
-        description: 'Événement',
+        description: 'Événement sur une compagnie',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
