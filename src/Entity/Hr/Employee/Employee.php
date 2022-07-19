@@ -7,8 +7,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
-use App\Repository\Hr\Employee\EmployeeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +14,6 @@ use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -30,48 +27,44 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
         ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
-        ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:employee', 'read:name', 'read:user'],
-            'openapi_definition_name' => 'Employee-read'
+            'groups' => ['read:id', 'read:employee', 'read:user'],
+            'openapi_definition_name' => 'Employee-read',
+            'skip_null_values' => false
         ]
     ),
-    ORM\Entity(repositoryClass: EmployeeRepository::class)
+    ORM\Entity
 ]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
-    use NameTrait;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'Super'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    /**
-     * @var Collection<int, Token>
-     */
+    /** @var Collection<int, Token> */
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
     private Collection $apiTokens;
 
     #[ORM\Embedded]
     private Roles $embRoles;
 
-    #[ORM\Column]
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Super'),
+        ORM\Column(length: 30),
+        Serializer\Groups(['read:employee', 'write:employee'])
+    ]
+    private ?string $name = null;
+
+    #[ORM\Column(type: 'char', length: 60)]
     private ?string $password = null;
+
+    #[ORM\ManyToOne(inversedBy: 'employees')]
+    private ?Team $team = null;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
-        ORM\Column(length: 180),
+        ORM\Column(length: 20),
         Serializer\Groups(['read:employee'])
     ]
     private ?string $username = null;
 
     #[Pure]
-    final public function __construct() {
+    public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
     }
@@ -116,6 +109,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         return $this->embRoles;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     /**
      * @see PasswordAuthenticatedUserInterface
      */
@@ -147,6 +144,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         return null;
     }
 
+    final public function getTeam(): ?Team {
+        return $this->team;
+    }
+
     #[
         ApiProperty(description: 'Token', example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
         Serializer\Groups(['read:employee'])
@@ -160,13 +161,10 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
      *
      * @see UserInterface
      */
-    final public function getUserIdentifier(): ?string {
-        return $this->username;
+    final public function getUserIdentifier(): string {
+        return (string) $this->username;
     }
 
-    /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
     final public function getUsername(): ?string {
         return $this->username;
     }
@@ -183,8 +181,18 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         return $this;
     }
 
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
+    }
+
     final public function setPassword(?string $password): self {
         $this->password = $password;
+        return $this;
+    }
+
+    final public function setTeam(?Team $team): self {
+        $this->team = $team;
         return $this;
     }
 

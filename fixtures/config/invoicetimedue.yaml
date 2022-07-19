@@ -1,9 +1,0 @@
-App\Entity\Management\InvoiceTimeDue:
-  deleted: statut
-  properties:
-    days:
-      new_name: days
-    endofmonth:
-      new_name: end_of_month
-    libelle:
-      new_name: name

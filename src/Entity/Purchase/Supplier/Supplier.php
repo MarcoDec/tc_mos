@@ -6,31 +6,18 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Supplier\CurrentPlace;
-use App\Entity\Management\Society\Company;
-use App\Entity\Management\Society\SubSociety;
-use App\Entity\Quality\Reception\Reference;
-use App\Filter\RelationFilter;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Entity;
+use App\Entity\Management\Society\Company\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'currentPlace' => 'name'
-    ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: [
-        'name'
-    ]),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Fournisseur',
         collectionOperations: [
@@ -114,9 +101,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Supplier extends SubSociety {
+class Supplier extends Entity {
     #[
-        ApiProperty(description: 'Compagnie dirigeante', required: true, readableLink: false, example: '/api/companies/2'),
+        ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/companies/2'),
         ORM\ManyToOne(targetEntity: Company::class),
         ORM\JoinColumn(nullable: false),
         Serializer\Groups(['read:company', 'write:company'])
@@ -124,7 +111,7 @@ class Supplier extends SubSociety {
     private Company $administeredBy;
 
     #[
-        ApiProperty(description: 'Critère de confiance', required: true, example: 0),
+        ApiProperty(description: 'Critère de confiance', example: 0),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
         Serializer\Groups(['read:supplier', 'write:supplier'])
@@ -132,77 +119,56 @@ class Supplier extends SubSociety {
     private int $confidenceCriteria = 0;
 
     #[
-        ApiProperty(description: 'Cuivre', required: true),
+        ApiProperty(description: 'Cuivre'),
         ORM\Embedded(Copper::class),
         Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private Copper $copper;
 
     #[
-        ApiProperty(description: 'Statut', required: true),
+        ApiProperty(description: 'Statut'),
         ORM\Embedded(CurrentPlace::class),
         Serializer\Groups(['read:supplier', 'write:supplier', 'read:supplier:collection'])
     ]
     private CurrentPlace $currentPlace;
 
     #[
-        ApiProperty(description: 'Langue', required: false, example: 'Français'),
+        ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:supplier', 'write:supplier'])
     ]
     private ?string $language = null;
 
     #[
-        ApiProperty(description: 'Gestion de la production', required: true, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
+        ApiProperty(description: 'Gestion de la production', example: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:supplier', 'write:supplier'])
     ]
     private bool $managedProduction = false;
 
     #[
-        ApiProperty(description: 'Gestion de la qualité', required: true, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
+        ApiProperty(description: 'Gestion de la qualité', example: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:supplier', 'write:supplier'])
     ]
     private bool $managedQuality = false;
 
     #[
-        ApiProperty(description: 'Notes', required: true, example: 'Lorem ipsum'),
+        ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:supplier', 'write:supplier'])
     ]
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Nouveau statut', required: false, example: 'draft'),
+        ApiProperty(description: 'Nouveau statut', example: 'draft'),
         Serializer\Groups(['write:supplier:promote'])
     ]
     private ?string $place = null;
 
-    /**
-     * @var Collection<int, Reference>
-     */
-    #[
-        ApiProperty(description: 'Références', readableLink: false, example: ['/api/references/2', '/api/references/18']),
-        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Reference::class, mappedBy: 'suppliers'),
-        Serializer\Groups(['read:supplier', 'write:supplier'])
-    ]
-    private Collection $references;
-
-    final public function __construct() {
-        parent::__construct();
+    public function __construct() {
         $this->copper = new Copper();
         $this->currentPlace = new CurrentPlace();
-        $this->references = new ArrayCollection();
-    }
-
-    final public function addReference(Reference $reference): self {
-        if (!$this->references->contains($reference)) {
-            $this->references[] = $reference;
-            $reference->addSupplier($this);
-        }
-
-        return $this;
     }
 
     final public function getAdministeredBy(): Company {
@@ -225,14 +191,6 @@ class Supplier extends SubSociety {
         return $this->language;
     }
 
-    final public function getManagedProduction(): ?bool {
-        return $this->managedProduction;
-    }
-
-    final public function getManagedQuality(): ?bool {
-        return $this->managedQuality;
-    }
-
     final public function getNotes(): ?string {
         return $this->notes;
     }
@@ -241,72 +199,56 @@ class Supplier extends SubSociety {
         return $this->place;
     }
 
-    /**
-     * @return Collection<int, Reference>
-     */
-    final public function getReferences(): Collection {
-        return $this->references;
+    final public function isManagedProduction(): bool {
+        return $this->managedProduction;
     }
 
-    final public function removeReference(Reference $reference): self {
-        if ($this->references->removeElement($reference)) {
-            $reference->removeSupplier($this);
-        }
-
-        return $this;
+    final public function isManagedQuality(): bool {
+        return $this->managedQuality;
     }
 
     final public function setAdministeredBy(Company $administeredBy): self {
         $this->administeredBy = $administeredBy;
-
         return $this;
     }
 
     final public function setConfidenceCriteria(int $confidenceCriteria): self {
         $this->confidenceCriteria = $confidenceCriteria;
-
         return $this;
     }
 
     final public function setCopper(Copper $copper): self {
         $this->copper = $copper;
-
         return $this;
     }
 
     final public function setCurrentPlace(CurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
-
         return $this;
     }
 
     final public function setLanguage(?string $language): self {
         $this->language = $language;
-
         return $this;
     }
 
     final public function setManagedProduction(bool $managedProduction): self {
         $this->managedProduction = $managedProduction;
-
         return $this;
     }
 
     final public function setManagedQuality(bool $managedQuality): self {
         $this->managedQuality = $managedQuality;
-
         return $this;
     }
 
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
-
         return $this;
     }
 
     final public function setPlace(?string $place): self {
         $this->place = $place;
-
         return $this;
     }
 }
