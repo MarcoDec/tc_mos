@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ba872e9c535a3e3a197062d130766f6",
+    "content-hash": "f7030d27e8c5d63d8b7b65b3bebc8bca",
     "packages": [
         {
             "name": "api-platform/core",
@@ -2625,16 +2625,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.3.3",
+            "version": "2.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "0da1dca5781dd3cfddbe328224d9a7a62571addc"
+                "reference": "155ec1c95626b16fda0889cf15904d24890a60d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/0da1dca5781dd3cfddbe328224d9a7a62571addc",
-                "reference": "0da1dca5781dd3cfddbe328224d9a7a62571addc",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/155ec1c95626b16fda0889cf15904d24890a60d5",
+                "reference": "155ec1c95626b16fda0889cf15904d24890a60d5",
                 "shasum": ""
             },
             "require": {
@@ -2727,7 +2727,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-07T21:28:26+00:00"
+            "time": "2022-07-17T16:25:47+00:00"
         },
         {
             "name": "league/config",
@@ -9584,16 +9584,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.9.3",
+            "version": "v3.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "bad87e63d7d87efa5e82aa4feafa52df6a37e6c1"
+                "reference": "093466b1c3ff3e3b469bdbc9827bb2362de6b2fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/bad87e63d7d87efa5e82aa4feafa52df6a37e6c1",
-                "reference": "bad87e63d7d87efa5e82aa4feafa52df6a37e6c1",
+                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/093466b1c3ff3e3b469bdbc9827bb2362de6b2fa",
+                "reference": "093466b1c3ff3e3b469bdbc9827bb2362de6b2fa",
                 "shasum": ""
             },
             "require": {
@@ -9661,7 +9661,7 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/issues",
-                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.9.3"
+                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.9.4"
             },
             "funding": [
                 {
@@ -9669,7 +9669,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-13T09:53:20+00:00"
+            "time": "2022-07-15T21:04:49+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
