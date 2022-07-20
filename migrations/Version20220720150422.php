@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220720073849 extends AbstractMigration {
+final class Version20220720150422 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -50,6 +50,8 @@ final class Version20220720073849 extends AbstractMigration {
 
     public function postUp(Schema $schema): void {
         $this->upPhoneNumbers('customer', 'address_phone_number');
+        $this->upPhoneNumbers('customer_contact', 'address_phone_number');
+        $this->upPhoneNumbers('customer_contact', 'mobile', 'mobile');
         $this->upPhoneNumbers('out_trainer', 'tel');
         $this->upPhoneNumbers('society', 'phone');
         $this->upPhoneNumbers('supplier', 'address_phone_number');
@@ -184,6 +186,7 @@ SQL);
         $this->upCompanyEvents();
         $this->upComponentAttributes();
         $this->upComponentReferenceValues();
+        $this->upContacts();
         $this->upCustomerEvents();
         $this->upManufacturers();
         $this->upNomenclatures();
@@ -650,6 +653,92 @@ SQL);
         $this->addQuery('DROP TABLE `component_old`');
     }
 
+    private function upContacts(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `contact` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_customer` INT UNSIGNED DEFAULT NULL,
+    `nom` VARCHAR(255) DEFAULT NULL,
+    `phone` VARCHAR(255) DEFAULT NULL,
+    `prenom` VARCHAR(255) DEFAULT NULL,
+    `address1` TEXT,
+    `address2` TEXT,
+    `zip` VARCHAR(255) DEFAULT NULL,
+    `city` VARCHAR(255) DEFAULT NULL,
+    `id_country` INT UNSIGNED DEFAULT NULL,
+    `email` VARCHAR(255) DEFAULT NULL,
+    `mobile` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('contact', [
+            'id',
+            'statut',
+            'id_customer',
+            'nom',
+            'phone',
+            'prenom',
+            'address1',
+            'address2',
+            'zip',
+            'city',
+            'id_country',
+            'email',
+            'mobile'
+        ]);
+        $this->addQuery('RENAME TABLE `contact` TO `contact_old`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `customer_contact` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `address_address` VARCHAR(80) DEFAULT NULL,
+    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_city` VARCHAR(50) DEFAULT NULL,
+    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_phone_number` VARCHAR(255) DEFAULT NULL,
+    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `default` BOOLEAN DEFAULT FALSE NOT NULL,
+    `kind` ENUM('comptabilité', 'chiffrage', 'direction', 'ingénierie', 'fabrication', 'achat', 'qualité', 'commercial', 'approvisionnement') DEFAULT 'comptabilité' NOT NULL COMMENT '(DC2Type:contact_type)',
+    `mobile` VARCHAR(255) DEFAULT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
+    `society_id` INT UNSIGNED DEFAULT NULL,
+    `surname` VARCHAR(255) NOT NULL,
+    CONSTRAINT `IDX_50BF4286E6389D24` FOREIGN KEY (`society_id`) REFERENCES `customer` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `customer_contact` (
+    `address_address`,
+    `address_address2`,
+    `address_city`,
+    `address_country`,
+    `address_email`,
+    `address_phone_number`,
+    `address_zip_code`,
+    `name`,
+    `mobile`,
+    `society_id`,
+    `surname`
+) SELECT
+    `address1`,
+    `address2`,
+    `city`,
+    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `contact_old`.`id_country`),
+    `email`,
+    `phone`,
+    `zip`,
+    `prenom`,
+    `mobile`,
+    (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `contact_old`.`id_customer`)),
+    `nom`
+FROM `contact_old`
+WHERE `statut` = 0
+AND EXISTS (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `contact_old`.`id_customer`))
+SQL);
+        $this->addQuery('DROP TABLE `contact_old`');
+    }
+
     private function upCountries(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `country` (
@@ -1016,7 +1105,7 @@ SQL);
         $this->addQuery('RENAME TABLE `employee_extformateur` TO `out_trainer`');
     }
 
-    private function upPhoneNumbers(string $table, string $phoneProp): void {
+    private function upPhoneNumbers(string $table, string $phoneProp, string $normalizedProp = 'address_phone_number'): void {
         $items = $this->connection->executeQuery("SELECT `id`, `$phoneProp`, `address_country` FROM `$table` WHERE `$phoneProp` IS NOT NULL");
         $util = PhoneNumberUtil::getInstance();
         while ($item = $items->fetchAssociative()) {
@@ -1031,7 +1120,7 @@ SQL);
                 : null;
             $this->phoneQueries->push("UPDATE `$table` SET `$phoneProp` = '$phone' WHERE `id` = {$item['id']}");
         }
-        $this->phoneQueries->push("ALTER TABLE `$table` CHANGE `$phoneProp` `address_phone_number` VARCHAR(18) DEFAULT NULL");
+        $this->phoneQueries->push("ALTER TABLE `$table` CHANGE `$phoneProp` `$normalizedProp` VARCHAR(18) DEFAULT NULL");
     }
 
     private function upPrinters(): void {

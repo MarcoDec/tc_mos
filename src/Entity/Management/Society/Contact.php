@@ -3,9 +3,9 @@
 namespace App\Entity\Management\Society;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Doctrine\DBAL\Types\Management\Society\ContactType;
 use App\Entity\Embeddable\Address;
 use App\Entity\Entity;
-use App\Entity\Selling\Customer\Contact as CustomerContact;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -13,71 +13,56 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @template T of object
  */
+#[ORM\MappedSuperclass]
 abstract class Contact extends Entity {
-    public const KIND_ACCOUNTING = 'comptabilité';
-    public const KIND_COSTING = 'chiffrage';
-    public const KIND_DIRECTION = 'direction';
-    public const KIND_ENGINEERING = 'ingénierie';
-    public const KIND_MANUFACTURING = 'fabrication';
-    public const KIND_PURCHASING = 'achat';
-    public const KIND_QUALITY = 'qualité';
-    public const KIND_SELLING = 'commercial';
-    public const KIND_SUPPLYING = 'approvisionnement';
-    public const KINDS = [self::KIND_ACCOUNTING, self::KIND_SUPPLYING, self::KIND_SELLING, self::KIND_COSTING, self::KIND_ENGINEERING, self::KIND_DIRECTION, self::KIND_QUALITY, self::KIND_MANUFACTURING, self::KIND_PURCHASING];
-    public const TYPES = ['customer' => CustomerContact::class];
-
     /** @var null|T */
     protected $society;
 
     #[
         Assert\Valid,
         ORM\Embedded,
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['read:contact', 'write:contact'])
     ]
     private Address $address;
 
     #[
-        ApiProperty(description: 'Defaut ?', required: true, example: false),
+        ApiProperty(description: 'Défaut', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:society-contact', 'write:society-contact'])
+        Serializer\Groups(['read:contact', 'write:contact'])
     ]
     private bool $default = false;
 
     #[
-        ApiProperty(description: 'Prénom', example: 'Matthieu'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:society-contact', 'write:society-contact'])
+        ApiProperty(description: 'Type', example: ContactType::TYPE_PURCHASING, openapiContext: ['enum' => ContactType::TYPES]),
+        ORM\Column(type: 'contact_type', options: ['default' => ContactType::TYPE_ACCOUNTING]),
+        Serializer\Groups(['read:contact', 'write:contact'])
     ]
-    private ?string $firstname = null;
-
-    #[
-        ApiProperty(description: 'Type', required: false, example: self::KIND_ACCOUNTING),
-        ORM\Column(options: ['default' => self::KIND_ACCOUNTING]),
-        Serializer\Groups(['read:society-contact', 'write:society-contact'])
-    ]
-    private ?string $kind = self::KIND_ACCOUNTING;
+    private ?string $kind = ContactType::TYPE_PURCHASING;
 
     #[
         ApiProperty(description: 'Numéro de téléphone mobile', example: '06 06 06 07 07'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:society-contact', 'write:society-contact'])
+        ORM\Column(length: 18, nullable: true),
+        Serializer\Groups(['read:contact', 'write:contact'])
     ]
     private ?string $mobile = null;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Henri'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        ApiProperty(description: 'Prénom', example: 'Matthieu'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:contact', 'write:contact'])
     ]
     private ?string $name = null;
 
+    #[
+        ApiProperty(description: 'Nom', example: 'Henri'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:contact', 'write:contact'])
+    ]
+    private ?string $surname = null;
+
     final public function getAddress(): Address {
         return $this->address;
-    }
-
-    final public function getFirstname(): ?string {
-        return $this->firstname;
     }
 
     final public function getKind(): ?string {
@@ -99,6 +84,10 @@ abstract class Contact extends Entity {
         return $this->society;
     }
 
+    final public function getSurname(): ?string {
+        return $this->surname;
+    }
+
     final public function isDefault(): bool {
         return $this->default;
     }
@@ -116,14 +105,6 @@ abstract class Contact extends Entity {
      */
     final public function setDefault(bool $default): self {
         $this->default = $default;
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    final public function setFirstname(?string $firstname): self {
-        $this->firstname = $firstname;
         return $this;
     }
 
@@ -158,6 +139,14 @@ abstract class Contact extends Entity {
      */
     final public function setSociety($society): self {
         $this->society = $society;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setSurname(?string $surname): self {
+        $this->surname = $surname;
         return $this;
     }
 }
