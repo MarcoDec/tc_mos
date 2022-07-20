@@ -12,6 +12,7 @@ use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Supplier\CurrentPlace;
 use App\Entity\Entity;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
@@ -19,6 +20,7 @@ use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -120,7 +122,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Supplier extends Entity {
+class Supplier extends Entity implements WorkflowInterface {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
@@ -267,6 +269,21 @@ class Supplier extends Entity {
         return $this->society;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
+    }
+
     final public function isManagedProduction(): bool {
         return $this->managedProduction;
     }
@@ -335,6 +352,11 @@ class Supplier extends Entity {
 
     final public function setSociety(?Society $society): self {
         $this->society = $society;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 }
