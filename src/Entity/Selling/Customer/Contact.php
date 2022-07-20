@@ -11,6 +11,9 @@ use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
+/**
+ * @template-extends SocietyContact<Customer>
+ */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: [
         'customer' => 'name',
@@ -66,7 +69,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class Contact extends SocietyContact {
     #[
         ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/7'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Customer::class),
+        ORM\ManyToOne(targetEntity: Customer::class),
         Serializer\Groups(['read:customer-contact', 'write:customer-contact'])
     ]
     protected $society;
