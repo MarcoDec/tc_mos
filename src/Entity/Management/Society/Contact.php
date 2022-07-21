@@ -27,7 +27,7 @@ abstract class Contact extends Entity {
 
     #[
         ApiProperty(description: 'Défaut', example: false),
-        ORM\Column(options: ['default' => false]),
+        ORM\Column(name: '`default`', options: ['default' => false]),
         Serializer\Groups(['read:contact', 'write:contact'])
     ]
     private bool $default = false;
