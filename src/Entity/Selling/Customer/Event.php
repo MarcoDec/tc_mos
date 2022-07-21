@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Management\Society\Company;
+namespace App\Entity\Selling\Customer;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -12,20 +12,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
-        description: 'Événement sur une compagnie',
+        description: 'Événement sur un client',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère les événements',
                     'summary' => 'Récupère les événements',
-                ]
+                ],
             ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer un événement',
                     'summary' => 'Créer un événement',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Supprime un événement',
                     'summary' => 'Supprime un événement',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
@@ -42,37 +42,37 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Modifie un événement',
                     'summary' => 'Modifie un événement',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
-            ]
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+            ],
         ],
-        shortName: 'CompanyEvent',
+        shortName: 'CustomerEvent',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:event'],
-            'openapi_definition_name' => 'CompanyEvent-write'
+            'openapi_definition_name' => 'CustomerEvent-write'
         ],
         normalizationContext: [
             'groups' => ['read:event', 'read:id'],
-            'openapi_definition_name' => 'CompanyEvent-read',
+            'openapi_definition_name' => 'CustomerEvent-read',
             'skip_null_values' => false
         ]
     ),
     ORM\Entity,
-    ORM\Table('company_event')
+    ORM\Table('customer_event')
 ]
 class Event extends AbstractEvent {
     public const EVENT_HOLIDAY = 'holiday';
     public const EVENT_KINDS = [self::EVENT_HOLIDAY];
 
     #[
-        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?Company $company = null;
+    private Customer $customer;
 
     #[
         ApiProperty(description: 'Type', example: self::EVENT_HOLIDAY),
@@ -82,16 +82,16 @@ class Event extends AbstractEvent {
     ]
     private string $kind = self::EVENT_HOLIDAY;
 
-    final public function getCompany(): ?Company {
-        return $this->company;
+    final public function getCustomer(): Customer {
+        return $this->customer;
     }
 
     final public function getKind(): string {
         return $this->kind;
     }
 
-    final public function setCompany(?Company $company): self {
-        $this->company = $company;
+    final public function setCustomer(Customer $customer): self {
+        $this->customer = $customer;
         return $this;
     }
 

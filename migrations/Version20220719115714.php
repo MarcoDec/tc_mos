@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220719092418 extends AbstractMigration {
+final class Version20220719115714 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -184,6 +184,7 @@ SQL);
         $this->upCompanyEvents();
         $this->upComponentAttributes();
         $this->upComponentReferenceValues();
+        $this->upCustomerEvents();
         $this->upManufacturers();
         $this->upNomenclatures();
         $this->upPrinters();
@@ -711,6 +712,23 @@ CREATE TABLE `customcode` (
 )
 SQL);
         $this->insert('customcode', ['id', 'statut', 'code']);
+    }
+
+    private function upCustomerEvents(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `customer_event` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `customer_id` INT UNSIGNED NOT NULL,
+    `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `done` BOOLEAN DEFAULT FALSE NOT NULL,
+    `kind` VARCHAR(255) DEFAULT 'holiday' NOT NULL,
+    `managing_company_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    CONSTRAINT `IDX_F59B7F9CE7E23CE8` FOREIGN KEY (`managing_company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_F59B7F9C9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
+)
+SQL);
     }
 
     private function upEngineGroups(): void {
