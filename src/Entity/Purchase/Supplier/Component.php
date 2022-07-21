@@ -96,7 +96,7 @@ class Component extends Entity {
     private Measure $deliveryTime;
 
     #[
-        ApiProperty(description: 'Incoterms'),
+        ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]

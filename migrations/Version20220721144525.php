@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220721120622 extends AbstractMigration {
+final class Version20220721144525 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -227,6 +227,7 @@ SQL);
         $this->upCompanyEvents();
         $this->upComponentAttributes();
         $this->upComponentReferenceValues();
+        $this->upComponentSuppliers();
         $this->upContacts();
         $this->upCustomerAddresses();
         $this->upCustomerEvents();
@@ -693,6 +694,98 @@ INNER JOIN `unit` ON `component_old`.`id_unit` = `unit`.`id`
 WHERE `component_old`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `component_old`');
+    }
+
+    private function upComponentSuppliers(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_supplier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_component` INT UNSIGNED DEFAULT NULL,
+    `id_supplier` INT UNSIGNED DEFAULT NULL,
+    `id_incoterms` INT UNSIGNED DEFAULT NULL,
+    `id_country` INT UNSIGNED DEFAULT NULL,
+    `moq` INT UNSIGNED DEFAULT NULL,
+    `conditionnement` INT UNSIGNED DEFAULT NULL,
+    `typeconditionnement` VARCHAR(255) DEFAULT NULL,
+    `timetodelivery` INT UNSIGNED DEFAULT NULL,
+    `refsupplier` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('component_supplier', [
+            'id',
+            'statut',
+            'id_component',
+            'id_supplier',
+            'id_incoterms',
+            'id_country',
+            'moq',
+            'conditionnement',
+            'typeconditionnement',
+            'timetodelivery',
+            'refsupplier'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `supplier_component` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(255) DEFAULT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `copper_weight_code` VARCHAR(6) DEFAULT NULL,
+    `copper_weight_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_weight_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `delivery_time_code` VARCHAR(6) DEFAULT NULL,
+    `delivery_time_denominator` VARCHAR(6) DEFAULT NULL,
+    `delivery_time_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `incoterms_id` INT UNSIGNED DEFAULT NULL,
+    `index` VARCHAR(255) DEFAULT '0' NOT NULL,
+    `moq_code` VARCHAR(6) DEFAULT NULL,
+    `moq_denominator` VARCHAR(6) DEFAULT NULL,
+    `moq_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `packaging_code` VARCHAR(6) DEFAULT NULL,
+    `packaging_denominator` VARCHAR(6) DEFAULT NULL,
+    `packaging_kind` VARCHAR(30) DEFAULT NULL,
+    `packaging_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `proportion` DOUBLE PRECISION UNSIGNED DEFAULT '100' NOT NULL,
+    `supplier_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_D3CC9B89E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    CONSTRAINT `IDX_D3CC9B8943D02C80` FOREIGN KEY (`incoterms_id`) REFERENCES `incoterms` (`id`),
+    CONSTRAINT `IDX_D3CC9B892ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `supplier_component` (
+    `code`,
+    `component_id`,
+    `delivery_time_code`,
+    `delivery_time_value`,
+    `incoterms_id`,
+    `moq_code`,
+    `moq_value`,
+    `packaging_code`,
+    `packaging_kind`,
+    `packaging_value`,
+    `proportion`,
+    `supplier_id`
+) SELECT
+    `component_supplier`.`refsupplier`,
+    `component`.`id`,
+    'j',
+    `component_supplier`.`timetodelivery`,
+    (SELECT `incoterms`.`id` FROM `incoterms` WHERE `incoterms`.`id` = `component_supplier`.`id_incoterms`),
+    `unit`.`code`,
+    `component_supplier`.`moq`,
+    `unit`.`code`,
+    `component_supplier`.`typeconditionnement`,
+    `component_supplier`.`conditionnement`,
+    100,
+    (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `component_supplier`.`id_supplier`))
+FROM `component_supplier`
+INNER JOIN `component` ON `component_supplier`.`id_component` = `component`.`old_id`
+LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
+WHERE `component_supplier`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `component_supplier`');
     }
 
     private function upContacts(): void {
