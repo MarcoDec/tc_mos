@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Society;
+use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Selling\Customer\Customer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -49,14 +50,27 @@ class Company extends Entity {
     #[ORM\ManyToOne]
     private ?Society $society = null;
 
+    /** @var Collection<int, Supplier> */
+    #[ORM\ManyToMany(targetEntity: Supplier::class, mappedBy: 'administeredBy')]
+    private Collection $suppliers;
+
     public function __construct() {
         $this->customers = new ArrayCollection();
+        $this->suppliers = new ArrayCollection();
     }
 
     final public function addCustomer(Customer $customer): self {
         if (!$this->customers->contains($customer)) {
             $this->customers->add($customer);
             $customer->addAdministeredBy($this);
+        }
+        return $this;
+    }
+
+    final public function addSupplier(Supplier $supplier): self {
+        if (!$this->suppliers->contains($supplier)) {
+            $this->suppliers->add($supplier);
+            $supplier->addAdministeredBy($this);
         }
         return $this;
     }
@@ -76,6 +90,13 @@ class Company extends Entity {
         return $this->society;
     }
 
+    /**
+     * @return Collection<int, Supplier>
+     */
+    final public function getSuppliers(): Collection {
+        return $this->suppliers;
+    }
+
     #[Serializer\Groups(['read:company:option'])]
     final public function getText(): ?string {
         return $this->getName();
@@ -85,6 +106,14 @@ class Company extends Entity {
         if ($this->customers->contains($customer)) {
             $this->customers->removeElement($customer);
             $customer->removeAdministeredBy($this);
+        }
+        return $this;
+    }
+
+    final public function removeSupplier(Supplier $supplier): self {
+        if ($this->suppliers->contains($supplier)) {
+            $this->suppliers->removeElement($supplier);
+            $supplier->removeAdministeredBy($this);
         }
         return $this;
     }
