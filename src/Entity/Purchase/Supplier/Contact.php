@@ -63,12 +63,15 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'SupplierContact-read',
             'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
-    ORM\Entity
+    ORM\Entity,
+    ORM\Table(name: 'supplier_contact')
 ]
 class Contact extends SocietyContact {
     #[
         ApiProperty(description: 'Client', readableLink: false, example: '/api/suppliers/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(targetEntity: Supplier::class),
         Serializer\Groups(['read:contact', 'write:contact'])
     ]

@@ -71,6 +71,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class Contact extends SocietyContact {
     #[
         ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/1'),
+        ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(targetEntity: Customer::class),
         Serializer\Groups(['read:contact', 'write:contact'])
     ]
