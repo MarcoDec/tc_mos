@@ -1,16 +1,99 @@
-@use 'bootstrap/scss/bootstrap';
+@use 'bootstrap/scss/bootstrap' as * with (
+  $accordion-bg: #212529,
+  $accordion-button-bg: #212529,
+  $accordion-button-color: #fff,
+  $accordion-button-active-bg: #343a40,
+  $accordion-button-active-color: #fff,
+  $container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1900px
+  )
+);
 
-.bg-blue {
-  background-color: #8ac2f1;
+$dropdown-success: #57ec57 !default;
+
+.bg-primary.card {
+  background-color: #8ac2f1 !important;
 }
 
-.overlay {
-  background-color: #EFEFEF;
-  height: 100%;
-  left: 0;
-  opacity: .5;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
+.bg-success .dropdown-item {
+  background-color: $dropdown-success !important;
+}
+
+.btn-icon {
+  height: 20px;
+  line-height: .8;
+  margin: 3.5px;
+  padding: 1px;
+  width: 20px;
+
+  i {
+    vertical-align: middle;
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .bg-#{$color}.text-dark .disabled.dropdown-item {
+    color: $black !important;
+  }
+}
+
+.container {
+  min-width: 100%;
+}
+
+.dropdown-item .text-success {
+  color: $dropdown-success !important;
+}
+
+.page-item, .pointer, th[aria-sort] {
+  cursor: pointer;
+}
+
+.resizer {
+  background-color: black;
+  cursor: row-resize;
+  margin: 0;
+  padding: 2px;
+}
+
+.text-white .navbar-text {
+  color: $white !important;
+}
+
+.tree-card-attributes {
+  height: 550px;
+  overflow: hidden;
+}
+
+.tree-card-body {
+  height: 570px;
+  overflow: hidden;
+}
+
+@media (max-width: 1140px) {
+  .gui-left {
+    display: block;
+  }
+
+  .gui-top {
+    display: block;
+  }
+}
+
+@media (min-width: 1140px) {
+  .gui {
+    overflow: hidden;
+  }
+
+  .gui-left {
+    display: inline;
+  }
+
+  .gui-top {
+    display: flex;
+  }
 }
