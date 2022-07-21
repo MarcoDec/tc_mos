@@ -8,6 +8,7 @@ use App\Entity\Entity;
 use App\Entity\Management\Society\Society;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Selling\Customer\Customer;
+use App\Entity\Selling\Customer\Product;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -47,6 +48,10 @@ class Company extends Entity {
     #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
+    /** @var Collection<int, Product> */
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'administeredBy')]
+    private Collection $products;
+
     #[ORM\ManyToOne]
     private ?Society $society = null;
 
@@ -56,6 +61,7 @@ class Company extends Entity {
 
     public function __construct() {
         $this->customers = new ArrayCollection();
+        $this->products = new ArrayCollection();
         $this->suppliers = new ArrayCollection();
     }
 
@@ -63,6 +69,14 @@ class Company extends Entity {
         if (!$this->customers->contains($customer)) {
             $this->customers->add($customer);
             $customer->addAdministeredBy($this);
+        }
+        return $this;
+    }
+
+    final public function addProduct(Product $product): self {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->addAdministeredBy($this);
         }
         return $this;
     }
@@ -86,6 +100,13 @@ class Company extends Entity {
         return $this->name;
     }
 
+    /**
+     * @return Collection<int, Product>
+     */
+    final public function getProducts(): Collection {
+        return $this->products;
+    }
+
     final public function getSociety(): ?Society {
         return $this->society;
     }
@@ -106,6 +127,14 @@ class Company extends Entity {
         if ($this->customers->contains($customer)) {
             $this->customers->removeElement($customer);
             $customer->removeAdministeredBy($this);
+        }
+        return $this;
+    }
+
+    final public function removeProduct(Product $product): self {
+        if ($this->products->contains($product)) {
+            $this->products->removeElement($product);
+            $product->removeAdministeredBy($this);
         }
         return $this;
     }

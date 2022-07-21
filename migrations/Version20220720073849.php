@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220719115714 extends AbstractMigration {
+final class Version20220720073849 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -188,6 +188,7 @@ SQL);
         $this->upManufacturers();
         $this->upNomenclatures();
         $this->upPrinters();
+        $this->upProductCustomers();
         $this->upSupplies();
         $this->upTeams();
         $this->addQuery('ALTER TABLE `employee` ADD CONSTRAINT `IDX_5D9F75A1296CD8AE` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)');
@@ -198,7 +199,8 @@ SQL);
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
-        $this->addQuery('ALTER TABLE `product` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `product` DROP `id_society`, DROP `old_id`');
+        $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('DROP TABLE `country`');
@@ -1063,6 +1065,101 @@ INSERT INTO `printer` (`company_id`, `ip`, `name`) VALUES
 SQL);
     }
 
+    private function upProductCustomers(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_customer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_product` INT UNSIGNED NOT NULL,
+    `id_customer` INT UNSIGNED NOT NULL
+)
+SQL);
+        $this->insert('product_customer', ['id', 'statut', 'id_product', 'id_customer']);
+        $this->addQuery('RENAME TABLE `product_customer` TO `product_customer_old`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_customer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `customer_id` INT UNSIGNED NOT NULL,
+    `product_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_4A89E49E9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+    CONSTRAINT `IDX_4A89E49E4584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `product_customer` (`old_id`, `customer_id`, `product_id`)
+SELECT
+    `id`,
+    (
+        SELECT `customer`.`id`
+        FROM `customer`
+        WHERE `customer`.`society_id` = (
+            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_customer_old`.`id_customer`
+        )
+    ),
+    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`)
+FROM `product_customer_old`
+WHERE `statut` = 0
+AND EXISTS (
+    SELECT `customer`.`id`
+    FROM `customer`
+    WHERE `customer`.`society_id` = (
+        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_customer_old`.`id_customer`
+    )
+)
+AND (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_company` (
+    `product_id` INT UNSIGNED NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_9E6612FF4584665A` FOREIGN KEY (`product_id`) REFERENCES `product_customer` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_9E6612FF979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(product_id, company_id)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `product_company` (`product_id`, `company_id`)
+SELECT
+    (
+        SELECT `product_customer`.`id`
+        FROM `product_customer`
+        WHERE `product_customer`.`old_id` = `product_customer_old`.`id`
+    ),
+    (
+        SELECT `company`.`id`
+        FROM `company`
+        WHERE `company`.`society_id` = (
+            SELECT `society`.`id`
+            FROM `society`
+            WHERE `society`.`old_id` = (
+                SELECT `product`.`id_society` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`
+            )
+        )
+    )
+FROM `product_customer_old`
+WHERE `statut` = 0
+AND EXISTS (
+    SELECT `product_customer`.`id`
+    FROM `product_customer`
+    WHERE `product_customer`.`old_id` = `product_customer_old`.`id`
+)
+AND EXISTS (
+    SELECT `company`.`id`
+    FROM `company`
+    WHERE `company`.`society_id` = (
+        SELECT `society`.`id`
+        FROM `society`
+        WHERE `society`.`old_id` = (
+            SELECT `product`.`id_society` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`
+        )
+    )
+)
+SQL);
+        $this->addQuery('DROP TABLE `product_customer_old`');
+    }
+
     private function upProductFamilies(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `product_family` (
@@ -1111,6 +1208,7 @@ CREATE TABLE `product` (
     `id_productstatus` INT NOT NULL DEFAULT 1,
     `date_expiration` DATE DEFAULT NULL,
     `id_product_subfamily` INT UNSIGNED NOT NULL,
+    `id_society` INT UNSIGNED NOT NULL,
     `volume_previsionnel` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `id_customcode` INT UNSIGNED NOT NULL,
     `id_product_child` INT UNSIGNED NOT NULL,
@@ -1146,6 +1244,7 @@ SQL);
             'id_productstatus',
             'date_expiration',
             'id_product_subfamily',
+            'id_society',
             'volume_previsionnel',
             'id_customcode',
             'id_product_child',
@@ -1175,6 +1274,7 @@ SQL);
 CREATE TABLE `product` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
+    `id_society` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `auto_duration_code` VARCHAR(6) DEFAULT NULL,
     `auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
@@ -1250,6 +1350,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `product` (
     `old_id`,
+    `id_society`,
     `auto_duration_code`,
     `auto_duration_value`,
     `code`,
@@ -1300,6 +1401,7 @@ INSERT INTO `product` (
     `weight_value`
 ) SELECT
     `id`,
+    `id_society`,
     'h',
     `temps_auto`,
     `ref`,
