@@ -16,28 +16,28 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['customer']),
     ApiResource(
-        description: 'Adresse de facturation',
+        description: 'Adresse cliente',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les adresses de facturation',
-                    'summary' => 'Récupère les adresses de facturation',
+                    'description' => 'Récupère les adresses clientes',
+                    'summary' => 'Récupère les adresses clientes',
                 ]
             ]
         ],
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime une adresse de facturation',
-                    'summary' => 'Supprime une adresse de facturation',
+                    'description' => 'Supprime une adresse cliente',
+                    'summary' => 'Supprime une adresse cliente',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie une adresse de facturation',
-                    'summary' => 'Modifie une adresse de facturation',
+                    'description' => 'Modifie une adresse cliente',
+                    'summary' => 'Modifie une adresse cliente',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
