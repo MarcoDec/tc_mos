@@ -1,21 +1,28 @@
 import {
     faAddressCard,
     faBars,
+    faBook,
     faBoxes,
+    faBullseye,
+    faCalendar,
     faCaretDown,
     faCaretUp,
     faCertificate,
     faCheck,
     faChevronDown,
     faChevronUp,
+    faClipboardList,
     faClock,
     faCommentsDollar,
     faDatabase,
     faEuroSign,
     faExclamationTriangle,
     faFileContract,
+    faFileInvoice,
     faFileInvoiceDollar,
     faFolder,
+    faHandHoldingUsd,
+    faHistory,
     faHourglass,
     faIcons,
     faIndustry,
@@ -23,12 +30,14 @@ import {
     faLayerGroup,
     faMale,
     faMapMarkedAlt,
+    faPaintRoller,
     faPalette,
     faPencil,
     faPlus,
     faProjectDiagram,
     faPuzzlePiece,
     faReceipt,
+    faRetweet,
     faRulerHorizontal,
     faSearch,
     faServer,
@@ -38,13 +47,15 @@ import {
     faSignOutAlt,
     faSitemap,
     faTimes,
+    faTools,
     faTrash,
     faUserCircle,
     faUserGraduate,
     faUserTag,
     faWrench
+
 } from '@fortawesome/free-solid-svg-icons'
-import {faElementor} from '@fortawesome/free-brands-svg-icons'
+import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
 library.add(faAddressCard)
@@ -92,3 +103,14 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faTools)
+library.add(faHandHoldingUsd)
+library.add(faFileInvoice)
+library.add(faClipboardList)
+library.add(faCalendar)
+library.add(faPaintRoller)
+library.add(faHistory)
+library.add(faRetweet)
+library.add(faProductHunt)
+library.add(faBook)
+library.add(faBullseye)

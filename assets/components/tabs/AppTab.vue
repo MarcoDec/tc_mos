@@ -4,6 +4,7 @@
     const tabs = inject('tabs')
     const props = defineProps({
         active: {type: Boolean},
+        brands: {type: Boolean},
         icon: {required: true, type: String},
         id: {required: true, type: String},
         title: {required: true, type: String}
@@ -16,6 +17,7 @@
         if (typeof tabs !== 'undefined')
             tabs.value.push({
                 active: props.active,
+                brands: props.brands,
                 icon: props.icon,
                 id: props.id,
                 labelledby: labelledby.value,

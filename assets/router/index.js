@@ -1,13 +1,19 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import AppHome from './pages/AppHome'
 import AppLogin from './pages/AppLogin.vue'
+import component from './routes/component'
+import customer from './routes/customer'
+import employee from './routes/employee'
+import equipment from './routes/equipment'
 import hr from './routes/hr'
 import logistics from './routes/logistics'
 import management from './routes/management'
+import product from './routes/product'
 import production from './routes/production'
 import project from './routes/project'
 import purchase from './routes/purchase'
 import quality from './routes/quality'
+import supplier from './routes/supplier'
 import useUserStore from '../stores/hr/employee/user'
 
 const router = createRouter({
@@ -31,7 +37,13 @@ const router = createRouter({
         ...production,
         ...project,
         ...purchase,
-        ...quality
+        ...quality,
+        ...supplier,
+        ...component,
+        ...customer,
+        ...product,
+        ...employee,
+        ...equipment
     ]
 })
 
