@@ -22,5 +22,11 @@ export default [
         meta: {requiresAuth: true},
         name: 'supplier-show',
         path: '/supplier/show'
+    },
+    {
+        component: () => import('../pages/purchase/order-supplier/AppSupplierOrder.vue'),
+        meta: {requiresAuth: true},
+        name: 'orderSupplier',
+        path: '/orderSupplier'
     }
 ]

@@ -8,6 +8,6 @@ function AppCard(props, context) {
     ])
 }
 
-AppCard.props = {title: {required: true, type: String}, variant: generateVariant('primary')}
+AppCard.props = {title: {required: false, type: String}, variant: generateVariant('primary')}
 
 export default AppCard

@@ -5,16 +5,21 @@ import {
     faCaretDown,
     faCaretUp,
     faCertificate,
+    faChartLine,
     faCheck,
     faChevronDown,
     faChevronUp,
+    faClipboardCheck,
+    faClipboardList,
     faClock,
     faCommentsDollar,
     faDatabase,
+    faDownload,
     faEuroSign,
     faExclamationTriangle,
     faFileContract,
     faFileInvoiceDollar,
+    faFilePdf,
     faFolder,
     faHourglass,
     faIcons,
@@ -24,6 +29,7 @@ import {
     faMale,
     faMapMarkedAlt,
     faPalette,
+    faPaperPlane,
     faPencil,
     faPlus,
     faProjectDiagram,
@@ -32,6 +38,7 @@ import {
     faRulerHorizontal,
     faSearch,
     faServer,
+    faShareAltSquare,
     faShoppingBag,
     faShoppingCart,
     faShuttleVan,
@@ -39,6 +46,7 @@ import {
     faSitemap,
     faTimes,
     faTrash,
+    faTruckMoving,
     faUserCircle,
     faUserGraduate,
     faUserTag,
@@ -92,3 +100,11 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faTruckMoving)
+library.add(faChartLine)
+library.add(faClipboardList)
+library.add(faFilePdf)
+library.add(faClipboardCheck)
+library.add(faPaperPlane)
+library.add(faDownload)
+library.add(faShareAltSquare)

@@ -1,9 +1,11 @@
-<script lang="ts" setup>
+<script  setup>
     import {computed, defineProps} from 'vue'
-    import type {Items} from '../../../store/supplierItems/supplierItem/getters'
-    
-    const p = defineProps<{item: Items}>()
-    const modalId = computed(() => `split-${p.item.id}`)
+    import AppCollectionTableSplit from '../router/pages/purchase/order-supplier/AppCollectionTableSplit.vue'
+
+    const props = defineProps({
+        item: {required: true, type: Object}
+    })
+    const modalId = computed(() => `split-${props.item.id}`)
     const target = computed(() => `#${modalId.value}`)
     const title = ''
 </script>
