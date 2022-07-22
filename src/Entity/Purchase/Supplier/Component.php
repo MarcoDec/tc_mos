@@ -60,8 +60,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:measure', 'read:supplier-component'],
             'openapi_definition_name' => 'SupplierComponent-read',
             'skip_null_values' => false
-        ],
-        paginationEnabled: false
+        ]
     ),
     ORM\Entity,
     ORM\Table(name: 'supplier_component')
