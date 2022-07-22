@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220721072815 extends AbstractMigration {
+final class Version20220721084718 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -185,6 +185,7 @@ SQL);
         $this->upProducts();
         $this->upSocieties();
         // rank 3
+        $this->upBillingAddresses();
         $this->upCompanyEvents();
         $this->upComponentAttributes();
         $this->upComponentReferenceValues();
@@ -285,6 +286,25 @@ WHILE @attribute_i < @attribute_count DO
 END WHILE
 SQL);
         $this->addQuery('ALTER TABLE `attribute` DROP `attribut_id_family`');
+    }
+
+    private function upBillingAddresses(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `billing_address` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `address_address` VARCHAR(80) DEFAULT NULL,
+    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_city` VARCHAR(50) DEFAULT NULL,
+    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_phone_number` VARCHAR(18) DEFAULT NULL,
+    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `customer_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    CONSTRAINT `IDX_6660E4569395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
+)
+SQL);
     }
 
     private function upCarriers(): void {
