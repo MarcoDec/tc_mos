@@ -5,9 +5,11 @@ import {
     faCaretDown,
     faCaretUp,
     faCertificate,
+    faChartLine,
     faCheck,
     faChevronDown,
     faChevronUp,
+    faClipboard,
     faClock,
     faCommentsDollar,
     faDatabase,
@@ -39,6 +41,7 @@ import {
     faSitemap,
     faTimes,
     faTrash,
+    faTruck,
     faUserCircle,
     faUserGraduate,
     faUserTag,
@@ -92,3 +95,6 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faTruck)
+library.add(faChartLine)
+library.add(faClipboard)
