@@ -1,4 +1,3 @@
-import AppPagination from './pagination/AppPagination'
 import AppTableHeaders from './head/AppTableHeaders'
 import AppTableItems from './body/AppTableItems'
 import {generateTableFields} from '../props'
@@ -40,8 +39,8 @@ function AppTable(props, context) {
                     cellSlots
                 )
             ])
-        ),
-        h(
+        )
+        /*  h(
             'div',
             {class: 'row'},
             h(
@@ -55,7 +54,7 @@ function AppTable(props, context) {
                     ? args => context.slots.pagination(args)
                     : null
             )
-        )
+        )*/
     )
 }
 

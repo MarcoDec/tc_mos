@@ -40,6 +40,9 @@
                                 <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
                                     Familles de composants
                                 </AppNavbarLink>
+                                <AppNavbarLink icon="layer-group" to="settings" variant="warning">
+                                    Settings
+                                </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
                         <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">

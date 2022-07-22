@@ -9,6 +9,7 @@ import {
     faChevronDown,
     faChevronUp,
     faClock,
+    faCogs,
     faCommentsDollar,
     faDatabase,
     faEuroSign,
@@ -92,3 +93,4 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faCogs)

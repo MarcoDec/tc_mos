@@ -22,5 +22,11 @@ export default [
         meta: {requiresAuth: true},
         name: 'supplier-show',
         path: '/supplier/show'
+    },
+    {
+        component: () => import('../pages/achat/AppSettings.vue'),
+        meta: {requiresAuth: true},
+        name: 'settings',
+        path: '/settings'
     }
 ]
