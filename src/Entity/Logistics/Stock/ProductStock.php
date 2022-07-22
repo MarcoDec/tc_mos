@@ -2,10 +2,12 @@
 
 namespace App\Entity\Logistics\Stock;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Project\Product\Product;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -13,13 +15,22 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template-extends Stock<Product>
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'warehouse']),
     ApiResource(
         description: 'Stock des produits',
         collectionOperations: [
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère les stocks de produits',
+                    'summary' => 'Récupère les stocks de produits',
+                    'tags' => ['Stock']
+                ]
+            ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer un stock de produits',
                     'summary' => 'Créer un stock de produits',
+                    'tags' => ['Stock']
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
@@ -44,6 +55,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class ProductStock extends Stock {
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]

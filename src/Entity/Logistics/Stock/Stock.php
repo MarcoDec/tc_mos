@@ -2,14 +2,17 @@
 
 namespace App\Entity\Logistics\Stock;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\Logistics\StockType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Logistics\Warehouse;
 use App\Entity\Traits\BarCodeTrait;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,6 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @template T of object
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
     ApiResource(
         description: 'Stock',
         collectionOperations: [
@@ -36,12 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un stock',
-                    'summary' => 'Récupère un stock',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un stock',
@@ -62,14 +61,18 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
+    ORM\DiscriminatorColumn(name: 'type', type: 'stock_type'),
+    ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
-    ORM\DiscriminatorColumn(name: 'type', type: 'string'),
-    ORM\DiscriminatorMap(Stock::TYPES)
+    ORM\InheritanceType('SINGLE_TABLE')
 ]
 abstract class Stock extends Entity implements BarCodeInterface {
     use BarCodeTrait;
 
-    public const TYPES = ['component' => ComponentStock::class, 'product' => ProductStock::class];
+    public const TYPES = [
+        StockType::TYPE_COMPONENT => ComponentStock::class,
+        StockType::TYPE_PRODUCT => ProductStock::class
+    ];
 
     /**
      * @var null|T
