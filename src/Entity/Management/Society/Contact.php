@@ -56,7 +56,7 @@ abstract class Contact extends Entity {
     #[
         ApiProperty(description: 'Nom', example: 'Henri'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:contact', 'write:contact'])
     ]
     private ?string $surname = null;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Selling\Customer;
+namespace App\Entity\Purchase\Supplier;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
@@ -12,12 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
- * @template-extends SocietyContact<Customer>
+ * @template-extends SocietyContact<Supplier>
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['society']),
     ApiResource(
-        description: 'Contact client',
+        description: 'Contact fournisseur',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -30,7 +30,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Créer un contact',
                     'summary' => 'Créer un contact',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -39,7 +39,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Supprime un contact',
                     'summary' => 'Supprime un contact',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
@@ -47,32 +47,32 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Modifie un contact',
                     'summary' => 'Modifie un contact',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
-        shortName: 'CustomerContact',
+        shortName: 'SupplierContact',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:address', 'write:contact'],
-            'openapi_definition_name' => 'CustomerContact-write'
+            'openapi_definition_name' => 'SupplierContact-write'
         ],
         normalizationContext: [
             'groups' => ['read:address', 'read:contact', 'read:id'],
-            'openapi_definition_name' => 'CustomerContact-read',
+            'openapi_definition_name' => 'SupplierContact-read',
             'skip_null_values' => false
         ],
         paginationEnabled: false
     ),
     ORM\Entity,
-    ORM\Table(name: 'customer_contact')
+    ORM\Table(name: 'supplier_contact')
 ]
 class Contact extends SocietyContact {
     #[
-        ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/1'),
+        ApiProperty(description: 'Client', readableLink: false, example: '/api/suppliers/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Customer::class),
+        ORM\ManyToOne(targetEntity: Supplier::class),
         Serializer\Groups(['read:contact', 'write:contact'])
     ]
     protected $society;
