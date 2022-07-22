@@ -10,15 +10,16 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Warehouse;
+use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @template T of object
+ * @template T of MeasuredInterface
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
@@ -46,6 +47,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Modifie un stock',
                     'summary' => 'Modifie un stock',
                 ]
+            ],
+            'out' => [
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Sortie d\'un stock',
+                    'requestBody' => [
+                        'content' => [
+                            'application/merge-patch+json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/Measure-unitary'
+                                ]
+                            ]
+                        ]
+                    ],
+                    'summary' => 'Sortie d\'un stock',
+                ],
+                'path' => '/stocks/{id}/out'
             ]
         ],
         attributes: [
@@ -66,7 +84,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Stock extends Entity implements BarCodeInterface {
+abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
     public const TYPES = [
@@ -74,47 +92,49 @@ abstract class Stock extends Entity implements BarCodeInterface {
         StockType::TYPE_PRODUCT => ProductStock::class
     ];
 
-    /**
-     * @var null|T
-     */
-    protected $item;
-
     #[
         ApiProperty(description: 'Numéro de lot', example: '165486543'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
-    private ?string $batchNumber = null;
+    protected ?string $batchNumber = null;
+
+    /**
+     * @var null|T
+     */
+    #[
+        ApiProperty(description: 'Élément', readableLink: false, example: '/api/components/1'),
+        Serializer\Groups(['read:stock'])
+    ]
+    protected $item;
 
     #[
-        ApiProperty(description: 'Enfermé ?', required: true, example: false),
+        ApiProperty(description: 'Enfermé ?', example: false),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
-    private bool $jail = false;
+    protected bool $jail = false;
 
     #[
         ApiProperty(description: 'Localisation', example: 'Rayon B'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
-    private ?string $location = null;
+    protected ?string $location = null;
 
     #[
-        ApiProperty(description: 'Quantité', example: '54'),
-        Assert\NotBlank(groups: ['Default', 'Receipt']),
-        Assert\Positive(groups: ['Default', 'Receipt']),
+        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
-    private Measure $quantity;
+    protected Measure $quantity;
 
     #[
-        ApiProperty(description: 'Entrepôt', readableLink: false, example: ['/api/warehouses/1', '/api/warehouses/2']),
+        ApiProperty(description: 'Entrepôt', readableLink: false, example: '/api/warehouses/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:warehouse', 'write:warehouse'])
+        Serializer\Groups(['read:stock', 'write:stock'])
     ]
-    private ?Warehouse $warehouse;
+    protected ?Warehouse $warehouse = null;
 
     public function __construct() {
         $this->quantity = new Measure();
@@ -139,8 +159,16 @@ abstract class Stock extends Entity implements BarCodeInterface {
         return $this->location;
     }
 
+    public function getMeasures(): array {
+        return [$this->quantity];
+    }
+
     final public function getQuantity(): Measure {
         return $this->quantity;
+    }
+
+    public function getUnit(): ?Unit {
+        return $this->item?->getUnit();
     }
 
     final public function getWarehouse(): ?Warehouse {
@@ -198,6 +226,14 @@ abstract class Stock extends Entity implements BarCodeInterface {
      */
     final public function setWarehouse(?Warehouse $warehouse): self {
         $this->warehouse = $warehouse;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function substract(Measure $quantity): self {
+        $this->quantity = $this->quantity->substract($quantity);
         return $this;
     }
 }
