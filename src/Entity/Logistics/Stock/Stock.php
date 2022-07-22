@@ -2,30 +2,22 @@
 
 namespace App\Entity\Logistics\Stock;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Logistics\Warehouse;
-use App\Entity\Project\Product\Product;
-use App\Entity\Purchase\Component\Component;
 use App\Entity\Traits\BarCodeTrait;
-use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @template T of object
+ */
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'location' => 'partial',
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'warehouse' => 'name',
-    ]),
     ApiResource(
         description: 'Stock',
         collectionOperations: [
@@ -37,6 +29,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             ]
         ],
         itemOperations: [
+            'delete' => [
+                'openapi_context' => [
+                    'description' => 'Supprime un stock',
+                    'summary' => 'Supprime un stock',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
+            ],
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère un stock',
@@ -48,27 +47,20 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Modifie un stock',
                     'summary' => 'Modifie un stock',
                 ]
-            ],
-            'delete' => [
-                'openapi_context' => [
-                    'description' => 'Supprime un stock',
-                    'summary' => 'Supprime un stock',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ]
-
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:stock', 'write:warehouse', 'write:measure', 'write:name', 'write:unit', 'write:company'],
+            'groups' => ['write:measure', 'write:stock'],
             'openapi_definition_name' => 'Stock-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:stock', 'read:warehouse', 'read:measure', 'read:name', 'read:unit', 'read:company'],
-            'openapi_definition_name' => 'Stock-read'
-        ],
+            'groups' => ['read:id', 'read:measure', 'read:stock'],
+            'openapi_definition_name' => 'Stock-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity,
     ORM\DiscriminatorColumn(name: 'type', type: 'string'),
@@ -79,6 +71,11 @@ abstract class Stock extends Entity implements BarCodeInterface {
 
     public const TYPES = ['component' => ComponentStock::class, 'product' => ProductStock::class];
 
+    /**
+     * @var null|T
+     */
+    protected $item;
+
     #[
         ApiProperty(description: 'Numéro de lot', example: '165486543'),
         ORM\Column(nullable: true),
@@ -86,14 +83,9 @@ abstract class Stock extends Entity implements BarCodeInterface {
     ]
     private ?string $batchNumber = null;
 
-    /**
-     * @var Component|null|Product
-     */
-    private $item;
-
     #[
         ApiProperty(description: 'Enfermé ?', required: true, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
     private bool $jail = false;
@@ -109,14 +101,14 @@ abstract class Stock extends Entity implements BarCodeInterface {
         ApiProperty(description: 'Quantité', example: '54'),
         Assert\NotBlank(groups: ['Default', 'Receipt']),
         Assert\Positive(groups: ['Default', 'Receipt']),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ORM\Embedded,
+        Serializer\Groups(['read:stock', 'write:stock'])
     ]
     private Measure $quantity;
 
     #[
         ApiProperty(description: 'Entrepôt', readableLink: false, example: ['/api/warehouses/1', '/api/warehouses/2']),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Warehouse::class),
+        ORM\ManyToOne,
         Serializer\Groups(['read:warehouse', 'write:warehouse'])
     ]
     private ?Warehouse $warehouse;
@@ -129,57 +121,80 @@ abstract class Stock extends Entity implements BarCodeInterface {
         return self::STOCK_BAR_CODE_PREFIX;
     }
 
-    abstract public function getItem(): Product|Component|null;
-
-    abstract public function getItemType(): string;
-
-    public function getBatchNumber(): ?string {
+    final public function getBatchNumber(): ?string {
         return $this->batchNumber;
     }
 
-    public function getJail(): ?bool {
-        return $this->jail;
+    /**
+     * @return null|T
+     */
+    final public function getItem() {
+        return $this->item;
     }
 
-    public function getLocation(): ?string {
+    final public function getLocation(): ?string {
         return $this->location;
     }
 
-    public function getQuantity(): Measure {
+    final public function getQuantity(): Measure {
         return $this->quantity;
     }
 
-    public function getWarehouse(): ?Warehouse {
+    final public function getWarehouse(): ?Warehouse {
         return $this->warehouse;
     }
 
-    public function setBatchNumber(?string $batchNumber): self {
+    final public function isJail(): bool {
+        return $this->jail;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setBatchNumber(?string $batchNumber): self {
         $this->batchNumber = $batchNumber;
-
         return $this;
     }
 
-    public function setJail(bool $jail): self {
+    /**
+     * @param null|T $item
+     *
+     * @return $this
+     */
+    final public function setItem($item): self {
+        $this->item = $item;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setJail(bool $jail): self {
         $this->jail = $jail;
-
         return $this;
     }
 
-    public function setLocation(?string $location): self {
+    /**
+     * @return $this
+     */
+    final public function setLocation(?string $location): self {
         $this->location = $location;
-
         return $this;
     }
 
-    public function setQuantity(Measure $quantity): self {
+    /**
+     * @return $this
+     */
+    final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
-
         return $this;
     }
 
-    public function setWarehouse(?Warehouse $warehouse): self {
+    /**
+     * @return $this
+     */
+    final public function setWarehouse(?Warehouse $warehouse): self {
         $this->warehouse = $warehouse;
-
         return $this;
     }
 }

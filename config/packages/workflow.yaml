@@ -2,9 +2,24 @@ imports:
   - { resource: workflows/ }
 
 parameters:
+  place_agreed: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_AGREED
+  place_blocked: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_BLOCKED
+  place_disabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DISABLED
+  place_draft: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DRAFT
+  place_to_validate: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_TO_VALIDATE
+  place_under_exemption: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_UNDER_EXEMPTION
+  place_warning: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_WARNING
+  tr_block: !php/const App\Entity\Embeddable\CurrentPlace::TR_BLOCK
+  tr_disable: !php/const App\Entity\Embeddable\CurrentPlace::TR_DISABLE
+  tr_partially_unlock: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_UNLOCK
+  tr_partially_validate: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_VALIDATE
+  tr_submit_validation: !php/const App\Entity\Embeddable\CurrentPlace::TR_SUBMIT_VALIDATION
+  tr_supervise: !php/const App\Entity\Embeddable\CurrentPlace::TR_SUPERVISE
+  tr_unlock: !php/const App\Entity\Embeddable\CurrentPlace::TR_UNLOCK
+  tr_validate: !php/const App\Entity\Embeddable\CurrentPlace::TR_VALIDATE
   wf_audit_trail:
     enabled: true
   wf_marking_store:
-    property: currentPlaceName
+    property: state
     type: method
   wf_type: state_machine

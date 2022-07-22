@@ -9,6 +9,9 @@ use App\Entity\Project\Product\Product;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
+/**
+ * @template-extends Stock<Product>
+ */
 #[
     ApiResource(
         description: 'Stock des produits',
@@ -21,42 +24,28 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
-        itemOperations: [
-        ],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         shortName: 'ProductStock',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:stock', 'write:warehouse', 'write:measure', 'write:name', 'write:unit', 'write:company'],
+            'groups' => ['write:measure', 'write:stock'],
             'openapi_definition_name' => 'ProductStock-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:stock', 'read:warehouse', 'read:measure', 'read:name', 'read:unit', 'read:company'],
-            'openapi_definition_name' => 'ProductStock-read'
-        ],
+            'groups' => ['read:id', 'read:measure', 'read:stock'],
+            'openapi_definition_name' => 'ProductStock-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity
 ]
 class ProductStock extends Stock {
     #[
-        ApiProperty(description: 'Produit', required: false, readableLink: false, example: '/api/products/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Product::class),
+        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ORM\ManyToOne(targetEntity: Product::class),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
-    private ?Product $item;
-
-    final public function getItem(): ?Product {
-        return $this->item;
-    }
-
-    final public function getItemType(): string {
-        return 'Product';
-    }
-
-    final public function setItem(?Product $item): self {
-        $this->item = $item;
-
-        return $this;
-    }
+    protected $item;
 }

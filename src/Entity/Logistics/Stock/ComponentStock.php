@@ -9,6 +9,9 @@ use App\Entity\Purchase\Component\Component;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
+/**
+ * @template-extends Stock<Component>
+ */
 #[
     ApiResource(
         description: 'Stock des composants',
@@ -21,42 +24,28 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
-        itemOperations: [
-        ],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         shortName: 'ComponentStock',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:stock', 'write:warehouse', 'write:measure', 'write:name', 'write:unit', 'write:company'],
+            'groups' => ['write:measure', 'write:stock'],
             'openapi_definition_name' => 'ComponentStock-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:stock', 'read:warehouse', 'read:measure', 'read:name', 'read:unit', 'read:company'],
-            'openapi_definition_name' => 'ComponentStock-read'
-        ],
+            'groups' => ['read:id', 'read:measure', 'read:stock'],
+            'openapi_definition_name' => 'ComponentStock-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity
 ]
 class ComponentStock extends Stock {
     #[
-        ApiProperty(description: 'Composant', required: false, readableLink: false, example: '/api/components/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Component::class),
+        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
+        ORM\ManyToOne(targetEntity: Component::class),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
-    private ?Component $item;
-
-    final public function getItem(): ?Component {
-        return $this->item;
-    }
-
-    final public function getItemType(): string {
-        return 'Component';
-    }
-
-    final public function setItem(?Component $item): self {
-        $this->item = $item;
-
-        return $this;
-    }
+    protected $item;
 }
