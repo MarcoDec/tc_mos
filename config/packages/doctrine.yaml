@@ -19,6 +19,7 @@ doctrine:
       component_current_place: App\Doctrine\DBAL\Types\Purchase\Component\CurrentPlaceType
       copper_type: App\Doctrine\DBAL\Types\Embeddable\CopperType
       contact_type: App\Doctrine\DBAL\Types\Management\Society\ContactType
+      customer_address_type: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
       customer_current_place: App\Doctrine\DBAL\Types\Selling\Customer\CurrentPlaceType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType

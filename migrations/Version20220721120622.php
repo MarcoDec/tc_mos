@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220721084718 extends AbstractMigration {
+final class Version20220721120622 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -154,6 +154,45 @@ SQL);
         ));
     }
 
+    private function insertCustomerAddresses(string $type, string $like): void {
+        $this->addQuery(<<<SQL
+INSERT INTO `customer_address` (
+    `address_address`,
+    `address_address2`,
+    `address_city`,
+    `address_country`,
+    `address_zip_code`,
+    `customer_id`,
+    `name`,
+    `type`
+) SELECT
+    `address1`,
+    `address2`,
+    `city`,
+    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `address`.`id_country`),
+    `zip`,
+    (
+        SELECT `customer`.`id`
+        FROM `customer`
+        WHERE `customer`.`society_id` = (
+            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `address`.`id_customer`
+        )
+    ),
+    `nom`,
+    '$type'
+FROM `address`
+WHERE `statut` = 0
+AND `typeaddress` LIKE '%$like%'
+AND EXISTS (
+    SELECT `customer`.`id`
+    FROM `customer`
+    WHERE `customer`.`society_id` = (
+        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `address`.`id_customer`
+    )
+)
+SQL);
+    }
+
     private function setProcedure(): void {
         // rank 0
         $this->upCountries();
@@ -185,11 +224,11 @@ SQL);
         $this->upProducts();
         $this->upSocieties();
         // rank 3
-        $this->upBillingAddresses();
         $this->upCompanyEvents();
         $this->upComponentAttributes();
         $this->upComponentReferenceValues();
         $this->upContacts();
+        $this->upCustomerAddresses();
         $this->upCustomerEvents();
         $this->upManufacturers();
         $this->upNomenclatures();
@@ -286,25 +325,6 @@ WHILE @attribute_i < @attribute_count DO
 END WHILE
 SQL);
         $this->addQuery('ALTER TABLE `attribute` DROP `attribut_id_family`');
-    }
-
-    private function upBillingAddresses(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `billing_address` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
-    `address_city` VARCHAR(50) DEFAULT NULL,
-    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
-    `address_phone_number` VARCHAR(18) DEFAULT NULL,
-    `address_zip_code` VARCHAR(10) DEFAULT NULL,
-    `customer_id` INT UNSIGNED DEFAULT NULL,
-    `name` VARCHAR(255) NOT NULL,
-    CONSTRAINT `IDX_6660E4569395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
-)
-SQL);
     }
 
     private function upCarriers(): void {
@@ -876,6 +896,55 @@ CREATE TABLE `customcode` (
 )
 SQL);
         $this->insert('customcode', ['id', 'statut', 'code']);
+    }
+
+    private function upCustomerAddresses(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `address` (
+  `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+  `id_customer` INT UNSIGNED DEFAULT NULL,
+  `nom` VARCHAR(255) NOT NULL,
+  `address1` TEXT NOT NULL,
+  `address2` TEXT DEFAULT NULL,
+  `zip` VARCHAR(255) NOT NULL,
+  `city` VARCHAR(255) NOT NULL,
+  `typeaddress` VARCHAR(255) DEFAULT NULL,
+  `id_country` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('address', [
+            'id',
+            'statut',
+            'id_customer',
+            'nom',
+            'address1',
+            'address2',
+            'zip',
+            'city',
+            'typeaddress',
+            'id_country'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `customer_address` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `address_address` VARCHAR(80) DEFAULT NULL,
+    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_city` VARCHAR(50) DEFAULT NULL,
+    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_phone_number` VARCHAR(18) DEFAULT NULL,
+    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `customer_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `type` ENUM('billing', 'delivery') NOT NULL COMMENT '(DC2Type:customer_address_type)',
+    CONSTRAINT `IDX_1193CB3F9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
+)
+SQL);
+        $this->insertCustomerAddresses('billing', 'factur');
+        $this->insertCustomerAddresses('delivery', 'livraison');
+        $this->addQuery('DROP TABLE `address`');
     }
 
     private function upCustomerEvents(): void {

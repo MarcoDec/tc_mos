@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Production\Engine\CounterPart\Group as CounterPartGroup;
@@ -69,9 +70,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 abstract class Group extends Entity {
     public const TYPES = [
-        'counter-part' => CounterPartGroup::class,
-        'tool' => ToolGroup::class,
-        'workstation' => WorkstationGroup::class
+        EngineType::TYPE_COUNTER_PART => CounterPartGroup::class,
+        EngineType::TYPE_TOOL => ToolGroup::class,
+        EngineType::TYPE_WORKSTATION => WorkstationGroup::class
     ];
 
     #[
