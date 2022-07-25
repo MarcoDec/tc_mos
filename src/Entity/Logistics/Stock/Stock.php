@@ -5,6 +5,7 @@ namespace App\Entity\Logistics\Stock;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Logistics\Stock\StockController;
 use App\Doctrine\DBAL\Types\Logistics\StockType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -64,6 +65,19 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Sortie d\'un stock',
                 ],
                 'path' => '/stocks/{id}/out'
+            ],
+            'transfer' => [
+                'controller' => StockController::class,
+                'denormalization_context' => [
+                    'groups' => ['transfer:stock', 'write:measure'],
+                    'openapi_definition_name' => 'Product-transfer'
+                ],
+                'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Transfert un stock',
+                    'summary' => 'Transfert un stock',
+                ],
+                'path' => '/transfer/{id}/out'
             ]
         ],
         attributes: [
@@ -125,14 +139,14 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'transfer:stock', 'write:stock'])
     ]
     protected Measure $quantity;
 
     #[
         ApiProperty(description: 'Entrepôt', readableLink: false, example: '/api/warehouses/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'transfer:stock', 'write:stock'])
     ]
     protected ?Warehouse $warehouse = null;
 
