@@ -3,48 +3,44 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Entity\Management\Society\Company;
-use App\Entity\Traits\NameTrait;
-use DateTimeInterface;
+use App\Entity\Management\Society\Company\Company;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
 abstract class Event extends Entity {
-    use NameTrait;
-
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Congés d\'été'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
+        ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/companies/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:event', 'write:event'])
     ]
-    protected ?string $name = null;
+    protected ?Company $managingCompany = null;
 
     #[
-        ApiProperty(description: 'Date', example: '2021-01-12 10:39:37'),
-        Assert\DateTime,
-        ORM\Column(type: 'datetime', nullable: true),
-        Serializer\Groups(['read:event_date', 'write:event_date'])
+        ApiProperty(description: 'Date'),
+        ORM\Column(type: 'datetime_immutable'),
+        Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?DateTimeInterface $date;
+    private ?DateTimeImmutable $date = null;
 
     #[
-        ApiProperty(description: 'Fini ?', required: true, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
+        ApiProperty(description: 'Fini', example: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:event', 'write:event'])
     ]
     private bool $done = false;
 
     #[
-        ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/companies/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company', 'write:company'])
+        ApiProperty(description: 'Nom', example: 'Congés d\'été'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?Company $managingCompany;
+    private ?string $name = null;
 
-    final public function getDate(): ?DateTimeInterface {
+    final public function getDate(): ?DateTimeImmutable {
         return $this->date;
     }
 
@@ -52,11 +48,15 @@ abstract class Event extends Entity {
         return $this->managingCompany;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function isDone(): bool {
         return $this->done;
     }
 
-    final public function setDate(?DateTimeInterface $date): self {
+    final public function setDate(?DateTimeImmutable $date): self {
         $this->date = $date;
         return $this;
     }
@@ -68,6 +68,11 @@ abstract class Event extends Entity {
 
     final public function setManagingCompany(?Company $managingCompany): self {
         $this->managingCompany = $managingCompany;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 }
