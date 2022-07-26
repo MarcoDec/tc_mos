@@ -168,7 +168,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
         Assert\Date,
-        ORM\Column(type: 'datetime_immutable', nullable: true),
+        ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:employee', 'write:employee'])
     ]
     private ?DateTimeImmutable $entryDate = null;
@@ -267,7 +267,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
-        ORM\Column(length: 20),
+        ORM\Column(length: 20, nullable: true),
         Serializer\Groups(['read:employee'])
     ]
     private ?string $username = null;
