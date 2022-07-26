@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
+use App\Repository\Logistics\Stock\ComponentStockRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -50,7 +51,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: ComponentStockRepository::class)
 ]
 class ComponentStock extends Stock {
     #[
