@@ -31,6 +31,9 @@ final class MeasureValidator extends ConstraintValidator {
                 ->setParameter('{{ unit }}', (string) $this->getUnit()->getName())
                 ->addViolation();
         }
+        if ($constraint->positive && $value->getValue() < 0) {
+            $this->context->buildViolation($constraint->positiveMessage)->addViolation();
+        }
     }
 
     private function getObject(): MeasuredInterface {
