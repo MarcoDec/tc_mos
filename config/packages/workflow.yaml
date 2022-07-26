@@ -6,6 +6,7 @@ parameters:
   place_blocked: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_BLOCKED
   place_disabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DISABLED
   place_draft: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DRAFT
+  place_enabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_ENABLED
   place_to_validate: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_TO_VALIDATE
   place_under_exemption: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_UNDER_EXEMPTION
   place_warning: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_WARNING

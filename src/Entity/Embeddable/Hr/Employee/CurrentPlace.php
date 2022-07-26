@@ -15,37 +15,34 @@ class CurrentPlace extends AbstractCurrentPlace {
     final public const TRANSITIONS = [
         self::TR_BLOCK,
         self::TR_DISABLE,
-        self::TR_PARTIALLY_UNLOCK,
         self::TR_PARTIALLY_VALIDATE,
-        self::TR_SUBMIT_VALIDATION,
-        self::TR_UNLOCK,
         self::TR_VALIDATE
     ];
 
     #[
-        ApiProperty(description: 'Nom', required: true, openapiContext: ['enum' => CurrentPlaceType::TYPES]),
+        ApiProperty(description: 'Nom', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
         Assert\NotBlank,
-        ORM\Column(type: 'product_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
+        ORM\Column(type: 'employee_current_place', options: ['default' => CurrentPlaceType::TYPE_WARNING]),
         Serializer\Groups(['read:current-place'])
     ]
-    protected ?string $name = null;
+    protected ?string $name = CurrentPlaceType::TYPE_WARNING;
 
     final public function __construct(?string $name = null) {
-        parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_DRAFT);
+        parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_WARNING);
     }
 
     #[Pure]
     final public function getTrafficLight(): int {
         return match ($this->getName()) {
-            CurrentPlaceType::TYPE_AGREED => 1,
+            CurrentPlaceType::TYPE_ENABLED => 1,
             CurrentPlaceType::TYPE_BLOCKED, CurrentPlaceType::TYPE_DISABLED => 3,
             default => 2,
         };
     }
 
     final public function isDeletable(): bool {
-        return in_array($this->name, [CurrentPlaceType::TYPE_DISABLED, CurrentPlaceType::TYPE_DRAFT]);
+        return $this->name === CurrentPlaceType::TYPE_DISABLED;
     }
 
     final public function isFrozen(): bool {

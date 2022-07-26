@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220722095434 extends AbstractMigration {
+final class Version20220726165321 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -1164,10 +1164,10 @@ CREATE TABLE `employee` (
     `birth_city` VARCHAR(255) DEFAULT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
     `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'disabled', 'draft', 'to_validate', 'under_exemption') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:product_current_place)',
+    `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_current_place)',
     `emb_roles_roles` TEXT DEFAULT NULL COMMENT '(DC2Type:simple_array)',
     `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `gender` VARCHAR(255) DEFAULT NULL,
+    `gender` ENUM('female', 'male') DEFAULT 'male' COMMENT '(DC2Type:gender_place)',
     `initials` VARCHAR(255) DEFAULT NULL,
     `level_of_study` VARCHAR(255) DEFAULT NULL,
     `manager_id` INT UNSIGNED DEFAULT NULL,
@@ -1175,7 +1175,7 @@ CREATE TABLE `employee` (
     `notes` VARCHAR(255) DEFAULT NULL,
     `password` CHAR(60) NOT NULL COMMENT '(DC2Type:char)',
     `plain_password` VARCHAR(255) DEFAULT NULL,
-    `situation` VARCHAR(255) DEFAULT NULL,
+    `situation` ENUM('married', 'single', 'windowed') DEFAULT 'single' COMMENT '(DC2Type:situation_place)',
     `social_security_number` VARCHAR(255) DEFAULT NULL,
     `surname` VARCHAR(255) NOT NULL,
     `team_id` INT UNSIGNED DEFAULT NULL,
@@ -1252,13 +1252,17 @@ INSERT INTO `employee` (
         )
     ),
     `d_entree`,
-    `sexe`,
+    IF(`sexe` = 'F', 'female', 'male'),
     IF_EMPTY(`initials`, CONCAT(UCASE(LEFT(`nom`, 2)), '-', UCFIRST(LEFT(`prenom`, 2)))),
     `lvl_etude`,
     `id_resp`,
     `prenom`,
     `password`,
-    `situation`,
+    CASE
+        WHEN `situation` LIKE 'mari%' THEN 'married'
+        WHEN `situation` LIKE 've%' THEN 'windowed'
+        ELSE 'single'
+    END,
     `n_secu`,
     `nom`,
     `user_gp`,

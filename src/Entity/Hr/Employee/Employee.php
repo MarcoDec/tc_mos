@@ -9,6 +9,8 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\Hr\Employee\GenderType;
+use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\CurrentPlace;
@@ -110,18 +112,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
     use BarCodeTrait;
 
-    public const GENDER_TYPE_FRMALE = 'female';
-    public const GENDER_TYPE_MALE = 'male';
-    public const GENDER_TYPES = [self::GENDER_TYPE_MALE, self::GENDER_TYPE_FRMALE];
-    public const SITUATION_TYPE_MARRIED = 'married';
-    public const SITUATION_TYPE_SINGLE = 'single';
-    public const SITUATION_TYPE_WINDOWED = 'windowed';
-    public const SITUATION_TYPES = [
-        self::SITUATION_TYPE_MARRIED,
-        self::SITUATION_TYPE_SINGLE,
-        self::SITUATION_TYPE_WINDOWED,
-    ];
-
     #[
         Assert\Valid,
         ORM\Embedded(Address::class),
@@ -174,12 +164,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     private ?DateTimeImmutable $entryDate = null;
 
     #[
-        ApiProperty(description: 'Sexe', example: self::GENDER_TYPE_MALE),
-        Assert\Choice(choices: self::GENDER_TYPES),
-        ORM\Column(nullable: true),
+        ApiProperty(description: 'Sexe', example: GenderType::TYPE_MALE, openapiContext: ['enum' => GenderType::TYPES]),
+        Assert\Choice(choices: GenderType::TYPES),
+        ORM\Column(type: 'gender_place', nullable: true, options: ['default' => GenderType::TYPE_MALE]),
         Serializer\Groups(['read:employee', 'write:employee'])
     ]
-    private ?string $gender = null;
+    private ?string $gender = GenderType::TYPE_MALE;
 
     #[
         ApiProperty(description: 'Initiales', example: 'C.R.'),
@@ -227,12 +217,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     private ?string $plainPassword = null;
 
     #[
-        ApiProperty(description: 'Situation', example: self::SITUATION_TYPE_MARRIED),
-        Assert\Choice(choices: self::SITUATION_TYPES),
-        ORM\Column(nullable: true),
+        ApiProperty(description: 'Situation', example: SituationType::TYPE_SINGLE, openapiContext: ['enum' => SituationType::TYPES]),
+        Assert\Choice(choices: SituationType::TYPES),
+        ORM\Column(type: 'situation_place', nullable: true, options: ['default' => SituationType::TYPE_SINGLE]),
         Serializer\Groups(['read:employee', 'write:employee'])
     ]
-    private ?string $situation = null;
+    private ?string $situation = SituationType::TYPE_SINGLE;
 
     #[
         ApiProperty(description: 'Numéro de sécurité sociale', example: '1 80 12 75 200 200 36'),
