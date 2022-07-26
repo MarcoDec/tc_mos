@@ -2,10 +2,10 @@
 
 namespace App\Entity\Logistics\Stock;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Controller\Logistics\Stock\StockController;
 use App\Doctrine\DBAL\Types\Logistics\StockType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -16,6 +16,8 @@ use App\Entity\Logistics\Warehouse;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Repository\Logistics\Stock\StockRepository;
+use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -67,7 +69,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'path' => '/stocks/{id}/out'
             ],
             'transfer' => [
-                'controller' => StockController::class,
+                'controller' => PlaceholderAction::class,
                 'denormalization_context' => [
                     'groups' => ['transfer:stock', 'write:measure'],
                     'openapi_definition_name' => 'Product-transfer'
@@ -95,7 +97,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'stock_type'),
     ORM\DiscriminatorMap(self::TYPES),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: StockRepository::class),
     ORM\InheritanceType('SINGLE_TABLE')
 ]
 abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterface {
@@ -138,6 +140,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['read:stock', 'transfer:stock', 'write:stock'])
     ]
