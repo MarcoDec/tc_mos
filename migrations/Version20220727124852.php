@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220727094835 extends AbstractMigration {
+final class Version20220727124852 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -253,7 +253,7 @@ SQL);
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
-        $this->addQuery('ALTER TABLE `employee` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `employee` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `product` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
@@ -1163,6 +1163,7 @@ CREATE TABLE `employee` (
     `birthday` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `birth_city` VARCHAR(255) DEFAULT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
     `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
     `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_current_place)',
     `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
@@ -1222,6 +1223,7 @@ INSERT INTO `employee` (
     `birthday`,
     `birth_city`,
     `company_id`,
+    `id_society`,
     `emb_roles_roles`,
     `entry_date`,
     `gender`,
@@ -1252,6 +1254,7 @@ INSERT INTO `employee` (
             SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `employee_old`.`id_society`
         )
     ),
+    `id_society`,
     CASE
         WHEN `id_role` = 100 THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_IT_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
         WHEN `id_role` < 300 OR (`id_role` % 100 = 0 AND `id_role` NOT IN (300, 400, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500)) THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
@@ -1289,6 +1292,7 @@ INSERT INTO `employee` (
     `user_gp`,
     `login`
 FROM `employee_old`
+WHERE `status` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 UPDATE `employee`
@@ -1297,6 +1301,37 @@ SET `employee`.`manager_id` = `m`.`id`
 SQL);
         $this->addQuery('ALTER TABLE `employee` ADD CONSTRAINT `IDX_5D9F75A1783E3463` FOREIGN KEY (`manager_id`) REFERENCES `employee` (`id`)');
         $this->addQuery('DROP TABLE `employee_old`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `user` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_society` INT UNSIGNED NOT NULL,
+    `login` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `nom` VARCHAR(255) NOT NULL,
+    `prenom` VARCHAR(255) NOT NULL
+)
+SQL);
+        $this->insert('user', [
+            'id',
+            'statut',
+            'id_society',
+            'login',
+            'password',
+            'nom',
+            'prenom'
+        ]);
+        $this->addQuery(<<<'SQL'
+UPDATE `employee`
+INNER JOIN `user`
+    ON `employee`.`name` LIKE `user`.`prenom`
+    AND `employee`.`surname` LIKE `user`.`nom`
+    AND `employee`.`id_society` = `user`.`id_society`
+    AND `user`.`statut` = 0
+SET `employee`.`password` = `user`.`password`
+AND `employee`.`username` = `user`.`login`
+SQL);
+        $this->addQuery('DROP TABLE `user`');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `token` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
