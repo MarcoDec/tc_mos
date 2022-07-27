@@ -41,26 +41,36 @@ use Symfony\Component\Validator\Constraints as Assert;
         description: 'Employé',
         collectionOperations: [
             'get' => [
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:employee:collection'],
+                    'openapi_definition_name' => 'Employee-collection',
+                    'skip_null_values' => false
+                ],
                 'openapi_context' => [
                     'description' => 'Récupère les employés',
                     'summary' => 'Récupère les employés'
-                ],
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:name', 'read:employee:collection'],
-                ],
+                ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:employee'],
+                    'openapi_definition_name' => 'Employee-create'
+                ],
                 'openapi_context' => [
                     'description' => 'Créer un employé',
                     'summary' => 'Créer un employé'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
-                'denormalization_context' => [
-                    'groups' => ['write:employee:post']
-                ]
+                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
             ]
         ],
         itemOperations: [
+            'delete' => [
+                'openapi_context' => [
+                    'description' => 'Supprime un employé',
+                    'summary' => 'Supprime un employé'
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
+            ],
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère un employé',
@@ -68,43 +78,56 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
-                'path' => '/employees/{id}/{process}',
-                'requirements' => ['process' => '\w+'],
                 'openapi_context' => [
                     'description' => 'Modifier un employé',
-                    'summary' => 'Modifier un employé',
                     'parameters' => [[
                         'in' => 'path',
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'type' => 'string',
-                            'enum' => ['main', 'hr', 'it', 'production']
+                            'enum' => ['main', 'hr', 'it', 'production'],
+                            'type' => 'string'
                         ]
-                    ]]
+                    ]],
+                    'summary' => 'Modifier un employé'
                 ],
+                'path' => '/employees/{id}/{process}',
                 'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
             ],
             'promote' => [
-                'method' => 'PATCH',
-                'path' => '/employees/{id}/promote',
                 'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
                 'openapi_context' => [
-                    'description' => 'Passer un employé à un nouveau statut',
-                    'summary' => 'Passer un employé à un nouveau statut',
+                    'description' => 'Transite l\'employé à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite l\'employé à son prochain statut de workflow'
                 ],
-                'denormalization_context' => [
-                    'groups' => ['write:employee:promote']
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
+                'path' => '/employees/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
+                'validate' => false
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
+        denormalizationContext: [
+            'groups' => ['write:address', 'write:current-place', 'write:employee'],
+            'openapi_definition_name' => 'Employee-write'
+        ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:employee', 'read:name', 'read:user', 'read:company'],
-            'openapi_definition_name' => 'Employee-read'
+            'groups' => ['read:address', 'read:current-place', 'read:employee', 'read:id'],
+            'openapi_definition_name' => 'Employee-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity
@@ -115,7 +138,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         Assert\Valid,
         ORM\Embedded(Address::class),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['read:employee', 'write:employee'])
     ]
     private Address $address;
 
@@ -134,21 +157,21 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         ApiProperty(description: 'Date de naissance', example: '1980-24-03'),
         Assert\Date,
         ORM\Column(type: 'datetime_immutable', nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?DateTimeImmutable $birthday = null;
 
     #[
         ApiProperty(description: 'Companie', example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:employee'])
     ]
     private ?Company $company = null;
 
     #[
         ApiProperty(description: 'Statut'),
         ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:employee', 'read:employee:collection'])
+        Serializer\Groups(['read:employee'])
     ]
     private CurrentPlace $currentPlace;
 
@@ -159,7 +182,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
         Assert\Date,
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?DateTimeImmutable $entryDate = null;
 
@@ -167,42 +190,42 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         ApiProperty(description: 'Sexe', example: GenderType::TYPE_MALE, openapiContext: ['enum' => GenderType::TYPES]),
         Assert\Choice(choices: GenderType::TYPES),
         ORM\Column(type: 'gender_place', nullable: true, options: ['default' => GenderType::TYPE_MALE]),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $gender = GenderType::TYPE_MALE;
 
     #[
         ApiProperty(description: 'Initiales', example: 'C.R.'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post', 'read:employee:collection'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $initials = null;
 
     #[
         ApiProperty(description: 'Niveau d\'étude', example: 'Bac+5'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $levelOfStudy = null;
 
     #[
         ApiProperty(description: 'Manager', readableLink: false, example: '/api/employees/3'),
         ORM\ManyToOne(targetEntity: self::class),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:production'])
     ]
     private ?self $manager = null;
 
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum dolor sit am'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:main'])
     ]
     private ?string $notes = null;
 
@@ -212,7 +235,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Mot de passe', example: 'L0r3m@Ipsum'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post'])
+        Serializer\Groups(['read:employee'])
     ]
     private ?string $plainPassword = null;
 
@@ -220,21 +243,21 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         ApiProperty(description: 'Situation', example: SituationType::TYPE_SINGLE, openapiContext: ['enum' => SituationType::TYPES]),
         Assert\Choice(choices: SituationType::TYPES),
         ORM\Column(type: 'situation_place', nullable: true, options: ['default' => SituationType::TYPE_SINGLE]),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $situation = SituationType::TYPE_SINGLE;
 
     #[
         ApiProperty(description: 'Numéro de sécurité sociale', example: '1 80 12 75 200 200 36'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $socialSecurityNumber = null;
 
     #[
         ApiProperty(description: 'Nom', example: 'Roosevelt'),
         ORM\Column,
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post', 'read:employee:collection'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $surname = null;
 
@@ -244,14 +267,14 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Carte de pointage', example: '65465224'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee'])
     ]
     private ?string $timeCard = null;
 
     #[
         ApiProperty(description: 'Compte validé', required: true, example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post', 'read:employee:collection'])
+        Serializer\Groups(['read:employee'])
     ]
     private bool $userEnabled = false;
 
