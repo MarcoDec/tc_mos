@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220726165321 extends AbstractMigration {
+final class Version20220727094835 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -1165,7 +1165,7 @@ CREATE TABLE `employee` (
     `company_id` INT UNSIGNED DEFAULT NULL,
     `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
     `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_current_place)',
-    `emb_roles_roles` TEXT DEFAULT NULL COMMENT '(DC2Type:simple_array)',
+    `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
     `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `gender` ENUM('female', 'male') DEFAULT 'male' COMMENT '(DC2Type:gender_place)',
     `initials` VARCHAR(255) DEFAULT NULL,
@@ -1222,6 +1222,7 @@ INSERT INTO `employee` (
     `birthday`,
     `birth_city`,
     `company_id`,
+    `emb_roles_roles`,
     `entry_date`,
     `gender`,
     `initials`,
@@ -1251,6 +1252,26 @@ INSERT INTO `employee` (
             SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `employee_old`.`id_society`
         )
     ),
+    CASE
+        WHEN `id_role` = 100 THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_IT_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 300 OR (`id_role` % 100 = 0 AND `id_role` NOT IN (300, 400, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500)) THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 311 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_QUALITY_ADMIN,ROLE_USER'
+        WHEN `id_role` < 400 THEN 'ROLE_PRODUCTION_WRITER,ROLE_QUALITY_WRITER,ROLE_USER'
+        WHEN `id_role` = 400 THEN 'ROLE_HR_ADMIN,ROLE_USER'
+        WHEN `id_role` < 500 THEN 'ROLE_HR_WRITER,ROLE_USER'
+        WHEN `id_role` < 600 THEN 'ROLE_HR_WRITER,ROLE_LOGISTICS_WRITER,ROLE_PRODUCTION_READER,ROLE_PROJECT_READER,ROLE_PURCHASE_WRITER,ROLE_QUALITY_READER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `id_role` IN (600, 1000) THEN 'ROLE_PRODUCTION_ADMIN,ROLE_USER'
+        WHEN `id_role` < 700 OR (`id_role` > 1000 AND `id_role` < 1100) THEN 'ROLE_PRODUCTION_WRITER,ROLE_USER'
+        WHEN `id_role` = 700 THEN 'ROLE_LOGISTICS_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 800 THEN 'ROLE_LOGISTICS_WRITER,ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_PURCHASE_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `id_role` < 910 THEN 'ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 1000 THEN 'ROLE_PROJECT_WRITER,ROLE_PURCHASE_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `id_role` = 1100 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_QUALITY_ADMIN,ROLE_USER'
+        WHEN `id_role` < 1300 THEN 'ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_QUALITY_WRITER,ROLE_USER'
+        WHEN `id_role` < 1320 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 1400 THEN 'ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_QUALITY_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        ELSE 'ROLE_USER'
+    END,
     `d_entree`,
     IF(`sexe` = 'F', 'female', 'male'),
     IF_EMPTY(`initials`, CONCAT(UCASE(LEFT(`nom`, 2)), '-', UCFIRST(LEFT(`prenom`, 2)))),
