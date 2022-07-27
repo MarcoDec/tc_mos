@@ -15,7 +15,7 @@ alias debug:router='php /var/www/html/TConcept-GPAO/bin/console debug:router'
 ### GPAO
 alias gpao:cron='php /var/www/html/TConcept-GPAO/bin/console gpao:cron'
 alias gpao:currency:rate='php /var/www/html/TConcept-GPAO/bin/console gpao:currency:rate'
-alias gpao:database:load='php /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
+alias gpao:database:load='php -d memory_limit=1G /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
 alias gpao:fixtures:load='php /var/www/html/TConcept-GPAO/bin/console gpao:fixtures:load'
 alias gpao:schema:update='php /var/www/html/TConcept-GPAO/bin/console gpao:schema:update'
 
