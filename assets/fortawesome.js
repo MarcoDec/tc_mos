@@ -1,5 +1,6 @@
 import {
     faAddressCard,
+    faArrowRightToBracket,
     faBars,
     faBoxes,
     faCaretDown,
@@ -8,6 +9,9 @@ import {
     faCheck,
     faChevronDown,
     faChevronUp,
+    faCircleDollarToSlot,
+    faCircleInfo,
+    faClipboardCheck,
     faClock,
     faCommentsDollar,
     faDatabase,
@@ -21,9 +25,11 @@ import {
     faIndustry,
     faLaptop,
     faLayerGroup,
+    faLocationDot,
     faMale,
     faMapMarkedAlt,
     faPalette,
+    faPallet,
     faPencil,
     faPlus,
     faProjectDiagram,
@@ -43,6 +49,7 @@ import {
     faUserGraduate,
     faUserTag,
     faWrench
+
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -92,3 +99,9 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faLocationDot)
+library.add(faPallet)
+library.add(faCircleDollarToSlot)
+library.add(faArrowRightToBracket)
+library.add(faClipboardCheck)
+library.add(faCircleInfo)

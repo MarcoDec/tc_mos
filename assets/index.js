@@ -3,6 +3,7 @@ import './fortawesome'
 import App from './App'
 import AppBtn from './components/AppBtn'
 import AppCard from './components/AppCard'
+import AppCardShow from './components/AppCardShow.vue'
 import AppContainer from './components/layout/AppContainer'
 import AppDropdownItem from './components/nav/AppDropdownItem'
 import AppForm from './components/form/AppForm'
@@ -27,6 +28,7 @@ import useUserStore from './stores/hr/employee/user'
 const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppCard', AppCard)
+    .component('AppCardShow', AppCardShow)
     .component('AppContainer', AppContainer)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppForm', AppForm)

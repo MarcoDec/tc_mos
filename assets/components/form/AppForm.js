@@ -18,34 +18,43 @@ function AppForm(props, context) {
             groups.push(generateSlot())
     } else {
         for (const field of props.fields)
-            groups.push(h(AppFormGroup, {
-                disabled: props.disabled,
-                field,
-                form: props.id,
-                key: field.name,
-                labelCols: props.labelCols,
-                modelValue: props.modelValue[field.name],
-                'onUpdate:modelValue': value => context.emit('update:modelValue', {
-                    ...props.modelValue,
-                    [field.name]: value
-                }),
-                violation: props.violations.find(violation => violation.propertyPath === field.name)
-            }))
-        groups.push(h(
-            'div',
-            {class: 'row'},
-            h(
-                'div',
-                {class: 'col d-inline-flex justify-content-end'},
-                typeof context.slots['default'] === 'function'
-                    ? generateSlot()
-                    : h(
-                        resolveComponent('AppBtn'),
-                        {disabled: props.disabled, form: props.id, type: 'submit'},
-                        () => props.submitLabel
+            groups.push(
+                h(AppFormGroup, {
+                    disabled: props.disabled,
+                    field,
+                    form: props.id,
+                    key: field.name,
+                    labelCols: props.labelCols,
+                    modelValue: props.modelValue[field.name],
+                    'onUpdate:modelValue': value =>
+                        context.emit('update:modelValue', {
+                            ...props.modelValue,
+                            [field.name]: value
+                        }),
+                    violation: props.violations.find(
+                        violation => violation.propertyPath === field.name
                     )
+                })
             )
-        ))
+        if (props.submitLabel !== null) {
+            groups.push(
+                h(
+                    'div',
+                    {class: 'row'},
+                    h(
+                        'div',
+                        {class: 'col d-inline-flex justify-content-end'},
+                        typeof context.slots['default'] === 'function'
+                            ? generateSlot()
+                            : h(
+                                resolveComponent('AppBtn'),
+                                {disabled: props.disabled, form: props.id, type: 'submit'},
+                                () => props.submitLabel
+                            )
+                    )
+                )
+            )
+        }
     }
     const attrs = {
         autocomplete: 'off',
@@ -57,8 +66,7 @@ function AppForm(props, context) {
             e.preventDefault()
             const data = new FormData(e.target)
             for (const [key, value] of Object.entries(Object.fromEntries(data))) {
-                if (typeof value === 'undefined' || value === null)
-                    data['delete'](key)
+                if (typeof value === 'undefined' || value === null) data['delete'](key)
                 if (typeof value === 'string') {
                     data.set(key, value.trim())
                     if (!props.noIgnoreNull && data.get(key).length === 0)
@@ -68,8 +76,7 @@ function AppForm(props, context) {
             context.emit('submit', data)
         }
     }
-    if (props.inline)
-        attrs['class'] = 'd-inline m-0 p-0'
+    if (props.inline) attrs['class'] = 'd-inline m-0 p-0'
     return h('form', attrs, groups)
 }
 
@@ -80,11 +87,8 @@ AppForm.props = {
         required: true,
         type: Array,
         validator(value) {
-            if (value.length === 0)
-                return false
-            for (const field of value)
-                if (!fieldValidator(field))
-                    return false
+            if (value.length === 0) return false
+            for (const field of value) if (!fieldValidator(field)) return false
             return true
         }
     },

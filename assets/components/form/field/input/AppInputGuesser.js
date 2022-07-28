@@ -1,6 +1,7 @@
 import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
 import AppInputNumber from './AppInputNumber'
+import AppRating from './AppRating.vue'
 import AppSelect from './select/AppSelect'
 import AppSwitch from './AppSwitch.vue'
 import {generateField} from '../../../props'
@@ -15,6 +16,8 @@ function getType(field) {
         return AppInputNumber
     case 'select':
         return AppSelect
+    case 'rating':
+        return AppRating
     default:
         return resolveComponent('AppInput')
     }
