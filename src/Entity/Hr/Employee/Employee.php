@@ -13,7 +13,7 @@ use App\Doctrine\DBAL\Types\Hr\Employee\GenderType;
 use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Address;
-use App\Entity\Embeddable\Hr\Employee\CurrentPlace;
+use App\Entity\Embeddable\EmployeeEngineCurrentPlace;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
@@ -105,7 +105,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'name' => 'transition',
                         'required' => true,
                         'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
+                            'enum' => EmployeeEngineCurrentPlace::TRANSITIONS,
                             'type' => 'string'
                         ]
                     ]],
@@ -170,10 +170,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Statut'),
-        ORM\Embedded(CurrentPlace::class),
+        ORM\Embedded(EmployeeEngineCurrentPlace::class),
         Serializer\Groups(['read:employee'])
     ]
-    private CurrentPlace $currentPlace;
+    private EmployeeEngineCurrentPlace $currentPlace;
 
     #[ORM\Embedded]
     private Roles $embRoles;
@@ -289,7 +289,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     final public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
-        $this->currentPlace = new CurrentPlace();
+        $this->currentPlace = new EmployeeEngineCurrentPlace();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -348,7 +348,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return null;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
+    final public function getCurrentPlace(): EmployeeEngineCurrentPlace {
         return $this->currentPlace;
     }
 
@@ -496,7 +496,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
+    final public function setCurrentPlace(EmployeeEngineCurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
         return $this;
     }
