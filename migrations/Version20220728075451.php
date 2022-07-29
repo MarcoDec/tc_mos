@@ -1170,12 +1170,12 @@ CREATE TABLE `employee` (
     `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
     `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `gender` ENUM('female', 'male') DEFAULT 'male' COMMENT '(DC2Type:gender_place)',
-    `initials` VARCHAR(255) DEFAULT NULL,
+    `initials` VARCHAR(255) NOT NULL,
     `level_of_study` VARCHAR(255) DEFAULT NULL,
     `manager_id` INT UNSIGNED DEFAULT NULL,
     `name` VARCHAR(30) NOT NULL,
     `notes` VARCHAR(255) DEFAULT NULL,
-    `password` CHAR(60) NOT NULL COMMENT '(DC2Type:char)',
+    `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
     `plain_password` VARCHAR(255) DEFAULT NULL,
     `situation` ENUM('married', 'single', 'windowed') DEFAULT 'single' COMMENT '(DC2Type:situation_place)',
     `social_security_number` VARCHAR(255) DEFAULT NULL,
@@ -1204,8 +1204,8 @@ SQL);
             ->addRole(Roles::ROLE_SELLING_ADMIN);
         $this->addQuery(sprintf(
             <<<'SQL'
-INSERT INTO `employee` (`emb_roles_roles`, `name`, `password`, `surname`, `username`)
-VALUES (%s, 'Super', %s, 'SUPER', 'super')
+INSERT INTO `employee` (`emb_roles_roles`, `initials`, `name`, `password`, `surname`, `username`)
+VALUES (%s, 'super', 'Super', %s, 'SUPER', 'super')
 SQL,
             /** @phpstan-ignore-next-line */
             $this->connection->quote(implode(',', $user->getRoles())),

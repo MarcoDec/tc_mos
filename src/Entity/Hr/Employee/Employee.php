@@ -17,8 +17,10 @@ use App\Entity\Embeddable\EmployeeEngineCurrentPlace;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
+use App\Filter\NumericFilter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -31,12 +33,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['userEnabled']),
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'initials' => 'partial',
-        'name' => 'partial',
-        'surname' => 'partial'
-    ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'name', 'surname']),
+    ApiFilter(filterClass: NumericFilter::class, properties: ['id']),
+    ApiFilter(
+        filterClass: SearchFilter::class,
+        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial']
+    ),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
     ApiResource(
         description: 'Employé',
         collectionOperations: [
@@ -132,7 +134,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
+class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface, WorkflowInterface {
     use BarCodeTrait;
 
     #[
@@ -196,7 +198,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Initiales', example: 'C.R.'),
-        ORM\Column(nullable: true),
+        ORM\Column,
         Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $initials = null;
@@ -229,7 +231,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private ?string $notes = null;
 
-    #[ORM\Column(type: 'char', length: 60)]
+    #[
+        ORM\Column(type: 'char', length: 60, nullable: true),
+        Serializer\Groups(['create:employee'])
+    ]
     private ?string $password = null;
 
     #[
@@ -274,19 +279,18 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Compte validé', required: true, example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection'])
     ]
     private bool $userEnabled = false;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection'])
     ]
     private ?string $username = null;
 
-    #[Pure]
-    final public function __construct() {
+    public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
         $this->currentPlace = new EmployeeEngineCurrentPlace();
@@ -427,6 +431,11 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->socialSecurityNumber;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
     final public function getSurname(): ?string {
         return $this->surname;
     }
@@ -458,6 +467,16 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     final public function getUsername(): ?string {
         return $this->username;
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
     }
 
     final public function isUserEnabled(): bool {
@@ -558,6 +577,11 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     final public function setSocialSecurityNumber(?string $socialSecurityNumber): self {
         $this->socialSecurityNumber = $socialSecurityNumber;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 

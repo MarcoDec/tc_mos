@@ -27,7 +27,7 @@ class EmployeeEngineCurrentPlace extends CurrentPlace {
     ]
     protected ?string $name = CurrentPlaceType::TYPE_WARNING;
 
-    final public function __construct(?string $name = null) {
+    public function __construct(?string $name = null) {
         parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_WARNING);
     }
 
