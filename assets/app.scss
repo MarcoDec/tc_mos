@@ -82,3 +82,47 @@ $dropdown-success: #57ec57 !default;
     display: flex;
   }
 }
+
+.overlay {
+  background-color: #EFEFEF;
+  height: 100%;
+  left: 0;
+  opacity: .5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.tableFixHead          { overflow: auto; height: 760px;}
+.tableFixHead thead th { top: 0; z-index: 50; position: sticky;}
+
+/* Just common table stuff. Really. */
+table  { border-collapse: collapse; width: 100%; }
+th, td { padding: 8px 16px; text-align: center; }
+th     { background:#eee; }
+
+/* Borders (if you need them) */
+
+.tableFixHead td {
+  box-shadow: inset 1px -1px #000;
+}
+.tableFixHead th {
+  box-shadow: inset 1px 1px #000, 0 1px #000;
+}
+
+.bg-warn{
+  background-color: rgba(var(--bs-warning-rgb), var(--bs-bg-opacity)) !important;
+  display: flex;
+}
+.style-icon{
+  color: red; 
+  margin-right: 10px; 
+  position: relative; 
+  top: 5px; 
+  left: 5px;
+}

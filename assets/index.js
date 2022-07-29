@@ -12,6 +12,8 @@ import AppOverlay from './components/AppOverlay'
 import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRouterLink from './components/nav/AppRouterLink'
 import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
+import AppScheduleTable from './components/app-schedule-table/AppScheduleTable.vue'
+import AppScheduleTableItemField from './components/app-schedule-table/body/AppScheduleTableItemField.vue'
 import AppTab from './components/tabs/AppTab.vue'
 import AppTableFormField from './components/table/AppTableFormField'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm'
@@ -36,6 +38,8 @@ const app = createApp(App)
     .component('AppPaginationItem', AppPaginationItem)
     .component('AppRouterLink', AppRouterLink)
     .component('AppShowGuiCard', AppShowGuiCard)
+    .component('AppScheduleTable', AppScheduleTable)
+    .component('AppScheduleTableItemField', AppScheduleTableItemField)
     .component('AppTab', AppTab)
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)

@@ -25,6 +25,49 @@ const router = createRouter({
             name: 'login',
             path: '/login'
         },
+        {
+            component: async () => import('./pages/AppProductionPlanning.vue'),
+            meta: {requiresAuth: true},
+            name: 'manufacturing-schedule',
+            path: '/manufacturingSchedule',
+            props: {
+                fields: [
+
+                    {
+                        label: 'Produit',
+                        name: 'produit',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Ind.',
+                        name: 'ind',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Client',
+                        name: 'client',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Stocks',
+                        name: 'stocks',
+                        type: 'text'
+                    },
+                    {
+                        label: '3%VP',
+                        name: 'vp',
+                        type: 'text'
+                    },
+                    {
+                        label: 'Retard',
+                        name: 'retard',
+                        type: 'text'
+                    }
+                ],
+                icon: 'table-list',
+                title: 'Planning de production'
+            }
+        },
         ...hr,
         ...logistics,
         ...management,
