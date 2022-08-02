@@ -250,6 +250,7 @@ SQL);
         $this->upStocks();
         // rank 5
         $this->upNotifications();
+        $this->upPlannings();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
@@ -1738,6 +1739,31 @@ SQL);
             $this->phoneQueries->push("UPDATE `$table` SET `$phoneProp` = '$phone' WHERE `id` = {$item['id']}");
         }
         $this->phoneQueries->push("ALTER TABLE `$table` CHANGE `$phoneProp` `$normalizedProp` VARCHAR(18) DEFAULT NULL");
+    }
+
+    private function upPlannings(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `engine_maintenance` (
+    `id` int(11) NOT NULL,
+    `id_engine` INT UNSIGNED DEFAULT NULL,
+    `type` VARCHAR(255) NOT NULL,
+    `designation` TEXT NOT NULL,
+    `quantity` INT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)'
+)
+SQL);
+        $this->insert('engine_maintenance', ['id', 'id_engine', 'type', 'designation', 'quantity']);
+        $this->addQuery(<<<'SQL'
+DELETE FROM `engine_maintenance`
+WHERE NOT EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance`.`id_engine`)
+SQL);
+        $this->addQuery(<<<'SQL'
+ALTER TABLE `engine_maintenance`
+    CHANGE `id_engine` `engine_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `type` `kind` VARCHAR(255) DEFAULT NULL,
+    CHANGE `designation` `name` VARCHAR(255) NOT NULL,
+    ADD CONSTRAINT `IDX_D499BFF6E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`)
+SQL);
+        $this->addQuery('RENAME TABLE `engine_maintenance` TO `planning`');
     }
 
     private function upPrinters(): void {
