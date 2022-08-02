@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220728075451 extends AbstractMigration {
+final class Version20220802154611 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -1371,22 +1371,51 @@ SQL);
 CREATE TABLE `engine` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `brand` VARCHAR(255) DEFAULT NULL,
-    `code` VARCHAR(10) NOT NULL,
-    `company_id` INT UNSIGNED DEFAULT NULL,
+    `marque` VARCHAR(255) DEFAULT NULL,
+    `ref` VARCHAR(255) NOT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
     `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
-    `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `group_id` INT UNSIGNED DEFAULT NULL,
-    `max_operator` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
-    `name` VARCHAR(80) NOT NULL,
+    `capabilite` VARCHAR(255) DEFAULT NULL,
+    `d_entree` DATE DEFAULT NULL,
+    `id_engine_group` INT UNSIGNED DEFAULT NULL,
+    `operateur_max` INT(10) NOT NULL,
+    `nom` VARCHAR(255) NOT NULL,
     `notes` TEXT DEFAULT NULL,
     `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine_type)',
     `zone_id` INT UNSIGNED DEFAULT NULL,
-    CONSTRAINT `IDX_E8A81A8D979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
-    CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
+    `reffourn` VARCHAR(255) DEFAULT NULL,
+    `date_fabrication` DATE DEFAULT NULL,
+    `id_fabricant` INT DEFAULT NULL,
+    `numero_serie` VARCHAR(255) DEFAULT NULL
 )
+SQL);
+        $this->insert('engine', [
+            'id',
+            'marque',
+            'ref',
+            'id_society',
+            'capabilite',
+            'd_entree',
+            'id_engine_group',
+            'operateur_max',
+            'nom',
+            'notes',
+            'reffourn',
+            'date_fabrication',
+            'id_fabricant',
+            'numero_serie'
+        ]);
+        $this->addQuery(<<<'SQL'
+UPDATE `engine`
+SET `id_society` = (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `engine`.`id_society`)),
+`capabilite` = CASE
+    WHEN `capabilite` = 1 THEN 'enabled'
+    WHEN `capabilite` = 2 THEN 'warning'
+    WHEN `capabilite` = 3 THEN 'blocked'
+    ELSE 'disabled'
+END,
+`id_engine_group` = (SELECT `engine_group`.`id` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
+`type` = (SELECT `engine_group`.`type` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`)
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `manufacturer_engine` (
@@ -1401,6 +1430,34 @@ CREATE TABLE `manufacturer_engine` (
     CONSTRAINT `IDX_F514547DA23B42D` FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturer` (`id`),
     UNIQUE KEY `UNIQ_F514547DE78C9C0A` (`engine_id`)
 )
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `manufacturer_engine` (`code`, `date`, `engine_id`, `manufacturer_id`, `serial_number`)
+SELECT
+    `reffourn`,
+    `date_fabrication`,
+    `id`,
+    (SELECT `manufacturer`.`id` FROM `manufacturer` WHERE `manufacturer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `engine`.`id_fabricant`)),
+    `numero_serie`
+FROM `engine`
+SQL);
+        $this->addQuery(<<<'SQL'
+ALTER TABLE `engine`
+    DROP `reffourn`,
+    DROP `date_fabrication`,
+    DROP `id_fabricant`,
+    DROP `numero_serie`,
+    CHANGE `marque` `brand` VARCHAR(255) DEFAULT NULL,
+    CHANGE `ref` `code` VARCHAR(10) NOT NULL,
+    CHANGE `id_society` `company_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `capabilite` `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
+    CHANGE `d_entree` `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    CHANGE `id_engine_group` `group_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `operateur_max` `max_operator` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
+    CHANGE `nom` `name` VARCHAR(127) NOT NULL,
+    ADD CONSTRAINT `IDX_E8A81A8D979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    ADD CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
+    ADD CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
 SQL);
     }
 
