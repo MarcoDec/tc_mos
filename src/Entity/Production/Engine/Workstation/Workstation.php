@@ -32,11 +32,11 @@ use Doctrine\ORM\Mapping as ORM;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
         ],
     ),
-    ORM\Entity,
+    ORM\Entity
 ]
 class Workstation extends Engine {
     #[
-        ApiProperty(description: 'Group d\'outil', readableLink: false, example: '/api/workstation-groups/1'),
+        ApiProperty(description: 'Groupe', readableLink: false, example: '/api/workstation-groups/1'),
         ORM\ManyToOne(targetEntity: Group::class),
     ]
     protected $group;

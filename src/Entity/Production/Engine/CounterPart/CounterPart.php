@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Production\Engine\Tool;
+namespace App\Entity\Production\Engine\CounterPart;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -10,19 +10,19 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[
     ApiResource(
-        description: 'Outil',
+        description: 'Contrepartie de test',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les outils',
-                    'summary' => 'Récupère les outils',
+                    'description' => 'Récupère les contreparties de test',
+                    'summary' => 'Récupère les contreparties de test',
                     'tags' => ['Engine']
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un outil',
-                    'summary' => 'Créer un outil',
+                    'description' => 'Créer une contrepartie de test',
+                    'summary' => 'Créer une contrepartie de test',
                     'tags' => ['Engine']
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
@@ -35,10 +35,10 @@ use Doctrine\ORM\Mapping as ORM;
     ),
     ORM\Entity
 ]
-class Tool extends Engine {
+class CounterPart extends Engine {
     #[
-        ApiProperty(description: 'Groupe', readableLink: false, example: '/api/tool-groups/1'),
-        ORM\ManyToOne(targetEntity: Group::class),
+        ApiProperty(description: 'Groupe', readableLink: true, example: '/api/counter-part-groups/1'),
+        ORM\ManyToOne(targetEntity: Group::class)
     ]
     protected $group;
 }

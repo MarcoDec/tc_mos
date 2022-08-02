@@ -38,7 +38,7 @@ trait SocietyTrait {
 
     #[
         ApiProperty(description: 'Incoterms', required: false, example: '/api/incoterms/1'),
-        ORM\ManyToOne(targetEntity: Incoterms::class, fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private ?Incoterms $incoterms = null;
@@ -53,7 +53,7 @@ trait SocietyTrait {
 
     #[
         ApiProperty(description: 'Délai de paiement des facture', required: false, example: '/api/invoice-time-dues/1'),
-        ORM\ManyToOne(targetEntity: InvoiceTimeDue::class, fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?InvoiceTimeDue $invoiceTimeDue = null;
@@ -85,7 +85,7 @@ trait SocietyTrait {
 
     #[
         ApiProperty(description: 'Message TVA', required: false, example: '/api/vat-messages/1'),
-        ORM\ManyToOne(targetEntity: VatMessage::class, fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?VatMessage $vatMessage = null;

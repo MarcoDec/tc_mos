@@ -79,7 +79,7 @@ class Manufacturer extends Entity {
 
     #[
         ApiProperty(description: 'Société', readableLink: false, required: false, example: '/api/societies/1'),
-        ORM\ManyToOne(targetEntity: Society::class, fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:manufacturer', 'write:manufacturer'])
     ]
     private ?Society $society;

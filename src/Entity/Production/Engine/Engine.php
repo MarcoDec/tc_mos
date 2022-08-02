@@ -12,6 +12,7 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Production\Company\Zone;
+use App\Entity\Production\Engine\CounterPart\CounterPart;
 use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
 use App\Entity\Production\Engine\Tool\Tool;
 use App\Entity\Production\Engine\Workstation\Workstation;
@@ -83,6 +84,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Engine-write'
         ],
         normalizationContext: [
+            'enable_max_depth' => true,
             'groups' => ['read:current_place', 'read:engine', 'read:id'],
             'openapi_definition_name' => 'Engine-read',
             'skip_null_values' => false
@@ -97,6 +99,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
     use BarCodeTrait;
 
     public const TYPES = [
+        EngineType::TYPE_COUNTER_PART => CounterPart::class,
         EngineType::TYPE_TOOL => Tool::class,
         EngineType::TYPE_WORKSTATION => Workstation::class
     ];
@@ -144,7 +147,8 @@ abstract class Engine extends Entity implements BarCodeInterface {
 
     #[
         ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist'], fetch: 'EAGER'),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        Serializer\Groups(['read:engine', 'write:engine']),
+        Serializer\MaxDepth(1)
     ]
     private ManufacturerEngine $manufacturerEngine;
 
