@@ -12,25 +12,43 @@ use Doctrine\ORM\Mapping as ORM;
     ApiResource(
         description: 'Outil',
         collectionOperations: [
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère les outils',
+                    'summary' => 'Récupère les outils',
+                    'tags' => ['Engine']
+                ]
+            ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer un outil',
                     'summary' => 'Créer un outil',
                     'tags' => ['Engine']
                 ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ],
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
+        denormalizationContext: [
+            'groups' => ['write:engine'],
+            'openapi_definition_name' => 'Tool-write'
+        ],
+        normalizationContext: [
+            'enable_max_depth' => true,
+            'groups' => ['read:current_place', 'read:engine', 'read:id'],
+            'openapi_definition_name' => 'Tool-read',
+            'skip_null_values' => false
+        ]
     ),
-    ORM\Entity,
+    ORM\Entity
 ]
 class Tool extends Engine {
     #[
-        ApiProperty(description: 'Group d\'outil', required: false, readableLink: false, example: '/api/tool-groups/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Group::class),
+        ApiProperty(description: 'Groupe', readableLink: false, example: '/api/tool-groups/1'),
+        ORM\ManyToOne(targetEntity: Group::class),
     ]
     protected $group;
 }

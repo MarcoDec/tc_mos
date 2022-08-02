@@ -12,10 +12,10 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class DeserializeListener {
     public function __construct(
-        private ApiDeserializeListener $decorated,
-        private DenormalizerInterface $denormalizer,
-        private EntityManagerInterface $em,
-        private SerializerContextBuilderInterface $serializer
+        private readonly ApiDeserializeListener $decorated,
+        private readonly DenormalizerInterface $denormalizer,
+        private readonly EntityManagerInterface $em,
+        private readonly SerializerContextBuilderInterface $serializer
     ) {
     }
 
@@ -25,18 +25,18 @@ final class DeserializeListener {
             return;
         }
 
-        if ($request->getContentType() !== 'multipart') {
+        if (in_array($request->getContentType(), ['form', 'multipart'])) {
+            $this->denormalizeMultipart($request);
+        } else {
             $this->decorated->onKernelRequest($event);
         }
-
-        $this->denormalizeMultipart($request);
     }
 
     private function denormalizeMultipart(Request $request): void {
         if (empty($attrs = RequestAttributesExtractor::extractAttributes($request))) {
             return;
         }
-
+        /** @var array{resource_class: class-string} $context */
         $context = $this->serializer->createFromRequest($request, false, $attrs);
         if (!empty($populated = $request->attributes->get('data'))) {
             $context['object_to_populate'] = $populated;
@@ -50,17 +50,21 @@ final class DeserializeListener {
     }
 
     /**
-     * @param mixed[] $context
+     * @param array{resource_class: class-string} $context
      *
      * @return mixed[]
      */
     private function getData(array $context, Request $request): array {
         $metadata = $this->em->getClassMetadata($context['resource_class']);
-        return collect(array_merge($request->request->all(), $request->files->all()))
+        return collect(array_merge($request->request->all(), array_filter($request->files->all())))
             ->map(static function ($value, string $name) use ($metadata) {
-                return $metadata->getTypeOfField($name) === 'boolean'
-                    ? is_string($value) && $value === 'true' || $value
-                    : $value;
+                if ($metadata->getTypeOfField($name) === 'boolean') {
+                    return $value === 'true';
+                }
+                if (is_string($value) && strlen($value) === 0) {
+                    return;
+                }
+                return $value;
             })
             ->all();
     }
