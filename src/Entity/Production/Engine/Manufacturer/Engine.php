@@ -9,7 +9,6 @@ use App\Entity\Production\Engine\Engine as Equipment;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -23,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une fiche fabricant',
                     'tags' => ['Engine']
                 ]
-            ],
+            ]
         ],
         shortName: 'ManufacturerEngine'
     ),
@@ -40,7 +39,6 @@ class Engine extends Entity {
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
-        Assert\Date,
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
@@ -61,11 +59,9 @@ class Engine extends Entity {
     private ?string $serialNumber = null;
 
     public function __construct(
-        #[
-            ORM\OneToOne(inversedBy: 'manufacturerEngine'),
-        Serializer\Groups(['read:engine', 'write:engine'])
-        ]
-        private Equipment $engine
+        #[ORM\OneToOne(inversedBy: 'manufacturerEngine'),
+        Serializer\Groups(['read:engine'])]
+        private ?Equipment $engine = null
     ) {
     }
 
@@ -77,7 +73,7 @@ class Engine extends Entity {
         return $this->date;
     }
 
-    final public function getEngine(): Equipment {
+    final public function getEngine(): ?Equipment {
         return $this->engine;
     }
 
@@ -99,7 +95,7 @@ class Engine extends Entity {
         return $this;
     }
 
-    final public function setEngine(Equipment $engine): self {
+    final public function setEngine(?Equipment $engine): self {
         $this->engine = $engine;
         return $this;
     }

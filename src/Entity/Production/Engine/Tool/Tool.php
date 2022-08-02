@@ -32,6 +32,16 @@ use Doctrine\ORM\Mapping as ORM;
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
+        denormalizationContext: [
+            'groups' => ['write:engine'],
+            'openapi_definition_name' => 'Tool-write'
+        ],
+        normalizationContext: [
+            'enable_max_depth' => true,
+            'groups' => ['read:current_place', 'read:engine', 'read:id'],
+            'openapi_definition_name' => 'Tool-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity
 ]

@@ -20,7 +20,6 @@ use App\Entity\Traits\BarCodeTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -88,7 +87,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:current_place', 'read:engine', 'read:id'],
             'openapi_definition_name' => 'Engine-read',
             'skip_null_values' => false
-        ],
+        ]
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'engine_type'),
     ORM\DiscriminatorMap(self::TYPES),
@@ -104,46 +103,59 @@ abstract class Engine extends Entity implements BarCodeInterface {
         EngineType::TYPE_WORKSTATION => Workstation::class
     ];
 
-    /**
-     * @var Group|null
-     */
-    protected $group;
-
     #[
         ApiProperty(description: 'Marque', example: 'Apple'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
-    private ?string $brand = null;
+    protected ?string $brand = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'MA-1'),
         ORM\Column(length: 10),
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
-    private ?string $code = null;
+    protected ?string $code = null;
 
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:engine'])
     ]
-    private ?Company $company = null;
-
-    #[
-        ApiProperty(description: 'Statut', example: 'end_of_life'),
-        ORM\Embedded(EmployeeEngineCurrentPlace::class),
-        Serializer\Groups(['read:engine'])
-    ]
-    private EmployeeEngineCurrentPlace $currentPlace;
+    protected ?Company $company = null;
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
-        Assert\Date,
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
-    private ?DateTimeImmutable $entryDate = null;
+    protected ?DateTimeImmutable $entryDate = null;
+
+    /**
+     * @var Group|null
+     */
+    protected $group;
+
+    #[
+        ApiProperty(description: 'Nom', example: 'Machine'),
+        ORM\Column(length: 80),
+        Serializer\Groups(['read:engine', 'write:engine'])
+    ]
+    protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Zone', readableLink: false, example: '/api/zones/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:engine', 'write:engine'])
+    ]
+    protected ?Zone $zone = null;
+
+    #[
+        ApiProperty(description: 'Statut', example: 'end_of_life'),
+        ORM\Embedded,
+        Serializer\Groups(['read:engine'])
+    ]
+    private EmployeeEngineCurrentPlace $currentPlace;
 
     #[
         ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist'], fetch: 'EAGER'),
@@ -160,25 +172,11 @@ abstract class Engine extends Entity implements BarCodeInterface {
     private int $maxOperator = 1;
 
     #[
-        ApiProperty(description: 'Nom', example: 'Machine'),
-        ORM\Column(length: 80),
-        Serializer\Groups(['read:engine', 'write:engine'])
-    ]
-    private ?string $name = null;
-
-    #[
         ApiProperty(description: 'Notes'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
     private ?string $notes = null;
-
-    #[
-        ApiProperty(description: 'Zone', readableLink: false, example: '/api/zones/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:engine', 'write:engine'])
-    ]
-    private ?Zone $zone = null;
 
     public function __construct() {
         $this->currentPlace = new EmployeeEngineCurrentPlace();
@@ -264,7 +262,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
     }
 
     final public function setManufacturerEngine(ManufacturerEngine $manufacturerEngine): self {
-        $this->manufacturerEngine = $manufacturerEngine;
+        $this->manufacturerEngine = $manufacturerEngine->setEngine($this);
         return $this;
     }
 
