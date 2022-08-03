@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220803133253 extends AbstractMigration {
+final class Version20220803173652 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -53,6 +53,7 @@ final class Version20220803133253 extends AbstractMigration {
         $this->upPhoneNumbers('customer_contact', 'address_phone_number');
         $this->upPhoneNumbers('customer_contact', 'mobile', 'mobile');
         $this->upPhoneNumbers('employee', 'address_phone_number');
+        $this->upPhoneNumbers('employee_contact', 'phone', 'phone');
         $this->upPhoneNumbers('out_trainer', 'tel');
         $this->upPhoneNumbers('society', 'phone');
         $this->upPhoneNumbers('supplier', 'address_phone_number');
@@ -63,6 +64,7 @@ final class Version20220803133253 extends AbstractMigration {
         $this->connection->executeQuery("CREATE PROCEDURE postUp$version() BEGIN {$this->getPhoneQueries()}; END");
         $this->connection->executeQuery("CALL postUp$version");
         $this->connection->executeQuery("DROP PROCEDURE postUp$version");
+        $this->connection->executeQuery('ALTER TABLE `employee_contact` DROP `address_country`');
     }
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -1185,6 +1187,10 @@ CREATE TABLE `employee` (
     `time_card` VARCHAR(255) DEFAULT NULL,
     `user_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
     `username` VARCHAR(20) DEFAULT NULL,
+    `nom_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
+    `prenom_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
+    `id_phone_prefix_pers_a_contacter` INT UNSIGNED DEFAULT NULL,
+    `tel_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
     CONSTRAINT `IDX_5D9F75A1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_5D9F75A1296CD8AE` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)
 )
@@ -1238,7 +1244,11 @@ INSERT INTO `employee` (
     `social_security_number`,
     `surname`,
     `user_enabled`,
-    `username`
+    `username`,
+    `nom_pers_a_contacter`,
+    `prenom_pers_a_contacter`,
+    `id_phone_prefix_pers_a_contacter`,
+    `tel_pers_a_contacter`
 ) SELECT
     `id`,
     `address`,
@@ -1292,7 +1302,11 @@ INSERT INTO `employee` (
     `n_secu`,
     `nom`,
     `user_gp`,
-    `login`
+    `login`,
+    `nom_pers_a_contacter`,
+    `prenom_pers_a_contacter`,
+    `id_phone_prefix_pers_a_contacter`,
+    `tel_pers_a_contacter`
 FROM `employee_old`
 WHERE `status` = 0
 SQL);
@@ -1343,6 +1357,31 @@ CREATE TABLE `token` (
     CONSTRAINT `IDX_5F37A13B8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
 )
 SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `employee_contact` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `employee_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
+    `phone` VARCHAR(255) DEFAULT NULL,
+    `surname` VARCHAR(255) DEFAULT NULL,
+    `address_country` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_CC2EB0378C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `employee_contact` (`employee_id`, `name`, `phone`, `surname`, `address_country`)
+SELECT
+    `id`,
+    `prenom_pers_a_contacter`,
+    `tel_pers_a_contacter`,
+    `nom_pers_a_contacter`,
+    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `employee`.`id_phone_prefix_pers_a_contacter`)
+FROM `employee`
+WHERE `prenom_pers_a_contacter` IS NOT NULL
+AND `nom_pers_a_contacter` IS NOT NULL
+SQL);
+        $this->addQuery('ALTER TABLE `employee` DROP `nom_pers_a_contacter`, DROP `prenom_pers_a_contacter`, DROP `id_phone_prefix_pers_a_contacter`, DROP `tel_pers_a_contacter`');
     }
 
     private function upEngineGroups(): void {
