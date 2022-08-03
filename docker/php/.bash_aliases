@@ -3,12 +3,6 @@
 ## Composer
 alias composer:prod='composer install --no-dev --optimize-autoloader'
 
-## PHP Coding Standards Fixer
-alias gpao:fix:code='/var/www/html/TConcept-GPAO/vendor/bin/php-cs-fixer fix'
-
-## PHPStan
-alias gpao:stan='/var/www/html/TConcept-GPAO/vendor/bin/phpstan analyse --memory-limit=1G'
-
 ## Symfony
 ### Cache
 alias cache:clear='php /var/www/html/TConcept-GPAO/bin/console cache:clear'
@@ -21,6 +15,19 @@ alias debug:router='php /var/www/html/TConcept-GPAO/bin/console debug:router'
 ### GPAO
 alias gpao:cron='php /var/www/html/TConcept-GPAO/bin/console gpao:cron'
 alias gpao:currency:rate='php /var/www/html/TConcept-GPAO/bin/console gpao:currency:rate'
-alias gpao:database:load='php /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
+alias gpao:database:load='php -d memory_limit=1G /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
 alias gpao:fixtures:load='php /var/www/html/TConcept-GPAO/bin/console gpao:fixtures:load'
 alias gpao:schema:update='php /var/www/html/TConcept-GPAO/bin/console gpao:schema:update'
+
+## PHP Coding Standards Fixer
+gpao_fix_code() {
+    cache:clear && \
+    /var/www/html/TConcept-GPAO/vendor/bin/php-cs-fixer fix && \
+    cache:clear && \
+    /var/www/html/TConcept-GPAO/vendor/bin/rector process && \
+    cache:clear && \
+    /var/www/html/TConcept-GPAO/vendor/bin/phpstan analyse --memory-limit=1G && \
+    cache:clear && \
+    php /var/www/html/TConcept-GPAO/bin/phpunit
+}
+alias gpao:fix:code='gpao_fix_code'

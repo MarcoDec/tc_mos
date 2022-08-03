@@ -3,6 +3,8 @@
 namespace App\Entity\Traits;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Doctrine\DBAL\Types\Management\VatMessageForce;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\VatMessage;
@@ -14,90 +16,90 @@ trait SocietyTrait {
     #[
         ApiProperty(description: 'Compte de comptabilité', required: false, example: 'D554DZ5'),
         Assert\Length(max: 50),
-        ORM\Column(type: 'string', length: 50, nullable: true),
+        ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:society', 'write:society'])
     ]
-    private ?string $accountingAccount;
+    private ?string $accountingAccount = null;
 
     #[
-        ApiProperty(description: 'Accusé de récéption', required: false, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
+        ApiProperty(description: 'Accusé de récéption', required: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
-    private ?bool $ar = false;
+    private bool $ar = false;
 
     #[
-        ApiProperty(description: 'Forcer la TVA', required: true, example: 0),
-        ORM\Column(options: ['default' => VatMessage::FORCE_DEFAULT, 'unsigned' => true], type: 'smallint'),
+        ApiProperty(description: 'Forcer la TVA', required: true, example: VatMessageForce::TYPE_FORCE_DEFAULT, openapiContext: ['enum' => VatMessageForce::TYPES]),
+        Assert\Choice(choices: VatMessageForce::TYPES),
+        ORM\Column(type: 'vat_message_force', options: ['default' => VatMessageForce::TYPE_FORCE_DEFAULT]),
         Serializer\Groups(['read:society', 'write:society'])
     ]
-    private int $forceVat = VatMessage::FORCE_DEFAULT;
+    private string $forceVat = VatMessageForce::TYPE_FORCE_DEFAULT;
 
     #[
-        ApiProperty(description: 'Incoterms', required: false),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        ApiProperty(description: 'Incoterms', required: false, example: '/api/incoterms/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
-    private ?Incoterms $incoterms;
+    private ?Incoterms $incoterms = null;
 
+    /** @noRector */
     #[
-        ApiProperty(description: 'Minimum de facturation', required: false, example: '2'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Minimum de facturation', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:society', 'write:society'])
     ]
-    private ?float $invoiceMin = 0;
+    private Measure $invoiceMin;
 
     #[
-        ApiProperty(description: 'Délai de paiement des facture', required: false, example: '/api/invoice-times-dues/4'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: InvoiceTimeDue::class),
-        Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
-    ]
-    private ?InvoiceTimeDue $invoiceTimeDue;
-
-    #[
-        ApiProperty(description: 'Ordre minimum', required: false, example: '5'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Délai de paiement des facture', required: false, example: '/api/invoice-time-dues/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:society', 'write:society'])
     ]
-    private ?float $orderMin = 0;
+    private ?InvoiceTimeDue $invoiceTimeDue = null;
+
+    /** @noRector */
+    #[
+        ApiProperty(description: 'Ordre minimum', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:society', 'write:society'])
+    ]
+    private Measure $orderMin;
 
     #[
         ApiProperty(description: 'Taux ppm', required: false, example: '10'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint'),
-        Serializer\Groups(['read:society', 'write:society'])
+        Assert\NotNull(groups: ['Default', 'Society-create']),
+        Assert\PositiveOrZero(groups: ['Default', 'Society-create']),
+        ORM\Column(type: 'smallint', options: ['default' => 10, 'unsigned' => true]),
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
-    private ?int $ppmRate = 10;
+    private int $ppmRate = 10;
 
     #[
         ApiProperty(description: 'TVA', required: false, example: 'FR'),
-        Assert\Length(max: 255),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:society', 'write:society'])
+        Assert\Length(max: 255, groups: ['Default', 'Society-create']),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
     private ?string $vat = null;
 
     #[
-        ApiProperty(description: 'Message TVA', required: false, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: VatMessage::class),
-        Serializer\Groups(['read:name', 'write:name'])
+        ApiProperty(description: 'Message TVA', required: false, example: '/api/vat-messages/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:society', 'write:society'])
     ]
-    private ?VatMessage $vatMessage;
+    private ?VatMessage $vatMessage = null;
+
+    public function __construct() {
+        $this->invoiceMin = new Measure();
+        $this->orderMin = new Measure();
+    }
 
     final public function getAccountingAccount(): ?string {
         return $this->accountingAccount;
     }
 
-    final public function getAr(): ?bool {
-        return $this->ar;
-    }
-
-    final public function getForceVat(): int {
+    final public function getForceVat(): string {
         return $this->forceVat;
     }
 
@@ -105,7 +107,7 @@ trait SocietyTrait {
         return $this->incoterms;
     }
 
-    final public function getInvoiceMin(): ?float {
+    final public function getInvoiceMin(): Measure {
         return $this->invoiceMin;
     }
 
@@ -113,11 +115,11 @@ trait SocietyTrait {
         return $this->invoiceTimeDue;
     }
 
-    final public function getOrderMin(): ?float {
+    final public function getOrderMin(): Measure {
         return $this->orderMin;
     }
 
-    final public function getPpmRate(): ?int {
+    final public function getPpmRate(): int {
         return $this->ppmRate;
     }
 
@@ -129,17 +131,21 @@ trait SocietyTrait {
         return $this->vatMessage;
     }
 
+    final public function isAr(): bool {
+        return $this->ar;
+    }
+
     final public function setAccountingAccount(?string $accountingAccount): self {
         $this->accountingAccount = $accountingAccount;
         return $this;
     }
 
-    final public function setAr(?bool $ar): self {
+    final public function setAr(bool $ar): self {
         $this->ar = $ar;
         return $this;
     }
 
-    final public function setForceVat(int $forceVat): self {
+    final public function setForceVat(string $forceVat): self {
         $this->forceVat = $forceVat;
         return $this;
     }
@@ -149,7 +155,7 @@ trait SocietyTrait {
         return $this;
     }
 
-    final public function setInvoiceMin(?float $invoiceMin): self {
+    final public function setInvoiceMin(Measure $invoiceMin): self {
         $this->invoiceMin = $invoiceMin;
         return $this;
     }
@@ -159,12 +165,12 @@ trait SocietyTrait {
         return $this;
     }
 
-    final public function setOrderMin(?float $orderMin): self {
+    final public function setOrderMin(Measure $orderMin): self {
         $this->orderMin = $orderMin;
         return $this;
     }
 
-    final public function setPpmRate(?int $ppmRate): self {
+    final public function setPpmRate(int $ppmRate): self {
         $this->ppmRate = $ppmRate;
         return $this;
     }

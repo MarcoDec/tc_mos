@@ -22,6 +22,7 @@ final class CronJobRepository extends ServiceEntityRepository {
      * @return CronJob[]
      */
     public function findAll(): array {
-        return $this->createQueryBuilder('j', 'j.command')->getQuery()->getResult();
+        $jobs = $this->createQueryBuilder('j', 'j.command')->getQuery()->getResult();
+        return is_array($jobs) ? $jobs : [];
     }
 }
