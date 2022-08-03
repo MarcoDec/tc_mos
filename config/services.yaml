@@ -53,6 +53,13 @@ services:
         event: preRemove
         name: doctrine.orm.entity_listener
 
+  App\EventListener\Production\Engine\EngineListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Production\Engine\Engine
+        event: postPersist
+        name: doctrine.orm.entity_listener
+
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'

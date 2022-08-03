@@ -158,5 +158,13 @@
     "unit_complete_lbl": "Ohm",
     "base": "1",
     "parent": null
+  },
+  {
+    "id": "21",
+    "statut": "0",
+    "unit_short_lbl": "fds",
+    "unit_complete_lbl": "Fin de série",
+    "base": "1",
+    "parent": null
   }
 ]
