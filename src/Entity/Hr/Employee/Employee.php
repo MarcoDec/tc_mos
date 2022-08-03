@@ -157,7 +157,6 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Date de naissance', example: '1980-24-03'),
-        Assert\Date,
         ORM\Column(type: 'datetime_immutable', nullable: true),
         Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
@@ -182,7 +181,6 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
-        Assert\Date,
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
