@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220802154611 extends AbstractMigration {
+final class Version20220803202038 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -1448,7 +1448,7 @@ ALTER TABLE `engine`
     DROP `id_fabricant`,
     DROP `numero_serie`,
     CHANGE `marque` `brand` VARCHAR(255) DEFAULT NULL,
-    CHANGE `ref` `code` VARCHAR(10) NOT NULL,
+    CHANGE `ref` `code` VARCHAR(10) DEFAULT NULL,
     CHANGE `id_society` `company_id` INT UNSIGNED DEFAULT NULL,
     CHANGE `capabilite` `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
     CHANGE `d_entree` `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
