@@ -10,6 +10,7 @@ use App\Entity\Embeddable\EmployeeEngineCurrentPlace;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
@@ -19,6 +20,7 @@ use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -94,7 +96,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Engine extends Entity implements BarCodeInterface {
+abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterface {
     use BarCodeTrait;
 
     public const TYPES = [
@@ -112,8 +114,8 @@ abstract class Engine extends Entity implements BarCodeInterface {
 
     #[
         ApiProperty(description: 'Référence', example: 'MA-1'),
-        ORM\Column(length: 10),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        ORM\Column(length: 10, nullable: true),
+        Serializer\Groups(['read:engine'])
     ]
     protected ?string $code = null;
 
@@ -227,8 +229,23 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this->notes;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
     final public function getZone(): ?Zone {
         return $this->zone;
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
     }
 
     final public function setBrand(?string $brand): self {
@@ -278,6 +295,11 @@ abstract class Engine extends Entity implements BarCodeInterface {
 
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 

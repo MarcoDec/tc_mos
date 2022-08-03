@@ -1488,7 +1488,7 @@ ALTER TABLE `engine`
     DROP `id_fabricant`,
     DROP `numero_serie`,
     CHANGE `marque` `brand` VARCHAR(255) DEFAULT NULL,
-    CHANGE `ref` `code` VARCHAR(10) NOT NULL,
+    CHANGE `ref` `code` VARCHAR(10) DEFAULT NULL,
     CHANGE `id_society` `company_id` INT UNSIGNED DEFAULT NULL,
     CHANGE `capabilite` `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
     CHANGE `d_entree` `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
@@ -1783,11 +1783,15 @@ SQL);
     private function upPlannings(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine_maintenance` (
-    `id` int(11) NOT NULL,
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_engine` INT UNSIGNED DEFAULT NULL,
     `type` VARCHAR(255) NOT NULL,
     `designation` TEXT NOT NULL,
-    `quantity` INT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)'
+    `quantity_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity` INT UNSIGNED DEFAULT 0 NOT NULL
 )
 SQL);
         $this->insert('engine_maintenance', ['id', 'id_engine', 'type', 'designation', 'quantity']);
@@ -1796,9 +1800,19 @@ DELETE FROM `engine_maintenance`
 WHERE NOT EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance`.`id_engine`)
 SQL);
         $this->addQuery(<<<'SQL'
+UPDATE `engine_maintenance`
+SET `quantity_code` = CASE
+    WHEN `type` = 'd' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'j')
+    WHEN `type` = 'u' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'U')
+    WHEN `type` = 'b' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'fds')
+END,
+`quantity_value` = `quantity`
+SQL);
+        $this->addQuery(<<<'SQL'
 ALTER TABLE `engine_maintenance`
+    DROP `quantity`,
+    DROP `type`,
     CHANGE `id_engine` `engine_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `type` `kind` VARCHAR(255) DEFAULT NULL,
     CHANGE `designation` `name` VARCHAR(255) NOT NULL,
     ADD CONSTRAINT `IDX_D499BFF6E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`)
 SQL);

@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Production\Engine\Engine;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiResource(
@@ -48,7 +49,8 @@ use Doctrine\ORM\Mapping as ORM;
 class CounterPart extends Engine {
     #[
         ApiProperty(description: 'Groupe', readableLink: true, example: '/api/counter-part-groups/1'),
-        ORM\ManyToOne(targetEntity: Group::class)
+        ORM\ManyToOne(targetEntity: Group::class),
+        Serializer\Groups(['read:engine', 'write:engine'])
     ]
     protected $group;
 }

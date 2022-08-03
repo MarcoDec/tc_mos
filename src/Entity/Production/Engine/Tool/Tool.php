@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Production\Engine\Engine;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiResource(
@@ -49,6 +50,7 @@ class Tool extends Engine {
     #[
         ApiProperty(description: 'Groupe', readableLink: false, example: '/api/tool-groups/1'),
         ORM\ManyToOne(targetEntity: Group::class),
+        Serializer\Groups(['read:engine', 'write:engine'])
     ]
     protected $group;
 }
