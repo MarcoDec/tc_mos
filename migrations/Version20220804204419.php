@@ -1448,7 +1448,13 @@ INSERT INTO `engine_event` (
     `date_planning`,
     `status_planning` != 1,
     (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`),
-    (SELECT `engine`.`company_id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`),
+    (
+        SELECT `zone`.`company_id`
+        FROM `zone`
+        WHERE `zone`.`id` = (
+            SELECT `engine`.`zone_id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`
+        )
+    ),
     `comment`,
     (SELECT `planning`.`id` FROM `planning` WHERE `planning`.`id` = `engine_maintenance_planning`.`id_maintenance`),
     'maintenance'
