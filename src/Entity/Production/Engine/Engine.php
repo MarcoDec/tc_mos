@@ -11,7 +11,6 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\WorkflowInterface;
-use App\Entity\Management\Society\Company\Company;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
 use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
@@ -120,13 +119,6 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
     protected ?string $code = null;
 
     #[
-        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:engine'])
-    ]
-    protected ?Company $company = null;
-
-    #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:engine', 'write:engine'])
@@ -197,10 +189,6 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
         return $this->code;
     }
 
-    final public function getCompany(): ?Company {
-        return $this->company;
-    }
-
     final public function getCurrentPlace(): EmployeeEngineCurrentPlace {
         return $this->currentPlace;
     }
@@ -255,11 +243,6 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
 
     final public function setCode(?string $code): self {
         $this->code = $code;
-        return $this;
-    }
-
-    final public function setCompany(?Company $company): self {
-        $this->company = $company;
         return $this;
     }
 

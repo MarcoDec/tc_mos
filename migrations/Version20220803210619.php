@@ -1413,7 +1413,6 @@ CREATE TABLE `engine` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `marque` VARCHAR(255) DEFAULT NULL,
     `ref` VARCHAR(255) NOT NULL,
-    `id_society` INT UNSIGNED DEFAULT NULL,
     `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
     `capabilite` VARCHAR(255) DEFAULT NULL,
     `d_entree` DATE DEFAULT NULL,
@@ -1433,7 +1432,6 @@ SQL);
             'id',
             'marque',
             'ref',
-            'id_society',
             'capabilite',
             'd_entree',
             'id_engine_group',
@@ -1445,18 +1443,21 @@ SQL);
             'id_fabricant',
             'numero_serie'
         ]);
+        $this->addQuery('CREATE TABLE `computer_engine` (`id_engine` INT UNSIGNED DEFAULT NULL, `id_society_zone` INT UNSIGNED DEFAULT NULL)');
+        $this->insert('computer_engine', ['id_engine', 'id_society_zone']);
         $this->addQuery(<<<'SQL'
 UPDATE `engine`
-SET `id_society` = (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `engine`.`id_society`)),
-`capabilite` = CASE
+SET `capabilite` = CASE
     WHEN `capabilite` = 1 THEN 'enabled'
     WHEN `capabilite` = 2 THEN 'warning'
     WHEN `capabilite` = 3 THEN 'blocked'
     ELSE 'disabled'
 END,
 `id_engine_group` = (SELECT `engine_group`.`id` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
-`type` = (SELECT `engine_group`.`type` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`)
+`type` = (SELECT `engine_group`.`type` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
+`zone_id` = (SELECT `zone`.`id` FROM `zone` WHERE `zone`.`id` = (SELECT `computer_engine`.`id_society_zone` FROM `computer_engine` WHERE `computer_engine`.`id_engine` = `engine`.`id`))
 SQL);
+        $this->addQuery('DROP TABLE `computer_engine`');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `manufacturer_engine` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -1489,13 +1490,11 @@ ALTER TABLE `engine`
     DROP `numero_serie`,
     CHANGE `marque` `brand` VARCHAR(255) DEFAULT NULL,
     CHANGE `ref` `code` VARCHAR(10) DEFAULT NULL,
-    CHANGE `id_society` `company_id` INT UNSIGNED DEFAULT NULL,
     CHANGE `capabilite` `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
     CHANGE `d_entree` `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     CHANGE `id_engine_group` `group_id` INT UNSIGNED DEFAULT NULL,
     CHANGE `operateur_max` `max_operator` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
     CHANGE `nom` `name` VARCHAR(127) NOT NULL,
-    ADD CONSTRAINT `IDX_E8A81A8D979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
     ADD CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
     ADD CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
 SQL);
