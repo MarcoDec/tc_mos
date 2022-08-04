@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220804144302 extends AbstractMigration {
+final class Version20220804204419 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -255,6 +255,8 @@ SQL);
         $this->upNotifications();
         $this->upPlannings();
         $this->upSkills();
+        // rank 6
+        $this->upEngineEvents();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
@@ -389,11 +391,11 @@ CREATE TABLE `company_event` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `company_id` INT UNSIGNED NOT NULL,
-    `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `done` BOOLEAN DEFAULT FALSE NOT NULL,
     `kind` VARCHAR(255) DEFAULT 'holiday' NOT NULL,
     `managing_company_id` INT UNSIGNED DEFAULT NULL,
-    `name` VARCHAR(255) NOT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
     CONSTRAINT `IDX_7C5FA8C2E7E23CE8` FOREIGN KEY (`managing_company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_7C5FA8C2979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 )
@@ -1064,11 +1066,11 @@ CREATE TABLE `customer_event` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `customer_id` INT UNSIGNED NOT NULL,
-    `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `done` BOOLEAN DEFAULT FALSE NOT NULL,
     `kind` VARCHAR(255) DEFAULT 'holiday' NOT NULL,
     `managing_company_id` INT UNSIGNED DEFAULT NULL,
-    `name` VARCHAR(255) NOT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
     CONSTRAINT `IDX_F59B7F9CE7E23CE8` FOREIGN KEY (`managing_company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_F59B7F9C9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
 )
@@ -1385,6 +1387,127 @@ WHERE `prenom_pers_a_contacter` IS NOT NULL
 AND `nom_pers_a_contacter` IS NOT NULL
 SQL);
         $this->addQuery('ALTER TABLE `employee` DROP `nom_pers_a_contacter`, DROP `prenom_pers_a_contacter`, DROP `id_phone_prefix_pers_a_contacter`, DROP `tel_pers_a_contacter`');
+    }
+
+    private function upEngineEvents(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `engine_event` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('agreed', 'closed') DEFAULT 'agreed' NOT NULL COMMENT '(DC2Type:engine_event_current_place)',
+    `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `done` BOOLEAN DEFAULT FALSE NOT NULL,
+    `emergency` TINYINT UNSIGNED DEFAULT 1 COMMENT '(DC2Type:tinyint)',
+    `employee_id` INT UNSIGNED DEFAULT NULL,
+    `engine_id` INT UNSIGNED DEFAULT NULL,
+    `intervention_notes` TEXT DEFAULT NULL,
+    `managing_company_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `planned_by_id` INT UNSIGNED DEFAULT NULL,
+    `type` ENUM('maintenance', 'request') NOT NULL COMMENT '(DC2Type:engine_event_type)',
+    CONSTRAINT `IDX_16C6DEEC8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
+    CONSTRAINT `IDX_16C6DEECE78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
+    CONSTRAINT `IDX_16C6DEECE7E23CE8` FOREIGN KEY (`managing_company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_16C6DEEC24E29790` FOREIGN KEY (`planned_by_id`) REFERENCES `planning` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `engine_maintenance_planning` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_maintenance` INT UNSIGNED NOT NULL,
+    `id_engine_maintenance` INT UNSIGNED NOT NULL,
+    `date_planning` DATE NOT NULL,
+    `date_execution` DATE DEFAULT NULL,
+    `status_planning` INT UNSIGNED NOT NULL DEFAULT 0,
+    `comment` TEXT
+)
+SQL);
+        $this->insert('engine_maintenance_planning', [
+            'id',
+            'id_maintenance',
+            'id_engine_maintenance',
+            'date_planning',
+            'date_execution',
+            'status_planning',
+            'comment'
+        ]);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `engine_event` (
+    `current_place_name`,
+    `date`,
+    `done`,
+    `engine_id`,
+    `managing_company_id`,
+    `notes`,
+    `planned_by_id`,
+    `type`
+) SELECT
+    IF(`status_planning` = 1, 'agreed', 'closed'),
+    `date_planning`,
+    `status_planning` != 1,
+    (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`),
+    (SELECT `engine`.`company_id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`),
+    `comment`,
+    (SELECT `planning`.`id` FROM `planning` WHERE `planning`.`id` = `engine_maintenance_planning`.`id_maintenance`),
+    'maintenance'
+FROM `engine_maintenance_planning`
+WHERE EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`)
+AND EXISTS (SELECT `planning`.`id` FROM `planning` WHERE `planning`.`id` = `engine_maintenance_planning`.`id_maintenance`)
+SQL);
+        $this->addQuery('DROP TABLE `engine_maintenance_planning`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `engine_request_event` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_society` INT UNSIGNED NOT NULL,
+    `id_engine` INT UNSIGNED NOT NULL,
+    `commentaire` VARCHAR(255) DEFAULT NULL,
+    `commentaire_intervention` VARCHAR(255) DEFAULT NULL,
+    `statut` INT UNSIGNED NOT NULL,
+    `urgence` TINYINT UNSIGNED NOT NULL,
+    `id_user_intervention` INT UNSIGNED NOT NULL,
+    `date_intervention` DATETIME DEFAULT NULL
+)
+SQL);
+        $this->insert('engine_request_event', [
+            'id',
+            'id_society',
+            'id_engine',
+            'commentaire',
+            'commentaire_intervention',
+            'statut',
+            'urgence',
+            'id_user_intervention',
+            'date_intervention'
+        ]);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `engine_event` (
+    `current_place_name`,
+    `date`,
+    `done`,
+    `emergency`,
+    `employee_id`,
+    `engine_id`,
+    `intervention_notes`,
+    `managing_company_id`,
+    `notes`,
+    `type`
+) SELECT
+    IF(`statut` = 2, 'closed', 'agreed'),
+    `date_intervention`,
+    `statut` = 2,
+    `urgence`,
+    (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `engine_request_event`.`id_user_intervention`),
+    (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_request_event`.`id_engine`),
+    `commentaire_intervention`,
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `engine_request_event`.`id_society`)),
+    `commentaire`,
+    'request'
+FROM `engine_request_event`
+WHERE EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_request_event`.`id_engine`)
+SQL);
+        $this->addQuery('DROP TABLE `engine_request_event`');
     }
 
     private function upEngineGroups(): void {

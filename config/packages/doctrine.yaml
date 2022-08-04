@@ -24,6 +24,8 @@ doctrine:
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
       employee_engine_current_place: App\Doctrine\DBAL\Types\EmployeeEngineCurrentPlaceType
+      engine_event_current_place: App\Doctrine\DBAL\Types\Production\Engine\CurrentPlaceType
+      engine_event_type: App\Doctrine\DBAL\Types\Production\Engine\EventType
       engine_type: App\Doctrine\DBAL\Types\Production\Engine\EngineType
       gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType

@@ -13,47 +13,28 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ApiResource(
         description: 'Requête',
         collectionOperations: [
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère les requêtes',
-                    'summary' => 'Récupère les requêtes',
-                ]
-            ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer une requête',
                     'summary' => 'Créer une requête',
+                    'tags' => ['EngineEvent']
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_WRITER.'\')'
             ]
         ],
-        itemOperations: [
-            'delete' => [
-                'openapi_context' => [
-                    'description' => 'Supprime une requête',
-                    'summary' => 'Supprime une requête',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_ADMIN.'\')'
-            ],
-            'patch' => [
-                'openapi_context' => [
-                    'description' => 'Modifie une requête',
-                    'summary' => 'Modifie une requête',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_WRITER.'\')'
-            ]
-        ],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         shortName: 'EngineRequest',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:planning', 'write:name', 'write:event_date', 'write:notes', 'write:request'],
+            'groups' => ['write:event'],
             'openapi_definition_name' => 'EngineRequest-write'
         ],
         normalizationContext: [
-            'groups' => ['read:planning', 'read:id', 'read:name', 'read:event_date', 'read:event', 'read:company', 'read:employee', 'read:engine', 'read:notes', 'read:request'],
-            'openapi_definition_name' => 'EngineRequest-read'
+            'groups' => ['read:event', 'read:id'],
+            'openapi_definition_name' => 'EngineRequest-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity
@@ -90,10 +71,6 @@ class Request extends Event {
 
     final public function getNotes(): ?string {
         return $this->notes;
-    }
-
-    final public function getType(): string {
-        return 'request';
     }
 
     final public function setEmergency(int $emergency): self {

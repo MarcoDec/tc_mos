@@ -20,7 +20,7 @@ abstract class Event extends Entity {
 
     #[
         ApiProperty(description: 'Date'),
-        ORM\Column(type: 'datetime_immutable'),
+        ORM\Column(type: 'datetime_immutable', nullable: true),
         Serializer\Groups(['read:event', 'write:event'])
     ]
     private ?DateTimeImmutable $date = null;
@@ -35,7 +35,7 @@ abstract class Event extends Entity {
     #[
         ApiProperty(description: 'Nom', example: 'Congés d\'été'),
         Assert\NotBlank,
-        ORM\Column,
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:event', 'write:event'])
     ]
     private ?string $name = null;

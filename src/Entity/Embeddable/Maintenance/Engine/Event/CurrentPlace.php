@@ -3,7 +3,7 @@
 namespace App\Entity\Embeddable\Maintenance\Engine\Event;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Doctrine\DBAL\Types\Selling\Customer\CurrentPlaceType;
+use App\Doctrine\DBAL\Types\Production\Engine\CurrentPlaceType;
 use App\Entity\Embeddable\CurrentPlace as AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
@@ -12,40 +12,31 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {
-    final public const TRANSITIONS = [
-        self::TR_BLOCK,
-        self::TR_DISABLE,
-        self::TR_UNLOCK,
-        self::TR_VALIDATE
-    ];
+    final public const TRANSITIONS = [self::TR_VALIDATE];
 
     #[
-        ApiProperty(description: 'Nom', required: true, openapiContext: ['enum' => CurrentPlaceType::TYPES]),
+        ApiProperty(description: 'Nom', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
         Assert\NotBlank,
-        ORM\Column(type: 'customer_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
+        ORM\Column(type: 'engine_event_current_place', options: ['default' => CurrentPlaceType::TYPE_AGREED]),
         Serializer\Groups(['read:current-place'])
     ]
     protected ?string $name = null;
 
     public function __construct(?string $name = null) {
-        parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_DRAFT);
+        parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_AGREED);
     }
 
     #[Pure]
     final public function getTrafficLight(): int {
-        return match ($this->getName()) {
-            CurrentPlaceType::TYPE_AGREED => 1,
-            CurrentPlaceType::TYPE_BLOCKED, CurrentPlaceType::TYPE_DISABLED => 3,
-            default => 2,
-        };
+        return $this->getName() === CurrentPlaceType::TYPE_AGREED ? 1 : 3;
     }
 
     final public function isDeletable(): bool {
-        return in_array($this->name, [CurrentPlaceType::TYPE_DISABLED, CurrentPlaceType::TYPE_DRAFT]);
+        return true;
     }
 
     final public function isFrozen(): bool {
-        return $this->name === CurrentPlaceType::TYPE_DISABLED;
+        return $this->name === CurrentPlaceType::TYPE_CLOSED;
     }
 }
