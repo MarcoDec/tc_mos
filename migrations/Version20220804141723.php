@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220803210619 extends AbstractMigration {
+final class Version20220804141723 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -221,7 +221,7 @@ SQL);
         $this->upProductFamilies();
         $this->upQualityTypes();
         $this->upRejectTypes();
-        $this->upSkills();
+        $this->upSkillTypes();
         $this->upTimeSlots();
         $this->upUnits();
         $this->upVatMessages();
@@ -253,6 +253,7 @@ SQL);
         // rank 5
         $this->upNotifications();
         $this->upPlannings();
+        $this->upSkills();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
@@ -262,6 +263,7 @@ SQL);
         $this->addQuery('ALTER TABLE `product` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
+        $this->addQuery('ALTER TABLE `skill_type` DROP `old_id`');
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
         $this->addQuery('DROP TABLE `country`');
@@ -2296,12 +2298,101 @@ SQL);
 
     private function upSkills(): void {
         $this->addQuery(<<<'SQL'
+CREATE TABLE `employee_histcompetence` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_employee` int(11) DEFAULT NULL,
+    `id_formateur` int(11) DEFAULT NULL,
+    `id_extformateur` int(11) DEFAULT NULL,
+    `date_form` date DEFAULT NULL,
+    `date_cloture_formation` date DEFAULT NULL,
+    `id_competence` int(11) DEFAULT NULL,
+    `id_engine` int(11) DEFAULT NULL,
+    `niveau` int(11) DEFAULT NULL
+)
+SQL);
+        $this->insert('employee_histcompetence', [
+            'id',
+            'id_employee',
+            'id_formateur',
+            'id_extformateur',
+            'date_form',
+            'date_cloture_formation',
+            'id_competence',
+            'id_engine',
+            'niveau'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `skill` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `employee_id` INT UNSIGNED DEFAULT NULL,
+    `ended_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `engine_id` INT UNSIGNED DEFAULT NULL,
+    `family_id` INT UNSIGNED DEFAULT NULL,
+    `in_trainer_id` INT UNSIGNED DEFAULT NULL,
+    `level` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `out_trainer_id` INT UNSIGNED DEFAULT NULL,
+    `product_id` INT UNSIGNED DEFAULT NULL,
+    `remindable` BOOLEAN DEFAULT FALSE NOT NULL,
+    `reminded_child_id` INT UNSIGNED DEFAULT NULL,
+    `reminded_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `started_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `type_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_5E3DE4778C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
+    CONSTRAINT `IDX_5E3DE477E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
+    CONSTRAINT `IDX_5E3DE477C35E566A` FOREIGN KEY (`family_id`) REFERENCES `engine_group` (`id`),
+    CONSTRAINT `IDX_5E3DE477B4B58540` FOREIGN KEY (`in_trainer_id`) REFERENCES `employee` (`id`),
+    CONSTRAINT `IDX_5E3DE47778A19B66` FOREIGN KEY (`out_trainer_id`) REFERENCES `out_trainer` (`id`),
+    CONSTRAINT `IDX_5E3DE4774584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
+    CONSTRAINT `IDX_5E3DE47795A13422` FOREIGN KEY (`reminded_child_id`) REFERENCES `skill` (`id`),
+    CONSTRAINT `IDX_5E3DE477C54C8C93` FOREIGN KEY (`type_id`) REFERENCES `skill_type` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `skill` (
+    `employee_id`,
+    `ended_date`,
+    `engine_id`,
+    `in_trainer_id`,
+    `level`,
+    `out_trainer_id`,
+    `started_date`,
+    `type_id`
+) SELECT
+    (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `employee_histcompetence`.`id_employee`),
+    `date_cloture_formation`,
+    (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `employee_histcompetence`.`id_engine`),
+    (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `employee_histcompetence`.`id_formateur`),
+    `niveau`,
+    (SELECT `out_trainer`.`id` FROM `out_trainer` WHERE `out_trainer`.`id` = `employee_histcompetence`.`id_extformateur`),
+    `date_form`,
+    (SELECT `skill_type`.`id` FROM `skill_type` WHERE `skill_type`.`old_id` = `employee_histcompetence`.`id_competence`)
+FROM `employee_histcompetence`
+WHERE EXISTS (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `employee_histcompetence`.`id_employee`)
+AND EXISTS (SELECT `skill_type`.`id` FROM `skill_type` WHERE `skill_type`.`old_id` = `employee_histcompetence`.`id_competence`)
+SQL);
+        $this->addQuery('DROP TABLE `employee_histcompetence`');
+    }
+
+    private function upSkillTypes(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `employee_competencelist` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `designation` varchar(255) NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL
+)
+SQL);
+        $this->insert('employee_competencelist', ['id', 'designation', 'statut']);
+        $this->addQuery(<<<'SQL'
 CREATE TABLE `skill_type` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(50) NOT NULL
 )
 SQL);
+        $this->addQuery('INSERT INTO `skill_type` (`old_id`, `name`) SELECT `id`, `designation` FROM `employee_competencelist` WHERE `statut` = 0');
+        $this->addQuery('DROP TABLE `employee_competencelist`');
     }
 
     private function upSocieties(): void {
