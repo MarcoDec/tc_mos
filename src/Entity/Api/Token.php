@@ -23,7 +23,7 @@ class Token {
     #[ORM\Column(type: 'char', length: 120)]
     private string $token;
 
-    final public function __construct(
+    public function __construct(
         #[ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'apiTokens')]
         private Employee $employee

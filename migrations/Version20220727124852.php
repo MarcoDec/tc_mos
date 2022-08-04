@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220722095434 extends AbstractMigration {
+final class Version20220727124852 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -52,6 +52,7 @@ final class Version20220722095434 extends AbstractMigration {
         $this->upPhoneNumbers('customer', 'address_phone_number');
         $this->upPhoneNumbers('customer_contact', 'address_phone_number');
         $this->upPhoneNumbers('customer_contact', 'mobile', 'mobile');
+        $this->upPhoneNumbers('employee', 'address_phone_number');
         $this->upPhoneNumbers('out_trainer', 'tel');
         $this->upPhoneNumbers('society', 'phone');
         $this->upPhoneNumbers('supplier', 'address_phone_number');
@@ -69,6 +70,11 @@ final class Version20220722095434 extends AbstractMigration {
     }
 
     public function up(Schema $schema): void {
+        $this->addSql(<<<'SQL'
+CREATE FUNCTION IF_EMPTY(s VARCHAR(255), def VARCHAR(255))
+    RETURNS VARCHAR(255) DETERMINISTIC
+    RETURN IF(s IS NULL OR TRIM(s) = '', def, s)
+SQL);
         $this->addSql(<<<'SQL'
 CREATE FUNCTION UCFIRST (s VARCHAR(255))
     RETURNS VARCHAR(255) DETERMINISTIC
@@ -100,6 +106,7 @@ SQL);
         $this->addSql("CALL up$version");
         $this->addSql("DROP PROCEDURE up$version");
         $this->addSql('DROP FUNCTION UCFIRST');
+        $this->addSql('DROP FUNCTION IF_EMPTY');
     }
 
     protected function addSql(string $sql, array $params = [], array $types = []): void {
@@ -198,7 +205,6 @@ SQL);
         $this->upCountries();
         $this->upCustomCode();
         $this->upLocales();
-        $this->upUsers();
         // rank 1
         $this->upCarriers();
         $this->upComponentFamilies();
@@ -209,7 +215,6 @@ SQL);
         $this->upEventTypes();
         $this->upIncoterms();
         $this->upInvoiceTimeDue();
-        $this->upNotifications();
         $this->upOutTrainers();
         $this->upProductFamilies();
         $this->upQualityTypes();
@@ -237,15 +242,18 @@ SQL);
         $this->upProductCustomers();
         $this->upSupplies();
         $this->upTeams();
-        $this->addQuery('ALTER TABLE `employee` ADD CONSTRAINT `IDX_5D9F75A1296CD8AE` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)');
         $this->upWarehouses();
         $this->upZones();
         // rank 4
+        $this->upEmployees();
         $this->upStocks();
+        // rank 5
+        $this->upNotifications();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
+        $this->addQuery('ALTER TABLE `employee` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `product` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
@@ -1056,6 +1064,281 @@ CREATE TABLE `customer_event` (
     `name` VARCHAR(255) NOT NULL,
     CONSTRAINT `IDX_F59B7F9CE7E23CE8` FOREIGN KEY (`managing_company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_F59B7F9C9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
+)
+SQL);
+    }
+
+    private function upEmployees(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `employee` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `status` BOOLEAN DEFAULT FALSE NOT NULL,
+    `matricule` INT UNSIGNED DEFAULT NULL,
+    `nom` VARCHAR(255) DEFAULT NULL,
+    `prenom` VARCHAR(255) DEFAULT NULL,
+    `address` VARCHAR(255) DEFAULT NULL,
+    `code_postal` INT UNSIGNED DEFAULT NULL,
+    `ville` VARCHAR(255) DEFAULT NULL,
+    `id_phone_prefix` INT UNSIGNED DEFAULT NULL,
+    `tel` VARCHAR(255) DEFAULT NULL,
+    `nom_pers_a_contacter` VARCHAR(255) NOT NULL,
+    `prenom_pers_a_contacter` VARCHAR(255) NOT NULL,
+    `id_phone_prefix_pers_a_contacter` INT UNSIGNED DEFAULT NULL,
+    `tel_pers_a_contacter` VARCHAR(255) NOT NULL,
+    `d_entree` DATE DEFAULT NULL,
+    `n_secu` VARCHAR(255) DEFAULT NULL,
+    `d_naissance` DATE DEFAULT NULL,
+    `lieu_de_naissance` VARCHAR(255) DEFAULT NULL,
+    `lvl_etude` VARCHAR(255) DEFAULT NULL,
+    `id_role` INT UNSIGNED DEFAULT NULL,
+    `id_role2` INT DEFAULT NULL,
+    `id_role3` INT DEFAULT NULL,
+    `id_resp` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `is_former` BOOLEAN DEFAULT FALSE NOT NULL,
+    `user_gp` BOOLEAN DEFAULT FALSE NOT NULL,
+    `login` VARCHAR(255) DEFAULT NULL,
+    `password` VARCHAR(255) DEFAULT NULL,
+    `email` VARCHAR(255) DEFAULT NULL,
+    `notes` TEXT,
+    `sexe` VARCHAR(1) DEFAULT NULL,
+    `situation` VARCHAR(255) DEFAULT NULL,
+    `initials` VARCHAR(5) DEFAULT NULL,
+    `matricule_pointage` VARCHAR(200) DEFAULT NULL,
+    `user_account` INT UNSIGNED DEFAULT NULL,
+    `team` enum('matin','journée','soir') DEFAULT NULL
+)
+SQL);
+        $this->insert('employee', [
+            'id',
+            'status',
+            'matricule',
+            'nom',
+            'prenom',
+            'address',
+            'code_postal',
+            'ville',
+            'id_phone_prefix',
+            'tel',
+            'nom_pers_a_contacter',
+            'prenom_pers_a_contacter',
+            'id_phone_prefix_pers_a_contacter',
+            'tel_pers_a_contacter',
+            'd_entree',
+            'n_secu',
+            'd_naissance',
+            'lieu_de_naissance',
+            'lvl_etude',
+            'id_role',
+            'id_role2',
+            'id_role3',
+            'id_resp',
+            'id_society',
+            'is_former',
+            'user_gp',
+            'login',
+            'password',
+            'email',
+            'notes',
+            'sexe',
+            'situation',
+            'initials',
+            'matricule_pointage',
+            'user_account',
+            'team'
+        ]);
+        $this->addQuery('RENAME TABLE `employee` TO `employee_old`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `employee` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED DEFAULT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `address_address` VARCHAR(80) DEFAULT NULL,
+    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_city` VARCHAR(50) DEFAULT NULL,
+    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_phone_number` VARCHAR(18) DEFAULT NULL,
+    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `birthday` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `birth_city` VARCHAR(255) DEFAULT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_current_place)',
+    `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
+    `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `gender` ENUM('female', 'male') DEFAULT 'male' COMMENT '(DC2Type:gender_place)',
+    `initials` VARCHAR(255) NOT NULL,
+    `level_of_study` VARCHAR(255) DEFAULT NULL,
+    `manager_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(30) NOT NULL,
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `plain_password` VARCHAR(255) DEFAULT NULL,
+    `situation` ENUM('married', 'single', 'windowed') DEFAULT 'single' COMMENT '(DC2Type:situation_place)',
+    `social_security_number` VARCHAR(255) DEFAULT NULL,
+    `surname` VARCHAR(255) NOT NULL,
+    `team_id` INT UNSIGNED DEFAULT NULL,
+    `time_card` VARCHAR(255) DEFAULT NULL,
+    `user_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
+    `username` VARCHAR(20) DEFAULT NULL,
+    CONSTRAINT `IDX_5D9F75A1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_5D9F75A1296CD8AE` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)
+)
+SQL);
+        ($user = (new Employee()))
+            ->setPassword($this->hasher->hashPassword($user, 'super'))
+            ->addRole(Roles::ROLE_ACCOUNTING_ADMIN)
+            ->addRole(Roles::ROLE_HR_ADMIN)
+            ->addRole(Roles::ROLE_IT_ADMIN)
+            ->addRole(Roles::ROLE_LEVEL_DIRECTOR)
+            ->addRole(Roles::ROLE_LOGISTICS_ADMIN)
+            ->addRole(Roles::ROLE_MAINTENANCE_ADMIN)
+            ->addRole(Roles::ROLE_MANAGEMENT_ADMIN)
+            ->addRole(Roles::ROLE_PRODUCTION_ADMIN)
+            ->addRole(Roles::ROLE_PROJECT_ADMIN)
+            ->addRole(Roles::ROLE_PURCHASE_ADMIN)
+            ->addRole(Roles::ROLE_QUALITY_ADMIN)
+            ->addRole(Roles::ROLE_SELLING_ADMIN);
+        $this->addQuery(sprintf(
+            <<<'SQL'
+INSERT INTO `employee` (`emb_roles_roles`, `initials`, `name`, `password`, `surname`, `username`)
+VALUES (%s, 'super', 'Super', %s, 'SUPER', 'super')
+SQL,
+            /** @phpstan-ignore-next-line */
+            $this->connection->quote(implode(',', $user->getRoles())),
+            /** @phpstan-ignore-next-line */
+            $this->connection->quote($user->getPassword())
+        ));
+        $this->addQuery(<<<'SQL'
+INSERT INTO `employee` (
+    `old_id`,
+    `address_address`,
+    `address_city`,
+    `address_country`,
+    `address_email`,
+    `address_phone_number`,
+    `address_zip_code`,
+    `birthday`,
+    `birth_city`,
+    `company_id`,
+    `id_society`,
+    `emb_roles_roles`,
+    `entry_date`,
+    `gender`,
+    `initials`,
+    `level_of_study`,
+    `manager_id`,
+    `name`,
+    `password`,
+    `situation`,
+    `social_security_number`,
+    `surname`,
+    `user_enabled`,
+    `username`
+) SELECT
+    `id`,
+    `address`,
+    `ville`,
+    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `employee_old`.`id_phone_prefix`),
+    `email`,
+    `tel`,
+    `code_postal`,
+    `d_naissance`,
+    `lieu_de_naissance`,
+    (
+        SELECT `company`.`id`
+        FROM `company`
+        WHERE `company`.`society_id` = (
+            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `employee_old`.`id_society`
+        )
+    ),
+    `id_society`,
+    CASE
+        WHEN `id_role` = 100 THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_IT_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 300 OR (`id_role` % 100 = 0 AND `id_role` NOT IN (300, 400, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500)) THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 311 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_QUALITY_ADMIN,ROLE_USER'
+        WHEN `id_role` < 400 THEN 'ROLE_PRODUCTION_WRITER,ROLE_QUALITY_WRITER,ROLE_USER'
+        WHEN `id_role` = 400 THEN 'ROLE_HR_ADMIN,ROLE_USER'
+        WHEN `id_role` < 500 THEN 'ROLE_HR_WRITER,ROLE_USER'
+        WHEN `id_role` < 600 THEN 'ROLE_HR_WRITER,ROLE_LOGISTICS_WRITER,ROLE_PRODUCTION_READER,ROLE_PROJECT_READER,ROLE_PURCHASE_WRITER,ROLE_QUALITY_READER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `id_role` IN (600, 1000) THEN 'ROLE_PRODUCTION_ADMIN,ROLE_USER'
+        WHEN `id_role` < 700 OR (`id_role` > 1000 AND `id_role` < 1100) THEN 'ROLE_PRODUCTION_WRITER,ROLE_USER'
+        WHEN `id_role` = 700 THEN 'ROLE_LOGISTICS_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 800 THEN 'ROLE_LOGISTICS_WRITER,ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_PURCHASE_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `id_role` < 910 THEN 'ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 1000 THEN 'ROLE_PROJECT_WRITER,ROLE_PURCHASE_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `id_role` = 1100 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_QUALITY_ADMIN,ROLE_USER'
+        WHEN `id_role` < 1300 THEN 'ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_QUALITY_WRITER,ROLE_USER'
+        WHEN `id_role` < 1320 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `id_role` < 1400 THEN 'ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_QUALITY_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        ELSE 'ROLE_USER'
+    END,
+    `d_entree`,
+    IF(`sexe` = 'F', 'female', 'male'),
+    IF_EMPTY(`initials`, CONCAT(UCASE(LEFT(`nom`, 2)), '-', UCFIRST(LEFT(`prenom`, 2)))),
+    `lvl_etude`,
+    `id_resp`,
+    `prenom`,
+    `password`,
+    CASE
+        WHEN `situation` LIKE 'mari%' THEN 'married'
+        WHEN `situation` LIKE 've%' THEN 'windowed'
+        ELSE 'single'
+    END,
+    `n_secu`,
+    `nom`,
+    `user_gp`,
+    `login`
+FROM `employee_old`
+WHERE `status` = 0
+SQL);
+        $this->addQuery(<<<'SQL'
+UPDATE `employee`
+LEFT JOIN `employee` `m` ON `employee`.`manager_id` = `m`.`old_id`
+SET `employee`.`manager_id` = `m`.`id`
+SQL);
+        $this->addQuery('ALTER TABLE `employee` ADD CONSTRAINT `IDX_5D9F75A1783E3463` FOREIGN KEY (`manager_id`) REFERENCES `employee` (`id`)');
+        $this->addQuery('DROP TABLE `employee_old`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `user` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_society` INT UNSIGNED NOT NULL,
+    `login` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `nom` VARCHAR(255) NOT NULL,
+    `prenom` VARCHAR(255) NOT NULL
+)
+SQL);
+        $this->insert('user', [
+            'id',
+            'statut',
+            'id_society',
+            'login',
+            'password',
+            'nom',
+            'prenom'
+        ]);
+        $this->addQuery(<<<'SQL'
+UPDATE `employee`
+INNER JOIN `user`
+    ON `employee`.`name` LIKE `user`.`prenom`
+    AND `employee`.`surname` LIKE `user`.`nom`
+    AND `employee`.`id_society` = `user`.`id_society`
+    AND `user`.`statut` = 0
+SET `employee`.`password` = `user`.`password`
+AND `employee`.`username` = `user`.`login`
+SQL);
+        $this->addQuery('DROP TABLE `user`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `token` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `employee_id` INT UNSIGNED NOT NULL,
+    `expire_at` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `token` CHAR(120) NOT NULL COMMENT '(DC2Type:char)',
+    CONSTRAINT `IDX_5F37A13B8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
 )
 SQL);
     }
@@ -2493,56 +2776,12 @@ SQL);
         $this->addQuery('UPDATE `unit` SET `name` = UCFIRST(`name`)');
     }
 
-    private function upUsers(): void {
-        ($user = (new Employee()))
-            ->setPassword($this->hasher->hashPassword($user, 'super'))
-            ->addRole(Roles::ROLE_ACCOUNTING_ADMIN)
-            ->addRole(Roles::ROLE_HR_ADMIN)
-            ->addRole(Roles::ROLE_IT_ADMIN)
-            ->addRole(Roles::ROLE_LEVEL_DIRECTOR)
-            ->addRole(Roles::ROLE_LOGISTICS_ADMIN)
-            ->addRole(Roles::ROLE_MAINTENANCE_ADMIN)
-            ->addRole(Roles::ROLE_MANAGEMENT_ADMIN)
-            ->addRole(Roles::ROLE_PRODUCTION_ADMIN)
-            ->addRole(Roles::ROLE_PROJECT_ADMIN)
-            ->addRole(Roles::ROLE_PURCHASE_ADMIN)
-            ->addRole(Roles::ROLE_QUALITY_ADMIN)
-            ->addRole(Roles::ROLE_SELLING_ADMIN);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `employee` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
-    `name` VARCHAR(30) NOT NULL,
-    `password` CHAR(60) NOT NULL  COMMENT '(DC2Type:char)',
-    `team_id` INT UNSIGNED DEFAULT NULL,
-    `username` VARCHAR(20) NOT NULL
-)
-SQL);
-        $this->addQuery(sprintf(
-            'INSERT INTO `employee` (`name`, `password`, `username`, `emb_roles_roles`) VALUES (\'Super\', %s, \'super\', %s)',
-            /** @phpstan-ignore-next-line */
-            $this->connection->quote($user->getPassword()),
-            /** @phpstan-ignore-next-line */
-            $this->connection->quote(implode(',', $user->getRoles()))
-        ));
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `token` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `employee_id` INT UNSIGNED NOT NULL,
-    `expire_at` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `token` CHAR(120) NOT NULL COMMENT '(DC2Type:char)',
-    CONSTRAINT `IDX_5F37A13B8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
-)
-SQL);
-    }
-
     private function upVatMessages(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `messagetva` (
-  `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-  `message` TEXT NOT NULL
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `message` TEXT NOT NULL
 )
 SQL);
         $this->insert('messagetva', ['id', 'statut', 'message']);

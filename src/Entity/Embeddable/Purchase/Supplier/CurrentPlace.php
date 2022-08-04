@@ -30,7 +30,7 @@ class CurrentPlace extends AbstractCurrentPlace {
     ]
     protected ?string $name = null;
 
-    final public function __construct(?string $name = null) {
+    public function __construct(?string $name = null) {
         parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_DRAFT);
     }
 
