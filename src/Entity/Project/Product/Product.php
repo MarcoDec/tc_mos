@@ -9,331 +9,341 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
-use App\Entity\Interfaces\EmbeddedInterface;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Logistics\Incoterms;
-use App\Entity\Quality\Reception\ProductReference;
+use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
-use App\Entity\Traits\NameTrait;
-use App\Entity\Traits\RefTrait;
+use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
-use DateTimeInterface;
+use App\Repository\Project\Product\ProductRepository;
+use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Validator as AppAssert;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'ref' => 'partial',
-        'kind' => 'partial',
-        'index' => 'partial'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'family' => 'name',
-        'currentPlace' => 'name'
-    ]),
-    ApiFilter(filterClass: DateFilter::class, properties: ['expirationDate']),
-    ApiFilter(filterClass: OrderFilter::class, properties: [
-        'ref',
-        'index',
-        'kind'
-    ]),
+    ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
+    ApiFilter(filterClass: EnumFilter::class, properties: ['currentPlace.name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'index' => 'partial', 'kind' => 'partial']),
     ApiResource(
         description: 'Produit',
         collectionOperations: [
             'get' => [
+                'normalization_context' => [
+                    'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
+                    'openapi_definition_name' => 'Product-collection',
+                    'skip_null_values' => false
+                ],
                 'openapi_context' => [
                     'description' => 'Récupère les produits',
-                    'summary' => 'Récupère les produits',
-                ],
-                'normalization_context' => [
-                    'groups' => ['read:product:collection', 'read:current_place']
+                    'summary' => 'Récupère les produits'
                 ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:product', 'write:measure'],
+                    'openapi_definition_name' => 'Product-create'
+                ],
                 'openapi_context' => [
                     'description' => 'Créer un produit',
-                    'summary' => 'Créer un produit',
+                    'summary' => 'Créer un produit'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validation_groups' => ['Product-create']
             ]
         ],
         itemOperations: [
+            'clone' => [
+                'controller' => PlaceholderAction::class,
+                'denormalization_context' => [
+                    'groups' => ['write:product:clone'],
+                    'openapi_definition_name' => 'Product-clone'
+                ],
+                'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Clone un produit',
+                    'summary' => 'Clone un produit',
+                ],
+                'path' => '/products/{id}/clone',
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validation_groups' => ['Product-clone']
+            ],
             'delete' => [
                 'openapi_context' => [
                     'description' => 'Supprime un produit',
-                    'summary' => 'Supprime un produit',
+                    'summary' => 'Supprime un produit'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère un produit',
-                    'summary' => 'Récupère un produit',
+                    'summary' => 'Récupère un produit'
                 ]
             ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un produit',
-                    'summary' => 'Modifie un produit',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'process',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => ['admin', 'logistics', 'main', 'production', 'project'],
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'summary' => 'Modifie un produit'
                 ],
-                'denormalization_context' => [
-                    'groups' => ['patch:product']
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
-            ],
-            'clone' => [
-                'method' => 'POST',
-                'path' => '/products/{id}/clone',
-                'controller' => PlaceholderAction::class,
-                'openapi_context' => [
-                    'description' => 'Clone un produit',
-                    'summary' => 'Clone un produit',
-                ],
-                'denormalization_context' => [
-                    'groups' => ['write:product:clone']
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
-            ],
-            'upgrade' => [
-                'method' => 'POST',
-                'path' => '/products/{id}/upgrade',
-                'controller' => PlaceholderAction::class,
-                'openapi_context' => [
-                    'description' => 'Dupliquer un produit en le reliant à son parent',
-                    'summary' => 'Dupliquer un produit en le reliant à son parent',
-                ],
-                'denormalization_context' => [
-                    'groups' => ['write:product:upgrade']
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'path' => '/products/{id}/{process}',
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
-                'method' => 'PATCH',
-                'path' => '/products/{id}/promote',
                 'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
                 'openapi_context' => [
-                    'description' => 'Passer un produit à un nouveau statut',
-                    'summary' => 'Passer un produit à un nouveau statut',
+                    'description' => 'Transite le produit à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
+                'path' => '/products/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validate' => false
+            ],
+            'upgrade' => [
+                'controller' => PlaceholderAction::class,
                 'denormalization_context' => [
-                    'groups' => ['write:product:promote']
+                    'groups' => ['write:product:clone'],
+                    'openapi_definition_name' => 'Product-upgrade'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
+                'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Évolue le produit au prochain indice',
+                    'summary' => 'Évolue le produit au prochain indice'
+                ],
+                'path' => '/products/{id}/upgrade',
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validation_groups' => ['Product-clone']
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:product', 'write:name', 'write:family', 'write:incoterms', 'write:measure', 'write:current_place', 'write:ref'],
+            'groups' => ['write:measure', 'write:product'],
             'openapi_definition_name' => 'Product-write'
         ],
         normalizationContext: [
-            'groups' => ['read:product', 'read:id', 'read:name', 'read:family', 'read:incoterms', 'read:measure', 'read:current_place', 'read:ref'],
-            'openapi_definition_name' => 'Product-read'
-        ],
+            'groups' => ['read:current-place', 'read:measure', 'read:product'],
+            'openapi_definition_name' => 'Product-read',
+            'skip_null_values' => false
+        ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: ProductRepository::class),
+    UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
+class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
     use BarCodeTrait;
-    use NameTrait, RefTrait {
-        RefTrait::__toString insteadof NameTrait;
-    }
-
-    public const KIND_EI = 'EI';
-    public const KIND_PROTOTYPE = 'Prototype';
-    public const KIND_SERIES = 'Série';
-    public const KIND_SPARE = 'Pièce de rechange';
-    public const PRODUCT_KINDS = [
-        self::KIND_EI,
-        self::KIND_PROTOTYPE,
-        self::KIND_SERIES,
-        self::KIND_SPARE,
-    ];
 
     #[
-        ApiProperty(description: 'Temps auto', example: '7'),
-        ORM\Embedded(Measure::class)
+        ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ORM\Embedded
     ]
-    protected Measure $autoDuration;
+    private Measure $autoDuration;
+
+    /** @var Collection<int, self> */
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    private Collection $children;
+
+    #[
+        ApiProperty(description: 'Référence', example: '54587F'),
+        Assert\Length(min: 3, max: 30),
+        ORM\Column(length: 30),
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
+    ]
+    private ?string $code = null;
+
+    #[
+        ApiProperty(description: 'Temps auto chiffrage', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ORM\Embedded
+    ]
+    private Measure $costingAutoDuration;
+
+    #[
+        ApiProperty(description: 'Temps manu chiffrage', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ORM\Embedded
+    ]
+    private Measure $costingManualDuration;
 
     #[
         ApiProperty(description: 'Statut'),
         ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'read:product:collection'])
+        Serializer\Groups(['read:product', 'read:product:collection'])
     ]
-    protected CurrentPlace $currentPlace;
-
-    #[
-        ApiProperty(description: 'Place', required: true, example: 'disabled'),
-    ]
-    protected ?string $currentPlaceName = null;
-
-    #[
-        ApiProperty(description: 'Volume prévisionnel', example: '2000'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['write:measure'])
-    ]
-    protected Measure $forecastVolume;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
-        Assert\NotBlank,
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:name', 'write:name', 'patch:product'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Référence', example: '54587F'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref', 'read:product:collection', 'patch:product', 'write:product:clone', 'write:product:upgrade'])
-    ]
-    protected ?string $ref = null;
-
-    #[
-        ApiProperty(description: 'Poids', example: '100'),
-        ORM\Embedded(Measure::class)
-    ]
-    protected Measure $weight;
-
-    /**
-     * @var Collection<int, self>
-     */
-    #[
-        ApiProperty(description: 'Produits enfant', required: false, readableLink: false, example: ['/api/products/5', '/api/products/14']),
-        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['persist', 'remove']),
-        Serializer\Groups(['read:product'])
-    ]
-    private Collection $children;
+    private CurrentPlace $currentPlace;
 
     #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:product'])
+        Assert\Length(min: 4, max: 10, groups: ['Product-logistics']),
+        ORM\Column(length: 10, nullable: true),
+        Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
-    private ?string $customsCode;
+    private ?string $customsCode = null;
 
     #[
-        ApiProperty(description: 'Date d\'expiration', example: '2021-01-12 10:39:37'),
-        Assert\DateTime,
-        ORM\Column(type: 'datetime', nullable: true),
-        Serializer\Groups(['read:product', 'write:product', 'read:product:collection'])
+        ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
+        Assert\GreaterThan(value: 'today', groups: ['Product-create', 'Product-project']),
+        ORM\Column(type: 'date_immutable', nullable: true),
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product:project'])
     ]
-    private ?DateTimeInterface $expirationDate;
+    private ?DateTimeImmutable $endOfLife = null;
 
     #[
-        ApiProperty(description: 'Famille de produit', readableLink: false, example: '/api/product-families/5'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Family::class),
-        Serializer\Groups(['read:family', 'write:family'])
+        ApiProperty(description: 'Famille de produit', readableLink: false, example: '/api/product-families/1'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection'])
     ]
-    private ?Family $family;
+    private ?Family $family = null;
 
     #[
-        ApiProperty(description: 'Incoterms', required: true, readableLink: false, example: '/api/incoterms/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
-        Serializer\Groups(['read:incoterms'])
+        ApiProperty(description: 'Volume prévisionnel', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure(groups: ['Product-create']),
+        ORM\Embedded,
+        Serializer\Groups(['create:product', 'read:product'])
     ]
-    private ?Incoterms $incoterms;
+    private Measure $forecastVolume;
+
+    #[
+        ApiProperty(description: 'Incoterms', readableLink: false, required: true, example: '/api/incoterms/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:product', 'write:product:logistics'])
+    ]
+    private ?Incoterms $incoterms = null;
 
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
-        Assert\Length(max: 255),
-        ORM\Column(type: 'string', length: 255, nullable: true, name: 'product_index'),
-        Serializer\Groups(['read:product', 'write:product', 'patch:product', 'read:product:collection', 'write:product:clone', 'write:product:upgrade'])
+        Assert\Length(min: 1, max: 3, groups: ['Product-admin', 'Product-create']),
+        ORM\Column(name: '`index`', length: 3),
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $index = null;
 
     #[
-        ApiProperty(description: 'Index interne', required: true, example: '1'),
+        ApiProperty(description: 'Indice interne', required: true, example: 1),
         Assert\NotNull,
         Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'smallint'),
+        ORM\Column(type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
         Serializer\Groups(['read:product'])
     ]
     private int $internalIndex = 1;
 
     #[
-        ApiProperty(description: 'Type', example: 'Série', openapiContext: ['enum' => self::PRODUCT_KINDS]),
-        Assert\Choice(choices: self::PRODUCT_KINDS),
-        ORM\Column(options: ['default' => self::KIND_PROTOTYPE], type: 'string', length: 255),
-        Serializer\Groups(['read:product', 'write:product', 'read:product:collection', 'patch:product'])
+        ApiProperty(description: 'Type', example: KindType::TYPE_PROTOTYPE, openapiContext: ['enum' => KindType::TYPES]),
+        Assert\Choice(choices: KindType::TYPES, groups: ['Product-admin', 'Product-create', 'Product-project']),
+        ORM\Column(type: 'product_kind', options: ['default' => KindType::TYPE_PROTOTYPE]),
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:project'])
     ]
-    private ?string $kind = self::KIND_PROTOTYPE;
+    private ?string $kind = KindType::TYPE_PROTOTYPE;
 
     #[
-        ApiProperty(description: 'Suivre le cuivre', required: false, example: true),
-        ORM\Column(options: ['default' => false], type: 'boolean'),
+        ApiProperty(description: 'Gestion cuivre', required: false, example: true),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:product'])
     ]
     private bool $managedCopper = false;
 
     #[
-        ApiProperty(description: 'Prototype maximum', required: true, example: '3'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 3, 'unsigned' => true], type: 'smallint'),
-        Serializer\Groups(['read:product'])
+        ApiProperty(description: 'Temps manu', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ORM\Embedded
     ]
-    private int $maxProto = 3;
+    private Measure $manualDuration;
 
     #[
-        ApiProperty(description: 'Livraison minimum', required: true, example: '10'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint'),
-        Serializer\Groups(['read:product'])
+        ApiProperty(description: 'Nombre max de prototypes', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure(groups: ['Product-project']),
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'write:product:project'])
     ]
-    private int $minDelivery = 10;
+    private Measure $maxProto;
 
     #[
-        ApiProperty(description: 'Production minimum', required: true, example: '10'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'smallint'),
-        Serializer\Groups(['read:product'])
+        ApiProperty(description: 'Délai de livraison minimum', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
-    private int $minProd = 10;
+    private Measure $minDelivery;
 
     #[
-        ApiProperty(description: 'Stock minimum', required: true, example: '12'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'integer'),
-        Serializer\Groups(['read:product'])
+        ApiProperty(description: 'Production minimum', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure(groups: ['Product-production']),
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'write:product:production'])
     ]
-    private int $minStock = 0;
+    private Measure $minProd;
+
+    #[
+        ApiProperty(description: 'Stock minimum', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'write:product:logistics'])
+    ]
+    private Measure $minStock;
+
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
+        Assert\Length(min: 3, max: 80),
+        Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
+        ORM\Column(length: 80),
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
+    ]
+    private ?string $name = null;
 
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Produit préféré des clients'),
-        Assert\Length(max: 255),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:product', 'write:product'])
+        ORM\Column(type: 'text', nullable: true),
+        Serializer\Groups(['create:product', 'read:product', 'write:product:main'])
     ]
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Conditionnement', required: true, example: '1'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'integer'),
-        Serializer\Groups(['read:product', 'write:product'])
+        ApiProperty(description: 'Conditionnement', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure(groups: ['Product-create', 'Product-production']),
+        ORM\Embedded,
+        Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
     ]
-    private int $packaging = 1;
+    private Measure $packaging;
 
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Type de packaging'),
-        Assert\Length(max: 255),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:product', 'write:product'])
+        Assert\Length(max: 30, groups: ['Product-create', 'Product-production']),
+        ORM\Column(length: 30),
+        Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
     ]
     private ?string $packagingKind = null;
 
@@ -345,95 +355,98 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
     private ?self $parent = null;
 
     #[
-        ApiProperty(description: 'Nouveau statut', required: false, example: 'draft'),
-        Serializer\Groups(['write:product:promote'])
-    ]
-    private ?string $place = null;
-
-    #[
-        ApiProperty(description: 'Prix', required: true, example: '4.2'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Prix', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:product'])
     ]
-    private float $price = 0;
+    private Measure $price;
 
     #[
-        ApiProperty(description: 'Prix sans cuivre', required: true, example: '3.15'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Prix sans cuivre', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:product'])
     ]
-    private float $priceWithoutCopper = 0;
+    private Measure $priceWithoutCopper;
 
     #[
-        ApiProperty(description: 'Délai de production', required: true, example: '7'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'smallint'),
-        Serializer\Groups(['read:product'])
+        ApiProperty(description: 'Délai de production', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'write:product:production'])
     ]
-    private int $productionDelay = 0;
-
-    /**
-     * @var Collection<int, ProductReference>
-     */
-    #[
-        ApiProperty(description: 'References'),
-        ORM\ManyToMany(targetEntity: ProductReference::class, mappedBy: 'items'),
-        Serializer\Groups(['read:product'])
-    ]
-    private Collection $references;
+    private Measure $productionDelay;
 
     #[
-        ApiProperty(description: 'Prix de cession des composants', required: true, example: '1.2'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Prix de cession des composants', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:product'])
     ]
-    private float $transfertPriceSupplies = 0;
+    private Measure $transfertPriceSupplies;
 
     #[
-        ApiProperty(description: 'Prix de cession de main d\'œuvre', required: true, example: '11.2'),
-        Assert\NotNull,
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 0, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Prix de cession de main d\'œuvre', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:product'])
     ]
-    private float $transfertPriceWork = 0;
+    private Measure $transfertPriceWork;
+
+    #[
+        ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['create:product', 'read:product'])
+    ]
+    private ?Unit $unit = null;
+
+    #[
+        ApiProperty(description: 'Poids', openapiContext: ['$ref' => '#/components/schemas/Measure-mass']),
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'write:product:logistics'])
+    ]
+    private Measure $weight;
 
     public function __construct() {
+        $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
         $this->currentPlace = new CurrentPlace();
-        $this->weight = new Measure();
+        $this->costingAutoDuration = new Measure();
+        $this->costingManualDuration = new Measure();
         $this->forecastVolume = new Measure();
-        $this->autoDuration = new Measure();
-        $this->references = new ArrayCollection();
+        $this->manualDuration = new Measure();
+        $this->maxProto = new Measure();
+        $this->minDelivery = new Measure();
+        $this->minProd = new Measure();
+        $this->minStock = new Measure();
+        $this->packaging = new Measure();
+        $this->price = new Measure();
+        $this->priceWithoutCopper = new Measure();
+        $this->productionDelay = new Measure();
+        $this->transfertPriceSupplies = new Measure();
+        $this->transfertPriceWork = new Measure();
+        $this->weight = new Measure();
+    }
+
+    public function __clone() {
+        parent::__clone();
+        $this->children = new ArrayCollection();
+        $this->currentPlace = new CurrentPlace();
+        $this->internalIndex = 1;
+        $this->parent = null;
     }
 
     final public static function getBarCodeTableNumber(): string {
         return self::PRODUCT_BAR_CODE_TABLE_NUMBER;
     }
 
-    final public function addChild(self $child): self {
-        if (!$this->children->contains($child)) {
-            $this->children[] = $child;
-            $child->setParent($this);
+    final public function addChild(self $children): self {
+        if (!$this->children->contains($children)) {
+            $this->children->add($children);
+            $children->setParent($this);
         }
-
         return $this;
     }
 
-    final public function addReference(ProductReference $references): self {
-        if (!$this->references->contains($references)) {
-            $this->references[] = $references;
-            $references->addItem($this);
-        }
-
-        return $this;
+    final public function getAutoDuration(): Measure {
+        return $this->autoDuration;
     }
 
     /**
@@ -443,33 +456,28 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this->children;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getCode(): ?string {
+        return $this->code;
     }
 
-    final public function getCurrentPlaceName(): ?string {
-        return $this->currentPlace->getName() ?? null;
+    final public function getCostingAutoDuration(): Measure {
+        return $this->costingAutoDuration;
+    }
+
+    final public function getCostingManualDuration(): Measure {
+        return $this->costingManualDuration;
+    }
+
+    final public function getCurrentPlace(): CurrentPlace {
+        return $this->currentPlace;
     }
 
     final public function getCustomsCode(): ?string {
         return $this->customsCode;
     }
 
-    final public function getEmbeddedMeasures(): array {
-        $measures = [];
-
-        /** @phpstan-ignore-next-line */
-        foreach ($this as $key => $value) {
-            if ($value instanceof Measure) {
-                $measures[$key] = $value;
-            }
-        }
-
-        return $measures;
-    }
-
-    final public function getExpirationDate(): ?DateTimeInterface {
-        return $this->expirationDate;
+    final public function getEndOfLife(): ?DateTimeImmutable {
+        return $this->endOfLife;
     }
 
     final public function getFamily(): ?Family {
@@ -488,7 +496,7 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this->index;
     }
 
-    final public function getInternalIndex(): ?int {
+    final public function getInternalIndex(): int {
         return $this->internalIndex;
     }
 
@@ -496,31 +504,56 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this->kind;
     }
 
-    final public function getManagedCopper(): ?bool {
-        return $this->managedCopper;
+    final public function getManualDuration(): Measure {
+        return $this->manualDuration;
     }
 
-    final public function getMaxProto(): ?int {
+    final public function getMaxProto(): Measure {
         return $this->maxProto;
     }
 
-    final public function getMinDelivery(): ?int {
+    final public function getMeasures(): array {
+        return [
+            $this->autoDuration,
+            $this->costingAutoDuration,
+            $this->costingManualDuration,
+            $this->forecastVolume,
+            $this->manualDuration,
+            $this->maxProto,
+            $this->minDelivery,
+            $this->minProd,
+            $this->minStock,
+            $this->packaging,
+            $this->price,
+            $this->priceWithoutCopper,
+            $this->productionDelay,
+            $this->transfertPriceSupplies,
+            $this->transfertPriceWork,
+            $this->weight
+        ];
+    }
+
+    final public function getMinDelivery(): Measure {
         return $this->minDelivery;
     }
 
-    final public function getMinProd(): ?int {
+    final public function getMinProd(): Measure {
         return $this->minProd;
     }
 
-    final public function getMinStock(): ?int {
+    final public function getMinStock(): Measure {
         return $this->minStock;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     final public function getNotes(): ?string {
         return $this->notes;
     }
 
-    final public function getPackaging(): ?int {
+    final public function getPackaging(): Measure {
         return $this->packaging;
     }
 
@@ -532,217 +565,220 @@ class Product extends Entity implements BarCodeInterface, EmbeddedInterface {
         return $this->parent;
     }
 
-    final public function getPlace(): ?string {
-        return $this->place;
-    }
-
-    final public function getPrice(): ?float {
+    final public function getPrice(): Measure {
         return $this->price;
     }
 
-    final public function getPriceWithoutCopper(): ?float {
+    final public function getPriceWithoutCopper(): Measure {
         return $this->priceWithoutCopper;
     }
 
-    final public function getProductionDelay(): ?int {
+    final public function getProductionDelay(): Measure {
         return $this->productionDelay;
     }
 
-    /**
-     * @return Collection<int, ProductReference>
-     */
-    final public function getReferences(): Collection {
-        return $this->references;
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
     }
 
-    final public function getTransfertPriceSupplies(): ?float {
+    final public function getTransfertPriceSupplies(): Measure {
         return $this->transfertPriceSupplies;
     }
 
-    final public function getTransfertPriceWork(): ?float {
+    final public function getTransfertPriceWork(): Measure {
         return $this->transfertPriceWork;
+    }
+
+    final public function getUnit(): ?Unit {
+        return $this->unit;
     }
 
     final public function getWeight(): Measure {
         return $this->weight;
     }
 
-    final public function removeChild(self $child): self {
-        if ($this->children->removeElement($child)) {
-            // set the owning side to null (unless already changed)
-            if ($child->getParent() === $this) {
-                $child->setParent(null);
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
+    }
+
+    final public function isManagedCopper(): bool {
+        return $this->managedCopper;
+    }
+
+    final public function removeChild(self $children): self {
+        if ($this->children->contains($children)) {
+            $this->children->removeElement($children);
+            if ($children->getParent() === $this) {
+                $children->setParent(null);
             }
         }
-
         return $this;
     }
 
-    final public function removeReference(ProductReference $references): self {
-        if ($this->references->removeElement($references)) {
-            $references->removeItem($this);
-        }
+    final public function setAutoDuration(Measure $autoDuration): self {
+        $this->autoDuration = $autoDuration;
+        return $this;
+    }
 
+    final public function setCode(?string $code): self {
+        $this->code = $code;
+        return $this;
+    }
+
+    final public function setCostingAutoDuration(Measure $costingAutoDuration): self {
+        $this->costingAutoDuration = $costingAutoDuration;
+        return $this;
+    }
+
+    final public function setCostingManualDuration(Measure $costingManualDuration): self {
+        $this->costingManualDuration = $costingManualDuration;
         return $this;
     }
 
     final public function setCurrentPlace(CurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
-
-        return $this;
-    }
-
-    final public function setCurrentPlaceName(string $currentPlaceName): self {
-        $currentPlace = new CurrentPlace();
-        $currentPlace->setName($currentPlaceName);
-
-        $this->currentPlaceName = $currentPlaceName;
-        $this->currentPlace = $currentPlace;
-
         return $this;
     }
 
     final public function setCustomsCode(?string $customsCode): self {
         $this->customsCode = $customsCode;
-
         return $this;
     }
 
-    final public function setExpirationDate(?DateTimeInterface $expirationDate): self {
-        $this->expirationDate = $expirationDate;
-
+    final public function setEndOfLife(?DateTimeImmutable $endOfLife): self {
+        $this->endOfLife = $endOfLife;
         return $this;
     }
 
     final public function setFamily(?Family $family): self {
         $this->family = $family;
-
         return $this;
     }
 
     final public function setForecastVolume(Measure $forecastVolume): self {
         $this->forecastVolume = $forecastVolume;
-
         return $this;
     }
 
     final public function setIncoterms(?Incoterms $incoterms): self {
         $this->incoterms = $incoterms;
-
         return $this;
     }
 
-    final public function setIndex(string $index): self {
+    final public function setIndex(?string $index): self {
         $this->index = $index;
-
         return $this;
     }
 
     final public function setInternalIndex(int $internalIndex): self {
         $this->internalIndex = $internalIndex;
-
         return $this;
     }
 
-    final public function setKind(string $kind): self {
+    final public function setKind(?string $kind): self {
         $this->kind = $kind;
-
         return $this;
     }
 
     final public function setManagedCopper(bool $managedCopper): self {
         $this->managedCopper = $managedCopper;
-
         return $this;
     }
 
-    final public function setMaxProto(int $maxProto): self {
+    final public function setManualDuration(Measure $manualDuration): self {
+        $this->manualDuration = $manualDuration;
+        return $this;
+    }
+
+    final public function setMaxProto(Measure $maxProto): self {
         $this->maxProto = $maxProto;
-
         return $this;
     }
 
-    final public function setMinDelivery(int $minDelivery): self {
+    final public function setMinDelivery(Measure $minDelivery): self {
         $this->minDelivery = $minDelivery;
-
         return $this;
     }
 
-    final public function setMinProd(int $minProd): self {
+    final public function setMinProd(Measure $minProd): self {
         $this->minProd = $minProd;
-
         return $this;
     }
 
-    final public function setMinStock(int $minStock): self {
+    final public function setMinStock(Measure $minStock): self {
         $this->minStock = $minStock;
+        return $this;
+    }
 
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
-
         return $this;
     }
 
-    final public function setPackaging(int $packaging): self {
+    final public function setPackaging(Measure $packaging): self {
         $this->packaging = $packaging;
-
         return $this;
     }
 
     final public function setPackagingKind(?string $packagingKind): self {
         $this->packagingKind = $packagingKind;
-
         return $this;
     }
 
     final public function setParent(?self $parent): self {
         $this->parent = $parent;
-
         return $this;
     }
 
-    final public function setPlace(?string $place): self {
-        $this->place = $place;
-
-        return $this;
-    }
-
-    final public function setPrice(float $price): self {
+    final public function setPrice(Measure $price): self {
         $this->price = $price;
-
         return $this;
     }
 
-    final public function setPriceWithoutCopper(float $priceWithoutCopper): self {
+    final public function setPriceWithoutCopper(Measure $priceWithoutCopper): self {
         $this->priceWithoutCopper = $priceWithoutCopper;
-
         return $this;
     }
 
-    final public function setProductionDelay(int $productionDelay): self {
+    final public function setProductionDelay(Measure $productionDelay): self {
         $this->productionDelay = $productionDelay;
-
         return $this;
     }
 
-    final public function setTransfertPriceSupplies(float $transfertPriceSupplies): self {
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
+        return $this;
+    }
+
+    final public function setTransfertPriceSupplies(Measure $transfertPriceSupplies): self {
         $this->transfertPriceSupplies = $transfertPriceSupplies;
-
         return $this;
     }
 
-    final public function setTransfertPriceWork(float $transfertPriceWork): self {
+    final public function setTransfertPriceWork(Measure $transfertPriceWork): self {
         $this->transfertPriceWork = $transfertPriceWork;
+        return $this;
+    }
 
+    final public function setUnit(?Unit $unit): self {
+        $this->unit = $unit;
         return $this;
     }
 
     final public function setWeight(Measure $weight): self {
         $this->weight = $weight;
-
         return $this;
     }
 }

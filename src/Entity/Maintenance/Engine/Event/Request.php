@@ -6,7 +6,6 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Production\Engine\Event\Event;
-use App\Entity\Traits\NotesTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -60,28 +59,26 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity
 ]
 class Request extends Event {
-    use NotesTrait;
-
     #[
-        ApiProperty(description: 'Notes', required: false, example: 'Demande technique sur l\'outil'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:notes', 'write:notes'])
-    ]
-    protected ?string $notes = null;
-
-    #[
-        ApiProperty(description: 'Urgence', required: true, example: 1),
-        ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'tinyint'),
+        ApiProperty(description: 'Urgence', example: 1),
+        ORM\Column(type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
         Serializer\Groups(['read:request', 'write:request'])
     ]
     private int $emergency = 1;
 
     #[
-        ApiProperty(description: 'Notes d\'intervention', required: false, example: 'Lorem ipsum dolores'),
+        ApiProperty(description: 'Notes d\'intervention', example: 'Lorem ipsum dolores'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:request', 'write:request'])
     ]
     private ?string $interventionNotes = null;
+
+    #[
+        ApiProperty(description: 'Notes', example: 'Demande technique sur l\'outil'),
+        ORM\Column(type: 'string', nullable: true),
+        Serializer\Groups(['read:notes', 'write:notes'])
+    ]
+    private ?string $notes = null;
 
     final public function getEmergency(): int {
         return $this->emergency;
@@ -89,6 +86,10 @@ class Request extends Event {
 
     final public function getInterventionNotes(): ?string {
         return $this->interventionNotes;
+    }
+
+    final public function getNotes(): ?string {
+        return $this->notes;
     }
 
     final public function getType(): string {
@@ -102,6 +103,11 @@ class Request extends Event {
 
     final public function setInterventionNotes(?string $interventionNotes): self {
         $this->interventionNotes = $interventionNotes;
+        return $this;
+    }
+
+    final public function setNotes(?string $notes): self {
+        $this->notes = $notes;
         return $this;
     }
 }
