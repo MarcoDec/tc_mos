@@ -1,0 +1,33 @@
+framework:
+  workflows:
+    component:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%place_agreed%'          # Accepté
+        - '%place_blocked%'         # Bloqué
+        - '%place_disabled%'        # Inactif
+        - '%place_draft%'           # Brouillon
+        - '%place_under_exemption%' # Sous-dérogation
+      supports:
+        - App\Entity\Purchase\Component\Component
+      transitions:
+        '%tr_block%':
+          from: [ '%place_agreed%', '%place_under_exemption%' ]
+          to: '%place_blocked%'
+        '%tr_disable%':
+          from: [ '%place_agreed%', '%place_under_exemption%' ]
+          to: '%place_disabled%'
+        '%tr_partially_unlock%':
+          from: '%place_blocked%'
+          to: '%place_under_exemption%'
+        '%tr_partially_validate%':
+          from: [ '%place_agreed%', '%place_draft%' ]
+          to: '%place_under_exemption%'
+        '%tr_unlock%':
+          from: '%place_blocked%'
+          to: '%place_agreed%'
+        '%tr_validate%':
+          from: [ '%place_draft%', '%place_under_exemption%' ]
+          to: '%place_agreed%'
