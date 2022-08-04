@@ -10,9 +10,7 @@ final class EngineListener {
     use SecurityTrait;
 
     public function postPersist(Engine $engine, LifecycleEventArgs $event): void {
-        $engine
-            ->setCompany($this->getUser()->getCompany())
-            ->setCode("{$engine->getGroup()?->getCode()}-{$engine->getId()}");
+        $engine->setCode("{$engine->getGroup()?->getCode()}-{$engine->getId()}");
         $event->getEntityManager()->flush();
     }
 }
