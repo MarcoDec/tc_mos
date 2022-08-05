@@ -1,20 +1,92 @@
 doctrine:
   dbal:
+    connections:
+      default:
+        driver: pdo_mysql
+        mapping_types:
+          enum: string
+        url: '%env(resolve:DATABASE_URL)%'
+        wrapper_class: App\Doctrine\DBAL\Connection
+      migrations:
+        driver: pdo_mysql
+        mapping_types:
+          enum: string
+        url: '%env(resolve:DATABASE_ROOT_URL)%'
+    default_connection: default
     types:
-      employee_current_place: App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType
-      tinyint: GollumSF\Doctrine\TinyInt
-    mapping_types: 
-      enum: string
-    url: '%env(resolve:DATABASE_URL)%'
-    wrapper_class: App\Doctrine\DBAL\Connection
+      attribute: App\Doctrine\DBAL\Types\Purchase\Component\AttributeType
+      char: App\Doctrine\DBAL\Types\CharType
+      component_current_place: App\Doctrine\DBAL\Types\Purchase\Component\CurrentPlaceType
+      copper_type: App\Doctrine\DBAL\Types\Embeddable\CopperType
+      contact_type: App\Doctrine\DBAL\Types\Management\Society\ContactType
+      customer_address_type: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
+      customer_current_place: App\Doctrine\DBAL\Types\Selling\Customer\CurrentPlaceType
+      !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
+      !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
+      employee_engine_current_place: App\Doctrine\DBAL\Types\EmployeeEngineCurrentPlaceType
+      engine_event_current_place: App\Doctrine\DBAL\Types\Production\Engine\CurrentPlaceType
+      engine_event_type: App\Doctrine\DBAL\Types\Production\Engine\EventType
+      engine_type: App\Doctrine\DBAL\Types\Production\Engine\EngineType
+      gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
+      notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
+      product_current_place: App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType
+      product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
+      situation_place: App\Doctrine\DBAL\Types\Hr\Employee\SituationType
+      stock_type: App\Doctrine\DBAL\Types\Logistics\StockType
+      supplier_current_place: App\Doctrine\DBAL\Types\Purchase\Supplier\CurrentPlaceType
+      tinyint: App\Doctrine\DBAL\Types\Tinyint
+      vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce
+      warehouse_families: App\Doctrine\DBAL\Types\Logistics\FamilyType
   orm:
     auto_generate_proxy_classes: true
-    auto_mapping: true
-    mappings:
-      App:
-        alias: App
-        dir: '%kernel.project_dir%/src/Entity'
-        is_bundle: false
-        prefix: App\Entity
-        type: attribute
-    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    default_entity_manager: default
+    entity_managers:
+      default:
+        connection: default
+        dql:
+          datetime_functions:
+            now: App\Doctrine\DQL\Now
+        mappings:
+          App:
+            alias: App
+            dir: '%kernel.project_dir%/src/Entity'
+            is_bundle: false
+            prefix: App\Entity
+            type: attribute
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+      migrations:
+        connection: migrations
+        dql:
+          datetime_functions:
+            now: App\Doctrine\DQL\Now
+        mappings:
+          App:
+            alias: App
+            dir: '%kernel.project_dir%/src/Entity'
+            is_bundle: false
+            prefix: App\Entity
+            type: attribute
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+
+when@prod:
+  doctrine:
+    orm:
+      auto_generate_proxy_classes: false
+      query_cache_driver:
+        pool: doctrine.system_cache_pool
+        type: pool
+      result_cache_driver:
+        pool: doctrine.result_cache_pool
+        type: pool
+  framework:
+    cache:
+      pools:
+        doctrine.result_cache_pool:
+          adapter: cache.app
+        doctrine.system_cache_pool:
+          adapter: cache.system
+
+when@test:
+  doctrine:
+    dbal:
+      dbname_suffix: '_test%env(default::TEST_TOKEN)%'
