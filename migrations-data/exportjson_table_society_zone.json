@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "id_society": "4",
+    "nom": "Zone sertissage"
+  },
+  {
+    "id": "4",
+    "id_society": "1",
+    "nom": "Tconcept"
+  },
+  {
+    "id": "5",
+    "id_society": "4",
+    "nom": "Zone de debit"
+  },
+  {
+    "id": "6",
+    "id_society": "4",
+    "nom": "Zone multi-Opérationnel"
+  },
+  {
+    "id": "7",
+    "id_society": "4",
+    "nom": "ZONE PROTO"
+  },
+  {
+    "id": "8",
+    "id_society": "4",
+    "nom": "Zone Grande Série (Etage 02)"
+  },
+  {
+    "id": "9",
+    "id_society": "4",
+    "nom": "Zone Petite Série (Etage 02)"
+  },
+  {
+    "id": "10",
+    "id_society": "4",
+    "nom": "Zone Coupe Gaine (Etage 02)"
+  },
+  {
+    "id": "11",
+    "id_society": "5",
+    "nom": "Atelier"
+  }
+]

@@ -7,17 +7,13 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Traits\NameTrait;
 use App\Filter\RelationFilter;
-use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'employee' => 'name',
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee']),
     ApiResource(
         description: 'Contact',
         collectionOperations: [
@@ -43,6 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un contact',
@@ -56,77 +53,82 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:employee-contact', 'write:name', 'write:employee'],
+            'groups' => ['write:employee-contact'],
             'openapi_definition_name' => 'EmployeeContact-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:employee-contact', 'read:employee'],
-            'openapi_definition_name' => 'EmployeeContact-read'
+            'groups' => ['read:employee-contact', 'read:id'],
+            'openapi_definition_name' => 'EmployeeContact-read',
+            'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity,
     ORM\Table(name: 'employee_contact')
 ]
 class Contact extends Entity {
-    use NameTrait;
-
     #[
-        ApiProperty(description: 'Employé', required: false, example: '/api/employees/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Employee::class),
-        Serializer\Groups(['read:employee', 'write:employee'])
-    ]
-    protected ?Employee $employee;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'De Gaule'),
-        Assert\NotBlank,
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Prénom', required: false, example: 'Charles'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
+        ApiProperty(description: 'Employé', example: '/api/employees/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:employee-contact', 'write:employee-contact'])
     ]
-    private ?string $firstname = null;
+    private ?Employee $employee = null;
+
+    #[
+        ApiProperty(description: 'Prénom', example: 'Charles'),
+        Assert\NotBlank,
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:employee-contact', 'write:employee-contact'])
+    ]
+    private ?string $name = null;
 
     #[
         ApiProperty(description: 'Numéro de téléphone', required: false, example: '03 84 91 99 84'),
-        AppAssert\PhoneNumber,
-        ORM\Column(type: 'string', nullable: true),
+        ORM\Column(length: 18, nullable: true),
         Serializer\Groups(['read:employee-contact', 'write:employee-contact'])
     ]
     private ?string $phone = null;
+
+    #[
+        ApiProperty(description: 'Prénom', example: 'De Gaule'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:employee-contact', 'write:employee-contact'])
+    ]
+    private ?string $surname = null;
 
     final public function getEmployee(): ?Employee {
         return $this->employee;
     }
 
-    final public function getFirstname(): ?string {
-        return $this->firstname;
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     final public function getPhone(): ?string {
         return $this->phone;
     }
 
+    final public function getSurname(): ?string {
+        return $this->surname;
+    }
+
     final public function setEmployee(?Employee $employee): self {
         $this->employee = $employee;
-
         return $this;
     }
 
-    final public function setFirstname(?string $firstname): self {
-        $this->firstname = $firstname;
-
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 
     final public function setPhone(?string $phone): self {
         $this->phone = $phone;
+        return $this;
+    }
 
+    final public function setSurname(?string $surname): self {
+        $this->surname = $surname;
         return $this;
     }
 }

@@ -13,15 +13,12 @@ use App\Entity\Production\Engine\Engine;
 use App\Entity\Production\Engine\Group;
 use App\Entity\Project\Product\Product;
 use App\Filter\RelationFilter;
-use DatetimeInterface;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'employee' => 'name',
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee']),
     ApiResource(
         description: 'Compétence',
         collectionOperations: [
@@ -47,6 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une compétence',
@@ -59,107 +57,105 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:employee', 'write:skill', 'write:engine', 'write:engine-group', 'write:out-trainer', 'write:out-trainer', 'write:product', ' write:engine'],
+            'groups' => ['write:skill'],
             'openapi_definition_name' => 'Skill-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:employee', 'read:skill', 'read:engime', 'read:engine-group', 'read:out-trainer', 'read:product', 'read:engine'],
-            'openapi_definition_name' => 'Skill-read'
-        ],
+            'groups' => ['read:id', 'read:skill'],
+            'openapi_definition_name' => 'Skill-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity
 ]
 class Skill extends Entity {
     #[
-        ApiProperty(description: 'Employé', required: false, readableLink: false, example: '/api/employees/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Employee::class, inversedBy: 'skills'),
-        Serializer\Groups(['read:employee', 'write:employee'])
-    ]
-    private ?Employee $employee;
-
-    #[
-        ApiProperty(description: 'Date de fin', required: false, example: '2052-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
+        ApiProperty(description: 'Employé', readableLink: false, example: '/api/employees/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
-    private ?DatetimeInterface $endedDate = null;
+    private ?Employee $employee = null;
 
     #[
-        ApiProperty(description: 'Employé', required: true, readableLink: false, example: '/api/manufacturer-engines/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Engine::class),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        ApiProperty(description: 'Date de fin', example: '2022-10-03'),
+        ORM\Column(type: 'date_immutable', nullable: true),
+        Serializer\Groups(['read:skill', 'write:skill'])
     ]
-    private Engine $engine;
+    private ?DateTimeImmutable $endedDate = null;
 
     #[
-        ApiProperty(description: 'Groupes d\'équipement', required: true, readableLink: false, example: '/api/engine-groups/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Group::class),
-        Serializer\Groups(['read:engine-group', 'write:engine-group'])
+        ApiProperty(description: 'Employé', readableLink: false, example: '/api/engines/3'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:skill', 'write:skill'])
     ]
-    private Group $family;
+    private ?Engine $engine = null;
 
     #[
-        ApiProperty(description: 'Formateur interne', required: false, readableLink: false, example: '/api/employees/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Employee::class),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ApiProperty(description: 'Groupes d\'équipement', readableLink: false, example: '/api/engine-groups/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:skill', 'write:skill'])
+    ]
+    private ?Group $family = null;
+
+    #[
+        ApiProperty(description: 'Formateur interne', readableLink: false, example: '/api/employees/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:skill', 'write:skill'])
     ]
     private ?Employee $inTrainer = null;
 
     #[
-        ApiProperty(description: 'Niveau', required: true, example: 0),
+        ApiProperty(description: 'Niveau', example: 0),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:skill', 'write:skill'])
     ]
     private int $level = 0;
 
     #[
-        ApiProperty(description: 'Formateur extérieur', required: false, readableLink: false, example: '/api/out-trainers/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: OutTrainer::class),
-        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
+        ApiProperty(description: 'Formateur extérieur', readableLink: false, example: '/api/out-trainers/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:skill', 'write:skill'])
     ]
     private ?OutTrainer $outTrainer = null;
 
     #[
-        ApiProperty(description: 'Produit', required: true, readableLink: false, example: '/api/products/4'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Product::class),
-        Serializer\Groups(['read:product', 'write:product'])
+        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/4'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:skill', 'write:skill'])
     ]
     private ?Product $product;
 
     #[
-        ApiProperty(description: 'Activer le suivi du cuivre', required: true, example: false),
-        ORM\Column(options: ['default' => false], type: 'boolean'),
+        ApiProperty(description: 'Activer le suivi du cuivre', example: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
     private bool $remindable = false;
 
     #[
-        ApiProperty(description: 'Rappel de l\'enfant', required: true, readableLink: false, example: '/api/skills/4'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: self::class),
+        ApiProperty(description: 'Rappel de l\'enfant', readableLink: false, example: '/api/skills/4'),
+        ORM\ManyToOne(targetEntity: self::class),
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
     private ?self $remindedChild = null;
 
     #[
-        ApiProperty(description: 'Date de rappel', required: false, example: '2052-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
+        ApiProperty(description: 'Date de rappel', example: '2023-10-03'),
+        ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
-    private ?DatetimeInterface $remindedDate = null;
+    private ?DateTimeImmutable $remindedDate = null;
 
     #[
-        ApiProperty(description: 'Date de début', required: false, example: '2052-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
+        ApiProperty(description: 'Date de début', example: '2021-10-03'),
+        ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
-    private ?DatetimeInterface $startedDate = null;
+    private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Type', required: true, readableLink: false, example: '/api/skill-types/4'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Type::class),
+        ApiProperty(description: 'Type', readableLink: false, example: '/api/skill-types/4'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
     private ?Type $type = null;
@@ -168,15 +164,15 @@ class Skill extends Entity {
         return $this->employee;
     }
 
-    final public function getEndedDate(): ?DateTimeInterface {
+    final public function getEndedDate(): ?DateTimeImmutable {
         return $this->endedDate;
     }
 
-    final public function getEngine(): Engine {
+    final public function getEngine(): ?Engine {
         return $this->engine;
     }
 
-    final public function getFamily(): Group {
+    final public function getFamily(): ?Group {
         return $this->family;
     }
 
@@ -196,19 +192,15 @@ class Skill extends Entity {
         return $this->product;
     }
 
-    final public function getRemindable(): ?bool {
-        return $this->remindable;
-    }
-
     final public function getRemindedChild(): ?self {
         return $this->remindedChild;
     }
 
-    final public function getRemindedDate(): ?DateTimeInterface {
+    final public function getRemindedDate(): ?DateTimeImmutable {
         return $this->remindedDate;
     }
 
-    final public function getStartedDate(): ?DateTimeInterface {
+    final public function getStartedDate(): ?DateTimeImmutable {
         return $this->startedDate;
     }
 
@@ -216,81 +208,72 @@ class Skill extends Entity {
         return $this->type;
     }
 
+    final public function isRemindable(): bool {
+        return $this->remindable;
+    }
+
     final public function setEmployee(?Employee $employee): self {
         $this->employee = $employee;
-
         return $this;
     }
 
-    final public function setEndedDate(?DateTimeInterface $endedDate): self {
+    final public function setEndedDate(?DateTimeImmutable $endedDate): self {
         $this->endedDate = $endedDate;
-
         return $this;
     }
 
-    final public function setEngine(Engine $engine): self {
+    final public function setEngine(?Engine $engine): self {
         $this->engine = $engine;
-
         return $this;
     }
 
-    final public function setFamily(Group $family): self {
+    final public function setFamily(?Group $family): self {
         $this->family = $family;
-
         return $this;
     }
 
     final public function setInTrainer(?Employee $inTrainer): self {
         $this->inTrainer = $inTrainer;
-
         return $this;
     }
 
     final public function setLevel(int $level): self {
         $this->level = $level;
-
         return $this;
     }
 
     final public function setOutTrainer(?OutTrainer $outTrainer): self {
         $this->outTrainer = $outTrainer;
-
         return $this;
     }
 
     final public function setProduct(?Product $product): self {
         $this->product = $product;
-
         return $this;
     }
 
     final public function setRemindable(bool $remindable): self {
         $this->remindable = $remindable;
-
         return $this;
     }
 
     final public function setRemindedChild(?self $remindedChild): self {
         $this->remindedChild = $remindedChild;
-
         return $this;
     }
 
-    final public function setRemindedDate(?DateTimeInterface $remindedDate): self {
+    final public function setRemindedDate(?DateTimeImmutable $remindedDate): self {
         $this->remindedDate = $remindedDate;
-
         return $this;
     }
 
-    final public function setStartedDate(?DateTimeInterface $startedDate): self {
+    final public function setStartedDate(?DateTimeImmutable $startedDate): self {
         $this->startedDate = $startedDate;
-
         return $this;
     }
 
     final public function setType(?Type $type): self {
         $this->type = $type;
-
         return $this;
     }
 }
