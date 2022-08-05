@@ -2,20 +2,18 @@
 
 namespace App\Entity\Hr\Event;
 
-use App\Entity\Event as AbstractEvent;
-use App\Entity\Hr\Employee\Employee;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Event as AbstractEvent;
+use App\Entity\Hr\Employee\Employee;
 use App\Filter\RelationFilter;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'employee' => 'name',
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee']),
     ApiResource(
         description: 'Événement',
         collectionOperations: [
@@ -41,6 +39,7 @@ use App\Filter\RelationFilter;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un événement',
@@ -49,35 +48,35 @@ use App\Filter\RelationFilter;
                 'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
             ]
         ],
+        shortName: 'EmployeeEvent',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:employee', 'write:name', 'write:type', 'write:event_date'],
-            'openapi_definition_name' => 'Event-write'
+            'groups' => ['write:event'],
+            'openapi_definition_name' => 'EmployeeEvent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:employee', 'read:type', 'read:event_date'],
-            'openapi_definition_name' => 'Event-read'
+            'groups' => ['read:event', 'read:id'],
+            'openapi_definition_name' => 'EmployeeEvent-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
     ORM\Table(name: 'employee_event')
 ]
-
 class Event extends AbstractEvent {
-
     #[
-        ApiProperty(description: 'Employé', required: false, example: '/api/employees/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Employee::class),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ApiProperty(description: 'Employé', example: '/api/employees/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?Employee $employee;
+    private ?Employee $employee = null;
 
     #[
-        ApiProperty(description: 'Type', required: true, readableLink: false, example: '/api/event-types/16'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Type::class),
-        Serializer\Groups(['read:type', 'write:type'])
+        ApiProperty(description: 'Type', readableLink: false, example: '/api/event-types/16'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:event', 'write:event'])
     ]
     private ?Type $type = null;
 
