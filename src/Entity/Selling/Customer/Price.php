@@ -7,12 +7,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
-use App\Entity\Traits\NotesTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
- #[
+#[
     ApiResource(
         description: 'Prix',
         collectionOperations: [
@@ -38,6 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un prix',
@@ -46,59 +45,51 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
-        shortName: 'CustomerPrice',
+        shortName: 'CustomerProductPrice',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:price', 'write:notes', 'write:price', 'write:product', 'write:measure', 'write:unit'],
-            'openapi_definition_name' => 'CustomerPrice-write'
+            'groups' => ['write:measure', 'write:price'],
+            'openapi_definition_name' => 'CustomerProductPrice-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:notes', 'read:price', 'read:product', 'read:measure', 'read:unit'],
-            'openapi_definition_name' => 'CustomerPrice-read'
+            'groups' => ['read:id', 'read:measure', 'read:price'],
+            'openapi_definition_name' => 'CustomerProductPrice-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
-    ORM\Table(name: 'product_customer_price')
+    ORM\Table(name: 'customer_product_price')
 ]
 class Price extends Entity {
-    use NotesTrait;
-
     #[
-        ApiProperty(description: 'Notes', required: false, example: 'Lorem ipsum dolores it'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:notes', 'write:notes'])
-    ]
-    protected ?string $notes = null;
-
-    #[
-        ApiProperty(description: 'Prix', example: 52),
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:price', 'write:price'])
     ]
-    private float $price = 0;
+    private Measure $price;
 
     #[
-        ApiProperty(description: 'Produit', required: true, readableLink: false, example: '/api/products/4'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Product::class),
-        Serializer\Groups(['read:product', 'write:product'])
+        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:price', 'write:price'])
     ]
-    private ?Product $product;
+    private ?Product $product = null;
 
     #[
-        ApiProperty(description: 'Quantité', example: '3'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:price', 'write:price'])
     ]
     private Measure $quantity;
 
     public function __construct() {
+        $this->price = new Measure();
         $this->quantity = new Measure();
     }
 
-    final public function getPrice(): float {
+    final public function getPrice(): Measure {
         return $this->price;
     }
 
@@ -110,7 +101,7 @@ class Price extends Entity {
         return $this->quantity;
     }
 
-    final public function setPrice(float $price): self {
+    final public function setPrice(Measure $price): self {
         $this->price = $price;
         return $this;
     }

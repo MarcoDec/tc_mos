@@ -1,8 +1,0 @@
-App\Entity\Management\Color:
-  properties:
-    name:
-      new_name: name
-    ral:
-      new_name: ral
-    rgb:
-      new_name: rgb

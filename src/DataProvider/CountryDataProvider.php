@@ -4,18 +4,19 @@ namespace App\DataProvider;
 
 use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
-use App\Entity\Country;
+use App\Api\Resource\Country;
+use Illuminate\Support\Collection;
 use Symfony\Component\Intl\Countries;
 
 final class CountryDataProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface {
     /**
-     * @return Country[]
+     * @return Collection<int, Country>
      */
-    public function getCollection(string $resourceClass, ?string $operationName = null): array {
-        return collect(Countries::getNames())
-            ->map(static fn (string $name, string $code): Country => new Country($code, $name))
+    public function getCollection(string $resourceClass, ?string $operationName = null): Collection {
+        return collect(Countries::getCountryCodes())
+            ->map(static fn (string $code): Country => new Country($code))
             ->values()
-            ->all();
+            ->sortBy->getName();
     }
 
     /**
