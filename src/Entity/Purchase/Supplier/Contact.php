@@ -11,12 +11,13 @@ use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
+/**
+ * @template-extends SocietyContact<Supplier>
+ */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'supplier' => 'name',
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['society']),
     ApiResource(
-        description: 'Contact',
+        description: 'Contact fournisseur',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -40,6 +41,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un contact',
@@ -53,21 +55,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:supplier-contact', 'write:name', 'write:address', 'write:society-contact'],
+            'groups' => ['write:address', 'write:contact'],
             'openapi_definition_name' => 'SupplierContact-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:address', 'read:supplier-contact', 'read:society-contact'],
-            'openapi_definition_name' => 'SupplierContact-read'
+            'groups' => ['read:address', 'read:contact', 'read:id'],
+            'openapi_definition_name' => 'SupplierContact-read',
+            'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
-    ORM\Entity
+    ORM\Entity,
+    ORM\Table(name: 'supplier_contact')
 ]
 class Contact extends SocietyContact {
     #[
-        ApiProperty(description: 'Client', readableLink: false, example: '/api/suppliers/7'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Supplier::class),
-        Serializer\Groups(['read:supplier-contact', 'write:supplier-contact'])
+        ApiProperty(description: 'Client', readableLink: false, example: '/api/suppliers/1'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne(targetEntity: Supplier::class),
+        Serializer\Groups(['read:contact', 'write:contact'])
     ]
     protected $society;
 }

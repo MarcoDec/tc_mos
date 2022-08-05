@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Repository\CurrencyRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -27,7 +28,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Modifie une devise',
                     'summary' => 'Modifie une devise',
-                ]
+                ],
+                'validate' => false
             ]
         ],
         attributes: [
@@ -38,14 +40,35 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Currency-write'
         ],
         normalizationContext: [
-            'groups' => ['read:code', 'read:currency', 'read:id'],
-            'openapi_definition_name' => 'Currency-read'
+            'groups' => ['read:currency', 'read:id'],
+            'openapi_definition_name' => 'Currency-read',
+            'skip_null_values' => false
         ],
+        order: ['code' => 'asc'],
         paginationEnabled: false
     ),
     ORM\Entity(repositoryClass: CurrencyRepository::class)
 ]
-class Currency extends Unit {
+class Currency extends AbstractUnit {
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    protected Collection $children;
+
+    #[
+        ApiProperty(description: 'Code ', required: true, example: 'EUR'),
+        ORM\Column(type: 'char', length: 3),
+        Serializer\Groups(['read:unit', 'write:unit'])
+    ]
+    protected ?string $code = null;
+
+    protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Parent ', readableLink: false, example: '/api/currencies/1'),
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
+        Serializer\Groups(['read:currency'])
+    ]
+    protected $parent;
+
     #[
         ApiProperty(description: 'Active', example: true),
         ORM\Column(options: ['default' => false]),
