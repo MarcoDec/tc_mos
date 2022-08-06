@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220805143949 extends AbstractMigration {
+final class Version20220806125824 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -1526,7 +1526,7 @@ CREATE TABLE `engine_event` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'closed') DEFAULT 'agreed' NOT NULL COMMENT '(DC2Type:engine_event_current_place)',
+    `current_place_name` ENUM('agreed', 'closed', 'draft', 'rejected') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:engine_event_current_place)',
     `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `done` BOOLEAN DEFAULT FALSE NOT NULL,
     `emergency` TINYINT UNSIGNED DEFAULT 1 COMMENT '(DC2Type:tinyint)',
@@ -1631,7 +1631,7 @@ INSERT INTO `engine_event` (
     `notes`,
     `type`
 ) SELECT
-    IF(`statut` = 2, 'closed', 'agreed'),
+    IF(`statut` = 2, 'closed', 'draft'),
     `date_intervention`,
     `statut` = 2,
     `urgence`,

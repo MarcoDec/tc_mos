@@ -32,8 +32,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un produit',
-                    'summary' => 'Supprime un produit',
+                    'description' => 'Supprime un événement',
+                    'summary' => 'Supprime un événement',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_ADMIN.'\')'
             ],
@@ -77,7 +77,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'EngineEvent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:event', 'read:id'],
+            'groups' => ['read:current-place', 'read:event', 'read:id'],
             'openapi_definition_name' => 'EngineEvent-read',
             'skip_null_values' => false
         ]
@@ -93,7 +93,7 @@ abstract class Event extends AbstractEvent implements WorkflowInterface {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:event', 'write:event'])
+        Serializer\Groups(['read:event'])
     ]
     private CurrentPlace $currentPlace;
 
