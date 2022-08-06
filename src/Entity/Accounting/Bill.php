@@ -2,21 +2,22 @@
 
 namespace App\Entity\Accounting;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\Management\VatMessageForce;
 use App\Entity\Embeddable\Accounting\Bill\CurrentPlace;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
-use App\Entity\Management\Society\Company;
+use App\Entity\Interfaces\WorkflowInterface;
+use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\VatMessage;
 use App\Entity\Selling\Customer\Contact;
 use App\Entity\Selling\Customer\Customer;
-use App\Entity\Traits\CompanyTrait;
-use App\Entity\Traits\NotesTrait;
-use App\Entity\Traits\RefTrait;
-use DateTime;
-use DateTimeInterface;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -46,141 +47,170 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_ADMIN.'\')'
             ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une facture',
+                    'summary' => 'Récupère une facture',
+                ]
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une facture',
                     'summary' => 'Modifie une facture',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')'
+            ],
+            'promote' => [
+                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Transite la facture à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite la facture à son prochain statut de workflow'
+                ],
+                'path' => '/bills/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
+                'validate' => false
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:ref', 'write:company', 'write:notes', 'write:bill', 'write:customer-contact', 'write:name'],
-            'openapi_definition_name' => 'Skill-write'
+            'groups' => ['write:bill', 'write:measure'],
+            'openapi_definition_name' => 'Bill-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:ref', 'read:company', 'read:notes', 'read:bill', 'read:customer-contact', 'read:name'],
-            'openapi_definition_name' => 'Skill-read'
+            'groups' => ['read:bill', 'read:current-place', 'read:id', 'read:measure'],
+            'openapi_definition_name' => 'Bill-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
-class Bill extends Entity {
-    use CompanyTrait;
-    use NotesTrait;
-    use RefTrait;
-
+class Bill extends Entity implements WorkflowInterface {
     #[
-        ApiProperty(description: 'Companie', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company', 'write:company'])
-    ]
-    protected ?Company $company;
-
-    #[
-        ApiProperty(description: 'Notes', required: false, example: 'Lorem ipsum dolores'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:notes', 'write:notes'])
-    ]
-    protected ?string $notes = null;
-
-    #[
-        ApiProperty(description: 'Référence', example: 'DJH545'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref'])
-    ]
-    protected ?string $ref = null;
-
-    #[
-        ApiProperty(description: 'Date de facturation', required: false, example: '2022-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
+        ApiProperty(description: 'Date de facturation', example: '2022-24-03'),
+        ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
-    private DateTimeInterface $billingDate;
+    private ?DateTimeImmutable $billingDate;
 
     #[
-        ApiProperty(description: 'Contact', required: true, readableLink: false, example: '/api/customer-contacts/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Contact::class),
-        Serializer\Groups(['read:customer-contact', 'write:customer-contact'])
+        ApiProperty(description: 'Companie', example: '/api/companies/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    private ?Company $company;
+
+    #[
+        ApiProperty(description: 'Contact', readableLink: false, example: '/api/customer-contacts/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private ?Contact $contact = null;
 
     #[
-        ApiProperty(description: 'Statut', required: true, example: 'partially_paid'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:bill', 'write:bill'])
+        ApiProperty(description: 'Statut', example: 'partially_paid'),
+        ORM\Embedded,
+        Serializer\Groups(['read:bill'])
     ]
     private CurrentPlace $currentPlace;
 
     #[
-        ApiProperty(description: 'Client', required: false, readableLink: false, example: '/api/customers/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Customer::class),
-        Serializer\Groups(['read:customer', 'write:customer'])
+        ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private ?Customer $customer = null;
 
     #[
-        ApiProperty(description: 'Date de facturation', required: false, example: '2022-27-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
+        ApiProperty(description: 'Date de facturation', example: '2022-27-03'),
+        ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
-    private ?DateTimeInterface $dueDate = null;
+    private ?DateTimeImmutable $dueDate = null;
 
     #[
-        ApiProperty(description: 'Prix HT', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
+        ApiProperty(description: 'Prix HT', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
-    private float $exclTax = 0;
+    private Measure $exclTax;
 
     #[
-        ApiProperty(description: 'Forcer la TVA', required: true, example: 0),
-        ORM\Column(options: ['default' => VatMessage::FORCE_DEFAULT, 'unsigned' => true], type: 'smallint'),
+        ApiProperty(description: 'Forcer la TVA', required: true, example: VatMessageForce::TYPE_FORCE_DEFAULT, openapiContext: ['enum' => VatMessageForce::TYPES]),
+        Assert\Choice(choices: VatMessageForce::TYPES),
+        ORM\Column(type: 'vat_message_force', options: ['default' => VatMessageForce::TYPE_FORCE_DEFAULT]),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
-    private int $forceVat = VatMessage::FORCE_DEFAULT;
+    private string $forceVat = VatMessageForce::TYPE_FORCE_DEFAULT;
 
     #[
-        ApiProperty(description: 'Prix TTC', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
+        ApiProperty(description: 'Prix TTC', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
-    private float $inclTax = 0;
+    private Measure $inclTax;
 
     #[
-        ApiProperty(description: 'TVA', required: false, example: 10),
+        ApiProperty(description: 'Notes', example: 'Lorem ipsum dolores'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
-    private float $vat = 0;
+    private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Message TVA', required: false),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: VatMessage::class),
-        Serializer\Groups(['read:name', 'write:name'])
+        ApiProperty(description: 'Référence', example: 'DJH545'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:bill'])
     ]
-    private ?VatMessage $vatMessage;
+    private ?string $ref = null;
+
+    #[
+        ApiProperty(description: 'TVA', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    private Measure $vat;
+
+    #[
+        ApiProperty(description: 'Message TVA'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    private ?VatMessage $vatMessage = null;
 
     public function __construct() {
-        $this->billingDate = new DateTime();
+        $this->billingDate = new DateTimeImmutable();
+        $this->exclTax = new Measure();
+        $this->inclTax = new Measure();
+        $this->vat = new Measure();
     }
 
-    final public function getBillingDate(): DateTimeInterface {
+    final public function getBillingDate(): ?DateTimeImmutable {
         return $this->billingDate;
+    }
+
+    final public function getCompany(): ?Company {
+        return $this->company;
     }
 
     final public function getContact(): ?Contact {
         return $this->contact;
     }
 
-    public function getCurrentPlace(): CurrentPlace {
+    final public function getCurrentPlace(): CurrentPlace {
         return $this->currentPlace;
     }
 
@@ -188,23 +218,36 @@ class Bill extends Entity {
         return $this->customer;
     }
 
-    final public function getDueDate(): ?DateTimeInterface {
+    final public function getDueDate(): ?DateTimeImmutable {
         return $this->dueDate;
     }
 
-    final public function getExclTax(): float {
+    final public function getExclTax(): Measure {
         return $this->exclTax;
     }
 
-    final public function getForceVat(): int {
+    final public function getForceVat(): string {
         return $this->forceVat;
     }
 
-    final public function getInclTax(): float {
+    final public function getInclTax(): Measure {
         return $this->inclTax;
     }
 
-    final public function getVat(): float {
+    final public function getNotes(): ?string {
+        return $this->notes;
+    }
+
+    final public function getRef(): ?string {
+        return $this->ref;
+    }
+
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
+    final public function getVat(): Measure {
         return $this->vat;
     }
 
@@ -212,8 +255,23 @@ class Bill extends Entity {
         return $this->vatMessage;
     }
 
-    final public function setBillingDate(DateTimeInterface $billingDate): self {
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
+    }
+
+    final public function setBillingDate(?DateTimeImmutable $billingDate): self {
         $this->billingDate = $billingDate;
+        return $this;
+    }
+
+    final public function setCompany(?Company $company): self {
+        $this->company = $company;
         return $this;
     }
 
@@ -222,8 +280,9 @@ class Bill extends Entity {
         return $this;
     }
 
-    public function setCurrentPlace(CurrentPlace $currentPlace): void {
+    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
+        return $this;
     }
 
     final public function setCustomer(?Customer $customer): self {
@@ -231,27 +290,42 @@ class Bill extends Entity {
         return $this;
     }
 
-    final public function setDueDate(?DateTimeInterface $dueDate): self {
+    final public function setDueDate(?DateTimeImmutable $dueDate): self {
         $this->dueDate = $dueDate;
         return $this;
     }
 
-    final public function setExclTax(float $exclTax): self {
+    final public function setExclTax(Measure $exclTax): self {
         $this->exclTax = $exclTax;
         return $this;
     }
 
-    final public function setForceVat(int $forceVat): self {
+    final public function setForceVat(string $forceVat): self {
         $this->forceVat = $forceVat;
         return $this;
     }
 
-    final public function setInclTax(float $inclTax): self {
+    final public function setInclTax(Measure $inclTax): self {
         $this->inclTax = $inclTax;
         return $this;
     }
 
-    final public function setVat(float $vat): self {
+    final public function setNotes(?string $notes): self {
+        $this->notes = $notes;
+        return $this;
+    }
+
+    final public function setRef(?string $ref): self {
+        $this->ref = $ref;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
+        return $this;
+    }
+
+    final public function setVat(Measure $vat): self {
         $this->vat = $vat;
         return $this;
     }

@@ -15,6 +15,7 @@ doctrine:
     default_connection: default
     types:
       attribute: App\Doctrine\DBAL\Types\Purchase\Component\AttributeType
+      bill_current_place: App\Doctrine\DBAL\Types\Accounting\Bill\CurrentPlaceType
       char: App\Doctrine\DBAL\Types\CharType
       component_current_place: App\Doctrine\DBAL\Types\Purchase\Component\CurrentPlaceType
       copper_type: App\Doctrine\DBAL\Types\Embeddable\CopperType

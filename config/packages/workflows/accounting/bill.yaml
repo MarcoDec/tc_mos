@@ -1,0 +1,31 @@
+framework:
+  workflows:
+    bill:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%place_bill%'
+        - '%place_disabled%'
+        - '%place_draft%'
+        - '%place_litigation%'
+        - '%place_paid%'
+        - '%place_partially_paid%'
+      supports:
+        - App\Entity\Accounting\Bill
+      transitions:
+        '%tr_bill%':
+          from: [ '%place_draft%', '%place_litigation%' ]
+          to: '%place_bill%'
+        '%tr_disable%':
+          from: [ '%place_bill%', '%place_litigation%' ]
+          to: '%place_disabled%'
+        '%tr_litigate%':
+          from: [ '%place_bill%', '%place_partially_paid%' ]
+          to: '%place_litigation%'
+        '%tr_partially_pay%':
+          from: [ '%place_bill%', '%place_litigation%' ]
+          to: '%place_partially_paid%'
+        '%tr_pay%':
+          from: [ '%place_bill%', '%place_litigation%', '%place_partially_paid%' ]
+          to: '%place_paid%'
