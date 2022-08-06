@@ -18,6 +18,11 @@ alias gpao:currency:rate='php /var/www/html/TConcept-GPAO/bin/console gpao:curre
 alias gpao:database:load='php -d memory_limit=1G /var/www/html/TConcept-GPAO/bin/console gpao:database:load'
 alias gpao:fixtures:load='php /var/www/html/TConcept-GPAO/bin/console gpao:fixtures:load'
 alias gpao:schema:update='php /var/www/html/TConcept-GPAO/bin/console gpao:schema:update'
+### Workflow
+dump_workflow() {
+    php bin/console workflow:dump $1 | dot -Tpng -o "$1.png"
+}
+alias dump:workflow='dump_workflow'
 
 ## PHP Coding Standards Fixer
 gpao_fix_code() {

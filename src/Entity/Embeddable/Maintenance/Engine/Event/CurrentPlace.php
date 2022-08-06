@@ -12,28 +12,32 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {
-    final public const TRANSITIONS = [self::TR_VALIDATE];
+    final public const TRANSITIONS = [self::TR_ACCEPT, self::TR_REJECT, self::TR_VALIDATE];
 
     #[
         ApiProperty(description: 'Nom', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
         Assert\NotBlank,
-        ORM\Column(type: 'engine_event_current_place', options: ['default' => CurrentPlaceType::TYPE_AGREED]),
+        ORM\Column(type: 'engine_event_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
         Serializer\Groups(['read:current-place'])
     ]
     protected ?string $name = null;
 
     public function __construct(?string $name = null) {
-        parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_AGREED);
+        parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_DRAFT);
     }
 
     #[Pure]
     final public function getTrafficLight(): int {
-        return $this->getName() === CurrentPlaceType::TYPE_AGREED ? 1 : 3;
+        return match ($this->getName()) {
+            CurrentPlaceType::TYPE_AGREED => 1,
+            CurrentPlaceType::TYPE_DRAFT => 2,
+            default => 3
+        };
     }
 
     final public function isDeletable(): bool {
-        return true;
+        return $this->name !== CurrentPlaceType::TYPE_AGREED;
     }
 
     final public function isFrozen(): bool {
