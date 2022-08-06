@@ -118,7 +118,7 @@ class Attribute extends Entity {
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
-        ORM\ManyToOne(fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['create:attribute', 'read:attribute', 'write:attribute'])
     ]
     private ?Unit $unit;

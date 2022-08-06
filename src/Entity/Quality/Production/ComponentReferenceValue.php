@@ -68,7 +68,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class ComponentReferenceValue extends Entity {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/2'),
-        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:component-reference-value', 'write:component-reference-value'])
     ]
     private Component $component;

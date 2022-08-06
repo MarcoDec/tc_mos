@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType;
+use App\Doctrine\DBAL\Types\EmployeeEngineCurrentPlaceType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Filter\EnumFilter;
@@ -83,9 +83,9 @@ class Type extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Status', example: 'blocked', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
-        Assert\Choice(choices: CurrentPlaceType::TYPES),
-        ORM\Column(type: 'employee_current_place', nullable: true),
+        ApiProperty(description: 'Status', example: 'blocked', openapiContext: ['enum' => EmployeeEngineCurrentPlaceType::TYPES]),
+        Assert\Choice(choices: EmployeeEngineCurrentPlaceType::TYPES),
+        ORM\Column(type: 'employee_engine_current_place', nullable: true),
         Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $toStatus = null;

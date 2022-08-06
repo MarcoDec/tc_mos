@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Entity\Embeddable\Hr\Employee;
+namespace App\Entity\Embeddable;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType;
-use App\Entity\Embeddable\CurrentPlace as AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
-class CurrentPlace extends AbstractCurrentPlace {
+class EmployeeEngineCurrentPlace extends CurrentPlace {
     final public const TRANSITIONS = [
         self::TR_BLOCK,
         self::TR_DISABLE,
@@ -23,7 +22,7 @@ class CurrentPlace extends AbstractCurrentPlace {
         ApiProperty(description: 'Nom', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
         Assert\Choice(choices: CurrentPlaceType::TYPES),
         Assert\NotBlank,
-        ORM\Column(type: 'employee_current_place', options: ['default' => CurrentPlaceType::TYPE_WARNING]),
+        ORM\Column(type: 'employee_engine_current_place', options: ['default' => CurrentPlaceType::TYPE_WARNING]),
         Serializer\Groups(['read:current-place'])
     ]
     protected ?string $name = CurrentPlaceType::TYPE_WARNING;

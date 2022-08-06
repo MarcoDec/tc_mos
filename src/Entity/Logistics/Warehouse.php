@@ -76,7 +76,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Warehouse extends Entity {
     #[
         ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:warehouse', 'write:warehouse'])
     ]
     private ?Company $company = null;

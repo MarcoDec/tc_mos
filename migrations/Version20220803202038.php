@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220727124852 extends AbstractMigration {
+final class Version20220803202038 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -246,6 +246,7 @@ SQL);
         $this->upZones();
         // rank 4
         $this->upEmployees();
+        $this->upEngines();
         $this->upStocks();
         // rank 5
         $this->upNotifications();
@@ -1165,7 +1166,7 @@ CREATE TABLE `employee` (
     `company_id` INT UNSIGNED DEFAULT NULL,
     `id_society` INT UNSIGNED DEFAULT NULL,
     `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_current_place)',
+    `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
     `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
     `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `gender` ENUM('female', 'male') DEFAULT 'male' COMMENT '(DC2Type:gender_place)',
@@ -1365,13 +1366,107 @@ ALTER TABLE `engine_group`
 SQL);
     }
 
+    private function upEngines(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `engine` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `marque` VARCHAR(255) DEFAULT NULL,
+    `ref` VARCHAR(255) NOT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `capabilite` VARCHAR(255) DEFAULT NULL,
+    `d_entree` DATE DEFAULT NULL,
+    `id_engine_group` INT UNSIGNED DEFAULT NULL,
+    `operateur_max` INT(10) NOT NULL,
+    `nom` VARCHAR(255) NOT NULL,
+    `notes` TEXT DEFAULT NULL,
+    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine_type)',
+    `zone_id` INT UNSIGNED DEFAULT NULL,
+    `reffourn` VARCHAR(255) DEFAULT NULL,
+    `date_fabrication` DATE DEFAULT NULL,
+    `id_fabricant` INT DEFAULT NULL,
+    `numero_serie` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('engine', [
+            'id',
+            'marque',
+            'ref',
+            'capabilite',
+            'd_entree',
+            'id_engine_group',
+            'operateur_max',
+            'nom',
+            'notes',
+            'reffourn',
+            'date_fabrication',
+            'id_fabricant',
+            'numero_serie'
+        ]);
+        $this->addQuery('CREATE TABLE `computer_engine` (`id_engine` INT UNSIGNED DEFAULT NULL, `id_society_zone` INT UNSIGNED DEFAULT NULL)');
+        $this->insert('computer_engine', ['id_engine', 'id_society_zone']);
+        $this->addQuery(<<<'SQL'
+UPDATE `engine`
+SET `capabilite` = CASE
+    WHEN `capabilite` = 1 THEN 'enabled'
+    WHEN `capabilite` = 2 THEN 'warning'
+    WHEN `capabilite` = 3 THEN 'blocked'
+    ELSE 'disabled'
+END,
+`id_engine_group` = (SELECT `engine_group`.`id` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
+`type` = (SELECT `engine_group`.`type` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
+`zone_id` = (SELECT `zone`.`id` FROM `zone` WHERE `zone`.`id` = (SELECT `computer_engine`.`id_society_zone` FROM `computer_engine` WHERE `computer_engine`.`id_engine` = `engine`.`id`))
+SQL);
+        $this->addQuery('DROP TABLE `computer_engine`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `manufacturer_engine` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(255) DEFAULT NULL,
+    `date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `engine_id` INT UNSIGNED DEFAULT NULL,
+    `manufacturer_id` INT UNSIGNED DEFAULT NULL,
+    `serial_number` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_F514547DE78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
+    CONSTRAINT `IDX_F514547DA23B42D` FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturer` (`id`),
+    UNIQUE KEY `UNIQ_F514547DE78C9C0A` (`engine_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `manufacturer_engine` (`code`, `date`, `engine_id`, `manufacturer_id`, `serial_number`)
+SELECT
+    `reffourn`,
+    `date_fabrication`,
+    `id`,
+    (SELECT `manufacturer`.`id` FROM `manufacturer` WHERE `manufacturer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `engine`.`id_fabricant`)),
+    `numero_serie`
+FROM `engine`
+SQL);
+        $this->addQuery(<<<'SQL'
+ALTER TABLE `engine`
+    DROP `reffourn`,
+    DROP `date_fabrication`,
+    DROP `id_fabricant`,
+    DROP `numero_serie`,
+    CHANGE `marque` `brand` VARCHAR(255) DEFAULT NULL,
+    CHANGE `ref` `code` VARCHAR(10) DEFAULT NULL,
+    CHANGE `capabilite` `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
+    CHANGE `d_entree` `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    CHANGE `id_engine_group` `group_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `operateur_max` `max_operator` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
+    CHANGE `nom` `name` VARCHAR(127) NOT NULL,
+    ADD CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
+    ADD CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
+SQL);
+    }
+
     private function upEventTypes(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `employee_eventlist` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `motif` VARCHAR(30) NOT NULL,
-    `to_status` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_current_place)'
+    `to_status` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_engine_current_place)'
 )
 SQL);
         $this->insert('employee_eventlist', ['id', 'motif']);
