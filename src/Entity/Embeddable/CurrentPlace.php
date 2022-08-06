@@ -9,10 +9,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\MappedSuperclass]
 abstract class CurrentPlace implements Stringable {
+    final public const TR_ACCEPT = 'accept';
     final public const TR_BLOCK = 'block';
     final public const TR_DISABLE = 'disable';
     final public const TR_PARTIALLY_UNLOCK = 'partially_unlock';
     final public const TR_PARTIALLY_VALIDATE = 'partially_validate';
+    final public const TR_REJECT = 'reject';
     final public const TR_SUBMIT_VALIDATION = 'submit_validation';
     final public const TR_SUPERVISE = 'supervise';
     final public const TR_UNLOCK = 'unlock';
