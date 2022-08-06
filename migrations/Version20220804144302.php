@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220804141723 extends AbstractMigration {
+final class Version20220804144302 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -251,6 +251,7 @@ SQL);
         $this->upEngines();
         $this->upStocks();
         // rank 5
+        $this->upItRequests();
         $this->upNotifications();
         $this->upPlannings();
         $this->upSkills();
@@ -1589,6 +1590,22 @@ FROM `invoicetimedue`
 SQL);
         $this->addQuery('DROP TABLE `invoicetimedue`');
         $this->addQuery('DROP TABLE `invoicetimeduesupplier`');
+    }
+
+    private function upItRequests(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `request` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `asked_at` DATE NOT NULL COMMENT '(DC2Type:date_immutable)',
+    `asked_by_id` INT UNSIGNED DEFAULT NULL,
+    `current_place` VARCHAR(255) NOT NULL,
+    `delay` DATE NOT NULL COMMENT '(DC2Type:date_immutable)',
+    `description` TEXT NOT NULL, name VARCHAR(255) NOT NULL,
+    `version` VARCHAR(255) NOT NULL,
+    CONSTRAINT `IDX_3B978F9F4F7A72E4` FOREIGN KEY (`asked_by_id`) REFERENCES `employee` (`id`)
+)
+SQL);
     }
 
     private function upLocales(): void {
