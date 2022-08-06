@@ -7,10 +7,8 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
-use App\Entity\Traits\RefTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -38,6 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un prix',
@@ -46,74 +45,62 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
-        shortName: 'SupplierPrice',
+        shortName: 'SupplierComponentPrice',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:price', 'write:ref', 'write:price', 'write:component', 'write:measure', 'write:unit'],
-            'openapi_definition_name' => 'SupplierPrice-write'
+            'groups' => ['write:measure', 'write:price'],
+            'openapi_definition_name' => 'SupplierComponentPrice-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:ref', 'read:price', 'read:component', 'read:measure', 'read:unit'],
-            'openapi_definition_name' => 'SupplierPrice-read'
+            'groups' => ['read:id', 'read:measure', 'read:price'],
+            'openapi_definition_name' => 'SupplierComponentPrice-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
-    ORM\Table(name: 'component_supplier_price')
+    ORM\Table(name: 'supplier_component_price')
 ]
 class Price extends Entity {
-    use RefTrait;
-
-    #[
-        ApiProperty(description: 'Notes', required: false, example: 'Coût du produit'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:price', 'write:price'])
-    ]
-    protected ?string $comments = null;
-
     #[
         ApiProperty(description: 'Référence', example: 'DJZ54'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref'])
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:price', 'write:price'])
     ]
     protected ?string $ref = null;
 
     #[
-        ApiProperty(description: 'Composant', required: false, readableLink: false, example: '/api/components/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Component::class),
-        Serializer\Groups(['read:component', 'write:component'])
-    ]
-    private ?Component $component;
-
-    #[
-        ApiProperty(description: 'Prix', example: 52),
-        Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 10, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:price', 'write:price'])
     ]
-    private float $price = 0;
+    private ?Component $component = null;
 
     #[
-        ApiProperty(description: 'Quantité', example: '3'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:price', 'write:price'])
+    ]
+    private Measure $price;
+
+    #[
+        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:price', 'write:price'])
     ]
     private Measure $quantity;
 
     public function __construct() {
+        $this->price = new Measure();
         $this->quantity = new Measure();
-    }
-
-    final public function getComments(): ?string {
-        return $this->comments;
     }
 
     final public function getComponent(): ?Component {
         return $this->component;
     }
 
-    final public function getPrice(): float {
+    final public function getPrice(): Measure {
         return $this->price;
     }
 
@@ -121,9 +108,8 @@ class Price extends Entity {
         return $this->quantity;
     }
 
-    final public function setComments(?string $comments): self {
-        $this->comments = $comments;
-        return $this;
+    final public function getRef(): ?string {
+        return $this->ref;
     }
 
     final public function setComponent(?Component $component): self {
@@ -131,13 +117,18 @@ class Price extends Entity {
         return $this;
     }
 
-    final public function setPrice(float $price): self {
+    final public function setPrice(Measure $price): self {
         $this->price = $price;
         return $this;
     }
 
-    final public function setQuantity(measure $quantity): self {
+    final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
+        return $this;
+    }
+
+    final public function setRef(?string $ref): self {
+        $this->ref = $ref;
         return $this;
     }
 }

@@ -1,0 +1,34 @@
+framework:
+  workflows:
+    supplier:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%place_agreed%'      # Accepté
+        - '%place_blocked%'     # Bloqué
+        - '%place_disabled%'    # Inactif
+        - '%place_draft%'       # Brouillon
+        - '%place_to_validate%' # Potentiel
+        - '%place_warning%'     # Sous-surveillance
+      supports:
+        - App\Entity\Purchase\Supplier\Supplier
+      transitions:
+        '%tr_block%':
+          from: '%place_agreed%'
+          to: '%place_blocked%'
+        '%tr_disable%':
+          from: [ '%place_agreed%','%place_blocked%' ]
+          to: '%place_disabled%'
+        '%tr_partially_unlock%':
+          from: '%place_blocked%'
+          to: '%place_warning%'
+        '%tr_partially_validate%':
+          from: '%place_draft%'
+          to: '%place_to_validate%'
+        '%tr_supervise%':
+          from: [ '%place_agreed%','%place_to_validate%' ]
+          to: '%place_warning%'
+        '%tr_validate%':
+          from: '%place_warning%'
+          to: '%place_agreed%'

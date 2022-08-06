@@ -5,16 +5,16 @@ namespace App\Entity\Maintenance\Engine;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Production\Engine\Engine;
-use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
-        description: 'Planning',
+        description: 'Planning de maintenance',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -38,12 +38,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un planning',
-                    'summary' => 'Récupère un planning',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un planning',
@@ -52,62 +47,57 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_WRITER.'\')'
             ]
         ],
-        shortName: 'EnginePlanning',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:planning', 'write:name', 'write:engine'],
-            'openapi_definition_name' => 'EnginePlanning-write'
+            'groups' => ['write:measure', 'write:planning'],
+            'openapi_definition_name' => 'Planning-write'
         ],
         normalizationContext: [
-            'groups' => ['read:planning', 'read:id', 'read:name', 'read:engine'],
-            'openapi_definition_name' => 'EnginePlanning-read'
+            'groups' => ['read:id', 'read:measure', 'read:planning'],
+            'openapi_definition_name' => 'Planning-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity
 ]
 class Planning extends Entity {
-    use NameTrait;
-
     #[
-        ApiProperty(description: 'Nom', required: true),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Equivalent', readableLink: false, example: '/api/manufacturer-engines/1'),
-        ORM\ManyToOne(targetEntity: Engine::class, inversedBy: 'children'),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        ApiProperty(description: 'Equivalent', readableLink: false, example: '/api/engines/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:planning', 'write:planning'])
     ]
     private ?Engine $engine = null;
 
     #[
-        ApiProperty(description: 'Type', required: false, example: 'Ipsum'),
-        ORM\Column(type: 'string', nullable: true),
+        ApiProperty(description: 'Nom'),
+        Assert\NotBlank,
+        ORM\Column,
         Serializer\Groups(['read:planning', 'write:planning'])
     ]
-    private ?string $kind = null;
+    private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Quantité', required: true, example: 0),
-        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
+        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ORM\Embedded,
         Serializer\Groups(['read:planning', 'write:planning'])
     ]
-    private int $quantity = 0;
+    private Measure $quantity;
+
+    public function __construct() {
+        $this->quantity = new Measure();
+    }
 
     final public function getEngine(): ?Engine {
         return $this->engine;
     }
 
-    final public function getKind(): ?string {
-        return $this->kind;
+    final public function getName(): ?string {
+        return $this->name;
     }
 
-    final public function getQuantity(): int {
+    final public function getQuantity(): Measure {
         return $this->quantity;
     }
 
@@ -116,12 +106,12 @@ class Planning extends Entity {
         return $this;
     }
 
-    final public function setKind(?string $kind): self {
-        $this->kind = $kind;
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 
-    final public function setQuantity(int $quantity): self {
+    final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
         return $this;
     }
