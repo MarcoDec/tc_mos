@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220803202038 extends AbstractMigration {
+final class Version20220803210619 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -250,6 +250,7 @@ SQL);
         $this->upStocks();
         // rank 5
         $this->upNotifications();
+        $this->upPlannings();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
@@ -1737,6 +1738,45 @@ SQL);
             $this->phoneQueries->push("UPDATE `$table` SET `$phoneProp` = '$phone' WHERE `id` = {$item['id']}");
         }
         $this->phoneQueries->push("ALTER TABLE `$table` CHANGE `$phoneProp` `$normalizedProp` VARCHAR(18) DEFAULT NULL");
+    }
+
+    private function upPlannings(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `engine_maintenance` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_engine` INT UNSIGNED DEFAULT NULL,
+    `type` VARCHAR(255) NOT NULL,
+    `designation` TEXT NOT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity` INT UNSIGNED DEFAULT 0 NOT NULL
+)
+SQL);
+        $this->insert('engine_maintenance', ['id', 'id_engine', 'type', 'designation', 'quantity']);
+        $this->addQuery(<<<'SQL'
+DELETE FROM `engine_maintenance`
+WHERE NOT EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance`.`id_engine`)
+SQL);
+        $this->addQuery(<<<'SQL'
+UPDATE `engine_maintenance`
+SET `quantity_code` = CASE
+    WHEN `type` = 'd' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'j')
+    WHEN `type` = 'u' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'U')
+    WHEN `type` = 'b' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'fds')
+END,
+`quantity_value` = `quantity`
+SQL);
+        $this->addQuery(<<<'SQL'
+ALTER TABLE `engine_maintenance`
+    DROP `quantity`,
+    DROP `type`,
+    CHANGE `id_engine` `engine_id` INT UNSIGNED DEFAULT NULL,
+    CHANGE `designation` `name` VARCHAR(255) NOT NULL,
+    ADD CONSTRAINT `IDX_D499BFF6E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`)
+SQL);
+        $this->addQuery('RENAME TABLE `engine_maintenance` TO `planning`');
     }
 
     private function upPrinters(): void {
