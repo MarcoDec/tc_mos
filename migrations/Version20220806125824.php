@@ -166,6 +166,7 @@ SQL);
     private function insertCustomerAddresses(string $type, string $like): void {
         $this->addQuery(<<<SQL
 INSERT INTO `customer_address` (
+    `old_id`,
     `address_address`,
     `address_address2`,
     `address_city`,
@@ -175,6 +176,7 @@ INSERT INTO `customer_address` (
     `name`,
     `type`
 ) SELECT
+    `id`,
     `address1`,
     `address2`,
     `city`,
@@ -249,6 +251,7 @@ SQL);
         // rank 4
         $this->upBills();
         $this->upComponentSupplierPrices();
+        $this->upCustomerOrders();
         $this->upCustomerProductPrices();
         $this->upEmployees();
         $this->upEngines();
@@ -265,6 +268,7 @@ SQL);
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
+        $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
         $this->addQuery('ALTER TABLE `employee` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
@@ -1156,6 +1160,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `customer_address` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `address_address` VARCHAR(80) DEFAULT NULL,
     `address_address2` VARCHAR(60) DEFAULT NULL,
@@ -1190,6 +1195,62 @@ CREATE TABLE `customer_event` (
     CONSTRAINT `IDX_F59B7F9C9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
 )
 SQL);
+    }
+
+    private function upCustomerOrders(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordercustomer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_customer` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `id_ordercustomerstatus` INT UNSIGNED DEFAULT NULL,
+    `id_address` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `info_public` TEXT DEFAULT NULL
+)
+SQL);
+        $this->insert('ordercustomer', [
+            'id',
+            'statut',
+            'id_customer',
+            'ref',
+            'id_ordercustomerstatus',
+            'id_address',
+            'id_society',
+            'info_public'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `customer_order` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `billed_to_id` INT UNSIGNED DEFAULT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `customer_id` INT UNSIGNED DEFAULT NULL,
+    `destination_id` INT UNSIGNED DEFAULT NULL,
+    `kind` ENUM('EI', 'Prototype', 'Série', 'Pièce de rechange') DEFAULT 'Prototype' NOT NULL COMMENT '(DC2Type:product_kind)',
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_3B1CE6A3994CB78` FOREIGN KEY (`billed_to_id`) REFERENCES `customer_address` (`id`),
+    CONSTRAINT `IDX_3B1CE6A3979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_3B1CE6A39395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+    CONSTRAINT `IDX_3B1CE6A3816C6140` FOREIGN KEY (`destination_id`) REFERENCES `customer_address` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `customer_order` (`billed_to_id`, `company_id`, `customer_id`, `kind`, `notes`, `ref`)
+SELECT
+    (SELECT `customer_address`.`id` FROM `customer_address` WHERE `customer_address`.`old_id` = `ordercustomer`.`id_address` AND `customer_address`.`type` = 'billing'),
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_society`)),
+    (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_customer`)),
+    'Série',
+    `info_public`,
+    `ref`
+FROM `ordercustomer`
+WHERE `statut` = 0
+AND EXISTS (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_customer`))
+SQL);
+        $this->addQuery('DROP TABLE `ordercustomer`');
     }
 
     private function upCustomerProductPrices(): void {
