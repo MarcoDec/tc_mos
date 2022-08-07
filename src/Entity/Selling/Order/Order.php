@@ -2,16 +2,20 @@
 
 namespace App\Entity\Selling\Order;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Selling\Order\CurrentPlace;
 use App\Entity\Entity;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Selling\Customer\BillingAddress;
 use App\Entity\Selling\Customer\Customer;
 use App\Entity\Selling\Customer\DeliveryAddress;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -53,6 +57,28 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une commande',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+            ],
+            'promote' => [
+                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Transite la commande à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite la commande à son prochain statut de workflow'
+                ],
+                'path' => '/customer-orders/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
+                'validate' => false
             ]
         ],
         shortName: 'CustomerOrder',
@@ -72,7 +98,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity,
     ORM\Table(name: 'customer_order')
 ]
-class Order extends Entity {
+class Order extends Entity implements WorkflowInterface {
     #[
         ApiProperty(description: 'Destinataire de la commande', readableLink: false, example: '/api/billing-addresses/1'),
         ORM\ManyToOne,
@@ -86,6 +112,13 @@ class Order extends Entity {
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Company $company;
+
+    #[
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded,
+        Serializer\Groups(['read:order'])
+    ]
+    private CurrentPlace $currentPlace;
 
     #[
         ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/8'),
@@ -123,12 +156,20 @@ class Order extends Entity {
     ]
     private ?string $ref = null;
 
+    public function __construct() {
+        $this->currentPlace = new CurrentPlace();
+    }
+
     final public function getBilledTo(): ?BillingAddress {
         return $this->billedTo;
     }
 
     final public function getCompany(): ?Company {
         return $this->company;
+    }
+
+    final public function getCurrentPlace(): CurrentPlace {
+        return $this->currentPlace;
     }
 
     final public function getCustomer(): ?Customer {
@@ -151,6 +192,21 @@ class Order extends Entity {
         return $this->ref;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
+    }
+
     final public function setBilledTo(?BillingAddress $billedTo): self {
         $this->billedTo = $billedTo;
         return $this;
@@ -158,6 +214,11 @@ class Order extends Entity {
 
     final public function setCompany(?Company $company): self {
         $this->company = $company;
+        return $this;
+    }
+
+    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
+        $this->currentPlace = $currentPlace;
         return $this;
     }
 
@@ -183,6 +244,11 @@ class Order extends Entity {
 
     final public function setRef(?string $ref): self {
         $this->ref = $ref;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 }

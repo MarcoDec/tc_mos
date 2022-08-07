@@ -11,6 +11,7 @@ parameters:
   place_enabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_ENABLED
   place_litigation: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_LITIGATION
   place_paid: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PAID
+  place_partially_delivered: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PARTIALLY_DELIVERED
   place_partially_paid: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PARTIALLY_PAID
   place_rejected: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_REJECTED
   place_to_validate: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_TO_VALIDATE
@@ -19,6 +20,7 @@ parameters:
   tr_accept: !php/const App\Entity\Embeddable\CurrentPlace::TR_ACCEPT
   tr_bill: !php/const App\Entity\Embeddable\CurrentPlace::TR_BILL
   tr_block: !php/const App\Entity\Embeddable\CurrentPlace::TR_BLOCK
+  tr_deliver: !php/const App\Entity\Embeddable\CurrentPlace::TR_DELIVER
   tr_disable: !php/const App\Entity\Embeddable\CurrentPlace::TR_DISABLE
   tr_litigate: !php/const App\Entity\Embeddable\CurrentPlace::TR_LITIGATE
   tr_partially_pay: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_PAY

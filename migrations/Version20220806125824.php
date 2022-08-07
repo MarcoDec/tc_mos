@@ -1226,6 +1226,8 @@ CREATE TABLE `customer_order` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `billed_to_id` INT UNSIGNED DEFAULT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('agreed', 'blocked', 'closed', 'disabled', 'draft', 'partially_delivered', 'to_validate') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_order_current_place)',
     `customer_id` INT UNSIGNED DEFAULT NULL,
     `destination_id` INT UNSIGNED DEFAULT NULL,
     `kind` ENUM('EI', 'Prototype', 'Série', 'Pièce de rechange') DEFAULT 'Prototype' NOT NULL COMMENT '(DC2Type:product_kind)',
@@ -1238,10 +1240,19 @@ CREATE TABLE `customer_order` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `customer_order` (`billed_to_id`, `company_id`, `customer_id`, `kind`, `notes`, `ref`)
+INSERT INTO `customer_order` (`billed_to_id`, `company_id`, `current_place_name`, `customer_id`, `kind`, `notes`, `ref`)
 SELECT
     (SELECT `customer_address`.`id` FROM `customer_address` WHERE `customer_address`.`old_id` = `ordercustomer`.`id_address` AND `customer_address`.`type` = 'billing'),
     (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_society`)),
+    CASE
+        WHEN `id_ordercustomerstatus` IN (2, 13) THEN 'to_validate'
+        WHEN `id_ordercustomerstatus` IN (3, 4, 5, 6) THEN 'agreed'
+        WHEN `id_ordercustomerstatus` IN (7, 9) THEN 'partially_delivered'
+        WHEN `id_ordercustomerstatus` IN (8, 10) THEN 'closed'
+        WHEN `id_ordercustomerstatus` = 11 THEN 'disabled'
+        WHEN `id_ordercustomerstatus` = 12 THEN 'blocked'
+        ELSE 'draft'
+    END,
     (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_customer`)),
     'Série',
     `info_public`,

@@ -12,6 +12,7 @@ abstract class CurrentPlaceType extends EnumType {
     final public const TYPE_ENABLED = 'enabled';
     final public const TYPE_LITIGATION = 'litigation';
     final public const TYPE_PAID = 'paid';
+    final public const TYPE_PARTIALLY_DELIVERED = 'partially_delivered';
     final public const TYPE_PARTIALLY_PAID = 'partially_paid';
     final public const TYPE_REJECTED = 'rejected';
     final public const TYPE_TO_VALIDATE = 'to_validate';
