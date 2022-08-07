@@ -1,0 +1,1352 @@
+[
+  {
+    "id": "1",
+    "statut": "0",
+    "name": "English",
+    "code": "en",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "2",
+    "statut": "0",
+    "name": "Afar",
+    "code": "aa",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "3",
+    "statut": "0",
+    "name": "Abkhazian",
+    "code": "ab",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "4",
+    "statut": "0",
+    "name": "Afrikaans",
+    "code": "af",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "5",
+    "statut": "0",
+    "name": "Amharic",
+    "code": "am",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "6",
+    "statut": "0",
+    "name": "Arabic",
+    "code": "ar",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "7",
+    "statut": "0",
+    "name": "Assamese",
+    "code": "as",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "8",
+    "statut": "0",
+    "name": "Aymara",
+    "code": "ay",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "9",
+    "statut": "0",
+    "name": "Azerbaijani",
+    "code": "az",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "10",
+    "statut": "0",
+    "name": "Bashkir",
+    "code": "ba",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "11",
+    "statut": "0",
+    "name": "Belarusian",
+    "code": "be",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "12",
+    "statut": "0",
+    "name": "Bulgarian",
+    "code": "bg",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "13",
+    "statut": "0",
+    "name": "Bihari",
+    "code": "bh",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "14",
+    "statut": "0",
+    "name": "Bislama",
+    "code": "bi",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "15",
+    "statut": "0",
+    "name": "Bengali\/Bangla",
+    "code": "bn",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "16",
+    "statut": "0",
+    "name": "Tibetan",
+    "code": "bo",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "17",
+    "statut": "0",
+    "name": "Breton",
+    "code": "br",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "18",
+    "statut": "0",
+    "name": "Catalan",
+    "code": "ca",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "19",
+    "statut": "0",
+    "name": "Corsican",
+    "code": "co",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "20",
+    "statut": "0",
+    "name": "Czech",
+    "code": "cs",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "21",
+    "statut": "0",
+    "name": "Welsh",
+    "code": "cy",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "22",
+    "statut": "0",
+    "name": "Danish",
+    "code": "da",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "23",
+    "statut": "0",
+    "name": "German",
+    "code": "de",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "24",
+    "statut": "0",
+    "name": "Bhutani",
+    "code": "dz",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "25",
+    "statut": "0",
+    "name": "Greek",
+    "code": "el",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "26",
+    "statut": "0",
+    "name": "Esperanto",
+    "code": "eo",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "27",
+    "statut": "0",
+    "name": "Spanish",
+    "code": "es",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "28",
+    "statut": "0",
+    "name": "Estonian",
+    "code": "et",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "29",
+    "statut": "0",
+    "name": "Basque",
+    "code": "eu",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "30",
+    "statut": "0",
+    "name": "Persian",
+    "code": "fa",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "31",
+    "statut": "0",
+    "name": "Finnish",
+    "code": "fi",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "32",
+    "statut": "0",
+    "name": "Fiji",
+    "code": "fj",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "33",
+    "statut": "0",
+    "name": "Faeroese",
+    "code": "fo",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "34",
+    "statut": "0",
+    "name": "French",
+    "code": "fr",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "35",
+    "statut": "0",
+    "name": "Frisian",
+    "code": "fy",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "36",
+    "statut": "0",
+    "name": "Irish",
+    "code": "ga",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "37",
+    "statut": "0",
+    "name": "Scots\/Gaelic",
+    "code": "gd",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "38",
+    "statut": "0",
+    "name": "Galician",
+    "code": "gl",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "39",
+    "statut": "0",
+    "name": "Guarani",
+    "code": "gn",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "40",
+    "statut": "0",
+    "name": "Gujarati",
+    "code": "gu",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "41",
+    "statut": "0",
+    "name": "Hausa",
+    "code": "ha",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "42",
+    "statut": "0",
+    "name": "Hindi",
+    "code": "hi",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "43",
+    "statut": "0",
+    "name": "Croatian",
+    "code": "hr",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "44",
+    "statut": "0",
+    "name": "Hungarian",
+    "code": "hu",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "45",
+    "statut": "0",
+    "name": "Armenian",
+    "code": "hy",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "46",
+    "statut": "0",
+    "name": "Interlingua",
+    "code": "ia",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "47",
+    "statut": "0",
+    "name": "Interlingue",
+    "code": "ie",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "48",
+    "statut": "0",
+    "name": "Inupiak",
+    "code": "ik",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "49",
+    "statut": "0",
+    "name": "Indonesian",
+    "code": "in",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "50",
+    "statut": "0",
+    "name": "Icelandic",
+    "code": "is",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "51",
+    "statut": "0",
+    "name": "Italian",
+    "code": "it",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "52",
+    "statut": "0",
+    "name": "Hebrew",
+    "code": "iw",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "53",
+    "statut": "0",
+    "name": "Japanese",
+    "code": "ja",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "54",
+    "statut": "0",
+    "name": "Yiddish",
+    "code": "ji",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "55",
+    "statut": "0",
+    "name": "Javanese",
+    "code": "jw",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "56",
+    "statut": "0",
+    "name": "Georgian",
+    "code": "ka",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "57",
+    "statut": "0",
+    "name": "Kazakh",
+    "code": "kk",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "58",
+    "statut": "0",
+    "name": "Greenlandic",
+    "code": "kl",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "59",
+    "statut": "0",
+    "name": "Cambodian",
+    "code": "km",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "60",
+    "statut": "0",
+    "name": "Kannada",
+    "code": "kn",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "61",
+    "statut": "0",
+    "name": "Korean",
+    "code": "ko",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "62",
+    "statut": "0",
+    "name": "Kashmiri",
+    "code": "ks",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "63",
+    "statut": "0",
+    "name": "Kurdish",
+    "code": "ku",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "64",
+    "statut": "0",
+    "name": "Kirghiz",
+    "code": "ky",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "65",
+    "statut": "0",
+    "name": "Latin",
+    "code": "la",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "66",
+    "statut": "0",
+    "name": "Lingala",
+    "code": "ln",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "67",
+    "statut": "0",
+    "name": "Laothian",
+    "code": "lo",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "68",
+    "statut": "0",
+    "name": "Lithuanian",
+    "code": "lt",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "69",
+    "statut": "0",
+    "name": "Latvian\/Lettish",
+    "code": "lv",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "70",
+    "statut": "0",
+    "name": "Malagasy",
+    "code": "mg",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "71",
+    "statut": "0",
+    "name": "Maori",
+    "code": "mi",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "72",
+    "statut": "0",
+    "name": "Macedonian",
+    "code": "mk",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "73",
+    "statut": "0",
+    "name": "Malayalam",
+    "code": "ml",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "74",
+    "statut": "0",
+    "name": "Mongolian",
+    "code": "mn",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "75",
+    "statut": "0",
+    "name": "Moldavian",
+    "code": "mo",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "76",
+    "statut": "0",
+    "name": "Marathi",
+    "code": "mr",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "77",
+    "statut": "0",
+    "name": "Malay",
+    "code": "ms",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "78",
+    "statut": "0",
+    "name": "Maltese",
+    "code": "mt",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "79",
+    "statut": "0",
+    "name": "Burmese",
+    "code": "my",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "80",
+    "statut": "0",
+    "name": "Nauru",
+    "code": "na",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "81",
+    "statut": "0",
+    "name": "Nepali",
+    "code": "ne",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "82",
+    "statut": "0",
+    "name": "Dutch",
+    "code": "nl",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "83",
+    "statut": "0",
+    "name": "Norwegian",
+    "code": "no",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "84",
+    "statut": "0",
+    "name": "Occitan",
+    "code": "oc",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "85",
+    "statut": "0",
+    "name": "(Afan)\/Oromoor\/Oriya",
+    "code": "om",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "86",
+    "statut": "0",
+    "name": "Punjabi",
+    "code": "pa",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "87",
+    "statut": "0",
+    "name": "Polish",
+    "code": "pl",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "88",
+    "statut": "0",
+    "name": "Pashto\/Pushto",
+    "code": "ps",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "89",
+    "statut": "0",
+    "name": "Portuguese",
+    "code": "pt",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "90",
+    "statut": "0",
+    "name": "Quechua",
+    "code": "qu",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "91",
+    "statut": "0",
+    "name": "Rhaeto-Romance",
+    "code": "rm",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "92",
+    "statut": "0",
+    "name": "Kirundi",
+    "code": "rn",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "93",
+    "statut": "0",
+    "name": "Romanian",
+    "code": "ro",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "94",
+    "statut": "0",
+    "name": "Russian",
+    "code": "ru",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "95",
+    "statut": "0",
+    "name": "Kinyarwanda",
+    "code": "rw",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "96",
+    "statut": "0",
+    "name": "Sanskrit",
+    "code": "sa",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "97",
+    "statut": "0",
+    "name": "Sindhi",
+    "code": "sd",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "98",
+    "statut": "0",
+    "name": "Sangro",
+    "code": "sg",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "99",
+    "statut": "0",
+    "name": "Serbo-Croatian",
+    "code": "sh",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "100",
+    "statut": "0",
+    "name": "Singhalese",
+    "code": "si",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "101",
+    "statut": "0",
+    "name": "Slovak",
+    "code": "sk",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "102",
+    "statut": "0",
+    "name": "Slovenian",
+    "code": "sl",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "103",
+    "statut": "0",
+    "name": "Samoan",
+    "code": "sm",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "104",
+    "statut": "0",
+    "name": "Shona",
+    "code": "sn",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "105",
+    "statut": "0",
+    "name": "Somali",
+    "code": "so",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "106",
+    "statut": "0",
+    "name": "Albanian",
+    "code": "sq",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "107",
+    "statut": "0",
+    "name": "Serbian",
+    "code": "sr",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "108",
+    "statut": "0",
+    "name": "Siswati",
+    "code": "ss",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "109",
+    "statut": "0",
+    "name": "Sesotho",
+    "code": "st",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "110",
+    "statut": "0",
+    "name": "Sundanese",
+    "code": "su",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "111",
+    "statut": "0",
+    "name": "Swedish",
+    "code": "sv",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "112",
+    "statut": "0",
+    "name": "Swahili",
+    "code": "sw",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "113",
+    "statut": "0",
+    "name": "Tamil",
+    "code": "ta",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "114",
+    "statut": "0",
+    "name": "Telugu",
+    "code": "te",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "115",
+    "statut": "0",
+    "name": "Tajik",
+    "code": "tg",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "116",
+    "statut": "0",
+    "name": "Thai",
+    "code": "th",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "117",
+    "statut": "0",
+    "name": "Tigrinya",
+    "code": "ti",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "118",
+    "statut": "0",
+    "name": "Turkmen",
+    "code": "tk",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "119",
+    "statut": "0",
+    "name": "Tagalog",
+    "code": "tl",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "120",
+    "statut": "0",
+    "name": "Setswana",
+    "code": "tn",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "121",
+    "statut": "0",
+    "name": "Tonga",
+    "code": "to",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "122",
+    "statut": "0",
+    "name": "Turkish",
+    "code": "tr",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "123",
+    "statut": "0",
+    "name": "Tsonga",
+    "code": "ts",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "124",
+    "statut": "0",
+    "name": "Tatar",
+    "code": "tt",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "125",
+    "statut": "0",
+    "name": "Twi",
+    "code": "tw",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "126",
+    "statut": "0",
+    "name": "Ukrainian",
+    "code": "uk",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "127",
+    "statut": "0",
+    "name": "Urdu",
+    "code": "ur",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "128",
+    "statut": "0",
+    "name": "Uzbek",
+    "code": "uz",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "129",
+    "statut": "0",
+    "name": "Vietnamese",
+    "code": "vi",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "130",
+    "statut": "0",
+    "name": "Volapuk",
+    "code": "vo",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "131",
+    "statut": "0",
+    "name": "Wolof",
+    "code": "wo",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "132",
+    "statut": "0",
+    "name": "Xhosa",
+    "code": "xh",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "133",
+    "statut": "0",
+    "name": "Yoruba",
+    "code": "yo",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "134",
+    "statut": "0",
+    "name": "Chinese",
+    "code": "zh",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "135",
+    "statut": "0",
+    "name": "Zulu",
+    "code": "zu",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  }
+]

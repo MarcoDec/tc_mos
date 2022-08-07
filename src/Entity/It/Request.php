@@ -2,134 +2,35 @@
 
 namespace App\Entity\It;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\It\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
-use App\Entity\Traits\NameTrait;
-use DatetimeInterface;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[
-    ApiResource(
-        description: 'Demande',
-        collectionOperations: [
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère les demandes',
-                    'summary' => 'Récupère les demandes',
-                ]
-            ],
-            'post' => [
-                'openapi_context' => [
-                    'description' => 'Créer une demande',
-                    'summary' => 'Créer une demande'
-                ],
-                'denormalization_context' => [
-                    'groups' => ['write:name', 'write:post']
-                ]
-            ]
-        ],
-        itemOperations: [
-            'delete' => [
-                'openapi_context' => [
-                    'description' => 'Supprime une demande',
-                    'summary' => 'Supprime une demande',
-                ]
-            ],
-            'patch' => [
-                'openapi_context' => [
-                    'description' => 'Modifie une demande',
-                    'summary' => 'Modifie une demande',
-                ]
-            ]
-        ],
-        attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_IT_ADMIN.'\')'
-        ],
-        denormalizationContext: [
-            'groups' => ['write:name', 'write:request', 'write:employee', 'write:current_place'],
-            'openapi_definition_name' => 'Request-write'
-        ],
-        normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:request', 'read:employee', 'read:current_place'],
-            'openapi_definition_name' => 'Request-read'
-        ],
-    ),
-    ORM\Entity
-]
+#[ORM\Entity]
 class Request extends Entity {
-    use NameTrait;
+    #[ORM\Column(type: 'date_immutable')]
+    private ?DateTimeImmutable $askedAt = null;
 
-    public const WF_PLACE_ACCEPTED = 'accepted';
-    public const WF_PLACE_ASKED = 'asked';
-    public const WF_PLACE_CLOSED = 'closed';
-    public const WF_PLACE_REFUSED = 'refused';
-    public const WF_TR_ACCEPT = 'accept';
-    public const WF_TR_CLOSE = 'close';
-    public const WF_TR_REFUSE = 'refuse';
-
-    #[
-        ApiProperty(description: 'Statut', required: true, example: 'locked'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'write:current_place'])
-    ]
-    protected CurrentPlace $currentPlace;
-
-    #[
-        ApiProperty(description: 'Nom', required: true),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Date de demande', required: false, example: '2022-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
-        Serializer\Groups(['read:request', 'write:request'])
-    ]
-    private ?DatetimeInterface $askedAt = null;
-
-    #[
-        ApiProperty(description: 'Employé demandeur', required: false, readableLink: false, example: '/api/employees/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Employee::class),
-        Serializer\Groups(['read:employee', 'write:employee'])
-    ]
+    #[ORM\ManyToOne]
     private ?Employee $askedBy = null;
 
-    #[
-        ApiProperty(description: 'Delai', required: false, example: '2022-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
-        Serializer\Groups(['read:request', 'write:request'])
-    ]
-    private ?DatetimeInterface $delay = null;
+    #[ORM\Column]
+    private ?string $currentPlace = null;
 
-    #[
-        ApiProperty(description: 'Description', required: false, example: 'Mise à jour'),
-        ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:request', 'write:request', 'write:post'])
-    ]
+    #[ORM\Column(type: 'date_immutable')]
+    private ?DateTimeImmutable $delay = null;
+
+    #[ORM\Column(type: 'text')]
     private ?string $description = null;
 
-    #[
-        ApiProperty(description: 'Version', required: false, example: '16.3.6'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:request', 'write:request'])
-    ]
+    #[ORM\Column]
+    private ?string $name = null;
+
+    #[ORM\Column]
     private ?string $version = null;
 
-    public function __construct() {
-        $this->currentPlace = new CurrentPlace();
-    }
-
-    final public function getAskedAt(): ?DateTimeInterface {
+    final public function getAskedAt(): ?DateTimeImmutable {
         return $this->askedAt;
     }
 
@@ -137,11 +38,11 @@ class Request extends Entity {
         return $this->askedBy;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
+    final public function getCurrentPlace(): ?string {
         return $this->currentPlace;
     }
 
-    final public function getDelay(): ?DateTimeInterface {
+    final public function getDelay(): ?DateTimeImmutable {
         return $this->delay;
     }
 
@@ -149,15 +50,15 @@ class Request extends Entity {
         return $this->description;
     }
 
-    final public function getTrafficLight(): int {
-        return $this->currentPlace->getTrafficLight();
+    final public function getName(): ?string {
+        return $this->name;
     }
 
     final public function getVersion(): ?string {
         return $this->version;
     }
 
-    final public function setAskedAt(?DateTimeInterface $askedAt): self {
+    final public function setAskedAt(?DateTimeImmutable $askedAt): self {
         $this->askedAt = $askedAt;
         return $this;
     }
@@ -167,18 +68,23 @@ class Request extends Entity {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
+    final public function setCurrentPlace(?string $currentPlace): self {
         $this->currentPlace = $currentPlace;
         return $this;
     }
 
-    final public function setDelay(?DateTimeInterface $delay): self {
+    final public function setDelay(?DateTimeImmutable $delay): self {
         $this->delay = $delay;
         return $this;
     }
 
     final public function setDescription(?string $description): self {
         $this->description = $description;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 
