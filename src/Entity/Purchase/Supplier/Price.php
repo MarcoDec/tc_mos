@@ -7,6 +7,9 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
+use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -62,7 +65,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'supplier_component_price')
 ]
-class Price extends Entity {
+class Price extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Référence', example: 'DJZ54'),
         ORM\Column(nullable: true),
@@ -71,7 +74,7 @@ class Price extends Entity {
     protected ?string $ref = null;
 
     #[
-        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
+        ApiProperty(description: 'Composant', readableLink: false, example: '/api/supplier-components/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:price', 'write:price'])
     ]
@@ -86,6 +89,7 @@ class Price extends Entity {
 
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['read:price', 'write:price'])
     ]
@@ -100,6 +104,10 @@ class Price extends Entity {
         return $this->component;
     }
 
+    final public function getMeasures(): array {
+        return [$this->price, $this->quantity];
+    }
+
     final public function getPrice(): Measure {
         return $this->price;
     }
@@ -110,6 +118,10 @@ class Price extends Entity {
 
     final public function getRef(): ?string {
         return $this->ref;
+    }
+
+    final public function getUnit(): ?Unit {
+        return $this->component?->getUnit();
     }
 
     final public function setComponent(?Component $component): self {
