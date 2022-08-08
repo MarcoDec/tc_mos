@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220808150144 extends AbstractMigration {
+final class Version20220808200812 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -260,6 +260,7 @@ SQL);
         $this->upDeliveryNotes();
         $this->upEmployeeEvents();
         $this->upItRequests();
+        $this->upManufacturingOrders();
         $this->upNotifications();
         $this->upPlannings();
         $this->upSkills();
@@ -2296,6 +2297,126 @@ SET `engine_fabricant_ou_contact`.`society_id` = `society`.`id`
 SQL);
         $this->addQuery('ALTER TABLE `society` DROP `manufacturer_id`');
         $this->addQuery('RENAME TABLE `engine_fabricant_ou_contact` TO `manufacturer`');
+    }
+
+    private function upManufacturingOrders(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `orderfabrication` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `ofnumber` INT UNSIGNED DEFAULT NULL,
+    `indice` INT UNSIGNED DEFAULT NULL,
+    `id_supplier` INT UNSIGNED DEFAULT NULL,
+    `id_orderfabricationstatus` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `id_product` INT UNSIGNED DEFAULT NULL,
+    `product_indice` VARCHAR(255) DEFAULT NULL,
+    `id_ordercustomer` INT UNSIGNED DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL,
+    `quantity_done` INT UNSIGNED DEFAULT NULL,
+    `quantity_real` INT UNSIGNED DEFAULT NULL,
+    `date_livraison` DATE DEFAULT NULL,
+    `info_public` TEXT DEFAULT NULL,
+    `date_validation` DATE DEFAULT NULL,
+    `date_fabrication` DATE DEFAULT NULL
+)
+SQL);
+        $this->insert('orderfabrication', [
+            'id',
+            'statut',
+            'ofnumber',
+            'indice',
+            'id_supplier',
+            'id_orderfabricationstatus',
+            'id_society',
+            'id_product',
+            'product_indice',
+            'id_ordercustomer',
+            'quantity',
+            'quantity_done',
+            'quantity_real',
+            'date_livraison',
+            'info_public',
+            'date_validation',
+            'date_fabrication'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `manufacturing_order` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `actual_quantity_code` VARCHAR(6) DEFAULT NULL,
+    `actual_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `actual_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('agreed', 'blocked', 'closed', 'disabled', 'draft') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:manufacturing_order_current_place)',
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `delivery_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `index` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `manufacturing_company_id` INT UNSIGNED DEFAULT NULL,
+    `manufacturing_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `order_id` INT UNSIGNED DEFAULT NULL,
+    `product_id` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `quantity_produced_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_produced_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_produced_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity_requested_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_requested_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_requested_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `validation_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    CONSTRAINT `IDX_34010DB1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_34010DB1E26A3063` FOREIGN KEY (`manufacturing_company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_34010DB18D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `customer_order` (`id`),
+    CONSTRAINT `IDX_34010DB14584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `manufacturing_order` (
+    `actual_quantity_code`,
+    `actual_quantity_value`,
+    `current_place_name`,
+    `company_id`,
+    `delivery_date`,
+    `index`,
+    `manufacturing_company_id`,
+    `manufacturing_date`,
+    `notes`,
+    `order_id`,
+    `product_id`,
+    `ref`,
+    `quantity_produced_code`,
+    `quantity_produced_value`,
+    `quantity_requested_code`,
+    `quantity_requested_value`
+) SELECT
+    (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)),
+    `quantity_real`,
+    CASE
+        WHEN `id_orderfabricationstatus` IN (3, 4, 8) THEN 'agreed'
+        WHEN `id_orderfabricationstatus` = 5 THEN 'closed'
+        WHEN `id_orderfabricationstatus` = 6 THEN 'disabled'
+        WHEN `id_orderfabricationstatus` = 7 THEN 'blocked'
+        ELSE 'draft'
+    END,
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `orderfabrication`.`id_society`)),
+    `date_livraison`,
+    `indice`,
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `orderfabrication`.`id_supplier`)),
+    `date_fabrication`,
+    `info_public`,
+    (SELECT `customer_order`.`id` FROM `customer_order` WHERE `customer_order`.`old_id` = `orderfabrication`.`id_ordercustomer`),
+    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`),
+    `ofnumber`,
+    (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)),
+    `quantity_done`,
+    (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)),
+    `quantity`
+FROM `orderfabrication`
+WHERE `statut` = 0
+AND EXISTS (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)
+SQL);
+        $this->addQuery('DROP TABLE `orderfabrication`');
     }
 
     private function upNomenclatures(): void {
