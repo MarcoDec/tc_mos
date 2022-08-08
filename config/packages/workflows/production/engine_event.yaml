@@ -1,0 +1,23 @@
+framework:
+  workflows:
+    engine_event:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%place_agreed%'   # Accepté
+        - '%place_closed%'   # Bloqué
+        - '%place_draft%'    # Demandé
+        - '%place_rejected%' # Refusé
+      supports:
+        - App\Entity\Production\Engine\Event\Event
+      transitions:
+        '%tr_accept%':
+          from: '%place_draft%'
+          to: '%place_agreed%'
+        '%tr_reject%':
+          from: '%place_draft%'
+          to: '%place_rejected%'
+        '%tr_validate%':
+          from: '%place_agreed%'
+          to: '%place_closed%'
