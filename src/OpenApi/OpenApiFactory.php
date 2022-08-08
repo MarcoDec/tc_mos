@@ -215,9 +215,9 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 'description' => 'Prix',
                 'properties' => [
                     'code' => [
-                        'default' => '€',
+                        'default' => 'EUR',
                         'description' => 'Code',
-                        'example' => '€',
+                        'example' => 'EUR',
                         'type' => 'string'
                     ],
                     'value' => [
