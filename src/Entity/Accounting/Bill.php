@@ -100,7 +100,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Bill extends Entity implements WorkflowInterface {
     #[
-        ApiProperty(description: 'Date de facturation', example: '2022-24-03'),
+        ApiProperty(description: 'Date de facturation', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
@@ -135,7 +135,7 @@ class Bill extends Entity implements WorkflowInterface {
     private ?Customer $customer = null;
 
     #[
-        ApiProperty(description: 'Date de facturation', example: '2022-27-03'),
+        ApiProperty(description: 'Date de facturation', example: '2022-03-27'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
@@ -185,7 +185,7 @@ class Bill extends Entity implements WorkflowInterface {
     private Measure $vat;
 
     #[
-        ApiProperty(description: 'Message TVA'),
+        ApiProperty(description: 'Message TVA', readableLink: false, example: '/api/vat-messages/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
@@ -193,6 +193,7 @@ class Bill extends Entity implements WorkflowInterface {
 
     public function __construct() {
         $this->billingDate = new DateTimeImmutable();
+        $this->currentPlace = new CurrentPlace();
         $this->exclTax = new Measure();
         $this->inclTax = new Measure();
         $this->vat = new Measure();

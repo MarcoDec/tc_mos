@@ -18,7 +18,7 @@ framework:
           from: [ '%place_draft%', '%place_litigation%' ]
           to: '%place_bill%'
         '%tr_disable%':
-          from: [ '%place_bill%', '%place_litigation%' ]
+          from: [ '%place_bill%', '%place_draft%', '%place_litigation%' ]
           to: '%place_disabled%'
         '%tr_litigate%':
           from: [ '%place_bill%', '%place_partially_paid%' ]

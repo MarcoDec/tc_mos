@@ -8,8 +8,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
+use App\Entity\Management\Unit;
 use App\Entity\Project\Product\Product as TechnicalSheet;
 use App\Filter\RelationFilter;
+use App\Repository\Selling\Customer\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -59,7 +61,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ProductRepository::class),
     ORM\Table(name: 'product_customer')
 ]
 class Product extends Entity {
@@ -112,6 +114,10 @@ class Product extends Entity {
 
     final public function getProduct(): ?TechnicalSheet {
         return $this->product;
+    }
+
+    final public function getUnit(): ?Unit {
+        return $this->product?->getUnit();
     }
 
     final public function removeAdministeredBy(Company $administeredBy): self {
