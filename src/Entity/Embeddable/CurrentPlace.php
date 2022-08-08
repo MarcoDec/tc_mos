@@ -20,6 +20,7 @@ abstract class CurrentPlace implements Stringable {
     final public const TR_PARTIALLY_VALIDATE = 'partially_validate';
     final public const TR_PAY = 'pay';
     final public const TR_REJECT = 'reject';
+    final public const TR_SEND = 'send';
     final public const TR_SUBMIT_VALIDATION = 'submit_validation';
     final public const TR_SUPERVISE = 'supervise';
     final public const TR_UNLOCK = 'unlock';
