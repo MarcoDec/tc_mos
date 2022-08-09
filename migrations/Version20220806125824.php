@@ -253,6 +253,7 @@ SQL);
         $this->upEngines();
         $this->upStocks();
         // rank 5
+        $this->upEmployeeEvents();
         $this->upItRequests();
         $this->upNotifications();
         $this->upPlannings();
@@ -1206,6 +1207,48 @@ AND EXISTS (
 )
 SQL);
         $this->addQuery('DROP TABLE `product_customer_old`');
+    }
+
+    private function upEmployeeEvents(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `employee_event` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `date_event` DATE DEFAULT NULL,
+    `description` VARCHAR(255) DEFAULT NULL,
+    `id_employee` INT UNSIGNED DEFAULT NULL,
+    `id_motif` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('employee_event', ['id', 'date_event', 'description', 'id_employee', 'id_motif']);
+        $this->addQuery('RENAME TABLE `employee_event` TO `old_employee_event`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `employee_event` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `done` BOOLEAN DEFAULT FALSE NOT NULL,
+    `employee_id` INT UNSIGNED DEFAULT NULL,
+    `managing_company_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
+    `type_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_D3A307DE8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
+    CONSTRAINT `IDX_D3A307DEC54C8C93` FOREIGN KEY (`type_id`) REFERENCES `event_type` (`id`),
+    CONSTRAINT `IDX_D3A307DEE7E23CE8` FOREIGN KEY (`managing_company_id`) REFERENCES `company` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `employee_event` (`date`, `employee_id`, `managing_company_id`, `name`, `type_id`)
+SELECT
+    `date_event`,
+    (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `old_employee_event`.`id_employee`),
+    (SELECT `employee`.`company_id` FROM `employee` WHERE `employee`.`old_id` = `old_employee_event`.`id_employee`),
+    `description`,
+    (SELECT `event_type`.`id` FROM `event_type` WHERE `event_type`.`id` = `old_employee_event`.`id_motif`)
+FROM `old_employee_event`
+WHERE EXISTS (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `old_employee_event`.`id_employee`)
+AND EXISTS (SELECT `event_type`.`id` FROM `event_type` WHERE `event_type`.`id` = `old_employee_event`.`id_motif`)
+SQL);
+        $this->addQuery('DROP TABLE `old_employee_event`');
     }
 
     private function upEmployees(): void {
