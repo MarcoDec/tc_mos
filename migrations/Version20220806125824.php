@@ -247,6 +247,7 @@ SQL);
         $this->upWarehouses();
         $this->upZones();
         // rank 4
+        $this->upComponentSupplierPrices();
         $this->upEmployees();
         $this->upEngines();
         $this->upStocks();
@@ -268,6 +269,7 @@ SQL);
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `skill_type` DROP `old_id`');
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
         $this->addQuery('DROP TABLE `country`');
         $this->addQuery('DROP TABLE `customcode`');
@@ -716,6 +718,76 @@ SQL);
         $this->addQuery('DROP TABLE `component_old`');
     }
 
+    private function upComponentSupplierPrices(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_supplier_price` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_component_supplier` INT UNSIGNED DEFAULT NULL,
+    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL,
+    `is_oem` BOOLEAN DEFAULT FALSE NOT NULL,
+    `texte` TEXT DEFAULT NULL,
+    `refsupplier` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('component_supplier_price', [
+            'id',
+            'statut',
+            'id_component_supplier',
+            'price',
+            'quantity',
+            'is_oem',
+            'texte',
+            'refsupplier'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `supplier_component_price` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL,
+    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_6CCD4783E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `supplier_component` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `supplier_component_price` (
+    `component_id`,
+    `price_code`,
+    `price_value`,
+    `quantity_code`,
+    `quantity_value`,
+    `ref`
+) SELECT
+    (SELECT `supplier_component`.`id` FROM `supplier_component` WHERE `supplier_component`.`old_id` = `component_supplier_price`.`id_component_supplier`),
+    'EUR',
+    `price`,
+    (
+        SELECT `unit`.`code`
+        FROM `unit`
+        WHERE `unit`.`id` = (
+            SELECT `component`.`unit_id`
+            FROM `component`
+            WHERE `component`.`id` = (
+                SELECT `supplier_component`.`component_id` FROM `supplier_component` WHERE `supplier_component`.`old_id` = `component_supplier_price`.`id_component_supplier`
+            )
+        )
+    ),
+    `quantity`,
+    `refsupplier`
+FROM `component_supplier_price`
+WHERE `component_supplier_price`.`statut` = 0
+AND EXISTS (SELECT `supplier_component`.`id` FROM `supplier_component` WHERE `supplier_component`.`old_id` = `component_supplier_price`.`id_component_supplier`)
+SQL);
+        $this->addQuery('DROP TABLE `component_supplier_price`');
+    }
+
     private function upComponentSuppliers(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component_supplier` (
@@ -748,6 +820,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `supplier_component` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `code` VARCHAR(255) DEFAULT NULL,
     `component_id` INT UNSIGNED DEFAULT NULL,
@@ -775,6 +848,7 @@ CREATE TABLE `supplier_component` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `supplier_component` (
+    `old_id`,
     `code`,
     `component_id`,
     `delivery_time_code`,
@@ -788,6 +862,7 @@ INSERT INTO `supplier_component` (
     `proportion`,
     `supplier_id`
 ) SELECT
+    `component_supplier`.`id`,
     `component_supplier`.`refsupplier`,
     `component`.`id`,
     'j',

@@ -9,8 +9,10 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
+use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component as TechnicalSheet;
 use App\Filter\RelationFilter;
+use App\Repository\Purchase\Supplier\ComponentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -62,7 +64,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ComponentRepository::class),
     ORM\Table(name: 'supplier_component')
 ]
 class Component extends Entity {
@@ -192,6 +194,10 @@ class Component extends Entity {
 
     final public function getSupplier(): ?Supplier {
         return $this->supplier;
+    }
+
+    final public function getUnit(): ?Unit {
+        return $this->component?->getUnit();
     }
 
     final public function setCode(?string $code): self {
