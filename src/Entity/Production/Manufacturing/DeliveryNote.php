@@ -10,10 +10,11 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Production\Manufacturing\DeliveryNote\CurrentPlace;
 use App\Entity\Entity;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
-use App\Entity\Selling\Order\Order;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -82,18 +83,18 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:delivery-note'],
+            'groups' => ['write:delivery-note', 'write:measure'],
             'openapi_definition_name' => 'DeliveryNote-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current_place', 'read:delivery-note', 'read:id'],
+            'groups' => ['read:current-place', 'read:delivery-note', 'read:id', 'read:measure'],
             'openapi_definition_name' => 'DeliveryNote-read',
             'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
-class DeliveryNote extends Entity {
+class DeliveryNote extends Entity implements WorkflowInterface {
     #[
         ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
         ORM\ManyToOne,
@@ -137,13 +138,6 @@ class DeliveryNote extends Entity {
     private bool $nonBillable = false;
 
     #[
-        ApiProperty(description: 'Commande', readableLink: false, example: '/api/manufacturing-orders/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
-    ]
-    private ?Order $order = null;
-
-    #[
         ApiProperty(description: 'Référence'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
@@ -175,12 +169,23 @@ class DeliveryNote extends Entity {
         return $this->freightSurcharge;
     }
 
-    final public function getOrder(): ?Order {
-        return $this->order;
-    }
-
     final public function getRef(): ?string {
         return $this->ref;
+    }
+
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
     }
 
     final public function isNonBillable(): bool {
@@ -217,13 +222,13 @@ class DeliveryNote extends Entity {
         return $this;
     }
 
-    final public function setOrder(?Order $order): self {
-        $this->order = $order;
+    final public function setRef(?string $ref): self {
+        $this->ref = $ref;
         return $this;
     }
 
-    final public function setRef(?string $ref): self {
-        $this->ref = $ref;
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 }

@@ -1475,11 +1475,9 @@ CREATE TABLE `delivery_note` (
     `freight_surcharge_denominator` VARCHAR(6) DEFAULT NULL,
     `freight_surcharge_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `non_billable` BOOLEAN DEFAULT FALSE NOT NULL,
-    `order_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     CONSTRAINT `IDX_1E21328E1A8C12F5` FOREIGN KEY (`bill_id`) REFERENCES `bill` (`id`),
-    CONSTRAINT `IDX_1E21328E979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_1E21328E8D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `customer_order` (`id`)
+    CONSTRAINT `IDX_1E21328E979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
@@ -1491,7 +1489,6 @@ INSERT INTO `delivery_note` (
     `freight_surcharge_code`,
     `freight_surcharge_value`,
     `non_billable`,
-    `order_id`,
     `ref`
 ) SELECT
     (
@@ -1511,7 +1508,6 @@ INSERT INTO `delivery_note` (
     'EUR',
     `supplement_fret`,
     `no_invoice`,
-    (SELECT `customer_order`.`id` FROM `customer_order` WHERE `customer_order`.`old_id` = `deliveryform`.`id_ordercustomer`),
     `deliveryform_number`
 FROM `deliveryform`
 WHERE `statut` = 0
