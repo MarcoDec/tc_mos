@@ -234,20 +234,21 @@ SQL);
         $this->upCompanyEvents();
         $this->upComponentAttributes();
         $this->upComponentReferenceValues();
-        $this->upComponentSuppliers();
         $this->upContacts();
         $this->upCustomerAddresses();
         $this->upCustomerEvents();
+        $this->upCustomerProducts();
         $this->upManufacturers();
         $this->upNomenclatures();
         $this->upPrinters();
-        $this->upProductCustomers();
+        $this->upSupplierComponents();
         $this->upSupplies();
         $this->upTeams();
         $this->upWarehouses();
         $this->upZones();
         // rank 4
         $this->upComponentSupplierPrices();
+        $this->upCustomerProductPrices();
         $this->upEmployees();
         $this->upEngines();
         $this->upStocks();
@@ -788,101 +789,6 @@ SQL);
         $this->addQuery('DROP TABLE `component_supplier_price`');
     }
 
-    private function upComponentSuppliers(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `component_supplier` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_component` INT UNSIGNED DEFAULT NULL,
-    `id_supplier` INT UNSIGNED DEFAULT NULL,
-    `id_incoterms` INT UNSIGNED DEFAULT NULL,
-    `id_country` INT UNSIGNED DEFAULT NULL,
-    `moq` INT UNSIGNED DEFAULT NULL,
-    `conditionnement` INT UNSIGNED DEFAULT NULL,
-    `typeconditionnement` VARCHAR(255) DEFAULT NULL,
-    `timetodelivery` INT UNSIGNED DEFAULT NULL,
-    `refsupplier` VARCHAR(255) DEFAULT NULL
-)
-SQL);
-        $this->insert('component_supplier', [
-            'id',
-            'statut',
-            'id_component',
-            'id_supplier',
-            'id_incoterms',
-            'id_country',
-            'moq',
-            'conditionnement',
-            'typeconditionnement',
-            'timetodelivery',
-            'refsupplier'
-        ]);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `supplier_component` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `old_id` INT UNSIGNED NOT NULL,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `code` VARCHAR(255) DEFAULT NULL,
-    `component_id` INT UNSIGNED DEFAULT NULL,
-    `copper_weight_code` VARCHAR(6) DEFAULT NULL,
-    `copper_weight_denominator` VARCHAR(6) DEFAULT NULL,
-    `copper_weight_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `delivery_time_code` VARCHAR(6) DEFAULT NULL,
-    `delivery_time_denominator` VARCHAR(6) DEFAULT NULL,
-    `delivery_time_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `incoterms_id` INT UNSIGNED DEFAULT NULL,
-    `index` VARCHAR(255) DEFAULT '0' NOT NULL,
-    `moq_code` VARCHAR(6) DEFAULT NULL,
-    `moq_denominator` VARCHAR(6) DEFAULT NULL,
-    `moq_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `packaging_code` VARCHAR(6) DEFAULT NULL,
-    `packaging_denominator` VARCHAR(6) DEFAULT NULL,
-    `packaging_kind` VARCHAR(30) DEFAULT NULL,
-    `packaging_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `proportion` DOUBLE PRECISION UNSIGNED DEFAULT '100' NOT NULL,
-    `supplier_id` INT UNSIGNED DEFAULT NULL,
-    CONSTRAINT `IDX_D3CC9B89E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
-    CONSTRAINT `IDX_D3CC9B8943D02C80` FOREIGN KEY (`incoterms_id`) REFERENCES `incoterms` (`id`),
-    CONSTRAINT `IDX_D3CC9B892ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `supplier_component` (
-    `old_id`,
-    `code`,
-    `component_id`,
-    `delivery_time_code`,
-    `delivery_time_value`,
-    `incoterms_id`,
-    `moq_code`,
-    `moq_value`,
-    `packaging_code`,
-    `packaging_kind`,
-    `packaging_value`,
-    `proportion`,
-    `supplier_id`
-) SELECT
-    `component_supplier`.`id`,
-    `component_supplier`.`refsupplier`,
-    `component`.`id`,
-    'j',
-    `component_supplier`.`timetodelivery`,
-    (SELECT `incoterms`.`id` FROM `incoterms` WHERE `incoterms`.`id` = `component_supplier`.`id_incoterms`),
-    `unit`.`code`,
-    `component_supplier`.`moq`,
-    `unit`.`code`,
-    `component_supplier`.`typeconditionnement`,
-    `component_supplier`.`conditionnement`,
-    100,
-    (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `component_supplier`.`id_supplier`))
-FROM `component_supplier`
-INNER JOIN `component` ON `component_supplier`.`id_component` = `component`.`old_id`
-LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
-WHERE `component_supplier`.`statut` = 0
-SQL);
-        $this->addQuery('DROP TABLE `component_supplier`');
-    }
-
     private function upContacts(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `contact` (
@@ -1150,6 +1056,156 @@ CREATE TABLE `customer_event` (
     CONSTRAINT `IDX_F59B7F9C9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
 )
 SQL);
+    }
+
+    private function upCustomerProductPrices(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_customer_price` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_product_customer` INT UNSIGNED DEFAULT NULL,
+    `price` DOUBLE PRECISION DEFAULT 0 DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('product_customer_price', ['id', 'statut', 'id_product_customer', 'price', 'quantity']);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `customer_product_price` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL,
+    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `product_id` INT UNSIGNED DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_FF129864584665A` FOREIGN KEY (`product_id`) REFERENCES `product_customer` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `customer_product_price` (
+    `price_code`,
+    `price_value`,
+    `product_id`,
+    `quantity_code`,
+    `quantity_value`
+) SELECT
+    'EUR',
+    `price`,
+    (SELECT `product_customer`.`id` FROM `product_customer` WHERE `product_customer`.`old_id` = `product_customer_price`.`id_product_customer`),
+    (
+        SELECT `unit`.`code`
+        FROM `unit`
+        WHERE `unit`.`id` = (
+            SELECT `product`.`unit_id`
+            FROM `product`
+            WHERE `product`.`id` = (
+                SELECT `product_customer`.`product_id` FROM `product_customer` WHERE `product_customer`.`old_id` = `product_customer_price`.`id_product_customer`
+            )
+        )
+    ),
+    `quantity`
+FROM `product_customer_price`
+WHERE `statut` = 0
+AND EXISTS (SELECT `product_customer`.`id` FROM `product_customer` WHERE `product_customer`.`old_id` = `product_customer_price`.`id_product_customer`)
+SQL);
+        $this->addQuery('DROP TABLE `product_customer_price`');
+    }
+
+    private function upCustomerProducts(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_customer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_product` INT UNSIGNED NOT NULL,
+    `id_customer` INT UNSIGNED NOT NULL
+)
+SQL);
+        $this->insert('product_customer', ['id', 'statut', 'id_product', 'id_customer']);
+        $this->addQuery('RENAME TABLE `product_customer` TO `product_customer_old`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_customer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `customer_id` INT UNSIGNED NOT NULL,
+    `product_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_4A89E49E9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+    CONSTRAINT `IDX_4A89E49E4584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `product_customer` (`old_id`, `customer_id`, `product_id`)
+SELECT
+    `id`,
+    (
+        SELECT `customer`.`id`
+        FROM `customer`
+        WHERE `customer`.`society_id` = (
+            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_customer_old`.`id_customer`
+        )
+    ),
+    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`)
+FROM `product_customer_old`
+WHERE `statut` = 0
+AND EXISTS (
+    SELECT `customer`.`id`
+    FROM `customer`
+    WHERE `customer`.`society_id` = (
+        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_customer_old`.`id_customer`
+    )
+)
+AND (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_company` (
+    `product_id` INT UNSIGNED NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_9E6612FF4584665A` FOREIGN KEY (`product_id`) REFERENCES `product_customer` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_9E6612FF979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(product_id, company_id)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `product_company` (`product_id`, `company_id`)
+SELECT
+    (
+        SELECT `product_customer`.`id`
+        FROM `product_customer`
+        WHERE `product_customer`.`old_id` = `product_customer_old`.`id`
+    ),
+    (
+        SELECT `company`.`id`
+        FROM `company`
+        WHERE `company`.`society_id` = (
+            SELECT `society`.`id`
+            FROM `society`
+            WHERE `society`.`old_id` = (
+                SELECT `product`.`id_society` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`
+            )
+        )
+    )
+FROM `product_customer_old`
+WHERE `statut` = 0
+AND EXISTS (
+    SELECT `product_customer`.`id`
+    FROM `product_customer`
+    WHERE `product_customer`.`old_id` = `product_customer_old`.`id`
+)
+AND EXISTS (
+    SELECT `company`.`id`
+    FROM `company`
+    WHERE `company`.`society_id` = (
+        SELECT `society`.`id`
+        FROM `society`
+        WHERE `society`.`old_id` = (
+            SELECT `product`.`id_society` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`
+        )
+    )
+)
+SQL);
+        $this->addQuery('DROP TABLE `product_customer_old`');
     }
 
     private function upEmployees(): void {
@@ -2070,101 +2126,6 @@ INSERT INTO `printer` (`company_id`, `ip`, `name`) VALUES
     'zpl-md'
 )
 SQL);
-    }
-
-    private function upProductCustomers(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `product_customer` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_product` INT UNSIGNED NOT NULL,
-    `id_customer` INT UNSIGNED NOT NULL
-)
-SQL);
-        $this->insert('product_customer', ['id', 'statut', 'id_product', 'id_customer']);
-        $this->addQuery('RENAME TABLE `product_customer` TO `product_customer_old`');
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `product_customer` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `old_id` INT UNSIGNED NOT NULL,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `customer_id` INT UNSIGNED NOT NULL,
-    `product_id` INT UNSIGNED NOT NULL,
-    CONSTRAINT `IDX_4A89E49E9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
-    CONSTRAINT `IDX_4A89E49E4584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `product_customer` (`old_id`, `customer_id`, `product_id`)
-SELECT
-    `id`,
-    (
-        SELECT `customer`.`id`
-        FROM `customer`
-        WHERE `customer`.`society_id` = (
-            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_customer_old`.`id_customer`
-        )
-    ),
-    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`)
-FROM `product_customer_old`
-WHERE `statut` = 0
-AND EXISTS (
-    SELECT `customer`.`id`
-    FROM `customer`
-    WHERE `customer`.`society_id` = (
-        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_customer_old`.`id_customer`
-    )
-)
-AND (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`)
-SQL);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `product_company` (
-    `product_id` INT UNSIGNED NOT NULL,
-    `company_id` INT UNSIGNED NOT NULL,
-    CONSTRAINT `IDX_9E6612FF4584665A` FOREIGN KEY (`product_id`) REFERENCES `product_customer` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `IDX_9E6612FF979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE,
-    PRIMARY KEY(product_id, company_id)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `product_company` (`product_id`, `company_id`)
-SELECT
-    (
-        SELECT `product_customer`.`id`
-        FROM `product_customer`
-        WHERE `product_customer`.`old_id` = `product_customer_old`.`id`
-    ),
-    (
-        SELECT `company`.`id`
-        FROM `company`
-        WHERE `company`.`society_id` = (
-            SELECT `society`.`id`
-            FROM `society`
-            WHERE `society`.`old_id` = (
-                SELECT `product`.`id_society` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`
-            )
-        )
-    )
-FROM `product_customer_old`
-WHERE `statut` = 0
-AND EXISTS (
-    SELECT `product_customer`.`id`
-    FROM `product_customer`
-    WHERE `product_customer`.`old_id` = `product_customer_old`.`id`
-)
-AND EXISTS (
-    SELECT `company`.`id`
-    FROM `company`
-    WHERE `company`.`society_id` = (
-        SELECT `society`.`id`
-        FROM `society`
-        WHERE `society`.`old_id` = (
-            SELECT `product`.`id_society` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`
-        )
-    )
-)
-SQL);
-        $this->addQuery('DROP TABLE `product_customer_old`');
     }
 
     private function upProductFamilies(): void {
@@ -3161,6 +3122,101 @@ AND (
 )
 SQL);
         $this->addQuery('DROP TABLE `old_stock`');
+    }
+
+    private function upSupplierComponents(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_supplier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_component` INT UNSIGNED DEFAULT NULL,
+    `id_supplier` INT UNSIGNED DEFAULT NULL,
+    `id_incoterms` INT UNSIGNED DEFAULT NULL,
+    `id_country` INT UNSIGNED DEFAULT NULL,
+    `moq` INT UNSIGNED DEFAULT NULL,
+    `conditionnement` INT UNSIGNED DEFAULT NULL,
+    `typeconditionnement` VARCHAR(255) DEFAULT NULL,
+    `timetodelivery` INT UNSIGNED DEFAULT NULL,
+    `refsupplier` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('component_supplier', [
+            'id',
+            'statut',
+            'id_component',
+            'id_supplier',
+            'id_incoterms',
+            'id_country',
+            'moq',
+            'conditionnement',
+            'typeconditionnement',
+            'timetodelivery',
+            'refsupplier'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `supplier_component` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(255) DEFAULT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `copper_weight_code` VARCHAR(6) DEFAULT NULL,
+    `copper_weight_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_weight_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `delivery_time_code` VARCHAR(6) DEFAULT NULL,
+    `delivery_time_denominator` VARCHAR(6) DEFAULT NULL,
+    `delivery_time_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `incoterms_id` INT UNSIGNED DEFAULT NULL,
+    `index` VARCHAR(255) DEFAULT '0' NOT NULL,
+    `moq_code` VARCHAR(6) DEFAULT NULL,
+    `moq_denominator` VARCHAR(6) DEFAULT NULL,
+    `moq_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `packaging_code` VARCHAR(6) DEFAULT NULL,
+    `packaging_denominator` VARCHAR(6) DEFAULT NULL,
+    `packaging_kind` VARCHAR(30) DEFAULT NULL,
+    `packaging_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
+    `proportion` DOUBLE PRECISION UNSIGNED DEFAULT '100' NOT NULL,
+    `supplier_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_D3CC9B89E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    CONSTRAINT `IDX_D3CC9B8943D02C80` FOREIGN KEY (`incoterms_id`) REFERENCES `incoterms` (`id`),
+    CONSTRAINT `IDX_D3CC9B892ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `supplier_component` (
+    `old_id`,
+    `code`,
+    `component_id`,
+    `delivery_time_code`,
+    `delivery_time_value`,
+    `incoterms_id`,
+    `moq_code`,
+    `moq_value`,
+    `packaging_code`,
+    `packaging_kind`,
+    `packaging_value`,
+    `proportion`,
+    `supplier_id`
+) SELECT
+    `component_supplier`.`id`,
+    `component_supplier`.`refsupplier`,
+    `component`.`id`,
+    'j',
+    `component_supplier`.`timetodelivery`,
+    (SELECT `incoterms`.`id` FROM `incoterms` WHERE `incoterms`.`id` = `component_supplier`.`id_incoterms`),
+    `unit`.`code`,
+    `component_supplier`.`moq`,
+    `unit`.`code`,
+    `component_supplier`.`typeconditionnement`,
+    `component_supplier`.`conditionnement`,
+    100,
+    (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `component_supplier`.`id_supplier`))
+FROM `component_supplier`
+INNER JOIN `component` ON `component_supplier`.`id_component` = `component`.`old_id`
+LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
+WHERE `component_supplier`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `component_supplier`');
     }
 
     private function upSupplies(): void {
