@@ -13,108 +13,111 @@ use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
-trait ReferenceTrait
-{
-   /**
-    * @var Collection<int, Company>
-    */
-   #[
-      ApiProperty(description: 'Compagnies', readableLink: false, example: ['/api/companies/2', '/api/companies/18']),
-      ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'references', fetch: 'EXTRA_LAZY'),
-      Serializer\Groups(['read:companies', 'write:companies'])
-   ]
-   private ArrayCollection $companies;
-   #[
-      ApiProperty(description: 'Global ?', required: true, example: true),
-      ORM\Column(type: 'boolean', options: ['default' => false]),
-      Serializer\Groups(['read:reference', 'write:reference'])
-   ]
-   private bool $global = false;
-   #[
-      ApiProperty(description: 'IPv4', required: true, example: '255.255.255.254'),
-      ORM\Column(type: 'string', options: ['default' => Reference::KIND_QTE]),
-      Assert\NotBlank,
-      Serializer\Groups(['read:reference', 'write:reference'])
-   ]
-   private string $kind = Reference::KIND_QTE;
+trait ReferenceTrait {
+    /**
+     * @var Collection<int, Company>
+     */
+    #[
+        ApiProperty(description: 'Compagnies', readableLink: false, example: ['/api/companies/2', '/api/companies/18']),
+        ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'references', fetch: 'EXTRA_LAZY'),
+        Serializer\Groups(['read:companies', 'write:companies'])
+    ]
+    private ArrayCollection $companies;
 
-   /**
-    * @var Collection<int, Supplier>
-    */
-   #[
-      ApiProperty(description: 'Références', readableLink: false, example: ['/api/suppliers/2', '/api/suppliers/15']),
-      ORM\ManyToMany(targetEntity: Supplier::class, mappedBy: 'references', fetch: 'EXTRA_LAZY'),
-      Serializer\Groups(['read:references', 'write:references'])
-   ]
-   private ArrayCollection $suppliers;
+    #[
+        ApiProperty(description: 'Global ?', required: true, example: true),
+        ORM\Column(type: 'boolean', options: ['default' => false]),
+        Serializer\Groups(['read:reference', 'write:reference'])
+    ]
+    private bool $global = false;
 
-   #[Pure] public function __construct() {
-      $this->companies = new ArrayCollection();
-      $this->suppliers = new ArrayCollection();
-   }
+    #[
+        ApiProperty(description: 'IPv4', required: true, example: '255.255.255.254'),
+        ORM\Column(type: 'string', options: ['default' => Reference::KIND_QTE]),
+        Assert\NotBlank,
+        Serializer\Groups(['read:reference', 'write:reference'])
+    ]
+    private string $kind = Reference::KIND_QTE;
 
-   final public function addCompany(Company $company): self {
-      if (!$this->companies->contains($company)) {
-         $this->companies->add($company);
-      }
-      return $this;
-   }
+    /**
+     * @var Collection<int, Supplier>
+     */
+    #[
+        ApiProperty(description: 'Références', readableLink: false, example: ['/api/suppliers/2', '/api/suppliers/15']),
+        ORM\ManyToMany(targetEntity: Supplier::class, mappedBy: 'references', fetch: 'EXTRA_LAZY'),
+        Serializer\Groups(['read:references', 'write:references'])
+    ]
+    private ArrayCollection $suppliers;
 
-   public function addSupplier(Supplier $supplier): self {
-      if (!$this->suppliers->contains($supplier)) {
-         $this->suppliers[] = $supplier;
-         $supplier->addReference($this);
-      }
+    #[Pure]
+    public function __construct() {
+        $this->companies = new ArrayCollection();
+        $this->suppliers = new ArrayCollection();
+    }
 
-      return $this;
-   }
+    final public function addCompany(Company $company): self {
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
+        }
+        return $this;
+    }
 
-   /**
-    * @return Collection<int, Company>
-    */
-   public function getCompanies(): Collection {
-      return $this->companies;
-   }
+    public function addSupplier(Supplier $supplier): self {
+        if (!$this->suppliers->contains($supplier)) {
+            $this->suppliers[] = $supplier;
+            $supplier->addReference($this);
+        }
 
-   /**
-    * @return Collection|Supplier[]
-    */
-   public function getSuppliers(): ArrayCollection {
-      return $this->suppliers;
-   }
+        return $this;
+    }
 
-   final public function removeCompany(Company $company): self {
-      if ($this->companies->contains($company)) {
-         $this->companies->removeElement($company);
-      }
-      return $this;
-   }
-   public function removeSupplier(Supplier $supplier): self {
-      if ($this->suppliers->removeElement($supplier)) {
-         $supplier->removeReference($this);
-      }
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getCompanies(): Collection {
+        return $this->companies;
+    }
 
-      return $this;
-   }
+    public function getGlobal(): ?bool {
+        return $this->global;
+    }
 
-   public function getKind(): string {
-      return $this->kind;
-   }
+    public function getKind(): string {
+        return $this->kind;
+    }
 
-   public function getGlobal(): ?bool {
-      return $this->global;
-   }
+    /**
+     * @return Collection|Supplier[]
+     */
+    public function getSuppliers(): ArrayCollection {
+        return $this->suppliers;
+    }
 
-   public function isGlobal(): bool {
-      return $this->global;
-   }
+    public function isGlobal(): bool {
+        return $this->global;
+    }
 
-   public function setGlobal(bool $global): self {
-      $this->global = $global;
-      return $this;
-   }
+    final public function removeCompany(Company $company): self {
+        if ($this->companies->contains($company)) {
+            $this->companies->removeElement($company);
+        }
+        return $this;
+    }
 
-   public function setKind(string $kind): void {
-      $this->kind = $kind;
-   }
+    public function removeSupplier(Supplier $supplier): self {
+        if ($this->suppliers->removeElement($supplier)) {
+            $supplier->removeReference($this);
+        }
+
+        return $this;
+    }
+
+    public function setGlobal(bool $global): self {
+        $this->global = $global;
+        return $this;
+    }
+
+    public function setKind(string $kind): void {
+        $this->kind = $kind;
+    }
 }

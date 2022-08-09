@@ -54,44 +54,45 @@ parameters:
   access_control_api_doc_role: IS_AUTHENTICATED_ANONYMOUSLY
 
 security:
-  # Easy way to control access for large sections of your site
-  # Note: Only the *first* access control that matches will be used
   access_control:
     - { path: ^/api/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/api$, roles: '%access_control_api_doc_role%' }
     - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
     - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-
   access_decision_manager:
     allow_if_all_abstain: true
-
-  # https://symfony.com/doc/current/security/authenticator_manager.html
   enable_authenticator_manager: true
-
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     main:
-      custom_authenticator: App\Security\TokenAuthenticator
+      custom_authenticators:
+        - App\Security\EmployeeAuthenticator
+        - App\Security\TokenAuthenticator
       lazy: true
       logout:
         path: logout
-
-      # activate different ways to authenticate
-      # https://symfony.com/doc/current/security.html#firewalls-authentication
-
-      # https://symfony.com/doc/current/security/impersonating_user.html
-      # switch_user: true
-
-  # https://symfony.com/doc/current/security.html#c-hashing-passwords
   password_hashers:
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     App\Entity\Hr\Employee\Employee:
       algorithm: auto
-
   providers:
     app_user_provider:
-      id: App\Repository\Hr\Employee\EmployeeRepository
-
+      entity:
+        class: App\Entity\Hr\Employee\Employee
+        property: username
   role_hierarchy: '%ROLE_HIERARCHY%'
+
+when@prod:
+  parameters:
+    access_control_api_doc_role: '%ROLE_IT_ADMIN%'
+
+when@test:
+  security:
+    password_hashers:
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+        algorithm: auto
+        cost: 4
+        time_cost: 3
+        memory_cost: 10
