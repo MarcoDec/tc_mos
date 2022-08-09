@@ -247,6 +247,7 @@ SQL);
         $this->upWarehouses();
         $this->upZones();
         // rank 4
+        $this->upBills();
         $this->upComponentSupplierPrices();
         $this->upCustomerProductPrices();
         $this->upEmployees();
@@ -264,6 +265,7 @@ SQL);
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
+        $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
         $this->addQuery('ALTER TABLE `employee` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `product` DROP `id_society`, DROP `old_id`');
@@ -350,6 +352,134 @@ WHILE @attribute_i < @attribute_count DO
 END WHILE
 SQL);
         $this->addQuery('ALTER TABLE `attribute` DROP `attribut_id_family`');
+    }
+
+    private function upBills(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `invoicecustomer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `invoice_number` INT UNSIGNED DEFAULT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_customer` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `id_invoicecustomerstatus` INT UNSIGNED DEFAULT NULL,
+    `id_messagetva` INT UNSIGNED DEFAULT NULL,
+    `id_contact` INT UNSIGNED DEFAULT NULL,
+    `info_public` TEXT DEFAULT NULL,
+    `date_facturation` DATE DEFAULT NULL,
+    `date_echeance` DATE DEFAULT NULL,
+    `total_ht` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tva` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `total_ttc` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `force_tva` TINYINT UNSIGNED DEFAULT NULL DEFAULT 0 COMMENT '0 = sans effet, 1 = force SANS TVA, 2 = force AVEC TVA',
+    `commentaire` TEXT DEFAULT NULL,
+    `infos_privees` TEXT DEFAULT NULL
+)
+SQL);
+        $this->insert('invoicecustomer', [
+            'id',
+            'invoice_number',
+            'statut',
+            'id_customer',
+            'id_society',
+            'id_invoicecustomerstatus',
+            'id_messagetva',
+            'id_contact',
+            'info_public',
+            'date_facturation',
+            'date_echeance',
+            'total_ht',
+            'tva',
+            'total_ttc',
+            'force_tva',
+            'commentaire',
+            'infos_privees'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `bill` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `billing_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `contact_id` INT UNSIGNED DEFAULT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('bill', 'disabled', 'draft', 'litigation', 'paid', 'partially_paid') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:bill_current_place)',
+    `customer_id` INT UNSIGNED DEFAULT NULL,
+    `due_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `excl_tax_code` VARCHAR(6) DEFAULT NULL,
+    `excl_tax_denominator` VARCHAR(6) DEFAULT NULL,
+    `excl_tax_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `force_vat` ENUM('TVA par défaut selon le pays du client', 'Force AVEC TVA', 'Force SANS TVA') DEFAULT 'TVA par défaut selon le pays du client' NOT NULL COMMENT '(DC2Type:vat_message_force)',
+    `incl_tax_code` VARCHAR(6) DEFAULT NULL,
+    `incl_tax_denominator` VARCHAR(6) DEFAULT NULL,
+    `incl_tax_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `vat_code` VARCHAR(6) DEFAULT NULL,
+    `vat_denominator` VARCHAR(6) DEFAULT NULL,
+    `vat_message_id` INT UNSIGNED DEFAULT NULL,
+    `vat_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_7A2119E3979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_7A2119E3E7A1254A` FOREIGN KEY (`contact_id`) REFERENCES `customer_contact` (`id`),
+    CONSTRAINT `IDX_7A2119E39395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+    CONSTRAINT `IDX_7A2119E36C896AD9` FOREIGN KEY (`vat_message_id`) REFERENCES `vat_message` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `bill` (
+    `billing_date`,
+    `company_id`,
+    `contact_id`,
+    `current_place_name`,
+    `customer_id`,
+    `due_date`,
+    `excl_tax_code`,
+    `excl_tax_value`,
+    `force_vat`,
+    `incl_tax_code`,
+    `incl_tax_value`,
+    `notes`,
+    `ref`,
+    `vat_code`,
+    `vat_message_id`,
+    `vat_value`
+) SELECT
+    `date_facturation`,
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `invoicecustomer`.`id_society`)),
+    (SELECT `customer_contact`.`id` FROM `customer_contact` WHERE `customer_contact`.`old_id` = `invoicecustomer`.`id_contact`),
+    CASE
+        WHEN `id_invoicecustomerstatus` = 1 THEN 'draft'
+        WHEN `id_invoicecustomerstatus` = 2 THEN 'bill'
+        WHEN `id_invoicecustomerstatus` = 3 THEN 'partially_paid'
+        WHEN `id_invoicecustomerstatus` = 4 THEN 'paid'
+        WHEN `id_invoicecustomerstatus` = 6 THEN 'litigation'
+        ELSE 'disabled'
+    END,
+    (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `invoicecustomer`.`id_customer`)),
+    `date_echeance`,
+    'EUR',
+    `total_ht`,
+    CASE
+        WHEN `force_tva` = 1 THEN 'Force SANS TVA'
+        WHEN `force_tva` = 2 THEN 'Force AVEC TVA'
+        ELSE 'TVA par défaut selon le pays du client'
+    END,
+    'EUR',
+    `total_ttc`,
+    IF(
+        LENGTH(CONCAT(IFNULL(`info_public`, ''), IFNULL(`infos_privees`, ''), IFNULL(`commentaire`, ''))) = 0,
+        NULL,
+        CONCAT(IFNULL(`info_public`, ''), IFNULL(`infos_privees`, ''), IFNULL(`commentaire`, ''))
+    ),
+    `invoice_number`,
+    'EUR',
+    (SELECT `vat_message`.`id` FROM `vat_message` WHERE `vat_message`.`id` = `invoicecustomer`.`id_messagetva`),
+    `tva`
+FROM `invoicecustomer`
+WHERE `statut` = 0
+AND EXISTS (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `invoicecustomer`.`id_customer`))
+SQL);
+        $this->addQuery('DROP TABLE `invoicecustomer`');
     }
 
     private function upCarriers(): void {
@@ -829,6 +959,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `customer_contact` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `address_address` VARCHAR(80) DEFAULT NULL,
     `address_address2` VARCHAR(60) DEFAULT NULL,
@@ -848,6 +979,7 @@ CREATE TABLE `customer_contact` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `customer_contact` (
+    `old_id`,
     `address_address`,
     `address_address2`,
     `address_city`,
@@ -860,6 +992,7 @@ INSERT INTO `customer_contact` (
     `society_id`,
     `surname`
 ) SELECT
+    `id`,
     `address1`,
     `address2`,
     `city`,
