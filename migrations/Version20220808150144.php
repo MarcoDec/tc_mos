@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220806125824 extends AbstractMigration {
+final class Version20220808150144 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -257,6 +257,7 @@ SQL);
         $this->upEngines();
         $this->upStocks();
         // rank 5
+        $this->upDeliveryNotes();
         $this->upEmployeeEvents();
         $this->upItRequests();
         $this->upNotifications();
@@ -266,10 +267,12 @@ SQL);
         $this->upEngineEvents();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `bill` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `customer_order` DROP `old_id`');
         $this->addQuery('ALTER TABLE `employee` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `product` DROP `id_society`, DROP `old_id`');
@@ -402,6 +405,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `bill` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `billing_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `company_id` INT UNSIGNED DEFAULT NULL,
@@ -431,6 +435,7 @@ CREATE TABLE `bill` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `bill` (
+    `old_id`,
     `billing_date`,
     `company_id`,
     `contact_id`,
@@ -448,6 +453,7 @@ INSERT INTO `bill` (
     `vat_message_id`,
     `vat_value`
 ) SELECT
+    `id`,
     `date_facturation`,
     (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `invoicecustomer`.`id_society`)),
     (SELECT `customer_contact`.`id` FROM `customer_contact` WHERE `customer_contact`.`old_id` = `invoicecustomer`.`id_contact`),
@@ -1223,6 +1229,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `customer_order` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `billed_to_id` INT UNSIGNED DEFAULT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
@@ -1240,8 +1247,9 @@ CREATE TABLE `customer_order` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `customer_order` (`billed_to_id`, `company_id`, `current_place_name`, `customer_id`, `kind`, `notes`, `ref`)
+INSERT INTO `customer_order` (`old_id`, `billed_to_id`, `company_id`, `current_place_name`, `customer_id`, `kind`, `notes`, `ref`)
 SELECT
+    `id`,
     (SELECT `customer_address`.`id` FROM `customer_address` WHERE `customer_address`.`old_id` = `ordercustomer`.`id_address` AND `customer_address`.`type` = 'billing'),
     (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_society`)),
     CASE
@@ -1412,6 +1420,100 @@ AND EXISTS (
 )
 SQL);
         $this->addQuery('DROP TABLE `product_customer_old`');
+    }
+
+    private function upDeliveryNotes(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `deliveryform` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deliveryform_number` INT UNSIGNED DEFAULT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `date_depart` DATE NOT NULL,
+    `id_carrier` INT UNSIGNED DEFAULT NULL,
+    `tracking_number` VARCHAR(255) DEFAULT NULL,
+    `id_customer` INT UNSIGNED DEFAULT NULL,
+    `id_ordercustomer` INT UNSIGNED DEFAULT NULL,
+    `invoice_number` INT DEFAULT NULL,
+    `supplement_fret` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `no_invoice` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('deliveryform', [
+            'id',
+            'deliveryform_number',
+            'statut',
+            'date_depart',
+            'id_carrier',
+            'tracking_number',
+            'id_customer',
+            'id_ordercustomer',
+            'invoice_number',
+            'supplement_fret',
+            'id_society',
+            'no_invoice'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `invoicecustomer_deliveryform` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_invoicecustomer` INT UNSIGNED DEFAULT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_deliveryform` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('invoicecustomer_deliveryform', ['id', 'id_invoicecustomer', 'statut', 'id_deliveryform']);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `delivery_note` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `bill_id` INT UNSIGNED DEFAULT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('draft', 'ready_to_sent', 'sent') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:delivery_note_current_place)',
+    `date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `freight_surcharge_code` VARCHAR(6) DEFAULT NULL,
+    `freight_surcharge_denominator` VARCHAR(6) DEFAULT NULL,
+    `freight_surcharge_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `non_billable` BOOLEAN DEFAULT FALSE NOT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_1E21328E1A8C12F5` FOREIGN KEY (`bill_id`) REFERENCES `bill` (`id`),
+    CONSTRAINT `IDX_1E21328E979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `delivery_note` (
+    `bill_id`,
+    `company_id`,
+    `current_place_name`,
+    `date`,
+    `freight_surcharge_code`,
+    `freight_surcharge_value`,
+    `non_billable`,
+    `ref`
+) SELECT
+    (
+        SELECT `bill`.`id`
+        FROM `bill`
+        WHERE `bill`.`ref` = `deliveryform`.`invoice_number`
+        AND `bill`.`old_id` IN (
+            SELECT `invoicecustomer_deliveryform`.`id_invoicecustomer`
+            FROM `invoicecustomer_deliveryform`
+            WHERE `invoicecustomer_deliveryform`.`id_deliveryform` = `deliveryform`.`id`
+            AND `invoicecustomer_deliveryform`.`statut` = 0
+        )
+    ),
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `deliveryform`.`id_society`)),
+    'sent',
+    `date_depart`,
+    'EUR',
+    `supplement_fret`,
+    `no_invoice`,
+    `deliveryform_number`
+FROM `deliveryform`
+WHERE `statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `deliveryform`');
+        $this->addQuery('DROP TABLE `invoicecustomer_deliveryform`');
     }
 
     private function upEmployeeEvents(): void {

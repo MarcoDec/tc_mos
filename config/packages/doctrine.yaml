@@ -23,6 +23,7 @@ doctrine:
       customer_address_type: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
       customer_current_place: App\Doctrine\DBAL\Types\Selling\Customer\CurrentPlaceType
       customer_order_current_place: App\Doctrine\DBAL\Types\Selling\Order\CurrentPlaceType
+      delivery_note_current_place: App\Doctrine\DBAL\Types\Production\Manufacturing\DeliveryNote\CurrentPlaceType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
       employee_engine_current_place: App\Doctrine\DBAL\Types\EmployeeEngineCurrentPlaceType
