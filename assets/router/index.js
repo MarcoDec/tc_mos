@@ -9,6 +9,7 @@ import project from './routes/project'
 import purchase from './routes/purchase'
 import quality from './routes/quality'
 import useUserStore from '../stores/hr/employee/user'
+import prices from './routes/prices'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -25,6 +26,7 @@ const router = createRouter({
             name: 'login',
             path: '/login'
         },
+        ...prices,
         ...hr,
         ...logistics,
         ...management,
