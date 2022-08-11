@@ -1,9 +1,0 @@
-App\Entity\Purchase\Component\Family:
-  deleted: statut
-  properties:
-    code:
-      force_value: 'component_family_code(family_name)'
-      new: true
-      new_name: code
-    family_name:
-      new_name: name

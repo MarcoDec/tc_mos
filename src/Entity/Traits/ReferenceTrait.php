@@ -18,42 +18,42 @@ trait ReferenceTrait {
      * @var Collection<int, Company>
      */
     #[
-      ApiProperty(description: 'Compagnies', readableLink: false, example: ['/api/companies/2', '/api/companies/18']),
-      ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'references', fetch: 'EXTRA_LAZY'),
-      Serializer\Groups(['read:companies', 'write:companies'])
-   ]
-   private ArrayCollection $companies;
+        ApiProperty(description: 'Compagnies', readableLink: false, example: ['/api/companies/2', '/api/companies/18']),
+        ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'references', fetch: 'EXTRA_LAZY'),
+        Serializer\Groups(['read:companies', 'write:companies'])
+    ]
+    private ArrayCollection $companies;
 
     #[
-      ApiProperty(description: 'Global ?', required: true, example: true),
-      ORM\Column(type: 'boolean', options: ['default' => false]),
-      Serializer\Groups(['read:reference', 'write:reference'])
-   ]
-   private bool $global = false;
+        ApiProperty(description: 'Global ?', required: true, example: true),
+        ORM\Column(type: 'boolean', options: ['default' => false]),
+        Serializer\Groups(['read:reference', 'write:reference'])
+    ]
+    private bool $global = false;
 
     #[
-      ApiProperty(description: 'IPv4', required: true, example: '255.255.255.254'),
-      ORM\Column(type: 'string', options: ['default' => Reference::KIND_QTE]),
-      Assert\NotBlank,
-      Serializer\Groups(['read:reference', 'write:reference'])
-   ]
-   private string $kind = Reference::KIND_QTE;
+        ApiProperty(description: 'IPv4', required: true, example: '255.255.255.254'),
+        ORM\Column(type: 'string', options: ['default' => Reference::KIND_QTE]),
+        Assert\NotBlank,
+        Serializer\Groups(['read:reference', 'write:reference'])
+    ]
+    private string $kind = Reference::KIND_QTE;
 
     /**
      * @var Collection<int, Supplier>
      */
     #[
-      ApiProperty(description: 'Références', readableLink: false, example: ['/api/suppliers/2', '/api/suppliers/15']),
-      ORM\ManyToMany(targetEntity: Supplier::class, mappedBy: 'references', fetch: 'EXTRA_LAZY'),
-      Serializer\Groups(['read:references', 'write:references'])
-   ]
-   private ArrayCollection $suppliers;
+        ApiProperty(description: 'Références', readableLink: false, example: ['/api/suppliers/2', '/api/suppliers/15']),
+        ORM\ManyToMany(targetEntity: Supplier::class, mappedBy: 'references', fetch: 'EXTRA_LAZY'),
+        Serializer\Groups(['read:references', 'write:references'])
+    ]
+    private ArrayCollection $suppliers;
 
     #[Pure]
- public function __construct() {
-     $this->companies = new ArrayCollection();
-     $this->suppliers = new ArrayCollection();
- }
+    public function __construct() {
+        $this->companies = new ArrayCollection();
+        $this->suppliers = new ArrayCollection();
+    }
 
     final public function addCompany(Company $company): self {
         if (!$this->companies->contains($company)) {
