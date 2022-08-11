@@ -2,15 +2,19 @@
 
 namespace App\Entity\Purchase\Order;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Purchase\Order\CurrentPlace;
 use App\Entity\Entity;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Purchase\Supplier\Contact;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Selling\Order\Order as CustomerOrder;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -28,7 +32,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Créer une commande',
                     'summary' => 'Créer une commande',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -37,7 +41,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Supprime une commande',
                     'summary' => 'Supprime une commande',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
@@ -50,19 +54,41 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Modifie une commande',
                     'summary' => 'Modifie une commande',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
+            ],
+            'promote' => [
+                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Transite la commande à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite la commande à son prochain statut de workflow'
+                ],
+                'path' => '/supplier-orders/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'validate' => false
             ]
         ],
         shortName: 'SupplierOrder',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:order'],
             'openapi_definition_name' => 'PurchaseOrder-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:order'],
+            'groups' => ['read:current-place', 'read:id', 'read:order'],
             'openapi_definition_name' => 'PurchaseOrder-read',
             'skip_null_values' => false
         ],
@@ -70,62 +96,73 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'supplier_order')
 ]
-class Order extends Entity {
+class Order extends Entity implements WorkflowInterface {
     #[
         ApiProperty(description: 'Companie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Company $company = null;
 
     #[
         ApiProperty(description: 'Contact', readableLink: false, example: '/api/supplier-contacts/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:customer-contact', 'write:customer-contact'])
+        Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Contact $contact = null;
 
     #[
-        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/selling-orders/1'),
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded,
+        Serializer\Groups(['read:order'])
+    ]
+    private CurrentPlace $currentPlace;
+
+    #[
+        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/customer-orders/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?CustomerOrder $customerOrder = null;
 
     #[
-        ApiProperty(description: 'Compagnie en charge de la livraison', readableLink: false, example: '/api/companies/2'),
+        ApiProperty(description: 'Compagnie en charge de la livraison', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:company', 'write:company', 'write:order:post', 'read:order:collection'])
+        Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Company $deliveryCompany = null;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:notes', 'write:notes'])
+        Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?string $notes = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'EJZ65'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref'])
+        Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?string $ref = null;
 
     #[
         ApiProperty(description: 'Supplément pour le fret', example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:purchase_order', 'write:purchase_order', 'write:order:post'])
+        Serializer\Groups(['read:order', 'write:order'])
     ]
     private bool $supplementFret = false;
 
     #[
         ApiProperty(description: 'Fournisseur', readableLink: false, example: '/api/suppliers/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:supplier', 'write:supplier'])
+        Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Supplier $supplier = null;
+
+    public function __construct() {
+        $this->currentPlace = new CurrentPlace();
+    }
 
     final public function getCompany(): ?Company {
         return $this->company;
@@ -133,6 +170,10 @@ class Order extends Entity {
 
     final public function getContact(): ?Contact {
         return $this->contact;
+    }
+
+    final public function getCurrentPlace(): CurrentPlace {
+        return $this->currentPlace;
     }
 
     final public function getCustomerOrder(): ?CustomerOrder {
@@ -151,8 +192,23 @@ class Order extends Entity {
         return $this->ref;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
     final public function getSupplier(): ?Supplier {
         return $this->supplier;
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
     }
 
     final public function isSupplementFret(): bool {
@@ -166,6 +222,11 @@ class Order extends Entity {
 
     final public function setContact(?Contact $contact): self {
         $this->contact = $contact;
+        return $this;
+    }
+
+    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
+        $this->currentPlace = $currentPlace;
         return $this;
     }
 
@@ -186,6 +247,11 @@ class Order extends Entity {
 
     final public function setRef(?string $ref): self {
         $this->ref = $ref;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 

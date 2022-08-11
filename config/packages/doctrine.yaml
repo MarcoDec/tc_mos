@@ -38,6 +38,7 @@ doctrine:
       situation_place: App\Doctrine\DBAL\Types\Hr\Employee\SituationType
       stock_type: App\Doctrine\DBAL\Types\Logistics\StockType
       supplier_current_place: App\Doctrine\DBAL\Types\Purchase\Supplier\CurrentPlaceType
+      supplier_order_current_place: App\Doctrine\DBAL\Types\Purchase\Order\CurrentPlaceType
       tinyint: App\Doctrine\DBAL\Types\Tinyint
       vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce
       warehouse_families: App\Doctrine\DBAL\Types\Logistics\FamilyType
