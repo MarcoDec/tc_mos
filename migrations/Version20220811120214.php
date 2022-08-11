@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220808200812 extends AbstractMigration {
+final class Version20220811120214 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -1476,11 +1476,9 @@ CREATE TABLE `delivery_note` (
     `freight_surcharge_denominator` VARCHAR(6) DEFAULT NULL,
     `freight_surcharge_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `non_billable` BOOLEAN DEFAULT FALSE NOT NULL,
-    `order_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     CONSTRAINT `IDX_1E21328E1A8C12F5` FOREIGN KEY (`bill_id`) REFERENCES `bill` (`id`),
-    CONSTRAINT `IDX_1E21328E979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_1E21328E8D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `customer_order` (`id`)
+    CONSTRAINT `IDX_1E21328E979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
@@ -1492,7 +1490,6 @@ INSERT INTO `delivery_note` (
     `freight_surcharge_code`,
     `freight_surcharge_value`,
     `non_billable`,
-    `order_id`,
     `ref`
 ) SELECT
     (
@@ -1512,7 +1509,6 @@ INSERT INTO `delivery_note` (
     'EUR',
     `supplement_fret`,
     `no_invoice`,
-    (SELECT `customer_order`.`id` FROM `customer_order` WHERE `customer_order`.`old_id` = `deliveryform`.`id_ordercustomer`),
     `deliveryform_number`
 FROM `deliveryform`
 WHERE `statut` = 0
@@ -2317,7 +2313,6 @@ CREATE TABLE `orderfabrication` (
     `quantity_real` INT UNSIGNED DEFAULT NULL,
     `date_livraison` DATE DEFAULT NULL,
     `info_public` TEXT DEFAULT NULL,
-    `date_validation` DATE DEFAULT NULL,
     `date_fabrication` DATE DEFAULT NULL
 )
 SQL);
@@ -2337,7 +2332,6 @@ SQL);
             'quantity_real',
             'date_livraison',
             'info_public',
-            'date_validation',
             'date_fabrication'
         ]);
         $this->addQuery(<<<'SQL'
@@ -2364,7 +2358,6 @@ CREATE TABLE `manufacturing_order` (
     `quantity_requested_code` VARCHAR(6) DEFAULT NULL,
     `quantity_requested_denominator` VARCHAR(6) DEFAULT NULL,
     `quantity_requested_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `validation_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     CONSTRAINT `IDX_34010DB1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB1E26A3063` FOREIGN KEY (`manufacturing_company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB18D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `customer_order` (`id`),
