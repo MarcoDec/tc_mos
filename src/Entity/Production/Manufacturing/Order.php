@@ -107,7 +107,7 @@ class Order extends Entity implements BarCodeInterface {
 
     #[
         ApiProperty(description: 'Index', example: 1),
-        ORM\Column(type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
+        ORM\Column(name: '`index`', type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
     private int $index = 1;
@@ -134,7 +134,7 @@ class Order extends Entity implements BarCodeInterface {
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/selling-orders/1'),
+        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/customer-orders/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
@@ -167,13 +167,6 @@ class Order extends Entity implements BarCodeInterface {
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
     private ?string $ref = null;
-
-    #[
-        ApiProperty(description: 'Date de validation', example: '2022-12-03'),
-        ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
-    ]
-    private ?DateTimeImmutable $validationDate = null;
 
     public function __construct() {
         $this->actualQuantity = new Measure();
@@ -238,10 +231,6 @@ class Order extends Entity implements BarCodeInterface {
         return $this->ref;
     }
 
-    final public function getValidationDate(): ?DateTimeImmutable {
-        return $this->validationDate;
-    }
-
     final public function setActualQuantity(Measure $actualQuantity): self {
         $this->actualQuantity = $actualQuantity;
         return $this;
@@ -304,11 +293,6 @@ class Order extends Entity implements BarCodeInterface {
 
     final public function setRef(?string $ref): self {
         $this->ref = $ref;
-        return $this;
-    }
-
-    final public function setValidationDate(?DateTimeImmutable $validationDate): self {
-        $this->validationDate = $validationDate;
         return $this;
     }
 }
