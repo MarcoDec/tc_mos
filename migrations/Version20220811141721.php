@@ -3704,6 +3704,19 @@ CREATE TABLE `ordersupplier` (
     `commentaire` TEXT DEFAULT NULL COMMENT 'info affichee sur le document envoyé'
 )
 SQL);
+        $this->insert('ordersupplier', [
+            'id',
+            'statut',
+            'id_supplier',
+            'ref',
+            'id_ordersupplierstatus',
+            'open_order',
+            'id_address',
+            'id_society',
+            'supplement_fret',
+            'info_public',
+            'commentaire'
+        ]);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `supplier_order` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -3753,6 +3766,8 @@ INSERT INTO `supplier_order` (
     `supplement_fret`,
     (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_supplier`))
 FROM `ordersupplier`
+WHERE `statut` = 0
+AND EXISTS (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_supplier`))
 SQL);
         $this->addQuery('DROP TABLE `ordersupplier`');
     }
