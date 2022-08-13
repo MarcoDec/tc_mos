@@ -5,6 +5,7 @@ parameters:
   place_agreed: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_AGREED
   place_bill: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_BILL
   place_blocked: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_BLOCKED
+  place_cart: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_CART
   place_closed: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_CLOSED
   place_disabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DISABLED
   place_draft: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DRAFT
@@ -22,6 +23,7 @@ parameters:
   tr_accept: !php/const App\Entity\Embeddable\CurrentPlace::TR_ACCEPT
   tr_bill: !php/const App\Entity\Embeddable\CurrentPlace::TR_BILL
   tr_block: !php/const App\Entity\Embeddable\CurrentPlace::TR_BLOCK
+  tr_cart: !php/const App\Entity\Embeddable\CurrentPlace::TR_CART
   tr_deliver: !php/const App\Entity\Embeddable\CurrentPlace::TR_DELIVER
   tr_disable: !php/const App\Entity\Embeddable\CurrentPlace::TR_DISABLE
   tr_litigate: !php/const App\Entity\Embeddable\CurrentPlace::TR_LITIGATE

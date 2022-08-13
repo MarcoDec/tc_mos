@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220811120214 extends AbstractMigration {
+final class Version20220811141721 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -264,6 +264,7 @@ SQL);
         $this->upNotifications();
         $this->upPlannings();
         $this->upSkills();
+        $this->upSupplierOrders();
         // rank 6
         $this->upEngineEvents();
         // clean
@@ -3685,6 +3686,90 @@ LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
 WHERE `component_supplier`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `component_supplier`');
+    }
+
+    private function upSupplierOrders(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordersupplier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_supplier` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `id_ordersupplierstatus` INT UNSIGNED DEFAULT NULL,
+    `open_order` VARCHAR(255) DEFAULT NULL,
+    `id_address` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
+    `info_public` TEXT DEFAULT NULL COMMENT 'info interne',
+    `commentaire` TEXT DEFAULT NULL COMMENT 'info affichee sur le document envoyé'
+)
+SQL);
+        $this->insert('ordersupplier', [
+            'id',
+            'statut',
+            'id_supplier',
+            'ref',
+            'id_ordersupplierstatus',
+            'open_order',
+            'id_address',
+            'id_society',
+            'supplement_fret',
+            'info_public',
+            'commentaire'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `supplier_order` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `contact_id` INT UNSIGNED DEFAULT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('agreed', 'blocked', 'cart', 'closed', 'disabled', 'draft', 'partially_delivered', 'to_validate') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:supplier_order_current_place)',
+    `customer_order_id` INT UNSIGNED DEFAULT NULL,
+    `delivery_company_id` INT UNSIGNED DEFAULT NULL,
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
+    `supplier_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_2C3291B2979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_2C3291B2E7A1254A` FOREIGN KEY (`contact_id`) REFERENCES `supplier_contact` (`id`),
+    CONSTRAINT `IDX_2C3291B2A15A2E17` FOREIGN KEY (`customer_order_id`) REFERENCES `customer_order` (`id`),
+    CONSTRAINT `IDX_2C3291B289DE8DF2` FOREIGN KEY (`delivery_company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_2C3291B22ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `supplier_order` (
+    `company_id`,
+    `current_place_name`,
+    `delivery_company_id`,
+    `notes`,
+    `ref`,
+    `supplement_fret`,
+    `supplier_id`
+) SELECT
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_society`)),
+    CASE
+        WHEN `id_ordersupplierstatus` = 4 THEN 'agreed'
+        WHEN `id_ordersupplierstatus` = 5 THEN 'partially_delivered'
+        WHEN `id_ordersupplierstatus` = 6 THEN 'closed'
+        WHEN `id_ordersupplierstatus` = 7 THEN 'disabled'
+        ELSE 'to_validate'
+    END,
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_society`)),
+    IF(
+        `info_public` IS NULL,
+        `commentaire`,
+        IF(`commentaire` IS NULL, NULL, CONCAT(`info_public`, `commentaire`))
+    ),
+    `ref`,
+    `supplement_fret`,
+    (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_supplier`))
+FROM `ordersupplier`
+WHERE `statut` = 0
+AND EXISTS (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_supplier`))
+SQL);
+        $this->addQuery('DROP TABLE `ordersupplier`');
     }
 
     private function upSupplies(): void {
