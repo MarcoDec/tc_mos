@@ -5,30 +5,18 @@ namespace App\Entity\Production\Company;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
-use App\Entity\Management\Society\Company;
+use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
-use App\Entity\Traits\CompanyTrait;
-use App\Entity\Traits\RefTrait;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'ref' => 'partial',
-    ]),
-    ApiFilter(filterClass: NumericFilter::class, properties: ['proportion']),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'product' => ['name', 'required' => true],
-        'company' => 'name',
-        'incoterms' => 'name'
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'product']),
     ApiResource(
         description: 'Fourniture',
         collectionOperations: [
@@ -54,6 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une fourniture',
@@ -62,89 +51,106 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ]
         ],
-        shortName: 'CompanySupply',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:incoterms', 'write:company', 'write:company-supply', 'write:ref', 'write:product'],
-            'openapi_definition_name' => 'CompanySupply-write'
+            'groups' => ['write:supply'],
+            'openapi_definition_name' => 'Supply-write'
         ],
         normalizationContext: [
-            'groups' => ['read:incoterms', 'read:id', 'read:company', 'read:company-supply', 'read:ref', 'read:product'],
-            'openapi_definition_name' => 'CompanySupply-read'
+            'groups' => ['read:id', 'read:supply'],
+            'openapi_definition_name' => 'Supply-read',
+            'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity
 ]
 class Supply extends Entity {
-    use CompanyTrait;
-    use RefTrait;
-
     #[
-        ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company', 'write:company'])
+        ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
+        Assert\NotBlank,
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:supply', 'write:supply'])
     ]
-    protected ?Company $company;
+    private ?Company $company;
 
     #[
-        ApiProperty(description: 'Référence', required: false, example: 'FIZ56'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref'])
+        ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/2'),
+        Assert\NotBlank,
+        ORM\ManyToOne,
+        Serializer\Groups(['read:supply', 'write:supply'])
     ]
-    protected ?string $ref = null;
+    private ?Incoterms $incoterms = null;
 
     #[
-        ApiProperty(description: 'Incoterms', required: true, readableLink: false, example: '/api/incoterms/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/4'),
+        Assert\NotBlank,
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:supply', 'write:supply'])
     ]
-    private ?Incoterms $incoterms;
+    private ?Product $product = null;
 
     #[
-        ApiProperty(description: 'Produit', required: true, readableLink: false, example: '/api/products/4'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Product::class),
-        Serializer\Groups(['read:product', 'write:product'])
-    ]
-    private ?Product $product;
-
-    #[
-        ApiProperty(description: 'Proportion', required: true, example: '99'),
-        Assert\NotNull,
+        ApiProperty(description: 'Proportion', example: '99'),
         Assert\PositiveOrZero,
-        ORM\Column(options: ['default' => 100, 'unsigned' => true], type: 'float'),
-        Serializer\Groups(['read:company-supply', 'write:company-supply'])
+        ORM\Column(options: ['default' => 100, 'unsigned' => true]),
+        Serializer\Groups(['read:supply', 'write:supply'])
     ]
     private float $proportion = 100;
 
-    public function getIncoterms(): ?Incoterms {
+    #[
+        ApiProperty(description: 'Référence', example: 'FIZ56'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:supply', 'write:supply'])
+    ]
+    private ?string $ref = null;
+
+    final public function getCompany(): ?Company {
+        return $this->company;
+    }
+
+    final public function getIncoterms(): ?Incoterms {
         return $this->incoterms;
     }
 
-    public function getProduct(): ?Product {
+    final public function getProduct(): ?Product {
         return $this->product;
     }
 
-    public function getProportion(): ?float {
+    final public function getProportion(): float {
         return $this->proportion;
     }
 
-    public function setIncoterms(?Incoterms $incoterms): self {
+    final public function getRef(): ?string {
+        return $this->ref;
+    }
+
+    final public function setCompany(?Company $company): self {
+        $this->company = $company;
+        return $this;
+    }
+
+    final public function setIncoterms(?Incoterms $incoterms): self {
         $this->incoterms = $incoterms;
-
         return $this;
     }
 
-    public function setProduct(?Product $product): self {
+    final public function setProduct(?Product $product): self {
         $this->product = $product;
-
         return $this;
     }
 
-    public function setProportion(float $proportion): self {
+    final public function setProportion(float $proportion): self {
         $this->proportion = $proportion;
+        return $this;
+    }
 
+    final public function setRef(?string $ref): self {
+        $this->ref = $ref;
         return $this;
     }
 }

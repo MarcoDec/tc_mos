@@ -11,21 +11,21 @@ class WebPortal {
     #[
         ApiProperty(description: 'Mot de passe', example: 'C@ble3j!'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:webportal', 'write:webportal'])
+        Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private ?string $password = null;
 
     #[
         ApiProperty(description: 'URL', example: 'https://www.monsite.fr'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:webportal', 'write:webportal'])
+        Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private ?string $url = null;
 
     #[
         ApiProperty(description: 'Nom d\'utilisateur', example: 'Patrick'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:webportal', 'write:webportal'])
+        Serializer\Groups(['read:customer', 'write:customer'])
     ]
     private ?string $username = null;
 

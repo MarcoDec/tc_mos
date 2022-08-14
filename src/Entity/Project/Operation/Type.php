@@ -7,7 +7,6 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Purchase\Component\Family;
-use App\Entity\Traits\NameTrait;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -41,12 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un type d\'opération',
-                    'summary' => 'Récupère un type d\'opération',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un type d\'opération',
@@ -60,12 +54,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:family', 'write:operation_type'],
-            'openapi_definition_name' => 'ComponentFamily-write'
+            'groups' => ['write:operation-type'],
+            'openapi_definition_name' => 'OperationType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:name', 'read:id', 'read:family', 'read:operation_type'],
-            'openapi_definition_name' => 'ComponentFamily-read'
+            'groups' => ['read:id', 'read:operation-type'],
+            'openapi_definition_name' => 'OperationType-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
@@ -73,32 +68,28 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['name'])
 ]
 class Type extends Entity {
-    use NameTrait;
-
     #[
-        ApiProperty(description: 'Nom', required: true),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Assemblage', required: false, example: true),
+        ApiProperty(description: 'Assemblage', example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:operation_type', 'write:operation_type'])
+        Serializer\Groups(['read:operation-type', 'write:operation-type'])
     ]
     private bool $assembly = false;
 
-    /**
-     * @var Collection<int, Family>
-     */
+    /** @var Collection<int, Family> */
     #[
         ApiProperty(description: 'Famille de produit', readableLink: false, example: ['/api/component-families/5', '/api/component-families/12']),
-        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Family::class, inversedBy: 'types'),
-        Serializer\Groups(['read:family', 'write:family'])
+        ORM\ManyToMany(targetEntity: Family::class),
+        Serializer\Groups(['read:operation-type', 'write:operation-type'])
     ]
     private Collection $families;
+
+    #[
+        ApiProperty(description: 'Nom'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:operation-type', 'write:operation-type'])
+    ]
+    private ?string $name = null;
 
     public function __construct() {
         $this->families = new ArrayCollection();
@@ -107,7 +98,6 @@ class Type extends Entity {
     final public function addFamily(Family $family): self {
         if (!$this->families->contains($family)) {
             $this->families->add($family);
-            $family->addType($this);
         }
         return $this;
     }
@@ -119,6 +109,10 @@ class Type extends Entity {
         return $this->families;
     }
 
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
     final public function isAssembly(): bool {
         return $this->assembly;
     }
@@ -126,13 +120,17 @@ class Type extends Entity {
     final public function removeFamily(Family $family): self {
         if ($this->families->contains($family)) {
             $this->families->removeElement($family);
-            $family->removeType($this);
         }
         return $this;
     }
 
     final public function setAssembly(bool $assembly): self {
         $this->assembly = $assembly;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 }

@@ -5,19 +5,16 @@ namespace App\Entity\Production\Manufacturing;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Production\Manufacturing\Operation\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Project\Operation\Operation as PrimaryOperation;
-use App\Entity\Traits\NotesTrait;
-use DateTimeInterface;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -45,12 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère une opération de production',
-                    'summary' => 'Récupère une opération de production',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une opération de production',
@@ -59,106 +51,94 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ],
         ],
+        shortName: 'ManufacturingOperation',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:notes', 'write:current_place', 'write:manufacturing_operation'],
+            'groups' => ['write:manufacturing-operation'],
             'openapi_definition_name' => 'ManufacturingOperation-write'
         ],
         normalizationContext: [
-            'groups' => ['read:namnotese', 'read:id', 'read:current_place', 'read:manufacturing_operation'],
-            'openapi_definition_name' => 'ManufacturingOperation-read'
+            'groups' => ['read:id', 'read:manufacturing-operation'],
+            'openapi_definition_name' => 'ManufacturingOperation-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
-   ORM\Table(name: 'manufacturing_operation')
+    ORM\Table(name: 'manufacturing_operation')
 ]
 class Operation extends Entity {
-    use NotesTrait;
-
     #[
-        ApiProperty(description: 'Notes', required: false, example: 'Lorem ipsum'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:notes', 'write:notes'])
+        ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
-    protected ?string $notes = null;
+    private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Statut', required: true, example: CurrentPlace::WF_PLACE_EXEMPTIONED),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'write:current_place'])
-    ]
-    private CurrentPlace $currentPlace;
-
-    #[
-        ApiProperty(description: 'Opération', required: false, example: '/api/project-operations/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: PrimaryOperation::class),
-        Serializer\Groups(['read:manufacturing_operation', 'write:manufacturing_operation'])
+        ApiProperty(description: 'Opération', readableLink: false, example: '/api/project-operations/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?PrimaryOperation $operation = null;
 
-    /**
-     * @var Collection<int, Employee>
-     */
+    /** @var Collection<int, Employee> */
     #[
-        ApiProperty(description: 'Opérateurs', required: false, example: ['/api/employees/1', '/api/employees/2']),
-        ORM\ManyToOne(fetch: 'EXTRA_LAZY', targetEntity: Employee::class, inversedBy: 'operations'),
-        Serializer\Groups(['read:manufacturing_operation', 'write:manufacturing_operation'])
+        ApiProperty(description: 'Opérateurs', readableLink: false, example: ['/api/employees/1', '/api/employees/2']),
+        ORM\ManyToOne(targetEntity: Employee::class),
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private Collection $operators;
 
     #[
-        ApiProperty(description: 'Commande', required: false, example: '/api/manufacturing-orders/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Order::class),
-        Serializer\Groups(['read:manufacturing_operation', 'write:manufacturing_operation'])
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/manufacturing-orders/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?Order $order = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', required: false, example: '/api/employee/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Employee::class),
-        Serializer\Groups(['read:manufacturing_operation', 'write:manufacturing_operation'])
+        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/employee/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?Employee $pic = null;
 
     #[
-        ApiProperty(description: 'Date de départ', required: true, example: '2022-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
-        Serializer\Groups(['read:manufacturing_operation', 'write:manufacturing_operation'])
+        ApiProperty(description: 'Date de départ', example: '2022-24-03'),
+        ORM\Column(type: 'date_immutable', nullable: true),
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
-    private DateTimeInterface $startedDate;
+    private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', required: false, example: '/api/workstations/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Workstation::class),
-        Serializer\Groups(['read:manufacturing_operation', 'write:manufacturing_operation'])
+        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/workstations/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?Workstation $workstation = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', required: false, example: '/api/zones/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Zone::class),
-        Serializer\Groups(['read:manufacturing_operation', 'write:manufacturing_operation'])
+        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/zones/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?Zone $zone = null;
 
     public function __construct() {
-        $this->currentPlace = new CurrentPlace();
         $this->operators = new ArrayCollection();
     }
 
     final public function addOperator(Employee $operator): self {
         if (!$this->operators->contains($operator)) {
             $this->operators->add($operator);
-            $operator->addOperation($this);
         }
         return $this;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getNotes(): ?string {
+        return $this->notes;
     }
 
     final public function getOperation(): ?PrimaryOperation {
@@ -166,7 +146,7 @@ class Operation extends Entity {
     }
 
     /**
-     * @return Collection<Int, Employee>
+     * @return Collection<int, Employee>
      */
     final public function getOperators(): Collection {
         return $this->operators;
@@ -180,7 +160,7 @@ class Operation extends Entity {
         return $this->pic;
     }
 
-    final public function getStartedDate(): DateTimeInterface {
+    final public function getStartedDate(): ?DateTimeImmutable {
         return $this->startedDate;
     }
 
@@ -195,13 +175,12 @@ class Operation extends Entity {
     final public function removeOperator(Employee $operator): self {
         if ($this->operators->contains($operator)) {
             $this->operators->removeElement($operator);
-            $operator->removeOperation($this);
         }
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setNotes(?string $notes): self {
+        $this->notes = $notes;
         return $this;
     }
 
@@ -220,7 +199,7 @@ class Operation extends Entity {
         return $this;
     }
 
-    final public function setStartedDate(DateTimeInterface $startedDate): self {
+    final public function setStartedDate(?DateTimeImmutable $startedDate): self {
         $this->startedDate = $startedDate;
         return $this;
     }

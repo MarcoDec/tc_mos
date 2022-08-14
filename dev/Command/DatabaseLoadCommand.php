@@ -12,16 +12,20 @@ final class DatabaseLoadCommand extends AbstractCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $run = function (string $cmd, array $options = []) use ($output): void {
-           $options['command'] = $cmd;
+            $output->writeln("<fg=green>$cmd</>");
+            $options['command'] = $cmd;
             $this
                 ->getApplication()
                 ->find($cmd)
                 ->run(new ArrayInput($options), $output);
         };
+
         $run('doctrine:database:drop', ['--force' => true]);
         $run('doctrine:database:create');
-        $run(SchemaUpdateCommand::getDefaultName());
-        $run(FixturesCommand::getDefaultName());
+        $run('doctrine:migrations:migrate');
+        $run(CronCommand::getDefaultName(), ['--'.CronCommand::OPTION_SCAN => true]);
+        $run(CurrencyRateCommand::getDefaultName());
+        $run(ExpirationDateCommand::getDefaultName());
         return self::SUCCESS;
     }
 }
