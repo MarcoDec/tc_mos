@@ -2,9 +2,44 @@ imports:
   - { resource: workflows/ }
 
 parameters:
+  place_agreed: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_AGREED
+  place_bill: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_BILL
+  place_blocked: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_BLOCKED
+  place_cart: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_CART
+  place_closed: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_CLOSED
+  place_disabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DISABLED
+  place_draft: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DRAFT
+  place_enabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_ENABLED
+  place_litigation: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_LITIGATION
+  place_paid: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PAID
+  place_partially_delivered: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PARTIALLY_DELIVERED
+  place_partially_paid: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PARTIALLY_PAID
+  place_ready_to_sent: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_READY_TO_SENT
+  place_rejected: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_REJECTED
+  place_sent: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_SENT
+  place_to_validate: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_TO_VALIDATE
+  place_under_exemption: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_UNDER_EXEMPTION
+  place_warning: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_WARNING
+  tr_accept: !php/const App\Entity\Embeddable\CurrentPlace::TR_ACCEPT
+  tr_bill: !php/const App\Entity\Embeddable\CurrentPlace::TR_BILL
+  tr_block: !php/const App\Entity\Embeddable\CurrentPlace::TR_BLOCK
+  tr_cart: !php/const App\Entity\Embeddable\CurrentPlace::TR_CART
+  tr_deliver: !php/const App\Entity\Embeddable\CurrentPlace::TR_DELIVER
+  tr_disable: !php/const App\Entity\Embeddable\CurrentPlace::TR_DISABLE
+  tr_litigate: !php/const App\Entity\Embeddable\CurrentPlace::TR_LITIGATE
+  tr_partially_pay: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_PAY
+  tr_partially_unlock: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_UNLOCK
+  tr_partially_validate: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_VALIDATE
+  tr_pay: !php/const App\Entity\Embeddable\CurrentPlace::TR_PAY
+  tr_reject: !php/const App\Entity\Embeddable\CurrentPlace::TR_REJECT
+  tr_send: !php/const App\Entity\Embeddable\CurrentPlace::TR_SEND
+  tr_submit_validation: !php/const App\Entity\Embeddable\CurrentPlace::TR_SUBMIT_VALIDATION
+  tr_supervise: !php/const App\Entity\Embeddable\CurrentPlace::TR_SUPERVISE
+  tr_unlock: !php/const App\Entity\Embeddable\CurrentPlace::TR_UNLOCK
+  tr_validate: !php/const App\Entity\Embeddable\CurrentPlace::TR_VALIDATE
   wf_audit_trail:
     enabled: true
   wf_marking_store:
-    property: currentPlaceName
+    property: state
     type: method
   wf_type: state_machine
