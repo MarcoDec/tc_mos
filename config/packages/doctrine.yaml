@@ -23,6 +23,7 @@ doctrine:
       customer_address_type: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
       customer_current_place: App\Doctrine\DBAL\Types\Selling\Customer\CurrentPlaceType
       customer_order_current_place: App\Doctrine\DBAL\Types\Selling\Order\CurrentPlaceType
+      customer_order_item_current_place: App\Doctrine\DBAL\Types\Selling\Order\Item\CurrentPlaceType
       delivery_note_current_place: App\Doctrine\DBAL\Types\Production\Manufacturing\DeliveryNote\CurrentPlaceType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
@@ -31,12 +32,12 @@ doctrine:
       engine_event_type: App\Doctrine\DBAL\Types\Production\Engine\EventType
       engine_type: App\Doctrine\DBAL\Types\Production\Engine\EngineType
       gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
+      item_type: App\Doctrine\DBAL\Types\ItemType
       manufacturing_order_current_place: App\Doctrine\DBAL\Types\Production\Manufacturing\CurrentPlaceType
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
       product_current_place: App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
       situation_place: App\Doctrine\DBAL\Types\Hr\Employee\SituationType
-      stock_type: App\Doctrine\DBAL\Types\Logistics\StockType
       supplier_current_place: App\Doctrine\DBAL\Types\Purchase\Supplier\CurrentPlaceType
       supplier_order_current_place: App\Doctrine\DBAL\Types\Purchase\Order\CurrentPlaceType
       tinyint: App\Doctrine\DBAL\Types\Tinyint
