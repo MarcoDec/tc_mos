@@ -18,8 +18,8 @@ export default function generatePrice(prices) {
       },
     },
     getters: {
-      rowspan: (state) => state.prices.length + 1,
+      rows: (state) => state.items.map((item) => item.rows).flat(1),
     },
-    state: () => ({ ...prices }),
+    state: () => ({ items: [componentSupplier] }),
   })();
 }

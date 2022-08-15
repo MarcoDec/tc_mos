@@ -2,7 +2,7 @@
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useTableMachine } from "../../machine";
-import usePrices from "../../stores/prices/prices";
+import usePrices from "../../stores/prices/componentSuppliers";
 import AppRowsTable from "../../components/app-rows-table/AppRowsTable.vue";
 import generateItems from "../../stores/table/items";
 
@@ -82,5 +82,5 @@ onMounted(async () => {
 
 <template>
   <h1>Component Suppliers Prices</h1>
-  <!--<AppRowsTable id="prices" :fields="priceItems" :items="priceItems" />-->
+  <AppRowsTable id="prices" :fields="fields" :items="priceItems" />
 </template>

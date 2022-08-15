@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import generatePrice from "./price";
+import generatePrice from "./componentSupplier";
 
 export default defineStore("prices", {
   actions: {
@@ -63,28 +63,20 @@ export default defineStore("prices", {
           update2: false,
         },
       ];
-      for (const price of response) this.items.push(generatePrice(price, this));
+      this.items = response;
     },
   },
   getters: {
     rows(state) {
-      const rows = [];
+      const rows = [state, state.prices[0]];
+      console.log("rows", rows);
+      for (const suppliers of state.items) 
+      console.log("state", suppliers);
 
-      for (const id of Object.keys(state.items)) {
-        console.log('id', id);
-
-        const row = [`prices/${id}`];
-        console.log('row', row);
-        const prices = [...this.items.prices];
-        console.log('price-->', prices);
-
-        const first = prices.shift();
-        if (typeof first === "string") row.push(first);
-        rows.push(row);
-        for (const price of prices) rows.push([price]);
-      }
-      return rows;
+      for (let i = 1; i < suppliers.prices.length; i++)
+        rows.push([state.prices[i]]);
     },
+    rowspan: (state) => state.prices.length + 1,
   },
   state: () => ({ items: [] }),
 });

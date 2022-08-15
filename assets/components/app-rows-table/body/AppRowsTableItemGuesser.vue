@@ -7,15 +7,17 @@ const props = defineProps({
   last: { required: true, type: Boolean },
   item: { required: true, type: Array },
   fields: { required: true, type: Array },
-  fieldsByLevel:{required: true, type: Array},
-  alignFields:{required: true, type: Array},
-  index:{required: true, type: Number},
+  fieldsByLevel: { required: true, type: Array },
+  alignFields: { required: true, type: Array },
+  index: { required: true, type: Number },
 });
 const add = computed(() => typeof props.item === "number");
+    console.log('alignFields33', props.alignFields);
+
 </script>
 
 <template>
-  <AppRowsTableAddItems v-if="add" :fields="fieldsByLevel[item]" />
+  <!-- <AppRowsTableAddItems v-if="add" :fields="fieldsByLevel[item]" />
   <AppRowsTableItem
     v-else
     :last="last"
@@ -23,5 +25,6 @@ const add = computed(() => typeof props.item === "number");
     :align-fields="alignFields"
     :item="item"
     :index="index"
-  />
+  />-->
+  <AppRowsTableItem :align-fields="alignFields" />
 </template>

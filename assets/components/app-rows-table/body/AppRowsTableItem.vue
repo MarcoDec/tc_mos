@@ -3,31 +3,27 @@ import { defineProps } from "vue";
 import AppRowsTableItemComponent from "./AppRowsTableItemComponent.vue";
 
 const props = defineProps({
-  item: { required: false, type: String },
+  item: { required: false, type: Array },
   alignFields: { required: false, type: Array },
 });
+console.log("alignFields444", props.alignFields);
+
 const stateFields = [];
 const states = [];
 for (const part of props.item) {
   const tabFields = [];
+  const state = { rowspan: part.rowpsan };
   for (const field of props.alignFields) {
     if (
-      part.startsWith(field.prefix) &&
+      part.type.startsWith(field.prefix) &&
       !(Array.isArray(field.children) && field.children.length > 0)
     ) {
       tabFields.push(field);
+      state[field.name] = part[field.name];
     }
   }
   stateFields.push(tabFields);
-  states.push({
-    ...useNamespacedState(part, [
-      ...tabFields.map(({ name }) => name),
-      "delete",
-      "update",
-      "index",
-    ]),
-    rowspan: useNamespacedGetters(part, ["rowspan"]).rowspan.value,
-  });
+  states.push(state);
 }
 </script>
 
