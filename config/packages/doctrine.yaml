@@ -33,6 +33,7 @@ doctrine:
       engine_type: App\Doctrine\DBAL\Types\Production\Engine\EngineType
       gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
       item_type: App\Doctrine\DBAL\Types\ItemType
+      manufacturing_operation_current_place: App\Doctrine\DBAL\Types\Production\Manufacturing\Operation\CurrentPlaceType
       manufacturing_order_current_place: App\Doctrine\DBAL\Types\Production\Manufacturing\CurrentPlaceType
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
       product_current_place: App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType

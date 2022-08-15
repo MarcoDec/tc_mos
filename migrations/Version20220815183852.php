@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220814170050 extends AbstractMigration {
+final class Version20220815183852 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -230,6 +230,7 @@ SQL);
         // rank 2
         $this->upAttributes();
         $this->upComponents();
+        $this->upOperationTypes();
         $this->upProducts();
         $this->upSocieties();
         // rank 3
@@ -243,6 +244,7 @@ SQL);
         $this->upManufacturers();
         $this->upNomenclatures();
         $this->upPrinters();
+        $this->upProjectOperations();
         $this->upSupplierComponents();
         $this->upSupplies();
         $this->upTeams();
@@ -269,6 +271,7 @@ SQL);
         // rank 6
         $this->upEngineEvents();
         $this->upExpeditions();
+        $this->upManufacturingOperations();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `bill` DROP `old_id`');
@@ -278,8 +281,9 @@ SQL);
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_order` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_order_item` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `employee` DROP `id_society`, DROP `old_id`');
+        $this->addQuery('ALTER TABLE `employee` DROP `id_society`, DROP `matricule`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
+        $this->addQuery('ALTER TABLE `manufacturing_order` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product` DROP `id_society`, DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
@@ -1757,6 +1761,7 @@ SQL);
 CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED DEFAULT NULL,
+    `matricule` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `address_address` VARCHAR(80) DEFAULT NULL,
     `address_address2` VARCHAR(60) DEFAULT NULL,
@@ -1823,6 +1828,7 @@ SQL,
         $this->addQuery(<<<'SQL'
 INSERT INTO `employee` (
     `old_id`,
+    `matricule`,
     `address_address`,
     `address_city`,
     `address_country`,
@@ -1852,6 +1858,7 @@ INSERT INTO `employee` (
     `tel_pers_a_contacter`
 ) SELECT
     `id`,
+    `matricule`,
     `address`,
     `ville`,
     (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `employee_old`.`id_phone_prefix`),
@@ -2475,6 +2482,94 @@ SQL);
         $this->addQuery('RENAME TABLE `engine_fabricant_ou_contact` TO `manufacturer`');
     }
 
+    private function upManufacturingOperations(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `production_operation` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `ofnumber` VARCHAR(100) DEFAULT NULL,
+    `id_poste` INT UNSIGNED DEFAULT NULL,
+    `id_outils` INT UNSIGNED DEFAULT NULL,
+    `date_debut` DATETIME DEFAULT NULL,
+    `date_fin` DATETIME DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL,
+    `statut_production` INT UNSIGNED DEFAULT NULL,
+    `commentaire` TEXT DEFAULT NULL,
+    `nature_cloture` INT UNSIGNED DEFAULT NULL,
+    `retouche` INT UNSIGNED DEFAULT NULL,
+    `matricule_responsable` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('production_operation', [
+            'id',
+            'id_society',
+            'ofnumber',
+            'id_poste',
+            'id_outils',
+            'date_debut',
+            'date_fin',
+            'quantity',
+            'statut_production',
+            'commentaire',
+            'nature_cloture',
+            'retouche',
+            'matricule_responsable'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `manufacturing_operation` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `current_place_name` ENUM('agreed', 'blocked', 'closed', 'draft', 'under_exemption') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:manufacturing_operation_current_place)',
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `operation_id` INT UNSIGNED DEFAULT NULL,
+    `order_id` INT UNSIGNED DEFAULT NULL,
+    `pic_id` INT UNSIGNED DEFAULT NULL,
+    `started_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `workstation_id` INT UNSIGNED DEFAULT NULL,
+    `zone_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_82088FAF44AC3583` FOREIGN KEY (`operation_id`) REFERENCES `project_operation` (`id`),
+    CONSTRAINT `IDX_82088FAF8D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `manufacturing_order` (`id`),
+    CONSTRAINT `IDX_82088FAF9E51FD91` FOREIGN KEY (`pic_id`) REFERENCES `employee` (`id`),
+    CONSTRAINT `IDX_82088FAFE29BB7D` FOREIGN KEY (`workstation_id`) REFERENCES `engine` (`id`),
+    CONSTRAINT `IDX_82088FAF9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `manufacturing_operation` (
+    `current_place_name`,
+    `notes`,
+    `order_id`,
+    `pic_id`,
+    `started_date`,
+    `workstation_id`
+) SELECT
+    CASE
+        WHEN `statut_production` = 1 THEN 'agreed'
+        WHEN `statut_production` = 2 THEN 'under_exemption'
+        WHEN `statut_production` = 3 THEN 'blocked'
+        WHEN `statut_production` = 4 THEN 'closed'
+        ELSE 'draft'
+    END,
+    `commentaire`,
+    (SELECT `manufacturing_order`.`id` FROM `manufacturing_order` WHERE `manufacturing_order`.`old_id` = `production_operation`.`ofnumber`),
+    (SELECT MIN(`employee`.`id`) FROM `employee` WHERE `employee`.`matricule` = `production_operation`.`matricule_responsable`),
+    `date_debut`,
+    (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `production_operation`.`id_poste`)
+FROM `production_operation`
+SQL);
+        $this->addQuery('DROP TABLE `production_operation`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `operation_employee` (
+    `operation_id` INT UNSIGNED NOT NULL,
+    `employee_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_B8E90A2C44AC3583` FOREIGN KEY (`operation_id`) REFERENCES `manufacturing_operation` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_B8E90A2C8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`) ON DELETE CASCADE,
+     PRIMARY KEY(`operation_id`, `employee_id`)
+)
+SQL);
+    }
+
     private function upManufacturingOrders(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `orderfabrication` (
@@ -2517,6 +2612,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `manufacturing_order` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `actual_quantity_code` VARCHAR(6) DEFAULT NULL,
     `actual_quantity_denominator` VARCHAR(6) DEFAULT NULL,
@@ -2546,6 +2642,7 @@ CREATE TABLE `manufacturing_order` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `manufacturing_order` (
+    `old_id`,
     `actual_quantity_code`,
     `actual_quantity_value`,
     `current_place_name`,
@@ -2563,6 +2660,7 @@ INSERT INTO `manufacturing_order` (
     `quantity_requested_code`,
     `quantity_requested_value`
 ) SELECT
+    `id`,
     (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)),
     `quantity_real`,
     CASE
@@ -2647,6 +2745,34 @@ CREATE TABLE `notification` (
     `user_id` INT UNSIGNED NOT NULL,
     CONSTRAINT `IDX_BF5476CAA76ED395` FOREIGN KEY (`user_id`) REFERENCES `employee` (`id`)
 )
+SQL);
+    }
+
+    private function upOperationTypes(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `operation_type` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `isAssemblage` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(255) NOT NULL
+)
+SQL);
+        $this->insert('operation_type', ['id', 'isAssemblage', 'name']);
+        $this->addQuery('ALTER TABLE `operation_type` CHANGE `isAssemblage` `assembly` BOOLEAN DEFAULT FALSE NOT NULL');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `operation_type_component_family` (
+    `component_family_id` INT UNSIGNED NOT NULL,
+    `operation_type_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_58A4AEF9C35E566A` FOREIGN KEY (`component_family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_86314A63C54C8C93` FOREIGN KEY (`operation_type_id`) REFERENCES `operation_type` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`operation_type_id`, `component_family_id`)
+)
+SQL);
+        $this->insert('operation_type_component_family', ['component_family_id', 'operation_type_id']);
+        $this->addQuery(<<<'SQL'
+ALTER TABLE `operation_type_component_family`
+    CHANGE `component_family_id` `family_id` INT UNSIGNED NOT NULL,
+    CHANGE `operation_type_id` `type_id` INT UNSIGNED NOT NULL
 SQL);
     }
 
@@ -3084,6 +3210,86 @@ WHERE `statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `product_old`');
         $this->addQuery('ALTER TABLE `product` DROP `id_product_child`');
+    }
+
+    private function upProjectOperations(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `operation` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(255) DEFAULT NULL,
+    `designation` TEXT DEFAULT NULL,
+    `limite` VARCHAR(255) DEFAULT NULL,
+    `cadence` INT UNSIGNED DEFAULT NULL,
+    `id_factory` INT UNSIGNED DEFAULT NULL,
+    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tms` DATETIME DEFAULT NULL,
+    `id_user` INT UNSIGNED DEFAULT NULL,
+    `lastmod` DATETIME DEFAULT NULL,
+    `type` TINYINT DEFAULT NULL COMMENT '0 = MANU ; 1 = AUTO',
+    `id_operation_type` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('operation', [
+            'id',
+            'statut',
+            'code',
+            'designation',
+            'limite',
+            'cadence',
+            'id_factory',
+            'price',
+            'tms',
+            'id_user',
+            'lastmod',
+            'type',
+            'id_operation_type'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `project_operation` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `auto` BOOLEAN DEFAULT FALSE NOT NULL,
+    `boundary` VARCHAR(255) DEFAULT NULL,
+    `cadence_code` VARCHAR(6) DEFAULT NULL,
+    `cadence_denominator` VARCHAR(6) DEFAULT NULL,
+    `cadence_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `code` VARCHAR(255) NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL,
+    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `time_code` VARCHAR(6) DEFAULT NULL,
+    `time_denominator` VARCHAR(6) DEFAULT NULL,
+    `time_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `type_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_8BDE3BAC54C8C93` FOREIGN KEY (`type_id`) REFERENCES `operation_type` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `project_operation` (
+    `auto`,
+    `boundary`,
+    `cadence_code`,
+    `cadence_value`,
+    `code`,
+    `name`,
+    `price_code`,
+    `price_value`,
+    `type_id`
+) SELECT
+    `type`,
+    `limite`,
+    'U',
+    `cadence`,
+    `code`,
+    `designation`,
+    'EUR',
+    `price`,
+    (SELECT `operation_type`.`id` FROM `operation_type` WHERE `operation_type`.`id` = `operation`.`id_operation_type`)
+FROM `operation`
+SQL);
+        $this->addQuery('DROP TABLE `operation`');
     }
 
     private function upQualityTypes(): void {

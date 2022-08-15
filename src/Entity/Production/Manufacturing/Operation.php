@@ -2,11 +2,14 @@
 
 namespace App\Entity\Production\Manufacturing;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Production\Manufacturing\Operation\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
+use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Project\Operation\Operation as PrimaryOperation;
@@ -14,6 +17,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -50,6 +54,28 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ],
+            'promote' => [
+                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Transite l\'opération à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite l\'opération à son prochain statut de workflow'
+                ],
+                'path' => '/manufacturing-operations/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')',
+                'validate' => false
+            ]
         ],
         shortName: 'ManufacturingOperation',
         attributes: [
@@ -68,7 +94,14 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'manufacturing_operation')
 ]
-class Operation extends Entity {
+class Operation extends Entity implements WorkflowInterface {
+    #[
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-operation'])
+    ]
+    private CurrentPlace $currentPlace;
+
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(nullable: true),
@@ -86,7 +119,7 @@ class Operation extends Entity {
     /** @var Collection<int, Employee> */
     #[
         ApiProperty(description: 'Opérateurs', readableLink: false, example: ['/api/employees/1', '/api/employees/2']),
-        ORM\ManyToOne(targetEntity: Employee::class),
+        ORM\ManyToMany(targetEntity: Employee::class),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private Collection $operators;
@@ -127,6 +160,7 @@ class Operation extends Entity {
     private ?Zone $zone = null;
 
     public function __construct() {
+        $this->currentPlace = new CurrentPlace();
         $this->operators = new ArrayCollection();
     }
 
@@ -135,6 +169,10 @@ class Operation extends Entity {
             $this->operators->add($operator);
         }
         return $this;
+    }
+
+    final public function getCurrentPlace(): CurrentPlace {
+        return $this->currentPlace;
     }
 
     final public function getNotes(): ?string {
@@ -164,6 +202,11 @@ class Operation extends Entity {
         return $this->startedDate;
     }
 
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
     final public function getWorkstation(): ?Workstation {
         return $this->workstation;
     }
@@ -172,10 +215,25 @@ class Operation extends Entity {
         return $this->zone;
     }
 
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
+    }
+
     final public function removeOperator(Employee $operator): self {
         if ($this->operators->contains($operator)) {
             $this->operators->removeElement($operator);
         }
+        return $this;
+    }
+
+    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
+        $this->currentPlace = $currentPlace;
         return $this;
     }
 
@@ -201,6 +259,11 @@ class Operation extends Entity {
 
     final public function setStartedDate(?DateTimeImmutable $startedDate): self {
         $this->startedDate = $startedDate;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 

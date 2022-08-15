@@ -78,6 +78,7 @@ class Type extends Entity {
     /** @var Collection<int, Family> */
     #[
         ApiProperty(description: 'Famille de produit', readableLink: false, example: ['/api/component-families/5', '/api/component-families/12']),
+        ORM\JoinTable(name: 'operation_type_component_family'),
         ORM\ManyToMany(targetEntity: Family::class),
         Serializer\Groups(['read:operation-type', 'write:operation-type'])
     ]
