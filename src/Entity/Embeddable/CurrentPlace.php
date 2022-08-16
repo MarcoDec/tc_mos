@@ -13,9 +13,12 @@ abstract class CurrentPlace implements Stringable {
     final public const TR_BILL = 'bill';
     final public const TR_BLOCK = 'block';
     final public const TR_CART = 'cart';
+    final public const TR_DELAYED = 'delayed';
     final public const TR_DELIVER = 'deliver';
     final public const TR_DISABLE = 'disable';
+    final public const TR_FORECAST = 'forecast';
     final public const TR_LITIGATE = 'litigate';
+    final public const TR_MONTHLY = 'monthly';
     final public const TR_PARTIALLY_PAY = 'partially_pay';
     final public const TR_PARTIALLY_UNLOCK = 'partially_unlock';
     final public const TR_PARTIALLY_VALIDATE = 'partially_validate';

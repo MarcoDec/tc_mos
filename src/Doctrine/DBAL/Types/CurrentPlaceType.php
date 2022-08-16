@@ -8,10 +8,14 @@ abstract class CurrentPlaceType extends EnumType {
     final public const TYPE_BLOCKED = 'blocked';
     final public const TYPE_CART = 'cart';
     final public const TYPE_CLOSED = 'closed';
+    final public const TYPE_DELAY = 'delay';
     final public const TYPE_DISABLED = 'disabled';
     final public const TYPE_DRAFT = 'draft';
     final public const TYPE_ENABLED = 'enabled';
+    final public const TYPE_FORECAST = 'forecast';
     final public const TYPE_LITIGATION = 'litigation';
+    final public const TYPE_MANUAL = 'manual';
+    final public const TYPE_MONTHLY = 'monthly';
     final public const TYPE_PAID = 'paid';
     final public const TYPE_PARTIALLY_DELIVERED = 'partially_delivered';
     final public const TYPE_PARTIALLY_PAID = 'partially_paid';

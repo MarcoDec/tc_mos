@@ -1,0 +1,44 @@
+framework:
+  workflows:
+    supplier_order_item:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%place_agreed%'
+        - '%place_closed%'
+        - '%place_delay%'
+        - '%place_disabled%'
+        - '%place_draft%'
+        - '%place_forecast%'
+        - '%place_manual%'
+        - '%place_monthly%'
+        - '%place_partially_delivered%'
+        - '%place_to_validate%'
+      supports:
+        - App\Entity\Purchase\Order\Item
+      transitions:
+        '%tr_accept%':
+          from: [ '%place_to_validate%', '%place_forecast%', '%place_manual%' ]
+          to: '%place_agreed%'
+        '%tr_delayed%':
+          from: '%place_agreed%'
+          to: '%place_delay%'
+        '%tr_deliver%':
+          from: [ '%place_agreed%', '%place_delay%' ]
+          to: '%place_partially_delivered%'
+        '%tr_disable%':
+          from: [ '%place_agreed%', '%place_to_validate%' ]
+          to: '%place_disabled%'
+        '%tr_forecast%':
+          from: [ '%place_draft%', '%place_manual%', '%place_monthly%' ]
+          to: '%place_forecast%'
+        '%tr_monthly%':
+          from: '%place_draft%'
+          to: '%place_monthly%'
+        '%tr_submit_validation%':
+          from: '%place_draft%'
+          to: '%place_to_validate%'
+        '%tr_validate%':
+          from: [ '%place_agreed%', '%place_delay%', '%place_partially_delivered%' ]
+          to: '%place_closed%'

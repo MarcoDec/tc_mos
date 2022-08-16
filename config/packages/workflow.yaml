@@ -7,10 +7,14 @@ parameters:
   place_blocked: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_BLOCKED
   place_cart: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_CART
   place_closed: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_CLOSED
+  place_delay: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DELAY
   place_disabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DISABLED
   place_draft: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_DRAFT
   place_enabled: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_ENABLED
+  place_forecast: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_FORECAST
   place_litigation: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_LITIGATION
+  place_manual: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_MANUAL
+  place_monthly: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_MONTHLY
   place_paid: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PAID
   place_partially_delivered: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PARTIALLY_DELIVERED
   place_partially_paid: !php/const App\Doctrine\DBAL\Types\CurrentPlaceType::TYPE_PARTIALLY_PAID
@@ -24,9 +28,12 @@ parameters:
   tr_bill: !php/const App\Entity\Embeddable\CurrentPlace::TR_BILL
   tr_block: !php/const App\Entity\Embeddable\CurrentPlace::TR_BLOCK
   tr_cart: !php/const App\Entity\Embeddable\CurrentPlace::TR_CART
+  tr_delayed: !php/const App\Entity\Embeddable\CurrentPlace::TR_DELAYED
   tr_deliver: !php/const App\Entity\Embeddable\CurrentPlace::TR_DELIVER
   tr_disable: !php/const App\Entity\Embeddable\CurrentPlace::TR_DISABLE
+  tr_forecast: !php/const App\Entity\Embeddable\CurrentPlace::TR_FORECAST
   tr_litigate: !php/const App\Entity\Embeddable\CurrentPlace::TR_LITIGATE
+  tr_monthly: !php/const App\Entity\Embeddable\CurrentPlace::TR_MONTHLY
   tr_partially_pay: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_PAY
   tr_partially_unlock: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_UNLOCK
   tr_partially_validate: !php/const App\Entity\Embeddable\CurrentPlace::TR_PARTIALLY_VALIDATE

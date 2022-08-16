@@ -3,7 +3,7 @@
 namespace App\Entity\Embeddable\Purchase\Order;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Doctrine\DBAL\Types\Selling\Customer\CurrentPlaceType;
+use App\Doctrine\DBAL\Types\Selling\Order\CurrentPlaceType;
 use App\Entity\Embeddable\CurrentPlace as AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;

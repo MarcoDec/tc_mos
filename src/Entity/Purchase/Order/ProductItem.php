@@ -44,7 +44,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class ProductItem extends Item {
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
-        ORM\JoinColumn(name: 'component_id'),
+        ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
         Serializer\Groups(['read:item', 'write:item'])
     ]
