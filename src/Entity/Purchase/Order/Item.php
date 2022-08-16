@@ -5,168 +5,107 @@ namespace App\Entity\Purchase\Order;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Purchase\Order\Item\CurrentPlace;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Item as BaseItem;
-use App\Entity\Logistics\Order\Receipt;
-use App\Entity\Management\Society\Company;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Management\Society\Company\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ *
+ * @template-extends BaseItem<I, Order>
+ */
 #[
     ApiResource(
-        description: 'Item',
+        description: 'Ligne de commande',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les items',
-                    'summary' => 'Récupère les items',
+                    'description' => 'Récupère les lignes',
+                    'summary' => 'Récupère les lignes',
                 ]
             ]
         ],
         itemOperations: [
-            'patch' => [
-                'openapi_context' => [
-                    'description' => 'Modifie un item',
-                    'summary' => 'Modifie un item',
-                ]
-            ],
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un item',
-                    'summary' => 'Supprime un item',
+                    'description' => 'Supprime une ligne',
+                    'summary' => 'Supprime une ligne',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
-            ]
-
+            ],
+            'get' => NO_ITEM_GET_OPERATION,
+            'patch' => [
+                'openapi_context' => [
+                    'description' => 'Modifie une ligne',
+                    'summary' => 'Modifie une ligne',
+                ]
+            ],
         ],
+        shortName: 'SupplierOrderItem',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
-        shortName: 'PurchaseOrderItem',
         denormalizationContext: [
-            'groups' => ['write:item', 'write:order', 'write:current_place', 'write:notes', 'write:ref', 'write:name'],
-            'openapi_definition_name' => 'PurchaseOrderItem-write'
+            'groups' => ['write:item', 'write:measure'],
+            'openapi_definition_name' => 'SupplierOrderItem-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:order', 'read:current_place', 'read:notes', 'read:ref', 'read:name'],
-            'openapi_definition_name' => 'PurchaseOrderItem-read'
+            'groups' => ['read:id', 'read:item', 'read:measure'],
+            'openapi_definition_name' => 'SupplierOrderItem-read',
+            'skip_null_values' => false
         ],
     ),
-    ORM\Entity,
     ORM\DiscriminatorColumn(name: 'type', type: 'string'),
-    ORM\DiscriminatorMap(Item::TYPES),
+    ORM\DiscriminatorMap(self::TYPES),
+    ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
-    ORM\Table(name: 'supplier_item')
+    ORM\Table(name: 'supplier_order_item')
 ]
 abstract class Item extends BaseItem {
     public const TYPES = ['component' => ComponentItem::class, 'product' => ProductItem::class];
 
     #[
-        ApiProperty(description: 'Statut', required: true, example: CurrentPlace::WF_PLACE_CANCELLED),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'write:current_place'])
-    ]
-    protected CurrentPlace $currentPlace;
-
-    #[
-        ApiProperty(description: 'Commande', required: false, example: '/api/purchase-orders/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Order::class),
-        Serializer\Groups(['read:order', 'write:order'])
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/supplier-orders/1'),
+        ORM\ManyToOne(targetEntity: Order::class),
+        Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $order;
 
-    /**
-     * @var Collection<int, Receipt>
-     */
     #[
-        ApiProperty(description: 'Companie', required: false, example: '/api/purchase-order-items/1'),
-        ORM\OneToMany(fetch: 'EAGER', targetEntity: Receipt::class, mappedBy: 'item'),
-        Serializer\Groups(['read:company', 'write:company'])
-    ]
-    protected Collection $receipts;
-
-    #[
-        ApiProperty(description: 'Prix du cuivre', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
+        ApiProperty(description: 'Prix du cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private float $copperPrice = 0;
+    private Measure $copperPrice;
 
     #[
-        ApiProperty(description: 'Employé', required: false, readableLink: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
+        ApiProperty(description: 'Employé', readableLink: false, example: '/api/companies/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
     private ?Company $targetCompany = null;
 
-    public function __construct() {
-        $this->currentPlace = new CurrentPlace();
-        $this->receipts = new ArrayCollection();
-    }
-
-    abstract public function getStockType(): string;
-
-    final public function addReceipt(Receipt $receipt): self {
-        if (!$this->receipts->contains($receipt)) {
-            $this->receipts->add($receipt);
-            $receipt->setItem($this);
-        }
-
-        return $this;
-    }
-
-    final public function getCopperPrice(): float {
+    final public function getCopperPrice(): Measure {
         return $this->copperPrice;
-    }
-
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
-    public function getReceiptQuantity(): float {
-        return collect($this->receipts->toArray())->sum->getQuantity();
-    }
-
-    /**
-     * @return Collection<int, Receipt>
-     */
-    final public function getReceipts(): Collection {
-        return $this->receipts;
     }
 
     final public function getTargetCompany(): ?Company {
         return $this->targetCompany;
     }
 
-    final public function getTrafficLight(): int {
-        return $this->currentPlace->getTrafficLight();
-    }
-
-    final public function removeReceipt(Receipt $receipt): self {
-        if ($this->receipts->contains($receipt)) {
-            $this->receipts->removeElement($receipt);
-            if ($receipt->getItem() === $this) {
-                $receipt->setItem(null);
-            }
-        }
-
-        return $this;
-    }
-
-    final public function setCopperPrice(float $copperPrice): self {
+    /**
+     * @return $this
+     */
+    final public function setCopperPrice(Measure $copperPrice): self {
         $this->copperPrice = $copperPrice;
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
-        return $this;
-    }
-
+    /**
+     * @return $this
+     */
     final public function setTargetCompany(?Company $targetCompany): self {
         $this->targetCompany = $targetCompany;
         return $this;

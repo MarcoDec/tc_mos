@@ -1,0 +1,27 @@
+framework:
+  workflows:
+    employee_engine:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%place_warning%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%place_blocked%'  # Bloqué
+        - '%place_disabled%' # Inactif
+        - '%place_enabled%'  # Actif
+        - '%place_warning%'  # Sous surveillance
+      supports:
+        - App\Entity\Hr\Employee\Employee
+        - App\Entity\Production\Engine\Engine
+      transitions:
+        '%tr_block%':
+          from: [ '%place_enabled%', '%place_warning%' ]
+          to: '%place_blocked%'
+        '%tr_disable%':
+          from: [ '%place_enabled%', '%place_warning%' ]
+          to: '%place_disabled%'
+        '%tr_partially_validate%':
+          from: '%place_blocked%'
+          to: '%place_warning%'
+        '%tr_validate%':
+          from: '%place_warning%'
+          to: '%place_enabled%'
