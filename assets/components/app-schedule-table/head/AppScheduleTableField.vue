@@ -3,8 +3,8 @@
 
     const props = defineProps({
         field: {required: true, type: Object},
-        lengthFields: {required: true, type: Number},
-        index: {required: true, type: Number}
+        index: {required: true, type: Number},
+        lengthFields: {required: true, type: Number}
     })
     const leftField = computed(() => `${props.index * 100}px`)
 </script>

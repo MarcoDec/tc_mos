@@ -2,9 +2,9 @@
     import {computed, defineProps} from 'vue'
     const props = defineProps({
         field: {required: true, type: Object},
+        index: {required: true, type: Number},
         item: {required: true, type: Object},
-        index: { required: true, type: Number },
-        lengthFields: { required: true, type: Number}
+        lengthFields: {required: true, type: Number}
     })
     const value = computed(() => props.item[props.field.name])
     const left = computed(() => `${props.index * 100}px`)

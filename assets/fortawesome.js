@@ -37,13 +37,14 @@ import {
     faShuttleVan,
     faSignOutAlt,
     faSitemap,
+    faTableList,
     faTimes,
+    faTools,
     faTrash,
     faUserCircle,
     faUserGraduate,
     faUserTag,
-    faWrench,
-    faTableList
+    faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -89,6 +90,7 @@ library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faTimes)
 library.add(faTrash)
+library.add(faTools)
 library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)

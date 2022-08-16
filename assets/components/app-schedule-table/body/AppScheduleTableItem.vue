@@ -2,9 +2,9 @@
     import {computed, defineProps} from 'vue'
 
     defineProps({
-        fields: { required: true, type: Array },
+        fields: {required: true, type: Array},
         item: {required: true, type: Object},
-        lengthFields: { required: true, type: Number }
+        lengthFields: {required: true, type: Number}
     })
     const td = computed(() => 'AppScheduleTableItemField')
 </script>

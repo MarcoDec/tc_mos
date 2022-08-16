@@ -23,7 +23,7 @@ export const useProductionPlanningsItemsStore = defineStore('productionPlannings
                     retard: '4',
                     stocks: '2017',
                     vp: '10'
-    
+
                 },
                 {
                     201347: '20',

@@ -1,7 +1,7 @@
 <script setup>
+    import AppManufacturingTableFields from './AppManufacturingTableFields.vue'
     import {defineProps} from 'vue'
-    defineProps({ fields: { required: true, type: Array } })
-
+    defineProps({fields: {required: true, type: Array}})
 </script>
 
 <template>
