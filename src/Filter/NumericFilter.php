@@ -81,6 +81,10 @@ class NumericFilter extends ApiNumericFilter {
         return $type;
     }
 
+    protected function isNumericField(string $property, string $resourceClass): bool {
+        return parent::isNumericField($property, $resourceClass) || $this->getDoctrineFieldType($property, $resourceClass) === 'tinyint';
+    }
+
     /**
      * @param mixed $value
      *

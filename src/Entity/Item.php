@@ -3,132 +3,153 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Entity\Project\Product\Product;
-use App\Entity\Purchase\Component\Component;
-use App\Entity\Purchase\Order\Order as SupplierOrder;
-use App\Entity\Selling\Order\Order as CustomerOrder;
-use App\Entity\Traits\NotesTrait;
-use App\Entity\Traits\RefTrait;
-use DateTimeInterface;
+use App\Entity\Embeddable\Measure;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
+use App\Validator as AppAssert;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @template I of Purchase\Component\Component|Project\Product\Product
+ * @template O of Purchase\Order\Order|Selling\Order\Order
+ */
 #[ORM\MappedSuperclass]
-abstract class Item extends Entity {
-    use NotesTrait;
-    use RefTrait;
-
-    /**
-     * @var Component|null|Product
-     */
+abstract class Item extends Entity implements MeasuredInterface {
+    /** @var I|null */
     protected $item;
 
-    #[
-        ApiProperty(description: 'Notes', required: false, example: 'Lorem ipsum'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:notes', 'write:notes'])
-    ]
-    protected ?string $notes = null;
-
-    /**
-     * @var CustomerOrder|null|SupplierOrder
-     */
+    /** @var null|O */
     protected $order;
 
     #[
-        ApiProperty(description: 'Référence', required: false, example: 'FIZ56'),
+        ApiProperty(description: 'Date de confirmation', example: '2022-03-24'),
+        ORM\Column(type: 'date_immutable', nullable: true),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private ?DateTimeImmutable $confirmedDate = null;
+
+    #[
+        ApiProperty(description: 'Quantité confirmée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private Measure $confirmedQuantity;
+
+    #[
+        ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
+        ORM\Column(type: 'string', nullable: true),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private ?string $notes = null;
+
+    #[
+        ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private Measure $price;
+
+    #[
+        ApiProperty(description: 'Référence', example: 'FIZ56'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref'])
-    ]
-    protected ?string $ref = null;
-
-    #[
-        ApiProperty(description: 'Date de confirmation', required: false, example: '2022-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private DateTimeInterface $confirmationDate;
+    private ?string $ref = null;
 
     #[
-        ApiProperty(description: 'Quantité confirmée', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
+        ApiProperty(description: 'Date de la demande', example: '2022-03-24'),
+        ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private float $confirmedQuantity = 0;
+    private ?DateTimeImmutable $requestedDate = null;
 
     #[
-        ApiProperty(description: 'Prix', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
+        ApiProperty(description: 'Quantité demandée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
+        ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private float $price = 0;
+    private Measure $requestedQuantity;
 
-    #[
-        ApiProperty(description: 'Date de la demande', required: false, example: '2022-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
-        Serializer\Groups(['read:item', 'write:item'])
-    ]
-    private DateTimeInterface $requestedDate;
-
-    #[
-        ApiProperty(description: 'Quantité demandée', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
-        Serializer\Groups(['read:item', 'write:item'])
-    ]
-    private float $requestQuantity = 0;
-
-    final public function getConfirmationDate(): ?DateTimeInterface {
-        return $this->confirmationDate;
+    public function __construct() {
+        $this->confirmedQuantity = new Measure();
+        $this->price = new Measure();
+        $this->requestedQuantity = new Measure();
     }
 
-    final public function getConfirmedQuantity(): float {
+    final public function getConfirmedDate(): ?DateTimeImmutable {
+        return $this->confirmedDate;
+    }
+
+    final public function getConfirmedQuantity(): Measure {
         return $this->confirmedQuantity;
     }
 
     /**
-     * @return Component|null|Product
+     * @return I|null
      */
     final public function getItem() {
         return $this->item;
     }
 
+    final public function getMeasures(): array {
+        return [$this->confirmedQuantity, $this->price, $this->requestedQuantity];
+    }
+
+    final public function getNotes(): ?string {
+        return $this->notes;
+    }
+
     /**
-     * @return CustomerOrder|null|SupplierOrder
+     * @return null|O
      */
     final public function getOrder() {
         return $this->order;
     }
 
-    final public function getPrice(): float {
+    final public function getPrice(): Measure {
         return $this->price;
     }
 
-    final public function getRequestedDate(): ?DateTimeInterface {
+    final public function getRef(): ?string {
+        return $this->ref;
+    }
+
+    final public function getRequestedDate(): ?DateTimeImmutable {
         return $this->requestedDate;
     }
 
-    final public function getRequestQuantity(): float {
-        return $this->requestQuantity;
+    final public function getRequestedQuantity(): Measure {
+        return $this->requestedQuantity;
     }
 
-    final public function setConfirmationDate(?DateTimeInterface $confirmationDate): self {
-        $this->confirmationDate = $confirmationDate;
+    final public function getUnit(): ?Unit {
+        return $this->item?->getUnit();
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setConfirmedDate(?DateTimeImmutable $confirmedDate): self {
+        $this->confirmedDate = $confirmedDate;
         return $this;
     }
 
-    final public function setConfirmedQuantity(float $confirmedQuantity): self {
+    /**
+     * @return $this
+     */
+    final public function setConfirmedQuantity(Measure $confirmedQuantity): self {
         $this->confirmedQuantity = $confirmedQuantity;
         return $this;
     }
 
     /**
-     * @param Component|null|Product $item
+     * @param I|null $item
+     *
+     * @return $this
      */
     final public function setItem($item): self {
         $this->item = $item;
@@ -136,25 +157,52 @@ abstract class Item extends Entity {
     }
 
     /**
-     * @param CustomerOrder|null|SupplierOrder $order
+     * @return $this
+     */
+    final public function setNotes(?string $notes): self {
+        $this->notes = $notes;
+        return $this;
+    }
+
+    /**
+     * @param null|O $order
+     *
+     * @return $this
      */
     final public function setOrder($order): self {
         $this->order = $order;
         return $this;
     }
 
-    final public function setPrice(float $price): self {
+    /**
+     * @return $this
+     */
+    final public function setPrice(Measure $price): self {
         $this->price = $price;
         return $this;
     }
 
-    final public function setRequestedDate(?DateTimeInterface $requestedDate): self {
+    /**
+     * @return $this
+     */
+    final public function setRef(?string $ref): self {
+        $this->ref = $ref;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setRequestedDate(?DateTimeImmutable $requestedDate): self {
         $this->requestedDate = $requestedDate;
         return $this;
     }
 
-    final public function setRequestQuantity(float $requestQuantity): self {
-        $this->requestQuantity = $requestQuantity;
+    /**
+     * @return $this
+     */
+    final public function setRequestedQuantity(Measure $requestedQuantity): self {
+        $this->requestedQuantity = $requestedQuantity;
         return $this;
     }
 }

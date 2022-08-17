@@ -2,22 +2,17 @@
 
 namespace App\Entity\Selling\Customer;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Event as AbstractEvent;
-use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'customer' => ['name', 'required' => true]
-    ]),
     ApiResource(
-        description: 'Evénement',
+        description: 'Événement sur un client',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -30,10 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Créer un événement',
                     'summary' => 'Créer un événement',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
-                'denormalization_context' => [
-                    'groups' => ['write:name', 'write:event_date', 'write:customer-event']
-                ]
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -44,12 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un événement',
-                    'summary' => 'Récupère un événement',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un événement',
@@ -63,50 +50,53 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:event_date', 'write:customer-event', 'write:event', 'write:company'],
+            'groups' => ['write:event'],
             'openapi_definition_name' => 'CustomerEvent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:event', 'read:customer-event', 'read:name', 'read:event_date', 'read:company'],
-            'openapi_definition_name' => 'CustomerEvent-read'
-        ],
+            'groups' => ['read:event', 'read:id'],
+            'openapi_definition_name' => 'CustomerEvent-read',
+            'skip_null_values' => false
+        ]
     ),
-    ORM\Entity
+    ORM\Entity,
+    ORM\Table('customer_event')
 ]
 class Event extends AbstractEvent {
     public const EVENT_HOLIDAY = 'holiday';
     public const EVENT_KINDS = [self::EVENT_HOLIDAY];
 
     #[
-        ApiProperty(description: 'Client', required: false, readableLink: false, example: '/api/customers/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Customer::class, inversedBy: 'events'),
-        Serializer\Groups(['read:customer-event', 'write:customer-event'])
+        ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/1'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:event', 'write:event'])
     ]
     private Customer $customer;
 
     #[
         ApiProperty(description: 'Type', example: self::EVENT_HOLIDAY),
         Assert\Choice(choices: self::EVENT_KINDS),
-        ORM\Column(options: ['default' => self::EVENT_HOLIDAY], type: 'string'),
-        Serializer\Groups(['read:customer-event', 'write:customer-event'])
+        ORM\Column(options: ['default' => self::EVENT_HOLIDAY]),
+        Serializer\Groups(['read:event', 'write:event'])
     ]
     private string $kind = self::EVENT_HOLIDAY;
 
-    public function getCustomer(): Customer {
+    final public function getCustomer(): Customer {
         return $this->customer;
     }
 
-    final public function getKind(): ?string {
+    final public function getKind(): string {
         return $this->kind;
     }
 
-    public function setCustomer(Customer $customer): void {
+    final public function setCustomer(Customer $customer): self {
         $this->customer = $customer;
+        return $this;
     }
 
     final public function setKind(string $kind): self {
         $this->kind = $kind;
-
         return $this;
     }
 }

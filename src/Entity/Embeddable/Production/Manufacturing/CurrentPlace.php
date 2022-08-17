@@ -2,35 +2,51 @@
 
 namespace App\Entity\Embeddable\Production\Manufacturing;
 
-use App\Entity\Embeddable\AbstractCurrentPlace;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Doctrine\DBAL\Types\Production\Manufacturing\CurrentPlaceType;
+use App\Entity\Embeddable\CurrentPlace as AbstractCurrentPlace;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class CurrentPlace extends AbstractCurrentPlace {
-    public const WF_PLACE_BLOCKED = 'blocked';
-    public const WF_PLACE_CANCELLED = 'cancelled';
-    public const WF_PLACE_CONFIRMED = 'confirmed';
-    public const WF_PLACE_DONE = 'done';
-    public const WF_PLACE_DRAFT = 'draft';
-    public const WF_TR_BLOCK = 'block';
-    public const WF_TR_CANCEL = 'cancel';
-    public const WF_TR_CLOSE = 'close';
-    public const WF_TR_CONFIRM = 'confirm';
-    public const WF_TR_UNBLOCK = 'unblock';
+    final public const TRANSITIONS = [
+        self::TR_ACCEPT,
+        self::TR_BLOCK,
+        self::TR_DISABLE,
+        self::TR_UNLOCK,
+        self::TR_VALIDATE
+    ];
 
-    final public function __construct(?string $name = null) {
-        parent::__construct(!empty($name) ? $name : self::WF_PLACE_DRAFT);
+    #[
+        ApiProperty(description: 'Nom', required: true, openapiContext: ['enum' => CurrentPlaceType::TYPES]),
+        Assert\Choice(choices: CurrentPlaceType::TYPES),
+        Assert\NotBlank,
+        ORM\Column(type: 'manufacturing_order_current_place', options: ['default' => CurrentPlaceType::TYPE_DRAFT]),
+        Serializer\Groups(['read:current-place'])
+    ]
+    protected ?string $name = null;
+
+    public function __construct(?string $name = null) {
+        parent::__construct(!empty($name) ? $name : CurrentPlaceType::TYPE_DRAFT);
     }
 
+    #[Pure]
     final public function getTrafficLight(): int {
-        switch ($this->getName()) {
-            case self::WF_PLACE_CANCELLED:
-            case self::WF_PLACE_DONE:
-                return 3;
-            case self::WF_PLACE_CONFIRMED:
-                return 1;
-            default:
-                return 2;
-        }
+        return match ($this->getName()) {
+            CurrentPlaceType::TYPE_AGREED => 1,
+            CurrentPlaceType::TYPE_BLOCKED, CurrentPlaceType::TYPE_DISABLED => 3,
+            default => 2,
+        };
+    }
+
+    final public function isDeletable(): bool {
+        return in_array($this->name, [CurrentPlaceType::TYPE_DISABLED, CurrentPlaceType::TYPE_DRAFT]);
+    }
+
+    final public function isFrozen(): bool {
+        return $this->name === CurrentPlaceType::TYPE_DISABLED;
     }
 }

@@ -1,0 +1,30 @@
+framework:
+  workflows:
+    manufacturing_order:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%place_agreed%'
+        - '%place_blocked%'
+        - '%place_closed%'
+        - '%place_disabled%'
+        - '%place_draft%'
+      supports:
+        - App\Entity\Production\Engine\Event\Event
+      transitions:
+        '%tr_accept%':
+          from: '%place_draft%'
+          to: '%place_agreed%'
+        '%tr_block%':
+          from: '%place_agreed%'
+          to: '%place_blocked%'
+        '%tr_disable%':
+          from: '%place_draft%'
+          to: '%place_disabled%'
+        '%tr_unlock%':
+          from: '%place_blocked%'
+          to: '%place_agreed%'
+        '%tr_validate%':
+          from: '%place_agreed%'
+          to: '%place_closed%'
