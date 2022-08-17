@@ -27,7 +27,9 @@
     }
 
     const alignFields = computed(() => props.fields.map(align).flat())
-    // console.log('alignFields', [alignFields]);
+     console.log('alignFields', [alignFields]);
+          console.log('items', props.items);
+
 </script>
 
 <template>

@@ -64,6 +64,8 @@
         result.push(0)
         return result
     })
+    console.log('itemsWithGhosts', itemsWithGhosts);
+    
 </script>
 
 <template>

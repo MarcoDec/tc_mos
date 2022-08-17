@@ -3,10 +3,10 @@ import { computed, defineProps } from "vue";
 import AppRowsTableItemGuesser from "./AppRowsTableItemGuesser.vue";
 import usePrices from "../../../stores/prices/componentSuppliers";
 
-const priceItems = usePrices()
+const priceItems = usePrices();
 console.log("pricesItemms--->", priceItems);
 const props = defineProps({
-  items:{default: () => [], type: Array},
+  items: { default: () => [], type: Array },
   fields: { required: true, type: Array },
   alignFields: { required: true, type: Array },
 });
@@ -60,10 +60,9 @@ const levels = computed(() => {
   return levelObj;
 });
 const itemsWithGhosts = computed(() => {
-  
   const result = [];
   for (let i = 0, j = 1; i < props.items.length; i++, j++) {
-    console.log('items',props.items);
+    console.log("afefffitems", props.items);
     result.push(props.items[i]);
     if (
       j === props.items.length ||
@@ -79,13 +78,14 @@ const itemsWithGhosts = computed(() => {
   result.push(0);
   return result;
 });
-    console.log('alignFields222', props.alignFields);
+console.log("alignFields222", props.alignFields);
+console.log("itemsWithGhosts", itemsWithGhosts);
 
 </script>
 
 <template>
   <tbody>
-   <!-- <AppRowsTableItemGuesser
+    <!-- <AppRowsTableItemGuesser
       v-for="(item, index) in itemsWithGhosts"
       :key="item.id"
       :last="lasts.includes(index)"
@@ -96,6 +96,12 @@ const itemsWithGhosts = computed(() => {
       :fields-by-level="fieldsByLevel"
       :index="index"
     />-->
-     <AppRowsTableItemGuesser  :fields="fields" :align-fields="alignFields"/>
+    <AppRowsTableItemGuesser
+      v-for="(item, index) in itemsWithGhosts"
+      :key="item.id"
+      :fields="fields"
+      :align-fields="alignFields"
+      :index="index"
+    />
   </tbody>
 </template>

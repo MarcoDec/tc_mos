@@ -11,6 +11,7 @@
     const fetchItem = useNamespacedActions<Actions>('componentSuppliers', ['fetchItem']).fetchItem
     //const {items} = useNamespacedGetters<Getters>('componentSuppliers', ['items'])
     const {rows} = useNamespacedGetters<Getters>('componentSuppliers', ['rows'])
+    console.log('rows',rows);
 
     onMounted(async () => {
         await fetchItem()
