@@ -7,16 +7,18 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Management\Society\Company\Company;
+use App\Entity\Management\Unit;
 use App\Entity\Project\Product\Product as TechnicalSheet;
 use App\Filter\RelationFilter;
+use App\Repository\Selling\Customer\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'customer' => 'name',
-        'product' => 'name'
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'product']),
     ApiResource(
         description: 'Produit',
         collectionOperations: [
@@ -31,10 +33,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Créer un produit',
                     'summary' => 'Créer un produit',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
-                // 'denormalization_context' => [
-                //     'groups' => ['write:name', 'write:event_date', 'write:customer-event']
-                // ]
+                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
         ],
         itemOperations: [
@@ -45,50 +44,69 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un produit',
-                    'summary' => 'Récupère un produit',
-                ]
-            ],
-            'patch' => [
-                'openapi_context' => [
-                    'description' => 'Modifie un produit',
-                    'summary' => 'Modifie un produit',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
-            ],
+            'get' => NO_ITEM_GET_OPERATION
         ],
         shortName: 'CustomerProduct',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:customer', 'write:product'],
+            'groups' => ['write:product-customer'],
             'openapi_definition_name' => 'CustomerProduct-write'
         ],
         normalizationContext: [
-            'groups' => ['read:customer', 'read:product', 'read:id'],
-            'openapi_definition_name' => 'CustomerProduct-read'
+            'groups' => ['read:id', 'read:product-customer'],
+            'openapi_definition_name' => 'CustomerProduct-read',
+            'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ProductRepository::class),
     ORM\Table(name: 'product_customer')
 ]
 class Product extends Entity {
+    /** @var Collection<int, Company> */
     #[
-        ApiProperty(description: 'Client', required: false, readableLink: false, example: '/api/customers/8'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Customer::class),
-        Serializer\Groups(['read:customer', 'write:customer'])
+        ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
+        ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'products'),
+        Serializer\Groups(['read:product-customer'])
+    ]
+    private Collection $administeredBy;
+
+    #[
+        ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/8'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:product-customer', 'write:product-customer'])
     ]
     private ?Customer $customer;
 
     #[
-        ApiProperty(description: 'Client', required: false, readableLink: false, example: '/api/products/45'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: TechnicalSheet::class),
-        Serializer\Groups(['read:product', 'write:product'])
+        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/45'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:product-customer', 'write:product-customer'])
     ]
     private ?TechnicalSheet $product;
+
+    public function __construct() {
+        $this->administeredBy = new ArrayCollection();
+    }
+
+    final public function addAdministeredBy(Company $administeredBy): self {
+        if (!$this->administeredBy->contains($administeredBy)) {
+            $this->administeredBy->add($administeredBy);
+            $administeredBy->addProduct($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    final public function getAdministeredBy(): Collection {
+        return $this->administeredBy;
+    }
 
     final public function getCustomer(): ?Customer {
         return $this->customer;
@@ -96,6 +114,18 @@ class Product extends Entity {
 
     final public function getProduct(): ?TechnicalSheet {
         return $this->product;
+    }
+
+    final public function getUnit(): ?Unit {
+        return $this->product?->getUnit();
+    }
+
+    final public function removeAdministeredBy(Company $administeredBy): self {
+        if ($this->administeredBy->contains($administeredBy)) {
+            $this->administeredBy->removeElement($administeredBy);
+            $administeredBy->removeProduct($this);
+        }
+        return $this;
     }
 
     final public function setCustomer(?Customer $customer): self {

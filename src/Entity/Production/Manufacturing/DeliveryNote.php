@@ -2,35 +2,35 @@
 
 namespace App\Entity\Production\Manufacturing;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Accounting\Bill;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Production\Manufacturing\DeliveryNote\CurrentPlace;
 use App\Entity\Entity;
-use App\Entity\Management\Society\Company;
-use App\Entity\Selling\Order\Order;
-use App\Entity\Traits\CompanyTrait;
-use App\Entity\Traits\RefTrait;
-use DateTimeInterface;
+use App\Entity\Interfaces\WorkflowInterface;
+use App\Entity\Management\Society\Company\Company;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
- #[
+#[
     ApiResource(
-        description: 'Note de livraison',
+        description: 'Bon de livraison',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les notes de livraison',
-                    'summary' => 'Récupère les notes de livraison',
+                    'description' => 'Récupère les bons de livraison',
+                    'summary' => 'Récupère les bons de livraison',
                 ],
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer une note de livraison',
-                    'summary' => 'Créer une note de livraison',
+                    'description' => 'Créer un bon de livraison',
+                    'summary' => 'Créer un bon de livraison',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ]
@@ -38,126 +38,157 @@ use Symfony\Component\Validator\Constraints as Assert;
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime une note de livraison',
-                    'summary' => 'Supprime une note de livraison',
+                    'description' => 'Supprime un bon de livraison',
+                    'summary' => 'Supprime un bon de livraison',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère une note de livraison',
-                    'summary' => 'Récupère une note de livraison',
+                    'description' => 'Récupère un bon de livraison',
+                    'summary' => 'Récupère un bon de livraison',
                 ]
             ],
             'patch' => [
                 'openapi_context' => [
-                    'description' => 'Modifie une note de livraison',
-                    'summary' => 'Modifie une note de livraison',
+                    'description' => 'Modifie un bon de livraison',
+                    'summary' => 'Modifie un bon de livraison',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
+            ],
+            'promote' => [
+                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Transite le bon à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => CurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite le bon à son prochain statut de workflow'
+                ],
+                'path' => '/delivery-notes/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'validate' => false
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:ref', 'write:company', 'write:delivery-note', 'write:bill', 'write:current_place', 'write:order'],
+            'groups' => ['write:delivery-note', 'write:measure'],
             'openapi_definition_name' => 'DeliveryNote-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:ref', 'read:company', 'read:delivery-note', 'read:bill', 'read:current_place', 'read:order'],
-            'openapi_definition_name' => 'DeliveryNote-read'
+            'groups' => ['read:current-place', 'read:delivery-note', 'read:id', 'read:measure'],
+            'openapi_definition_name' => 'DeliveryNote-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
-class DeliveryNote extends Entity {
-    use CompanyTrait;
-    use RefTrait;
-
+class DeliveryNote extends Entity implements WorkflowInterface {
     #[
-        ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company', 'write:company'])
-    ]
-    protected ?Company $company;
-
-    #[
-        ApiProperty(description: 'Référence'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref'])
-    ]
-    protected ?string $ref = null;
-
-    #[
-        ApiProperty(description: 'Facture', required: false, example: '/api/bills/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Bill::class),
-        Serializer\Groups(['read:bill', 'write:bill'])
+        ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
     ]
     private ?Bill $bill = null;
 
     #[
-        ApiProperty(description: 'Statut', required: true, example: 'in_creation'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:current_place', 'write:current_place'])
+        ApiProperty(description: 'Company', readableLink: false, example: '/api/companies/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
+    ]
+    private ?Company $company = null;
+
+    #[
+        ApiProperty(description: 'Statut', example: 'in_creation'),
+        ORM\Embedded,
+        Serializer\Groups(['read:delivery-note'])
     ]
     private CurrentPlace $currentPlace;
 
     #[
-        ApiProperty(description: 'Date', required: false, example: '2022-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
+        ApiProperty(description: 'Date', readableLink: false, example: '2022-03-24'),
+        ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
     ]
-    private ?DateTimeInterface $date;
+    private ?DateTimeImmutable $date = null;
 
     #[
-        ApiProperty(description: 'Supplément de transport', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
+        ApiProperty(description: 'Supplément de transport', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
         Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
     ]
-    private float $freightSurcharge = 0;
+    private Measure $freightSurcharge;
 
     #[
-        ApiProperty(description: 'Non facturable', required: true, example: false),
-        ORM\Column(options: ['default' => false], type: 'boolean'),
+        ApiProperty(description: 'Non facturable', example: false),
+        ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
     ]
     private bool $nonBillable = false;
 
     #[
-        ApiProperty(description: 'Commande', required: false, example: '/api/manufacturing-orders/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Order::class),
-        Serializer\Groups(['read:order', 'write:order'])
+        ApiProperty(description: 'Référence'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
     ]
-    private ?Order $order = null;
+    private ?string $ref = null;
 
     public function __construct() {
         $this->currentPlace = new CurrentPlace();
+        $this->freightSurcharge = new Measure();
     }
 
     final public function getBill(): ?Bill {
         return $this->bill;
     }
 
+    final public function getCompany(): ?Company {
+        return $this->company;
+    }
+
     final public function getCurrentPlace(): CurrentPlace {
         return $this->currentPlace;
     }
 
-    final public function getDate(): ?DateTimeInterface {
+    final public function getDate(): ?DateTimeImmutable {
         return $this->date;
     }
 
-    final public function getFreightSurcharge(): float {
+    final public function getFreightSurcharge(): Measure {
         return $this->freightSurcharge;
     }
 
-    final public function getOrder(): ?Order {
-        return $this->order;
+    final public function getRef(): ?string {
+        return $this->ref;
     }
 
-    public function isNonBillable(): bool {
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
+    }
+
+    final public function isNonBillable(): bool {
         return $this->nonBillable;
     }
 
@@ -166,27 +197,38 @@ class DeliveryNote extends Entity {
         return $this;
     }
 
+    final public function setCompany(?Company $company): self {
+        $this->company = $company;
+        return $this;
+    }
+
     final public function setCurrentPlace(CurrentPlace $currentPlace): self {
         $this->currentPlace = $currentPlace;
         return $this;
     }
 
-    final public function setDate(?DateTimeInterface $date): self {
+    final public function setDate(?DateTimeImmutable $date): self {
         $this->date = $date;
         return $this;
     }
 
-    final public function setFreightSurcharge(float $freightSurcharge): self {
+    final public function setFreightSurcharge(Measure $freightSurcharge): self {
         $this->freightSurcharge = $freightSurcharge;
         return $this;
     }
 
-    public function setNonBillable(bool $nonBillable): void {
+    final public function setNonBillable(bool $nonBillable): self {
         $this->nonBillable = $nonBillable;
+        return $this;
     }
 
-    final public function setOrder(?Order $order): self {
-        $this->order = $order;
+    final public function setRef(?string $ref): self {
+        $this->ref = $ref;
+        return $this;
+    }
+
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 }

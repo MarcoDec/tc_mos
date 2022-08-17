@@ -9,17 +9,15 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
+use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component as TechnicalSheet;
-use App\Entity\Traits\RefTrait;
 use App\Filter\RelationFilter;
+use App\Repository\Purchase\Supplier\ComponentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'component' => 'name',
-        'supplier' => 'name'
-    ]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'supplier']),
     ApiResource(
         description: 'Composant',
         collectionOperations: [
@@ -44,6 +42,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Supprime un composant'
                 ]
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifier un composant',
@@ -56,199 +55,203 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:supplier-component', 'write:supplier', 'write:component', 'write:measure', 'write:incoterms', 'write:ref'],
+            'groups' => ['write:measure', 'write:supplier-component'],
             'openapi_definition_name' => 'SupplierComponent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:supplier-component', 'read:ref', 'read:supplier', 'read:component', 'read:measure', 'read:incoterms'],
-            'openapi_definition_name' => 'SupplierComponent-read'
+            'groups' => ['read:id', 'read:measure', 'read:supplier-component'],
+            'openapi_definition_name' => 'SupplierComponent-read',
+            'skip_null_values' => false
         ]
     ),
-    ORM\Entity,
-    ORM\Table(name: 'component_supplier')
+    ORM\Entity(repositoryClass: ComponentRepository::class),
+    ORM\Table(name: 'supplier_component')
 ]
 class Component extends Entity {
-    use RefTrait;
-
     #[
         ApiProperty(description: 'Référence', example: 'DH544G'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref'])
+        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
-    protected ?string $ref = null;
+    private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Composant', required: false, readableLink: false, example: '/api/components/4'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: TechnicalSheet::class),
-        Serializer\Groups(['read:component', 'write:component'])
+        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
-    private ?TechnicalSheet $component;
+    private ?TechnicalSheet $component = null;
 
     #[
-        ApiProperty(description: 'Poids du cuivre', example: '3'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
+        ORM\Embedded,
+        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
     private Measure $copperWeight;
 
     #[
-        ApiProperty(description: 'Temps de livraison', example: '7'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
+        ORM\Embedded,
+        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
     private Measure $deliveryTime;
 
     #[
-        ApiProperty(description: 'Incoterms', required: false),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Incoterms::class),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        ApiProperty(description: 'Incoterms', readableLink: false, example: '/api/incoterms/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
-    private ?Incoterms $incoterms;
+    private ?Incoterms $incoterms = null;
 
     #[
-        ApiProperty(description: 'Indice', required: true, example: '0'),
-        ORM\Column(type: 'string', options: ['default' => '0'], name: 'supplier_component_index'),
+        ApiProperty(description: 'Indice', example: '0'),
+        ORM\Column(name: '`index`', options: ['default' => '0']),
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
     private string $index = '0';
 
     #[
-        ApiProperty(description: 'MOQ (Minimal Order Quantity)', required: true, example: '1'),
-        ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'MOQ (Minimal Order Quantity)', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
-    private float $moq = 1;
+    private Measure $moq;
 
     #[
-        ApiProperty(description: 'Conditionnement', required: true, example: 1),
-        ORM\Column(options: ['default' => 1, 'unsigned' => true], type: 'integer'),
+        ApiProperty(description: 'Conditionnement', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
-    private int $packaging = 1;
+    private Measure $packaging;
 
     #[
-        ApiProperty(description: 'Type de packaging', required: false, example: 'Palette'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
+        ApiProperty(description: 'Type de packaging', example: 'Palette'),
+        ORM\Column(length: 30, nullable: true),
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
     private ?string $packagingKind = null;
 
     #[
-        ApiProperty(description: 'Proportion', required: true, example: '99'),
-        ORM\Column(options: ['default' => 100, 'unsigned' => true], type: 'float'),
+        ApiProperty(description: 'Proportion', example: '99'),
+        ORM\Column(options: ['default' => 100, 'unsigned' => true]),
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
     private float $proportion = 100;
 
     #[
-        ApiProperty(description: 'Fournisseur', required: false, readableLink: false, example: '/api/suppliers/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Supplier::class),
-        Serializer\Groups(['read:supplier', 'write:supplier'])
+        ApiProperty(description: 'Fournisseur', readableLink: false, example: '/api/suppliers/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
-    private ?Supplier $supplier;
+    private ?Supplier $supplier = null;
 
     public function __construct() {
         $this->copperWeight = new Measure();
         $this->deliveryTime = new Measure();
+        $this->moq = new Measure();
+        $this->packaging = new Measure();
     }
 
-    public function getComponent(): ?TechnicalSheet {
+    final public function getCode(): ?string {
+        return $this->code;
+    }
+
+    final public function getComponent(): ?TechnicalSheet {
         return $this->component;
     }
 
-    public function getCopperWeight(): Measure {
+    final public function getCopperWeight(): Measure {
         return $this->copperWeight;
     }
 
-    public function getDeliveryTime(): Measure {
+    final public function getDeliveryTime(): Measure {
         return $this->deliveryTime;
     }
 
-    public function getIncoterms(): ?Incoterms {
+    final public function getIncoterms(): ?Incoterms {
         return $this->incoterms;
     }
 
-    public function getIndex(): ?string {
+    final public function getIndex(): string {
         return $this->index;
     }
 
-    public function getMoq(): ?float {
+    final public function getMoq(): Measure {
         return $this->moq;
     }
 
-    public function getPackaging(): ?int {
+    final public function getPackaging(): Measure {
         return $this->packaging;
     }
 
-    public function getPackagingKind(): ?string {
+    final public function getPackagingKind(): ?string {
         return $this->packagingKind;
     }
 
-    public function getProportion(): ?float {
+    final public function getProportion(): float {
         return $this->proportion;
     }
 
-    public function getSupplier(): ?Supplier {
+    final public function getSupplier(): ?Supplier {
         return $this->supplier;
     }
 
-    public function setComponent(?TechnicalSheet $component): self {
+    final public function getUnit(): ?Unit {
+        return $this->component?->getUnit();
+    }
+
+    final public function setCode(?string $code): self {
+        $this->code = $code;
+        return $this;
+    }
+
+    final public function setComponent(?TechnicalSheet $component): self {
         $this->component = $component;
-
         return $this;
     }
 
-    public function setCopperWeight(Measure $copperWeight): self {
+    final public function setCopperWeight(Measure $copperWeight): self {
         $this->copperWeight = $copperWeight;
-
         return $this;
     }
 
-    public function setDeliveryTime(Measure $deliveryTime): self {
+    final public function setDeliveryTime(Measure $deliveryTime): self {
         $this->deliveryTime = $deliveryTime;
-
         return $this;
     }
 
-    public function setIncoterms(?Incoterms $incoterms): self {
+    final public function setIncoterms(?Incoterms $incoterms): self {
         $this->incoterms = $incoterms;
-
         return $this;
     }
 
-    public function setIndex(string $index): self {
+    final public function setIndex(string $index): self {
         $this->index = $index;
-
         return $this;
     }
 
-    public function setMoq(float $moq): self {
+    final public function setMoq(Measure $moq): self {
         $this->moq = $moq;
-
         return $this;
     }
 
-    public function setPackaging(int $packaging): self {
+    final public function setPackaging(Measure $packaging): self {
         $this->packaging = $packaging;
-
         return $this;
     }
 
-    public function setPackagingKind(?string $packagingKind): self {
+    final public function setPackagingKind(?string $packagingKind): self {
         $this->packagingKind = $packagingKind;
-
         return $this;
     }
 
-    public function setProportion(float $proportion): self {
+    final public function setProportion(float $proportion): self {
         $this->proportion = $proportion;
-
         return $this;
     }
 
-    public function setSupplier(?Supplier $supplier): self {
+    final public function setSupplier(?Supplier $supplier): self {
         $this->supplier = $supplier;
-
         return $this;
     }
 }

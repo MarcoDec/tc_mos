@@ -5,9 +5,8 @@ namespace App\Entity\Project\Operation;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
-use App\Entity\Traits\CodeTrait;
-use App\Entity\Traits\NameTrait;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -39,12 +38,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_ADMIN.'\')'
             ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère une opération',
-                    'summary' => 'Récupère une opération',
-                ]
-            ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une opération',
@@ -58,92 +52,105 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PROJECT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:code', 'write:family', 'write:project_operation'],
+            'groups' => ['write:measure', 'write:project-operation'],
             'openapi_definition_name' => 'ProjectOperation-write'
         ],
         normalizationContext: [
-            'groups' => ['read:name', 'read:id', 'read:code', 'read:family', 'read:project_operation'],
-            'openapi_definition_name' => 'ProjectOperation-read'
+            'groups' => ['read:id', 'read:measure', 'read:project-operation'],
+            'openapi_definition_name' => 'ProjectOperation-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
+    ORM\Table(name: 'project_operation'),
     UniqueEntity(['name', 'code'])
 ]
 class Operation extends Entity {
-    use CodeTrait;
-    use NameTrait;
-
     #[
-        ApiProperty(description: 'Code', required: true, example: 'SAZ'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:code', 'write:code'])
-    ]
-    protected ?string $code = null;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'Nom'),
-        Assert\NotBlank,
-        ORM\Column,
-        Serializer\Groups(['read:name', 'write:name'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Automatique', required: false, example: true),
+        ApiProperty(description: 'Automatique', example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:project_operation', 'write:project_operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
     private bool $auto = false;
 
     #[
-        ApiProperty(description: 'Limite', required: false, example: 'Lorem ipsum'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:project_operation', 'write:project_operation'])
+        ApiProperty(description: 'Limite', example: 'Lorem ipsum'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
     private ?string $boundary = null;
 
     #[
-        ApiProperty(description: 'Cadence', required: true, example: 0),
-        ORM\Column(type: 'integer', options: ['default' => 0, 'unsigned' => true]),
-        Serializer\Groups(['read:project_operation', 'write:project_operation'])
+        ApiProperty(description: 'Cadence'),
+        ORM\Embedded,
+        Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
-    private int $cadence = 0;
+    private Measure $cadence;
 
     #[
-        ApiProperty(description: 'Prix', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Serializer\Groups(['read:project_operation', 'write:project_operation'])
+        ApiProperty(description: 'Code', example: 'SAZ'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
-    private float $price = 0;
+    private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Durée', required: true, example: 0),
-        ORM\Column(type: 'integer', options: ['default' => 0, 'unsigned' => true]),
-        Serializer\Groups(['read:project_operation', 'write:project_operation'])
+        ApiProperty(description: 'Nom', example: 'Nom'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
-    private int $time = 0;
+    private ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Prix'),
+        ORM\Embedded,
+        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+    ]
+    private Measure $price;
+
+    #[
+        ApiProperty(description: 'Durée'),
+        ORM\Embedded,
+        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+    ]
+    private Measure $time;
 
     #[
         ApiProperty(description: 'Type', required: false, example: '/api/operation-types/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Type::class),
-        Serializer\Groups(['read:project_operation', 'write:project_operation'])
+        ORM\ManyToOne,
+        Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
     private ?Type $type = null;
+
+    public function __construct() {
+        $this->cadence = new Measure();
+        $this->price = new Measure();
+        $this->time = new Measure();
+    }
 
     final public function getBoundary(): ?string {
         return $this->boundary;
     }
 
-    final public function getCadence(): int {
+    final public function getCadence(): Measure {
         return $this->cadence;
     }
 
-    final public function getPrice(): float {
+    final public function getCode(): ?string {
+        return $this->code;
+    }
+
+    final public function getName(): ?string {
+        return $this->name;
+    }
+
+    final public function getPrice(): Measure {
         return $this->price;
     }
 
-    final public function getTime(): int {
+    final public function getTime(): Measure {
         return $this->time;
     }
 
@@ -165,17 +172,27 @@ class Operation extends Entity {
         return $this;
     }
 
-    final public function setCadence(int $cadence): self {
+    final public function setCadence(Measure $cadence): self {
         $this->cadence = $cadence;
         return $this;
     }
 
-    final public function setPrice(float $price): self {
+    final public function setCode(?string $code): self {
+        $this->code = $code;
+        return $this;
+    }
+
+    final public function setName(?string $name): self {
+        $this->name = $name;
+        return $this;
+    }
+
+    final public function setPrice(Measure $price): self {
         $this->price = $price;
         return $this;
     }
 
-    final public function setTime(int $time): self {
+    final public function setTime(Measure $time): self {
         $this->time = $time;
         return $this;
     }

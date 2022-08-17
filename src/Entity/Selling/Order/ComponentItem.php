@@ -9,39 +9,44 @@ use App\Entity\Purchase\Component\Component;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
+/**
+ * @template-extends Item<Component>
+ */
 #[
     ApiResource(
-        description: 'Item du composant',
+        description: 'Ligne de commande',
         collectionOperations: [
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un item de composant',
-                    'summary' => 'Créer un item de composant',
+                    'description' => 'Créer une ligne',
+                    'summary' => 'Créer une ligne',
+                    'tags' => ['CustomerOrderItem']
                 ]
-            ],
+            ]
         ],
-        itemOperations: [
-        ],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        shortName: 'CustomerOrderItemComponent',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
         ],
-        shortName: 'SellingOrderComponent',
         denormalizationContext: [
-            'groups' => ['write:item', 'write:order', 'write:current_place', 'write:notes', 'write:ref', 'write:name', 'write:component'],
-            'openapi_definition_name' => 'SellingOrderItem-write'
+            'groups' => ['write:item', 'write:measure'],
+            'openapi_definition_name' => 'CustomerOrderItemComponent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:order', 'read:current_place', 'read:notes', 'read:ref', 'read:name', 'read:component'],
-            'openapi_definition_name' => 'SellingOrderItem-read'
-        ],
+            'groups' => ['read:id', 'read:item', 'read:measure'],
+            'openapi_definition_name' => 'CustomerOrderItemComponent-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity
 ]
 class ComponentItem extends Item {
     #[
-        ApiProperty(description: 'Composant', required: false, example: '/api/components/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Component::class),
-        Serializer\Groups(['read:component', 'write:component'])
+        ApiProperty(description: 'Composant', example: '/api/components/1'),
+        ORM\JoinColumn(name: 'component_id'),
+        ORM\ManyToOne(targetEntity: Component::class),
+        Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
 }

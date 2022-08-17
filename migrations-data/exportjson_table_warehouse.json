@@ -1,0 +1,282 @@
+[
+  {
+    "id": "1",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "Magasin RIOZ",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "2",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "Import sous douane RIOZ",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "3",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "Magasin TC",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "4",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "Prison",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "0000-00-00 00:00:00",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "5",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "EXPORT vers TUNISIE",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2017-03-14 16:08:35",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "6",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "Magasin ACT",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2017-03-14 16:09:19",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "7",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "EXPORT vers FRANCE",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2017-03-14 16:09:33",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "8",
+    "statut": "0",
+    "id_society": "2",
+    "warehouse_name": "Magasin K&N",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2017-03-14 16:18:58",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "9",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "CAMION FR-TN",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2017-03-22 13:09:39",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "10",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "CAMION TN-FR",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2017-03-22 13:09:53",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "11",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "Réception RIOZ",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2017-06-06 08:53:08",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "12",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "Réception Tunisie",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2017-06-06 08:53:27",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "13",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "Fabrication",
+    "date_creation": "2017-06-20 00:00:00",
+    "date_modification": "2017-06-20 07:41:38",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "14",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "EXPORT vers MOLDAVIE",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-03-23 11:57:27",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "15",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "Production RIOZ",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-05-16 06:11:40",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "16",
+    "statut": "0",
+    "id_society": "5",
+    "warehouse_name": "Reception Moldavie",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-06-07 09:13:15",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "17",
+    "statut": "0",
+    "id_society": "5",
+    "warehouse_name": "Magasin Moldavie",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-06-11 08:11:14",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "18",
+    "statut": "0",
+    "id_society": "5",
+    "warehouse_name": "Production Moldavie",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-06-11 08:15:17",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "19",
+    "statut": "0",
+    "id_society": "1",
+    "warehouse_name": "CAMION FR-MD",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-06-18 06:06:50",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "20",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "Prison Tunisie",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-07-05 12:48:14",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "21",
+    "statut": "0",
+    "id_society": "5",
+    "warehouse_name": "MD - Export vers France",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-08-22 13:14:37",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "22",
+    "statut": "0",
+    "id_society": "5",
+    "warehouse_name": "CAMION MD-FR",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2018-08-22 13:15:54",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "23",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "EXPEDITIONS TUNISIE",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2019-01-25 16:14:22",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "24",
+    "statut": "1",
+    "id_society": "4",
+    "warehouse_name": "VENTE TUNISIE",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2019-01-25 17:03:02",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "25",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "VENTES TUNISIE",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2019-01-28 12:02:13",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "26",
+    "statut": "0",
+    "id_society": "5",
+    "warehouse_name": "Prison Moldavie",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2019-02-19 13:08:16",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "27",
+    "statut": "0",
+    "id_society": "2",
+    "warehouse_name": "Reception K&N",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2019-02-25 08:47:44",
+    "id_user_creation": null,
+    "id_user_modification": null
+  },
+  {
+    "id": "28",
+    "statut": "0",
+    "id_society": "4",
+    "warehouse_name": "BESOINS SCOCOMEC",
+    "date_creation": "0000-00-00 00:00:00",
+    "date_modification": "2019-02-27 12:41:50",
+    "id_user_creation": null,
+    "id_user_modification": null
+  }
+]
