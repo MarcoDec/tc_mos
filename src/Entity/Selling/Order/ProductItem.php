@@ -9,39 +9,44 @@ use App\Entity\Project\Product\Product;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
+/**
+ * @template-extends Item<Product>
+ */
 #[
     ApiResource(
-        description: 'Item du produit',
+        description: 'Ligne de commande',
         collectionOperations: [
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un item de produit',
-                    'summary' => 'Créer un item de produit',
+                    'description' => 'Créer une ligne',
+                    'summary' => 'Créer une ligne',
+                    'tags' => ['CustomerOrderItem']
                 ]
-            ],
+            ]
         ],
-        itemOperations: [
-        ],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        shortName: 'CustomerOrderItemProduct',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
         ],
-        shortName: 'SellingOrderProduct',
         denormalizationContext: [
-            'groups' => ['write:item', 'write:order', 'write:current_place', 'write:notes', 'write:ref', 'write:name', 'write:product'],
-            'openapi_definition_name' => 'SellingOrderItem-write'
+            'groups' => ['write:item', 'write:measure'],
+            'openapi_definition_name' => 'CustomerOrderItemProduct-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:order', 'read:current_place', 'read:notes', 'read:ref', 'read:name', 'read:product'],
-            'openapi_definition_name' => 'SellingOrderItem-read'
-        ],
+            'groups' => ['read:id', 'read:item', 'read:measure'],
+            'openapi_definition_name' => 'CustomerOrderItemProduct-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity
 ]
 class ProductItem extends Item {
     #[
-        ApiProperty(description: 'Produit', required: false, example: '/api/products/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Product::class),
-        Serializer\Groups(['read:product', 'write:product'])
+        ApiProperty(description: 'Produit', example: '/api/products/1'),
+        ORM\JoinColumn(name: 'product_id'),
+        ORM\ManyToOne(targetEntity: Product::class),
+        Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
 }

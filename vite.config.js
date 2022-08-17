@@ -1,33 +1,7 @@
-import {existsSync, unlinkSync} from 'fs'
-import {defineConfig} from 'vite'
-import {resolve} from 'path'
 import checker from 'vite-plugin-checker'
+import {defineConfig} from 'vite'
+import symfonyPlugin from 'vite-plugin-symfony'
 import vue from '@vitejs/plugin-vue'
-
-const symfonyPlugin = {
-    configResolved(config) {
-        if (config.env.DEV && config.build.manifest) {
-            const buildDir = resolve(
-                config.root,
-                config.build.outDir,
-                'manifest.json'
-            )
-            existsSync(buildDir) && unlinkSync(buildDir)
-        }
-    },
-    configureServer(devServer) {
-        const {watcher, ws} = devServer
-        watcher.add(resolve('templates/**/*.twig'))
-        watcher.on('change', path => {
-            if (path.endsWith('.twig')) {
-                ws.send({
-                    type: 'full-reload'
-                })
-            }
-        })
-    },
-    name: 'symfony'
-}
 
 export default defineConfig({
     base: '/build/',
@@ -35,30 +9,29 @@ export default defineConfig({
         assetsDir: '',
         emptyOutDir: true,
         manifest: true,
-        outDir: '../public/build/',
+        outDir: './public/build/',
         rollupOptions: {
-            input: ['./app.ts']
+            input: {index: './assets/index.js'},
+            output: {
+                // eslint-disable-next-line consistent-return
+                manualChunks(id) {
+                    if (id.includes('AppSuspenseWrapper') || id.includes('stores/options'))
+                        return 'vendor'
+                }
+            }
         }
     },
+    optimizeDeps: {force: true},
     plugins: [
-        symfonyPlugin,
+        symfonyPlugin(),
         vue(),
-        checker({
-            eslint: {extensions: ['.ts', '.vue'], files: [resolve('assets')]},
-            typescript: true,
-            vueTsc: true
-        })
+        checker({eslint: {lintCommand: 'eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}'}})
     ],
-    root: './assets/',
+    root: './',
     server: {
-        fs: {
-            allow: ['..'],
-            strict: false
-        },
+        fs: {allow: ['..'], strict: false},
         host: '0.0.0.0',
         port: 8001,
-        watch: {
-            disableGlobbing: false
-        }
+        watch: {disableGlobbing: false}
     }
 })

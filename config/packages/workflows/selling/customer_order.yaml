@@ -1,0 +1,38 @@
+framework:
+  workflows:
+    customer_order:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%place_agreed%'
+        - '%place_blocked%'
+        - '%place_closed%'
+        - '%place_disabled%'
+        - '%place_draft%'
+        - '%place_partially_delivered%'
+        - '%place_to_validate%'
+      supports:
+        - App\Entity\Selling\Order\Order
+      transitions:
+        '%tr_accept%':
+          from: '%place_to_validate%'
+          to: '%place_agreed%'
+        '%tr_block%':
+          from: '%place_partially_delivered%'
+          to: '%place_blocked%'
+        '%tr_deliver%':
+          from: '%place_agreed%'
+          to: '%place_partially_delivered%'
+        '%tr_disable%':
+          from: [ '%place_agreed%', '%place_to_validate%', '%place_draft%' ]
+          to: '%place_disabled%'
+        '%tr_submit_validation%':
+          from: '%place_draft%'
+          to: '%place_to_validate%'
+        '%tr_unlock%':
+          from: '%place_blocked%'
+          to: '%place_partially_delivered%'
+        '%tr_validate%':
+          from: [ '%place_agreed%', '%place_partially_delivered%' ]
+          to: '%place_closed%'

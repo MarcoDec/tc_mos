@@ -9,22 +9,19 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\Hr\Employee\GenderType;
+use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Address;
-use App\Entity\Embeddable\Hr\Employee\CurrentPlace;
+use App\Entity\Embeddable\EmployeeEngineCurrentPlace;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Hr\Employee\Skill\Skill;
 use App\Entity\Interfaces\BarCodeInterface;
-use App\Entity\Management\Society\Company;
-use App\Entity\Production\Manufacturing\Operation;
-use App\Entity\Traits\AddressTrait;
+use App\Entity\Interfaces\WorkflowInterface;
+use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
-use App\Entity\Traits\CompanyTrait;
-use App\Entity\Traits\NameTrait;
-use App\Filter\RelationFilter;
-use App\Repository\Hr\Employee\EmployeeRepository;
-use DatetimeInterface;
+use App\Filter\NumericFilter;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -36,41 +33,46 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['userEnabled']),
-    ApiFilter(filterClass: SearchFilter::class, properties: [
-        'name' => 'partial',
-        'surname' => 'partial',
-        'initials' => 'partial'
-    ]),
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'currentPlace' => 'name'
-    ]),
-    ApiFilter(filterClass: OrderFilter::class, properties: [
-        'name', 'surname', 'initials'
-    ]),
+    ApiFilter(filterClass: NumericFilter::class, properties: ['id']),
+    ApiFilter(
+        filterClass: SearchFilter::class,
+        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial']
+    ),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
     ApiResource(
         description: 'Employé',
         collectionOperations: [
             'get' => [
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:employee:collection'],
+                    'openapi_definition_name' => 'Employee-collection',
+                    'skip_null_values' => false
+                ],
                 'openapi_context' => [
                     'description' => 'Récupère les employés',
                     'summary' => 'Récupère les employés'
-                ],
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:name', 'read:employee:collection'],
-                ],
+                ]
             ],
             'post' => [
+                'denormalization_context' => [
+                    'groups' => ['create:employee'],
+                    'openapi_definition_name' => 'Employee-create'
+                ],
                 'openapi_context' => [
                     'description' => 'Créer un employé',
                     'summary' => 'Créer un employé'
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
-                'denormalization_context' => [
-                    'groups' => ['write:employee:post']
-                ]
+                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
             ]
         ],
         itemOperations: [
+            'delete' => [
+                'openapi_context' => [
+                    'description' => 'Supprime un employé',
+                    'summary' => 'Supprime un employé'
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
+            ],
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère un employé',
@@ -78,267 +80,221 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
-                'path' => '/employees/{id}/{process}',
-                'requirements' => ['process' => '\w+'],
                 'openapi_context' => [
                     'description' => 'Modifier un employé',
-                    'summary' => 'Modifier un employé',
                     'parameters' => [[
                         'in' => 'path',
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'type' => 'string',
-                            'enum' => ['main', 'hr', 'it', 'production']
+                            'enum' => ['main', 'hr', 'it', 'production'],
+                            'type' => 'string'
                         ]
-                    ]]
+                    ]],
+                    'summary' => 'Modifier un employé'
                 ],
+                'path' => '/employees/{id}/{process}',
                 'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
             ],
             'promote' => [
-                'method' => 'PATCH',
-                'path' => '/employees/{id}/promote',
                 'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
                 'openapi_context' => [
-                    'description' => 'Passer un employé à un nouveau statut',
-                    'summary' => 'Passer un employé à un nouveau statut',
+                    'description' => 'Transite l\'employé à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => [
+                            'enum' => EmployeeEngineCurrentPlace::TRANSITIONS,
+                            'type' => 'string'
+                        ]
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite l\'employé à son prochain statut de workflow'
                 ],
-                'denormalization_context' => [
-                    'groups' => ['write:employee:promote']
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
+                'path' => '/employees/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
+                'validate' => false
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
+        denormalizationContext: [
+            'groups' => ['write:address', 'write:current-place', 'write:employee'],
+            'openapi_definition_name' => 'Employee-write'
+        ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:employee', 'read:name', 'read:user', 'read:company'],
-            'openapi_definition_name' => 'Employee-read'
+            'groups' => ['read:address', 'read:current-place', 'read:employee', 'read:id'],
+            'openapi_definition_name' => 'Employee-read',
+            'skip_null_values' => false
         ]
     ),
-    ORM\Entity(repositoryClass: EmployeeRepository::class)
+    ORM\Entity
 ]
-class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
-    use AddressTrait {
-        AddressTrait::__construct as private addressContruct;
-    }
+class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface, WorkflowInterface {
     use BarCodeTrait;
-    use CompanyTrait;
-    use NameTrait;
-
-    public const GENDER_TYPE_FRMALE = 'female';
-    public const GENDER_TYPE_MALE = 'male';
-    public const GENDER_TYPES = [
-        self::GENDER_TYPE_MALE,
-        self::GENDER_TYPE_FRMALE,
-    ];
-    public const SITUATION_TYPE_MARRIED = 'married';
-    public const SITUATION_TYPE_SINGLE = 'single';
-    public const SITUATION_TYPE_WINDOWED = 'windowed';
-    public const SITUATION_TYPES = [
-        self::SITUATION_TYPE_MARRIED,
-        self::SITUATION_TYPE_SINGLE,
-        self::SITUATION_TYPE_WINDOWED,
-    ];
 
     #[
         Assert\Valid,
         ORM\Embedded(Address::class),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['read:employee', 'write:employee'])
     ]
-    protected Address $address;
+    private Address $address;
 
-    #[
-        ApiProperty(description: 'Companie', required: false, example: '/api/companies/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class),
-        Serializer\Groups(['read:company', 'write:company'])
-    ]
-    protected ?Company $company;
-
-    #[
-        ApiProperty(description: 'Statut', required: true),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:employee', 'read:employee:collection'])
-    ]
-    protected CurrentPlace $currentPlace;
-
-    #[
-        ApiProperty(description: 'Nom', required: true, example: 'Super'),
-        Assert\NotBlank,
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:name', 'write:name', 'write:employee:post'])
-    ]
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Nom de famille', required: true, example: 'Roosevelt'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post', 'read:employee:collection'])
-    ]
-    protected ?string $surname = null;
-
-    /**
-     * @var Collection<int, Token>
-     */
+    /** @var Collection<int, Token> */
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
     private Collection $apiTokens;
 
     #[
-        ApiProperty(description: 'Ville de naissance', required: false, example: 'Nancy'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
+        ApiProperty(description: 'Ville de naissance', example: 'Nancy'),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:employee', 'write:employee'])
     ]
     private ?string $birthCity = null;
 
     #[
         ApiProperty(description: 'Date de naissance', example: '1980-24-03'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ORM\Column(type: 'datetime_immutable', nullable: true),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
-    private ?DatetimeInterface $birthday = null;
+    private ?DateTimeImmutable $birthday = null;
+
+    #[
+        ApiProperty(description: 'Companie', example: '/api/companies/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:employee'])
+    ]
+    private ?Company $company = null;
+
+    #[
+        ApiProperty(description: 'Statut'),
+        ORM\Embedded(EmployeeEngineCurrentPlace::class),
+        Serializer\Groups(['read:employee'])
+    ]
+    private EmployeeEngineCurrentPlace $currentPlace;
 
     #[ORM\Embedded]
     private Roles $embRoles;
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
-        Assert\Date,
-        ORM\Column(type: 'date', nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ORM\Column(type: 'date_immutable', nullable: true),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
-    private ?DatetimeInterface $entryDate = null;
+    private ?DateTimeImmutable $entryDate = null;
 
     #[
-        ApiProperty(description: 'Prénom', required: false, example: 'Charles'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ApiProperty(description: 'Sexe', example: GenderType::TYPE_MALE, openapiContext: ['enum' => GenderType::TYPES]),
+        Assert\Choice(choices: GenderType::TYPES),
+        ORM\Column(type: 'gender_place', nullable: true, options: ['default' => GenderType::TYPE_MALE]),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
-    private ?string $firstname = null;
+    private ?string $gender = GenderType::TYPE_MALE;
 
     #[
-        ApiProperty(description: 'Sexe', required: false, example: self::GENDER_TYPE_MALE),
-        Assert\Choice(choices: self::GENDER_TYPES),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
-    ]
-    private ?string $gender = null;
-
-    #[
-        ApiProperty(description: 'Initiales', required: false, example: 'C.R.'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post', 'read:employee:collection'])
+        ApiProperty(description: 'Initiales', example: 'C.R.'),
+        ORM\Column,
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $initials = null;
 
     #[
-        ApiProperty(description: 'Niveau d\'étude', required: false, example: 'Bac+5'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ApiProperty(description: 'Niveau d\'étude', example: 'Bac+5'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $levelOfStudy = null;
 
     #[
-        ApiProperty(description: 'Manager', readableLink: false, required: false, example: '/api/employees/3'),
+        ApiProperty(description: 'Manager', readableLink: false, example: '/api/employees/3'),
         ORM\ManyToOne(targetEntity: self::class),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:production'])
     ]
     private ?self $manager = null;
 
     #[
-        ApiProperty(description: 'Notes', required: false, example: 'Lorem ipsum dolor sit am'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ApiProperty(description: 'Prénom', required: true, example: 'Super'),
+        ORM\Column(length: 30),
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
+    ]
+    private ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Notes', example: 'Lorem ipsum dolor sit am'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:main'])
     ]
     private ?string $notes = null;
 
-    /**
-     * @var Collection<int, Operation>
-     */
     #[
-        ApiProperty(description: 'Opérations', required: false, example: ['/api/operations/1', '/api/operations/6']),
-        ORM\ManyToMany(fetch: 'EXTRA_LAZY', targetEntity: Operation::class, mappedBy: 'operators'),
-    ]
-    private Collection $operations;
-
-    #[
-        ORM\Column
+        ORM\Column(type: 'char', length: 60, nullable: true),
+        Serializer\Groups(['create:employee'])
     ]
     private ?string $password = null;
 
     #[
-        ApiProperty(description: 'Nouveau statut', required: false, example: 'disabled'),
-        Serializer\Groups(['write:employee:promote'])
-    ]
-    private ?string $place = null;
-
-    #[
-        ApiProperty(description: 'Mot de passe', required: false, example: 'L0r3m@Ipsum'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post'])
+        ApiProperty(description: 'Mot de passe', example: 'L0r3m@Ipsum'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:employee'])
     ]
     private ?string $plainPassword = null;
 
-    private ?Company $sessionCompany = null;
-
     #[
-        ApiProperty(description: 'Situation', required: false, example: self::SITUATION_TYPE_MARRIED),
-        Assert\Choice(choices: self::SITUATION_TYPES),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ApiProperty(description: 'Situation', example: SituationType::TYPE_SINGLE, openapiContext: ['enum' => SituationType::TYPES]),
+        Assert\Choice(choices: SituationType::TYPES),
+        ORM\Column(type: 'situation_place', nullable: true, options: ['default' => SituationType::TYPE_SINGLE]),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
-    private ?string $situation = null;
-
-    /**
-     * @var Collection<int, Skill>
-     */
-    #[
-        ApiProperty(description: 'Composants', required: false, readableLink: false, example: ['/api/skills/5', '/api/skills/14']),
-        ORM\OneToMany(mappedBy: 'employee', targetEntity: Skill::class),
-        Serializer\Groups(['read:component']),
-    ]
-    private Collection $skills;
+    private ?string $situation = SituationType::TYPE_SINGLE;
 
     #[
-        ApiProperty(description: 'Numéro de sécurité sociale', required: false, example: '1 80 12 75 200 200 36'),
-        ORM\Column(type: 'string', length: 255, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ApiProperty(description: 'Numéro de sécurité sociale', example: '1 80 12 75 200 200 36'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $socialSecurityNumber = null;
 
     #[
-        ApiProperty(description: 'Carte de pointage', required: false, example: '65465224'),
-        ORM\Column(type: 'string', length: 180, nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        ApiProperty(description: 'Nom', example: 'Roosevelt'),
+        ORM\Column,
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
+    ]
+    private ?string $surname = null;
+
+    #[ORM\ManyToOne(inversedBy: 'employees')]
+    private ?Team $team = null;
+
+    #[
+        ApiProperty(description: 'Carte de pointage', example: '65465224'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:employee'])
     ]
     private ?string $timeCard = null;
 
     #[
         ApiProperty(description: 'Compte validé', required: true, example: false),
-        ORM\Column(type: 'boolean', options: ['default' => false]),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:post', 'read:employee:collection'])
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection'])
     ]
     private bool $userEnabled = false;
 
     #[
-        ApiProperty(description: 'Identifiant', example: 'super'),
-        ORM\Column(length: 180),
-        Serializer\Groups(['read:employee', 'write:employee:post'])
+        ApiProperty(description: 'identifiant', example: 'super'),
+        ORM\Column(length: 20, nullable: true),
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection'])
     ]
     private ?string $username = null;
 
-    #[Pure]
-    final public function __construct() {
+    public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
-        $this->currentPlace = new CurrentPlace();
-        $this->address = new Address();
-        $this->skills = new ArrayCollection();
-        $this->operations = new ArrayCollection();
+        $this->currentPlace = new EmployeeEngineCurrentPlace();
     }
 
-    final public static function getBarCodeTableNumber(): string {
+    public static function getBarCodeTableNumber(): string {
         return self::EMPLOYEE_BAR_CODE_TABLE_NUMBER;
     }
 
@@ -349,25 +305,8 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function addOperation(Operation $operation): self {
-        if (!$this->operations->contains($operation)) {
-            $this->operations->add($operation);
-            $operation->addOperator($this);
-        }
-        return $this;
-    }
-
     final public function addRole(string $role): self {
         $this->embRoles->addRole($role);
-        return $this;
-    }
-
-    final public function addSkill(Skill $skill): self {
-        if (!$this->skills->contains($skill)) {
-            $this->skills[] = $skill;
-            $skill->setEmployee($this);
-        }
-
         return $this;
     }
 
@@ -394,8 +333,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->birthCity;
     }
 
-    final public function getBirthday(): ?DateTimeInterface {
+    final public function getBirthday(): ?DateTimeImmutable {
         return $this->birthday;
+    }
+
+    final public function getCompany(): ?Company {
+        return $this->company;
     }
 
     final public function getCurrentApiToken(): ?Token {
@@ -407,7 +350,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return null;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
+    final public function getCurrentPlace(): EmployeeEngineCurrentPlace {
         return $this->currentPlace;
     }
 
@@ -415,12 +358,8 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->embRoles;
     }
 
-    final public function getEntryDate(): ?DateTimeInterface {
+    final public function getEntryDate(): ?DateTimeImmutable {
         return $this->entryDate;
-    }
-
-    final public function getFirstname(): ?string {
-        return $this->firstname;
     }
 
     final public function getGender(): ?string {
@@ -439,15 +378,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->manager;
     }
 
-    final public function getNotes(): ?string {
-        return $this->notes;
+    final public function getName(): ?string {
+        return $this->name;
     }
 
-    /**
-     * @return Collection<int, Operation>
-     */
-    final public function getOperations(): Collection {
-        return $this->operations;
+    final public function getNotes(): ?string {
+        return $this->notes;
     }
 
     /**
@@ -455,10 +391,6 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
      */
     final public function getPassword(): ?string {
         return $this->password;
-    }
-
-    final public function getPlace(): ?string {
-        return $this->place;
     }
 
     final public function getPlainPassword(): ?string {
@@ -489,27 +421,25 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return null;
     }
 
-    final public function getSessionCompany(): ?Company {
-        return $this->sessionCompany ?? $this->company;
-    }
-
     final public function getSituation(): ?string {
         return $this->situation;
-    }
-
-    /**
-     * @return Collection<int, Skill>
-     */
-    final public function getSkills(): Collection {
-        return $this->skills;
     }
 
     final public function getSocialSecurityNumber(): ?string {
         return $this->socialSecurityNumber;
     }
 
-    public function getSurname(): ?string {
+    #[Pure]
+    final public function getState(): ?string {
+        return $this->currentPlace->getName();
+    }
+
+    final public function getSurname(): ?string {
         return $this->surname;
+    }
+
+    final public function getTeam(): ?Team {
+        return $this->team;
     }
 
     final public function getTimeCard(): ?string {
@@ -524,24 +454,31 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->getCurrentApiToken()?->getToken();
     }
 
-    final public function getUserEnabled(): ?bool {
-        return $this->userEnabled;
-    }
-
     /**
      * A visual identifier that represents this user.
      *
      * @see UserInterface
      */
-    final public function getUserIdentifier(): ?string {
+    final public function getUserIdentifier(): string {
+        return (string) $this->username;
+    }
+
+    final public function getUsername(): ?string {
         return $this->username;
     }
 
-    /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
-    final public function getUsername(): ?string {
-        return $this->username;
+    #[Pure]
+    final public function isDeletable(): bool {
+        return $this->currentPlace->isDeletable();
+    }
+
+    #[Pure]
+    final public function isFrozen(): bool {
+        return $this->currentPlace->isFrozen();
+    }
+
+    final public function isUserEnabled(): bool {
+        return $this->userEnabled;
     }
 
     final public function removeApiToken(Token $apiToken): self {
@@ -551,99 +488,73 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function removeOperation(Operation $operation): self {
-        if ($this->operations->contains($operation)) {
-            $this->operations->removeElement($operation);
-            $operation->removeOperator($this);
-        }
-        return $this;
-    }
-
     final public function removeRole(string $role): self {
         $this->embRoles->removeRole($role);
         return $this;
     }
 
-    final public function removeSkill(Skill $skill): self {
-        if ($this->skills->removeElement($skill)) {
-            // set the owning side to null (unless already changed)
-            if ($skill->getEmployee() === $this) {
-                $skill->setEmployee(null);
-            }
-        }
-
-        return $this;
-    }
-
     final public function setAddress(Address $address): self {
         $this->address = $address;
-
         return $this;
     }
 
     final public function setBirthCity(?string $birthCity): self {
         $this->birthCity = $birthCity;
-
         return $this;
     }
 
-    final public function setBirthday(?DateTimeInterface $birthday): self {
+    final public function setBirthday(?DateTimeImmutable $birthday): self {
         $this->birthday = $birthday;
-
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setCompany(?Company $company): self {
+        $this->company = $company;
+        return $this;
+    }
 
+    final public function setCurrentPlace(EmployeeEngineCurrentPlace $currentPlace): self {
+        $this->currentPlace = $currentPlace;
         return $this;
     }
 
     final public function setEmbRoles(Roles $embRoles): self {
         $this->embRoles = $embRoles;
-
         return $this;
     }
 
-    final public function setEntryDate(?DateTimeInterface $entryDate): self {
+    final public function setEntryDate(?DateTimeImmutable $entryDate): self {
         $this->entryDate = $entryDate;
-
-        return $this;
-    }
-
-    final public function setFirstname(?string $firstname): self {
-        $this->firstname = $firstname;
-
         return $this;
     }
 
     final public function setGender(?string $gender): self {
         $this->gender = $gender;
-
         return $this;
     }
 
     final public function setInitials(?string $initials): self {
         $this->initials = $initials;
-
         return $this;
     }
 
     final public function setLevelOfStudy(?string $levelOfStudy): self {
         $this->levelOfStudy = $levelOfStudy;
-
         return $this;
     }
 
     final public function setManager(?self $manager): self {
         $this->manager = $manager;
+        return $this;
+    }
 
+    final public function setName(?string $name): self {
+        $this->name = $name;
         return $this;
     }
 
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
-
         return $this;
     }
 
@@ -652,50 +563,43 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function setPlace(?string $place): self {
-        $this->place = $place;
-
-        return $this;
-    }
-
     final public function setPlainPassword(?string $plainPassword): self {
         $this->plainPassword = $plainPassword;
-
-        return $this;
-    }
-
-    final public function setSessionCompany(?Company $sessionCompany): self {
-        $this->sessionCompany = $sessionCompany;
         return $this;
     }
 
     final public function setSituation(?string $situation): self {
         $this->situation = $situation;
-
         return $this;
     }
 
     final public function setSocialSecurityNumber(?string $socialSecurityNumber): self {
         $this->socialSecurityNumber = $socialSecurityNumber;
+        return $this;
+    }
 
+    final public function setState(?string $state): self {
+        $this->currentPlace->setName($state);
         return $this;
     }
 
     final public function setSurname(?string $surname): self {
         $this->surname = $surname;
+        return $this;
+    }
 
+    final public function setTeam(?Team $team): self {
+        $this->team = $team;
         return $this;
     }
 
     final public function setTimeCard(?string $timeCard): self {
         $this->timeCard = $timeCard;
-
         return $this;
     }
 
     final public function setUserEnabled(bool $userEnabled): self {
         $this->userEnabled = $userEnabled;
-
         return $this;
     }
 
