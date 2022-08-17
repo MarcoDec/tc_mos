@@ -3,6 +3,7 @@
 namespace App\Entity\Quality\Reception;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,7 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  * @template F of \App\Entity\Purchase\Component\Family|\App\Entity\Project\Product\Family
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
-#[ORM\MappedSuperclass]
+#[
+    ORM\DiscriminatorColumn(name: 'type', type: 'item_type'),
+    ORM\DiscriminatorMap(self::TYPES),
+    ORM\Entity,
+    ORM\InheritanceType('SINGLE_TABLE')
+]
 abstract class Reference extends Entity {
     public const KIND_DIM = 'Dimensionnel';
     public const KIND_DOC = 'Documentaire';
@@ -20,10 +26,7 @@ abstract class Reference extends Entity {
     public const KIND_QTE = 'Quantitatif';
     public const KIND_VIS = 'Visuel';
     public const KINDS = [self::KIND_DOC, self::KIND_DIM, self::KIND_GON, self::KIND_VIS, self::KIND_QTE];
-    public const TYPES = [
-        'product' => ProductReference::class,
-        'component' => ComponentReference::class,
-    ];
+    public const TYPES = [ItemType::TYPE_COMPONENT => ComponentReference::class, ItemType::TYPE_PRODUCT => ProductReference::class];
 
     /** @var Collection<int, F> */
     protected Collection $families;

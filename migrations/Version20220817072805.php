@@ -275,6 +275,7 @@ SQL);
         $this->upSupplierOrderItems();
         // rank 7
         $this->upBillItems();
+        $this->upChecks();
         $this->upOperationComponentTools();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
@@ -624,6 +625,63 @@ SQL);
 ALTER TABLE `carrier`
     CHANGE `nom` `name` VARCHAR(50) NOT NULL,
     CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
+SQL);
+    }
+
+    private function upChecks(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `reference` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(40) NOT NULL,
+    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item_type)'
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_reference_family` (
+    `component_reference_id` INT UNSIGNED NOT NULL,
+    `family_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_D42E58E262AE155E` FOREIGN KEY (`component_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_D42E58E2C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`component_reference_id`, `family_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_reference_component` (
+    `component_reference_id` INT UNSIGNED NOT NULL,
+    `component_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_E833EC8462AE155E` FOREIGN KEY (`component_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_E833EC84E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`component_reference_id`, `component_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_reference_family` (
+    `product_reference_id` INT UNSIGNED NOT NULL,
+    `family_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_360BF4A39BE1FCC2` FOREIGN KEY (`product_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_360BF4A3C35E566A` FOREIGN KEY (`family_id`) REFERENCES `product_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`product_reference_id`, `family_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_reference_product` (
+    `product_reference_id` INT UNSIGNED NOT NULL,
+    `product_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_60BF93569BE1FCC2` FOREIGN KEY (`product_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_60BF93564584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`product_reference_id`, `product_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `check` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `receipt_id` INT UNSIGNED DEFAULT NULL,
+    `reference_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_3C8EAC132B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`),
+    CONSTRAINT `IDX_3C8EAC131645DEA9` FOREIGN KEY (`reference_id`) REFERENCES `reference` (`id`)
+)
 SQL);
     }
 
