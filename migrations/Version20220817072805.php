@@ -273,6 +273,8 @@ SQL);
         $this->upExpeditions();
         $this->upManufacturingOperations();
         $this->upSupplierOrderItems();
+        // rank 7
+        $this->upBillItems();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `bill` DROP `old_id`');
@@ -371,6 +373,103 @@ WHILE @attribute_i < @attribute_count DO
 END WHILE
 SQL);
         $this->addQuery('ALTER TABLE `attribute` DROP `attribut_id_family`');
+    }
+
+    private function upBillItems(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `invoicecustomer_product` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_invoicecustomer` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `id_ordercustomer` INT UNSIGNED DEFAULT NULL,
+    `id_product` INT UNSIGNED DEFAULT NULL,
+    `id_component` INT UNSIGNED DEFAULT NULL,
+    `id_expedition` INT UNSIGNED DEFAULT NULL,
+    `id_deliveryform` INT UNSIGNED DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL,
+    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `texte` TEXT DEFAULT NULL,
+    `ref_ordercustomer_product` VARCHAR(255) DEFAULT NULL,
+    `customcode` VARCHAR(255) DEFAULT NULL,
+    `origin` VARCHAR(255) DEFAULT NULL,
+    `weight` DOUBLE PRECISION DEFAULT 0 NOT NULL
+)
+SQL);
+        $this->insert('invoicecustomer_product', [
+            'id',
+            'statut',
+            'id_invoicecustomer',
+            'id_society',
+            'id_ordercustomer',
+            'id_product',
+            'id_component',
+            'id_expedition',
+            'id_deliveryform',
+            'quantity',
+            'price',
+            'texte',
+            'ref_ordercustomer_product',
+            'customcode',
+            'origin',
+            'weight'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `bill_item` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `bill_id` INT UNSIGNED DEFAULT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `expedition_id` INT UNSIGNED DEFAULT NULL,
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL,
+    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `product_id` INT UNSIGNED DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item_type)',
+    `weight_code` VARCHAR(6) DEFAULT NULL,
+    `weight_denominator` VARCHAR(6) DEFAULT NULL,
+    `weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_EC044DB41A8C12F5` FOREIGN KEY (`bill_id`) REFERENCES `bill` (`id`),
+    CONSTRAINT `IDX_EC044DB4E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    CONSTRAINT `IDX_EC044DB4576EF81E` FOREIGN KEY (`expedition_id`) REFERENCES `expedition` (`id`),
+    CONSTRAINT `IDX_EC044DB44584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `bill_item` (
+    `bill_id`,
+    `expedition_id`,
+    `notes`,
+    `price_code`,
+    `price_value`,
+    `product_id`,
+    `quantity_code`,
+    `quantity_value`,
+    `ref`,
+    `type`,
+    `weight_code`,
+    `weight_value`
+) SELECT
+    (SELECT `bill`.`id` FROM `bill` WHERE `bill`.`old_id` = `invoicecustomer_product`.`id_invoicecustomer`),
+    (SELECT `expedition`.`id` FROM `expedition` WHERE `expedition`.`old_id` = `invoicecustomer_product`.`id_expedition`),
+    `texte`,
+    'EUR',
+    `price`,
+    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `invoicecustomer_product`.`id_product`),
+    'U',
+    `quantity`,
+    `ref_ordercustomer_product`,
+    'product',
+    'g',
+    `weight`
+FROM `invoicecustomer_product`
+WHERE `statut` = 0
+SQL);
     }
 
     private function upBills(): void {
@@ -2281,6 +2380,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `expedition` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `batch_number` VARCHAR(255) DEFAULT NULL,
     `date` DATE NOT NULL COMMENT '(DC2Type:date_immutable)',
@@ -2298,6 +2398,7 @@ CREATE TABLE `expedition` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `expedition` (
+    `old_id`,
     `batch_number`,
     `date`,
     `item_id`,
@@ -2306,6 +2407,7 @@ INSERT INTO `expedition` (
     `quantity_code`,
     `quantity_value`
 ) SELECT
+    `id`,
     `batchnumber`,
     `date_livraison`,
     (SELECT `customer_order_item`.`id` FROM `customer_order_item` WHERE `customer_order_item`.`old_id` = `old_expedition`.`id_ordercustomer_product`),
