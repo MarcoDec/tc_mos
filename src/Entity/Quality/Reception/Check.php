@@ -10,6 +10,10 @@ use App\Entity\Logistics\Order\Receipt;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
+/**
+ * @template F of \App\Entity\Purchase\Component\Family|\App\Entity\Project\Product\Family
+ * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ */
 #[
     ApiResource(
         description: 'Contrôle',
@@ -36,6 +40,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_QUALITY_WRITER.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'delete' => [
                 'openapi_context' => [
                     'description' => 'Supprime un contrôle',
@@ -53,39 +58,59 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:check'],
-            'openapi_definition_name' => 'Check-read'
+            'openapi_definition_name' => 'Check-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
 class Check extends Entity {
+    /** @var null|Receipt<I> */
     #[
-        ApiProperty(description: 'Reçu', required: false, example: '/api/receipts/5'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Receipt::class),
+        ApiProperty(description: 'Reçu', readableLink: false, example: '/api/receipts/5'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:check', 'write:check'])
     ]
-    private Receipt $receipt;
+    private ?Receipt $receipt = null;
 
+    /** @var null|Reference<F, I> */
     #[
-        ApiProperty(description: 'Référence', required: false, example: '/api/references/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Reference::class),
+        ApiProperty(description: 'Référence', readableLink: false, example: '/api/references/2'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:check', 'write:check'])
     ]
-    private ?Reference $reference;
+    private ?Reference $reference = null;
 
-    public function getReceipt(): Receipt {
+    /**
+     * @return null|Receipt<I>
+     */
+    final public function getReceipt(): ?Receipt {
         return $this->receipt;
     }
 
-    public function getReference(): Reference {
+    /**
+     * @return null|Reference<F, I>
+     */
+    final public function getReference(): ?Reference {
         return $this->reference;
     }
 
-    public function setReceipt(Receipt $receipt): self {
+    /**
+     * @param null|Receipt<I> $receipt
+     *
+     * @return $this
+     */
+    final public function setReceipt(?Receipt $receipt): self {
         $this->receipt = $receipt;
         return $this;
     }
 
-    public function setReference(Reference $reference): self {
+    /**
+     * @param null|Reference<F, I> $reference
+     *
+     * @return $this
+     */
+    final public function setReference(?Reference $reference): self {
         $this->reference = $reference;
         return $this;
     }

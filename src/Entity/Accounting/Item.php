@@ -4,126 +4,122 @@ namespace App\Entity\Accounting;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Production\Manufacturing\Expedition;
-use App\Entity\Project\Product\Product;
-use App\Entity\Purchase\Component\Component;
-use App\Entity\Traits\NotesTrait;
-use App\Entity\Traits\RefTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ */
 #[
     ApiResource(
-        description: 'Item',
+        description: 'Lignes facturée',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les items',
-                    'summary' => 'Récupère les items',
+                    'description' => 'Récupère les lignes',
+                    'summary' => 'Récupère les lignes',
                 ]
             ]
         ],
         itemOperations: [
-            'patch' => [
-                'openapi_context' => [
-                    'description' => 'Modifie un item',
-                    'summary' => 'Modifie un item',
-                ]
-            ],
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un item',
-                    'summary' => 'Supprime un item',
+                    'description' => 'Supprime une ligne',
+                    'summary' => 'Supprime un une ligne',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_ADMIN.'\')'
+            ],
+            'get' => NO_ITEM_GET_OPERATION,
+            'patch' => [
+                'openapi_context' => [
+                    'description' => 'Modifie une ligne',
+                    'summary' => 'Modifie une ligne',
+                ]
             ]
-
         ],
+        shortName: 'BillItem',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_READER.'\')'
         ],
-        shortName: 'AccountingItem',
         denormalizationContext: [
-            'groups' => ['write:measure', 'write:unit', 'write:notes', 'write:ref', 'write:item'],
-            'openapi_definition_name' => 'AccountingItem-write'
+            'groups' => ['write:item', 'write:measure'],
+            'openapi_definition_name' => 'BillItem-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:notes', 'read:ref', 'read:item'],
-            'openapi_definition_name' => 'AccountingItem-read'
+            'groups' => ['read:id', 'read:item', 'read:measure'],
+            'openapi_definition_name' => 'BillItem-read',
+            'skip_null_values' => false
         ],
     ),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item_type'),
+    ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
-    ORM\DiscriminatorColumn(name: 'type', type: 'string'),
-    ORM\DiscriminatorMap(Item::TYPES),
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'bill_item')
 ]
 abstract class Item extends Entity {
-    use NotesTrait;
-    use RefTrait;
+    public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
-    public const TYPES = ['component' => ComponentItem::class, 'product' => ProductItem::class];
-
-    /**
-     * @var Component|null|Product
-     */
+    /** @var I|null */
     protected $item;
 
     #[
-        ApiProperty(description: 'Notes', required: false, example: 'Lorem ipsum'),
-        ORM\Column(type: 'string', nullable: true),
-        Serializer\Groups(['read:notes', 'write:notes'])
-    ]
-    protected ?string $notes = null;
-
-    #[
-        ApiProperty(description: 'Référence', required: false, example: 'TSKD'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:ref', 'write:ref'])
-    ]
-    protected ?string $ref = null;
-
-    #[
-        ApiProperty(description: 'Facture', required: false, example: '/api/bills/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Bill::class),
+        ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
     private ?Bill $bill = null;
 
+    /** @var Expedition<I>|null */
     #[
-        ApiProperty(description: 'Commande', required: false, example: '/api/expeditions/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Expedition::class),
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/expeditions/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
     private ?Expedition $expedition = null;
 
     #[
-        ApiProperty(description: 'Prix', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
+        ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private float $price = 0;
+    private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Quantité', example: '54'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private Measure $price;
+
+    #[
+        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
     ]
     private Measure $quantity;
 
     #[
-        ApiProperty(description: 'Poids', example: '54'),
-        ORM\Embedded(Measure::class),
-        Serializer\Groups(['read:measure', 'write:measure'])
+        ApiProperty(description: 'Référence', example: 'TSKD'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    private ?string $ref = null;
+
+    #[
+        ApiProperty(description: 'Poids', openapiContext: ['$ref' => '#/components/schemas/Measure-mass']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
     ]
     private Measure $weight;
 
     public function __construct() {
+        $this->price = new Measure();
         $this->quantity = new Measure();
         $this->weight = new Measure();
     }
@@ -132,18 +128,25 @@ abstract class Item extends Entity {
         return $this->bill;
     }
 
+    /**
+     * @return Expedition<I>|null
+     */
     final public function getExpedition(): ?Expedition {
         return $this->expedition;
     }
 
     /**
-     * @return Component|null|Product
+     * @return I|null
      */
     final public function getItem() {
         return $this->item;
     }
 
-    final public function getPrice(): float {
+    final public function getNotes(): ?string {
+        return $this->notes;
+    }
+
+    final public function getPrice(): Measure {
         return $this->price;
     }
 
@@ -151,38 +154,77 @@ abstract class Item extends Entity {
         return $this->quantity;
     }
 
+    final public function getRef(): ?string {
+        return $this->ref;
+    }
+
     final public function getWeight(): Measure {
         return $this->weight;
     }
 
+    /**
+     * @return $this
+     */
     final public function setBill(?Bill $bill): self {
         $this->bill = $bill;
         return $this;
     }
 
+    /**
+     * @param Expedition<I>|null $expedition
+     *
+     * @return $this
+     */
     final public function setExpedition(?Expedition $expedition): self {
         $this->expedition = $expedition;
         return $this;
     }
 
     /**
-     * @param Component|null|Product $item
+     * @param I $item
+     *
+     * @return $this
      */
     final public function setItem($item): self {
         $this->item = $item;
         return $this;
     }
 
-    final public function setPrice(float $price): self {
+    /**
+     * @return $this
+     */
+    final public function setNotes(?string $notes): self {
+        $this->notes = $notes;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setPrice(Measure $price): self {
         $this->price = $price;
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
         return $this;
     }
 
+    /**
+     * @return $this
+     */
+    final public function setRef(?string $ref): self {
+        $this->ref = $ref;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
     final public function setWeight(Measure $weight): self {
         $this->weight = $weight;
         return $this;

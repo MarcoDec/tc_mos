@@ -5,50 +5,34 @@ namespace App\Entity\Logistics\Order;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Purchase\Order\Item;
-use DateTimeInterface;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ */
 #[
     ApiResource(
-        description: 'Reçu',
+        description: 'Réception',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les reçus',
-                    'summary' => 'Récupère les reçus',
+                    'description' => 'Récupère les réceptions',
+                    'summary' => 'Récupère les réceptions',
                 ]
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un reçu',
-                    'summary' => 'Créer un reçu',
+                    'description' => 'Créer une réception',
+                    'summary' => 'Créer une réception',
                 ]
             ]
         ],
-        itemOperations: [
-            'delete' => [
-                'openapi_context' => [
-                    'description' => 'Supprime un reçu',
-                    'summary' => 'Supprime un reçu',
-                ]
-            ],
-            'get' => [
-                'openapi_context' => [
-                    'description' => 'Récupère un reçu',
-                    'summary' => 'Récupère un reçu',
-                ],
-            ],
-            'patch' => [
-                'openapi_context' => [
-                    'description' => 'Modifie un reçu',
-                    'summary' => 'Modifie un reçu',
-                ]
-            ]
-        ],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
         ],
@@ -58,61 +42,77 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:receipt', 'read:id'],
-            'openapi_definition_name' => 'Receipt-read'
+            'openapi_definition_name' => 'Receipt-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity(readOnly: true)
 ]
 class Receipt extends Entity {
     #[
-        ApiProperty(description: 'Item', required: false, example: '/api/purchase-order-items/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Item::class, inversedBy: 'receipts'),
+        ApiProperty(description: 'Date', example: '2022-27-03'),
+        ORM\Column(type: 'datetime_immutable', nullable: true),
         Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
-    protected ?Item $item = null;
+    private ?DateTimeImmutable $date = null;
+
+    /** @var Item<I>|null */
+    #[
+        ApiProperty(description: 'Item', readableLink: false, example: '/api/supplier-order-items/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:receipt', 'write:receipt'])
+    ]
+    private ?Item $item = null;
 
     #[
-        ApiProperty(description: 'Date', required: false, example: '2022-27-03'),
-        ORM\Column(type: 'datetime', nullable: true),
+        ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
         Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
-    private ?DateTimeInterface $date = null;
+    private Measure $quantity;
 
-    #[
-        ApiProperty(description: 'Quantité', required: true, example: 0),
-        ORM\Column(type: 'float', options: ['default' => 0, 'unsigned' => true]),
-        Assert\PositiveOrZero,
-        Serializer\Groups(['read:receipt', 'write:receipt'])
-    ]
-    private float $quantity = 0;
+    public function __construct() {
+        $this->quantity = new Measure();
+    }
 
-    final public function getDate(): ?DateTimeInterface {
+    final public function getDate(): ?DateTimeImmutable {
         return $this->date;
     }
 
+    /**
+     * @return Item<I>|null
+     */
     final public function getItem(): ?Item {
         return $this->item;
     }
 
-    final public function getQuantity(): float {
+    final public function getQuantity(): Measure {
         return $this->quantity;
     }
 
-    final public function setDate(?DateTimeInterface $date): self {
+    /**
+     * @return $this
+     */
+    final public function setDate(?DateTimeImmutable $date): self {
         $this->date = $date;
-
         return $this;
     }
 
+    /**
+     * @param Item<I>|null $item
+     *
+     * @return $this
+     */
     final public function setItem(?Item $item): self {
         $this->item = $item;
-
         return $this;
     }
 
-    final public function setQuantity(float $quantity): self {
+    /**
+     * @return $this
+     */
+    final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
-
         return $this;
     }
 }

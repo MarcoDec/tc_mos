@@ -2,23 +2,17 @@
 
 namespace App\Entity\Management\Society\Company;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Event as AbstractEvent;
-use App\Entity\Management\Society\Company;
-use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: [
-        'company' => ['name', 'required' => true]
-    ]),
     ApiResource(
-        description: 'Evénement',
+        description: 'Événement sur une compagnie',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
@@ -31,9 +25,6 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Créer un événement',
                     'summary' => 'Créer un événement',
                 ],
-                'denormalization_context' => [
-                    'groups' => ['write:name', 'write:company-event:post', 'write:event']
-                ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
@@ -45,6 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un événement',
@@ -58,13 +50,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:company', 'write:event', ' write:company-event', 'write:name', 'write:event_date', 'write:company-event'],
+            'groups' => ['write:event'],
             'openapi_definition_name' => 'CompanyEvent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:event', 'read:id', 'read:company-event', 'read:company', 'read:name', ' write:company-event', 'read:event_date'],
-            'openapi_definition_name' => 'CompanyEvent-read'
-        ],
+            'groups' => ['read:event', 'read:id'],
+            'openapi_definition_name' => 'CompanyEvent-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity,
     ORM\Table('company_event')
@@ -74,17 +67,18 @@ class Event extends AbstractEvent {
     public const EVENT_KINDS = [self::EVENT_HOLIDAY];
 
     #[
-        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/2'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Company::class, inversedBy: 'events'),
-        Serializer\Groups(['read:company', 'read:company-event', 'write:company-event:post', 'write:company-event'])
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?Company $company;
+    private ?Company $company = null;
 
     #[
         ApiProperty(description: 'Type', example: self::EVENT_HOLIDAY),
         Assert\Choice(choices: self::EVENT_KINDS),
-        ORM\Column(options: ['default' => self::EVENT_HOLIDAY], type: 'string'),
-        Serializer\Groups(['read:company-event', 'write:company-event', 'write:company-event:post', 'write:company-event'])
+        ORM\Column(options: ['default' => self::EVENT_HOLIDAY]),
+        Serializer\Groups(['read:event', 'write:event'])
     ]
     private string $kind = self::EVENT_HOLIDAY;
 
@@ -92,19 +86,17 @@ class Event extends AbstractEvent {
         return $this->company;
     }
 
-    final public function getKind(): ?string {
+    final public function getKind(): string {
         return $this->kind;
     }
 
     final public function setCompany(?Company $company): self {
         $this->company = $company;
-
         return $this;
     }
 
     final public function setKind(string $kind): self {
         $this->kind = $kind;
-
         return $this;
     }
 }
