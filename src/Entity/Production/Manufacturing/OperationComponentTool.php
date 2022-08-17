@@ -28,21 +28,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ],
         ],
-        itemOperations: [
-            'patch' => [
-                'openapi_context' => [
-                    'description' => 'Modifie une opération de production d\'un composant et outil',
-                    'summary' => 'Modifie une opération de production d\'un composant et outil',
-                ]
-            ],
-            'delete' => [
-                'openapi_context' => [
-                    'description' => 'Supprime une opération de production d\'un composant et outil',
-                    'summary' => 'Supprime une opération de production d\'un composant et outil',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
-            ]
-        ],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
@@ -52,7 +38,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:oct'],
-            'openapi_definition_name' => 'OperationComponentTool-read'
+            'openapi_definition_name' => 'OperationComponentTool-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity
@@ -60,28 +47,28 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class OperationComponentTool extends Entity {
     #[
         ApiProperty(description: 'Numéro de lot', example: '165486543'),
-        ORM\Column(nullable: true, type: 'string'),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:oct', 'write:oct'])
     ]
     private ?string $batchNumber = null;
 
     #[
-        ApiProperty(description: 'Composant', required: false, example: '/api/components/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Component::class),
+        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:oct', 'write:oct'])
     ]
     private ?Component $component;
 
     #[
-        ApiProperty(description: 'Opération', required: false, example: '/api/operations/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Operation::class),
+        ApiProperty(description: 'Opération', readableLink: false, example: '/api/operations/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:oct', 'write:oct'])
     ]
     private ?Operation $operation;
 
     #[
-        ApiProperty(description: 'Outil', required: false, example: '/api/tools/1'),
-        ORM\ManyToOne(fetch: 'EAGER', targetEntity: Tool::class),
+        ApiProperty(description: 'Outil', readableLink: false, example: '/api/tools/1'),
+        ORM\ManyToOne,
         Serializer\Groups(['read:oct', 'write:oct'])
     ]
     private ?Tool $tool;

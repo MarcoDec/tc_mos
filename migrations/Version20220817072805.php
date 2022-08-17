@@ -275,6 +275,7 @@ SQL);
         $this->upSupplierOrderItems();
         // rank 7
         $this->upBillItems();
+        $this->upOperationComponentTools();
         // clean
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `bill` DROP `old_id`');
@@ -2848,6 +2849,22 @@ CREATE TABLE `notification` (
     `subject` VARCHAR(50) DEFAULT NULL,
     `user_id` INT UNSIGNED NOT NULL,
     CONSTRAINT `IDX_BF5476CAA76ED395` FOREIGN KEY (`user_id`) REFERENCES `employee` (`id`)
+)
+SQL);
+    }
+
+    private function upOperationComponentTools(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `operation_component_tool` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `batch_number` VARCHAR(255) DEFAULT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `operation_id` INT UNSIGNED DEFAULT NULL,
+    `tool_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_A40214F4E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    CONSTRAINT `IDX_A40214F444AC3583` FOREIGN KEY (`operation_id`) REFERENCES `manufacturing_operation` (`id`),
+    CONSTRAINT `IDX_A40214F48F7B22CC` FOREIGN KEY (`tool_id`) REFERENCES `engine` (`id`)
 )
 SQL);
     }
