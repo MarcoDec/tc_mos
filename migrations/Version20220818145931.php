@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220818125355 extends AbstractMigration {
+final class Version20220818145931 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -119,21 +119,14 @@ SQL);
         $this->queries->push(self::trim($query));
     }
 
-    private function generateEmployee(int $company, string $initials, string $username): void {
-        ($user = (new Employee()))
-            ->setPassword($this->hasher->hashPassword($user, 'super'))
-            ->addRole(Roles::ROLE_ACCOUNTING_ADMIN)
-            ->addRole(Roles::ROLE_HR_ADMIN)
-            ->addRole(Roles::ROLE_IT_ADMIN)
-            ->addRole(Roles::ROLE_LEVEL_DIRECTOR)
-            ->addRole(Roles::ROLE_LOGISTICS_ADMIN)
-            ->addRole(Roles::ROLE_MAINTENANCE_ADMIN)
-            ->addRole(Roles::ROLE_MANAGEMENT_ADMIN)
-            ->addRole(Roles::ROLE_PRODUCTION_ADMIN)
-            ->addRole(Roles::ROLE_PROJECT_ADMIN)
-            ->addRole(Roles::ROLE_PURCHASE_ADMIN)
-            ->addRole(Roles::ROLE_QUALITY_ADMIN)
-            ->addRole(Roles::ROLE_SELLING_ADMIN);
+    /**
+     * @param string[] $roles
+     */
+    private function generateEmployee(int $company, string $initials, string $password, array $roles, string $username): void {
+        ($user = (new Employee()))->setPassword($this->hasher->hashPassword($user, $password));
+        foreach ($roles as $role) {
+            $user->addRole($role);
+        }
         $this->addQuery(sprintf(
             <<<SQL
 INSERT INTO `employee` (`company_id`, `emb_roles_roles`, `initials`, `name`, `password`, `surname`, `username`)
@@ -1988,9 +1981,157 @@ CREATE TABLE `employee` (
     CONSTRAINT `IDX_5D9F75A1296CD8AE` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)
 )
 SQL);
-        $this->generateEmployee(1, 'super', 'super');
-        $this->generateEmployee(4, 'su-md', 'super-md');
-        $this->generateEmployee(3, 'su-tn', 'super-tn');
+        $this->generateEmployee(
+            company: 1,
+            initials: 'super',
+            password: 'super',
+            roles: [
+                Roles::ROLE_ACCOUNTING_ADMIN,
+                Roles::ROLE_HR_ADMIN,
+                Roles::ROLE_IT_ADMIN,
+                Roles::ROLE_LEVEL_DIRECTOR,
+                Roles::ROLE_LOGISTICS_ADMIN,
+                Roles::ROLE_MAINTENANCE_ADMIN,
+                Roles::ROLE_MANAGEMENT_ADMIN,
+                Roles::ROLE_PRODUCTION_ADMIN,
+                Roles::ROLE_PROJECT_ADMIN,
+                Roles::ROLE_PURCHASE_ADMIN,
+                Roles::ROLE_QUALITY_ADMIN,
+                Roles::ROLE_SELLING_ADMIN
+            ],
+            username: 'super'
+        );
+        $this->generateEmployee(
+            company: 4,
+            initials: 'su-md',
+            password: 'super',
+            roles: [
+                Roles::ROLE_ACCOUNTING_ADMIN,
+                Roles::ROLE_HR_ADMIN,
+                Roles::ROLE_IT_ADMIN,
+                Roles::ROLE_LEVEL_DIRECTOR,
+                Roles::ROLE_LOGISTICS_ADMIN,
+                Roles::ROLE_MAINTENANCE_ADMIN,
+                Roles::ROLE_MANAGEMENT_ADMIN,
+                Roles::ROLE_PRODUCTION_ADMIN,
+                Roles::ROLE_PROJECT_ADMIN,
+                Roles::ROLE_PURCHASE_ADMIN,
+                Roles::ROLE_QUALITY_ADMIN,
+                Roles::ROLE_SELLING_ADMIN
+            ],
+            username: 'super-md'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'su-tn',
+            password: 'super',
+            roles: [
+                Roles::ROLE_ACCOUNTING_ADMIN,
+                Roles::ROLE_HR_ADMIN,
+                Roles::ROLE_IT_ADMIN,
+                Roles::ROLE_LEVEL_DIRECTOR,
+                Roles::ROLE_LOGISTICS_ADMIN,
+                Roles::ROLE_MAINTENANCE_ADMIN,
+                Roles::ROLE_MANAGEMENT_ADMIN,
+                Roles::ROLE_PRODUCTION_ADMIN,
+                Roles::ROLE_PROJECT_ADMIN,
+                Roles::ROLE_PURCHASE_ADMIN,
+                Roles::ROLE_QUALITY_ADMIN,
+                Roles::ROLE_SELLING_ADMIN
+            ],
+            username: 'super-tn'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnloa',
+            password: 'tnloa',
+            roles: [Roles::ROLE_LOGISTICS_ADMIN],
+            username: 'tnloa'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnlor',
+            password: 'tnlor',
+            roles: [Roles::ROLE_LOGISTICS_READER],
+            username: 'tnlor'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnlow',
+            password: 'tnlow',
+            roles: [Roles::ROLE_LOGISTICS_WRITER],
+            username: 'tnlow'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnmaa',
+            password: 'tnmaa',
+            roles: [Roles::ROLE_MAINTENANCE_ADMIN],
+            username: 'tnmaa'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnmar',
+            password: 'tnmar',
+            roles: [Roles::ROLE_MAINTENANCE_READER],
+            username: 'tnmar'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnmaw',
+            password: 'tnmaw',
+            roles: [Roles::ROLE_MAINTENANCE_WRITER],
+            username: 'tnmaw'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnpoa',
+            password: 'tnpoa',
+            roles: [Roles::ROLE_PRODUCTION_ADMIN],
+            username: 'tnpoa'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnpor',
+            password: 'tnpor',
+            roles: [Roles::ROLE_PRODUCTION_READER],
+            username: 'tnpor'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnpow',
+            password: 'tnpow',
+            roles: [Roles::ROLE_PRODUCTION_WRITER],
+            username: 'tnpow'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnqua',
+            password: 'tnqua',
+            roles: [Roles::ROLE_QUALITY_ADMIN],
+            username: 'tnqua'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnqur',
+            password: 'tnqur',
+            roles: [Roles::ROLE_QUALITY_READER],
+            username: 'tnqur'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnquw',
+            password: 'tnquw',
+            roles: [Roles::ROLE_QUALITY_WRITER],
+            username: 'tnquw'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'user',
+            password: 'user',
+            roles: [],
+            username: 'user'
+        );
         $this->addQuery(<<<'SQL'
 INSERT INTO `employee` (
     `old_id`,
