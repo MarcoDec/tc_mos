@@ -5,7 +5,7 @@ import {defineStore} from 'pinia'
 export default defineStore('user', {
     actions: {
         async connect(fields, data) {
-            const response = await new Api(fields).fetch('/api/login', 'POST', data)
+            const response = await new Api(fields).fetch('/api/mobile/login', 'POST', data)
             if (response.status === 200)
                 this.save(response.content)
             else

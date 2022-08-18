@@ -18,12 +18,12 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
+abstract class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     public function __construct(
         private readonly NormalizerInterface $normalizer,
         private readonly TokenRepository $tokenRepo,
         private readonly TranslatorInterface $translator,
-        private readonly UrlGeneratorInterface $urlGenerator
+        protected readonly UrlGeneratorInterface $urlGenerator
     ) {
     }
 
@@ -56,9 +56,5 @@ final class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
         $user = $token->getUser();
         $this->tokenRepo->connect($user);
         return new JsonResponse($this->normalizer->normalize($user, null, ['jsonld_has_context' => false]));
-    }
-
-    protected function getLoginUrl(Request $request): string {
-        return $this->urlGenerator->generate('login');
     }
 }

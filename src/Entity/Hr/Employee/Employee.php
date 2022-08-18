@@ -467,6 +467,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->username;
     }
 
+    final public function hasRole(string $role): bool {
+        return $this->embRoles->hasRole($role);
+    }
+
     #[Pure]
     final public function isDeletable(): bool {
         return $this->currentPlace->isDeletable();
