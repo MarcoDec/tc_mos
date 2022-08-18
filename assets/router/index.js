@@ -25,6 +25,12 @@ const router = createRouter({
             name: 'login',
             path: '/login'
         },
+        {
+            component: async () => import('./pages/AppOverview.vue'),
+            meta: {requiresAuth: true},
+            name: 'overview',
+            path: '/overview'
+        },
         ...hr,
         ...logistics,
         ...management,
