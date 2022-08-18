@@ -9,8 +9,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Interfaces\CompanyInterface;
 use App\Entity\Management\Society\Company\Company;
-use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,20 +18,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
     ApiResource(
         description: 'Zone',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère les zones',
-                    'summary' => 'Récupère les zones',
+                    'summary' => 'Récupère les zones'
                 ]
             ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer une zone',
-                    'summary' => 'Créer une zone',
+                    'summary' => 'Créer une zone'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ]
@@ -48,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une zone',
-                    'summary' => 'Modifie une zone',
+                    'summary' => 'Modifie une zone'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ]
@@ -64,16 +63,15 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:id', 'read:zone'],
             'openapi_definition_name' => 'CompanySupply-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity
 ]
-class Zone extends Entity {
+class Zone extends Entity implements CompanyInterface {
     #[
-        ApiProperty(description: 'Company', readableLink: false, example: '/api/companies/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:zone', 'write:zone'])
+        ORM\ManyToOne
     ]
     private ?Company $company = null;
 

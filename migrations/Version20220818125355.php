@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220817072805 extends AbstractMigration {
+final class Version20220818125355 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -117,6 +117,33 @@ SQL);
 
     private function addQuery(string $query): void {
         $this->queries->push(self::trim($query));
+    }
+
+    private function generateEmployee(int $company, string $initials, string $username): void {
+        ($user = (new Employee()))
+            ->setPassword($this->hasher->hashPassword($user, 'super'))
+            ->addRole(Roles::ROLE_ACCOUNTING_ADMIN)
+            ->addRole(Roles::ROLE_HR_ADMIN)
+            ->addRole(Roles::ROLE_IT_ADMIN)
+            ->addRole(Roles::ROLE_LEVEL_DIRECTOR)
+            ->addRole(Roles::ROLE_LOGISTICS_ADMIN)
+            ->addRole(Roles::ROLE_MAINTENANCE_ADMIN)
+            ->addRole(Roles::ROLE_MANAGEMENT_ADMIN)
+            ->addRole(Roles::ROLE_PRODUCTION_ADMIN)
+            ->addRole(Roles::ROLE_PROJECT_ADMIN)
+            ->addRole(Roles::ROLE_PURCHASE_ADMIN)
+            ->addRole(Roles::ROLE_QUALITY_ADMIN)
+            ->addRole(Roles::ROLE_SELLING_ADMIN);
+        $this->addQuery(sprintf(
+            <<<SQL
+INSERT INTO `employee` (`company_id`, `emb_roles_roles`, `initials`, `name`, `password`, `surname`, `username`)
+VALUES ($company, %s, '$initials', 'Super', %s, 'SUPER', '$username')
+SQL,
+            /** @phpstan-ignore-next-line */
+            $this->connection->quote(implode(',', $user->getRoles())),
+            /** @phpstan-ignore-next-line */
+            $this->connection->quote($user->getPassword())
+        ));
     }
 
     private function getPhoneQueries(): string {
@@ -1961,30 +1988,9 @@ CREATE TABLE `employee` (
     CONSTRAINT `IDX_5D9F75A1296CD8AE` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)
 )
 SQL);
-        ($user = (new Employee()))
-            ->setPassword($this->hasher->hashPassword($user, 'super'))
-            ->addRole(Roles::ROLE_ACCOUNTING_ADMIN)
-            ->addRole(Roles::ROLE_HR_ADMIN)
-            ->addRole(Roles::ROLE_IT_ADMIN)
-            ->addRole(Roles::ROLE_LEVEL_DIRECTOR)
-            ->addRole(Roles::ROLE_LOGISTICS_ADMIN)
-            ->addRole(Roles::ROLE_MAINTENANCE_ADMIN)
-            ->addRole(Roles::ROLE_MANAGEMENT_ADMIN)
-            ->addRole(Roles::ROLE_PRODUCTION_ADMIN)
-            ->addRole(Roles::ROLE_PROJECT_ADMIN)
-            ->addRole(Roles::ROLE_PURCHASE_ADMIN)
-            ->addRole(Roles::ROLE_QUALITY_ADMIN)
-            ->addRole(Roles::ROLE_SELLING_ADMIN);
-        $this->addQuery(sprintf(
-            <<<'SQL'
-INSERT INTO `employee` (`emb_roles_roles`, `initials`, `name`, `password`, `surname`, `username`)
-VALUES (%s, 'super', 'Super', %s, 'SUPER', 'super')
-SQL,
-            /** @phpstan-ignore-next-line */
-            $this->connection->quote(implode(',', $user->getRoles())),
-            /** @phpstan-ignore-next-line */
-            $this->connection->quote($user->getPassword())
-        ));
+        $this->generateEmployee(1, 'super', 'super');
+        $this->generateEmployee(4, 'su-md', 'super-md');
+        $this->generateEmployee(3, 'su-tn', 'super-tn');
         $this->addQuery(<<<'SQL'
 INSERT INTO `employee` (
     `old_id`,
@@ -4677,28 +4683,27 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `society_zone` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_society` INT UNSIGNED NOT NULL,
     `nom` VARCHAR(255) NOT NULL
 )
 SQL);
         $this->insert('society_zone', ['id', 'id_society', 'nom']);
         $this->addQuery(<<<'SQL'
-UPDATE `society_zone`
-SET `id_society` = (
-    SELECT `company`.`id`
-    FROM `company`
-    WHERE `company`.`society_id` = (
-        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_zone`.`id_society`
-    )
+CREATE TABLE `zone` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    CONSTRAINT `IDX_A0EBC007979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-ALTER TABLE `society_zone`
-    CHANGE `id_society` `company_id` INT UNSIGNED NOT NULL,
-    CHANGE `nom` `name` VARCHAR(255) NOT NULL,
-    ADD CONSTRAINT `IDX_A0EBC007979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+INSERT INTO `zone` (`company_id`, `name`)
+SELECT
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_zone`.`id_society`)),
+    `nom`
+FROM `society_zone`
 SQL);
-        $this->addQuery('RENAME TABLE `society_zone` TO `zone`');
+        $this->addQuery('DROP TABLE `society_zone`');
     }
 }
