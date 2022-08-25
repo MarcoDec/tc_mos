@@ -38,8 +38,12 @@
   },
   "extra": {
     "patches": {
+      "doctrine/dbal": {
+        "Doctrine\\DBAL\\Schema\\Comparator::doCompareSchemas to public": "./patches/doctrine/dbal/src/Schema/Comparator.patch",
+        "Doctrine\\DBAL\\Schema\\MySQLSchemaManager::doCompareSchemas to App Comparator": "./patches/doctrine/dbal/src/Schema/MySQLSchemaManager.patch"
+      },
       "symfony/validator": {
-        "Translator to public accessibility": "./patches/symfony/validator/Context/ExecutionContext.patch"
+        "Symfony\\Component\\Validator\\Context\\ExecutionContext: $translator & $translationDomain to public": "./patches/symfony/validator/Context/ExecutionContext.patch"
       }
     },
     "symfony": {
