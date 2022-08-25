@@ -34,7 +34,7 @@ abstract class Contact extends Entity {
 
     #[
         ApiProperty(description: 'Type', example: ContactType::TYPE_PURCHASING, openapiContext: ['enum' => ContactType::TYPES]),
-        ORM\Column(type: 'contact_type', options: ['default' => ContactType::TYPE_ACCOUNTING]),
+        ORM\Column(type: 'contact', options: ['default' => ContactType::TYPE_ACCOUNTING]),
         Serializer\Groups(['read:contact', 'write:contact'])
     ]
     private ?string $kind = ContactType::TYPE_PURCHASING;

@@ -14,19 +14,19 @@ use Doctrine\ORM\Mapping as ORM;
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
-    ORM\DiscriminatorColumn(name: 'type', type: 'item_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
 abstract class Reference extends Entity {
-    public const KIND_DIM = 'Dimensionnel';
-    public const KIND_DOC = 'Documentaire';
-    public const KIND_GON = 'GO/NOGO';
-    public const KIND_QTE = 'Quantitatif';
-    public const KIND_VIS = 'Visuel';
-    public const KINDS = [self::KIND_DOC, self::KIND_DIM, self::KIND_GON, self::KIND_VIS, self::KIND_QTE];
-    public const TYPES = [ItemType::TYPE_COMPONENT => ComponentReference::class, ItemType::TYPE_PRODUCT => ProductReference::class];
+    final public const KIND_DIM = 'Dimensionnel';
+    final public const KIND_DOC = 'Documentaire';
+    final public const KIND_GON = 'GO/NOGO';
+    final public const KIND_QTE = 'Quantitatif';
+    final public const KIND_VIS = 'Visuel';
+    final public const KINDS = [self::KIND_DOC, self::KIND_DIM, self::KIND_GON, self::KIND_VIS, self::KIND_QTE];
+    final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentReference::class, ItemType::TYPE_PRODUCT => ProductReference::class];
 
     /** @var Collection<int, F> */
     protected Collection $families;

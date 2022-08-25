@@ -7,11 +7,9 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Selling\Order\Item\CurrentPlace;
-use App\Entity\Interfaces\WorkflowInterface;
+use App\Entity\Embeddable\Selling\Order\Item\State;
 use App\Entity\Item as BaseItem;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
@@ -55,13 +53,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                         'in' => 'path',
                         'name' => 'transition',
                         'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
-                        ]
+                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
                     ]],
                     'requestBody' => null,
-                    'summary' => 'Transite le la ligne à son prochain statut de workflow'
+                    'summary' => 'Transite la ligne à son prochain statut de workflow'
                 ],
                 'path' => '/customer-order-items/{id}/promote/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
@@ -77,19 +72,19 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'CustomerOrderItem-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:measure'],
+            'groups' => ['read:id', 'read:item', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'CustomerOrderItem-read',
             'skip_null_values' => false
         ]
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'item_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'customer_order_item')
 ]
-abstract class Item extends BaseItem implements WorkflowInterface {
-    public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
+abstract class Item extends BaseItem {
+    final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
     #[
         ApiProperty(description: 'Commande', example: '/api/selling-orders/1'),
@@ -106,38 +101,29 @@ abstract class Item extends BaseItem implements WorkflowInterface {
     private bool $arSent = false;
 
     #[
-        ApiProperty(description: 'Statut'),
         ORM\Embedded,
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:item'])
     ]
-    private CurrentPlace $currentPlace;
+    private State $embState;
 
     public function __construct() {
         parent::__construct();
-        $this->currentPlace = new CurrentPlace();
+        $this->embState = new State();
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    /**
+     * @return array<string, 1>
+     */
+    final public function getState(): array {
+        return $this->embState->getState();
     }
 
     final public function isArSent(): bool {
         return $this->arSent;
-    }
-
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
     }
 
     /**
@@ -151,16 +137,18 @@ abstract class Item extends BaseItem implements WorkflowInterface {
     /**
      * @return $this
      */
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
     /**
+     * @param array<string, 1> $state
+     *
      * @return $this
      */
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setState(array $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 }

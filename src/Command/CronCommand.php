@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @method static string getDefaultName()
  */
 final class CronCommand extends AbstractCommand {
-    public const OPTION_SCAN = 'scan';
+    final public const OPTION_SCAN = 'scan';
 
     protected static $defaultDescription = 'Lance les CRON.';
     protected static $defaultName = 'gpao:cron';

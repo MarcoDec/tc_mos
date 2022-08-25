@@ -6,10 +6,9 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Production\Manufacturing\Operation\CurrentPlace;
+use App\Entity\Embeddable\Manufacturing\Operation\State;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Project\Operation\Operation as PrimaryOperation;
@@ -17,7 +16,6 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -64,16 +62,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                         'in' => 'path',
                         'name' => 'transition',
                         'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
-                        ]
+                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
                     ]],
                     'requestBody' => null,
                     'summary' => 'Transite l\'opération à son prochain statut de workflow'
                 ],
                 'path' => '/manufacturing-operations/{id}/promote/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')',
+                'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
         ],
@@ -86,7 +81,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ManufacturingOperation-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:manufacturing-operation'],
+            'groups' => ['read:id', 'read:manufacturing-operation', 'read:state'],
             'openapi_definition_name' => 'ManufacturingOperation-read',
             'skip_null_values' => false
         ]
@@ -94,13 +89,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'manufacturing_operation')
 ]
-class Operation extends Entity implements WorkflowInterface {
+class Operation extends Entity {
     #[
-        ApiProperty(description: 'Statut'),
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-operation'])
     ]
-    private CurrentPlace $currentPlace;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
@@ -160,7 +154,7 @@ class Operation extends Entity implements WorkflowInterface {
     private ?Zone $zone = null;
 
     public function __construct() {
-        $this->currentPlace = new CurrentPlace();
+        $this->embState = new State();
         $this->operators = new ArrayCollection();
     }
 
@@ -171,8 +165,8 @@ class Operation extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getNotes(): ?string {
@@ -202,9 +196,11 @@ class Operation extends Entity implements WorkflowInterface {
         return $this->startedDate;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    /**
+     * @return array<string, 1>
+     */
+    final public function getState(): array {
+        return $this->embState->getState();
     }
 
     final public function getWorkstation(): ?Workstation {
@@ -215,16 +211,6 @@ class Operation extends Entity implements WorkflowInterface {
         return $this->zone;
     }
 
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
-    }
-
     final public function removeOperator(Employee $operator): self {
         if ($this->operators->contains($operator)) {
             $this->operators->removeElement($operator);
@@ -232,8 +218,8 @@ class Operation extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -262,8 +248,11 @@ class Operation extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    /**
+     * @param array<string, 1> $state
+     */
+    final public function setState(array $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 

@@ -1,0 +1,483 @@
+parameters:
+  wf_audit_trail:
+    enabled: true
+  wf_marking_store:
+    property: state
+    type: method
+  wf_place_agreed: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_AGREED
+  wf_place_asked: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_ASKED
+  wf_place_billed: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_BILLED
+  wf_place_blocked: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_BLOCKED
+  wf_place_cart: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_CART
+  wf_place_closed: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_CLOSED
+  wf_place_delayed: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_DELAYED
+  wf_place_delivered: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_DELIVERED
+  wf_place_disabled: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_DISABLED
+  wf_place_draft: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_DRAFT
+  wf_place_enabled: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_ENABLED
+  wf_place_forecasted: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_FORECAST
+  wf_place_initial: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_INITIAL
+  wf_place_monthly: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_MONTHLY
+  wf_place_paid: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_PAID
+  wf_place_partially_delivered: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_PARTIALLY_DELIVERED
+  wf_place_partially_paid: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_PARTIALLY_PAID
+  wf_place_rejected: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_REJECTED
+  wf_place_to_validate: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_TO_VALIDATE
+  wf_place_warning: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_WARNING
+  wf_tr_accept: !php/const App\Entity\Embeddable\State::TR_ACCEPT
+  wf_tr_bill: !php/const App\Entity\Embeddable\State::TR_BILL
+  wf_tr_block: !php/const App\Entity\Embeddable\State::TR_BLOCK
+  wf_tr_buy: !php/const App\Entity\Embeddable\State::TR_BUY
+  wf_tr_close: !php/const App\Entity\Embeddable\State::TR_CLOSE
+  wf_tr_create: !php/const App\Entity\Embeddable\State::TR_CREATE
+  wf_tr_delay: !php/const App\Entity\Embeddable\State::TR_DELAY
+  wf_tr_deliver: !php/const App\Entity\Embeddable\State::TR_DELIVER
+  wf_tr_disable: !php/const App\Entity\Embeddable\State::TR_DISABLE
+  wf_tr_forecast: !php/const App\Entity\Embeddable\State::TR_FORECAST
+  wf_tr_month: !php/const App\Entity\Embeddable\State::TR_MONTH
+  wf_tr_partially_deliver: !php/const App\Entity\Embeddable\State::TR_PARTIALLY_DELIVER
+  wf_tr_partially_pay: !php/const App\Entity\Embeddable\State::TR_PARTIALLY_PAY
+  wf_tr_pay: !php/const App\Entity\Embeddable\State::TR_PAY
+  wf_tr_reject: !php/const App\Entity\Embeddable\State::TR_REJECT
+  wf_tr_submit_validation: !php/const App\Entity\Embeddable\State::TR_SUBMIT_VALIDATION
+  wf_tr_supervise: !php/const App\Entity\Embeddable\State::TR_SUPERVISE
+  wf_tr_unlock: !php/const App\Entity\Embeddable\State::TR_UNLOCK
+  wf_tr_validate: !php/const App\Entity\Embeddable\State::TR_VALIDATE
+
+framework:
+  workflows:
+    bill:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_billed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_disabled%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_paid%'
+        - '%wf_place_partially_paid%'
+      supports:
+        - App\Entity\Accounting\Bill
+      transitions:
+        '%wf_tr_bill%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_billed%'
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_disable%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_disabled%'
+        '%wf_tr_partially_pay%':
+          from: '%wf_place_billed%'
+          to: '%wf_place_partially_paid%'
+        '%wf_tr_pay%':
+          from: [ '%wf_place_billed%', '%wf_place_partially_paid%' ]
+          to: '%wf_place_paid%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+      type: workflow
+    component:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_disabled%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_warning%'
+      supports:
+        - App\Entity\Purchase\Component\Component
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_disable%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_disabled%'
+        '%wf_tr_supervise%':
+          from: [ '%wf_place_agreed%', '%wf_place_draft%' ]
+          to: '%wf_place_warning%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: [ '%wf_place_draft%', '%wf_place_warning%' ]
+          to: '%wf_place_agreed%'
+      type: workflow
+    customer:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_disabled%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+      supports:
+        - App\Entity\Selling\Customer\Customer
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_disable%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_disabled%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_agreed%'
+      type: workflow
+    customer_order:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_closed%'
+        - '%wf_place_delivered%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_partially_delivered%'
+        - '%wf_place_to_validate%'
+      supports:
+        - App\Entity\Selling\Order\Order
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_close%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_closed%'
+        '%wf_tr_deliver%':
+          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
+          to: '%wf_place_delivered%'
+        '%wf_tr_partially_deliver%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_partially_delivered%'
+        '%wf_tr_submit_validation%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_to_validate%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: '%wf_place_to_validate%'
+          to: '%wf_place_agreed%'
+      type: workflow
+    customer_order_item:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_closed%'
+        - '%wf_place_delivered%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_partially_delivered%'
+      supports:
+        - App\Entity\Selling\Order\Item
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_close%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_closed%'
+        '%wf_tr_deliver%':
+          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
+          to: '%wf_place_delivered%'
+        '%wf_tr_partially_deliver%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_partially_delivered%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_agreed%'
+      type: workflow
+    employee_engine:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_enabled%', '%wf_place_warning%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_disabled%'
+        - '%wf_place_enabled%'
+        - '%wf_place_warning%'
+      supports:
+        - App\Entity\Hr\Employee\Employee
+        - App\Entity\Production\Engine\Engine
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_disable%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_disabled%'
+        '%wf_tr_supervise%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_warning%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: '%wf_place_warning%'
+          to: '%wf_place_agreed%'
+      type: workflow
+    event:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_asked%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_asked%'
+        - '%wf_place_closed%'
+        - '%wf_place_rejected%'
+      supports:
+        - App\Entity\Production\Engine\Event\Event
+        - App\Entity\Production\Manufacturing\DeliveryNote
+      transitions:
+        '%wf_tr_accept%':
+          from: '%wf_place_asked%'
+          to: '%wf_place_agreed%'
+        '%wf_tr_close%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_closed%'
+        '%wf_tr_reject%':
+          from: '%wf_place_asked%'
+          to: '%wf_place_rejected%'
+      type: state_machine
+    manufacturing_operation:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_closed%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_warning%'
+      supports:
+        - App\Entity\Production\Manufacturing\Operation
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_close%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_closed%'
+        '%wf_tr_supervise%':
+          from: [ '%wf_place_agreed%', '%wf_place_draft%' ]
+          to: '%wf_place_warning%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: [ '%wf_place_draft%', '%wf_place_warning%' ]
+          to: '%wf_place_agreed%'
+      type: workflow
+    manufacturing_order:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_asked%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_asked%'
+        - '%wf_place_blocked%'
+        - '%wf_place_closed%'
+        - '%wf_place_enabled%'
+        - '%wf_place_rejected%'
+      supports:
+        - App\Entity\Production\Manufacturing\Order
+      transitions:
+        '%wf_tr_accept%':
+          from: '%wf_place_asked%'
+          to: '%wf_place_agreed%'
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_close%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_closed%'
+        '%wf_tr_reject%':
+          from: '%wf_place_asked%'
+          to: '%wf_place_rejected%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+      type: workflow
+    product:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_disabled%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_to_validate%'
+        - '%wf_place_warning%'
+      supports:
+        - App\Entity\Project\Product\Product
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_disable%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_disabled%'
+        '%wf_tr_submit_validation%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_to_validate%'
+        '%wf_tr_supervise%':
+          from: [ '%wf_place_agreed%', '%wf_place_to_validate%' ]
+          to: '%wf_place_warning%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: [ '%wf_place_to_validate%', '%wf_place_warning%' ]
+          to: '%wf_place_agreed%'
+      type: workflow
+    supplier:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_disabled%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_to_validate%'
+        - '%wf_place_warning%'
+      supports:
+        - App\Entity\Purchase\Supplier\Supplier
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_disable%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_disabled%'
+        '%wf_tr_submit_validation%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_to_validate%'
+        '%wf_tr_supervise%':
+          from: [ '%wf_place_agreed%', '%wf_place_to_validate%' ]
+          to: '%wf_place_warning%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: '%wf_place_warning%'
+          to: '%wf_place_agreed%'
+      type: workflow
+    supplier_order:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_initial%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_cart%'
+        - '%wf_place_closed%'
+        - '%wf_place_delivered%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_initial%'
+        - '%wf_place_partially_delivered%'
+      supports:
+        - App\Entity\Purchase\Order\Order
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_buy%':
+          from: '%wf_place_initial%'
+          to: '%wf_place_cart%'
+        '%wf_tr_close%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_closed%'
+        '%wf_tr_create%':
+          from: '%wf_place_initial%'
+          to: '%wf_place_draft%'
+        '%wf_tr_deliver%':
+          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
+          to: '%wf_place_delivered%'
+        '%wf_tr_partially_deliver%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_partially_delivered%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: [ '%wf_place_cart%', '%wf_place_draft%' ]
+          to: '%wf_place_agreed%'
+      type: workflow
+    supplier_order_item:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: [ '%wf_place_initial%', '%wf_place_enabled%' ]
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_blocked%'
+        - '%wf_place_closed%'
+        - '%wf_place_delayed%'
+        - '%wf_place_delivered%'
+        - '%wf_place_draft%'
+        - '%wf_place_enabled%'
+        - '%wf_place_forecasted%'
+        - '%wf_place_initial%'
+        - '%wf_place_monthly%'
+        - '%wf_place_partially_delivered%'
+      supports:
+        - App\Entity\Purchase\Order\Item
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_close%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_closed%'
+        '%wf_tr_create%':
+          from: '%wf_place_initial%'
+          to: '%wf_place_draft%'
+        '%wf_tr_delay%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_delayed%'
+        '%wf_tr_deliver%':
+          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
+          to: '%wf_place_delivered%'
+        '%wf_tr_forecast%':
+          from: [ '%wf_place_draft%', '%wf_place_initial%', '%wf_place_monthly%' ]
+          to: '%wf_place_forecasted%'
+        '%wf_tr_month%':
+          from: '%wf_place_initial%'
+          to: '%wf_place_monthly%'
+        '%wf_tr_partially_deliver%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_partially_delivered%'
+        '%wf_tr_unlock%':
+          from: [ '%wf_place_blocked%', '%wf_place_delayed%' ]
+          to: '%wf_place_enabled%'
+        '%wf_tr_validate%':
+          from: [ '%wf_place_draft%', '%wf_place_forecasted%' ]
+          to: '%wf_place_agreed%'
+      type: workflow

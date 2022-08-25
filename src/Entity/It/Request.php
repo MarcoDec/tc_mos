@@ -15,9 +15,6 @@ class Request extends Entity {
     #[ORM\ManyToOne]
     private ?Employee $askedBy = null;
 
-    #[ORM\Column]
-    private ?string $currentPlace = null;
-
     #[ORM\Column(type: 'date_immutable')]
     private ?DateTimeImmutable $delay = null;
 
@@ -36,10 +33,6 @@ class Request extends Entity {
 
     final public function getAskedBy(): ?Employee {
         return $this->askedBy;
-    }
-
-    final public function getCurrentPlace(): ?string {
-        return $this->currentPlace;
     }
 
     final public function getDelay(): ?DateTimeImmutable {
@@ -65,11 +58,6 @@ class Request extends Entity {
 
     final public function setAskedBy(?Employee $askedBy): self {
         $this->askedBy = $askedBy;
-        return $this;
-    }
-
-    final public function setCurrentPlace(?string $currentPlace): self {
-        $this->currentPlace = $currentPlace;
         return $this;
     }
 

@@ -30,6 +30,7 @@ final class PromoteDataPersister implements ContextAwareDataPersisterInterface {
             throw new BadRequestException('Missing "transition" parameter.');
         }
         $workflow = $this->registry->get($data);
+        dump(['$data' => $data, '$transition' => $transition, '$workflow' => $workflow]);
         if ($workflow->can($data, $transition)) {
             $workflow->apply($data, $transition);
             $this->em->flush();

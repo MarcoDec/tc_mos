@@ -2,11 +2,9 @@
 
 namespace App\Doctrine\DBAL\Types\Logistics;
 
-use App\Doctrine\DBAL\Types\EnumType;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
+use App\Doctrine\DBAL\Types\SetType;
 
-final class FamilyType extends EnumType {
+final class FamilyType extends SetType {
     final public const TYPE_JAIL = 'prison';
     final public const TYPE_PRODUCTION = 'production';
     final public const TYPE_RECEIPT = 'réception';
@@ -23,34 +21,6 @@ final class FamilyType extends EnumType {
         self::TYPE_STORE,
         self::TYPE_TRUCK
     ];
-
-    /**
-     * @param string[] $value
-     */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string {
-        if (empty($value)) {
-            return null;
-        }
-        foreach ($value as $item) {
-            if (!in_array($item, self::TYPES, true)) {
-                throw new InvalidArgumentException(sprintf("Invalid value. Get \"$item\", but valid values are [%s].", self::getStrTypes()));
-            }
-        }
-        return implode(',', $value);
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return string[]
-     */
-    public function convertToPHPValue($value, AbstractPlatform $platform): array {
-        return empty($value) ? [] : explode(',', $value);
-    }
-
-    public function getEnumType(): string {
-        return 'SET';
-    }
 
     public function getName(): string {
         return 'warehouse_families';

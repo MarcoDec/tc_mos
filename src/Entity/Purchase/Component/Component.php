@@ -10,11 +10,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Purchase\Component\CurrentPlace;
+use App\Entity\Embeddable\Purchase\Component\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
@@ -24,7 +23,6 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -37,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:current-place', 'read:component:collection', 'read:measure'],
+                    'groups' => ['read:component:collection', 'read:measure', 'read:state'],
                     'openapi_definition_name' => 'Component-collection',
                     'skip_null_values' => false
                 ],
@@ -116,10 +114,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'in' => 'path',
                         'name' => 'transition',
                         'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
-                        ]
+                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
                     ]],
                     'requestBody' => null,
                     'summary' => 'Transite le composant à son prochain statut de workflow'
@@ -152,14 +147,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Component-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current-place', 'read:component', 'read:measure'],
+            'groups' => ['read:component', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'Component-read',
             'skip_null_values' => false
         ]
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
-class Component extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
+class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
     /** @var Collection<int, ComponentAttribute> */
@@ -174,19 +169,18 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
     private Measure $copperWeight;
 
     #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:component', 'read:product:component'])
-    ]
-    private CurrentPlace $currentPlace;
-
-    #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 16, groups: ['Component-logistics']),
         ORM\Column(length: 16, nullable: true),
         Serializer\Groups(['read:component', 'write:component:logistics'])
     ]
     private ?string $customsCode = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:component', 'read:component:collection'])
+    ]
+    private State $embState;
 
     #[
         ApiProperty(description: 'Date de fin de vie', required: false, example: '2021-11-18'),
@@ -317,7 +311,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
     public function __construct() {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
-        $this->currentPlace = new CurrentPlace();
+        $this->embState = new State();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
         $this->weight = new Measure();
@@ -354,12 +348,12 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         return $this->copperWeight;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
     final public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getEndOfLife(): ?DateTimeImmutable {
@@ -414,9 +408,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         return $this->ppmRate;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    /**
+     * @return array<string, 1>
+     */
+    final public function getState(): array {
+        return $this->embState->getState();
     }
 
     final public function getUnit(): ?Unit {
@@ -425,16 +421,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
 
     final public function getWeight(): Measure {
         return $this->weight;
-    }
-
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
     }
 
     final public function isManagedStock(): bool {
@@ -460,13 +446,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setCustomsCode(?string $customsCode): self {
+        $this->customsCode = $customsCode;
         return $this;
     }
 
-    final public function setCustomsCode(?string $customsCode): self {
-        $this->customsCode = $customsCode;
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -540,8 +526,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface, W
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    /**
+     * @param array<string, 1> $state
+     */
+    final public function setState(array $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 

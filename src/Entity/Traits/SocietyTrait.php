@@ -43,7 +43,6 @@ trait SocietyTrait {
     ]
     private ?Incoterms $incoterms = null;
 
-    /** @noRector */
     #[
         ApiProperty(description: 'Minimum de facturation', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
@@ -58,7 +57,6 @@ trait SocietyTrait {
     ]
     private ?InvoiceTimeDue $invoiceTimeDue = null;
 
-    /** @noRector */
     #[
         ApiProperty(description: 'Ordre minimum', required: false, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,

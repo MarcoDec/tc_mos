@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
 abstract class AbstractUnit extends Entity {
-    public const UNIT_CODE_MAX_LENGTH = 6;
+    final public const UNIT_CODE_MAX_LENGTH = 6;
 
     /** @var Collection<int, static> */
     protected Collection $children;

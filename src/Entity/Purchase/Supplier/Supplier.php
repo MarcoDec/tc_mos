@@ -10,9 +10,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Purchase\Supplier\CurrentPlace;
+use App\Entity\Embeddable\Purchase\Supplier\State;
 use App\Entity\Entity;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
@@ -20,7 +19,6 @@ use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:address', 'read:copper', 'read:current-place', 'read:id', 'read:measure', 'read:supplier:collection'],
+                    'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:state', 'read:supplier:collection'],
                     'openapi_definition_name' => 'Supplier-collection',
                     'skip_null_values' => false
                 ],
@@ -94,10 +92,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'in' => 'path',
                         'name' => 'transition',
                         'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
-                        ]
+                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
                     ]],
                     'requestBody' => null,
                     'summary' => 'Transite le fournisseur à son prochain statut de workflow'
@@ -115,14 +110,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Supplier-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:copper', 'read:current-place', 'read:id', 'read:measure', 'read:supplier'],
+            'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:state', 'read:supplier'],
             'openapi_definition_name' => 'Supplier-read',
             'skip_null_values' => false
         ]
     ),
     ORM\Entity
 ]
-class Supplier extends Entity implements WorkflowInterface {
+class Supplier extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
@@ -162,11 +157,10 @@ class Supplier extends Entity implements WorkflowInterface {
     private ?Currency $currency = null;
 
     #[
-        ApiProperty(description: 'Statut'),
         ORM\Embedded,
-        Serializer\Groups(['read:supplier'])
+        Serializer\Groups(['read:supplier', 'read:supplier:collection'])
     ]
-    private CurrentPlace $currentPlace;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
@@ -215,7 +209,7 @@ class Supplier extends Entity implements WorkflowInterface {
         $this->administeredBy = new ArrayCollection();
         $this->address = new Address();
         $this->copper = new Copper();
-        $this->currentPlace = new CurrentPlace();
+        $this->embState = new State();
     }
 
     final public function addAdministeredBy(Company $administeredBy): self {
@@ -249,8 +243,8 @@ class Supplier extends Entity implements WorkflowInterface {
         return $this->currency;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getLanguage(): ?string {
@@ -269,19 +263,11 @@ class Supplier extends Entity implements WorkflowInterface {
         return $this->society;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
-    }
-
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
+    /**
+     * @return array<string, 1>
+     */
+    final public function getState(): array {
+        return $this->embState->getState();
     }
 
     final public function isManagedProduction(): bool {
@@ -320,8 +306,8 @@ class Supplier extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -355,8 +341,11 @@ class Supplier extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    /**
+     * @param array<string, 1> $state
+     */
+    final public function setState(array $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 }

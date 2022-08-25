@@ -2,11 +2,12 @@
 
 namespace App\Entity\Production\Manufacturing;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Manufacturing\Order\State;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Production\Manufacturing\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
@@ -55,6 +56,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Modifie un OF',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
+            ],
+            'promote' => [
+                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Transite l\'OF à son prochain statut de workflow',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'transition',
+                        'required' => true,
+                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Transite l\'OF à son prochain statut de workflow'
+                ],
+                'path' => '/manufacturing-orders/{id}/promote/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
+                'validate' => false
             ]
         ],
         shortName: 'ManufacturingOrder',
@@ -66,7 +86,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ManufacturingOrder-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current-place', 'read:id', 'read:manufacturing-order', 'read:measure'],
+            'groups' => ['read:id', 'read:manufacturing-order', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'ManufacturingOrder-read',
             'skip_null_values' => false
         ],
@@ -92,18 +112,17 @@ class Order extends Entity implements BarCodeInterface {
     private ?Company $company;
 
     #[
-        ApiProperty(description: 'Statut', example: 'confirmed'),
-        ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order'])
-    ]
-    private CurrentPlace $currentPlace;
-
-    #[
         ApiProperty(description: 'Date de livraison', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
     private ?DateTimeImmutable $deliveryDate = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-order'])
+    ]
+    private State $embState;
 
     #[
         ApiProperty(description: 'Index', example: 1),
@@ -170,7 +189,7 @@ class Order extends Entity implements BarCodeInterface {
 
     public function __construct() {
         $this->actualQuantity = new Measure();
-        $this->currentPlace = new CurrentPlace();
+        $this->embState = new State();
         $this->quantityProduced = new Measure();
         $this->quantityRequested = new Measure();
     }
@@ -187,12 +206,12 @@ class Order extends Entity implements BarCodeInterface {
         return $this->company;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
     final public function getDeliveryDate(): ?DateTimeImmutable {
         return $this->deliveryDate;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getIndex(): int {
@@ -231,6 +250,13 @@ class Order extends Entity implements BarCodeInterface {
         return $this->ref;
     }
 
+    /**
+     * @return array<string, 1>
+     */
+    final public function getState(): array {
+        return $this->embState->getState();
+    }
+
     final public function setActualQuantity(Measure $actualQuantity): self {
         $this->actualQuantity = $actualQuantity;
         return $this;
@@ -241,13 +267,13 @@ class Order extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setDeliveryDate(?DateTimeImmutable $deliveryDate): self {
+        $this->deliveryDate = $deliveryDate;
         return $this;
     }
 
-    final public function setDeliveryDate(?DateTimeImmutable $deliveryDate): self {
-        $this->deliveryDate = $deliveryDate;
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -293,6 +319,14 @@ class Order extends Entity implements BarCodeInterface {
 
     final public function setRef(?string $ref): self {
         $this->ref = $ref;
+        return $this;
+    }
+
+    /**
+     * @param array<string, 1> $state
+     */
+    final public function setState(array $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 }

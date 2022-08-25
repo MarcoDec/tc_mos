@@ -23,9 +23,9 @@ final class DatabaseLoadCommand extends AbstractCommand {
         $run('doctrine:database:drop', ['--force' => true]);
         $run('doctrine:database:create');
         $run('doctrine:migrations:migrate');
-        $run(CronCommand::getDefaultName(), ['--'.CronCommand::OPTION_SCAN => true]);
-        $run(CurrencyRateCommand::getDefaultName());
-        $run(ExpirationDateCommand::getDefaultName());
+        // $run(CronCommand::getDefaultName(), ['--'.CronCommand::OPTION_SCAN => true]);
+        // $run(CurrencyRateCommand::getDefaultName());
+        // $run(ExpirationDateCommand::getDefaultName());
         return self::SUCCESS;
     }
 }

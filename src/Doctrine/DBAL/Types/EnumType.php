@@ -37,7 +37,7 @@ abstract class EnumType extends Type {
         return 'ENUM';
     }
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
+    final public function getSQLDeclaration(array $column, AbstractPlatform $platform): string {
         return sprintf("{$this->getEnumType()}(%s)", self::getStrTypes());
     }
 }

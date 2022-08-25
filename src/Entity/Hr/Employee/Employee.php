@@ -13,11 +13,10 @@ use App\Doctrine\DBAL\Types\Hr\Employee\GenderType;
 use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Address;
-use App\Entity\Embeddable\EmployeeEngineCurrentPlace;
+use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\NumericFilter;
@@ -44,7 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:id', 'read:employee:collection'],
+                    'groups' => ['read:id', 'read:employee:collection', 'read:state'],
                     'openapi_definition_name' => 'Employee-collection',
                     'skip_null_values' => false
                 ],
@@ -106,16 +105,13 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'in' => 'path',
                         'name' => 'transition',
                         'required' => true,
-                        'schema' => [
-                            'enum' => EmployeeEngineCurrentPlace::TRANSITIONS,
-                            'type' => 'string'
-                        ]
+                        'schema' => ['enum' => EmployeeEngineState::TRANSITIONS, 'type' => 'string']
                     ]],
                     'requestBody' => null,
                     'summary' => 'Transite l\'employé à son prochain statut de workflow'
                 ],
                 'path' => '/employees/{id}/promote/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
+                'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
         ],
@@ -123,18 +119,18 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:address', 'write:current-place', 'write:employee'],
+            'groups' => ['write:address', 'write:employee'],
             'openapi_definition_name' => 'Employee-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:current-place', 'read:employee', 'read:id'],
+            'groups' => ['read:address', 'read:employee', 'read:id', 'read:state'],
             'openapi_definition_name' => 'Employee-read',
             'skip_null_values' => false
         ]
     ),
     ORM\Entity
 ]
-class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface, WorkflowInterface {
+class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
     use BarCodeTrait;
 
     #[
@@ -169,15 +165,14 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private ?Company $company = null;
 
-    #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded(EmployeeEngineCurrentPlace::class),
-        Serializer\Groups(['read:employee'])
-    ]
-    private EmployeeEngineCurrentPlace $currentPlace;
-
     #[ORM\Embedded]
     private Roles $embRoles;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:employee', 'read:employee:collection'])
+    ]
+    private EmployeeEngineState $embState;
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
@@ -291,7 +286,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     public function __construct() {
         $this->apiTokens = new ArrayCollection();
         $this->embRoles = new Roles();
-        $this->currentPlace = new EmployeeEngineCurrentPlace();
+        $this->embState = new EmployeeEngineState();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -350,12 +345,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return null;
     }
 
-    final public function getCurrentPlace(): EmployeeEngineCurrentPlace {
-        return $this->currentPlace;
-    }
-
     final public function getEmbRoles(): Roles {
         return $this->embRoles;
+    }
+
+    final public function getEmbState(): EmployeeEngineState {
+        return $this->embState;
     }
 
     final public function getEntryDate(): ?DateTimeImmutable {
@@ -429,9 +424,11 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->socialSecurityNumber;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    /**
+     * @return array<string, 1>
+     */
+    final public function getState(): array {
+        return $this->embState->getState();
     }
 
     final public function getSurname(): ?string {
@@ -471,16 +468,6 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->embRoles->hasRole($role);
     }
 
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
-    }
-
     final public function isUserEnabled(): bool {
         return $this->userEnabled;
     }
@@ -517,13 +504,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function setCurrentPlace(EmployeeEngineCurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setEmbRoles(Roles $embRoles): self {
+        $this->embRoles = $embRoles;
         return $this;
     }
 
-    final public function setEmbRoles(Roles $embRoles): self {
-        $this->embRoles = $embRoles;
+    final public function setEmbState(EmployeeEngineState $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -582,8 +569,11 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    /**
+     * @param array<string, 1> $state
+     */
+    final public function setState(array $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 

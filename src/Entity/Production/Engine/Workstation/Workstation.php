@@ -38,7 +38,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'enable_max_depth' => true,
-            'groups' => ['read:current_place', 'read:engine', 'read:id'],
+            'groups' => ['read:engine', 'read:id'],
             'openapi_definition_name' => 'Workstation-read',
             'skip_null_values' => false
         ]

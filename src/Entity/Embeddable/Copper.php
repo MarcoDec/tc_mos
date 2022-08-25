@@ -42,7 +42,7 @@ class Copper {
     #[
         ApiProperty(description: 'Type de suivi', example: CopperType::TYPE_MONTHLY, openapiContext: ['enum' => CopperType::TYPES]),
         Assert\Choice(choices: CopperType::TYPES),
-        ORM\Column(type: 'copper_type', options: ['default' => CopperType::TYPE_MONTHLY]),
+        ORM\Column(type: 'copper', options: ['default' => CopperType::TYPE_MONTHLY]),
         Serializer\Groups(['read:copper', 'write:copper'])
     ]
     private string $type = CopperType::TYPE_MONTHLY;

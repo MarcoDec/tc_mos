@@ -12,15 +12,13 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Project\Product\CurrentPlace;
+use App\Entity\Embeddable\Project\Product\Product\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
-use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
 use App\Repository\Project\Product\ProductRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -29,13 +27,11 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
-    ApiFilter(filterClass: EnumFilter::class, properties: ['currentPlace.name']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'index' => 'partial', 'kind' => 'partial']),
@@ -44,7 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
+                    'groups' => ['read:measure', 'read:product:collection', 'read:state'],
                     'openapi_definition_name' => 'Product-collection',
                     'skip_null_values' => false
                 ],
@@ -123,16 +119,13 @@ use Symfony\Component\Validator\Constraints as Assert;
                         'in' => 'path',
                         'name' => 'transition',
                         'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
-                        ]
+                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
                     ]],
                     'requestBody' => null,
                     'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
                 'path' => '/products/{id}/promote/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ],
             'upgrade' => [
@@ -159,7 +152,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Product-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current-place', 'read:measure', 'read:product'],
+            'groups' => ['read:measure', 'read:product', 'read:state'],
             'openapi_definition_name' => 'Product-read',
             'skip_null_values' => false
         ]
@@ -167,7 +160,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
+class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
     #[
@@ -201,19 +194,18 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     private Measure $costingManualDuration;
 
     #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:product', 'read:product:collection'])
-    ]
-    private CurrentPlace $currentPlace;
-
-    #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 10, groups: ['Product-logistics']),
         ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
     private ?string $customsCode = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'read:product:collection'])
+    ]
+    private State $embState;
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
@@ -407,9 +399,9 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     public function __construct() {
         $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
-        $this->currentPlace = new CurrentPlace();
         $this->costingAutoDuration = new Measure();
         $this->costingManualDuration = new Measure();
+        $this->embState = new State();
         $this->forecastVolume = new Measure();
         $this->manualDuration = new Measure();
         $this->maxProto = new Measure();
@@ -428,7 +420,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     public function __clone() {
         parent::__clone();
         $this->children = new ArrayCollection();
-        $this->currentPlace = new CurrentPlace();
+        $this->embState = new State();
         $this->internalIndex = 1;
         $this->parent = null;
     }
@@ -468,12 +460,12 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this->costingManualDuration;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
     final public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getEndOfLife(): ?DateTimeImmutable {
@@ -577,9 +569,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this->productionDelay;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    /**
+     * @return array<string, 1>
+     */
+    final public function getState(): array {
+        return $this->embState->getState();
     }
 
     final public function getTransfertPriceSupplies(): Measure {
@@ -596,16 +590,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
 
     final public function getWeight(): Measure {
         return $this->weight;
-    }
-
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
     }
 
     final public function isManagedCopper(): bool {
@@ -642,13 +626,13 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setCustomsCode(?string $customsCode): self {
+        $this->customsCode = $customsCode;
         return $this;
     }
 
-    final public function setCustomsCode(?string $customsCode): self {
-        $this->customsCode = $customsCode;
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -757,8 +741,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    /**
+     * @param array<string, 1> $state
+     */
+    final public function setState(array $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 
