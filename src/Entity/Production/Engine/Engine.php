@@ -127,7 +127,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
 
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
-        ORM\Column(length: 127),
+        ORM\Column,
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
     protected ?string $name = null;

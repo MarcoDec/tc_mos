@@ -78,6 +78,11 @@ CREATE FUNCTION IF_EMPTY(s VARCHAR(255), def VARCHAR(255))
     RETURN IF(s IS NULL OR TRIM(s) = '', def, s)
 SQL);
         $this->addSql(<<<'SQL'
+CREATE FUNCTION IS_NUMBER(s VARCHAR(255))
+    RETURNS BOOLEAN DETERMINISTIC
+    RETURN s REGEXP '^[0-9]+$'
+SQL);
+        $this->addSql(<<<'SQL'
 CREATE FUNCTION UCFIRST (s VARCHAR(255))
     RETURNS VARCHAR(255) DETERMINISTIC
     RETURN CONCAT(UCASE(LEFT(s, 1)), LCASE(SUBSTRING(s, 2)))
@@ -108,6 +113,7 @@ SQL);
         $this->addSql("CALL up$version");
         $this->addSql("DROP PROCEDURE up$version");
         $this->addSql('DROP FUNCTION UCFIRST');
+        $this->addSql('DROP FUNCTION IS_NUMBER');
         $this->addSql('DROP FUNCTION IF_EMPTY');
     }
 
@@ -149,8 +155,9 @@ SQL,
 
     /**
      * @param string[] $columns
+     * @param string[] $dates
      */
-    private function insert(string $table, array $columns): void {
+    private function insert(string $table, array $columns, array $dates = []): void {
         $filename = __DIR__."/../migrations-data/exportjson_table_$table.json";
         $file = file_get_contents($filename);
         if (!$file) {
@@ -163,13 +170,18 @@ SQL,
             "INSERT INTO `$table` (%s) VALUES %s",
             collect($columns)->map(static fn (string $key): string => "`$key`")->join(','),
             $json
-                ->map(function (array $row) use ($columns): string {
+                /** @phpstan-ignore-next-line */
+                ->filter(static fn (array $row): bool => !isset($row['id']) || (int) ($row['id']) > 0)
+                ->map(function (array $row) use ($columns, $dates): string {
                     $mapped = [];
                     foreach ($columns as $column) {
                         $value = $row[$column] ?? null;
                         if (is_string($value)) {
                             $value = trim($value);
                             if (strlen($value) === 0) {
+                                $value = null;
+                            }
+                            if (!empty($value) && in_array($column, $dates) && str_ends_with($value, '00')) {
                                 $value = null;
                             }
                         }
@@ -300,9 +312,13 @@ SQL);
         $this->addQuery('ALTER TABLE `customer_order` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_order_item` DROP `old_id`');
         $this->addQuery('ALTER TABLE `employee` DROP `old_id`, DROP `matricule`, DROP `id_society`');
+        $this->addQuery('ALTER TABLE `engine` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
         $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `manufacturing_order` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `operation_type` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `planning` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product` DROP `old_id`, DROP `id_society`');
         $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
@@ -321,12 +337,10 @@ CREATE TABLE `attribut` (
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `description` VARCHAR(255) DEFAULT NULL,
     `libelle` VARCHAR(100) NOT NULL,
-    `attribut_id_family` VARCHAR(255) DEFAULT NULL,
-    `unit_id` INT UNSIGNED DEFAULT NULL,
-    `type` VARCHAR(255) DEFAULT NULL
+    `attribut_id_family` VARCHAR(255) DEFAULT NULL
 )
 SQL);
-        $this->insert('attribut', ['id', 'statut', 'description', 'libelle', 'attribut_id_family', 'unit_id', 'type']);
+        $this->insert('attribut', ['id', 'statut', 'description', 'libelle', 'attribut_id_family']);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `attribute` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -341,8 +355,8 @@ CREATE TABLE `attribute` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `unit_id`, `attribut_id_family`, `type`)
-SELECT `id`, `statut`, `description`, `libelle`, `unit_id`, `attribut_id_family`, `type`
+INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`)
+SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`
 FROM `attribut`
 SQL);
         $this->addQuery('DROP TABLE `attribut`');
@@ -548,7 +562,7 @@ CREATE TABLE `bill` (
     `incl_tax_code` VARCHAR(6) DEFAULT NULL,
     `incl_tax_denominator` VARCHAR(6) DEFAULT NULL,
     `incl_tax_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `notes` VARCHAR(255) DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     `vat_code` VARCHAR(6) DEFAULT NULL,
     `vat_denominator` VARCHAR(6) DEFAULT NULL,
@@ -638,11 +652,11 @@ SQL);
 CREATE TABLE `carrier` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(18) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `name` VARCHAR(50) NOT NULL
@@ -713,14 +727,21 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `couleur` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `rgb` VARCHAR(7) DEFAULT NULL
+)
+SQL);
+        $this->insert('couleur', ['id', 'name', 'rgb']);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `color` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(20) NOT NULL,
     `rgb` CHAR(7) NOT NULL COMMENT '(DC2Type:char)'
 )
 SQL);
-        $this->insert('couleur', ['id', 'name', 'rgb']);
-        $this->addQuery('UPDATE `couleur` SET `name` = UCFIRST(`name`)');
-        $this->addQuery('RENAME TABLE `couleur` TO `color`');
+        $this->addQuery('INSERT INTO `color` (`name`, `rgb`) SELECT UCFIRST(`name`), `rgb` FROM `couleur` WHERE `rgb` IS NOT NULL');
+        $this->addQuery('DROP TABLE `couleur`');
     }
 
     private function upCompanyEvents(): void {
@@ -787,7 +808,7 @@ CREATE TABLE `component_family` (
     `prefix` VARCHAR(3) DEFAULT NULL,
     `copperable` BOOLEAN DEFAULT FALSE NOT NULL,
     `customsCode` VARCHAR(255) DEFAULT NULL,
-    `family_name` VARCHAR(25) NOT NULL,
+    `family_name` VARCHAR(255) NOT NULL,
     `old_subfamily_id` INT UNSIGNED DEFAULT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL
 )
@@ -831,32 +852,17 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component_quality_values` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_component` INT UNSIGNED DEFAULT NULL,
-    `obligation_hauteur` BOOLEAN DEFAULT TRUE NOT NULL,
-    `height_tolerance_code` VARCHAR(6) DEFAULT 'mm',
-    `height_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
-    `tolerance_hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `height_value_code` VARCHAR(6) DEFAULT 'mm',
-    `height_value_denominator` VARCHAR(6) DEFAULT NULL,
-    `hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `section_code` VARCHAR(6) DEFAULT 'mm²',
-    `section_denominator` VARCHAR(6) DEFAULT NULL,
-    `section` DOUBLE PRECISION UNSIGNED DEFAULT 0 NOT NULL,
-    `obligation_traction` BOOLEAN DEFAULT TRUE NOT NULL,
-    `tensile_tolerance_code` VARCHAR(6) DEFAULT 'mm²',
-    `tensile_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
-    `tolerance_traction` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `tensile_value_code` VARCHAR(6) DEFAULT 'mm²',
-    `tensile_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `section` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `traction` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `obligation_largeur` BOOLEAN DEFAULT TRUE NOT NULL,
-    `width_tolerance_code` VARCHAR(6) DEFAULT 'mm',
-    `width_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `tolerance_traction` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `obligation_traction` BOOLEAN DEFAULT TRUE NOT NULL,
+    `hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tolerance_hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `obligation_hauteur` BOOLEAN DEFAULT TRUE NOT NULL,
+    `largeur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `tolerance_largeur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `width_value_code` VARCHAR(6) DEFAULT 'mm',
-    `width_value_denominator` VARCHAR(6) DEFAULT NULL,
-    `largeur` DOUBLE PRECISION DEFAULT 0 NOT NULL
+    `obligation_largeur` BOOLEAN DEFAULT TRUE NOT NULL
 )
 SQL);
         $this->insert('component_quality_values', [
@@ -874,32 +880,80 @@ SQL);
             'obligation_largeur'
         ]);
         $this->addQuery(<<<'SQL'
-UPDATE `component_quality_values`
-SET `id_component` = (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_quality_values`.`id_component`)
+CREATE TABLE `component_reference_value` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `height_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    `height_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    `height_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `height_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `height_value_code` VARCHAR(6) DEFAULT NULL,
+    `height_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `height_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `section_code` VARCHAR(6) DEFAULT NULL,
+    `section_denominator` VARCHAR(6) DEFAULT NULL,
+    `section_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tensile_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    `tensile_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    `tensile_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `tensile_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tensile_value_code` VARCHAR(6) DEFAULT NULL,
+    `tensile_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `tensile_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `width_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    `width_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    `width_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `width_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `width_value_code` VARCHAR(6) DEFAULT NULL,
+    `width_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `width_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_648B6870E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
+)
 SQL);
         $this->addQuery(<<<'SQL'
-ALTER TABLE `component_quality_values`
-    CHANGE `id_component` `component_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `hauteur` `height_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `height_tolerance_code` `height_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `height_value_code` `height_value_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `largeur` `width_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `obligation_hauteur` `height_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    CHANGE `obligation_largeur` `width_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    CHANGE `obligation_traction` `tensile_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    CHANGE `section_code` `section_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `section` `section_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `tensile_tolerance_code` `tensile_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `tensile_value_code` `tensile_value_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `tolerance_hauteur` `height_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `tolerance_largeur` `width_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `tolerance_traction` `tensile_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `traction` `tensile_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `width_tolerance_code` `width_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `width_value_code` `width_value_code` VARCHAR(6) DEFAULT NULL,
-    ADD CONSTRAINT `IDX_648B6870E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
+INSERT INTO `component_reference_value` (
+    `component_id`,
+    `height_required`,
+    `height_tolerance_code`,
+    `height_tolerance_value`,
+    `height_value_code`,
+    `height_value_value`,
+    `section_code`,
+    `section_value`,
+    `tensile_required`,
+    `tensile_tolerance_code`,
+    `tensile_tolerance_value`,
+    `tensile_value_code`,
+    `tensile_value_value`,
+    `width_required`,
+    `width_tolerance_code`,
+    `width_tolerance_value`,
+    `width_value_code`,
+    `width_value_value`
+) SELECT
+    `component`.`id`,
+    `component_quality_values`.`obligation_hauteur`,
+    'mm',
+    `component_quality_values`.`tolerance_hauteur`,
+    'mm',
+    `component_quality_values`.`hauteur`,
+    'mm²',
+    `component_quality_values`.`section`,
+    `component_quality_values`.`obligation_traction`,
+    'mm²',
+    `component_quality_values`.`tolerance_traction`,
+    'mm²',
+    `component_quality_values`.`traction`,
+    `component_quality_values`.`obligation_largeur`,
+    'mm',
+    `component_quality_values`.`tolerance_largeur`,
+    'mm',
+    `component_quality_values`.`largeur`
+FROM `component_quality_values`
+INNER JOIN `component` ON `component_quality_values`.`id_component` = `component`.`old_id`
 SQL);
-        $this->addQuery('RENAME TABLE `component_quality_values` TO `component_reference_value`');
+        $this->addQuery('DROP TABLE `component_quality_values`');
     }
 
     private function upComponents(): void {
@@ -927,27 +981,31 @@ CREATE TABLE `component` (
     `weight` DOUBLE PRECISION DEFAULT 0 NOT NULL
 )
 SQL);
-        $this->insert('component', [
-            'id',
-            'statut',
-            'poid_cu',
-            'id_componentstatus',
-            'customcode',
-            'endOfLife',
-            'id_component_subfamily',
-            'volume_previsionnel',
-            'gestion_stock',
-            'fabricant',
-            'fabricant_reference',
-            'stock_minimum',
-            'designation',
-            'need_joint',
-            'info_public',
-            'info_commande',
-            'ref',
-            'id_unit',
-            'weight'
-        ]);
+        $this->insert(
+            table: 'component',
+            columns: [
+                'id',
+                'statut',
+                'poid_cu',
+                'id_componentstatus',
+                'customcode',
+                'endOfLife',
+                'id_component_subfamily',
+                'volume_previsionnel',
+                'gestion_stock',
+                'fabricant',
+                'fabricant_reference',
+                'stock_minimum',
+                'designation',
+                'need_joint',
+                'info_public',
+                'info_commande',
+                'ref',
+                'id_unit',
+                'weight'
+            ],
+            dates: ['endOfLife']
+        );
         $this->addQuery('RENAME TABLE `component` TO `component_old`');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component` (
@@ -1151,11 +1209,11 @@ CREATE TABLE `customer_contact` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `default` BOOLEAN DEFAULT FALSE NOT NULL,
@@ -1204,11 +1262,11 @@ SQL);
 CREATE TABLE `supplier_contact` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `default` BOOLEAN DEFAULT FALSE NOT NULL,
@@ -1283,7 +1341,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `currency` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `active` BOOLEAN DEFAULT FALSE NOT NULL,
     `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
     `code` CHAR(3) NOT NULL COMMENT '(DC2Type:char)',
@@ -1328,7 +1386,7 @@ CREATE TABLE `address` (
   `nom` VARCHAR(255) NOT NULL,
   `address1` TEXT NOT NULL,
   `address2` TEXT DEFAULT NULL,
-  `zip` VARCHAR(255) NOT NULL,
+  `zip` VARCHAR(255) DEFAULT NULL,
   `city` VARCHAR(255) NOT NULL,
   `typeaddress` VARCHAR(255) DEFAULT NULL,
   `id_country` INT UNSIGNED DEFAULT NULL
@@ -1351,11 +1409,11 @@ CREATE TABLE `customer_address` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(18) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `customer_id` INT UNSIGNED DEFAULT NULL,
@@ -1474,6 +1532,7 @@ INSERT INTO `customer_order_item` (
         WHEN `customer_order`.`emb_state_state` LIKE '%blocked%' THEN 'agreed,blocked'
         WHEN `customer_order`.`emb_state_state` LIKE '%agreed%' OR `customer_order`.`emb_state_state` LIKE '%partially_delivered%'
             THEN IF(`ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity`, 'delivered,closed', IF(`ordercustomer_product`.`quantity_sent` > 0, 'partially_delivered,enabled', 'agreed,enabled'))
+        ELSE 'draft,enabled'
     END,
     `product`.`id`,
     `ordercustomer_product`.`texte`,
@@ -1809,10 +1868,10 @@ CREATE TABLE `employee` (
     `ville` VARCHAR(255) DEFAULT NULL,
     `id_phone_prefix` INT UNSIGNED DEFAULT NULL,
     `tel` VARCHAR(255) DEFAULT NULL,
-    `nom_pers_a_contacter` VARCHAR(255) NOT NULL,
-    `prenom_pers_a_contacter` VARCHAR(255) NOT NULL,
+    `nom_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
+    `prenom_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
     `id_phone_prefix_pers_a_contacter` INT UNSIGNED DEFAULT NULL,
-    `tel_pers_a_contacter` VARCHAR(255) NOT NULL,
+    `tel_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
     `d_entree` DATE DEFAULT NULL,
     `n_secu` VARCHAR(255) DEFAULT NULL,
     `d_naissance` DATE DEFAULT NULL,
@@ -1882,11 +1941,11 @@ CREATE TABLE `employee` (
     `old_id` INT UNSIGNED DEFAULT NULL,
     `matricule` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(18) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `birthday` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
@@ -1902,7 +1961,7 @@ CREATE TABLE `employee` (
     `manager_id` INT UNSIGNED DEFAULT NULL,
     `name` VARCHAR(30) NOT NULL,
     `notes` VARCHAR(255) DEFAULT NULL,
-    `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `password` VARCHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
     `plain_password` VARCHAR(255) DEFAULT NULL,
     `situation` ENUM('married', 'single', 'windowed') DEFAULT 'single' COMMENT '(DC2Type:situation_place)',
     `social_security_number` VARCHAR(255) DEFAULT NULL,
@@ -2173,9 +2232,9 @@ CREATE TABLE `user` (
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_society` INT UNSIGNED NOT NULL,
     `login` VARCHAR(255) NOT NULL,
-    `password` VARCHAR(255) NOT NULL,
+    `password` TEXT NOT NULL,
     `nom` VARCHAR(255) NOT NULL,
-    `prenom` VARCHAR(255) NOT NULL
+    `prenom` VARCHAR(255) DEFAULT NULL
 )
 SQL);
         $this->insert('user', [
@@ -2198,6 +2257,7 @@ SET `employee`.`password` = `user`.`password`
 AND `employee`.`username` = `user`.`login`
 SQL);
         $this->addQuery('DROP TABLE `user`');
+        $this->addQuery('UPDATE `employee` SET `name` = UCFIRST(`name`), `surname` = UCASE(`surname`)');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `token` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -2223,9 +2283,9 @@ SQL);
 INSERT INTO `employee_contact` (`employee_id`, `name`, `phone`, `surname`, `address_country`)
 SELECT
     `id`,
-    `prenom_pers_a_contacter`,
+    UCFIRST(`prenom_pers_a_contacter`),
     `tel_pers_a_contacter`,
-    `nom_pers_a_contacter`,
+    UCASE(`nom_pers_a_contacter`),
     (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `employee`.`id_phone_prefix_pers_a_contacter`)
 FROM `employee`
 WHERE `prenom_pers_a_contacter` IS NOT NULL
@@ -2290,12 +2350,12 @@ INSERT INTO `engine_event` (
     `engine_maintenance_planning`.`status_planning` != 1,
     `engine`.`id`,
     `zone`.`company_id`,
-    `engine_maintenance_planning`.`comment`,
+    UCFIRST(`engine_maintenance_planning`.`comment`),
     `planning`.`id`,
     'maintenance'
 FROM `engine_maintenance_planning`
-INNER JOIN `engine` ON `engine_maintenance_planning`.`id_engine_maintenance` = `engine`.`id`
-INNER JOIN `planning` ON `engine_maintenance_planning`.`id_maintenance` = `planning`.`id`
+INNER JOIN `engine` ON `engine_maintenance_planning`.`id_engine_maintenance` = `engine`.`old_id`
+INNER JOIN `planning` ON `engine_maintenance_planning`.`id_maintenance` = `planning`.`old_id`
 LEFT JOIN `zone` ON `engine`.`zone_id` = `zone`.`id`
 SQL);
         $this->addQuery('DROP TABLE `engine_maintenance_planning`');
@@ -2340,12 +2400,12 @@ INSERT INTO `engine_event` (
     `engine_request_event`.`urgence`,
     `employee`.`id`,
     `engine`.`id`,
-    `engine_request_event`.`commentaire_intervention`,
+    UCFIRST(`engine_request_event`.`commentaire_intervention`),
     `company`.`id`,
-    `engine_request_event`.`commentaire`,
+    UCFIRST(`engine_request_event`.`commentaire`),
     'request'
 FROM `engine_request_event`
-INNER JOIN `engine` ON `engine_request_event`.`id_engine` = `engine`.`id`
+INNER JOIN `engine` ON `engine_request_event`.`id_engine` = `engine`.`old_id`
 LEFT JOIN `employee` ON `engine_request_event`.`id_user_intervention` = `employee`.`old_id`
 LEFT JOIN `society` ON `engine_request_event`.`id_society`= `society`.`old_id`
 LEFT JOIN `company` ON `society`.`id` = `company`.`society_id`
@@ -2357,73 +2417,133 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine_group` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `code` VARCHAR(3) NOT NULL,
-    `libelle` VARCHAR(35) NOT NULL,
-    `id_family_group` INT NOT NULL,
-    `organe_securite` BOOLEAN DEFAULT FALSE NOT NULL,
-    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine)'
+    `libelle` VARCHAR(255) DEFAULT NULL,
+    `code` VARCHAR(3) DEFAULT NULL,
+    `id_family_group` INT UNSIGNED DEFAULT NULL,
+    `organe_securite` BOOLEAN DEFAULT FALSE NOT NULL
 )
 SQL);
         $this->insert('engine_group', ['id', 'code', 'libelle', 'id_family_group', 'organe_securite']);
-        $this->addQuery('UPDATE `engine_group` SET `libelle` = UCFIRST(`libelle`), `type` = IF(`id_family_group` = 1, \'workstation\', \'tool\')');
+        $this->addQuery('RENAME TABLE `engine_group` TO `old_engine_group`');
         $this->addQuery(<<<'SQL'
-ALTER TABLE `engine_group`
-    DROP `id_family_group`,
-    CHANGE `libelle` `name` VARCHAR(35) NOT NULL,
-    CHANGE `organe_securite` `safety_device` BOOLEAN DEFAULT FALSE NOT NULL
+CREATE TABLE `engine_group` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(3) NOT NULL,
+    `name` VARCHAR(35) NOT NULL,
+    `safety_device` BOOLEAN DEFAULT FALSE NOT NULL,
+    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine)'
+)
 SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `engine_group` (`old_id`, `code`, `name`, `safety_device`, `type`)
+SELECT `id`, `code`, UCFIRST(`libelle`), `organe_securite`, IF(`id_family_group` = 1, 'workstation', 'tool')
+FROM `old_engine_group`
+SQL);
+        $this->addQuery('DROP TABLE `old_engine_group`');
     }
 
     private function upEngines(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `marque` VARCHAR(255) DEFAULT NULL,
-    `ref` VARCHAR(255) NOT NULL,
-    `capabilite` VARCHAR(255) DEFAULT NULL,
-    `d_entree` DATE DEFAULT NULL,
+    `nom` VARCHAR(255) DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `emplacement` VARCHAR(255) DEFAULT NULL,
     `id_engine_group` INT UNSIGNED DEFAULT NULL,
-    `operateur_max` INT(10) NOT NULL,
-    `nom` VARCHAR(255) NOT NULL,
-    `notes` TEXT DEFAULT NULL,
-    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine)',
-    `zone_id` INT UNSIGNED DEFAULT NULL,
-    `reffourn` VARCHAR(255) DEFAULT NULL,
+    `marque` VARCHAR(255) DEFAULT NULL,
     `date_fabrication` DATE DEFAULT NULL,
     `id_fabricant` INT DEFAULT NULL,
-    `numero_serie` VARCHAR(255) DEFAULT NULL
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `reffourn` VARCHAR(255) DEFAULT NULL,
+    `proprietaire` VARCHAR(100) DEFAULT NULL,
+    `description` TEXT DEFAULT NULL,
+    `d_entree` DATE DEFAULT NULL,
+    `numero_serie` VARCHAR(255) DEFAULT NULL,
+    `capabilite` TINYINT UNSIGNED DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
+    `operateur_max` INT UNSIGNED DEFAULT NULL,
+    `piece_jointe_validation` VARCHAR(255) DEFAULT NULL,
+    `date_validation` DATE DEFAULT NULL COMMENT '1 year after validation'
 )
 SQL);
         $this->insert('engine', [
-            'id',
-            'marque',
-            'ref',
-            'capabilite',
-            'd_entree',
-            'id_engine_group',
-            'operateur_max',
             'nom',
-            'notes',
-            'reffourn',
+            'id_society',
+            'emplacement',
+            'id_engine_group',
+            'marque',
             'date_fabrication',
             'id_fabricant',
-            'numero_serie'
+            'ref',
+            'reffourn',
+            'proprietaire',
+            'description',
+            'd_entree',
+            'numero_serie',
+            'capabilite',
+            'notes',
+            'operateur_max',
+            'piece_jointe_validation',
+            'date_validation'
         ]);
+        $this->addQuery('UPDATE `engine` SET `id_fabricant` = IF(`id_fabricant` IS NULL OR `id_fabricant` <= 0, NULL, `id_fabricant`)');
+        $this->addQuery('ALTER TABLE `engine` CHANGE `id_fabricant` `id_fabricant` INT UNSIGNED DEFAULT NULL');
+        $this->addQuery('RENAME TABLE `engine` TO `old_engine`');
         $this->addQuery('CREATE TABLE `computer_engine` (`id_engine` INT UNSIGNED DEFAULT NULL, `id_society_zone` INT UNSIGNED DEFAULT NULL)');
         $this->insert('computer_engine', ['id_engine', 'id_society_zone']);
         $this->addQuery(<<<'SQL'
-UPDATE `engine`
-SET `capabilite` = CASE
-    WHEN `capabilite` = 1 THEN 'agreed,enabled'
-    WHEN `capabilite` = 2 THEN 'warning,enabled'
-    WHEN `capabilite` = 3 THEN 'warning,blocked'
-    ELSE 'agreed,disabled'
-END,
-`id_engine_group` = (SELECT `engine_group`.`id` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
-`type` = (SELECT `engine_group`.`type` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
-`zone_id` = (SELECT `zone`.`id` FROM `zone` WHERE `zone`.`id` = (SELECT `computer_engine`.`id_society_zone` FROM `computer_engine` WHERE `computer_engine`.`id_engine` = `engine`.`id`))
+CREATE TABLE `engine` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `brand` VARCHAR(255) DEFAULT NULL,
+    `code` VARCHAR(10) DEFAULT NULL,
+    `emb_state_state` SET('agreed','blocked','disabled','enabled','warning') NOT NULL DEFAULT 'enabled,warning' COMMENT '(DC2Type:employee_engine_state)',
+    `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `group_id` INT UNSIGNED DEFAULT NULL,
+    `max_operator` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
+    `name` VARCHAR(255) NOT NULL,
+    `notes` TEXT,
+    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)',
+    `zone_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`),
+    CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `engine` (
+    `old_id`,
+    `brand`,
+    `code`,
+    `emb_state_state`,
+    `entry_date`,
+    `group_id`,
+    `max_operator`,
+    `name`,
+    `type`,
+    `zone_id`
+) SELECT
+    `old_engine`.`id`,
+    `old_engine`.`marque`,
+    `old_engine`.`ref`,
+    CASE
+        WHEN `old_engine`.`capabilite` = 1 THEN 'agreed,enabled'
+        WHEN `old_engine`.`capabilite` = 2 THEN 'warning,enabled'
+        WHEN `old_engine`.`capabilite` = 3 THEN 'warning,blocked'
+        ELSE 'agreed,disabled'
+    END,
+    `old_engine`.`d_entree`,
+    `engine_group`.`id`,
+    `old_engine`.`operateur_max`,
+    `old_engine`.`nom`,
+    `engine_group`.`type`,
+    `zone`.`id`
+FROM `old_engine`
+INNER JOIN `engine_group` ON `old_engine`.`id_engine_group` = `engine_group`.`old_id`
+LEFT JOIN `computer_engine` ON `old_engine`.`id` = `computer_engine`.`id_engine`
+LEFT JOIN `zone` ON `computer_engine`.`id_society_zone` = `zone`.`id`
 SQL);
         $this->addQuery('DROP TABLE `computer_engine`');
         $this->addQuery(<<<'SQL'
@@ -2443,31 +2563,17 @@ SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `manufacturer_engine` (`code`, `date`, `engine_id`, `manufacturer_id`, `serial_number`)
 SELECT
-    `engine`.`reffourn`,
-    `engine`.`date_fabrication`,
+    `old_engine`.`reffourn`,
+    `old_engine`.`date_fabrication`,
     `engine`.`id`,
     `manufacturer`.`id`,
-    `engine`.`numero_serie`
-FROM `engine`
-INNER JOIN `society` ON `engine`.`id_fabricant` = `society`.`old_id`
-INNER JOIN `manufacturer` ON `society`.`id` = `manufacturer`.`society_id`
+    `old_engine`.`numero_serie`
+FROM `old_engine`
+INNER JOIN `engine` ON `old_engine`.`id` = `engine`.`old_id`
+LEFT JOIN `society` ON `old_engine`.`id_fabricant` = `society`.`old_id`
+LEFT JOIN `manufacturer` ON `society`.`id` = `manufacturer`.`society_id`
 SQL);
-        $this->addQuery(<<<'SQL'
-ALTER TABLE `engine`
-    DROP `reffourn`,
-    DROP `date_fabrication`,
-    DROP `id_fabricant`,
-    DROP `numero_serie`,
-    CHANGE `capabilite` `emb_state_state` SET('agreed', 'blocked', 'disabled', 'enabled', 'warning') DEFAULT 'enabled,warning' NOT NULL COMMENT '(DC2Type:employee_engine_state)',
-    CHANGE `marque` `brand` VARCHAR(255) DEFAULT NULL,
-    CHANGE `ref` `code` VARCHAR(10) DEFAULT NULL,
-    CHANGE `d_entree` `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    CHANGE `id_engine_group` `group_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `operateur_max` `max_operator` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
-    CHANGE `nom` `name` VARCHAR(127) NOT NULL,
-    ADD CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
-    ADD CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
-SQL);
+        $this->addQuery('DROP TABLE `old_engine`');
     }
 
     private function upEventTypes(): void {
@@ -2560,7 +2666,7 @@ SQL);
 CREATE TABLE `incoterms` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `code` VARCHAR(11) NOT NULL,
+    `code` VARCHAR(25) NOT NULL,
     `label` VARCHAR(50) DEFAULT NULL
 )
 SQL);
@@ -2601,6 +2707,13 @@ SQL);
 INSERT INTO `invoicetimedue` (`id_old_invoicetimeduesupplier`, `statut`, `libelle`, `days`, `endofmonth`)
 SELECT `id`, `statut`, `libelle`, `days`, `endofmonth`
 FROM `invoicetimeduesupplier`
+SQL);
+        $this->addQuery(<<<'SQL'
+UPDATE `invoicetimedue`
+LEFT JOIN `invoicetimedue` `duplicate`
+    ON `invoicetimedue`.`libelle` = `duplicate`.`libelle`
+    AND `invoicetimedue`.`id` < `duplicate`.`id`
+SET `invoicetimedue`.`id_old_invoicetimeduesupplier` = `duplicate`.`id_old_invoicetimeduesupplier`
 SQL);
         $this->addQuery(<<<'SQL'
 DELETE `i1`
@@ -2731,7 +2844,7 @@ CREATE TABLE `production_operation` (
     `id_outils` INT UNSIGNED DEFAULT NULL,
     `date_debut` DATETIME DEFAULT NULL,
     `date_fin` DATETIME DEFAULT NULL,
-    `quantity` INT UNSIGNED DEFAULT NULL,
+    `quantity` INT DEFAULT NULL,
     `statut_production` INT UNSIGNED DEFAULT NULL,
     `commentaire` TEXT DEFAULT NULL,
     `nature_cloture` INT UNSIGNED DEFAULT NULL,
@@ -2796,7 +2909,7 @@ INSERT INTO `manufacturing_operation` (
     `engine`.`id`
 FROM `production_operation`
 INNER JOIN `manufacturing_order` ON `production_operation`.`ofnumber` = `manufacturing_order`.`old_id`
-LEFT JOIN `engine` ON `production_operation`.`id_poste` = `engine`.`id`
+LEFT JOIN `engine` ON `production_operation`.`id_poste` = `engine`.`old_id`
 SQL);
         $this->addQuery('DROP TABLE `production_operation`');
         $this->addQuery(<<<'SQL'
@@ -2863,7 +2976,7 @@ CREATE TABLE `manufacturing_order` (
     `index` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
     `manufacturing_company_id` INT UNSIGNED DEFAULT NULL,
     `manufacturing_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `notes` VARCHAR(255) DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
@@ -3014,27 +3127,43 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `operation_type` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `isAssemblage` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(255) NOT NULL
 )
 SQL);
         $this->insert('operation_type', ['id', 'isAssemblage', 'name']);
-        $this->addQuery('ALTER TABLE `operation_type` CHANGE `isAssemblage` `assembly` BOOLEAN DEFAULT FALSE NOT NULL');
+        $this->addQuery('RENAME TABLE `operation_type` TO `old_operation_type`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `operation_type` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `assembly` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(255) NOT NULL
+)
+SQL);
+        $this->addQuery('INSERT INTO `operation_type` (`old_id`, `assembly`, `name`) SELECT `id`, `isAssemblage`, UCFIRST(`name`) FROM `old_operation_type`');
+        $this->addQuery('DROP TABLE `old_operation_type`');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `operation_type_component_family` (
     `component_family_id` INT UNSIGNED NOT NULL,
     `operation_type_id` INT UNSIGNED NOT NULL,
-    CONSTRAINT `IDX_58A4AEF9C35E566A` FOREIGN KEY (`component_family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `IDX_86314A63C54C8C93` FOREIGN KEY (`operation_type_id`) REFERENCES `operation_type` (`id`) ON DELETE CASCADE,
     PRIMARY KEY(`operation_type_id`, `component_family_id`)
 )
 SQL);
         $this->insert('operation_type_component_family', ['component_family_id', 'operation_type_id']);
         $this->addQuery(<<<'SQL'
+UPDATE `operation_type_component_family`
+LEFT JOIN `operation_type` ON `operation_type_component_family`.`operation_type_id` = `operation_type`.`old_id`
+SET `operation_type_id` = `operation_type`.`id`
+SQL);
+        $this->addQuery('DELETE FROM `operation_type_component_family` WHERE `operation_type_id` IS NULL');
+        $this->addQuery(<<<'SQL'
 ALTER TABLE `operation_type_component_family`
     CHANGE `component_family_id` `family_id` INT UNSIGNED NOT NULL,
-    CHANGE `operation_type_id` `type_id` INT UNSIGNED NOT NULL
+    CHANGE `operation_type_id` `type_id` INT UNSIGNED NOT NULL,
+    ADD CONSTRAINT `IDX_58A4AEF9C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    ADD CONSTRAINT `IDX_86314A63C54C8C93` FOREIGN KEY (`type_id`) REFERENCES `operation_type` (`id`) ON DELETE CASCADE
 SQL);
     }
 
@@ -3044,10 +3173,10 @@ CREATE TABLE `employee_extformateur` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `address` VARCHAR(80) NOT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `ville` VARCHAR(50) NOT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `code_postal` INT NOT NULL,
     `prenom` VARCHAR(30) NOT NULL,
     `nom` VARCHAR(30) NOT NULL,
@@ -3069,7 +3198,7 @@ ALTER TABLE `employee_extformateur`
     DROP `id_phone_prefix`,
     CHANGE `prenom` `name` VARCHAR(30) NOT NULL,
     CHANGE `nom` `surname` VARCHAR(30) NOT NULL,
-    CHANGE `address` `address_address` VARCHAR(80) DEFAULT NULL,
+    CHANGE `address` `address_address` VARCHAR(160) DEFAULT NULL,
     CHANGE `ville` `address_city` VARCHAR(50) DEFAULT NULL,
     CHANGE `code_postal` `address_zip_code` VARCHAR(10) DEFAULT NULL
 SQL);
@@ -3098,39 +3227,42 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine_maintenance` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_engine` INT UNSIGNED DEFAULT NULL,
-    `type` VARCHAR(255) NOT NULL,
-    `designation` TEXT NOT NULL,
+    `designation` TEXT DEFAULT NULL,
+    `type` VARCHAR(255) DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('engine_maintenance', ['id', 'id_engine', 'designation', 'type', 'quantity']);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `planning` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `engine_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `quantity` INT UNSIGNED DEFAULT 0 NOT NULL
+    CONSTRAINT `IDX_D499BFF6E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`)
 )
 SQL);
-        $this->insert('engine_maintenance', ['id', 'id_engine', 'type', 'designation', 'quantity']);
         $this->addQuery(<<<'SQL'
-DELETE FROM `engine_maintenance`
-WHERE NOT EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance`.`id_engine`)
+INSERT INTO `planning` (`old_id`, `engine_id`, `name`, `quantity_code`, `quantity_value`)
+SELECT
+    `engine_maintenance`.`id`,
+    `engine`.`id`,
+    `engine_maintenance`.`designation`,
+    CASE
+        WHEN `engine_maintenance`.`type` = 'd' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'j')
+        WHEN `engine_maintenance`.`type` = 'u' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'U')
+        WHEN `engine_maintenance`.`type` = 'b' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'fds')
+    END,
+    `engine_maintenance`.`quantity`
+FROM `engine_maintenance`
+INNER JOIN `engine` ON `engine_maintenance`.`id_engine` = `engine`.`old_id`
 SQL);
-        $this->addQuery(<<<'SQL'
-UPDATE `engine_maintenance`
-SET `quantity_code` = CASE
-    WHEN `type` = 'd' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'j')
-    WHEN `type` = 'u' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'U')
-    WHEN `type` = 'b' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'fds')
-END,
-`quantity_value` = `quantity`
-SQL);
-        $this->addQuery(<<<'SQL'
-ALTER TABLE `engine_maintenance`
-    DROP `quantity`,
-    DROP `type`,
-    CHANGE `id_engine` `engine_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `designation` `name` VARCHAR(255) NOT NULL,
-    ADD CONSTRAINT `IDX_D499BFF6E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`)
-SQL);
-        $this->addQuery('RENAME TABLE `engine_maintenance` TO `planning`');
+        $this->addQuery('DROP TABLE `engine_maintenance`');
     }
 
     private function upPrinters(): void {
@@ -3181,7 +3313,7 @@ SQL);
 ALTER TABLE `product_family`
     CHANGE `customsCode` `customs_code` VARCHAR(10) DEFAULT NULL,
     CHANGE `family_name` `name` VARCHAR(30) NOT NULL,
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `product_subfamily` (
@@ -3205,7 +3337,7 @@ SQL);
 CREATE TABLE `product` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `temps_auto` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `temps_auto` DOUBLE PRECISION DEFAULT NULL,
     `ref` VARCHAR(255) NOT NULL,
     `tps_chiff_auto` DOUBLE PRECISION DEFAULT NULL,
     `tps_chiff_manu` DOUBLE PRECISION DEFAULT NULL,
@@ -3216,20 +3348,20 @@ CREATE TABLE `product` (
     `volume_previsionnel` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `id_customcode` INT UNSIGNED NOT NULL,
     `id_product_child` INT UNSIGNED NOT NULL,
-    `id_incoterms` INT UNSIGNED NOT NULL,
-    `indice` VARCHAR(3) NOT NULL,
+    `id_incoterms` INT UNSIGNED DEFAULT NULL,
+    `indice` VARCHAR(255) DEFAULT NULL,
     `indice_interne` TINYINT UNSIGNED DEFAULT 1 NOT NULL,
-    `is_prototype` BOOLEAN DEFAULT FALSE NOT NULL,
+    `is_prototype` BOOLEAN DEFAULT NULL,
     `gestion_cu` BOOLEAN DEFAULT FALSE NOT NULL,
-    `temps_manu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `temps_manu` DOUBLE PRECISION DEFAULT NULL,
     `max_proto_quantity` DOUBLE PRECISION DEFAULT NULL,
     `livraison_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `min_prod_quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `stock_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `designation` VARCHAR(80) NOT NULL,
+    `designation` VARCHAR(255) DEFAULT NULL,
     `info_public` TEXT DEFAULT NULL,
-    `typeconditionnement` VARCHAR(30) NOT NULL,
-    `conditionnement` DOUBLE PRECISION DEFAULT NULL,
+    `typeconditionnement` VARCHAR(255) DEFAULT NULL,
+    `conditionnement` VARCHAR(255) DEFAULT NULL,
     `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `price_without_cu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `production_delay` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -3283,7 +3415,7 @@ CREATE TABLE `product` (
     `auto_duration_code` VARCHAR(6) DEFAULT NULL,
     `auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
     `auto_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `code` VARCHAR(30) NOT NULL,
+    `code` VARCHAR(50) NOT NULL,
     `costing_auto_duration_code` VARCHAR(6) DEFAULT NULL,
     `costing_auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
     `costing_auto_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -3299,10 +3431,10 @@ CREATE TABLE `product` (
     `forecast_volume_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `id_product_child` INT UNSIGNED NOT NULL,
     `incoterms_id` INT UNSIGNED DEFAULT NULL,
-    `index` VARCHAR(3) NOT NULL,
+    `index` VARCHAR(10) DEFAULT NULL,
     `internal_index` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
     `kind` enum('EI','Prototype','Série','Pièce de rechange') NOT NULL DEFAULT 'Prototype' COMMENT '(DC2Type:product_kind)',
-    `managed_copper` TINYINT(1) DEFAULT 0 NOT NULL,
+    `managed_copper` BOOLEAN DEFAULT FALSE NOT NULL,
     `manual_duration_code` VARCHAR(6) DEFAULT NULL,
     `manual_duration_denominator` VARCHAR(6) DEFAULT NULL,
     `manual_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -3318,11 +3450,12 @@ CREATE TABLE `product` (
     `min_stock_code` VARCHAR(6) DEFAULT NULL,
     `min_stock_denominator` VARCHAR(6) DEFAULT NULL,
     `min_stock_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `name` VARCHAR(80) NOT NULL,
+    `name` VARCHAR(160) DEFAULT NULL,
     `notes` text DEFAULT NULL,
     `packaging_code` VARCHAR(6) DEFAULT NULL,
     `packaging_denominator` VARCHAR(6) DEFAULT NULL,
-    `packaging_kind` VARCHAR(30) NOT NULL,
+    `packaging_incorrect` VARCHAR(255) DEFAULT NULL,
+    `packaging_kind` VARCHAR(60) DEFAULT NULL,
     `packaging_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL,
     `price_code` VARCHAR(6) DEFAULT NULL,
@@ -3386,6 +3519,7 @@ INSERT INTO `product` (
     `name`,
     `notes`,
     `packaging_code`,
+    `packaging_incorrect`,
     `packaging_kind`,
     `packaging_value`,
     `parent_id`,
@@ -3406,7 +3540,7 @@ INSERT INTO `product` (
     `product_old`.`id`,
     `product_old`.`id_society`,
     'h',
-    `product_old`.`temps_auto`,
+    IFNULL(`product_old`.`temps_auto`, 0),
     `product_old`.`ref`,
     'h',
     IFNULL(`product_old`.`tps_chiff_auto`, 0),
@@ -3437,7 +3571,7 @@ INSERT INTO `product` (
     END,
     `product_old`.`gestion_cu`,
     'h',
-    `product_old`.`temps_manu`,
+    IFNULL(`product_old`.`temps_manu`, 0),
     'U',
     IFNULL(`product_old`.`max_proto_quantity`, 0),
     'U',
@@ -3449,8 +3583,9 @@ INSERT INTO `product` (
     `product_old`.`designation`,
     `product_old`.`info_public`,
     'U',
+    IF(`product_old`.`conditionnement` IS NULL OR IS_NUMBER(`product_old`.`conditionnement`), NULL, `product_old`.`conditionnement`),
     `product_old`.`typeconditionnement`,
-    IFNULL(`product_old`.`conditionnement`, 1),
+    IF(`product_old`.`conditionnement` IS NOT NULL AND IS_NUMBER(`product_old`.`conditionnement`), `product_old`.`conditionnement`, 1),
     (SELECT `product`.`id` FROM `product` WHERE `product`.`id_product_child` = `product_old`.`id`),
     'EUR',
     `product_old`.`price`,
@@ -3542,16 +3677,16 @@ INSERT INTO `project_operation` (
     `type_id`
 ) SELECT
     `operation`.`type`,
-    `operation`.`limite`,
+    UCFIRST(`operation`.`limite`),
     'U',
     `operation`.`cadence`,
     `operation`.`code`,
-    `operation`.`designation`,
+    UCFIRST(`operation`.`designation`),
     'EUR',
     `operation`.`price`,
     `operation_type`.`id`
 FROM `operation`
-INNER JOIN `operation_type` ON `operation`.`id_operation_type` = `operation_type`.`id`
+LEFT JOIN `operation_type` ON `operation`.`id_operation_type` = `operation_type`.`id`
 SQL);
         $this->addQuery('DROP TABLE `operation`');
     }
@@ -3568,7 +3703,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 ALTER TABLE `qualitycontrol`
     CHANGE `qualitycontrol` `name` VARCHAR(40) NOT NULL,
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
         $this->addQuery('UPDATE `qualitycontrol` SET `name` = UCFIRST(`name`)');
         $this->addQuery('RENAME TABLE `qualitycontrol` TO `quality_type`');
@@ -3668,7 +3803,7 @@ INSERT INTO `skill` (
     `skill_type`.`id`
 FROM `employee_histcompetence`
 INNER JOIN `employee` ON `employee_histcompetence`.`id_employee` = `employee`.`old_id`
-LEFT JOIN `engine` ON `employee_histcompetence`.`id_engine` = `engine`.`id`
+LEFT JOIN `engine` ON `employee_histcompetence`.`id_engine` = `engine`.`old_id`
 LEFT JOIN `employee` `formateur` ON `employee_histcompetence`.`id_formateur` = `formateur`.`old_id`
 LEFT JOIN `out_trainer` ON `employee_histcompetence`.`id_extformateur` = `out_trainer`.`id`
 INNER JOIN `skill_type` ON `employee_histcompetence`.`id_competence` = `skill_type`.`old_id`
@@ -3693,7 +3828,7 @@ CREATE TABLE `skill_type` (
     `name` VARCHAR(50) NOT NULL
 )
 SQL);
-        $this->addQuery('INSERT INTO `skill_type` (`old_id`, `name`) SELECT `id`, `designation` FROM `employee_competencelist` WHERE `statut` = 0');
+        $this->addQuery('INSERT INTO `skill_type` (`old_id`, `name`) SELECT `id`, UCFIRST(`designation`) FROM `employee_competencelist` WHERE `statut` = 0');
         $this->addQuery('DROP TABLE `employee_competencelist`');
     }
 
@@ -3704,8 +3839,8 @@ CREATE TABLE `society` (
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `nom` VARCHAR(255) NOT NULL,
     `phone` VARCHAR(255) DEFAULT NULL,
-    `address1` VARCHAR(80) DEFAULT NULL,
-    `address2` VARCHAR(60) DEFAULT NULL,
+    `address1` VARCHAR(255) DEFAULT NULL,
+    `address2` VARCHAR(255) DEFAULT NULL,
     `zip` VARCHAR(10) DEFAULT NULL,
     `city` VARCHAR(50) DEFAULT NULL,
     `id_country` INT UNSIGNED NOT NULL,
@@ -3719,7 +3854,7 @@ CREATE TABLE `society` (
     `invoice_minimum` DOUBLE PRECISION DEFAULT NULL,
     `order_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `web` VARCHAR(255) DEFAULT NULL,
-    `email` VARCHAR(60) DEFAULT NULL,
+    `email` VARCHAR(255) DEFAULT NULL,
     `formejuridique` VARCHAR(50) DEFAULT NULL,
     `siren` VARCHAR(50) DEFAULT NULL,
     `tva` VARCHAR(255) DEFAULT NULL,
@@ -3787,20 +3922,20 @@ CREATE TABLE `society` (
     `old_id` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `accounting_account` VARCHAR(50) DEFAULT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `phone` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
-    `ar` TINYINT(1) DEFAULT 0 NOT NULL,
+    `ar` BOOLEAN DEFAULT FALSE NOT NULL,
     `bank_details` VARCHAR(255) DEFAULT NULL,
     `copper_index_code` VARCHAR(6) DEFAULT NULL,
     `copper_index_denominator` VARCHAR(6) DEFAULT NULL,
     `copper_index_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `copper_managed` TINYINT(1) DEFAULT 0 NOT NULL,
+    `copper_managed` BOOLEAN DEFAULT FALSE NOT NULL,
     `copper_next` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `copper_type` ENUM('à la livraison','mensuel','semestriel') NOT NULL DEFAULT 'mensuel' COMMENT '(DC2Type:copper)',
     `force_vat` ENUM('TVA par défaut selon le pays du client','Force AVEC TVA','Force SANS TVA') NOT NULL DEFAULT 'TVA par défaut selon le pays du client' COMMENT '(DC2Type:vat_message_force)',
@@ -3933,11 +4068,11 @@ CREATE TABLE `customer` (
     `accounting_portal_password` VARCHAR(255) DEFAULT NULL,
     `accounting_portal_url` VARCHAR(255) DEFAULT NULL,
     `accounting_portal_username` VARCHAR(255) DEFAULT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `conveyance_duration_code` VARCHAR(6) DEFAULT NULL,
@@ -4066,11 +4201,11 @@ SQL);
 CREATE TABLE `supplier` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `confidence_criteria` TINYINT UNSIGNED DEFAULT '0' NOT NULL COMMENT '(DC2Type:tinyint)',
@@ -4084,8 +4219,8 @@ CREATE TABLE `supplier` (
     `currency_id` INT UNSIGNED NOT NULL,
     `emb_state_state` SET('agreed', 'blocked', 'disabled', 'draft', 'enabled', 'to_validate', 'warning') DEFAULT 'draft,enabled' NOT NULL COMMENT '(DC2Type:supplier_state)',
     `language` VARCHAR(255) DEFAULT NULL,
-    `managed_production` TINYINT(1) DEFAULT 0 NOT NULL,
-    `managed_quality` TINYINT(1) DEFAULT 0 NOT NULL,
+    `managed_production` BOOLEAN DEFAULT FALSE NOT NULL,
+    `managed_quality` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `notes` TEXT DEFAULT NULL,
     `society_id` INT UNSIGNED NOT NULL,
@@ -4547,7 +4682,7 @@ CREATE TABLE `supplier_order` (
     `customer_order_id` INT UNSIGNED DEFAULT NULL,
     `delivery_company_id` INT UNSIGNED DEFAULT NULL,
     `emb_state_state` SET('agreed', 'blocked', 'cart', 'closed', 'delivered', 'draft', 'enabled', 'initial', 'partially_delivered') DEFAULT 'enabled,initial' NOT NULL COMMENT '(DC2Type:supplier_order_state)',
-    `notes` VARCHAR(255) DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
     `supplier_id` INT UNSIGNED DEFAULT NULL,
@@ -4792,7 +4927,7 @@ CREATE TABLE `zone` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `zone` (`company_id`, `name`)
-SELECT `company`.`id`, `society_zone`.`nom`
+SELECT `company`.`id`, UCFIRST(`society_zone`.`nom`)
 FROM `society_zone`
 INNER JOIN `society` ON `society_zone`.`id_society` = `society`.`old_id`
 INNER JOIN `company` ON `society`.`id` = `company`.`society_id`

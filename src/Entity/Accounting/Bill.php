@@ -159,7 +159,7 @@ class Bill extends Entity {
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum dolores'),
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private ?string $notes = null;

@@ -128,7 +128,7 @@ class Order extends Entity {
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?string $notes = null;

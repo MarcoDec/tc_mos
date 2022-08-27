@@ -147,7 +147,7 @@ class Order extends Entity implements BarCodeInterface {
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
     private ?string $notes = null;

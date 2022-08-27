@@ -175,8 +175,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Référence', example: '54587F'),
-        Assert\Length(min: 3, max: 30),
-        ORM\Column(length: 30),
+        Assert\Length(min: 3, max: 50),
+        ORM\Column(length: 50),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $code = null;
@@ -240,8 +240,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
-        Assert\Length(min: 1, max: 3, groups: ['Product-admin', 'Product-create']),
-        ORM\Column(name: '`index`', length: 3),
+        Assert\Length(min: 1, max: 10, groups: ['Product-admin', 'Product-create']),
+        ORM\Column(name: '`index`', length: 10, nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $index = null;
@@ -309,9 +309,9 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
-        Assert\Length(min: 3, max: 80),
+        Assert\Length(min: 3, max: 160),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
-        ORM\Column(length: 80),
+        ORM\Column(length: 160, nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
     ]
     private ?string $name = null;
@@ -331,10 +331,13 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private Measure $packaging;
 
+    #[ORM\Column(nullable: true)]
+    private ?string $packagingIncorrect = null;
+
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Type de packaging'),
-        Assert\Length(max: 30, groups: ['Product-create', 'Product-production']),
-        ORM\Column(length: 30),
+        Assert\Length(max: 60, groups: ['Product-create', 'Product-production']),
+        ORM\Column(length: 60, nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
     ]
     private ?string $packagingKind = null;
@@ -549,6 +552,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->packaging;
     }
 
+    final public function getPackagingIncorrect(): ?string {
+        return $this->packagingIncorrect;
+    }
+
     final public function getPackagingKind(): ?string {
         return $this->packagingKind;
     }
@@ -713,6 +720,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setPackaging(Measure $packaging): self {
         $this->packaging = $packaging;
+        return $this;
+    }
+
+    final public function setPackagingIncorrect(?string $packagingIncorrect): self {
+        $this->packagingIncorrect = $packagingIncorrect;
         return $this;
     }
 
