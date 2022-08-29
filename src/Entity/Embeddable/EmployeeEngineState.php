@@ -9,18 +9,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class EmployeeEngineState extends State {
-    final public const TRANSITIONS = [
-        self::TR_BLOCK,
-        self::TR_DISABLE,
-        self::TR_SUPERVISE,
-        self::TR_UNLOCK,
-        self::TR_VALIDATE
-    ];
+    final public const TRANSITIONS = [self::TR_SUPERVISE, self::TR_VALIDATE];
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => EmployeeEngineStateType::TYPES]),
-        ORM\Column(type: 'employee_engine_state', options: ['default' => 'enabled,warning']),
+        ORM\Column(type: 'employee_engine_state', options: ['default' => 'warning']),
         Serializer\Groups(['read:state'])
     ]
-    protected array $state = [EmployeeEngineStateType::TYPE_STATE_WARNING => 1, EmployeeEngineStateType::TYPE_STATE_ENABLED => 1];
+    protected string $state = EmployeeEngineStateType::TYPE_STATE_WARNING;
 }

@@ -7,9 +7,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 abstract class SetType extends EnumType {
     /**
-     * @param array<string, 1>|string[] $value
+     * @param string[] $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string {
+    final public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string {
         if (empty($value)) {
             return null;
         }
@@ -24,9 +24,9 @@ abstract class SetType extends EnumType {
     /**
      * @param string $value
      *
-     * @return array<string, 1>|string[]
+     * @return string[]
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): array {
+    final public function convertToPHPValue($value, AbstractPlatform $platform): array {
         return empty($value) ? [] : explode(',', $value);
     }
 

@@ -5,6 +5,7 @@ namespace App\Entity\Production\Manufacturing;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Manufacturing\Operation\State;
 use App\Entity\Entity;
@@ -58,16 +59,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite l\'opération à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['component_manufacturing_operation', 'closer'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite l\'opération à son prochain statut de workflow'
                 ],
-                'path' => '/manufacturing-operations/{id}/promote/{transition}',
+                'path' => '/manufacturing-operations/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
@@ -90,6 +99,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Table(name: 'manufacturing_operation')
 ]
 class Operation extends Entity {
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-operation'])
+    ]
+    private Closer $embBlocker;
+
     #[
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-operation'])
@@ -154,6 +169,7 @@ class Operation extends Entity {
     private ?Zone $zone = null;
 
     public function __construct() {
+        $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->operators = new ArrayCollection();
     }
@@ -163,6 +179,14 @@ class Operation extends Entity {
             $this->operators->add($operator);
         }
         return $this;
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
+    final public function getEmbBlocker(): Closer {
+        return $this->embBlocker;
     }
 
     final public function getEmbState(): State {
@@ -196,10 +220,7 @@ class Operation extends Entity {
         return $this->startedDate;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
@@ -215,6 +236,16 @@ class Operation extends Entity {
         if ($this->operators->contains($operator)) {
             $this->operators->removeElement($operator);
         }
+        return $this;
+    }
+
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+
+    final public function setEmbBlocker(Closer $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
@@ -248,10 +279,7 @@ class Operation extends Entity {
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

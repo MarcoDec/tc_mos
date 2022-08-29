@@ -26,20 +26,13 @@ abstract class State {
     final public const TR_UNLOCK = 'unlock';
     final public const TR_VALIDATE = 'validate';
 
-    /** @var array<string, 1> */
-    protected array $state = [];
+    protected string $state;
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->state;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->state = $state;
         return $this;
     }

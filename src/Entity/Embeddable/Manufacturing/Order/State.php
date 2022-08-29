@@ -10,18 +10,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class State extends AbstractState {
-    final public const TRANSITIONS = [
-        self::TR_ACCEPT,
-        self::TR_BLOCK,
-        self::TR_CLOSE,
-        self::TR_REJECT,
-        self::TR_UNLOCK
-    ];
+    final public const TRANSITIONS = [self::TR_ACCEPT, self::TR_REJECT];
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => OrderStateType::TYPES]),
-        ORM\Column(type: 'manufacturing_order_state', options: ['default' => 'asked,enabled']),
+        ORM\Column(type: 'manufacturing_order_state', options: ['default' => 'asked']),
         Serializer\Groups(['read:state'])
     ]
-    protected array $state = [OrderStateType::TYPE_STATE_ASKED => 1, OrderStateType::TYPE_STATE_ENABLED => 1];
+    protected string $state = OrderStateType::TYPE_STATE_ASKED;
 }

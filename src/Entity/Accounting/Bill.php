@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Management\VatMessageForce;
 use App\Entity\Embeddable\Accounting\State;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -64,16 +65,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite la facture à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['bill', 'blocker'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite la facture à son prochain statut de workflow'
                 ],
-                'path' => '/bills/{id}/promote/{transition}',
+                'path' => '/bills/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
@@ -133,6 +142,12 @@ class Bill extends Entity {
         ORM\Embedded,
         Serializer\Groups(['read:bill'])
     ]
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:bill'])
+    ]
     private State $embState;
 
     #[
@@ -187,6 +202,7 @@ class Bill extends Entity {
 
     public function __construct() {
         $this->billingDate = new DateTimeImmutable();
+        $this->embBlocker = new Blocker();
         $this->embState = new State();
         $this->exclTax = new Measure();
         $this->inclTax = new Measure();
@@ -195,6 +211,10 @@ class Bill extends Entity {
 
     final public function getBillingDate(): ?DateTimeImmutable {
         return $this->billingDate;
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getCompany(): ?Company {
@@ -211,6 +231,10 @@ class Bill extends Entity {
 
     final public function getDueDate(): ?DateTimeImmutable {
         return $this->dueDate;
+    }
+
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
     }
 
     final public function getEmbState(): State {
@@ -237,10 +261,7 @@ class Bill extends Entity {
         return $this->ref;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
@@ -254,6 +275,11 @@ class Bill extends Entity {
 
     final public function setBillingDate(?DateTimeImmutable $billingDate): self {
         $this->billingDate = $billingDate;
+        return $this;
+    }
+
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
         return $this;
     }
 
@@ -274,6 +300,11 @@ class Bill extends Entity {
 
     final public function setDueDate(?DateTimeImmutable $dueDate): self {
         $this->dueDate = $dueDate;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
@@ -307,10 +338,7 @@ class Bill extends Entity {
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

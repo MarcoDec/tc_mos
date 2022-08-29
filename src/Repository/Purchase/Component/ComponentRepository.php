@@ -21,10 +21,10 @@ final class ComponentRepository extends ServiceEntityRepository {
 
     public function expires(): void {
         $this->_em->createQueryBuilder()
-            ->update($this->getClassName(), 'p')
-            ->set('p.currentPlace.name', ':place')
+            ->update($this->getClassName(), 'c')
+            ->set('c.embState.state', ':place')
             ->setParameter('place', 'disabled')
-            ->where('p.endOfLife >= NOW()')
+            ->where('c.endOfLife >= NOW()')
             ->getQuery()
             ->execute();
     }

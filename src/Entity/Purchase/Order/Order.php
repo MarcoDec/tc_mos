@@ -5,6 +5,7 @@ namespace App\Entity\Purchase\Order;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Order\Order\State;
 use App\Entity\Entity;
@@ -60,16 +61,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite la commande à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['supplier_order', 'closer'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite la commande à son prochain statut de workflow'
                 ],
-                'path' => '/supplier-orders/{id}/promote/{transition}',
+                'path' => '/supplier-orders/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
@@ -124,6 +133,12 @@ class Order extends Entity {
         ORM\Embedded,
         Serializer\Groups(['read:order'])
     ]
+    private Closer $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:order'])
+    ]
     private State $embState;
 
     #[
@@ -155,7 +170,12 @@ class Order extends Entity {
     private ?Supplier $supplier = null;
 
     public function __construct() {
+        $this->embBlocker = new Closer();
         $this->embState = new State();
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getCompany(): ?Company {
@@ -174,6 +194,10 @@ class Order extends Entity {
         return $this->deliveryCompany;
     }
 
+    final public function getEmbBlocker(): Closer {
+        return $this->embBlocker;
+    }
+
     final public function getEmbState(): State {
         return $this->embState;
     }
@@ -186,10 +210,7 @@ class Order extends Entity {
         return $this->ref;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
@@ -199,6 +220,11 @@ class Order extends Entity {
 
     final public function isSupplementFret(): bool {
         return $this->supplementFret;
+    }
+
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
     }
 
     final public function setCompany(?Company $company): self {
@@ -221,6 +247,11 @@ class Order extends Entity {
         return $this;
     }
 
+    final public function setEmbBlocker(Closer $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
     final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
@@ -236,10 +267,7 @@ class Order extends Entity {
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

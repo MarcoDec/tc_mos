@@ -10,17 +10,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class State extends AbstractState {
-    final public const TRANSITIONS = [
-        self::TR_BLOCK,
-        self::TR_DISABLE,
-        self::TR_UNLOCK,
-        self::TR_VALIDATE
-    ];
+    final public const TRANSITIONS = [self::TR_VALIDATE];
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => CustomerStateType::TYPES]),
-        ORM\Column(type: 'customer_state', options: ['default' => 'draft,enabled']),
+        ORM\Column(type: 'customer_state', options: ['default' => 'draft']),
         Serializer\Groups(['read:state'])
     ]
-    protected array $state = [CustomerStateType::TYPE_STATE_DRAFT => 1, CustomerStateType::TYPE_STATE_ENABLED => 1];
+    protected string $state = CustomerStateType::TYPE_STATE_DRAFT;
 }

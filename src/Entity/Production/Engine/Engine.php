@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -57,16 +58,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite l\'équipement à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => EmployeeEngineState::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...EmployeeEngineState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['employee_engine', 'blocker'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite l\'équipement à son prochain statut de workflow'
                 ],
-                'path' => '/engines/{id}/promote/{transition}',
+                'path' => '/engines/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
@@ -143,6 +152,12 @@ abstract class Engine extends Entity implements BarCodeInterface {
         ORM\Embedded,
         Serializer\Groups(['read:engine'])
     ]
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:engine'])
+    ]
     private EmployeeEngineState $embState;
 
     #[
@@ -167,6 +182,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
     private ?string $notes = null;
 
     public function __construct() {
+        $this->embBlocker = new Blocker();
         $this->embState = new EmployeeEngineState();
         $this->manufacturerEngine = new ManufacturerEngine($this);
     }
@@ -175,12 +191,20 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return self::ENGINE_BAR_CODE_TABLE_NUMBER;
     }
 
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
     final public function getBrand(): ?string {
         return $this->brand;
     }
 
     final public function getCode(): ?string {
         return $this->code;
+    }
+
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
     }
 
     final public function getEmbState(): EmployeeEngineState {
@@ -211,15 +235,17 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this->notes;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
     final public function getZone(): ?Zone {
         return $this->zone;
+    }
+
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
     }
 
     final public function setBrand(?string $brand): self {
@@ -229,6 +255,11 @@ abstract class Engine extends Entity implements BarCodeInterface {
 
     final public function setCode(?string $code): self {
         $this->code = $code;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
@@ -267,10 +298,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

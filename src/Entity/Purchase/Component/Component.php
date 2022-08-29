@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Purchase\Component\State;
@@ -110,16 +111,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite le composant à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['component_manufacturing_operation', 'blocker'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite le composant à son prochain statut de workflow'
                 ],
-                'path' => '/components/{id}/promote/{transition}',
+                'path' => '/components/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ],
@@ -175,6 +184,12 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         Serializer\Groups(['read:component', 'write:component:logistics'])
     ]
     private ?string $customsCode = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:component', 'read:component:collection'])
+    ]
+    private Blocker $embBlocker;
 
     #[
         ORM\Embedded,
@@ -311,6 +326,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     public function __construct() {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
+        $this->embBlocker = new Blocker();
         $this->embState = new State();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
@@ -336,6 +352,10 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->attributes;
     }
 
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
     #[
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
         Serializer\Groups(['read:component', 'read:component:collection'])
@@ -350,6 +370,10 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
     }
 
     final public function getEmbState(): State {
@@ -408,10 +432,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->ppmRate;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
@@ -441,6 +462,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+
     final public function setCopperWeight(Measure $copperWeight): self {
         $this->copperWeight = $copperWeight;
         return $this;
@@ -448,6 +474,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setCustomsCode(?string $customsCode): self {
         $this->customsCode = $customsCode;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
@@ -526,10 +557,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

@@ -10,6 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Project\Product\KindType;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\Product\State;
@@ -115,16 +116,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite le produit à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['product', 'blocker'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
-                'path' => '/products/{id}/promote/{transition}',
+                'path' => '/products/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ],
@@ -200,6 +209,12 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
     private ?string $customsCode = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'read:product:collection'])
+    ]
+    private Blocker $embBlocker;
 
     #[
         ORM\Embedded,
@@ -404,6 +419,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->children = new ArrayCollection();
         $this->costingAutoDuration = new Measure();
         $this->costingManualDuration = new Measure();
+        $this->embBlocker = new Blocker();
         $this->embState = new State();
         $this->forecastVolume = new Measure();
         $this->manualDuration = new Measure();
@@ -423,6 +439,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     public function __clone() {
         parent::__clone();
         $this->children = new ArrayCollection();
+        $this->embBlocker = new Blocker();
         $this->embState = new State();
         $this->internalIndex = 1;
         $this->parent = null;
@@ -442,6 +459,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getAutoDuration(): Measure {
         return $this->autoDuration;
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     /**
@@ -465,6 +486,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
     }
 
     final public function getEmbState(): State {
@@ -576,10 +601,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->productionDelay;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
@@ -618,6 +640,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+
     final public function setCode(?string $code): self {
         $this->code = $code;
         return $this;
@@ -635,6 +662,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setCustomsCode(?string $customsCode): self {
         $this->customsCode = $customsCode;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
@@ -753,10 +785,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

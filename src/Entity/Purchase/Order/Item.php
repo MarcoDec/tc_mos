@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
+use App\Entity\Embeddable\Purchase\Order\Item\Closer;
 use App\Entity\Embeddable\Purchase\Order\Item\State;
 use App\Entity\Item as BaseItem;
 use App\Entity\Management\Society\Company\Company;
@@ -51,16 +52,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite la ligne à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['supplier_order_item', 'supplier_order_item_closer'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite la ligne à son prochain statut de workflow'
                 ],
-                'path' => '/supplier-order-items/{id}/promote/{transition}',
+                'path' => '/supplier-order-items/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
@@ -106,6 +115,12 @@ abstract class Item extends BaseItem {
         ORM\Embedded,
         Serializer\Groups(['read:item'])
     ]
+    private Closer $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:item'])
+    ]
     private State $embState;
 
     #[
@@ -117,26 +132,40 @@ abstract class Item extends BaseItem {
 
     public function __construct() {
         parent::__construct();
+        $this->embBlocker = new Closer();
         $this->embState = new State();
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getCopperPrice(): Measure {
         return $this->copperPrice;
     }
 
+    final public function getEmbBlocker(): Closer {
+        return $this->embBlocker;
+    }
+
     final public function getEmbState(): State {
         return $this->embState;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
     final public function getTargetCompany(): ?Company {
         return $this->targetCompany;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
     }
 
     /**
@@ -150,17 +179,23 @@ abstract class Item extends BaseItem {
     /**
      * @return $this
      */
+    final public function setEmbBlocker(Closer $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
     final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }
 
     /**
-     * @param array<string, 1> $state
-     *
      * @return $this
      */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

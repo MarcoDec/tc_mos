@@ -13,6 +13,7 @@ use App\Doctrine\DBAL\Types\Hr\Employee\GenderType;
 use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
 use App\Entity\Embeddable\Address;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -101,16 +102,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite l\'employé à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => EmployeeEngineState::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...EmployeeEngineState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['employee_engine', 'blocker'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite l\'employé à son prochain statut de workflow'
                 ],
-                'path' => '/employees/{id}/promote/{transition}',
+                'path' => '/employees/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
@@ -164,6 +173,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         Serializer\Groups(['read:employee'])
     ]
     private ?Company $company = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:employee', 'read:employee:collection'])
+    ]
+    private Blocker $embBlocker;
 
     #[ORM\Embedded]
     private Roles $embRoles;
@@ -285,6 +300,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     public function __construct() {
         $this->apiTokens = new ArrayCollection();
+        $this->embBlocker = new Blocker();
         $this->embRoles = new Roles();
         $this->embState = new EmployeeEngineState();
     }
@@ -332,6 +348,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->birthday;
     }
 
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
     final public function getCompany(): ?Company {
         return $this->company;
     }
@@ -343,6 +363,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
             }
         }
         return null;
+    }
+
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
     }
 
     final public function getEmbRoles(): Roles {
@@ -424,10 +448,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this->socialSecurityNumber;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
@@ -499,8 +520,18 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+
     final public function setCompany(?Company $company): self {
         $this->company = $company;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
@@ -569,10 +600,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

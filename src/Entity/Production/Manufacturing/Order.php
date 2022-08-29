@@ -5,6 +5,7 @@ namespace App\Entity\Production\Manufacturing;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Manufacturing\Order\State;
 use App\Entity\Embeddable\Measure;
@@ -63,16 +64,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite l\'OF à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['manufacturing_order', 'closer'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite l\'OF à son prochain statut de workflow'
                 ],
-                'path' => '/manufacturing-orders/{id}/promote/{transition}',
+                'path' => '/manufacturing-orders/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
@@ -117,6 +126,12 @@ class Order extends Entity implements BarCodeInterface {
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
     private ?DateTimeImmutable $deliveryDate = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-order'])
+    ]
+    private Closer $embBlocker;
 
     #[
         ORM\Embedded,
@@ -189,6 +204,7 @@ class Order extends Entity implements BarCodeInterface {
 
     public function __construct() {
         $this->actualQuantity = new Measure();
+        $this->embBlocker = new Closer();
         $this->embState = new State();
         $this->quantityProduced = new Measure();
         $this->quantityRequested = new Measure();
@@ -202,12 +218,20 @@ class Order extends Entity implements BarCodeInterface {
         return $this->actualQuantity;
     }
 
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
     final public function getCompany(): ?Company {
         return $this->company;
     }
 
     final public function getDeliveryDate(): ?DateTimeImmutable {
         return $this->deliveryDate;
+    }
+
+    final public function getEmbBlocker(): Closer {
+        return $this->embBlocker;
     }
 
     final public function getEmbState(): State {
@@ -250,15 +274,17 @@ class Order extends Entity implements BarCodeInterface {
         return $this->ref;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
     final public function setActualQuantity(Measure $actualQuantity): self {
         $this->actualQuantity = $actualQuantity;
+        return $this;
+    }
+
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
         return $this;
     }
 
@@ -269,6 +295,11 @@ class Order extends Entity implements BarCodeInterface {
 
     final public function setDeliveryDate(?DateTimeImmutable $deliveryDate): self {
         $this->deliveryDate = $deliveryDate;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Closer $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
@@ -322,10 +353,7 @@ class Order extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

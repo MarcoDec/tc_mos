@@ -4,6 +4,9 @@ parameters:
   wf_marking_store:
     property: state
     type: method
+  wf_marking_store_blocker:
+    property: blocker
+    type: method
   wf_place_agreed: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_AGREED
   wf_place_asked: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_ASKED
   wf_place_billed: !php/const App\Doctrine\DBAL\Types\Embeddable\StateType::TYPE_STATE_BILLED
@@ -48,14 +51,11 @@ framework:
   workflows:
     bill:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      initial_marking: '%wf_place_draft%'
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_billed%'
-        - '%wf_place_blocked%'
-        - '%wf_place_disabled%'
         - '%wf_place_draft%'
-        - '%wf_place_enabled%'
         - '%wf_place_paid%'
         - '%wf_place_partially_paid%'
       supports:
@@ -64,63 +64,28 @@ framework:
         '%wf_tr_bill%':
           from: '%wf_place_draft%'
           to: '%wf_place_billed%'
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_disable%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_disabled%'
         '%wf_tr_partially_pay%':
           from: '%wf_place_billed%'
           to: '%wf_place_partially_paid%'
         '%wf_tr_pay%':
           from: [ '%wf_place_billed%', '%wf_place_partially_paid%' ]
           to: '%wf_place_paid%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
-      type: workflow
-    component:
+      type: state_machine
+    blocker:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
-      marking_store: '%wf_marking_store%'
+      initial_marking: '%wf_place_enabled%'
+      marking_store: '%wf_marking_store_blocker%'
       places:
-        - '%wf_place_agreed%'
         - '%wf_place_blocked%'
         - '%wf_place_disabled%'
-        - '%wf_place_draft%'
         - '%wf_place_enabled%'
-        - '%wf_place_warning%'
       supports:
+        - App\Entity\Accounting\Bill
+        - App\Entity\Hr\Employee\Employee
+        - App\Entity\Production\Engine\Engine
+        - App\Entity\Project\Product\Product
         - App\Entity\Purchase\Component\Component
-      transitions:
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_disable%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_disabled%'
-        '%wf_tr_supervise%':
-          from: [ '%wf_place_agreed%', '%wf_place_draft%' ]
-          to: '%wf_place_warning%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
-        '%wf_tr_validate%':
-          from: [ '%wf_place_draft%', '%wf_place_warning%' ]
-          to: '%wf_place_agreed%'
-      type: workflow
-    customer:
-      audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
-      marking_store: '%wf_marking_store%'
-      places:
-        - '%wf_place_agreed%'
-        - '%wf_place_blocked%'
-        - '%wf_place_disabled%'
-        - '%wf_place_draft%'
-        - '%wf_place_enabled%'
-      supports:
+        - App\Entity\Purchase\Supplier\Supplier
         - App\Entity\Selling\Customer\Customer
       transitions:
         '%wf_tr_block%':
@@ -132,24 +97,20 @@ framework:
         '%wf_tr_unlock%':
           from: '%wf_place_blocked%'
           to: '%wf_place_enabled%'
-        '%wf_tr_validate%':
-          from: '%wf_place_draft%'
-          to: '%wf_place_agreed%'
-      type: workflow
-    customer_order:
+      type: state_machine
+    closer:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
-      marking_store: '%wf_marking_store%'
+      initial_marking: '%wf_place_enabled%'
+      marking_store: '%wf_marking_store_blocker%'
       places:
-        - '%wf_place_agreed%'
         - '%wf_place_blocked%'
         - '%wf_place_closed%'
-        - '%wf_place_delivered%'
-        - '%wf_place_draft%'
         - '%wf_place_enabled%'
-        - '%wf_place_partially_delivered%'
-        - '%wf_place_to_validate%'
       supports:
+        - App\Entity\Production\Manufacturing\Operation
+        - App\Entity\Production\Manufacturing\Order
+        - App\Entity\Purchase\Order\Order
+        - App\Entity\Selling\Order\Item
         - App\Entity\Selling\Order\Order
       transitions:
         '%wf_tr_block%':
@@ -158,6 +119,56 @@ framework:
         '%wf_tr_close%':
           from: '%wf_place_enabled%'
           to: '%wf_place_closed%'
+        '%wf_tr_unlock%':
+          from: '%wf_place_blocked%'
+          to: '%wf_place_enabled%'
+      type: state_machine
+    component_manufacturing_operation:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_draft%'
+        - '%wf_place_warning%'
+      supports:
+        - App\Entity\Purchase\Component\Component
+        - App\Entity\Production\Manufacturing\Operation
+      transitions:
+        '%wf_tr_supervise%':
+          from: [ '%wf_place_agreed%', '%wf_place_draft%' ]
+          to: '%wf_place_warning%'
+        '%wf_tr_validate%':
+          from: [ '%wf_place_draft%', '%wf_place_warning%' ]
+          to: '%wf_place_agreed%'
+      type: state_machine
+    customer:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_draft%'
+      supports:
+        - App\Entity\Selling\Customer\Customer
+      transitions:
+        '%wf_tr_validate%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_agreed%'
+      type: state_machine
+    customer_order:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_delivered%'
+        - '%wf_place_draft%'
+        - '%wf_place_partially_delivered%'
+        - '%wf_place_to_validate%'
+      supports:
+        - App\Entity\Selling\Order\Order
+      transitions:
         '%wf_tr_deliver%':
           from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
           to: '%wf_place_delivered%'
@@ -167,77 +178,50 @@ framework:
         '%wf_tr_submit_validation%':
           from: '%wf_place_draft%'
           to: '%wf_place_to_validate%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
         '%wf_tr_validate%':
           from: '%wf_place_to_validate%'
           to: '%wf_place_agreed%'
-      type: workflow
+      type: state_machine
     customer_order_item:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      initial_marking: '%wf_place_draft%'
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_agreed%'
-        - '%wf_place_blocked%'
-        - '%wf_place_closed%'
         - '%wf_place_delivered%'
         - '%wf_place_draft%'
-        - '%wf_place_enabled%'
         - '%wf_place_partially_delivered%'
       supports:
         - App\Entity\Selling\Order\Item
       transitions:
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_close%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_closed%'
         '%wf_tr_deliver%':
           from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
           to: '%wf_place_delivered%'
         '%wf_tr_partially_deliver%':
           from: '%wf_place_agreed%'
           to: '%wf_place_partially_delivered%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
         '%wf_tr_validate%':
           from: '%wf_place_draft%'
           to: '%wf_place_agreed%'
-      type: workflow
+      type: state_machine
     employee_engine:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_enabled%', '%wf_place_warning%' ]
+      initial_marking: '%wf_place_warning%'
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_agreed%'
-        - '%wf_place_blocked%'
-        - '%wf_place_disabled%'
-        - '%wf_place_enabled%'
         - '%wf_place_warning%'
       supports:
         - App\Entity\Hr\Employee\Employee
         - App\Entity\Production\Engine\Engine
       transitions:
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_disable%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_disabled%'
         '%wf_tr_supervise%':
           from: '%wf_place_agreed%'
           to: '%wf_place_warning%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
         '%wf_tr_validate%':
           from: '%wf_place_warning%'
           to: '%wf_place_agreed%'
-      type: workflow
+      type: state_machine
     event:
       audit_trail: '%wf_audit_trail%'
       initial_marking: '%wf_place_asked%'
@@ -261,46 +245,13 @@ framework:
           from: '%wf_place_asked%'
           to: '%wf_place_rejected%'
       type: state_machine
-    manufacturing_operation:
-      audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
-      marking_store: '%wf_marking_store%'
-      places:
-        - '%wf_place_agreed%'
-        - '%wf_place_blocked%'
-        - '%wf_place_closed%'
-        - '%wf_place_draft%'
-        - '%wf_place_enabled%'
-        - '%wf_place_warning%'
-      supports:
-        - App\Entity\Production\Manufacturing\Operation
-      transitions:
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_close%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_closed%'
-        '%wf_tr_supervise%':
-          from: [ '%wf_place_agreed%', '%wf_place_draft%' ]
-          to: '%wf_place_warning%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
-        '%wf_tr_validate%':
-          from: [ '%wf_place_draft%', '%wf_place_warning%' ]
-          to: '%wf_place_agreed%'
-      type: workflow
     manufacturing_order:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_asked%', '%wf_place_enabled%' ]
+      initial_marking: '%wf_place_asked%'
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_agreed%'
         - '%wf_place_asked%'
-        - '%wf_place_blocked%'
-        - '%wf_place_closed%'
-        - '%wf_place_enabled%'
         - '%wf_place_rejected%'
       supports:
         - App\Entity\Production\Manufacturing\Order
@@ -308,113 +259,71 @@ framework:
         '%wf_tr_accept%':
           from: '%wf_place_asked%'
           to: '%wf_place_agreed%'
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_close%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_closed%'
         '%wf_tr_reject%':
           from: '%wf_place_asked%'
           to: '%wf_place_rejected%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
-      type: workflow
+      type: state_machine
     product:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      initial_marking: '%wf_place_draft%'
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_agreed%'
-        - '%wf_place_blocked%'
-        - '%wf_place_disabled%'
         - '%wf_place_draft%'
-        - '%wf_place_enabled%'
         - '%wf_place_to_validate%'
         - '%wf_place_warning%'
       supports:
         - App\Entity\Project\Product\Product
       transitions:
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_disable%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_disabled%'
         '%wf_tr_submit_validation%':
           from: '%wf_place_draft%'
           to: '%wf_place_to_validate%'
         '%wf_tr_supervise%':
           from: [ '%wf_place_agreed%', '%wf_place_to_validate%' ]
           to: '%wf_place_warning%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
         '%wf_tr_validate%':
           from: [ '%wf_place_to_validate%', '%wf_place_warning%' ]
           to: '%wf_place_agreed%'
-      type: workflow
+      type: state_machine
     supplier:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_draft%', '%wf_place_enabled%' ]
+      initial_marking: '%wf_place_draft%'
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_agreed%'
-        - '%wf_place_blocked%'
-        - '%wf_place_disabled%'
         - '%wf_place_draft%'
-        - '%wf_place_enabled%'
         - '%wf_place_to_validate%'
         - '%wf_place_warning%'
       supports:
         - App\Entity\Purchase\Supplier\Supplier
       transitions:
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_disable%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_disabled%'
         '%wf_tr_submit_validation%':
           from: '%wf_place_draft%'
           to: '%wf_place_to_validate%'
         '%wf_tr_supervise%':
           from: [ '%wf_place_agreed%', '%wf_place_to_validate%' ]
           to: '%wf_place_warning%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
         '%wf_tr_validate%':
           from: '%wf_place_warning%'
           to: '%wf_place_agreed%'
-      type: workflow
+      type: state_machine
     supplier_order:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_initial%', '%wf_place_enabled%' ]
+      initial_marking: '%wf_place_initial%'
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_agreed%'
-        - '%wf_place_blocked%'
         - '%wf_place_cart%'
-        - '%wf_place_closed%'
         - '%wf_place_delivered%'
         - '%wf_place_draft%'
-        - '%wf_place_enabled%'
         - '%wf_place_initial%'
         - '%wf_place_partially_delivered%'
       supports:
         - App\Entity\Purchase\Order\Order
       transitions:
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
         '%wf_tr_buy%':
           from: '%wf_place_initial%'
           to: '%wf_place_cart%'
-        '%wf_tr_close%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_closed%'
         '%wf_tr_create%':
           from: '%wf_place_initial%'
           to: '%wf_place_draft%'
@@ -424,25 +333,18 @@ framework:
         '%wf_tr_partially_deliver%':
           from: '%wf_place_agreed%'
           to: '%wf_place_partially_delivered%'
-        '%wf_tr_unlock%':
-          from: '%wf_place_blocked%'
-          to: '%wf_place_enabled%'
         '%wf_tr_validate%':
           from: [ '%wf_place_cart%', '%wf_place_draft%' ]
           to: '%wf_place_agreed%'
-      type: workflow
+      type: state_machine
     supplier_order_item:
       audit_trail: '%wf_audit_trail%'
-      initial_marking: [ '%wf_place_initial%', '%wf_place_enabled%' ]
+      initial_marking: '%wf_place_initial%'
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_agreed%'
-        - '%wf_place_blocked%'
-        - '%wf_place_closed%'
-        - '%wf_place_delayed%'
         - '%wf_place_delivered%'
         - '%wf_place_draft%'
-        - '%wf_place_enabled%'
         - '%wf_place_forecasted%'
         - '%wf_place_initial%'
         - '%wf_place_monthly%'
@@ -450,18 +352,9 @@ framework:
       supports:
         - App\Entity\Purchase\Order\Item
       transitions:
-        '%wf_tr_block%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_blocked%'
-        '%wf_tr_close%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_closed%'
         '%wf_tr_create%':
           from: '%wf_place_initial%'
           to: '%wf_place_draft%'
-        '%wf_tr_delay%':
-          from: '%wf_place_enabled%'
-          to: '%wf_place_delayed%'
         '%wf_tr_deliver%':
           from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
           to: '%wf_place_delivered%'
@@ -474,10 +367,32 @@ framework:
         '%wf_tr_partially_deliver%':
           from: '%wf_place_agreed%'
           to: '%wf_place_partially_delivered%'
-        '%wf_tr_unlock%':
-          from: [ '%wf_place_blocked%', '%wf_place_delayed%' ]
-          to: '%wf_place_enabled%'
         '%wf_tr_validate%':
           from: [ '%wf_place_draft%', '%wf_place_forecasted%' ]
           to: '%wf_place_agreed%'
-      type: workflow
+      type: state_machine
+    supplier_order_item_closer:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_enabled%'
+      marking_store: '%wf_marking_store_blocker%'
+      places:
+        - '%wf_place_blocked%'
+        - '%wf_place_closed%'
+        - '%wf_place_delayed%'
+        - '%wf_place_enabled%'
+      supports:
+        - App\Entity\Purchase\Order\Item
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_close%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_closed%'
+        '%wf_tr_delay%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_delayed%'
+        '%wf_tr_unlock%':
+          from: [ '%wf_place_blocked%', '%wf_place_delayed%' ]
+          to: '%wf_place_enabled%'
+      type: state_machine

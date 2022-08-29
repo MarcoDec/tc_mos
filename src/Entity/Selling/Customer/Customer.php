@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -91,16 +92,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite le client à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
-                    ]],
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['customer', 'blocker'], 'type' => 'string']
+                        ]
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite le client à son prochain statut de workflow'
                 ],
-                'path' => '/customers/{id}/promote/{transition}',
+                'path' => '/customers/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
                 'validate' => false
             ]
@@ -164,6 +173,12 @@ class Customer extends Entity {
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private ?Currency $currency = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'read:customer:collection'])
+    ]
+    private Blocker $embBlocker;
 
     #[
         ORM\Embedded,
@@ -256,6 +271,7 @@ class Customer extends Entity {
         $this->administeredBy = new ArrayCollection();
         $this->conveyanceDuration = new Measure();
         $this->copper = new Copper();
+        $this->embBlocker = new Blocker();
         $this->embState = new State();
         $this->monthlyOutstanding = new Measure();
         $this->outstandingMax = new Measure();
@@ -284,6 +300,10 @@ class Customer extends Entity {
         return $this->administeredBy;
     }
 
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
     final public function getConveyanceDuration(): Measure {
         return $this->conveyanceDuration;
     }
@@ -294,6 +314,10 @@ class Customer extends Entity {
 
     final public function getCurrency(): ?Currency {
         return $this->currency;
+    }
+
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
     }
 
     final public function getEmbState(): State {
@@ -336,10 +360,7 @@ class Customer extends Entity {
         return $this->society;
     }
 
-    /**
-     * @return array<string, 1>
-     */
-    final public function getState(): array {
+    final public function getState(): string {
         return $this->embState->getState();
     }
 
@@ -369,6 +390,11 @@ class Customer extends Entity {
         return $this;
     }
 
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+
     final public function setConveyanceDuration(Measure $conveyanceDuration): self {
         $this->conveyanceDuration = $conveyanceDuration;
         return $this;
@@ -381,6 +407,11 @@ class Customer extends Entity {
 
     final public function setCurrency(?Currency $currency): self {
         $this->currency = $currency;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
@@ -444,10 +475,7 @@ class Customer extends Entity {
         return $this;
     }
 
-    /**
-     * @param array<string, 1> $state
-     */
-    final public function setState(array $state): self {
+    final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
     }

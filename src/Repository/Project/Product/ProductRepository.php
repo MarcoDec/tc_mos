@@ -22,7 +22,7 @@ final class ProductRepository extends ServiceEntityRepository {
     public function expires(): void {
         $this->_em->createQueryBuilder()
             ->update($this->getClassName(), 'p')
-            ->set('p.currentPlace.name', ':place')
+            ->set('p.embState.state', ':place')
             ->setParameter('place', 'disabled')
             ->where('p.endOfLife >= NOW()')
             ->getQuery()
