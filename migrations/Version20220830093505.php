@@ -23,10 +23,10 @@ final class Version20220830093505 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
-    private Collection $phoneQueries;
+    private readonly Collection $phoneQueries;
 
     /** @var Collection<int, string> */
-    private Collection $queries;
+    private readonly Collection $queries;
 
     public function __construct(Connection $connection, LoggerInterface $logger) {
         parent::__construct($connection, $logger);
@@ -78,6 +78,11 @@ CREATE FUNCTION IF_EMPTY(s VARCHAR(255), def VARCHAR(255))
     RETURN IF(s IS NULL OR TRIM(s) = '', def, s)
 SQL);
         $this->addSql(<<<'SQL'
+CREATE FUNCTION IS_NUMBER(s VARCHAR(255))
+    RETURNS BOOLEAN DETERMINISTIC
+    RETURN s REGEXP '^[0-9]+$'
+SQL);
+        $this->addSql(<<<'SQL'
 CREATE FUNCTION UCFIRST (s VARCHAR(255))
     RETURNS VARCHAR(255) DETERMINISTIC
     RETURN CONCAT(UCASE(LEFT(s, 1)), LCASE(SUBSTRING(s, 2)))
@@ -108,6 +113,7 @@ SQL);
         $this->addSql("CALL up$version");
         $this->addSql("DROP PROCEDURE up$version");
         $this->addSql('DROP FUNCTION UCFIRST');
+        $this->addSql('DROP FUNCTION IS_NUMBER');
         $this->addSql('DROP FUNCTION IF_EMPTY');
     }
 
@@ -117,6 +123,26 @@ SQL);
 
     private function addQuery(string $query): void {
         $this->queries->push(self::trim($query));
+    }
+
+    /**
+     * @param string[] $roles
+     */
+    private function generateEmployee(int $company, string $initials, string $password, array $roles, string $username): void {
+        ($user = (new Employee()))->setPassword($this->hasher->hashPassword($user, $password));
+        /** @var string $hashedPassword */
+        $hashedPassword = $user->getPassword();
+        foreach ($roles as $role) {
+            $user->addRole($role);
+        }
+        $this->addQuery(sprintf(
+            <<<SQL
+INSERT INTO `employee` (`company_id`, `emb_roles_roles`, `initials`, `name`, `password`, `surname`, `username`)
+VALUES ($company, %s, '$initials', 'Super', %s, 'SUPER', '$username')
+SQL,
+            $this->platform->quoteStringLiteral(implode(',', $user->getRoles())),
+            $this->platform->quoteStringLiteral($hashedPassword)
+        ));
     }
 
     private function getPhoneQueries(): string {
@@ -129,8 +155,9 @@ SQL);
 
     /**
      * @param string[] $columns
+     * @param string[] $dates
      */
-    private function insert(string $table, array $columns): void {
+    private function insert(string $table, array $columns, array $dates = []): void {
         $filename = __DIR__."/../migrations-data/exportjson_table_$table.json";
         $file = file_get_contents($filename);
         if (!$file) {
@@ -143,13 +170,18 @@ SQL);
             "INSERT INTO `$table` (%s) VALUES %s",
             collect($columns)->map(static fn (string $key): string => "`$key`")->join(','),
             $json
-                ->map(function (array $row) use ($columns): string {
+                /** @phpstan-ignore-next-line */
+                ->filter(static fn (array $row): bool => !isset($row['id']) || (int) ($row['id']) > 0)
+                ->map(function (array $row) use ($columns, $dates): string {
                     $mapped = [];
                     foreach ($columns as $column) {
                         $value = $row[$column] ?? null;
                         if (is_string($value)) {
                             $value = trim($value);
                             if (strlen($value) === 0) {
+                                $value = null;
+                            }
+                            if (!empty($value) && in_array($column, $dates) && str_ends_with($value, '00')) {
                                 $value = null;
                             }
                         }
@@ -176,31 +208,21 @@ INSERT INTO `customer_address` (
     `name`,
     `type`
 ) SELECT
-    `id`,
-    `address1`,
-    `address2`,
-    `city`,
-    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `address`.`id_country`),
-    `zip`,
-    (
-        SELECT `customer`.`id`
-        FROM `customer`
-        WHERE `customer`.`society_id` = (
-            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `address`.`id_customer`
-        )
-    ),
-    `nom`,
+    `address`.`id`,
+    `address`.`address1`,
+    `address`.`address2`,
+    `address`.`city`,
+    UCASE(`country`.`code`),
+    `address`.`zip`,
+    `customer`.`id`,
+    `address`.`nom`,
     '$type'
 FROM `address`
-WHERE `statut` = 0
-AND `typeaddress` LIKE '%$like%'
-AND EXISTS (
-    SELECT `customer`.`id`
-    FROM `customer`
-    WHERE `customer`.`society_id` = (
-        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `address`.`id_customer`
-    )
-)
+INNER JOIN `society` ON `address`.`id_customer` = `society`.`old_id`
+INNER JOIN `customer` ON `society`.`id` = `customer`.`society_id`
+LEFT JOIN `country` ON `address`.`id_country` = `country`.`id`
+WHERE `address`.`statut` = 0
+AND `address`.`typeaddress` LIKE '%$like%'
 SQL);
     }
 
@@ -251,46 +273,51 @@ SQL);
         // rank 4
         $this->upBills();
         $this->upComponentSupplierPrices();
-        $this->upCustomerOrders();
         $this->upCustomerProductPrices();
         $this->upEmployees();
         $this->upEngines();
+        $this->upSellingOrders();
         $this->upStocks();
         // rank 5
-        $this->upCustomerOrderItems();
         $this->upDeliveryNotes();
         $this->upEmployeeEvents();
         $this->upItRequests();
         $this->upManufacturingOrders();
         $this->upNotifications();
         $this->upPlannings();
+        $this->upPurchaseOrders();
+        $this->upSellingOrderItems();
         $this->upSkills();
-        $this->upSupplierOrders();
         // rank 6
         $this->upEngineEvents();
         $this->upExpeditions();
         // clean
+        $this->addQuery('DROP TABLE `country`');
+        $this->addQuery('DROP TABLE `customcode`');
+        $this->addQuery('DROP TABLE `locale`');
         $this->addQuery('ALTER TABLE `attribute` DROP `old_id`');
         $this->addQuery('ALTER TABLE `bill` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `customer_order` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `customer_order_item` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `employee` DROP `id_society`, DROP `old_id`');
+        $this->addQuery('ALTER TABLE `employee` DROP `old_id`, DROP `matricule`, DROP `id_society`');
+        $this->addQuery('ALTER TABLE `engine` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
-        $this->addQuery('ALTER TABLE `product` DROP `id_society`, DROP `old_id`');
+        $this->addQuery('ALTER TABLE `manufacturing_order` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `planning` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `product` DROP `old_id`, DROP `id_society`');
         $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
+        $this->addQuery('ALTER TABLE `purchase_order` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `selling_order` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `selling_order_item` DROP `old_id`');
         $this->addQuery('ALTER TABLE `skill_type` DROP `old_id`');
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('ALTER TABLE `stock` DROP `old_id`');
         $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
-        $this->addQuery('DROP TABLE `country`');
-        $this->addQuery('DROP TABLE `customcode`');
-        $this->addQuery('DROP TABLE `locale`');
     }
 
     private function upAttributes(): void {
@@ -300,12 +327,10 @@ CREATE TABLE `attribut` (
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `description` VARCHAR(255) DEFAULT NULL,
     `libelle` VARCHAR(100) NOT NULL,
-    `attribut_id_family` VARCHAR(255) DEFAULT NULL,
-    `unit_id` INT UNSIGNED DEFAULT NULL,
-    `type` VARCHAR(255) DEFAULT NULL
+    `attribut_id_family` VARCHAR(255) DEFAULT NULL
 )
 SQL);
-        $this->insert('attribut', ['id', 'statut', 'description', 'libelle', 'attribut_id_family', 'unit_id', 'type']);
+        $this->insert('attribut', ['id', 'statut', 'description', 'libelle', 'attribut_id_family']);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `attribute` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -320,8 +345,8 @@ CREATE TABLE `attribute` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `unit_id`, `attribut_id_family`, `type`)
-SELECT `id`, `statut`, `description`, `libelle`, `unit_id`, `attribut_id_family`, `type`
+INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`)
+SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`
 FROM `attribut`
 SQL);
         $this->addQuery('DROP TABLE `attribut`');
@@ -416,10 +441,10 @@ CREATE TABLE `bill` (
     `billing_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `company_id` INT UNSIGNED DEFAULT NULL,
     `contact_id` INT UNSIGNED DEFAULT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('bill', 'disabled', 'draft', 'litigation', 'paid', 'partially_paid') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:bill_current_place)',
     `customer_id` INT UNSIGNED DEFAULT NULL,
     `due_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
+    `emb_state_state` ENUM('billed', 'draft', 'partially_paid', 'paid') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:bill_state)',
     `excl_tax_code` VARCHAR(6) DEFAULT NULL,
     `excl_tax_denominator` VARCHAR(6) DEFAULT NULL,
     `excl_tax_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -427,7 +452,7 @@ CREATE TABLE `bill` (
     `incl_tax_code` VARCHAR(6) DEFAULT NULL,
     `incl_tax_denominator` VARCHAR(6) DEFAULT NULL,
     `incl_tax_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `notes` VARCHAR(255) DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     `vat_code` VARCHAR(6) DEFAULT NULL,
     `vat_denominator` VARCHAR(6) DEFAULT NULL,
@@ -445,9 +470,10 @@ INSERT INTO `bill` (
     `billing_date`,
     `company_id`,
     `contact_id`,
-    `current_place_name`,
     `customer_id`,
     `due_date`,
+    `emb_blocker_state`,
+    `emb_state_state`,
     `excl_tax_code`,
     `excl_tax_value`,
     `force_vat`,
@@ -459,41 +485,49 @@ INSERT INTO `bill` (
     `vat_message_id`,
     `vat_value`
 ) SELECT
-    `id`,
-    `date_facturation`,
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `invoicecustomer`.`id_society`)),
-    (SELECT `customer_contact`.`id` FROM `customer_contact` WHERE `customer_contact`.`old_id` = `invoicecustomer`.`id_contact`),
+    `invoicecustomer`.`id`,
+    `invoicecustomer`.`date_facturation`,
+    `company`.`id`,
+    `customer_contact`.`id`,
+    `customer`.`id`,
+    `invoicecustomer`.`date_echeance`,
     CASE
-        WHEN `id_invoicecustomerstatus` = 1 THEN 'draft'
-        WHEN `id_invoicecustomerstatus` = 2 THEN 'bill'
-        WHEN `id_invoicecustomerstatus` = 3 THEN 'partially_paid'
-        WHEN `id_invoicecustomerstatus` = 4 THEN 'paid'
-        WHEN `id_invoicecustomerstatus` = 6 THEN 'litigation'
+        WHEN `invoicecustomer`.`id_invoicecustomerstatus` IN (1, 2, 3, 4) THEN 'enabled'
+        WHEN `invoicecustomer`.`id_invoicecustomerstatus` = 6 THEN 'blocked'
         ELSE 'disabled'
     END,
-    (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `invoicecustomer`.`id_customer`)),
-    `date_echeance`,
-    'EUR',
-    `total_ht`,
     CASE
-        WHEN `force_tva` = 1 THEN 'Force SANS TVA'
-        WHEN `force_tva` = 2 THEN 'Force AVEC TVA'
+        WHEN `invoicecustomer`.`id_invoicecustomerstatus` IN (2, 6) THEN 'billed'
+        WHEN `invoicecustomer`.`id_invoicecustomerstatus` = 3 THEN 'partially_paid'
+        WHEN `invoicecustomer`.`id_invoicecustomerstatus` = 4 THEN 'paid'
+        ELSE 'draft'
+    END,
+    'EUR',
+    `invoicecustomer`.`total_ht`,
+    CASE
+        WHEN `invoicecustomer`.`force_tva` = 1 THEN 'Force SANS TVA'
+        WHEN `invoicecustomer`.`force_tva` = 2 THEN 'Force AVEC TVA'
         ELSE 'TVA par défaut selon le pays du client'
     END,
     'EUR',
-    `total_ttc`,
+    `invoicecustomer`.`total_ttc`,
     IF(
-        LENGTH(CONCAT(IFNULL(`info_public`, ''), IFNULL(`infos_privees`, ''), IFNULL(`commentaire`, ''))) = 0,
+        LENGTH(CONCAT(IFNULL(`invoicecustomer`.`info_public`, ''), IFNULL(`invoicecustomer`.`infos_privees`, ''), IFNULL(`invoicecustomer`.`commentaire`, ''))) = 0,
         NULL,
-        CONCAT(IFNULL(`info_public`, ''), IFNULL(`infos_privees`, ''), IFNULL(`commentaire`, ''))
+        CONCAT(IFNULL(`invoicecustomer`.`info_public`, ''), IFNULL(`invoicecustomer`.`infos_privees`, ''), IFNULL(`invoicecustomer`.`commentaire`, ''))
     ),
-    `invoice_number`,
+    `invoicecustomer`.`invoice_number`,
     'EUR',
-    (SELECT `vat_message`.`id` FROM `vat_message` WHERE `vat_message`.`id` = `invoicecustomer`.`id_messagetva`),
-    `tva`
+    `vat_message`.`id`,
+    `invoicecustomer`.`tva`
 FROM `invoicecustomer`
-WHERE `statut` = 0
-AND EXISTS (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `invoicecustomer`.`id_customer`))
+INNER JOIN `society` `society_customer` ON `invoicecustomer`.`id_customer` = `society_customer`.`old_id`
+INNER JOIN `customer` ON `society_customer`.`id` = `customer`.`society_id`
+LEFT JOIN `society` `society_company` ON `invoicecustomer`.`id_society` = `society_company`.`old_id`
+LEFT JOIN `company` ON `society_company`.`id` = `company`.`society_id`
+LEFT JOIN `customer_contact` ON `invoicecustomer`.`id_contact` = `customer_contact`.`old_id`
+LEFT JOIN `vat_message` ON `invoicecustomer`.`id_messagetva` = `vat_message`.`id`
+WHERE `invoicecustomer`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `invoicecustomer`');
     }
@@ -502,37 +536,49 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `carrier` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
-    `address_city` VARCHAR(50) DEFAULT NULL,
-    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
-    `address_phone_number` VARCHAR(18) DEFAULT NULL,
-    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `nom` TEXT NOT NULL
 )
 SQL);
         $this->insert('carrier', ['id', 'statut', 'nom']);
+        $this->addQuery('RENAME TABLE `carrier` TO `old_carrier`');
         $this->addQuery(<<<'SQL'
-ALTER TABLE `carrier`
-    CHANGE `nom` `name` VARCHAR(50) NOT NULL,
-    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
+CREATE TABLE `carrier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
+    `address_city` VARCHAR(50) DEFAULT NULL,
+    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `address_email` VARCHAR(80) DEFAULT NULL,
+    `address_phone_number` VARCHAR(18) DEFAULT NULL,
+    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `name` VARCHAR(50) NOT NULL
+)
 SQL);
+        $this->addQuery('INSERT INTO `carrier` (`name`) SELECT `nom` FROM `old_carrier` WHERE `statut` = 0');
+        $this->addQuery('DROP TABLE `old_carrier`');
     }
 
     private function upColors(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `couleur` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `rgb` VARCHAR(7) DEFAULT NULL
+)
+SQL);
+        $this->insert('couleur', ['id', 'name', 'rgb']);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `color` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(20) NOT NULL,
     `rgb` CHAR(7) NOT NULL COMMENT '(DC2Type:char)'
 )
 SQL);
-        $this->insert('couleur', ['id', 'name', 'rgb']);
-        $this->addQuery('UPDATE `couleur` SET `name` = UCFIRST(`name`)');
-        $this->addQuery('RENAME TABLE `couleur` TO `color`');
+        $this->addQuery('INSERT INTO `color` (`name`, `rgb`) SELECT UCFIRST(`name`), `rgb` FROM `couleur` WHERE `rgb` IS NOT NULL');
+        $this->addQuery('DROP TABLE `couleur`');
     }
 
     private function upCompanyEvents(): void {
@@ -581,14 +627,11 @@ CREATE TABLE `component_attribute` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `value`)
-SELECT
-    (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_attribut`.`id_component`),
-    (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`old_id` = `component_attribut`.`id_attribut`),
-    `valeur_attribut`
+SELECT `component`.`id`, `attribute`.`id`, `component_attribut`.`valeur_attribut`
 FROM `component_attribut`
-WHERE `valeur_attribut` IS NOT NULL AND TRIM(`valeur_attribut`) != ''
-AND EXISTS (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_attribut`.`id_component`)
-AND EXISTS (SELECT `attribute`.`id` FROM `attribute` WHERE `attribute`.`old_id` = `component_attribut`.`id_attribut`)
+INNER JOIN `attribute` ON `component_attribut`.`id_attribut` = `attribute`.`old_id`
+INNER JOIN `component` ON `component_attribut`.`id_component` = `component`.`old_id`
+WHERE `component_attribut`.`valeur_attribut` IS NOT NULL AND TRIM(`component_attribut`.`valeur_attribut`) != ''
 SQL);
         $this->addQuery('DROP TABLE `component_attribut`');
         $this->addQuery('CALL LINK_COMPONENTS_ATTRIBUTES');
@@ -602,7 +645,7 @@ CREATE TABLE `component_family` (
     `prefix` VARCHAR(3) DEFAULT NULL,
     `copperable` BOOLEAN DEFAULT FALSE NOT NULL,
     `customsCode` VARCHAR(255) DEFAULT NULL,
-    `family_name` VARCHAR(25) NOT NULL,
+    `family_name` VARCHAR(255) NOT NULL,
     `old_subfamily_id` INT UNSIGNED DEFAULT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL
 )
@@ -646,32 +689,17 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component_quality_values` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_component` INT UNSIGNED DEFAULT NULL,
-    `obligation_hauteur` BOOLEAN DEFAULT TRUE NOT NULL,
-    `height_tolerance_code` VARCHAR(6) DEFAULT 'mm',
-    `height_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
-    `tolerance_hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `height_value_code` VARCHAR(6) DEFAULT 'mm',
-    `height_value_denominator` VARCHAR(6) DEFAULT NULL,
-    `hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `section_code` VARCHAR(6) DEFAULT 'mm²',
-    `section_denominator` VARCHAR(6) DEFAULT NULL,
-    `section` DOUBLE PRECISION UNSIGNED DEFAULT 0 NOT NULL,
-    `obligation_traction` BOOLEAN DEFAULT TRUE NOT NULL,
-    `tensile_tolerance_code` VARCHAR(6) DEFAULT 'mm²',
-    `tensile_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
-    `tolerance_traction` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `tensile_value_code` VARCHAR(6) DEFAULT 'mm²',
-    `tensile_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `section` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `traction` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `obligation_largeur` BOOLEAN DEFAULT TRUE NOT NULL,
-    `width_tolerance_code` VARCHAR(6) DEFAULT 'mm',
-    `width_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `tolerance_traction` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `obligation_traction` BOOLEAN DEFAULT TRUE NOT NULL,
+    `hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tolerance_hauteur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `obligation_hauteur` BOOLEAN DEFAULT TRUE NOT NULL,
+    `largeur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `tolerance_largeur` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `width_value_code` VARCHAR(6) DEFAULT 'mm',
-    `width_value_denominator` VARCHAR(6) DEFAULT NULL,
-    `largeur` DOUBLE PRECISION DEFAULT 0 NOT NULL
+    `obligation_largeur` BOOLEAN DEFAULT TRUE NOT NULL
 )
 SQL);
         $this->insert('component_quality_values', [
@@ -689,32 +717,80 @@ SQL);
             'obligation_largeur'
         ]);
         $this->addQuery(<<<'SQL'
-UPDATE `component_quality_values`
-SET `id_component` = (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `component_quality_values`.`id_component`)
+CREATE TABLE `component_reference_value` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `height_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    `height_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    `height_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `height_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `height_value_code` VARCHAR(6) DEFAULT NULL,
+    `height_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `height_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `section_code` VARCHAR(6) DEFAULT NULL,
+    `section_denominator` VARCHAR(6) DEFAULT NULL,
+    `section_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tensile_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    `tensile_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    `tensile_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `tensile_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `tensile_value_code` VARCHAR(6) DEFAULT NULL,
+    `tensile_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `tensile_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `width_required` BOOLEAN DEFAULT TRUE NOT NULL,
+    `width_tolerance_code` VARCHAR(6) DEFAULT NULL,
+    `width_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `width_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `width_value_code` VARCHAR(6) DEFAULT NULL,
+    `width_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `width_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_648B6870E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
+)
 SQL);
         $this->addQuery(<<<'SQL'
-ALTER TABLE `component_quality_values`
-    CHANGE `id_component` `component_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `hauteur` `height_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `height_tolerance_code` `height_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `height_value_code` `height_value_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `largeur` `width_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `obligation_hauteur` `height_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    CHANGE `obligation_largeur` `width_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    CHANGE `obligation_traction` `tensile_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    CHANGE `section_code` `section_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `section` `section_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `tensile_tolerance_code` `tensile_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `tensile_value_code` `tensile_value_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `tolerance_hauteur` `height_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `tolerance_largeur` `width_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `tolerance_traction` `tensile_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `traction` `tensile_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CHANGE `width_tolerance_code` `width_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    CHANGE `width_value_code` `width_value_code` VARCHAR(6) DEFAULT NULL,
-    ADD CONSTRAINT `IDX_648B6870E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
+INSERT INTO `component_reference_value` (
+    `component_id`,
+    `height_required`,
+    `height_tolerance_code`,
+    `height_tolerance_value`,
+    `height_value_code`,
+    `height_value_value`,
+    `section_code`,
+    `section_value`,
+    `tensile_required`,
+    `tensile_tolerance_code`,
+    `tensile_tolerance_value`,
+    `tensile_value_code`,
+    `tensile_value_value`,
+    `width_required`,
+    `width_tolerance_code`,
+    `width_tolerance_value`,
+    `width_value_code`,
+    `width_value_value`
+) SELECT
+    `component`.`id`,
+    `component_quality_values`.`obligation_hauteur`,
+    'mm',
+    `component_quality_values`.`tolerance_hauteur`,
+    'mm',
+    `component_quality_values`.`hauteur`,
+    'mm²',
+    `component_quality_values`.`section`,
+    `component_quality_values`.`obligation_traction`,
+    'mm²',
+    `component_quality_values`.`tolerance_traction`,
+    'mm²',
+    `component_quality_values`.`traction`,
+    `component_quality_values`.`obligation_largeur`,
+    'mm',
+    `component_quality_values`.`tolerance_largeur`,
+    'mm',
+    `component_quality_values`.`largeur`
+FROM `component_quality_values`
+INNER JOIN `component` ON `component_quality_values`.`id_component` = `component`.`old_id`
 SQL);
-        $this->addQuery('RENAME TABLE `component_quality_values` TO `component_reference_value`');
+        $this->addQuery('DROP TABLE `component_quality_values`');
     }
 
     private function upComponents(): void {
@@ -742,27 +818,31 @@ CREATE TABLE `component` (
     `weight` DOUBLE PRECISION DEFAULT 0 NOT NULL
 )
 SQL);
-        $this->insert('component', [
-            'id',
-            'statut',
-            'poid_cu',
-            'id_componentstatus',
-            'customcode',
-            'endOfLife',
-            'id_component_subfamily',
-            'volume_previsionnel',
-            'gestion_stock',
-            'fabricant',
-            'fabricant_reference',
-            'stock_minimum',
-            'designation',
-            'need_joint',
-            'info_public',
-            'info_commande',
-            'ref',
-            'id_unit',
-            'weight'
-        ]);
+        $this->insert(
+            table: 'component',
+            columns: [
+                'id',
+                'statut',
+                'poid_cu',
+                'id_componentstatus',
+                'customcode',
+                'endOfLife',
+                'id_component_subfamily',
+                'volume_previsionnel',
+                'gestion_stock',
+                'fabricant',
+                'fabricant_reference',
+                'stock_minimum',
+                'designation',
+                'need_joint',
+                'info_public',
+                'info_commande',
+                'ref',
+                'id_unit',
+                'weight'
+            ],
+            dates: ['endOfLife']
+        );
         $this->addQuery('RENAME TABLE `component` TO `component_old`');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component` (
@@ -772,9 +852,9 @@ CREATE TABLE `component` (
     `copper_weight_code` VARCHAR(6) DEFAULT NULL,
     `copper_weight_denominator` VARCHAR(6) DEFAULT NULL,
     `copper_weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'disabled', 'draft', 'under_exemption') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_current_place)',
     `customs_code` VARCHAR(16) DEFAULT NULL,
+    `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_state)',
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
     `forecast_volume_code` VARCHAR(6) DEFAULT NULL,
@@ -808,8 +888,9 @@ INSERT INTO `component` (
     `copper_weight_code`,
     `copper_weight_denominator`,
     `copper_weight_value`,
-    `current_place_name`,
     `customs_code`,
+    `emb_blocker_state`,
+    `emb_state_state`,
     `end_of_life`,
     `family_id`,
     `forecast_volume_code`,
@@ -832,15 +913,13 @@ INSERT INTO `component` (
     'Kg',
     'km',
     `component_old`.`poid_cu`,
-    CASE
-        WHEN `component_old`.`id_componentstatus` = 1 THEN 'draft'
-        WHEN `component_old`.`id_componentstatus` = 2 THEN 'agreed'
-        WHEN `component_old`.`id_componentstatus` = 3 THEN 'disabled'
-        WHEN `component_old`.`id_componentstatus` = 4 THEN 'blocked'
-        WHEN `component_old`.`id_componentstatus` = 5 THEN 'under_exemption'
-        ELSE 'draft'
-    END,
     `component_old`.`customcode`,
+    CASE
+        WHEN `component_old`.`id_componentstatus` IN (3, 5) THEN 'disabled'
+        WHEN `component_old`.`id_componentstatus` = 4 THEN 'blocked'
+        ELSE 'enabled'
+    END,
+    IF(`component_old`.`id_componentstatus` IN (2, 3, 4, 5), 'agreed', 'warning'),
     `component_old`.`endOfLife`,
     `component_family`.`id`,
     `unit`.`code`,
@@ -913,25 +992,17 @@ INSERT INTO `supplier_component_price` (
     `quantity_value`,
     `ref`
 ) SELECT
-    (SELECT `supplier_component`.`id` FROM `supplier_component` WHERE `supplier_component`.`old_id` = `component_supplier_price`.`id_component_supplier`),
+    `supplier_component`.`id`,
     'EUR',
-    `price`,
-    (
-        SELECT `unit`.`code`
-        FROM `unit`
-        WHERE `unit`.`id` = (
-            SELECT `component`.`unit_id`
-            FROM `component`
-            WHERE `component`.`id` = (
-                SELECT `supplier_component`.`component_id` FROM `supplier_component` WHERE `supplier_component`.`old_id` = `component_supplier_price`.`id_component_supplier`
-            )
-        )
-    ),
-    `quantity`,
-    `refsupplier`
+    `component_supplier_price`.`price`,
+    `unit`.`code`,
+    `component_supplier_price`.`quantity`,
+    `component_supplier_price`.`refsupplier`
 FROM `component_supplier_price`
+INNER JOIN `supplier_component` ON `component_supplier_price`.`id_component_supplier` = `supplier_component`.`old_id`
+INNER JOIN `component` ON `supplier_component`.`component_id` = `component`.`id`
+LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
 WHERE `component_supplier_price`.`statut` = 0
-AND EXISTS (SELECT `supplier_component`.`id` FROM `supplier_component` WHERE `supplier_component`.`old_id` = `component_supplier_price`.`id_component_supplier`)
 SQL);
         $this->addQuery('DROP TABLE `component_supplier_price`');
     }
@@ -977,15 +1048,15 @@ CREATE TABLE `customer_contact` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `default` BOOLEAN DEFAULT FALSE NOT NULL,
-    `kind` ENUM('comptabilité', 'chiffrage', 'direction', 'ingénierie', 'fabrication', 'achat', 'qualité', 'commercial', 'approvisionnement') DEFAULT 'comptabilité' NOT NULL COMMENT '(DC2Type:contact_type)',
+    `kind` ENUM('comptabilité', 'chiffrage', 'direction', 'ingénierie', 'fabrication', 'achat', 'qualité', 'commercial', 'approvisionnement') DEFAULT 'comptabilité' NOT NULL COMMENT '(DC2Type:contact)',
     `mobile` VARCHAR(255) DEFAULT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
     `society_id` INT UNSIGNED NOT NULL,
@@ -1008,35 +1079,37 @@ INSERT INTO `customer_contact` (
     `society_id`,
     `surname`
 ) SELECT
-    `id`,
-    `address1`,
-    `address2`,
-    `city`,
-    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `contact_old`.`id_country`),
-    `email`,
-    `phone`,
-    `zip`,
-    `prenom`,
-    `mobile`,
-    (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `contact_old`.`id_customer`)),
-    `nom`
+    `contact_old`.`id`,
+    `contact_old`.`address1`,
+    `contact_old`.`address2`,
+    `contact_old`.`city`,
+    UCASE(`country`.`code`),
+    `contact_old`.`email`,
+    `contact_old`.`phone`,
+    `contact_old`.`zip`,
+    `contact_old`.`prenom`,
+    `contact_old`.`mobile`,
+    `customer`.`id`,
+    `contact_old`.`nom`
 FROM `contact_old`
-WHERE `statut` = 0
-AND EXISTS (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `contact_old`.`id_customer`))
+INNER JOIN `society` ON `contact_old`.`id_customer` = `society`.`old_id`
+INNER JOIN `customer` ON `society`.`id` = `customer`.`society_id`
+LEFT JOIN `country` ON `contact_old`.`id_country` = `country`.`id`
+WHERE `contact_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `supplier_contact` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `default` BOOLEAN DEFAULT FALSE NOT NULL,
-    `kind` ENUM('comptabilité', 'chiffrage', 'direction', 'ingénierie', 'fabrication', 'achat', 'qualité', 'commercial', 'approvisionnement') DEFAULT 'comptabilité' NOT NULL COMMENT '(DC2Type:contact_type)',
+    `kind` ENUM('comptabilité', 'chiffrage', 'direction', 'ingénierie', 'fabrication', 'achat', 'qualité', 'commercial', 'approvisionnement') DEFAULT 'comptabilité' NOT NULL COMMENT '(DC2Type:contact)',
     `mobile` VARCHAR(255) DEFAULT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
     `society_id` INT UNSIGNED NOT NULL,
@@ -1058,20 +1131,22 @@ INSERT INTO `supplier_contact` (
     `society_id`,
     `surname`
 ) SELECT
-    `address1`,
-    `address2`,
-    `city`,
-    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `contact_old`.`id_country`),
-    `email`,
-    `phone`,
-    `zip`,
-    `prenom`,
-    `mobile`,
-    (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `contact_old`.`id_supplier`)),
-    `nom`
+    `contact_old`.`address1`,
+    `contact_old`.`address2`,
+    `contact_old`.`city`,
+    UCASE(`country`.`code`),
+    `contact_old`.`email`,
+    `contact_old`.`phone`,
+    `contact_old`.`zip`,
+    `contact_old`.`prenom`,
+    `contact_old`.`mobile`,
+    `supplier`.`id`,
+    `contact_old`.`nom`
 FROM `contact_old`
-WHERE `statut` = 0
-AND EXISTS (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `contact_old`.`id_supplier`))
+INNER JOIN `society` ON `contact_old`.`id_supplier` = `society`.`old_id`
+INNER JOIN `supplier` ON `society`.`id` = `supplier`.`society_id`
+LEFT JOIN `country` ON `contact_old`.`id_country` = `country`.`id`
+WHERE `contact_old`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `contact_old`');
     }
@@ -1105,7 +1180,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `currency` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `active` BOOLEAN DEFAULT FALSE NOT NULL,
     `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
     `code` CHAR(3) NOT NULL COMMENT '(DC2Type:char)',
@@ -1115,8 +1190,7 @@ CREATE TABLE `currency` (
 SQL);
         $currencies = collect(Currencies::getCurrencyCodes())
             ->map(fn (string $code): string => sprintf(
-                /** @phpstan-ignore-next-line */
-                "(%s, {$this->connection->quote($code)}, %s)",
+                "(%s, {$this->platform->quoteStringLiteral($code)}, %s)",
                 $code !== 'EUR' ? 1 : 'NULL',
                 in_array($code, ['CHF', 'EUR', 'MDL', 'RUB', 'TND', 'USD', 'VND']) ? 'TRUE' : 'FALSE'
             ));
@@ -1151,7 +1225,7 @@ CREATE TABLE `address` (
   `nom` VARCHAR(255) NOT NULL,
   `address1` TEXT NOT NULL,
   `address2` TEXT DEFAULT NULL,
-  `zip` VARCHAR(255) NOT NULL,
+  `zip` VARCHAR(255) DEFAULT NULL,
   `city` VARCHAR(255) NOT NULL,
   `typeaddress` VARCHAR(255) DEFAULT NULL,
   `id_country` INT UNSIGNED DEFAULT NULL
@@ -1174,16 +1248,16 @@ CREATE TABLE `customer_address` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(18) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `customer_id` INT UNSIGNED DEFAULT NULL,
     `name` VARCHAR(255) NOT NULL,
-    `type` ENUM('billing', 'delivery') NOT NULL COMMENT '(DC2Type:customer_address_type)',
+    `type` ENUM('billing', 'delivery') NOT NULL COMMENT '(DC2Type:customer_address)',
     CONSTRAINT `IDX_1193CB3F9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
 )
 SQL);
@@ -1207,184 +1281,6 @@ CREATE TABLE `customer_event` (
     CONSTRAINT `IDX_F59B7F9C9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
 )
 SQL);
-    }
-
-    private function upCustomerOrderItems(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `ordercustomer_product` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_ordercustomer` INT UNSIGNED DEFAULT NULL,
-    `id_product` INT UNSIGNED DEFAULT NULL,
-    `quantity` INT UNSIGNED DEFAULT NULL,
-    `quantity_souhaitee` INT UNSIGNED DEFAULT NULL,
-    `quantity_sent` INT UNSIGNED DEFAULT NULL,
-    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `texte` TEXT DEFAULT NULL,
-    `ref_ordercustomer_product` VARCHAR(255) DEFAULT NULL,
-    `date_souhaitee` DATE DEFAULT NULL,
-    `date_livraison` DATE DEFAULT NULL
-)
-SQL);
-        $this->insert('ordercustomer_product', [
-            'id',
-            'statut',
-            'id_ordercustomer',
-            'id_product',
-            'quantity',
-            'quantity_souhaitee',
-            'quantity_sent',
-            'price',
-            'texte',
-            'ref_ordercustomer_product',
-            'date_souhaitee',
-            'date_livraison'
-        ]);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `customer_order_item` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `old_id` INT UNSIGNED NOT NULL,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `ar_sent` BOOLEAN DEFAULT FALSE NOT NULL,
-    `component_id` INT UNSIGNED DEFAULT NULL,
-    `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
-    `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'disabled', 'draft', 'paid', 'partially_delivered', 'sent') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_order_item_current_place)',
-    `notes` VARCHAR(255) DEFAULT NULL,
-    `order_id` INT UNSIGNED DEFAULT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
-    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `product_id` INT UNSIGNED DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `requested_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `requested_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL,
-    `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item_type)',
-    CONSTRAINT `IDX_AF231B8BE2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
-    CONSTRAINT `IDX_AF231B8B8D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `customer_order` (`id`),
-    CONSTRAINT `IDX_AF231B8B4584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `customer_order_item` (
-    `old_id`,
-    `confirmed_date`,
-    `confirmed_quantity_code`,
-    `confirmed_quantity_value`,
-    `current_place_name`,
-    `product_id`,
-    `notes`,
-    `order_id`,
-    `price_code`,
-    `price_value`,
-    `ref`,
-    `requested_date`,
-    `requested_quantity_code`,
-    `requested_quantity_value`,
-    `type`
-) SELECT
-    `id`,
-    `date_livraison`,
-    (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `ordercustomer_product`.`id_product`)),
-    IFNULL(`quantity`, 0),
-    CASE
-        WHEN (SELECT `customer_order`.`current_place_name` FROM `customer_order` WHERE `customer_order`.`old_id` = `ordercustomer_product`.`id_ordercustomer`) = 'close' THEN 'paid'
-        WHEN (SELECT `customer_order`.`current_place_name` FROM `customer_order` WHERE `customer_order`.`old_id` = `ordercustomer_product`.`id_ordercustomer`) = 'disabled' THEN 'disabled'
-        WHEN (SELECT `customer_order`.`current_place_name` FROM `customer_order` WHERE `customer_order`.`old_id` = `ordercustomer_product`.`id_ordercustomer`) = 'blocked' THEN 'blocked'
-        WHEN (SELECT `customer_order`.`current_place_name` FROM `customer_order` WHERE `customer_order`.`old_id` = `ordercustomer_product`.`id_ordercustomer`) IN ('agreed', 'partially_delivered')
-            THEN IF(`quantity_sent` >= `quantity`, 'sent', IF(`quantity_sent` > 0, 'partially_delivered', 'agreed'))
-        ELSE 'draft'
-    END,
-    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `ordercustomer_product`.`id_product`),
-    `texte`,
-    (SELECT `customer_order`.`id` FROM `customer_order` WHERE `customer_order`.`old_id` = `ordercustomer_product`.`id_ordercustomer`),
-    'EUR',
-    IFNULL(`price`, 0),
-    `ref_ordercustomer_product`,
-    `date_souhaitee`,
-    (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `ordercustomer_product`.`id_product`)),
-    IFNULL(`quantity_souhaitee`, 0),
-    'product'
-FROM `ordercustomer_product`
-WHERE `statut` = 0
-AND EXISTS (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `ordercustomer_product`.`id_product`)
-AND EXISTS (SELECT `customer_order`.`id` FROM `customer_order` WHERE `customer_order`.`old_id` = `ordercustomer_product`.`id_ordercustomer`)
-SQL);
-        $this->addQuery('DROP TABLE `ordercustomer_product`');
-    }
-
-    private function upCustomerOrders(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `ordercustomer` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_customer` INT UNSIGNED DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `id_ordercustomerstatus` INT UNSIGNED DEFAULT NULL,
-    `id_address` INT UNSIGNED DEFAULT NULL,
-    `id_society` INT UNSIGNED DEFAULT NULL,
-    `info_public` TEXT DEFAULT NULL
-)
-SQL);
-        $this->insert('ordercustomer', [
-            'id',
-            'statut',
-            'id_customer',
-            'ref',
-            'id_ordercustomerstatus',
-            'id_address',
-            'id_society',
-            'info_public'
-        ]);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `customer_order` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `old_id` INT UNSIGNED NOT NULL,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `billed_to_id` INT UNSIGNED DEFAULT NULL,
-    `company_id` INT UNSIGNED DEFAULT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'closed', 'disabled', 'draft', 'partially_delivered', 'to_validate') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_order_current_place)',
-    `customer_id` INT UNSIGNED DEFAULT NULL,
-    `destination_id` INT UNSIGNED DEFAULT NULL,
-    `kind` ENUM('EI', 'Prototype', 'Série', 'Pièce de rechange') DEFAULT 'Prototype' NOT NULL COMMENT '(DC2Type:product_kind)',
-    `notes` VARCHAR(255) DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    CONSTRAINT `IDX_3B1CE6A3994CB78` FOREIGN KEY (`billed_to_id`) REFERENCES `customer_address` (`id`),
-    CONSTRAINT `IDX_3B1CE6A3979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_3B1CE6A39395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
-    CONSTRAINT `IDX_3B1CE6A3816C6140` FOREIGN KEY (`destination_id`) REFERENCES `customer_address` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `customer_order` (`old_id`, `billed_to_id`, `company_id`, `current_place_name`, `customer_id`, `kind`, `notes`, `ref`)
-SELECT
-    `id`,
-    (SELECT `customer_address`.`id` FROM `customer_address` WHERE `customer_address`.`old_id` = `ordercustomer`.`id_address` AND `customer_address`.`type` = 'billing'),
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_society`)),
-    CASE
-        WHEN `id_ordercustomerstatus` IN (2, 13) THEN 'to_validate'
-        WHEN `id_ordercustomerstatus` IN (3, 4, 5, 6) THEN 'agreed'
-        WHEN `id_ordercustomerstatus` IN (7, 9) THEN 'partially_delivered'
-        WHEN `id_ordercustomerstatus` IN (8, 10) THEN 'closed'
-        WHEN `id_ordercustomerstatus` = 11 THEN 'disabled'
-        WHEN `id_ordercustomerstatus` = 12 THEN 'blocked'
-        ELSE 'draft'
-    END,
-    (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_customer`)),
-    'Série',
-    `info_public`,
-    `ref`
-FROM `ordercustomer`
-WHERE `statut` = 0
-AND EXISTS (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordercustomer`.`id_customer`))
-SQL);
-        $this->addQuery('DROP TABLE `ordercustomer`');
     }
 
     private function upCustomerProductPrices(): void {
@@ -1421,23 +1317,15 @@ INSERT INTO `customer_product_price` (
     `quantity_value`
 ) SELECT
     'EUR',
-    `price`,
-    (SELECT `product_customer`.`id` FROM `product_customer` WHERE `product_customer`.`old_id` = `product_customer_price`.`id_product_customer`),
-    (
-        SELECT `unit`.`code`
-        FROM `unit`
-        WHERE `unit`.`id` = (
-            SELECT `product`.`unit_id`
-            FROM `product`
-            WHERE `product`.`id` = (
-                SELECT `product_customer`.`product_id` FROM `product_customer` WHERE `product_customer`.`old_id` = `product_customer_price`.`id_product_customer`
-            )
-        )
-    ),
-    `quantity`
+    `product_customer_price`.`price`,
+    `product_customer`.`id`,
+    `unit`.`code`,
+    `product_customer_price`.`quantity`
 FROM `product_customer_price`
-WHERE `statut` = 0
-AND EXISTS (SELECT `product_customer`.`id` FROM `product_customer` WHERE `product_customer`.`old_id` = `product_customer_price`.`id_product_customer`)
+INNER JOIN `product_customer` ON `product_customer_price`.`id_product_customer` = `product_customer`.`old_id`
+INNER JOIN `product` ON `product_customer`.`product_id` = `product`.`id`
+LEFT JOIN `unit` ON `product`.`unit_id` = `unit`.`id`
+WHERE `product_customer_price`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `product_customer_price`');
     }
@@ -1466,26 +1354,12 @@ CREATE TABLE `product_customer` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `product_customer` (`old_id`, `customer_id`, `product_id`)
-SELECT
-    `id`,
-    (
-        SELECT `customer`.`id`
-        FROM `customer`
-        WHERE `customer`.`society_id` = (
-            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_customer_old`.`id_customer`
-        )
-    ),
-    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`)
+SELECT `product_customer_old`.`id`, `customer`.`id`, `product`.`id`
 FROM `product_customer_old`
-WHERE `statut` = 0
-AND EXISTS (
-    SELECT `customer`.`id`
-    FROM `customer`
-    WHERE `customer`.`society_id` = (
-        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_customer_old`.`id_customer`
-    )
-)
-AND (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`)
+INNER JOIN `society` ON `product_customer_old`.`id_customer` = `society`.`old_id`
+INNER JOIN `customer` ON `society`.`id` = `customer`.`society_id`
+INNER JOIN `product` ON `product_customer_old`.`id_product` = `product`.`old_id`
+WHERE `product_customer_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `product_company` (
@@ -1498,41 +1372,13 @@ CREATE TABLE `product_company` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `product_company` (`product_id`, `company_id`)
-SELECT
-    (
-        SELECT `product_customer`.`id`
-        FROM `product_customer`
-        WHERE `product_customer`.`old_id` = `product_customer_old`.`id`
-    ),
-    (
-        SELECT `company`.`id`
-        FROM `company`
-        WHERE `company`.`society_id` = (
-            SELECT `society`.`id`
-            FROM `society`
-            WHERE `society`.`old_id` = (
-                SELECT `product`.`id_society` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`
-            )
-        )
-    )
+SELECT `product_customer`.`id`, `company`.`id`
 FROM `product_customer_old`
-WHERE `statut` = 0
-AND EXISTS (
-    SELECT `product_customer`.`id`
-    FROM `product_customer`
-    WHERE `product_customer`.`old_id` = `product_customer_old`.`id`
-)
-AND EXISTS (
-    SELECT `company`.`id`
-    FROM `company`
-    WHERE `company`.`society_id` = (
-        SELECT `society`.`id`
-        FROM `society`
-        WHERE `society`.`old_id` = (
-            SELECT `product`.`id_society` FROM `product` WHERE `product`.`old_id` = `product_customer_old`.`id_product`
-        )
-    )
-)
+INNER JOIN `product_customer` ON `product_customer_old`.`id` = `product_customer`.`old_id`
+INNER JOIN `product` ON `product_customer_old`.`id_product` = `product`.`old_id`
+INNER JOIN `society` ON `product`.`id_society` = `society`.`old_id`
+INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
+WHERE `product_customer_old`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `product_customer_old`');
     }
@@ -1583,9 +1429,8 @@ CREATE TABLE `delivery_note` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `bill_id` INT UNSIGNED DEFAULT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('draft', 'ready_to_sent', 'sent') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:delivery_note_current_place)',
     `date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `emb_state_state` ENUM('agreed', 'asked', 'closed', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:event_state)',
     `freight_surcharge_code` VARCHAR(6) DEFAULT NULL,
     `freight_surcharge_denominator` VARCHAR(6) DEFAULT NULL,
     `freight_surcharge_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -1599,33 +1444,31 @@ SQL);
 INSERT INTO `delivery_note` (
     `bill_id`,
     `company_id`,
-    `current_place_name`,
     `date`,
+    `emb_state_state`,
     `freight_surcharge_code`,
     `freight_surcharge_value`,
     `non_billable`,
     `ref`
 ) SELECT
-    (
-        SELECT `bill`.`id`
-        FROM `bill`
-        WHERE `bill`.`ref` = `deliveryform`.`invoice_number`
-        AND `bill`.`old_id` IN (
-            SELECT `invoicecustomer_deliveryform`.`id_invoicecustomer`
-            FROM `invoicecustomer_deliveryform`
-            WHERE `invoicecustomer_deliveryform`.`id_deliveryform` = `deliveryform`.`id`
-            AND `invoicecustomer_deliveryform`.`statut` = 0
-        )
-    ),
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `deliveryform`.`id_society`)),
-    'sent',
-    `date_depart`,
+    `bill`.`id`,
+    `company`.`id`,
+    `deliveryform`.`date_depart`,
+    'closed',
     'EUR',
-    `supplement_fret`,
-    `no_invoice`,
-    `deliveryform_number`
+    `deliveryform`.`supplement_fret`,
+    `deliveryform`.`no_invoice`,
+    `deliveryform`.`deliveryform_number`
 FROM `deliveryform`
-WHERE `statut` = 0
+LEFT JOIN `society` ON `deliveryform`.`id_society` = `society`.`old_id`
+LEFT JOIN `company` ON `society`.`id` = `company`.`society_id`
+LEFT JOIN `invoicecustomer_deliveryform`
+    ON `deliveryform`.`id` = `invoicecustomer_deliveryform`.`id_deliveryform`
+    AND `invoicecustomer_deliveryform`.`statut` = 0
+LEFT JOIN `bill`
+    ON `deliveryform`.`invoice_number` = `bill`.`ref`
+    AND `invoicecustomer_deliveryform`.`id_invoicecustomer` = `bill`.`old_id`
+WHERE `deliveryform`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `deliveryform`');
         $this->addQuery('DROP TABLE `invoicecustomer_deliveryform`');
@@ -1661,14 +1504,14 @@ SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `employee_event` (`date`, `employee_id`, `managing_company_id`, `name`, `type_id`)
 SELECT
-    `date_event`,
-    (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `old_employee_event`.`id_employee`),
-    (SELECT `employee`.`company_id` FROM `employee` WHERE `employee`.`old_id` = `old_employee_event`.`id_employee`),
-    `description`,
-    (SELECT `event_type`.`id` FROM `event_type` WHERE `event_type`.`id` = `old_employee_event`.`id_motif`)
+    `old_employee_event`.`date_event`,
+    `employee`.`id`,
+    `employee`.`company_id`,
+    `old_employee_event`.`description`,
+    `event_type`.`id`
 FROM `old_employee_event`
-WHERE EXISTS (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `old_employee_event`.`id_employee`)
-AND EXISTS (SELECT `event_type`.`id` FROM `event_type` WHERE `event_type`.`id` = `old_employee_event`.`id_motif`)
+INNER JOIN `employee` ON `old_employee_event`.`id_employee` = `employee`.`old_id`
+INNER JOIN `event_type` ON `old_employee_event`.`id_motif` = `event_type`.`id`
 SQL);
         $this->addQuery('DROP TABLE `old_employee_event`');
     }
@@ -1686,10 +1529,10 @@ CREATE TABLE `employee` (
     `ville` VARCHAR(255) DEFAULT NULL,
     `id_phone_prefix` INT UNSIGNED DEFAULT NULL,
     `tel` VARCHAR(255) DEFAULT NULL,
-    `nom_pers_a_contacter` VARCHAR(255) NOT NULL,
-    `prenom_pers_a_contacter` VARCHAR(255) NOT NULL,
+    `nom_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
+    `prenom_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
     `id_phone_prefix_pers_a_contacter` INT UNSIGNED DEFAULT NULL,
-    `tel_pers_a_contacter` VARCHAR(255) NOT NULL,
+    `tel_pers_a_contacter` VARCHAR(255) DEFAULT NULL,
     `d_entree` DATE DEFAULT NULL,
     `n_secu` VARCHAR(255) DEFAULT NULL,
     `d_naissance` DATE DEFAULT NULL,
@@ -1757,21 +1600,22 @@ SQL);
 CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED DEFAULT NULL,
+    `matricule` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(18) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `birthday` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `birth_city` VARCHAR(255) DEFAULT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
     `id_society` INT UNSIGNED DEFAULT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
     `emb_roles_roles` TEXT NOT NULL COMMENT '(DC2Type:simple_array)',
+    `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
+    `emb_state_state` ENUM('agreed', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_state)',
     `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `gender` ENUM('female', 'male') DEFAULT 'male' COMMENT '(DC2Type:gender_place)',
     `initials` VARCHAR(255) NOT NULL,
@@ -1779,7 +1623,7 @@ CREATE TABLE `employee` (
     `manager_id` INT UNSIGNED DEFAULT NULL,
     `name` VARCHAR(30) NOT NULL,
     `notes` VARCHAR(255) DEFAULT NULL,
-    `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `password` VARCHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
     `plain_password` VARCHAR(255) DEFAULT NULL,
     `situation` ENUM('married', 'single', 'windowed') DEFAULT 'single' COMMENT '(DC2Type:situation_place)',
     `social_security_number` VARCHAR(255) DEFAULT NULL,
@@ -1796,33 +1640,161 @@ CREATE TABLE `employee` (
     CONSTRAINT `IDX_5D9F75A1296CD8AE` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`)
 )
 SQL);
-        ($user = (new Employee()))
-            ->setPassword($this->hasher->hashPassword($user, 'super'))
-            ->addRole(Roles::ROLE_ACCOUNTING_ADMIN)
-            ->addRole(Roles::ROLE_HR_ADMIN)
-            ->addRole(Roles::ROLE_IT_ADMIN)
-            ->addRole(Roles::ROLE_LEVEL_DIRECTOR)
-            ->addRole(Roles::ROLE_LOGISTICS_ADMIN)
-            ->addRole(Roles::ROLE_MAINTENANCE_ADMIN)
-            ->addRole(Roles::ROLE_MANAGEMENT_ADMIN)
-            ->addRole(Roles::ROLE_PRODUCTION_ADMIN)
-            ->addRole(Roles::ROLE_PROJECT_ADMIN)
-            ->addRole(Roles::ROLE_PURCHASE_ADMIN)
-            ->addRole(Roles::ROLE_QUALITY_ADMIN)
-            ->addRole(Roles::ROLE_SELLING_ADMIN);
-        $this->addQuery(sprintf(
-            <<<'SQL'
-INSERT INTO `employee` (`emb_roles_roles`, `initials`, `name`, `password`, `surname`, `username`)
-VALUES (%s, 'super', 'Super', %s, 'SUPER', 'super')
-SQL,
-            /** @phpstan-ignore-next-line */
-            $this->connection->quote(implode(',', $user->getRoles())),
-            /** @phpstan-ignore-next-line */
-            $this->connection->quote($user->getPassword())
-        ));
+        $this->generateEmployee(
+            company: 1,
+            initials: 'super',
+            password: 'super',
+            roles: [
+                Roles::ROLE_ACCOUNTING_ADMIN,
+                Roles::ROLE_HR_ADMIN,
+                Roles::ROLE_IT_ADMIN,
+                Roles::ROLE_LEVEL_DIRECTOR,
+                Roles::ROLE_LOGISTICS_ADMIN,
+                Roles::ROLE_MAINTENANCE_ADMIN,
+                Roles::ROLE_MANAGEMENT_ADMIN,
+                Roles::ROLE_PRODUCTION_ADMIN,
+                Roles::ROLE_PROJECT_ADMIN,
+                Roles::ROLE_PURCHASE_ADMIN,
+                Roles::ROLE_QUALITY_ADMIN,
+                Roles::ROLE_SELLING_ADMIN
+            ],
+            username: 'super'
+        );
+        $this->generateEmployee(
+            company: 4,
+            initials: 'su-md',
+            password: 'super',
+            roles: [
+                Roles::ROLE_ACCOUNTING_ADMIN,
+                Roles::ROLE_HR_ADMIN,
+                Roles::ROLE_IT_ADMIN,
+                Roles::ROLE_LEVEL_DIRECTOR,
+                Roles::ROLE_LOGISTICS_ADMIN,
+                Roles::ROLE_MAINTENANCE_ADMIN,
+                Roles::ROLE_MANAGEMENT_ADMIN,
+                Roles::ROLE_PRODUCTION_ADMIN,
+                Roles::ROLE_PROJECT_ADMIN,
+                Roles::ROLE_PURCHASE_ADMIN,
+                Roles::ROLE_QUALITY_ADMIN,
+                Roles::ROLE_SELLING_ADMIN
+            ],
+            username: 'super-md'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'su-tn',
+            password: 'super',
+            roles: [
+                Roles::ROLE_ACCOUNTING_ADMIN,
+                Roles::ROLE_HR_ADMIN,
+                Roles::ROLE_IT_ADMIN,
+                Roles::ROLE_LEVEL_DIRECTOR,
+                Roles::ROLE_LOGISTICS_ADMIN,
+                Roles::ROLE_MAINTENANCE_ADMIN,
+                Roles::ROLE_MANAGEMENT_ADMIN,
+                Roles::ROLE_PRODUCTION_ADMIN,
+                Roles::ROLE_PROJECT_ADMIN,
+                Roles::ROLE_PURCHASE_ADMIN,
+                Roles::ROLE_QUALITY_ADMIN,
+                Roles::ROLE_SELLING_ADMIN
+            ],
+            username: 'super-tn'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnloa',
+            password: 'tnloa',
+            roles: [Roles::ROLE_LOGISTICS_ADMIN],
+            username: 'tnloa'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnlor',
+            password: 'tnlor',
+            roles: [Roles::ROLE_LOGISTICS_READER],
+            username: 'tnlor'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnlow',
+            password: 'tnlow',
+            roles: [Roles::ROLE_LOGISTICS_WRITER],
+            username: 'tnlow'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnmaa',
+            password: 'tnmaa',
+            roles: [Roles::ROLE_MAINTENANCE_ADMIN],
+            username: 'tnmaa'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnmar',
+            password: 'tnmar',
+            roles: [Roles::ROLE_MAINTENANCE_READER],
+            username: 'tnmar'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnmaw',
+            password: 'tnmaw',
+            roles: [Roles::ROLE_MAINTENANCE_WRITER],
+            username: 'tnmaw'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnpoa',
+            password: 'tnpoa',
+            roles: [Roles::ROLE_PRODUCTION_ADMIN],
+            username: 'tnpoa'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnpor',
+            password: 'tnpor',
+            roles: [Roles::ROLE_PRODUCTION_READER],
+            username: 'tnpor'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnpow',
+            password: 'tnpow',
+            roles: [Roles::ROLE_PRODUCTION_WRITER],
+            username: 'tnpow'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnqua',
+            password: 'tnqua',
+            roles: [Roles::ROLE_QUALITY_ADMIN],
+            username: 'tnqua'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnqur',
+            password: 'tnqur',
+            roles: [Roles::ROLE_QUALITY_READER],
+            username: 'tnqur'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'tnquw',
+            password: 'tnquw',
+            roles: [Roles::ROLE_QUALITY_WRITER],
+            username: 'tnquw'
+        );
+        $this->generateEmployee(
+            company: 3,
+            initials: 'user',
+            password: 'user',
+            roles: [],
+            username: 'user'
+        );
         $this->addQuery(<<<'SQL'
 INSERT INTO `employee` (
     `old_id`,
+    `matricule`,
     `address_address`,
     `address_city`,
     `address_country`,
@@ -1851,65 +1823,63 @@ INSERT INTO `employee` (
     `id_phone_prefix_pers_a_contacter`,
     `tel_pers_a_contacter`
 ) SELECT
-    `id`,
-    `address`,
-    `ville`,
-    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `employee_old`.`id_phone_prefix`),
-    `email`,
-    `tel`,
-    `code_postal`,
-    `d_naissance`,
-    `lieu_de_naissance`,
-    (
-        SELECT `company`.`id`
-        FROM `company`
-        WHERE `company`.`society_id` = (
-            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `employee_old`.`id_society`
-        )
-    ),
-    `id_society`,
+    `employee_old`.`id`,
+    `employee_old`.`matricule`,
+    `employee_old`.`address`,
+    `employee_old`.`ville`,
+    UCASE(`country`.`code`),
+    `employee_old`.`email`,
+    `employee_old`.`tel`,
+    `employee_old`.`code_postal`,
+    `employee_old`.`d_naissance`,
+    `employee_old`.`lieu_de_naissance`,
+    `company`.`id`,
+    `employee_old`.`id_society`,
     CASE
-        WHEN `id_role` = 100 THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_IT_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
-        WHEN `id_role` < 300 OR (`id_role` % 100 = 0 AND `id_role` NOT IN (300, 400, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500)) THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
-        WHEN `id_role` < 311 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_QUALITY_ADMIN,ROLE_USER'
-        WHEN `id_role` < 400 THEN 'ROLE_PRODUCTION_WRITER,ROLE_QUALITY_WRITER,ROLE_USER'
-        WHEN `id_role` = 400 THEN 'ROLE_HR_ADMIN,ROLE_USER'
-        WHEN `id_role` < 500 THEN 'ROLE_HR_WRITER,ROLE_USER'
-        WHEN `id_role` < 600 THEN 'ROLE_HR_WRITER,ROLE_LOGISTICS_WRITER,ROLE_PRODUCTION_READER,ROLE_PROJECT_READER,ROLE_PURCHASE_WRITER,ROLE_QUALITY_READER,ROLE_SELLING_WRITER,ROLE_USER'
-        WHEN `id_role` IN (600, 1000) THEN 'ROLE_PRODUCTION_ADMIN,ROLE_USER'
-        WHEN `id_role` < 700 OR (`id_role` > 1000 AND `id_role` < 1100) THEN 'ROLE_PRODUCTION_WRITER,ROLE_USER'
-        WHEN `id_role` = 700 THEN 'ROLE_LOGISTICS_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
-        WHEN `id_role` < 800 THEN 'ROLE_LOGISTICS_WRITER,ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_PURCHASE_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
-        WHEN `id_role` < 910 THEN 'ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
-        WHEN `id_role` < 1000 THEN 'ROLE_PROJECT_WRITER,ROLE_PURCHASE_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
-        WHEN `id_role` = 1100 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_QUALITY_ADMIN,ROLE_USER'
-        WHEN `id_role` < 1300 THEN 'ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_QUALITY_WRITER,ROLE_USER'
-        WHEN `id_role` < 1320 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
-        WHEN `id_role` < 1400 THEN 'ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_QUALITY_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `employee_old`.`id_role` = 100 THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_IT_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 300 OR (`employee_old`.`id_role` % 100 = 0 AND `employee_old`.`id_role` NOT IN (300, 400, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500)) THEN 'ROLE_ACCOUNTING_ADMIN,ROLE_HR_ADMIN,ROLE_LOGISTICS_ADMIN,ROLE_MAINTENANCE_ADMIN,ROLE_MANAGEMENT_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 311 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_QUALITY_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 400 THEN 'ROLE_PRODUCTION_WRITER,ROLE_QUALITY_WRITER,ROLE_USER'
+        WHEN `employee_old`.`id_role` = 400 THEN 'ROLE_HR_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 500 THEN 'ROLE_HR_WRITER,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 600 THEN 'ROLE_HR_WRITER,ROLE_LOGISTICS_WRITER,ROLE_PRODUCTION_READER,ROLE_PROJECT_READER,ROLE_PURCHASE_WRITER,ROLE_QUALITY_READER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `employee_old`.`id_role` IN (600, 1000) THEN 'ROLE_PRODUCTION_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 700 OR (`employee_old`.`id_role` > 1000 AND `employee_old`.`id_role` < 1100) THEN 'ROLE_PRODUCTION_WRITER,ROLE_USER'
+        WHEN `employee_old`.`id_role` = 700 THEN 'ROLE_LOGISTICS_ADMIN,ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 800 THEN 'ROLE_LOGISTICS_WRITER,ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_PURCHASE_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 910 THEN 'ROLE_PROJECT_ADMIN,ROLE_PURCHASE_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 1000 THEN 'ROLE_PROJECT_WRITER,ROLE_PURCHASE_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
+        WHEN `employee_old`.`id_role` = 1100 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_QUALITY_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 1300 THEN 'ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_QUALITY_WRITER,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 1320 THEN 'ROLE_PRODUCTION_ADMIN,ROLE_PROJECT_ADMIN,ROLE_QUALITY_ADMIN,ROLE_SELLING_ADMIN,ROLE_USER'
+        WHEN `employee_old`.`id_role` < 1400 THEN 'ROLE_PRODUCTION_WRITER,ROLE_PROJECT_WRITER,ROLE_QUALITY_WRITER,ROLE_SELLING_WRITER,ROLE_USER'
         ELSE 'ROLE_USER'
     END,
-    `d_entree`,
-    IF(`sexe` = 'F', 'female', 'male'),
-    IF_EMPTY(`initials`, CONCAT(UCASE(LEFT(`nom`, 2)), '-', UCFIRST(LEFT(`prenom`, 2)))),
-    `lvl_etude`,
-    `id_resp`,
-    `prenom`,
-    `password`,
+    `employee_old`.`d_entree`,
+    IF(`employee_old`.`sexe` = 'F', 'female', 'male'),
+    IF_EMPTY(`employee_old`.`initials`, CONCAT(UCASE(LEFT(`employee_old`.`nom`, 2)), '-', UCFIRST(LEFT(`employee_old`.`prenom`, 2)))),
+    `employee_old`.`lvl_etude`,
+    `employee_old`.`id_resp`,
+    `employee_old`.`prenom`,
+    `employee_old`.`password`,
     CASE
-        WHEN `situation` LIKE 'mari%' THEN 'married'
-        WHEN `situation` LIKE 've%' THEN 'windowed'
+        WHEN `employee_old`.`situation` LIKE 'mari%' THEN 'married'
+        WHEN `employee_old`.`situation` LIKE 've%' THEN 'windowed'
         ELSE 'single'
     END,
-    `n_secu`,
-    `nom`,
-    `user_gp`,
-    `login`,
-    `nom_pers_a_contacter`,
-    `prenom_pers_a_contacter`,
-    `id_phone_prefix_pers_a_contacter`,
-    `tel_pers_a_contacter`
+    `employee_old`.`n_secu`,
+    `employee_old`.`nom`,
+    `employee_old`.`user_gp`,
+    `employee_old`.`login`,
+    `employee_old`.`nom_pers_a_contacter`,
+    `employee_old`.`prenom_pers_a_contacter`,
+    `employee_old`.`id_phone_prefix_pers_a_contacter`,
+    `employee_old`.`tel_pers_a_contacter`
 FROM `employee_old`
-WHERE `status` = 0
+LEFT JOIN `country` ON `employee_old`.`id_phone_prefix` = `country`.`id`
+INNER JOIN `society` ON `employee_old`.`id_society` = `society`.`old_id`
+INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
+WHERE `employee_old`.`status` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 UPDATE `employee`
@@ -1924,9 +1894,9 @@ CREATE TABLE `user` (
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_society` INT UNSIGNED NOT NULL,
     `login` VARCHAR(255) NOT NULL,
-    `password` VARCHAR(255) NOT NULL,
+    `password` TEXT NOT NULL,
     `nom` VARCHAR(255) NOT NULL,
-    `prenom` VARCHAR(255) NOT NULL
+    `prenom` VARCHAR(255) DEFAULT NULL
 )
 SQL);
         $this->insert('user', [
@@ -1949,6 +1919,7 @@ SET `employee`.`password` = `user`.`password`
 AND `employee`.`username` = `user`.`login`
 SQL);
         $this->addQuery('DROP TABLE `user`');
+        $this->addQuery('UPDATE `employee` SET `name` = UCFIRST(`name`), `surname` = UCASE(`surname`)');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `token` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -1974,9 +1945,9 @@ SQL);
 INSERT INTO `employee_contact` (`employee_id`, `name`, `phone`, `surname`, `address_country`)
 SELECT
     `id`,
-    `prenom_pers_a_contacter`,
+    UCFIRST(`prenom_pers_a_contacter`),
     `tel_pers_a_contacter`,
-    `nom_pers_a_contacter`,
+    UCASE(`nom_pers_a_contacter`),
     (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `employee`.`id_phone_prefix_pers_a_contacter`)
 FROM `employee`
 WHERE `prenom_pers_a_contacter` IS NOT NULL
@@ -1990,19 +1961,18 @@ SQL);
 CREATE TABLE `engine_event` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'closed', 'draft', 'rejected') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:engine_event_current_place)',
     `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `done` BOOLEAN DEFAULT FALSE NOT NULL,
     `emergency` TINYINT UNSIGNED DEFAULT 1 COMMENT '(DC2Type:tinyint)',
     `employee_id` INT UNSIGNED DEFAULT NULL,
+    `emb_state_state` ENUM('agreed', 'asked', 'closed', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:event_state)',
     `engine_id` INT UNSIGNED DEFAULT NULL,
     `intervention_notes` TEXT DEFAULT NULL,
     `managing_company_id` INT UNSIGNED DEFAULT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
     `notes` VARCHAR(255) DEFAULT NULL,
     `planned_by_id` INT UNSIGNED DEFAULT NULL,
-    `type` ENUM('maintenance', 'request') NOT NULL COMMENT '(DC2Type:engine_event_type)',
+    `type` ENUM('maintenance', 'request') NOT NULL COMMENT '(DC2Type:engine_event)',
     CONSTRAINT `IDX_16C6DEEC8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
     CONSTRAINT `IDX_16C6DEECE78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
     CONSTRAINT `IDX_16C6DEECE7E23CE8` FOREIGN KEY (`managing_company_id`) REFERENCES `company` (`id`),
@@ -2031,7 +2001,7 @@ SQL);
         ]);
         $this->addQuery(<<<'SQL'
 INSERT INTO `engine_event` (
-    `current_place_name`,
+    `emb_state_state`,
     `date`,
     `done`,
     `engine_id`,
@@ -2041,22 +2011,17 @@ INSERT INTO `engine_event` (
     `type`
 ) SELECT
     IF(`status_planning` = 1, 'agreed', 'closed'),
-    `date_planning`,
-    `status_planning` != 1,
-    (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`),
-    (
-        SELECT `zone`.`company_id`
-        FROM `zone`
-        WHERE `zone`.`id` = (
-            SELECT `engine`.`zone_id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`
-        )
-    ),
-    `comment`,
-    (SELECT `planning`.`id` FROM `planning` WHERE `planning`.`id` = `engine_maintenance_planning`.`id_maintenance`),
+    `engine_maintenance_planning`.`date_planning`,
+    `engine_maintenance_planning`.`status_planning` != 1,
+    `engine`.`id`,
+    `zone`.`company_id`,
+    UCFIRST(`engine_maintenance_planning`.`comment`),
+    `planning`.`id`,
     'maintenance'
 FROM `engine_maintenance_planning`
-WHERE EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance_planning`.`id_engine_maintenance`)
-AND EXISTS (SELECT `planning`.`id` FROM `planning` WHERE `planning`.`id` = `engine_maintenance_planning`.`id_maintenance`)
+INNER JOIN `engine` ON `engine_maintenance_planning`.`id_engine_maintenance` = `engine`.`old_id`
+INNER JOIN `planning` ON `engine_maintenance_planning`.`id_maintenance` = `planning`.`old_id`
+LEFT JOIN `zone` ON `engine`.`zone_id` = `zone`.`id`
 SQL);
         $this->addQuery('DROP TABLE `engine_maintenance_planning`');
         $this->addQuery(<<<'SQL'
@@ -2085,7 +2050,7 @@ SQL);
         ]);
         $this->addQuery(<<<'SQL'
 INSERT INTO `engine_event` (
-    `current_place_name`,
+    `emb_state_state`,
     `date`,
     `done`,
     `emergency`,
@@ -2096,18 +2061,21 @@ INSERT INTO `engine_event` (
     `notes`,
     `type`
 ) SELECT
-    IF(`statut` = 2, 'closed', 'draft'),
-    `date_intervention`,
-    `statut` = 2,
-    `urgence`,
-    (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `engine_request_event`.`id_user_intervention`),
-    (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_request_event`.`id_engine`),
-    `commentaire_intervention`,
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `engine_request_event`.`id_society`)),
-    `commentaire`,
+    IF(`statut` = 2, 'closed', 'asked'),
+    `engine_request_event`.`date_intervention`,
+    `engine_request_event`.`statut` = 2,
+    `engine_request_event`.`urgence`,
+    `employee`.`id`,
+    `engine`.`id`,
+    UCFIRST(`engine_request_event`.`commentaire_intervention`),
+    `company`.`id`,
+    UCFIRST(`engine_request_event`.`commentaire`),
     'request'
 FROM `engine_request_event`
-WHERE EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_request_event`.`id_engine`)
+INNER JOIN `engine` ON `engine_request_event`.`id_engine` = `engine`.`old_id`
+LEFT JOIN `employee` ON `engine_request_event`.`id_user_intervention` = `employee`.`old_id`
+LEFT JOIN `society` ON `engine_request_event`.`id_society`= `society`.`old_id`
+LEFT JOIN `company` ON `society`.`id` = `company`.`society_id`
 SQL);
         $this->addQuery('DROP TABLE `engine_request_event`');
     }
@@ -2116,74 +2084,135 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine_group` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `code` VARCHAR(3) NOT NULL,
-    `libelle` VARCHAR(35) NOT NULL,
-    `id_family_group` INT NOT NULL,
-    `organe_securite` BOOLEAN DEFAULT FALSE NOT NULL,
-    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine_type)'
+    `libelle` VARCHAR(255) DEFAULT NULL,
+    `code` VARCHAR(3) DEFAULT NULL,
+    `id_family_group` INT UNSIGNED DEFAULT NULL,
+    `organe_securite` BOOLEAN DEFAULT FALSE NOT NULL
 )
 SQL);
         $this->insert('engine_group', ['id', 'code', 'libelle', 'id_family_group', 'organe_securite']);
-        $this->addQuery('UPDATE `engine_group` SET `libelle` = UCFIRST(`libelle`), `type` = IF(`id_family_group` = 1, \'workstation\', \'tool\')');
+        $this->addQuery('RENAME TABLE `engine_group` TO `old_engine_group`');
         $this->addQuery(<<<'SQL'
-ALTER TABLE `engine_group`
-    DROP `id_family_group`,
-    CHANGE `libelle` `name` VARCHAR(35) NOT NULL,
-    CHANGE `organe_securite` `safety_device` BOOLEAN DEFAULT FALSE NOT NULL
+CREATE TABLE `engine_group` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(3) NOT NULL,
+    `name` VARCHAR(35) NOT NULL,
+    `safety_device` BOOLEAN DEFAULT FALSE NOT NULL,
+    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine)'
+)
 SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `engine_group` (`old_id`, `code`, `name`, `safety_device`, `type`)
+SELECT `id`, `code`, UCFIRST(`libelle`), `organe_securite`, IF(`id_family_group` = 1, 'workstation', 'tool')
+FROM `old_engine_group`
+SQL);
+        $this->addQuery('DROP TABLE `old_engine_group`');
     }
 
     private function upEngines(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `marque` VARCHAR(255) DEFAULT NULL,
-    `ref` VARCHAR(255) NOT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `capabilite` VARCHAR(255) DEFAULT NULL,
-    `d_entree` DATE DEFAULT NULL,
+    `nom` VARCHAR(255) DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `emplacement` VARCHAR(255) DEFAULT NULL,
     `id_engine_group` INT UNSIGNED DEFAULT NULL,
-    `operateur_max` INT(10) NOT NULL,
-    `nom` VARCHAR(255) NOT NULL,
-    `notes` TEXT DEFAULT NULL,
-    `type` ENUM('counter-part', 'tool', 'workstation') NOT NULL COMMENT '(DC2Type:engine_type)',
-    `zone_id` INT UNSIGNED DEFAULT NULL,
-    `reffourn` VARCHAR(255) DEFAULT NULL,
+    `marque` VARCHAR(255) DEFAULT NULL,
     `date_fabrication` DATE DEFAULT NULL,
     `id_fabricant` INT DEFAULT NULL,
-    `numero_serie` VARCHAR(255) DEFAULT NULL
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `reffourn` VARCHAR(255) DEFAULT NULL,
+    `proprietaire` VARCHAR(100) DEFAULT NULL,
+    `description` TEXT DEFAULT NULL,
+    `d_entree` DATE DEFAULT NULL,
+    `numero_serie` VARCHAR(255) DEFAULT NULL,
+    `capabilite` TINYINT UNSIGNED DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
+    `operateur_max` INT UNSIGNED DEFAULT NULL,
+    `piece_jointe_validation` VARCHAR(255) DEFAULT NULL,
+    `date_validation` DATE DEFAULT NULL COMMENT '1 year after validation'
 )
 SQL);
         $this->insert('engine', [
-            'id',
-            'marque',
-            'ref',
-            'capabilite',
-            'd_entree',
-            'id_engine_group',
-            'operateur_max',
             'nom',
-            'notes',
-            'reffourn',
+            'id_society',
+            'emplacement',
+            'id_engine_group',
+            'marque',
             'date_fabrication',
             'id_fabricant',
-            'numero_serie'
+            'ref',
+            'reffourn',
+            'proprietaire',
+            'description',
+            'd_entree',
+            'numero_serie',
+            'capabilite',
+            'notes',
+            'operateur_max',
+            'piece_jointe_validation',
+            'date_validation'
         ]);
+        $this->addQuery('UPDATE `engine` SET `id_fabricant` = IF(`id_fabricant` IS NULL OR `id_fabricant` <= 0, NULL, `id_fabricant`)');
+        $this->addQuery('ALTER TABLE `engine` CHANGE `id_fabricant` `id_fabricant` INT UNSIGNED DEFAULT NULL');
+        $this->addQuery('RENAME TABLE `engine` TO `old_engine`');
         $this->addQuery('CREATE TABLE `computer_engine` (`id_engine` INT UNSIGNED DEFAULT NULL, `id_society_zone` INT UNSIGNED DEFAULT NULL)');
         $this->insert('computer_engine', ['id_engine', 'id_society_zone']);
         $this->addQuery(<<<'SQL'
-UPDATE `engine`
-SET `capabilite` = CASE
-    WHEN `capabilite` = 1 THEN 'enabled'
-    WHEN `capabilite` = 2 THEN 'warning'
-    WHEN `capabilite` = 3 THEN 'blocked'
-    ELSE 'disabled'
-END,
-`id_engine_group` = (SELECT `engine_group`.`id` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
-`type` = (SELECT `engine_group`.`type` FROM `engine_group` WHERE `engine_group`.`id` = `engine`.`id_engine_group`),
-`zone_id` = (SELECT `zone`.`id` FROM `zone` WHERE `zone`.`id` = (SELECT `computer_engine`.`id_society_zone` FROM `computer_engine` WHERE `computer_engine`.`id_engine` = `engine`.`id`))
+CREATE TABLE `engine` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `brand` VARCHAR(255) DEFAULT NULL,
+    `code` VARCHAR(10) DEFAULT NULL,
+    `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
+    `emb_state_state` ENUM('agreed', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_state)',
+    `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `group_id` INT UNSIGNED DEFAULT NULL,
+    `max_operator` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
+    `name` VARCHAR(255) NOT NULL,
+    `notes` TEXT,
+    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)',
+    `zone_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`),
+    CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `engine` (
+    `old_id`,
+    `brand`,
+    `code`,
+    `emb_blocker_state`,
+    `emb_state_state`,
+    `entry_date`,
+    `group_id`,
+    `max_operator`,
+    `name`,
+    `type`,
+    `zone_id`
+) SELECT
+    `old_engine`.`id`,
+    `old_engine`.`marque`,
+    `old_engine`.`ref`,
+    CASE
+        WHEN `old_engine`.`capabilite` IN (1, 2) THEN 'enabled'
+        WHEN `old_engine`.`capabilite` = 3 THEN 'blocked'
+        ELSE 'disabled'
+    END,
+    IF(`old_engine`.`capabilite` IN (2, 3), 'warning', 'agreed'),
+    `old_engine`.`d_entree`,
+    `engine_group`.`id`,
+    `old_engine`.`operateur_max`,
+    `old_engine`.`nom`,
+    `engine_group`.`type`,
+    `zone`.`id`
+FROM `old_engine`
+INNER JOIN `engine_group` ON `old_engine`.`id_engine_group` = `engine_group`.`old_id`
+LEFT JOIN `computer_engine` ON `old_engine`.`id` = `computer_engine`.`id_engine`
+LEFT JOIN `zone` ON `computer_engine`.`id_society_zone` = `zone`.`id`
 SQL);
         $this->addQuery('DROP TABLE `computer_engine`');
         $this->addQuery(<<<'SQL'
@@ -2203,29 +2232,17 @@ SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `manufacturer_engine` (`code`, `date`, `engine_id`, `manufacturer_id`, `serial_number`)
 SELECT
-    `reffourn`,
-    `date_fabrication`,
-    `id`,
-    (SELECT `manufacturer`.`id` FROM `manufacturer` WHERE `manufacturer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `engine`.`id_fabricant`)),
-    `numero_serie`
-FROM `engine`
+    `old_engine`.`reffourn`,
+    `old_engine`.`date_fabrication`,
+    `engine`.`id`,
+    `manufacturer`.`id`,
+    `old_engine`.`numero_serie`
+FROM `old_engine`
+INNER JOIN `engine` ON `old_engine`.`id` = `engine`.`old_id`
+LEFT JOIN `society` ON `old_engine`.`id_fabricant` = `society`.`old_id`
+LEFT JOIN `manufacturer` ON `society`.`id` = `manufacturer`.`society_id`
 SQL);
-        $this->addQuery(<<<'SQL'
-ALTER TABLE `engine`
-    DROP `reffourn`,
-    DROP `date_fabrication`,
-    DROP `id_fabricant`,
-    DROP `numero_serie`,
-    CHANGE `marque` `brand` VARCHAR(255) DEFAULT NULL,
-    CHANGE `ref` `code` VARCHAR(10) DEFAULT NULL,
-    CHANGE `capabilite` `current_place_name` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT 'warning' NOT NULL COMMENT '(DC2Type:employee_engine_current_place)',
-    CHANGE `d_entree` `entry_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    CHANGE `id_engine_group` `group_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `operateur_max` `max_operator` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
-    CHANGE `nom` `name` VARCHAR(127) NOT NULL,
-    ADD CONSTRAINT `IDX_E8A81A8DFE54D947` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
-    ADD CONSTRAINT `IDX_E8A81A8D9F2C3FAB` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
-SQL);
+        $this->addQuery('DROP TABLE `old_engine`');
     }
 
     private function upEventTypes(): void {
@@ -2234,7 +2251,7 @@ CREATE TABLE `employee_eventlist` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `motif` VARCHAR(30) NOT NULL,
-    `to_status` ENUM('blocked', 'disabled', 'enabled', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_engine_current_place)'
+    `to_status` ENUM('agreed', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_engine_state)'
 )
 SQL);
         $this->insert('employee_eventlist', ['id', 'motif']);
@@ -2282,7 +2299,7 @@ CREATE TABLE `expedition` (
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CONSTRAINT `IDX_692907E126F525E` FOREIGN KEY (`item_id`) REFERENCES `customer_order_item` (`id`),
+    CONSTRAINT `IDX_692907E126F525E` FOREIGN KEY (`item_id`) REFERENCES `selling_order_item` (`id`),
     CONSTRAINT `IDX_692907E26ED0855` FOREIGN KEY (`note_id`) REFERENCES `delivery_note` (`id`),
     CONSTRAINT `IDX_692907EDCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`)
 )
@@ -2299,7 +2316,7 @@ INSERT INTO `expedition` (
 ) SELECT
     `batchnumber`,
     `date_livraison`,
-    (SELECT `customer_order_item`.`id` FROM `customer_order_item` WHERE `customer_order_item`.`old_id` = `old_expedition`.`id_ordercustomer_product`),
+    (SELECT `selling_order_item`.`id` FROM `selling_order_item` WHERE `selling_order_item`.`old_id` = `old_expedition`.`id_ordercustomer_product`),
     `location`,
     (SELECT `stock`.`id` FROM `stock` WHERE `stock`.`old_id` = `old_expedition`.`id_stock`),
     'U',
@@ -2314,7 +2331,7 @@ SQL);
 CREATE TABLE `incoterms` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `code` VARCHAR(11) NOT NULL,
+    `code` VARCHAR(25) NOT NULL,
     `label` VARCHAR(50) DEFAULT NULL
 )
 SQL);
@@ -2357,6 +2374,13 @@ SELECT `id`, `statut`, `libelle`, `days`, `endofmonth`
 FROM `invoicetimeduesupplier`
 SQL);
         $this->addQuery(<<<'SQL'
+UPDATE `invoicetimedue`
+LEFT JOIN `invoicetimedue` `duplicate`
+    ON `invoicetimedue`.`libelle` = `duplicate`.`libelle`
+    AND `invoicetimedue`.`id` < `duplicate`.`id`
+SET `invoicetimedue`.`id_old_invoicetimeduesupplier` = `duplicate`.`id_old_invoicetimeduesupplier`
+SQL);
+        $this->addQuery(<<<'SQL'
 DELETE `i1`
 FROM `invoicetimedue` as `i1`, `invoicetimedue` as `i2`
 WHERE `i1`.`id` > `i2`.`id`
@@ -2390,7 +2414,6 @@ CREATE TABLE `request` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `asked_at` DATE NOT NULL COMMENT '(DC2Type:date_immutable)',
     `asked_by_id` INT UNSIGNED DEFAULT NULL,
-    `current_place` VARCHAR(255) NOT NULL,
     `delay` DATE NOT NULL COMMENT '(DC2Type:date_immutable)',
     `description` TEXT NOT NULL, name VARCHAR(255) NOT NULL,
     `version` VARCHAR(255) NOT NULL,
@@ -2447,14 +2470,15 @@ INSERT INTO `society` (
     `name`,
     `phone`
 ) SELECT
-    `address`,
-    `ville`,
-    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `engine_fabricant_ou_contact`.`id_phone_prefix`),
-    `code_postal`,
-    `id`,
-    IF(`prenom` IS NULL, TRIM(`nom`), TRIM(CONCAT(`nom`, ' ', `prenom`))),
-    `tel`
+    `engine_fabricant_ou_contact`.`address`,
+    `engine_fabricant_ou_contact`.`ville`,
+    UCASE(`country`.`code`),
+    `engine_fabricant_ou_contact`.`code_postal`,
+    `engine_fabricant_ou_contact`.`id`,
+    IF(`engine_fabricant_ou_contact`.`prenom` IS NULL, TRIM(`engine_fabricant_ou_contact`.`nom`), TRIM(CONCAT(`engine_fabricant_ou_contact`.`nom`, ' ', `engine_fabricant_ou_contact`.`prenom`))),
+    `engine_fabricant_ou_contact`.`tel`
 FROM `engine_fabricant_ou_contact`
+LEFT JOIN `country` ON `engine_fabricant_ou_contact`.`id_phone_prefix` = `country`.`id`
 SQL);
         $this->addQuery(<<<'SQL'
 ALTER TABLE `engine_fabricant_ou_contact`
@@ -2517,18 +2541,19 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `manufacturing_order` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `actual_quantity_code` VARCHAR(6) DEFAULT NULL,
     `actual_quantity_denominator` VARCHAR(6) DEFAULT NULL,
     `actual_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'closed', 'disabled', 'draft') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:manufacturing_order_current_place)',
     `company_id` INT UNSIGNED DEFAULT NULL,
     `delivery_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
+    `emb_state_state` ENUM('agreed', 'asked', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:manufacturing_order_state)',
     `index` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
     `manufacturing_company_id` INT UNSIGNED DEFAULT NULL,
     `manufacturing_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `notes` VARCHAR(255) DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
@@ -2540,17 +2565,19 @@ CREATE TABLE `manufacturing_order` (
     `quantity_requested_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_34010DB1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB1E26A3063` FOREIGN KEY (`manufacturing_company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_34010DB18D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `customer_order` (`id`),
+    CONSTRAINT `IDX_34010DB18D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `selling_order` (`id`),
     CONSTRAINT `IDX_34010DB14584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `manufacturing_order` (
+    `old_id`,
     `actual_quantity_code`,
     `actual_quantity_value`,
-    `current_place_name`,
     `company_id`,
     `delivery_date`,
+    `emb_blocker_state`,
+    `emb_state_state`,
     `index`,
     `manufacturing_company_id`,
     `manufacturing_date`,
@@ -2563,31 +2590,41 @@ INSERT INTO `manufacturing_order` (
     `quantity_requested_code`,
     `quantity_requested_value`
 ) SELECT
-    (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)),
-    `quantity_real`,
+    `orderfabrication`.`id`,
+    `unit`.`code`,
+    `orderfabrication`.`quantity_real`,
+    `company`.`id`,
+    `orderfabrication`.`date_livraison`,
     CASE
-        WHEN `id_orderfabricationstatus` IN (3, 4, 8) THEN 'agreed'
-        WHEN `id_orderfabricationstatus` = 5 THEN 'closed'
-        WHEN `id_orderfabricationstatus` = 6 THEN 'disabled'
-        WHEN `id_orderfabricationstatus` = 7 THEN 'blocked'
-        ELSE 'draft'
+        WHEN `orderfabrication`.`id_orderfabricationstatus` IN (5, 6) THEN 'closed'
+        WHEN `orderfabrication`.`id_orderfabricationstatus` = 7 THEN 'blocked'
+        ELSE 'enabled'
     END,
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `orderfabrication`.`id_society`)),
-    `date_livraison`,
-    `indice`,
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `orderfabrication`.`id_supplier`)),
-    `date_fabrication`,
-    `info_public`,
-    (SELECT `customer_order`.`id` FROM `customer_order` WHERE `customer_order`.`old_id` = `orderfabrication`.`id_ordercustomer`),
-    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`),
-    `ofnumber`,
-    (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)),
-    `quantity_done`,
-    (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)),
-    `quantity`
+    CASE
+        WHEN `orderfabrication`.`id_orderfabricationstatus` IN (3, 4, 5, 7, 8) THEN 'agreed'
+        WHEN `orderfabrication`.`id_orderfabricationstatus` = 6 THEN 'rejected'
+        ELSE 'asked'
+    END,
+    `orderfabrication`.`indice`,
+    `supplier`.`id`,
+    `orderfabrication`.`date_fabrication`,
+    `orderfabrication`.`info_public`,
+    `selling_order`.`id`,
+    `product`.`id`,
+    `orderfabrication`.`ofnumber`,
+    `unit`.`code`,
+    `orderfabrication`.`quantity_done`,
+    `unit`.`code`,
+    `orderfabrication`.`quantity`
 FROM `orderfabrication`
-WHERE `statut` = 0
-AND EXISTS (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `orderfabrication`.`id_product`)
+INNER JOIN `product` ON `orderfabrication`.`id_product` = `product`.`old_id`
+LEFT JOIN `unit` ON `product`.`unit_id` = `unit`.`id`
+INNER JOIN `society` `society_company` ON `orderfabrication`.`id_society` = `society_company`.`old_id`
+INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
+INNER JOIN `society` `society_supplier` ON `orderfabrication`.`id_supplier` = `society_supplier`.`old_id`
+INNER JOIN `supplier` ON `society_supplier`.`id` = `supplier`.`society_id`
+LEFT JOIN `selling_order` ON `orderfabrication`.`id_ordercustomer` = `selling_order`.`old_id`
+WHERE `orderfabrication`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `orderfabrication`');
     }
@@ -2621,16 +2658,17 @@ SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `nomenclature` (`product_id`, `component_id`, `quantity_value`, `mandated`, `quantity_code`)
 SELECT
-    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `productcontent`.`id_product`),
-    (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `productcontent`.`id_component`),
+    `product`.`id`,
+    `component`.`id`,
     `quantity`,
     `mandat`,
-    (SELECT `unit`.`code` FROM `unit` INNER JOIN `component` ON `unit`.`id` = `component`.`unit_id` AND `component`.`id` = `productcontent`.`id_component`)
+    `unit`.`code`
 FROM `productcontent`
+INNER JOIN `component` ON `productcontent`.`id_component` = `component`.`old_id`
+LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
+INNER JOIN `product` ON `productcontent`.`id_product` = `product`.`old_id`
 WHERE `statut` = 0
 AND `quantity` IS NOT NULL AND TRIM(`quantity`) != '' AND `quantity` > 0
-AND EXISTS (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `productcontent`.`id_component`)
-AND EXISTS (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `productcontent`.`id_product`)
 SQL);
         $this->addQuery('DROP TABLE `productcontent`');
     }
@@ -2656,10 +2694,10 @@ CREATE TABLE `employee_extformateur` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `address` VARCHAR(80) NOT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `ville` VARCHAR(50) NOT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `code_postal` INT NOT NULL,
     `prenom` VARCHAR(30) NOT NULL,
     `nom` VARCHAR(30) NOT NULL,
@@ -2681,7 +2719,7 @@ ALTER TABLE `employee_extformateur`
     DROP `id_phone_prefix`,
     CHANGE `prenom` `name` VARCHAR(30) NOT NULL,
     CHANGE `nom` `surname` VARCHAR(30) NOT NULL,
-    CHANGE `address` `address_address` VARCHAR(80) DEFAULT NULL,
+    CHANGE `address` `address_address` VARCHAR(160) DEFAULT NULL,
     CHANGE `ville` `address_city` VARCHAR(50) DEFAULT NULL,
     CHANGE `code_postal` `address_zip_code` VARCHAR(10) DEFAULT NULL
 SQL);
@@ -2710,39 +2748,42 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `engine_maintenance` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_engine` INT UNSIGNED DEFAULT NULL,
-    `type` VARCHAR(255) NOT NULL,
-    `designation` TEXT NOT NULL,
+    `designation` TEXT DEFAULT NULL,
+    `type` VARCHAR(255) DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('engine_maintenance', ['id', 'id_engine', 'designation', 'type', 'quantity']);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `planning` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `engine_id` INT UNSIGNED DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `quantity` INT UNSIGNED DEFAULT 0 NOT NULL
+    CONSTRAINT `IDX_D499BFF6E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`)
 )
 SQL);
-        $this->insert('engine_maintenance', ['id', 'id_engine', 'type', 'designation', 'quantity']);
         $this->addQuery(<<<'SQL'
-DELETE FROM `engine_maintenance`
-WHERE NOT EXISTS (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `engine_maintenance`.`id_engine`)
+INSERT INTO `planning` (`old_id`, `engine_id`, `name`, `quantity_code`, `quantity_value`)
+SELECT
+    `engine_maintenance`.`id`,
+    `engine`.`id`,
+    `engine_maintenance`.`designation`,
+    CASE
+        WHEN `engine_maintenance`.`type` = 'd' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'j')
+        WHEN `engine_maintenance`.`type` = 'u' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'U')
+        WHEN `engine_maintenance`.`type` = 'b' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'fds')
+    END,
+    `engine_maintenance`.`quantity`
+FROM `engine_maintenance`
+INNER JOIN `engine` ON `engine_maintenance`.`id_engine` = `engine`.`old_id`
 SQL);
-        $this->addQuery(<<<'SQL'
-UPDATE `engine_maintenance`
-SET `quantity_code` = CASE
-    WHEN `type` = 'd' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'j')
-    WHEN `type` = 'u' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'U')
-    WHEN `type` = 'b' THEN (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`code` = 'fds')
-END,
-`quantity_value` = `quantity`
-SQL);
-        $this->addQuery(<<<'SQL'
-ALTER TABLE `engine_maintenance`
-    DROP `quantity`,
-    DROP `type`,
-    CHANGE `id_engine` `engine_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `designation` `name` VARCHAR(255) NOT NULL,
-    ADD CONSTRAINT `IDX_D499BFF6E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`)
-SQL);
-        $this->addQuery('RENAME TABLE `engine_maintenance` TO `planning`');
+        $this->addQuery('DROP TABLE `engine_maintenance`');
     }
 
     private function upPrinters(): void {
@@ -2793,7 +2834,7 @@ SQL);
 ALTER TABLE `product_family`
     CHANGE `customsCode` `customs_code` VARCHAR(10) DEFAULT NULL,
     CHANGE `family_name` `name` VARCHAR(30) NOT NULL,
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `product_subfamily` (
@@ -2817,7 +2858,7 @@ SQL);
 CREATE TABLE `product` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `temps_auto` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `temps_auto` DOUBLE PRECISION DEFAULT NULL,
     `ref` VARCHAR(255) NOT NULL,
     `tps_chiff_auto` DOUBLE PRECISION DEFAULT NULL,
     `tps_chiff_manu` DOUBLE PRECISION DEFAULT NULL,
@@ -2828,20 +2869,20 @@ CREATE TABLE `product` (
     `volume_previsionnel` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `id_customcode` INT UNSIGNED NOT NULL,
     `id_product_child` INT UNSIGNED NOT NULL,
-    `id_incoterms` INT UNSIGNED NOT NULL,
-    `indice` VARCHAR(3) NOT NULL,
+    `id_incoterms` INT UNSIGNED DEFAULT NULL,
+    `indice` VARCHAR(255) DEFAULT NULL,
     `indice_interne` TINYINT UNSIGNED DEFAULT 1 NOT NULL,
-    `is_prototype` BOOLEAN DEFAULT FALSE NOT NULL,
+    `is_prototype` BOOLEAN DEFAULT NULL,
     `gestion_cu` BOOLEAN DEFAULT FALSE NOT NULL,
-    `temps_manu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `temps_manu` DOUBLE PRECISION DEFAULT NULL,
     `max_proto_quantity` DOUBLE PRECISION DEFAULT NULL,
     `livraison_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `min_prod_quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `stock_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `designation` VARCHAR(80) NOT NULL,
+    `designation` VARCHAR(255) DEFAULT NULL,
     `info_public` TEXT DEFAULT NULL,
-    `typeconditionnement` VARCHAR(30) NOT NULL,
-    `conditionnement` DOUBLE PRECISION DEFAULT NULL,
+    `typeconditionnement` VARCHAR(255) DEFAULT NULL,
+    `conditionnement` VARCHAR(255) DEFAULT NULL,
     `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `price_without_cu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `production_delay` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -2895,16 +2936,16 @@ CREATE TABLE `product` (
     `auto_duration_code` VARCHAR(6) DEFAULT NULL,
     `auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
     `auto_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `code` VARCHAR(30) NOT NULL,
+    `code` VARCHAR(50) NOT NULL,
     `costing_auto_duration_code` VARCHAR(6) DEFAULT NULL,
     `costing_auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
     `costing_auto_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `costing_manual_duration_code` VARCHAR(6) DEFAULT NULL,
     `costing_manual_duration_denominator` VARCHAR(6) DEFAULT NULL,
     `costing_manual_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `current_place_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed','blocked','disabled','draft','to_validate','under_exemption') NOT NULL DEFAULT 'draft' COMMENT '(DC2Type:product_current_place)',
     `customs_code` VARCHAR(10) DEFAULT NULL,
+    `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'to_validate', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:product_state)',
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
     `forecast_volume_code` VARCHAR(6) DEFAULT NULL,
@@ -2912,10 +2953,10 @@ CREATE TABLE `product` (
     `forecast_volume_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `id_product_child` INT UNSIGNED NOT NULL,
     `incoterms_id` INT UNSIGNED DEFAULT NULL,
-    `index` VARCHAR(3) NOT NULL,
+    `index` VARCHAR(10) DEFAULT NULL,
     `internal_index` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
     `kind` enum('EI','Prototype','Série','Pièce de rechange') NOT NULL DEFAULT 'Prototype' COMMENT '(DC2Type:product_kind)',
-    `managed_copper` TINYINT(1) DEFAULT 0 NOT NULL,
+    `managed_copper` BOOLEAN DEFAULT FALSE NOT NULL,
     `manual_duration_code` VARCHAR(6) DEFAULT NULL,
     `manual_duration_denominator` VARCHAR(6) DEFAULT NULL,
     `manual_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -2931,11 +2972,12 @@ CREATE TABLE `product` (
     `min_stock_code` VARCHAR(6) DEFAULT NULL,
     `min_stock_denominator` VARCHAR(6) DEFAULT NULL,
     `min_stock_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `name` VARCHAR(80) NOT NULL,
+    `name` VARCHAR(160) DEFAULT NULL,
     `notes` text DEFAULT NULL,
     `packaging_code` VARCHAR(6) DEFAULT NULL,
     `packaging_denominator` VARCHAR(6) DEFAULT NULL,
-    `packaging_kind` VARCHAR(30) NOT NULL,
+    `packaging_incorrect` VARCHAR(255) DEFAULT NULL,
+    `packaging_kind` VARCHAR(60) DEFAULT NULL,
     `packaging_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL,
     `price_code` VARCHAR(6) DEFAULT NULL,
@@ -2974,8 +3016,9 @@ INSERT INTO `product` (
     `costing_auto_duration_value`,
     `costing_manual_duration_code`,
     `costing_manual_duration_value`,
-    `current_place_name`,
     `customs_code`,
+    `emb_blocker_state`,
+    `emb_state_state`,
     `end_of_life`,
     `family_id`,
     `forecast_volume_code`,
@@ -2999,6 +3042,7 @@ INSERT INTO `product` (
     `name`,
     `notes`,
     `packaging_code`,
+    `packaging_incorrect`,
     `packaging_kind`,
     `packaging_value`,
     `parent_id`,
@@ -3016,74 +3060,171 @@ INSERT INTO `product` (
     `weight_code`,
     `weight_value`
 ) SELECT
-    `id`,
-    `id_society`,
+    `product_old`.`id`,
+    `product_old`.`id_society`,
     'h',
-    `temps_auto`,
-    `ref`,
+    IFNULL(`product_old`.`temps_auto`, 0),
+    `product_old`.`ref`,
     'h',
-    IFNULL(`tps_chiff_auto`, 0),
+    IFNULL(`product_old`.`tps_chiff_auto`, 0),
     'h',
-    IFNULL(`tps_chiff_manu`, 0),
+    IFNULL(`product_old`.`tps_chiff_manu`, 0),
+    `customcode`.`code`,
     CASE
-        WHEN `product_old`.`id_productstatus` = 1 THEN 'draft'
-        WHEN `product_old`.`id_productstatus` = 2 THEN 'to_validate'
-        WHEN `product_old`.`id_productstatus` = 3 THEN 'agreed'
-        WHEN `product_old`.`id_productstatus` = 4 THEN 'under_exemption'
         WHEN `product_old`.`id_productstatus` = 5 THEN 'blocked'
         WHEN `product_old`.`id_productstatus` = 6 THEN 'disabled'
+        ELSE 'enabled'
+    END,
+    CASE
+        WHEN `product_old`.`id_productstatus` = 2 THEN 'to_validate'
+        WHEN `product_old`.`id_productstatus` IN (3, 6) THEN 'agreed'
+        WHEN `product_old`.`id_productstatus` IN (4, 5) THEN 'warning'
         ELSE 'draft'
     END,
-    (SELECT `customcode`.`code` FROM `customcode` WHERE `customcode`.`id` = `product_old`.`id_customcode`),
-    `date_expiration`,
-    (SELECT `product_family`.`id` FROM `product_family` WHERE `product_family`.`old_subfamily_id` = `product_old`.`id_product_subfamily`),
+    `product_old`.`date_expiration`,
+    `product_family`.`id`,
     'U',
-    `volume_previsionnel`,
-    `id_product_child`,
-    (SELECT `incoterms`.`id` FROM `incoterms` WHERE `incoterms`.`id` = `product_old`.`id_incoterms`),
-    `indice`,
-    `indice_interne`,
+    `product_old`.`volume_previsionnel`,
+    `product_old`.`id_product_child`,
+    `incoterms`.`id`,
+    `product_old`.`indice`,
+    `product_old`.`indice_interne`,
     CASE
         WHEN `product_old`.`is_prototype` = 0 THEN 'Série'
         WHEN `product_old`.`is_prototype` = 1 THEN 'Prototype'
         WHEN `product_old`.`is_prototype` = 2 THEN 'EI'
         ELSE 'Prototype'
     END,
-    `gestion_cu`,
+    `product_old`.`gestion_cu`,
     'h',
-    `temps_manu`,
+    IFNULL(`product_old`.`temps_manu`, 0),
     'U',
-    IFNULL(`max_proto_quantity`, 0),
+    IFNULL(`product_old`.`max_proto_quantity`, 0),
     'U',
-    `livraison_minimum`,
+    `product_old`.`livraison_minimum`,
     'U',
-    `min_prod_quantity`,
+    `product_old`.`min_prod_quantity`,
     'U',
-    `stock_minimum`,
-    `designation`,
-    `info_public`,
+    `product_old`.`stock_minimum`,
+    `product_old`.`designation`,
+    `product_old`.`info_public`,
     'U',
-    `typeconditionnement`,
-    IFNULL(`conditionnement`, 1),
+    IF(`product_old`.`conditionnement` IS NULL OR IS_NUMBER(`product_old`.`conditionnement`), NULL, `product_old`.`conditionnement`),
+    `product_old`.`typeconditionnement`,
+    IF(`product_old`.`conditionnement` IS NOT NULL AND IS_NUMBER(`product_old`.`conditionnement`), `product_old`.`conditionnement`, 1),
     (SELECT `product`.`id` FROM `product` WHERE `product`.`id_product_child` = `product_old`.`id`),
     'EUR',
-    `price`,
+    `product_old`.`price`,
     'EUR',
-    `price_without_cu`,
+    `product_old`.`price_without_cu`,
     'j',
-    `production_delay`,
+    `product_old`.`production_delay`,
     'EUR',
-    `transfert_price_supplies`,
+    `product_old`.`transfert_price_supplies`,
     'EUR',
-    `transfert_price_work`,
+    `product_old`.`transfert_price_work`,
     (SELECT `unit`.`id` FROM `unit` WHERE `unit`.`code` = 'U'),
     'g',
-    `weight`
+    `product_old`.`weight`
 FROM `product_old`
-WHERE `statut` = 0
+LEFT JOIN `customcode` ON `product_old`.`id_customcode` = `customcode`.`id`
+LEFT JOIN `incoterms` ON `product_old`.`id_incoterms` = `incoterms`.`id`
+LEFT JOIN `product_family` ON `product_old`.`id_product_subfamily` = `product_family`.`old_subfamily_id`
+WHERE `product_old`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `product_old`');
         $this->addQuery('ALTER TABLE `product` DROP `id_product_child`');
+    }
+
+    private function upPurchaseOrders(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordersupplier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_supplier` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `id_ordersupplierstatus` INT UNSIGNED DEFAULT NULL,
+    `open_order` VARCHAR(255) DEFAULT NULL,
+    `id_address` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
+    `info_public` TEXT DEFAULT NULL COMMENT 'info interne',
+    `commentaire` TEXT DEFAULT NULL COMMENT 'info affichee sur le document envoyé'
+)
+SQL);
+        $this->insert('ordersupplier', [
+            'id',
+            'statut',
+            'id_supplier',
+            'ref',
+            'id_ordersupplierstatus',
+            'open_order',
+            'id_address',
+            'id_society',
+            'supplement_fret',
+            'info_public',
+            'commentaire'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `purchase_order` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `contact_id` INT UNSIGNED DEFAULT NULL,
+    `delivery_company_id` INT UNSIGNED DEFAULT NULL,
+    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
+    `emb_state_state` ENUM('agreed', 'cart', 'delivered', 'draft', 'initial', 'partially_delivered') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_state)',
+    `notes` TEXT DEFAULT NULL,
+    `order_id` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
+    `supplier_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_21E210B2979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_21E210B2E7A1254A` FOREIGN KEY (`contact_id`) REFERENCES `supplier_contact` (`id`),
+    CONSTRAINT `IDX_21E210B289DE8DF2` FOREIGN KEY (`delivery_company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_21E210B28D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `selling_order` (`id`),
+    CONSTRAINT `IDX_21E210B22ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `purchase_order` (
+    `old_id`,
+    `company_id`,
+    `delivery_company_id`,
+    `emb_blocker_state`,
+    `emb_state_state`,
+    `notes`,
+    `ref`,
+    `supplement_fret`,
+    `supplier_id`
+) SELECT
+    `ordersupplier`.`id`,
+    `company`.`id`,
+    `company`.`id`,
+    IF(`ordersupplier`.`id_ordersupplierstatus` IN (6, 7), 'closed', 'enabled'),
+    CASE
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 4 THEN 'agreed'
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 5 THEN 'partially_delivered'
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 6 THEN 'delivered'
+        ELSE 'draft'
+    END,
+    IF(
+        `ordersupplier`.`info_public` IS NULL,
+        `ordersupplier`.`commentaire`,
+        IF(`ordersupplier`.`commentaire` IS NULL, NULL, CONCAT(`ordersupplier`.`info_public`, `ordersupplier`.`commentaire`))
+    ),
+    `ordersupplier`.`ref`,
+    `ordersupplier`.`supplement_fret`,
+    `supplier`.`id`
+FROM `ordersupplier`
+INNER JOIN `society` `society_company` ON `ordersupplier`.`id_society` = `society_company`.`old_id`
+INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
+INNER JOIN `society` `society_supplier` ON `ordersupplier`.`id_supplier` = `society_supplier`.`old_id`
+INNER JOIN `supplier` ON `society_supplier`.`id` = `supplier`.`society_id`
+WHERE `ordersupplier`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `ordersupplier`');
     }
 
     private function upQualityTypes(): void {
@@ -3098,7 +3239,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 ALTER TABLE `qualitycontrol`
     CHANGE `qualitycontrol` `name` VARCHAR(40) NOT NULL,
-    CHANGE `statut` `deleted` TINYINT(1) DEFAULT 0 NOT NULL
+    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL
 SQL);
         $this->addQuery('UPDATE `qualitycontrol` SET `name` = UCFIRST(`name`)');
         $this->addQuery('RENAME TABLE `qualitycontrol` TO `quality_type`');
@@ -3123,6 +3264,200 @@ CREATE TABLE `reject_type` (
 SQL);
         $this->addQuery('INSERT INTO `reject_type` (`name`) SELECT UCFIRST(`libelle`) FROM `production_rejectlist`');
         $this->addQuery('DROP TABLE `production_rejectlist`');
+    }
+
+    private function upSellingOrderItems(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordercustomer_product` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_ordercustomer` INT UNSIGNED DEFAULT NULL,
+    `id_product` INT UNSIGNED DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL,
+    `quantity_souhaitee` INT UNSIGNED DEFAULT NULL,
+    `quantity_sent` INT UNSIGNED DEFAULT NULL,
+    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `texte` TEXT DEFAULT NULL,
+    `ref_ordercustomer_product` VARCHAR(255) DEFAULT NULL,
+    `date_souhaitee` DATE DEFAULT NULL,
+    `date_livraison` DATE DEFAULT NULL
+)
+SQL);
+        $this->insert('ordercustomer_product', [
+            'id',
+            'statut',
+            'id_ordercustomer',
+            'id_product',
+            'quantity',
+            'quantity_souhaitee',
+            'quantity_sent',
+            'price',
+            'texte',
+            'ref_ordercustomer_product',
+            'date_souhaitee',
+            'date_livraison'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `selling_order_item` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `ar_sent` BOOLEAN DEFAULT FALSE NOT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL,
+    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
+    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'partially_delivered') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_item_state)',
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `order_id` INT UNSIGNED DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL,
+    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `product_id` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `requested_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `requested_quantity_code` VARCHAR(6) DEFAULT NULL,
+    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
+    CONSTRAINT `IDX_8A64F230E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    CONSTRAINT `IDX_8A64F2308D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `selling_order` (`id`),
+    CONSTRAINT `IDX_8A64F2304584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `selling_order_item` (
+    `old_id`,
+    `confirmed_date`,
+    `confirmed_quantity_code`,
+    `confirmed_quantity_value`,
+    `emb_blocker_state`,
+    `emb_state_state`,
+    `product_id`,
+    `notes`,
+    `order_id`,
+    `price_code`,
+    `price_value`,
+    `ref`,
+    `requested_date`,
+    `requested_quantity_code`,
+    `requested_quantity_value`,
+    `type`
+) SELECT
+    `ordercustomer_product`.`id`,
+    `ordercustomer_product`.`date_livraison`,
+    `unit`.`code`,
+    IFNULL(`ordercustomer_product`.`quantity`, 0),
+    CASE
+        WHEN `selling_order`.`emb_blocker_state` IN ('closed', 'disabled')
+            OR (`selling_order`.`emb_state_state` IN ('agreed', 'partially_delivered') AND `ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity`)
+            THEN 'closed'
+        WHEN `selling_order`.`emb_blocker_state` = 'blocked' THEN 'blocked'
+        WHEN `selling_order`.`emb_state_state` IN ('agreed', 'partially_delivered') AND `ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity` THEN 'closed'
+        ELSE 'enabled'
+    END,
+    CASE
+        WHEN `selling_order`.`emb_blocker_state` = 'closed' THEN 'delivered'
+        WHEN `selling_order`.`emb_blocker_state` LIKE 'blocked' THEN 'agreed'
+        WHEN `selling_order`.`emb_state_state` IN ('agreed', 'partially_delivered')
+            THEN IF(`ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity`, 'delivered', IF(`ordercustomer_product`.`quantity_sent` > 0, 'partially_delivered', 'agreed'))
+        ELSE 'draft'
+    END,
+    `product`.`id`,
+    `ordercustomer_product`.`texte`,
+    `selling_order`.`id`,
+    'EUR',
+    IFNULL(`ordercustomer_product`.`price`, 0),
+    `ordercustomer_product`.`ref_ordercustomer_product`,
+    `ordercustomer_product`.`date_souhaitee`,
+    `unit`.`code`,
+    IFNULL(`ordercustomer_product`.`quantity_souhaitee`, 0),
+    'product'
+FROM `ordercustomer_product`
+INNER JOIN `product` ON `ordercustomer_product`.`id_product` = `product`.`old_id`
+LEFT JOIN `unit` ON `product`.`unit_id` = `unit`.`id`
+INNER JOIN `selling_order` ON `ordercustomer_product`.`id_ordercustomer` = `selling_order`.`old_id`
+WHERE `ordercustomer_product`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `ordercustomer_product`');
+    }
+
+    private function upSellingOrders(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordercustomer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_customer` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `id_ordercustomerstatus` INT UNSIGNED DEFAULT NULL,
+    `id_address` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `info_public` TEXT DEFAULT NULL
+)
+SQL);
+        $this->insert('ordercustomer', [
+            'id',
+            'statut',
+            'id_customer',
+            'ref',
+            'id_ordercustomerstatus',
+            'id_address',
+            'id_society',
+            'info_public'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `selling_order` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `billed_to_id` INT UNSIGNED DEFAULT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `customer_id` INT UNSIGNED DEFAULT NULL,
+    `destination_id` INT UNSIGNED DEFAULT NULL,
+    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
+    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'partially_delivered', 'to_validate') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_state)',
+    `kind` ENUM('EI', 'Prototype', 'Série', 'Pièce de rechange') DEFAULT 'Prototype' NOT NULL COMMENT '(DC2Type:product_kind)',
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_9CCD846B994CB78` FOREIGN KEY (`billed_to_id`) REFERENCES `customer_address` (`id`),
+    CONSTRAINT `IDX_9CCD846B979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_9CCD846B9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+    CONSTRAINT `IDX_9CCD846B816C6140` FOREIGN KEY (`destination_id`) REFERENCES `customer_address` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `selling_order` (`old_id`, `billed_to_id`, `company_id`, `customer_id`, `emb_blocker_state`, `emb_state_state`, `kind`, `notes`, `ref`)
+SELECT
+    `ordercustomer`.`id`,
+    `customer_address`.`id`,
+    `company`.`id`,
+    `customer`.`id`,
+    CASE
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (8, 10, 11) THEN 'closed'
+        WHEN `ordercustomer`.`id_ordercustomerstatus` = 12 THEN 'blocked'
+        ELSE 'enabled'
+    END,
+    CASE
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (2, 13) THEN 'to_validate'
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (3, 4, 5, 6, 11, 12) THEN 'agreed'
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (7, 9) THEN 'partially_delivered'
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (8, 10) THEN 'delivered'
+        ELSE 'draft'
+    END,
+    'Série',
+    `ordercustomer`.`info_public`,
+    `ordercustomer`.`ref`
+FROM `ordercustomer`
+INNER JOIN `society` `society_company` ON `ordercustomer`.`id_society` = `society_company`.`old_id`
+INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
+INNER JOIN `society` `society_customer` ON `ordercustomer`.`id_customer` = `society_customer`.`old_id`
+INNER JOIN `customer` ON `society_customer`.`id` = `customer`.`society_id`
+LEFT JOIN `customer_address` ON `ordercustomer`.`id_address` = `customer_address`.`old_id` AND `customer_address`.`type` = 'billing'
+WHERE `ordercustomer`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `ordercustomer`');
     }
 
     private function upSkills(): void {
@@ -3188,17 +3523,20 @@ INSERT INTO `skill` (
     `started_date`,
     `type_id`
 ) SELECT
-    (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `employee_histcompetence`.`id_employee`),
-    `date_cloture_formation`,
-    (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `employee_histcompetence`.`id_engine`),
-    (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `employee_histcompetence`.`id_formateur`),
-    `niveau`,
-    (SELECT `out_trainer`.`id` FROM `out_trainer` WHERE `out_trainer`.`id` = `employee_histcompetence`.`id_extformateur`),
-    `date_form`,
-    (SELECT `skill_type`.`id` FROM `skill_type` WHERE `skill_type`.`old_id` = `employee_histcompetence`.`id_competence`)
+    `employee`.`id`,
+    `employee_histcompetence`.`date_cloture_formation`,
+    `engine`.`id`,
+    `formateur`.`id`,
+    `employee_histcompetence`.`niveau`,
+    `out_trainer`.`id`,
+    `employee_histcompetence`.`date_form`,
+    `skill_type`.`id`
 FROM `employee_histcompetence`
-WHERE EXISTS (SELECT `employee`.`id` FROM `employee` WHERE `employee`.`old_id` = `employee_histcompetence`.`id_employee`)
-AND EXISTS (SELECT `skill_type`.`id` FROM `skill_type` WHERE `skill_type`.`old_id` = `employee_histcompetence`.`id_competence`)
+INNER JOIN `employee` ON `employee_histcompetence`.`id_employee` = `employee`.`old_id`
+LEFT JOIN `engine` ON `employee_histcompetence`.`id_engine` = `engine`.`old_id`
+LEFT JOIN `employee` `formateur` ON `employee_histcompetence`.`id_formateur` = `formateur`.`old_id`
+LEFT JOIN `out_trainer` ON `employee_histcompetence`.`id_extformateur` = `out_trainer`.`id`
+INNER JOIN `skill_type` ON `employee_histcompetence`.`id_competence` = `skill_type`.`old_id`
 SQL);
         $this->addQuery('DROP TABLE `employee_histcompetence`');
     }
@@ -3220,7 +3558,7 @@ CREATE TABLE `skill_type` (
     `name` VARCHAR(50) NOT NULL
 )
 SQL);
-        $this->addQuery('INSERT INTO `skill_type` (`old_id`, `name`) SELECT `id`, `designation` FROM `employee_competencelist` WHERE `statut` = 0');
+        $this->addQuery('INSERT INTO `skill_type` (`old_id`, `name`) SELECT `id`, UCFIRST(`designation`) FROM `employee_competencelist` WHERE `statut` = 0');
         $this->addQuery('DROP TABLE `employee_competencelist`');
     }
 
@@ -3231,8 +3569,8 @@ CREATE TABLE `society` (
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `nom` VARCHAR(255) NOT NULL,
     `phone` VARCHAR(255) DEFAULT NULL,
-    `address1` VARCHAR(80) DEFAULT NULL,
-    `address2` VARCHAR(60) DEFAULT NULL,
+    `address1` VARCHAR(255) DEFAULT NULL,
+    `address2` VARCHAR(255) DEFAULT NULL,
     `zip` VARCHAR(10) DEFAULT NULL,
     `city` VARCHAR(50) DEFAULT NULL,
     `id_country` INT UNSIGNED NOT NULL,
@@ -3246,7 +3584,7 @@ CREATE TABLE `society` (
     `invoice_minimum` DOUBLE PRECISION DEFAULT NULL,
     `order_minimum` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `web` VARCHAR(255) DEFAULT NULL,
-    `email` VARCHAR(60) DEFAULT NULL,
+    `email` VARCHAR(255) DEFAULT NULL,
     `formejuridique` VARCHAR(50) DEFAULT NULL,
     `siren` VARCHAR(50) DEFAULT NULL,
     `tva` VARCHAR(255) DEFAULT NULL,
@@ -3314,22 +3652,22 @@ CREATE TABLE `society` (
     `old_id` INT UNSIGNED DEFAULT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `accounting_account` VARCHAR(50) DEFAULT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `phone` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
-    `ar` TINYINT(1) DEFAULT 0 NOT NULL,
+    `ar` BOOLEAN DEFAULT FALSE NOT NULL,
     `bank_details` VARCHAR(255) DEFAULT NULL,
     `copper_index_code` VARCHAR(6) DEFAULT NULL,
     `copper_index_denominator` VARCHAR(6) DEFAULT NULL,
     `copper_index_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `copper_managed` TINYINT(1) DEFAULT 0 NOT NULL,
+    `copper_managed` BOOLEAN DEFAULT FALSE NOT NULL,
     `copper_next` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `copper_type` ENUM('à la livraison','mensuel','semestriel') NOT NULL DEFAULT 'mensuel' COMMENT '(DC2Type:copper_type)',
+    `copper_type` ENUM('à la livraison','mensuel','semestriel') NOT NULL DEFAULT 'mensuel' COMMENT '(DC2Type:copper)',
     `force_vat` ENUM('TVA par défaut selon le pays du client','Force AVEC TVA','Force SANS TVA') NOT NULL DEFAULT 'TVA par défaut selon le pays du client' COMMENT '(DC2Type:vat_message_force)',
     `incoterms_id` INT UNSIGNED DEFAULT NULL,
     `invoice_min_code` VARCHAR(6) DEFAULT NULL,
@@ -3381,27 +3719,27 @@ INSERT INTO `society` (
     `vat_message_id`,
     `web`
 ) SELECT
-    `id`,
-    `compte_compta`,
-    `address1`,
-    `address2`,
-    `city`,
-    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `society_old`.`id_country`),
-    `email`,
-    `phone`,
-    `zip`,
-    `ar_enabled` = 1 OR `ar_customer_enabled` = 1,
-    IFNULL(`indice_cu`, 0),
-    `indice_cu_date`,
-    `indice_cu_enabled`,
-    `indice_cu_date_fin`,
+    `society_old`.`id`,
+    `society_old`.`compte_compta`,
+    `society_old`.`address1`,
+    `society_old`.`address2`,
+    `society_old`.`city`,
+    UCASE(`country`.`code`),
+    `society_old`.`email`,
+    `society_old`.`phone`,
+    `society_old`.`zip`,
+    `society_old`.`ar_enabled` = 1 OR `society_old`.`ar_customer_enabled` = 1,
+    IFNULL(`society_old`.`indice_cu`, 0),
+    `society_old`.`indice_cu_date`,
+    `society_old`.`indice_cu_enabled`,
+    `society_old`.`indice_cu_date_fin`,
     CASE
-        WHEN `force_tva` = 1 THEN 'Force AVEC TVA'
-        WHEN `force_tva` = 2 THEN 'Force SANS TVA'
+        WHEN `society_old`.`force_tva` = 1 THEN 'Force AVEC TVA'
+        WHEN `society_old`.`force_tva` = 2 THEN 'Force SANS TVA'
         ELSE 'TVA par défaut selon le pays du client'
     END,
-    (SELECT `incoterms`.`id` FROM `incoterms` WHERE `incoterms`.`id` = `society_old`.`id_incoterms`),
-    IFNULL(`invoice_minimum`, 0),
+    `incoterms`.`id`,
+    IFNULL(`society_old`.`invoice_minimum`, 0),
     (
         SELECT `invoice_time_due`.`id`
         FROM `invoice_time_due`
@@ -3409,20 +3747,23 @@ INSERT INTO `society` (
         OR `invoice_time_due`.`id_old_invoicetimeduesupplier` = `society_old`.`id_invoicetimeduesupplier`
         LIMIT 1
     ),
-    `formejuridique`,
-    `nom`,
+    `society_old`.`formejuridique`,
+    `society_old`.`nom`,
     IF(
-        `info_public` IS NULL,
-        `info_private`,
-        IF(`info_private` IS NULL, NULL, CONCAT(`info_public`, `info_private`))
+        `society_old`.`info_public` IS NULL,
+        `society_old`.`info_private`,
+        IF(`society_old`.`info_private` IS NULL, NULL, CONCAT(`society_old`.`info_public`, `society_old`.`info_private`))
     ),
-    `order_minimum`,
-    `siren`,
-    `tva`,
-    (SELECT `vat_message`.`id` FROM `vat_message` WHERE `vat_message`.`id` = `society_old`.`id_messagetva`),
-    `web`
+    `society_old`.`order_minimum`,
+    `society_old`.`siren`,
+    `society_old`.`tva`,
+    `vat_message`.`id`,
+    `society_old`.`web`
 FROM `society_old`
-WHERE `statut` = 0
+LEFT JOIN `country` ON `society_old`.`id_country` = `country`.`id`
+LEFT JOIN `incoterms` ON `society_old`.`id_incoterms` = `incoterms`.`id`
+LEFT JOIN `vat_message` ON `society_old`.`id_messagetva` = `vat_message`.`id`
+WHERE `society_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `company` (
@@ -3445,9 +3786,10 @@ CREATE TABLE `company` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `company` (`name`, `society_id`)
-SELECT `nom`, (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)
+SELECT `society_old`.`nom`, `society`.`id`
 FROM `society_old`
-WHERE `is_company` = 1 AND `statut` = 0
+INNER JOIN `society` ON `society_old`.`id` = `society`.`old_id`
+WHERE `society_old`.`is_company` = 1 AND `society_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `customer` (
@@ -3456,11 +3798,11 @@ CREATE TABLE `customer` (
     `accounting_portal_password` VARCHAR(255) DEFAULT NULL,
     `accounting_portal_url` VARCHAR(255) DEFAULT NULL,
     `accounting_portal_username` VARCHAR(255) DEFAULT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `conveyance_duration_code` VARCHAR(6) DEFAULT NULL,
@@ -3472,10 +3814,10 @@ CREATE TABLE `customer` (
     `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `copper_managed` BOOLEAN DEFAULT FALSE NOT NULL,
     `copper_next` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper_type)',
+    `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper)',
     `currency_id` INT UNSIGNED NOT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'disabled', 'draft') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_current_place)',
+    `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
+    `emb_state_state` ENUM('agreed', 'draft') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_state)',
     `equivalent_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
     `invoice_by_email` BOOLEAN DEFAULT FALSE NOT NULL,
     `language` VARCHAR(255) DEFAULT NULL,
@@ -3512,7 +3854,8 @@ INSERT INTO `customer` (
     `copper_managed`,
     `copper_next`,
     `currency_id`,
-    `current_place_name`,
+    `emb_blocker_state`,
+    `emb_state_state`,
     `invoice_by_email`,
     `language`,
     `name`,
@@ -3522,35 +3865,31 @@ INSERT INTO `customer` (
     `payment_terms_id`,
     `society_id`
 ) SELECT
-    `address1`,
-    `address2`,
-    `city`,
-    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `society_old`.`id_country`),
-    `email`,
-    `phone`,
-    `zip`,
+    `society_old`.`address1`,
+    `society_old`.`address2`,
+    `society_old`.`city`,
+    UCASE(`country`.`code`),
+    `society_old`.`email`,
+    `society_old`.`phone`,
+    `society_old`.`zip`,
     'j',
     7,
-    IFNULL(`indice_cu`, 0),
-    `indice_cu_date`,
-    `indice_cu_enabled`,
-    `indice_cu_date_fin`,
-    (SELECT `currency`.`id` FROM `currency` WHERE `currency`.`code` = 'EUR'),
-    CASE
-        WHEN `id_societystatus` = 1 THEN 'draft'
-        WHEN `id_societystatus` = 2 THEN 'agreed'
-        WHEN `id_societystatus` = 3 THEN 'blocked'
-        ELSE 'draft'
-    END,
-    `invoicecustomer_by_email`,
-    (SELECT UCASE(`locale`.`code`) FROM `locale` WHERE `locale`.`id` = `society_old`.`id_locale`),
-    `nom`,
+    IFNULL(`society_old`.`indice_cu`, 0),
+    `society_old`.`indice_cu_date`,
+    `society_old`.`indice_cu_enabled`,
+    `society_old`.`indice_cu_date_fin`,
+    `currency`.`id`,
+    IF( `society_old`.`id_societystatus` = 3, 'blocked', 'enabled'),
+    IF( `society_old`.`id_societystatus` IN (2, 3), 'agreed', 'draft'),
+    `society_old`.`invoicecustomer_by_email`,
+    UCASE(`locale`.`code`),
+    `society_old`.`nom`,
     10,
     10,
     IF(
-        `info_public` IS NULL,
-        `info_private`,
-        IF(`info_private` IS NULL, NULL, CONCAT(`info_public`, `info_private`))
+        `society_old`.`info_public` IS NULL,
+        `society_old`.`info_private`,
+        IF(`society_old`.`info_private` IS NULL, NULL, CONCAT(`society_old`.`info_public`, `society_old`.`info_private`))
     ),
     (
         SELECT `invoice_time_due`.`id`
@@ -3559,9 +3898,13 @@ INSERT INTO `customer` (
         OR `invoice_time_due`.`id_old_invoicetimeduesupplier` = `society_old`.`id_invoicetimeduesupplier`
         LIMIT 1
     ),
-    (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)
+    `society`.`id`
 FROM `society_old`
-WHERE `is_customer` = 1 AND `statut` = 0
+LEFT JOIN `country` ON `society_old`.`id_country` = `country`.`id`
+LEFT JOIN `currency` ON `currency`.`code` = 'EUR'
+LEFT JOIN `locale` ON `society_old`.`id_locale` = `locale`.`id`
+INNER JOIN `society` ON `society_old`.`id` = `society`.`old_id`
+WHERE `society_old`.`is_customer` = 1 AND `society_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `customer_company` (
@@ -3574,24 +3917,24 @@ CREATE TABLE `customer_company` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `customer_company` (`customer_id`, `company_id`)
-SELECT
-    (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)),
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id_soc_gest_customer`))
+SELECT `customer`.`id`, `company`.`id`
 FROM `society_old`
-WHERE `is_customer` = 1
-AND `statut` = 0
-AND EXISTS (SELECT `customer`.`id` FROM `customer` WHERE `customer`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`))
-AND EXISTS (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id_soc_gest_customer`))
+INNER JOIN `society` `society_customer` ON `society_old`.`id` = `society_customer`.`old_id`
+INNER JOIN `customer` ON `society_customer`.`id` = `customer`.`society_id`
+INNER JOIN `society` `society_company` ON `society_old`.`id_soc_gest_customer` = `society_company`.`old_id`
+INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
+WHERE `society_old`.`is_customer` = 1
+AND `society_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `supplier` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `address_address` VARCHAR(80) DEFAULT NULL,
-    `address_address2` VARCHAR(60) DEFAULT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
     `address_city` VARCHAR(50) DEFAULT NULL,
     `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `address_email` VARCHAR(60) DEFAULT NULL,
+    `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `confidence_criteria` TINYINT UNSIGNED DEFAULT '0' NOT NULL COMMENT '(DC2Type:tinyint)',
@@ -3601,13 +3944,13 @@ CREATE TABLE `supplier` (
     `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `copper_managed` BOOLEAN DEFAULT FALSE NOT NULL,
     `copper_next` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper_type)',
+    `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper)',
     `currency_id` INT UNSIGNED NOT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'disabled', 'draft', 'to_validate', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:supplier_current_place)',
+    `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'to_validate', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:supplier_state)',
     `language` VARCHAR(255) DEFAULT NULL,
-    `managed_production` TINYINT(1) DEFAULT 0 NOT NULL,
-    `managed_quality` TINYINT(1) DEFAULT 0 NOT NULL,
+    `managed_production` BOOLEAN DEFAULT FALSE NOT NULL,
+    `managed_quality` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `notes` TEXT DEFAULT NULL,
     `society_id` INT UNSIGNED NOT NULL,
@@ -3629,40 +3972,45 @@ INSERT INTO `supplier` (
     `copper_managed`,
     `copper_next`,
     `currency_id`,
-    `current_place_name`,
+    `emb_blocker_state`,
+    `emb_state_state`,
     `language`,
     `name`,
     `notes`,
     `society_id`
 ) SELECT
-    `address1`,
-    `address2`,
-    `city`,
-    (SELECT UCASE(`country`.`code`) FROM `country` WHERE `country`.`id` = `society_old`.`id_country`),
-    `email`,
-    `phone`,
-    `zip`,
-    IFNULL(`indice_cu`, 0),
-    `indice_cu_date`,
-    `indice_cu_enabled`,
-    `indice_cu_date_fin`,
-    (SELECT `currency`.`id` FROM `currency` WHERE `currency`.`code` = 'EUR'),
+    `society_old`.`address1`,
+    `society_old`.`address2`,
+    `society_old`.`city`,
+    UCASE(`country`.`code`),
+    `society_old`.`email`,
+    `society_old`.`phone`,
+    `society_old`.`zip`,
+    IFNULL(`society_old`.`indice_cu`, 0),
+    `society_old`.`indice_cu_date`,
+    `society_old`.`indice_cu_enabled`,
+    `society_old`.`indice_cu_date_fin`,
+    `currency`.`id`,
+    IF(`society_old`.`id_societystatus` = 3, 'blocked', 'enabled'),
     CASE
-        WHEN `id_societystatus` = 1 THEN 'to_validate'
-        WHEN `id_societystatus` = 2 THEN 'agreed'
-        WHEN `id_societystatus` = 3 THEN 'blocked'
-        ELSE 'draft'
+        WHEN `society_old`.`id_societystatus` = 2 THEN 'agreed'
+        WHEN `society_old`.`id_societystatus` = 3 THEN 'warning'
+        ELSE 'to_validate'
     END,
-    (SELECT UCASE(`locale`.`code`) FROM `locale` WHERE `locale`.`id` = `society_old`.`id_locale`),
-    `nom`,
+    UCASE(`locale`.`code`),
+    `society_old`.`nom`,
     IF(
-        `info_public` IS NULL,
-        `info_private`,
-        IF(`info_private` IS NULL, NULL, CONCAT(`info_public`, `info_private`))
+        `society_old`.`info_public` IS NULL,
+        `society_old`.`info_private`,
+        IF(`society_old`.`info_private` IS NULL, NULL, CONCAT(`society_old`.`info_public`, `society_old`.`info_private`))
     ),
-    (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)
+    `society`.`id`
 FROM `society_old`
-WHERE `is_supplier` = 1 AND `statut` = 0
+LEFT JOIN `country` ON `society_old`.`id_country` = `country`.`id`
+LEFT JOIN `currency` ON `currency`.`code` = 'EUR'
+LEFT JOIN `locale` ON `society_old`.`id_locale` = `locale`.`id`
+INNER JOIN `society`ON `society_old`.`id` = `society`.`old_id`
+WHERE `society_old`.`is_supplier` = 1 AND `society_old`.`statut` = 0
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `supplier_company` (
@@ -3675,14 +4023,14 @@ CREATE TABLE `supplier_company` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `supplier_company` (`supplier_id`, `company_id`)
-SELECT
-    (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`)),
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id_soc_gest`))
+SELECT `supplier`.`id`, `company`.`id`
 FROM `society_old`
-WHERE `is_supplier` = 1
-AND `statut` = 0
-AND EXISTS (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id`))
-AND EXISTS (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_old`.`id_soc_gest_customer`))
+INNER JOIN `society` `society_supplier` ON `society_old`.`id` = `society_supplier`.`old_id`
+INNER JOIN `supplier` ON `society_supplier`.`id` = `supplier`.`society_id`
+INNER JOIN `society` `society_company` ON `society_old`.`id_soc_gest` = `society_company`.`old_id`
+INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
+WHERE `society_old`.`is_supplier` = 1
+AND `society_old`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `society_old`');
     }
@@ -3726,7 +4074,7 @@ CREATE TABLE `stock` (
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
     `quantity_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item_type)',
+    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
     `warehouse_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_4B365660E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
     CONSTRAINT `IDX_4B3656604584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
@@ -3746,31 +4094,25 @@ INSERT INTO `stock` (
     `type`,
     `warehouse_id`
 ) SELECT
-    `id`,
-    `batchnumber`,
-    (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `old_stock`.`id_component`),
-    `jail`,
-    `location`,
-    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `old_stock`.`id_product`),
-    IF(
-        EXISTS (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `old_stock`.`id_component`),
-        (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `component`.`unit_id` FROM `component` WHERE `component`.`old_id` = `old_stock`.`id_component`)),
-        (SELECT `unit`.`code` FROM `unit` WHERE `unit`.`id` = (SELECT `product`.`unit_id` FROM `product` WHERE `product`.`old_id` = `old_stock`.`id_product`))
-    ),
-    `quantity`,
-    IF(
-        EXISTS (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `old_stock`.`id_component`),
-        'component',
-        'product'
-    ),
-    (SELECT `warehouse`.`id` FROM `warehouse` WHERE `warehouse`.`old_id` = `old_stock`.`id_warehouse`)
+    `old_stock`.`id`,
+    `old_stock`.`batchnumber`,
+    `component`.`id`,
+    `old_stock`.`jail`,
+    `old_stock`.`location`,
+    `product`.`id`,
+    IF(`component`.`id` IS NOT NULL, `unit_component`.`code`, `unit_product`.`code`),
+    `old_stock`.`quantity`,
+    IF(`component`.`id` IS NOT NULL, 'component', 'product'),
+    `warehouse`.`id`
 FROM `old_stock`
-WHERE `statut` = 0
-AND `quantity` IS NOT NULL AND TRIM(`quantity`) != '' AND `quantity` > 0
-AND (
-    EXISTS (SELECT `component`.`id` FROM `component` WHERE `component`.`old_id` = `old_stock`.`id_component`)
-    OR EXISTS (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `old_stock`.`id_product`)
-)
+LEFT JOIN `component` ON `old_stock`.`id_component` = `component`.`old_id`
+LEFT JOIN `unit` `unit_component` ON `component`.`unit_id` = `unit_component`.`id`
+LEFT JOIN `product` ON `old_stock`.`id_product` = `product`.`old_id`
+LEFT JOIN `unit` `unit_product` ON `product`.`unit_id` = `unit_product`.`id`
+LEFT JOIN `warehouse` ON `old_stock`.`id_warehouse` = `warehouse`.`old_id`
+WHERE `old_stock`.`statut` = 0
+AND `old_stock`.`quantity` IS NOT NULL AND TRIM(`old_stock`.`quantity`) != '' AND `old_stock`.`quantity` > 0
+AND (`component`.`id` IS NOT NULL OR `product`.`id` IS NOT NULL)
 SQL);
         $this->addQuery('DROP TABLE `old_stock`');
     }
@@ -3854,104 +4196,23 @@ INSERT INTO `supplier_component` (
     `component`.`id`,
     'j',
     `component_supplier`.`timetodelivery`,
-    (SELECT `incoterms`.`id` FROM `incoterms` WHERE `incoterms`.`id` = `component_supplier`.`id_incoterms`),
+    `incoterms`.`id`,
     `unit`.`code`,
     `component_supplier`.`moq`,
     `unit`.`code`,
     `component_supplier`.`typeconditionnement`,
     `component_supplier`.`conditionnement`,
     100,
-    (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `component_supplier`.`id_supplier`))
+    `supplier`.`id`
 FROM `component_supplier`
 INNER JOIN `component` ON `component_supplier`.`id_component` = `component`.`old_id`
 LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
+LEFT JOIN `incoterms` ON `component_supplier`.`id_incoterms` = `incoterms`.`id`
+INNER JOIN `society` ON `component_supplier`.`id_supplier` = `society`.`old_id`
+INNER JOIN `supplier` ON `society`.`id` = `supplier`.`society_id`
 WHERE `component_supplier`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `component_supplier`');
-    }
-
-    private function upSupplierOrders(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `ordersupplier` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_supplier` INT UNSIGNED DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `id_ordersupplierstatus` INT UNSIGNED DEFAULT NULL,
-    `open_order` VARCHAR(255) DEFAULT NULL,
-    `id_address` INT UNSIGNED DEFAULT NULL,
-    `id_society` INT UNSIGNED DEFAULT NULL,
-    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
-    `info_public` TEXT DEFAULT NULL COMMENT 'info interne',
-    `commentaire` TEXT DEFAULT NULL COMMENT 'info affichee sur le document envoyé'
-)
-SQL);
-        $this->insert('ordersupplier', [
-            'id',
-            'statut',
-            'id_supplier',
-            'ref',
-            'id_ordersupplierstatus',
-            'open_order',
-            'id_address',
-            'id_society',
-            'supplement_fret',
-            'info_public',
-            'commentaire'
-        ]);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `supplier_order` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `company_id` INT UNSIGNED DEFAULT NULL,
-    `contact_id` INT UNSIGNED DEFAULT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'cart', 'closed', 'disabled', 'draft', 'partially_delivered', 'to_validate') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:supplier_order_current_place)',
-    `customer_order_id` INT UNSIGNED DEFAULT NULL,
-    `delivery_company_id` INT UNSIGNED DEFAULT NULL,
-    `notes` VARCHAR(255) DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
-    `supplier_id` INT UNSIGNED DEFAULT NULL,
-    CONSTRAINT `IDX_2C3291B2979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_2C3291B2E7A1254A` FOREIGN KEY (`contact_id`) REFERENCES `supplier_contact` (`id`),
-    CONSTRAINT `IDX_2C3291B2A15A2E17` FOREIGN KEY (`customer_order_id`) REFERENCES `customer_order` (`id`),
-    CONSTRAINT `IDX_2C3291B289DE8DF2` FOREIGN KEY (`delivery_company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_2C3291B22ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `supplier_order` (
-    `company_id`,
-    `current_place_name`,
-    `delivery_company_id`,
-    `notes`,
-    `ref`,
-    `supplement_fret`,
-    `supplier_id`
-) SELECT
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_society`)),
-    CASE
-        WHEN `id_ordersupplierstatus` = 4 THEN 'agreed'
-        WHEN `id_ordersupplierstatus` = 5 THEN 'partially_delivered'
-        WHEN `id_ordersupplierstatus` = 6 THEN 'closed'
-        WHEN `id_ordersupplierstatus` = 7 THEN 'disabled'
-        ELSE 'to_validate'
-    END,
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_society`)),
-    IF(
-        `info_public` IS NULL,
-        `commentaire`,
-        IF(`commentaire` IS NULL, NULL, CONCAT(`info_public`, `commentaire`))
-    ),
-    `ref`,
-    `supplement_fret`,
-    (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_supplier`))
-FROM `ordersupplier`
-WHERE `statut` = 0
-AND EXISTS (SELECT `supplier`.`id` FROM `supplier` WHERE `supplier`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `ordersupplier`.`id_supplier`))
-SQL);
-        $this->addQuery('DROP TABLE `ordersupplier`');
     }
 
     private function upSupplies(): void {
@@ -3992,15 +4253,17 @@ SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `supply` (`product_id`, `company_id`, `proportion`, `incoterms_id`, `ref`)
 SELECT
-    (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_supplier`.`id_product`),
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_supplier`.`id_supplier`)),
-    `percentage`,
-    (SELECT `incoterms`.`id` FROM `incoterms` WHERE `incoterms`.`id` = `product_supplier`.`id_incoterms`),
-    `refsupplier`
+    `product`.`id`,
+    `company`.`id`,
+    `product_supplier`.`percentage`,
+    `incoterms`.`id`,
+    `product_supplier`.`refsupplier`
 FROM `product_supplier`
-WHERE `statut` = 0
-AND EXISTS (SELECT `product`.`id` FROM `product` WHERE `product`.`old_id` = `product_supplier`.`id_product`)
-AND EXISTS (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `product_supplier`.`id_supplier`))
+INNER JOIN `product` ON `product_supplier`.`id_product` = `product`.`old_id`
+INNER JOIN `society` ON `product_supplier`.`id_supplier` = `society`.`old_id`
+INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
+LEFT JOIN `incoterms` ON `product_supplier`.`id_incoterms` = `incoterms`.`id`
+WHERE `product_supplier`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `product_supplier`');
     }
@@ -4106,27 +4369,23 @@ SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `warehouse` (`old_id`, `company_id`, `families`, `name`)
 SELECT
-    `id`,
-    (
-        SELECT `company`.`id`
-        FROM `company`
-        WHERE `company`.`society_id` = (
-            SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `warehouse_old`.`id_society`
-        )
-    ),
+    `warehouse_old`.`id`,
+    `company`.`id`,
     CASE
-        WHEN `warehouse_name` LIKE '%prison%' THEN 'prison'
-        WHEN `warehouse_name` LIKE '%fabrication%' OR `warehouse_name` LIKE '%production%' THEN 'production'
-        WHEN `warehouse_name` LIKE '%réception%' OR `warehouse_name` LIKE '%import%' THEN 'réception'
-        WHEN `warehouse_name` LIKE '%vente%' THEN 'magasin pièces finies'
-        WHEN `warehouse_name` LIKE '%expédition%' OR `warehouse_name` LIKE '%export%' THEN 'expédition'
-        WHEN `warehouse_name` LIKE '%besoin%' OR `warehouse_name` LIKE '%magasin%' THEN 'magasin matières premières'
-        WHEN `warehouse_name` LIKE '%camion%' THEN 'camion'
+        WHEN `warehouse_old`.`warehouse_name` LIKE '%prison%' THEN 'prison'
+        WHEN `warehouse_old`.`warehouse_name` LIKE '%fabrication%' OR `warehouse_old`.`warehouse_name` LIKE '%production%' THEN 'production'
+        WHEN `warehouse_old`.`warehouse_name` LIKE '%réception%' OR `warehouse_old`.`warehouse_name` LIKE '%import%' THEN 'réception'
+        WHEN `warehouse_old`.`warehouse_name` LIKE '%vente%' THEN 'magasin pièces finies'
+        WHEN `warehouse_old`.`warehouse_name` LIKE '%expédition%' OR `warehouse_old`.`warehouse_name` LIKE '%export%' THEN 'expédition'
+        WHEN `warehouse_old`.`warehouse_name` LIKE '%besoin%' OR `warehouse_old`.`warehouse_name` LIKE '%magasin%' THEN 'magasin matières premières'
+        WHEN `warehouse_old`.`warehouse_name` LIKE '%camion%' THEN 'camion'
         ELSE NULL
     END,
-    `warehouse_name`
+    `warehouse_old`.`warehouse_name`
 FROM `warehouse_old`
-WHERE `statut` = 0
+INNER JOIN `society` ON `warehouse_old`.`id_society` = `society`.`old_id`
+INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
+WHERE `warehouse_old`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `warehouse_old`');
     }
@@ -4135,28 +4394,27 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `society_zone` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_society` INT UNSIGNED NOT NULL,
     `nom` VARCHAR(255) NOT NULL
 )
 SQL);
         $this->insert('society_zone', ['id', 'id_society', 'nom']);
         $this->addQuery(<<<'SQL'
-UPDATE `society_zone`
-SET `id_society` = (
-    SELECT `company`.`id`
-    FROM `company`
-    WHERE `company`.`society_id` = (
-        SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = `society_zone`.`id_society`
-    )
+CREATE TABLE `zone` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    CONSTRAINT `IDX_A0EBC007979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-ALTER TABLE `society_zone`
-    CHANGE `id_society` `company_id` INT UNSIGNED NOT NULL,
-    CHANGE `nom` `name` VARCHAR(255) NOT NULL,
-    ADD CONSTRAINT `IDX_A0EBC007979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+INSERT INTO `zone` (`company_id`, `name`)
+SELECT `company`.`id`, UCFIRST(`society_zone`.`nom`)
+FROM `society_zone`
+INNER JOIN `society` ON `society_zone`.`id_society` = `society`.`old_id`
+INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
 SQL);
-        $this->addQuery('RENAME TABLE `society_zone` TO `zone`');
+        $this->addQuery('DROP TABLE `society_zone`');
     }
 }

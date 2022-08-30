@@ -63,8 +63,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table('company_event')
 ]
 class Event extends AbstractEvent {
-    public const EVENT_HOLIDAY = 'holiday';
-    public const EVENT_KINDS = [self::EVENT_HOLIDAY];
+    final public const EVENT_HOLIDAY = 'holiday';
+    final public const EVENT_KINDS = [self::EVENT_HOLIDAY];
 
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),

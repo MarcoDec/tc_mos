@@ -71,9 +71,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Incoterms extends Entity {
     #[
         ApiProperty(description: 'Code ', required: true, example: 'DDP'),
-        Assert\Length(min: 3, max: 11),
+        Assert\Length(min: 3, max: 25),
         Assert\NotBlank,
-        ORM\Column(length: 11),
+        ORM\Column(length: 25),
         Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
     private ?string $code = null;

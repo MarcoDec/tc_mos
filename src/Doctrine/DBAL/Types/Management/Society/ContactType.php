@@ -5,16 +5,16 @@ namespace App\Doctrine\DBAL\Types\Management\Society;
 use App\Doctrine\DBAL\Types\EnumType;
 
 final class ContactType extends EnumType {
-    public const TYPE_ACCOUNTING = 'comptabilité';
-    public const TYPE_COSTING = 'chiffrage';
-    public const TYPE_DIRECTION = 'direction';
-    public const TYPE_ENGINEERING = 'ingénierie';
-    public const TYPE_MANUFACTURING = 'fabrication';
-    public const TYPE_PURCHASING = 'achat';
-    public const TYPE_QUALITY = 'qualité';
-    public const TYPE_SELLING = 'commercial';
-    public const TYPE_SUPPLYING = 'approvisionnement';
-    public const TYPES = [
+    final public const TYPE_ACCOUNTING = 'comptabilité';
+    final public const TYPE_COSTING = 'chiffrage';
+    final public const TYPE_DIRECTION = 'direction';
+    final public const TYPE_ENGINEERING = 'ingénierie';
+    final public const TYPE_MANUFACTURING = 'fabrication';
+    final public const TYPE_PURCHASING = 'achat';
+    final public const TYPE_QUALITY = 'qualité';
+    final public const TYPE_SELLING = 'commercial';
+    final public const TYPE_SUPPLYING = 'approvisionnement';
+    final public const TYPES = [
         self::TYPE_ACCOUNTING,
         self::TYPE_COSTING,
         self::TYPE_DIRECTION,
@@ -27,6 +27,6 @@ final class ContactType extends EnumType {
     ];
 
     public function getName(): string {
-        return 'contact_type';
+        return 'contact';
     }
 }

@@ -81,7 +81,7 @@ class Expedition extends Entity {
 
     /** @var Item<I>|null */
     #[
-        ApiProperty(description: 'Item', readableLink: false, example: '/api/customer-order-items/1'),
+        ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-order-items/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
