@@ -141,21 +141,21 @@ class Operation extends Entity {
     private ?Order $order = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/employee/1'),
+        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/employees/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?Employee $pic = null;
 
     #[
-        ApiProperty(description: 'Date de départ', example: '2022-24-03'),
+        ApiProperty(description: 'Date de départ', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/workstations/1'),
+        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/workstations/460'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]

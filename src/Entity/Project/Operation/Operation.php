@@ -81,7 +81,7 @@ class Operation extends Entity {
     private ?string $boundary = null;
 
     #[
-        ApiProperty(description: 'Cadence'),
+        ApiProperty(description: 'Cadence', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
         Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
@@ -104,14 +104,14 @@ class Operation extends Entity {
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Prix'),
+        ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
     private Measure $price;
 
     #[
-        ApiProperty(description: 'Durée'),
+        ApiProperty(description: 'Durée', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
         Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]
