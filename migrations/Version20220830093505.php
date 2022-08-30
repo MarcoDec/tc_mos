@@ -2289,6 +2289,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `expedition` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `batch_number` VARCHAR(255) DEFAULT NULL,
     `date` DATE NOT NULL COMMENT '(DC2Type:date_immutable)',
@@ -2306,6 +2307,7 @@ CREATE TABLE `expedition` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `expedition` (
+    `old_id`,
     `batch_number`,
     `date`,
     `item_id`,
@@ -2314,14 +2316,17 @@ INSERT INTO `expedition` (
     `quantity_code`,
     `quantity_value`
 ) SELECT
-    `batchnumber`,
-    `date_livraison`,
-    (SELECT `selling_order_item`.`id` FROM `selling_order_item` WHERE `selling_order_item`.`old_id` = `old_expedition`.`id_ordercustomer_product`),
-    `location`,
-    (SELECT `stock`.`id` FROM `stock` WHERE `stock`.`old_id` = `old_expedition`.`id_stock`),
+    `old_expedition`.`id`,
+    `old_expedition`.`batchnumber`,
+    `old_expedition`.`date_livraison`,
+    `selling_order_item`.`id`,
+    `old_expedition`.`location`,
+    `stock`.`id`,
     'U',
-    `quantity`
+    `old_expedition`.`quantity`
 FROM `old_expedition`
+LEFT JOIN `selling_order_item` ON `old_expedition`.`id_ordercustomer_product` = `selling_order_item`.`old_id`
+LEFT JOIN `stock` ON `old_expedition`.`id_stock` = `stock`.`old_id`
 SQL);
         $this->addQuery('DROP TABLE `old_expedition`');
     }

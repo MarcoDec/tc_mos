@@ -73,7 +73,7 @@ class Expedition extends Entity {
     private ?string $batchNumber = null;
 
     #[
-        ApiProperty(description: 'Date', example: '2022-24-03'),
+        ApiProperty(description: 'Date', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: false),
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]
