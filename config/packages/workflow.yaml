@@ -297,12 +297,17 @@ framework:
       marking_store: '%wf_marking_store%'
       places:
         - '%wf_place_agreed%'
+        - '%wf_place_billed%'
         - '%wf_place_delivered%'
         - '%wf_place_draft%'
+        - '%wf_place_paid%'
         - '%wf_place_partially_delivered%'
       supports:
         - App\Entity\Selling\Order\Item
       transitions:
+        '%wf_tr_bill%':
+          from: '%wf_place_delivered%'
+          to: '%wf_place_billed%'
         '%wf_tr_deliver%':
           from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
           to: '%wf_place_delivered%'
@@ -312,6 +317,9 @@ framework:
         '%wf_tr_validate%':
           from: '%wf_place_draft%'
           to: '%wf_place_agreed%'
+        '%wf_tr_pay%':
+          from: '%wf_place_billed%'
+          to: '%wf_place_paid%'
       type: state_machine
     supplier:
       audit_trail: '%wf_audit_trail%'
