@@ -34,7 +34,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'SellingOrderItemComponent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:measure'],
+            'groups' => ['read:id', 'read:item', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'SellingOrderItemComponent-read',
             'skip_null_values' => false
         ]
@@ -43,7 +43,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class ComponentItem extends Item {
     #[
-        ApiProperty(description: 'Composant', example: '/api/components/1'),
+        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
         ORM\ManyToOne(targetEntity: Component::class),
         Serializer\Groups(['read:item', 'write:item'])
