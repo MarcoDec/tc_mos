@@ -7,7 +7,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Production\Manufacturing\Operation as ManufacturingOperation;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -103,6 +106,10 @@ class Operation extends Entity {
     ]
     private ?string $name = null;
 
+    /** @var Collection<int, ManufacturingOperation> */
+    #[ORM\OneToMany(mappedBy: 'operation', targetEntity: ManufacturingOperation::class, fetch: 'EXTRA_LAZY')]
+    private Collection $operations;
+
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
@@ -126,8 +133,17 @@ class Operation extends Entity {
 
     public function __construct() {
         $this->cadence = new Measure();
+        $this->operations = new ArrayCollection();
         $this->price = new Measure();
         $this->time = new Measure();
+    }
+
+    final public function addOperation(ManufacturingOperation $operation): self {
+        if (!$this->operations->contains($operation)) {
+            $this->operations->add($operation);
+            $operation->setOperation($this);
+        }
+        return $this;
     }
 
     final public function getBoundary(): ?string {
@@ -142,8 +158,19 @@ class Operation extends Entity {
         return $this->code;
     }
 
+    final public function getCountOperations(): int {
+        return $this->operations->count();
+    }
+
     final public function getName(): ?string {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, ManufacturingOperation>
+     */
+    final public function getOperations(): Collection {
+        return $this->operations;
     }
 
     final public function getPrice(): Measure {
@@ -160,6 +187,16 @@ class Operation extends Entity {
 
     final public function isAuto(): bool {
         return $this->auto;
+    }
+
+    final public function removeOperation(ManufacturingOperation $operation): self {
+        if ($this->operations->contains($operation)) {
+            $this->operations->removeElement($operation);
+            if ($operation->getOperation() === $this) {
+                $operation->setOperation(null);
+            }
+        }
+        return $this;
     }
 
     final public function setAuto(bool $auto): self {
