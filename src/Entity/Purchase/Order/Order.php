@@ -12,7 +12,7 @@ use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Purchase\Supplier\Contact;
 use App\Entity\Purchase\Supplier\Supplier;
-use App\Entity\Selling\Order\Order as CustomerOrder;
+use App\Entity\Selling\Order\Order as SellingOrder;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -72,18 +72,18 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['supplier_order', 'closer'], 'type' => 'string']
+                            'schema' => ['enum' => ['purchase_order', 'closer'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
                     'summary' => 'Transite la commande à son prochain statut de workflow'
                 ],
-                'path' => '/supplier-orders/{id}/promote/{workflow}/to/{transition}',
+                'path' => '/purchase-orders/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
         ],
-        shortName: 'SupplierOrder',
+        shortName: 'PurchaseOrder',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
@@ -98,7 +98,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
     ),
     ORM\Entity,
-    ORM\Table(name: 'supplier_order')
+    ORM\Table(name: 'purchase_order')
 ]
 class Order extends Entity {
     #[
@@ -114,13 +114,6 @@ class Order extends Entity {
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Contact $contact = null;
-
-    #[
-        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/customer-orders/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:order', 'write:order'])
-    ]
-    private ?CustomerOrder $customerOrder = null;
 
     #[
         ApiProperty(description: 'Compagnie en charge de la livraison', readableLink: false, example: '/api/companies/1'),
@@ -147,6 +140,13 @@ class Order extends Entity {
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?string $notes = null;
+
+    #[
+        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private ?SellingOrder $order = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'EJZ65'),
@@ -186,10 +186,6 @@ class Order extends Entity {
         return $this->contact;
     }
 
-    final public function getCustomerOrder(): ?CustomerOrder {
-        return $this->customerOrder;
-    }
-
     final public function getDeliveryCompany(): ?Company {
         return $this->deliveryCompany;
     }
@@ -204,6 +200,10 @@ class Order extends Entity {
 
     final public function getNotes(): ?string {
         return $this->notes;
+    }
+
+    final public function getOrder(): ?SellingOrder {
+        return $this->order;
     }
 
     final public function getRef(): ?string {
@@ -237,11 +237,6 @@ class Order extends Entity {
         return $this;
     }
 
-    final public function setCustomerOrder(?CustomerOrder $customerOrder): self {
-        $this->customerOrder = $customerOrder;
-        return $this;
-    }
-
     final public function setDeliveryCompany(?Company $deliveryCompany): self {
         $this->deliveryCompany = $deliveryCompany;
         return $this;
@@ -259,6 +254,11 @@ class Order extends Entity {
 
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
+        return $this;
+    }
+
+    final public function setOrder(?SellingOrder $order): self {
+        $this->order = $order;
         return $this;
     }
 

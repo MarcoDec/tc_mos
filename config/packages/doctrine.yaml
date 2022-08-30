@@ -23,8 +23,6 @@ doctrine:
       copper: App\Doctrine\DBAL\Types\Embeddable\CopperType
       contact: App\Doctrine\DBAL\Types\Management\Society\ContactType
       customer_address: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
-      customer_order_item_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Order\CustomerOrderItemStateType
-      customer_order_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Order\CustomerOrderStateType
       customer_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Customer\CustomerStateType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
@@ -38,8 +36,10 @@ doctrine:
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
       product_state: App\Doctrine\DBAL\Types\Embeddable\Project\Product\ProductStateType
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
+      selling_order_item_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Order\SellingOrderItemStateType
+      selling_order_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Order\SellingOrderStateType
       situation_place: App\Doctrine\DBAL\Types\Hr\Employee\SituationType
-      supplier_order_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\OrderStateType
+      purchase_order_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\OrderStateType
       supplier_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Supplier\SupplierStateType
       tinyint: App\Doctrine\DBAL\Types\Tinyint
       vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce

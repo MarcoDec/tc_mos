@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'description' => 'Récupère les statuts',
                 'summary' => 'Récupère les statuts',
             ],
-            'path' => '/employee-current-places/options'
+            'path' => '/employee-states/options'
         ]
     ],
     itemOperations: ['get' => NO_ITEM_GET_OPERATION],

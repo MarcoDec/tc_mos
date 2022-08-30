@@ -61,28 +61,28 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['customer_order_item', 'closer'], 'type' => 'string']
+                            'schema' => ['enum' => ['selling_order_item', 'closer'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
                     'summary' => 'Transite la ligne à son prochain statut de workflow'
                 ],
-                'path' => '/customer-order-items/{id}/promote/{workflow}/to/{transition}',
+                'path' => '/selling-order-items/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
         ],
-        shortName: 'CustomerOrderItem',
+        shortName: 'SellingOrderItem',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:item', 'write:measure'],
-            'openapi_definition_name' => 'CustomerOrderItem-write'
+            'openapi_definition_name' => 'SellingOrderItem-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:item', 'read:measure', 'read:state'],
-            'openapi_definition_name' => 'CustomerOrderItem-read',
+            'openapi_definition_name' => 'SellingOrderItem-read',
             'skip_null_values' => false
         ]
     ),
@@ -90,7 +90,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
-    ORM\Table(name: 'customer_order_item')
+    ORM\Table(name: 'selling_order_item')
 ]
 abstract class Item extends BaseItem {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];

@@ -4,7 +4,7 @@
 
     defineProps({brands: {type: Boolean}, icon: {required: true, type: String}, title: {required: true, type: String}})
 
-    const options = generateOptions('employee-current-places', 'value')
+    const options = generateOptions('employee-states', 'value')
     await options.fetch()
     const fields = [
         {create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true},

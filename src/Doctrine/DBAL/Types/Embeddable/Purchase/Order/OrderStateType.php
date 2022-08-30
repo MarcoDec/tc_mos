@@ -15,6 +15,6 @@ final class OrderStateType extends StateType {
     ];
 
     public function getName(): string {
-        return 'supplier_order_state';
+        return 'purchase_order_state';
     }
 }

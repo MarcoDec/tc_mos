@@ -74,33 +74,33 @@ use Symfony\Component\Validator\Constraints as Assert;
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['customer_order', 'closer'], 'type' => 'string']
+                            'schema' => ['enum' => ['selling_order', 'closer'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
                     'summary' => 'Transite la commande à son prochain statut de workflow'
                 ],
-                'path' => '/customer-orders/{id}/promote/{workflow}/to/{transition}',
+                'path' => '/selling-orders/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
                 'validate' => false
             ]
         ],
-        shortName: 'CustomerOrder',
+        shortName: 'SellingOrder',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_SELLING_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:order'],
-            'openapi_definition_name' => 'CustomerOrder-write'
+            'openapi_definition_name' => 'SellingOrder-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:order', 'read:state'],
-            'openapi_definition_name' => 'CustomerOrder-read',
+            'openapi_definition_name' => 'SellingOrder-read',
             'skip_null_values' => false
         ],
     ),
     ORM\Entity,
-    ORM\Table(name: 'customer_order')
+    ORM\Table(name: 'selling_order')
 ]
 class Order extends Entity {
     #[

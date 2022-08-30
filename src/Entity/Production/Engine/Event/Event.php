@@ -80,7 +80,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'EngineEvent-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current-place', 'read:event', 'read:id', 'read:state'],
+            'groups' => ['read:event', 'read:id', 'read:state'],
             'openapi_definition_name' => 'EngineEvent-read',
             'skip_null_values' => false
         ]
