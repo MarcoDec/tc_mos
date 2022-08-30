@@ -19,7 +19,7 @@ doctrine:
       blocker_state: App\Doctrine\DBAL\Types\Embeddable\BlockerStateType
       char: App\Doctrine\DBAL\Types\CharType
       closer_state: App\Doctrine\DBAL\Types\Embeddable\CloserStateType
-      component_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Component\ComponentStateType
+      component_manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\ComponentManufacturingOperationStateType
       copper: App\Doctrine\DBAL\Types\Embeddable\CopperType
       contact: App\Doctrine\DBAL\Types\Management\Society\ContactType
       customer_address: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
@@ -32,7 +32,6 @@ doctrine:
       event_state: App\Doctrine\DBAL\Types\Embeddable\EventStateType
       gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
       item: App\Doctrine\DBAL\Types\ItemType
-      manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OperationStateType
       manufacturing_order_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OrderStateType
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
       product_state: App\Doctrine\DBAL\Types\Embeddable\Project\Product\ProductStateType

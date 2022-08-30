@@ -6,8 +6,8 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
+use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Production\Manufacturing\Operation\State;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Production\Company\Zone;
@@ -64,7 +64,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
@@ -109,7 +109,7 @@ class Operation extends Entity {
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-operation'])
     ]
-    private State $embState;
+    private ComponentManufacturingOperationState $embState;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
@@ -170,7 +170,7 @@ class Operation extends Entity {
 
     public function __construct() {
         $this->embBlocker = new Closer();
-        $this->embState = new State();
+        $this->embState = new ComponentManufacturingOperationState();
         $this->operators = new ArrayCollection();
     }
 
@@ -189,7 +189,7 @@ class Operation extends Entity {
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): State {
+    final public function getEmbState(): ComponentManufacturingOperationState {
         return $this->embState;
     }
 
@@ -249,7 +249,7 @@ class Operation extends Entity {
         return $this;
     }
 
-    final public function setEmbState(State $embState): self {
+    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
         $this->embState = $embState;
         return $this;
     }

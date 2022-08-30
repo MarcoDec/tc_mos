@@ -9,9 +9,9 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Blocker;
+use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Purchase\Component\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
@@ -116,7 +116,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
@@ -195,7 +195,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:component', 'read:component:collection'])
     ]
-    private State $embState;
+    private ComponentManufacturingOperationState $embState;
 
     #[
         ApiProperty(description: 'Date de fin de vie', required: false, example: '2021-11-18'),
@@ -327,7 +327,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
         $this->embBlocker = new Blocker();
-        $this->embState = new State();
+        $this->embState = new ComponentManufacturingOperationState();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
         $this->weight = new Measure();
@@ -376,7 +376,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): State {
+    final public function getEmbState(): ComponentManufacturingOperationState {
         return $this->embState;
     }
 
@@ -482,7 +482,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
-    final public function setEmbState(State $embState): self {
+    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
         $this->embState = $embState;
         return $this;
     }

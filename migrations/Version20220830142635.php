@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220830130054 extends AbstractMigration {
+final class Version20220830142635 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -858,7 +858,7 @@ CREATE TABLE `component` (
     `copper_weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `customs_code` VARCHAR(16) DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_manufacturing_operation_state)',
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
     `forecast_volume_code` VARCHAR(6) DEFAULT NULL,
@@ -2546,7 +2546,7 @@ CREATE TABLE `manufacturing_operation` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:manufacturing_operation_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_manufacturing_operation_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `operation_id` INT UNSIGNED DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
