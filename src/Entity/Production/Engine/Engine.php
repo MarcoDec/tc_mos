@@ -6,11 +6,11 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
-use App\Entity\Embeddable\EmployeeEngineCurrentPlace;
+use App\Entity\Embeddable\Blocker;
+use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
 use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
@@ -19,7 +19,6 @@ use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -59,20 +58,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite l\'équipement à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => EmployeeEngineCurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...EmployeeEngineState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['employee_engine', 'blocker'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
-                    'summary' => 'Transite le l\'équipement à son prochain statut de workflow'
+                    'summary' => 'Transite l\'équipement à son prochain statut de workflow'
                 ],
-                'path' => '/engines/{id}/promote/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')',
+                'path' => '/engines/{id}/promote/{workflow}/to/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
         ],
@@ -85,20 +89,20 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         normalizationContext: [
             'enable_max_depth' => true,
-            'groups' => ['read:current_place', 'read:engine', 'read:id'],
+            'groups' => ['read:engine', 'read:id', 'read:state'],
             'openapi_definition_name' => 'Engine-read',
             'skip_null_values' => false
         ]
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'engine_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'engine'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterface {
+abstract class Engine extends Entity implements BarCodeInterface {
     use BarCodeTrait;
 
-    public const TYPES = [
+    final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPart::class,
         EngineType::TYPE_TOOL => Tool::class,
         EngineType::TYPE_WORKSTATION => Workstation::class
@@ -132,7 +136,7 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
 
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
-        ORM\Column(length: 127),
+        ORM\Column,
         Serializer\Groups(['read:engine', 'write:engine'])
     ]
     protected ?string $name = null;
@@ -145,11 +149,16 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
     protected ?Zone $zone = null;
 
     #[
-        ApiProperty(description: 'Statut', example: 'end_of_life'),
         ORM\Embedded,
         Serializer\Groups(['read:engine'])
     ]
-    private EmployeeEngineCurrentPlace $currentPlace;
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:engine'])
+    ]
+    private EmployeeEngineState $embState;
 
     #[
         ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist'], fetch: 'EAGER'),
@@ -173,12 +182,17 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
     private ?string $notes = null;
 
     public function __construct() {
-        $this->currentPlace = new EmployeeEngineCurrentPlace();
+        $this->embBlocker = new Blocker();
+        $this->embState = new EmployeeEngineState();
         $this->manufacturerEngine = new ManufacturerEngine($this);
     }
 
     public static function getBarCodeTableNumber(): string {
         return self::ENGINE_BAR_CODE_TABLE_NUMBER;
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getBrand(): ?string {
@@ -189,8 +203,12 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
         return $this->code;
     }
 
-    final public function getCurrentPlace(): EmployeeEngineCurrentPlace {
-        return $this->currentPlace;
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
+    }
+
+    final public function getEmbState(): EmployeeEngineState {
+        return $this->embState;
     }
 
     final public function getEntryDate(): ?DateTimeImmutable {
@@ -217,23 +235,17 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
         return $this->notes;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function getZone(): ?Zone {
         return $this->zone;
     }
 
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
     }
 
     final public function setBrand(?string $brand): self {
@@ -246,8 +258,13 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
         return $this;
     }
 
-    final public function setCurrentPlace(EmployeeEngineCurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    final public function setEmbState(EmployeeEngineState $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -281,8 +298,8 @@ abstract class Engine extends Entity implements BarCodeInterface, WorkflowInterf
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 

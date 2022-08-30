@@ -63,14 +63,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'engine_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'engine'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'engine_group')
 ]
 abstract class Group extends Entity {
-    public const TYPES = [
+    final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPartGroup::class,
         EngineType::TYPE_TOOL => ToolGroup::class,
         EngineType::TYPE_WORKSTATION => WorkstationGroup::class

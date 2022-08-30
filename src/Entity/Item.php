@@ -17,18 +17,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  */
 #[ORM\MappedSuperclass]
 abstract class Item extends Entity implements MeasuredInterface {
-    /** @var I|null */
-    protected $item;
-
-    /** @var null|O */
-    protected $order;
-
     #[
         ApiProperty(description: 'Date de confirmation', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?DateTimeImmutable $confirmedDate = null;
+    protected ?DateTimeImmutable $confirmedDate = null;
 
     #[
         ApiProperty(description: 'Quantité confirmée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -36,35 +30,41 @@ abstract class Item extends Entity implements MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $confirmedQuantity;
+    protected Measure $confirmedQuantity;
+
+    /** @var I|null */
+    protected $item;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?string $notes = null;
+    protected ?string $notes = null;
+
+    /** @var null|O */
+    protected $order;
 
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $price;
+    protected Measure $price;
 
     #[
         ApiProperty(description: 'Référence', example: 'FIZ56'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?string $ref = null;
+    protected ?string $ref = null;
 
     #[
         ApiProperty(description: 'Date de la demande', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?DateTimeImmutable $requestedDate = null;
+    protected ?DateTimeImmutable $requestedDate = null;
 
     #[
         ApiProperty(description: 'Quantité demandée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -72,7 +72,7 @@ abstract class Item extends Entity implements MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $requestedQuantity;
+    protected Measure $requestedQuantity;
 
     public function __construct() {
         $this->confirmedQuantity = new Measure();
