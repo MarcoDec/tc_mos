@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220830093505 extends AbstractMigration {
+final class Version20220830130054 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -307,6 +307,7 @@ SQL);
         $this->addQuery('ALTER TABLE `employee` DROP `old_id`, DROP `matricule`, DROP `id_society`');
         $this->addQuery('ALTER TABLE `engine` DROP `old_id`');
         $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `manufacturing_order` DROP `old_id`');
         $this->addQuery('ALTER TABLE `planning` DROP `old_id`');
@@ -2517,7 +2518,7 @@ CREATE TABLE `production_operation` (
     `id_outils` INT UNSIGNED DEFAULT NULL,
     `date_debut` DATETIME DEFAULT NULL,
     `date_fin` DATETIME DEFAULT NULL,
-    `quantity` INT UNSIGNED DEFAULT NULL,
+    `quantity` INT DEFAULT NULL,
     `statut_production` INT UNSIGNED DEFAULT NULL,
     `commentaire` TEXT DEFAULT NULL,
     `nature_cloture` INT UNSIGNED DEFAULT NULL,
@@ -2544,8 +2545,8 @@ SQL);
 CREATE TABLE `manufacturing_operation` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `current_place_date` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `current_place_name` ENUM('agreed', 'blocked', 'closed', 'draft', 'under_exemption') DEFAULT 'draft' NOT NULL,
+    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:manufacturing_operation_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `operation_id` INT UNSIGNED DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
@@ -2562,7 +2563,8 @@ CREATE TABLE `manufacturing_operation` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `manufacturing_operation` (
-    `current_place_name`,
+    `emb_blocker_state`,
+    `emb_state_state`,
     `notes`,
     `order_id`,
     `pic_id`,
@@ -2570,18 +2572,23 @@ INSERT INTO `manufacturing_operation` (
     `workstation_id`
 ) SELECT
     CASE
-        WHEN `statut_production` = 1 THEN 'agreed'
-        WHEN `statut_production` = 2 THEN 'under_exemption'
-        WHEN `statut_production` = 3 THEN 'blocked'
-        WHEN `statut_production` = 4 THEN 'closed'
+        WHEN `production_operation`.`statut_production` = 3 THEN 'blocked'
+        WHEN `production_operation`.`statut_production` = 4 THEN 'closed'
+        ELSE 'enabled'
+    END,
+    CASE
+        WHEN `production_operation`.`statut_production` IN (1, 3, 4) THEN 'agreed'
+        WHEN `production_operation`.`statut_production` = 2 THEN 'warning'
         ELSE 'draft'
     END,
-    `commentaire`,
-    (SELECT `manufacturing_order`.`id` FROM `manufacturing_order` WHERE `manufacturing_order`.`old_id` = `production_operation`.`ofnumber`),
+    `production_operation`.`commentaire`,
+    `manufacturing_order`.`id`,
     (SELECT MIN(`employee`.`id`) FROM `employee` WHERE `employee`.`matricule` = `production_operation`.`matricule_responsable`),
-    `date_debut`,
-    (SELECT `engine`.`id` FROM `engine` WHERE `engine`.`id` = `production_operation`.`id_poste`)
+    `production_operation`.`date_debut`,
+    `engine`.`id`
 FROM `production_operation`
+INNER JOIN `manufacturing_order` ON `production_operation`.`ofnumber` = `manufacturing_order`.`old_id`
+LEFT JOIN `engine` ON `production_operation`.`id_poste` = `engine`.`old_id`
 SQL);
         $this->addQuery('DROP TABLE `production_operation`');
         $this->addQuery(<<<'SQL'
@@ -3326,16 +3333,17 @@ INSERT INTO `project_operation` (
     `price_value`,
     `type_id`
 ) SELECT
-    `type`,
-    `limite`,
+    `operation`.`type`,
+    UCFIRST(`operation`.`limite`),
     'U',
-    `cadence`,
-    `code`,
-    `designation`,
+    `operation`.`cadence`,
+    `operation`.`code`,
+    UCFIRST(`operation`.`designation`),
     'EUR',
-    `price`,
-    (SELECT `operation_type`.`id` FROM `operation_type` WHERE `operation_type`.`id` = `operation`.`id_operation_type`)
+    `operation`.`price`,
+    `operation_type`.`id`
 FROM `operation`
+LEFT JOIN `operation_type` ON `operation`.`id_operation_type` = `operation_type`.`id`
 SQL);
         $this->addQuery('DROP TABLE `operation`');
     }
