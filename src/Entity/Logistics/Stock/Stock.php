@@ -95,7 +95,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'skip_null_values' => false
         ]
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'item_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity(repositoryClass: StockRepository::class),
     ORM\InheritanceType('SINGLE_TABLE')
@@ -103,7 +103,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
-    public const TYPES = [
+    final public const TYPES = [
         ItemType::TYPE_COMPONENT => ComponentStock::class,
         ItemType::TYPE_PRODUCT => ProductStock::class
     ];

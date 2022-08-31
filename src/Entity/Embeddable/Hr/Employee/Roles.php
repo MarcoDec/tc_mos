@@ -138,6 +138,18 @@ class Roles {
         return $this->roles;
     }
 
+    final public function hasRole(string $role): bool {
+        if (in_array($role, $this->roles)) {
+            return true;
+        }
+        foreach (self::ROLE_HIERARCHY as $key => $value) {
+            if ($role === $value && $this->hasRole($key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     final public function removeRole(string $role): self {
         if (false !== $key = array_search($role, $this->roles, true)) {
             array_splice($this->roles, (int) $key, 1);

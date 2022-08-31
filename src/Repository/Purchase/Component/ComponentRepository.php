@@ -2,7 +2,6 @@
 
 namespace App\Repository\Purchase\Component;
 
-use App\Doctrine\DBAL\Types\Project\Product\CurrentPlaceType;
 use App\Entity\Purchase\Component\Component;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,10 +21,10 @@ final class ComponentRepository extends ServiceEntityRepository {
 
     public function expires(): void {
         $this->_em->createQueryBuilder()
-            ->update($this->getClassName(), 'p')
-            ->set('p.currentPlace.name', ':place')
-            ->setParameter('place', CurrentPlaceType::TYPE_DISABLED)
-            ->where('p.endOfLife >= NOW()')
+            ->update($this->getClassName(), 'c')
+            ->set('c.embState.state', ':place')
+            ->setParameter('place', 'disabled')
+            ->where('c.endOfLife >= NOW()')
             ->getQuery()
             ->execute();
     }

@@ -8,13 +8,13 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Selling\Customer\CurrentPlace;
+use App\Entity\Embeddable\Selling\Customer\State;
 use App\Entity\Embeddable\Selling\Customer\WebPortal;
 use App\Entity\Entity;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
@@ -23,7 +23,6 @@ use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -33,7 +32,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:address', 'read:copper', 'read:current-place', 'read:customer:collection', 'read:id', 'read:measure'],
+                    'groups' => ['read:address', 'read:copper', 'read:customer:collection', 'read:id', 'read:measure', 'read:state'],
                     'openapi_definition_name' => 'Customer-collection',
                     'skip_null_values' => false
                 ],
@@ -93,19 +92,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite le client à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['customer', 'blocker'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite le client à son prochain statut de workflow'
                 ],
-                'path' => '/customers/{id}/promote/{transition}',
+                'path' => '/customers/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')',
                 'validate' => false
             ]
@@ -118,14 +122,14 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Customer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:copper', 'read:current-place', 'read:customer', 'read:id', 'read:measure'],
+            'groups' => ['read:address', 'read:copper', 'read:customer', 'read:id', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'Customer-read',
             'skip_null_values' => false
         ]
     ),
     ORM\Entity
 ]
-class Customer extends Entity implements WorkflowInterface {
+class Customer extends Entity {
     #[
         ApiProperty(description: 'Portail de gestion'),
         ORM\Embedded,
@@ -171,11 +175,16 @@ class Customer extends Entity implements WorkflowInterface {
     private ?Currency $currency = null;
 
     #[
-        ApiProperty(description: 'Statut'),
         ORM\Embedded,
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'read:customer:collection'])
     ]
-    private CurrentPlace $currentPlace;
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'read:customer:collection'])
+    ]
+    private State $embState;
 
     #[
         ApiProperty(description: 'Acceptation des équivalents', example: false),
@@ -262,7 +271,8 @@ class Customer extends Entity implements WorkflowInterface {
         $this->administeredBy = new ArrayCollection();
         $this->conveyanceDuration = new Measure();
         $this->copper = new Copper();
-        $this->currentPlace = new CurrentPlace();
+        $this->embBlocker = new Blocker();
+        $this->embState = new State();
         $this->monthlyOutstanding = new Measure();
         $this->outstandingMax = new Measure();
     }
@@ -290,6 +300,10 @@ class Customer extends Entity implements WorkflowInterface {
         return $this->administeredBy;
     }
 
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
     final public function getConveyanceDuration(): Measure {
         return $this->conveyanceDuration;
     }
@@ -302,8 +316,12 @@ class Customer extends Entity implements WorkflowInterface {
         return $this->currency;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getLanguage(): ?string {
@@ -342,23 +360,12 @@ class Customer extends Entity implements WorkflowInterface {
         return $this->society;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
-    }
-
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function isEquivalentEnabled(): bool {
         return $this->equivalentEnabled;
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
     }
 
     final public function isInvoiceByEmail(): bool {
@@ -383,6 +390,11 @@ class Customer extends Entity implements WorkflowInterface {
         return $this;
     }
 
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+
     final public function setConveyanceDuration(Measure $conveyanceDuration): self {
         $this->conveyanceDuration = $conveyanceDuration;
         return $this;
@@ -398,8 +410,13 @@ class Customer extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -458,8 +475,8 @@ class Customer extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 }

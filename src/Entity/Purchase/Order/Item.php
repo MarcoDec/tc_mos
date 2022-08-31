@@ -3,17 +3,18 @@
 namespace App\Entity\Purchase\Order;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Purchase\Order\Item\CurrentPlace;
-use App\Entity\Interfaces\WorkflowInterface;
+use App\Entity\Embeddable\Purchase\Order\Item\Closer;
+use App\Entity\Embeddable\Purchase\Order\Item\State;
 use App\Entity\Item as BaseItem;
 use App\Entity\Management\Society\Company\Company;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
@@ -22,6 +23,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template-extends BaseItem<I, Order>
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -53,104 +55,120 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite la ligne à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['purchase_order_item', 'purchase_order_item_closer'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
-                    'summary' => 'Transite le la ligne à son prochain statut de workflow'
+                    'summary' => 'Transite la ligne à son prochain statut de workflow'
                 ],
-                'path' => '/customer-order-items/{id}/promote/{transition}',
+                'path' => '/purchase-order-items/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
         ],
-        shortName: 'SupplierOrderItem',
+        shortName: 'PurchaseOrderItem',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:item', 'write:measure'],
-            'openapi_definition_name' => 'SupplierOrderItem-write'
+            'openapi_definition_name' => 'PurchaseOrderItem-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:measure'],
-            'openapi_definition_name' => 'SupplierOrderItem-read',
+            'groups' => ['read:id', 'read:item', 'read:measure', 'read:state'],
+            'openapi_definition_name' => 'PurchaseOrderItem-read',
             'skip_null_values' => false
         ],
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'item_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
-    ORM\Table(name: 'supplier_order_item')
+    ORM\Table(name: 'purchase_order_item')
 ]
-abstract class Item extends BaseItem implements WorkflowInterface {
-    public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
-
-    #[
-        ApiProperty(description: 'Commande', readableLink: false, example: '/api/supplier-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class),
-        Serializer\Groups(['read:item', 'write:item'])
-    ]
-    protected $order;
+abstract class Item extends BaseItem {
+    final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
     #[
         ApiProperty(description: 'Prix du cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $copperPrice;
+    protected Measure $copperPrice;
 
     #[
-        ApiProperty(description: 'Statut'),
         ORM\Embedded,
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:item'])
     ]
-    private CurrentPlace $currentPlace;
+    protected Closer $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:item'])
+    ]
+    protected State $embState;
+
+    #[
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/purchase-orders/1'),
+        ORM\ManyToOne(targetEntity: Order::class),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected $order;
 
     #[
         ApiProperty(description: 'Employé', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?Company $targetCompany = null;
+    protected ?Company $targetCompany = null;
 
     public function __construct() {
         parent::__construct();
-        $this->currentPlace = new CurrentPlace();
+        $this->embBlocker = new Closer();
+        $this->embState = new State();
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getCopperPrice(): Measure {
         return $this->copperPrice;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getEmbBlocker(): Closer {
+        return $this->embBlocker;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    final public function getEmbState(): State {
+        return $this->embState;
+    }
+
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function getTargetCompany(): ?Company {
         return $this->targetCompany;
     }
 
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
+    /**
+     * @return $this
+     */
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
     }
 
     /**
@@ -164,16 +182,24 @@ abstract class Item extends BaseItem implements WorkflowInterface {
     /**
      * @return $this
      */
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setEmbBlocker(Closer $embBlocker): self {
+        $this->embBlocker = $embBlocker;
         return $this;
     }
 
     /**
      * @return $this
      */
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 
