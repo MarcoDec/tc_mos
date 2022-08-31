@@ -2,6 +2,7 @@
 
 namespace App\Entity\Accounting;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
@@ -9,6 +10,7 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Production\Manufacturing\Expedition;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -16,6 +18,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['bill']),
     ApiResource(
         description: 'Lignes facturée',
         collectionOperations: [
