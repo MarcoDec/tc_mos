@@ -98,6 +98,25 @@ abstract class Item extends BaseItem {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
     #[
+        ApiProperty(description: 'Prix du cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected Measure $copperPrice;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:item'])
+    ]
+    protected Closer $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:item'])
+    ]
+    protected State $embState;
+
+    #[
         ApiProperty(description: 'Commande', readableLink: false, example: '/api/purchase-orders/1'),
         ORM\ManyToOne(targetEntity: Order::class),
         Serializer\Groups(['read:item', 'write:item'])
@@ -105,30 +124,11 @@ abstract class Item extends BaseItem {
     protected $order;
 
     #[
-        ApiProperty(description: 'Prix du cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
-        ORM\Embedded,
-        Serializer\Groups(['read:item', 'write:item'])
-    ]
-    private Measure $copperPrice;
-
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:item'])
-    ]
-    private Closer $embBlocker;
-
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:item'])
-    ]
-    private State $embState;
-
-    #[
         ApiProperty(description: 'Employé', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?Company $targetCompany = null;
+    protected ?Company $targetCompany = null;
 
     public function __construct() {
         parent::__construct();
