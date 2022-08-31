@@ -3,6 +3,7 @@
 namespace App\Entity\Purchase\Order;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
@@ -12,6 +13,7 @@ use App\Entity\Embeddable\Purchase\Order\Item\Closer;
 use App\Entity\Embeddable\Purchase\Order\Item\State;
 use App\Entity\Item as BaseItem;
 use App\Entity\Management\Society\Company\Company;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -21,6 +23,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template-extends BaseItem<I, Order>
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
