@@ -58,7 +58,7 @@ class Receipt extends Entity {
 
     /** @var Item<I>|null */
     #[
-        ApiProperty(description: 'Item', readableLink: false, example: '/api/supplier-order-items/1'),
+        ApiProperty(description: 'Item', readableLink: false, example: '/api/purchase-order-items/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
