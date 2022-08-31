@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220830142635 extends AbstractMigration {
+final class Version20220831094823 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -3368,8 +3368,7 @@ CREATE TABLE `ordersupplier_component` (
     `refsupplier` VARCHAR(255) DEFAULT NULL DEFAULT '',
     `invoice` TINYINT DEFAULT NULL DEFAULT 0,
     `date_souhaitee` DATE DEFAULT NULL,
-    `date_livraison` DATE DEFAULT NULL,
-    `date` DATE DEFAULT NULL
+    `date_livraison` DATE DEFAULT NULL
 )
 SQL);
         $this->insert('ordersupplier_component', [
@@ -3389,8 +3388,7 @@ SQL);
             'refsupplier',
             'invoice',
             'date_souhaitee',
-            'date_livraison',
-            'date'
+            'date_livraison'
         ]);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `purchase_order_item` (
@@ -3420,6 +3418,7 @@ CREATE TABLE `purchase_order_item` (
     `target_company_id` INT UNSIGNED DEFAULT NULL,
     `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
     `receipt_date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `receipt_quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_5ED948C3E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
     CONSTRAINT `IDX_5ED948C38D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `purchase_order` (`id`),
     CONSTRAINT `IDX_5ED948C34584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
@@ -3446,7 +3445,8 @@ INSERT INTO `purchase_order_item` (
     `requested_quantity_value`,
     `target_company_id`,
     `type`,
-    `receipt_date`
+    `receipt_date`,
+    `receipt_quantity`
 ) SELECT
     `component`.`id`,
     `ordersupplier_component`.`date_livraison`,
@@ -3484,7 +3484,8 @@ INSERT INTO `purchase_order_item` (
     `ordersupplier_component`.`quantity_souhaitee`,
     `company`.`id`,
     'component',
-    `ordersupplier_component`.`date`
+    `ordersupplier_component`.`date_livraison`,
+    `ordersupplier_component`.`quantity_received`
 FROM `ordersupplier_component`
 INNER JOIN `component` ON `ordersupplier_component`.`id_component` = `component`.`old_id`
 LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
@@ -3515,9 +3516,9 @@ SELECT
     `purchase_order_item`.`confirmed_quantity_value`
 FROM `purchase_order_item`
 WHERE `purchase_order_item`.`receipt_date` IS NOT NULL
-AND `purchase_order_item`.`confirmed_quantity_value` > 0
+AND `purchase_order_item`.`receipt_quantity` > 0
 SQL);
-        $this->addQuery('ALTER TABLE `purchase_order_item` DROP `receipt_date`');
+        $this->addQuery('ALTER TABLE `purchase_order_item` DROP `receipt_date`, DROP `receipt_quantity`');
     }
 
     private function upPurchaseOrders(): void {
