@@ -45,7 +45,7 @@ class ProductItem extends Item {
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
         ORM\JoinColumn(name: 'product_id'),
-        ORM\ManyToOne(targetEntity: Product::class),
+        ORM\ManyToOne(targetEntity: Product::class, fetch: 'EAGER'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
