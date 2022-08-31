@@ -6,18 +6,17 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Management\VatMessageForce;
-use App\Entity\Embeddable\Accounting\Bill\CurrentPlace;
+use App\Entity\Embeddable\Accounting\State;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\VatMessage;
 use App\Entity\Selling\Customer\Contact;
 use App\Entity\Selling\Customer\Customer;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -66,19 +65,24 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite la facture à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['bill', 'blocker'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite la facture à son prochain statut de workflow'
                 ],
-                'path' => '/bills/{id}/promote/{transition}',
+                'path' => '/bills/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
@@ -91,14 +95,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Bill-write'
         ],
         normalizationContext: [
-            'groups' => ['read:bill', 'read:current-place', 'read:id', 'read:measure'],
+            'groups' => ['read:bill', 'read:id', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'Bill-read',
             'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
-class Bill extends Entity implements WorkflowInterface {
+class Bill extends Entity {
     #[
         ApiProperty(description: 'Date de facturation', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
@@ -121,13 +125,6 @@ class Bill extends Entity implements WorkflowInterface {
     private ?Contact $contact = null;
 
     #[
-        ApiProperty(description: 'Statut', example: 'partially_paid'),
-        ORM\Embedded,
-        Serializer\Groups(['read:bill'])
-    ]
-    private CurrentPlace $currentPlace;
-
-    #[
         ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:bill', 'write:bill'])
@@ -140,6 +137,18 @@ class Bill extends Entity implements WorkflowInterface {
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private ?DateTimeImmutable $dueDate = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:bill'])
+    ]
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:bill'])
+    ]
+    private State $embState;
 
     #[
         ApiProperty(description: 'Prix HT', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -165,7 +174,7 @@ class Bill extends Entity implements WorkflowInterface {
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum dolores'),
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private ?string $notes = null;
@@ -193,7 +202,8 @@ class Bill extends Entity implements WorkflowInterface {
 
     public function __construct() {
         $this->billingDate = new DateTimeImmutable();
-        $this->currentPlace = new CurrentPlace();
+        $this->embBlocker = new Blocker();
+        $this->embState = new State();
         $this->exclTax = new Measure();
         $this->inclTax = new Measure();
         $this->vat = new Measure();
@@ -201,6 +211,10 @@ class Bill extends Entity implements WorkflowInterface {
 
     final public function getBillingDate(): ?DateTimeImmutable {
         return $this->billingDate;
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getCompany(): ?Company {
@@ -211,16 +225,20 @@ class Bill extends Entity implements WorkflowInterface {
         return $this->contact;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
     final public function getCustomer(): ?Customer {
         return $this->customer;
     }
 
     final public function getDueDate(): ?DateTimeImmutable {
         return $this->dueDate;
+    }
+
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getExclTax(): Measure {
@@ -243,9 +261,8 @@ class Bill extends Entity implements WorkflowInterface {
         return $this->ref;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function getVat(): Measure {
@@ -256,18 +273,13 @@ class Bill extends Entity implements WorkflowInterface {
         return $this->vatMessage;
     }
 
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
-    }
-
     final public function setBillingDate(?DateTimeImmutable $billingDate): self {
         $this->billingDate = $billingDate;
+        return $this;
+    }
+
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
         return $this;
     }
 
@@ -281,11 +293,6 @@ class Bill extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
-        return $this;
-    }
-
     final public function setCustomer(?Customer $customer): self {
         $this->customer = $customer;
         return $this;
@@ -293,6 +300,16 @@ class Bill extends Entity implements WorkflowInterface {
 
     final public function setDueDate(?DateTimeImmutable $dueDate): self {
         $this->dueDate = $dueDate;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -321,8 +338,8 @@ class Bill extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 

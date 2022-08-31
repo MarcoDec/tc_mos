@@ -526,7 +526,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 array_filter($operation['openapi_context'] ?? [], static fn ($item) => preg_match('/^x-.*$/i', (string) $item), ARRAY_FILTER_USE_KEY)
             );
 
-            $pathItem = $pathItem->{'with'.ucfirst($method)}($modelOperation->withSecurity([['bearerAuth' => []]]));
+            $pathItem = $pathItem->{'with'.ucfirst((string) $method)}($modelOperation->withSecurity([['bearerAuth' => []]]));
 
             $paths->addPath($path, $pathItem);
         }

@@ -20,22 +20,22 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Créer une ligne',
                     'summary' => 'Créer une ligne',
-                    'tags' => ['SupplierOrderItem']
+                    'tags' => ['PurchaseOrderItem']
                 ]
             ]
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],
-        shortName: 'SupplierOrderItemProduct',
+        shortName: 'PurchaseOrderItemProduct',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:item', 'write:measure'],
-            'openapi_definition_name' => 'SupplierOrderItemProduct-write'
+            'openapi_definition_name' => 'PurchaseOrderItemProduct-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:item', 'read:measure'],
-            'openapi_definition_name' => 'SupplierOrderItemProduct-read',
+            'openapi_definition_name' => 'PurchaseOrderItemProduct-read',
             'skip_null_values' => false
         ],
     ),
