@@ -65,15 +65,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 abstract class Item extends Entity {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
-    /** @var I|null */
-    protected $item;
-
     #[
         ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?Bill $bill = null;
+    protected ?Bill $bill = null;
 
     /** @var Expedition<I>|null */
     #[
@@ -81,42 +78,45 @@ abstract class Item extends Entity {
         ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?Expedition $expedition = null;
+    protected ?Expedition $expedition = null;
+
+    /** @var I|null */
+    protected $item;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?string $notes = null;
+    protected ?string $notes = null;
 
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $price;
+    protected Measure $price;
 
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $quantity;
+    protected Measure $quantity;
 
     #[
         ApiProperty(description: 'Référence', example: 'TSKD'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?string $ref = null;
+    protected ?string $ref = null;
 
     #[
         ApiProperty(description: 'Poids', openapiContext: ['$ref' => '#/components/schemas/Measure-mass']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $weight;
+    protected Measure $weight;
 
     public function __construct() {
         $this->price = new Measure();
