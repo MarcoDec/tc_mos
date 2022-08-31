@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
 abstract class AbstractUnit extends Entity {
-    public const UNIT_CODE_MAX_LENGTH = 6;
+    final public const UNIT_CODE_MAX_LENGTH = 6;
 
     /** @var Collection<int, static> */
     protected Collection $children;
@@ -169,7 +169,7 @@ abstract class AbstractUnit extends Entity {
      */
     private function getDepthChildren(): LaravelCollection {
         /** @var LaravelCollection<int, static> $children */
-        $children = collect($this->children->getValues())
+        $children = collect($this->getChildren()->getValues())
             ->map(static fn (self $child): array => $child->getDepthChildren()->push($child)->values()->all())
             ->flatten()
             ->unique->getId();

@@ -5,16 +5,15 @@ namespace App\Entity\Purchase\Order;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Purchase\Order\CurrentPlace;
+use App\Entity\Embeddable\Purchase\Order\Order\State;
 use App\Entity\Entity;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Purchase\Supplier\Contact;
 use App\Entity\Purchase\Supplier\Supplier;
-use App\Entity\Selling\Order\Order as CustomerOrder;
+use App\Entity\Selling\Order\Order as SellingOrder;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -62,24 +61,29 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite la commande à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['purchase_order', 'closer'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite la commande à son prochain statut de workflow'
                 ],
-                'path' => '/supplier-orders/{id}/promote/{transition}',
+                'path' => '/purchase-orders/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
         ],
-        shortName: 'SupplierOrder',
+        shortName: 'PurchaseOrder',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
@@ -88,15 +92,15 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'PurchaseOrder-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current-place', 'read:id', 'read:order'],
+            'groups' => ['read:id', 'read:order', 'read:state'],
             'openapi_definition_name' => 'PurchaseOrder-read',
             'skip_null_values' => false
         ],
     ),
     ORM\Entity,
-    ORM\Table(name: 'supplier_order')
+    ORM\Table(name: 'purchase_order')
 ]
-class Order extends Entity implements WorkflowInterface {
+class Order extends Entity {
     #[
         ApiProperty(description: 'Companie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
@@ -112,20 +116,6 @@ class Order extends Entity implements WorkflowInterface {
     private ?Contact $contact = null;
 
     #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded,
-        Serializer\Groups(['read:order'])
-    ]
-    private CurrentPlace $currentPlace;
-
-    #[
-        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/customer-orders/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:order', 'write:order'])
-    ]
-    private ?CustomerOrder $customerOrder = null;
-
-    #[
         ApiProperty(description: 'Compagnie en charge de la livraison', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:order', 'write:order'])
@@ -133,11 +123,30 @@ class Order extends Entity implements WorkflowInterface {
     private ?Company $deliveryCompany = null;
 
     #[
+        ORM\Embedded,
+        Serializer\Groups(['read:order'])
+    ]
+    private Closer $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:order'])
+    ]
+    private State $embState;
+
+    #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
-        ORM\Column(nullable: true),
+        ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?string $notes = null;
+
+    #[
+        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private ?SellingOrder $order = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'EJZ65'),
@@ -161,7 +170,12 @@ class Order extends Entity implements WorkflowInterface {
     private ?Supplier $supplier = null;
 
     public function __construct() {
-        $this->currentPlace = new CurrentPlace();
+        $this->embBlocker = new Closer();
+        $this->embState = new State();
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     final public function getCompany(): ?Company {
@@ -172,47 +186,45 @@ class Order extends Entity implements WorkflowInterface {
         return $this->contact;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
-    final public function getCustomerOrder(): ?CustomerOrder {
-        return $this->customerOrder;
-    }
-
     final public function getDeliveryCompany(): ?Company {
         return $this->deliveryCompany;
+    }
+
+    final public function getEmbBlocker(): Closer {
+        return $this->embBlocker;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getNotes(): ?string {
         return $this->notes;
     }
 
+    final public function getOrder(): ?SellingOrder {
+        return $this->order;
+    }
+
     final public function getRef(): ?string {
         return $this->ref;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function getSupplier(): ?Supplier {
         return $this->supplier;
     }
 
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
-    }
-
     final public function isSupplementFret(): bool {
         return $this->supplementFret;
+    }
+
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
     }
 
     final public function setCompany(?Company $company): self {
@@ -225,18 +237,18 @@ class Order extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
-        return $this;
-    }
-
-    final public function setCustomerOrder(?CustomerOrder $customerOrder): self {
-        $this->customerOrder = $customerOrder;
-        return $this;
-    }
-
     final public function setDeliveryCompany(?Company $deliveryCompany): self {
         $this->deliveryCompany = $deliveryCompany;
+        return $this;
+    }
+
+    final public function setEmbBlocker(Closer $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -245,13 +257,18 @@ class Order extends Entity implements WorkflowInterface {
         return $this;
     }
 
+    final public function setOrder(?SellingOrder $order): self {
+        $this->order = $order;
+        return $this;
+    }
+
     final public function setRef(?string $ref): self {
         $this->ref = $ref;
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 

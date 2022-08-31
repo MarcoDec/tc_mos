@@ -57,14 +57,14 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         paginationEnabled: false
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'customer_address_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'customer_address'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'customer_address')
 ]
 abstract class Address extends Entity {
-    public const TYPES = [
+    final public const TYPES = [
         AddressType::TYPE_BILLING => BillingAddress::class,
         AddressType::TYPE_DELIVERY => DeliveryAddress::class
     ];

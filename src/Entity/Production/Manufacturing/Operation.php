@@ -5,11 +5,11 @@ namespace App\Entity\Production\Manufacturing;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Embeddable\Closer;
+use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Production\Manufacturing\Operation\CurrentPlace;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Project\Operation\Operation as PrimaryOperation;
@@ -17,7 +17,6 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -60,20 +59,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite l\'opération à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['component_manufacturing_operation', 'closer'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite l\'opération à son prochain statut de workflow'
                 ],
-                'path' => '/manufacturing-operations/{id}/promote/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')',
+                'path' => '/manufacturing-operations/{id}/promote/{workflow}/to/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ]
         ],
@@ -86,7 +90,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ManufacturingOperation-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:manufacturing-operation'],
+            'groups' => ['read:id', 'read:manufacturing-operation', 'read:state'],
             'openapi_definition_name' => 'ManufacturingOperation-read',
             'skip_null_values' => false
         ]
@@ -94,13 +98,18 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'manufacturing_operation')
 ]
-class Operation extends Entity implements WorkflowInterface {
+class Operation extends Entity {
     #[
-        ApiProperty(description: 'Statut'),
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-operation'])
     ]
-    private CurrentPlace $currentPlace;
+    private Closer $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-operation'])
+    ]
+    private ComponentManufacturingOperationState $embState;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
@@ -111,7 +120,7 @@ class Operation extends Entity implements WorkflowInterface {
 
     #[
         ApiProperty(description: 'Opération', readableLink: false, example: '/api/project-operations/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(inversedBy: 'operations'),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?PrimaryOperation $operation = null;
@@ -132,21 +141,21 @@ class Operation extends Entity implements WorkflowInterface {
     private ?Order $order = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/employee/1'),
+        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/employees/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?Employee $pic = null;
 
     #[
-        ApiProperty(description: 'Date de départ', example: '2022-24-03'),
+        ApiProperty(description: 'Date de départ', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/workstations/1'),
+        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/workstations/460'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
@@ -160,7 +169,8 @@ class Operation extends Entity implements WorkflowInterface {
     private ?Zone $zone = null;
 
     public function __construct() {
-        $this->currentPlace = new CurrentPlace();
+        $this->embBlocker = new Closer();
+        $this->embState = new ComponentManufacturingOperationState();
         $this->operators = new ArrayCollection();
     }
 
@@ -171,8 +181,16 @@ class Operation extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
+    }
+
+    final public function getEmbBlocker(): Closer {
+        return $this->embBlocker;
+    }
+
+    final public function getEmbState(): ComponentManufacturingOperationState {
+        return $this->embState;
     }
 
     final public function getNotes(): ?string {
@@ -202,9 +220,8 @@ class Operation extends Entity implements WorkflowInterface {
         return $this->startedDate;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function getWorkstation(): ?Workstation {
@@ -215,16 +232,6 @@ class Operation extends Entity implements WorkflowInterface {
         return $this->zone;
     }
 
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
-    }
-
     final public function removeOperator(Employee $operator): self {
         if ($this->operators->contains($operator)) {
             $this->operators->removeElement($operator);
@@ -232,8 +239,18 @@ class Operation extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+
+    final public function setEmbBlocker(Closer $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -262,8 +279,8 @@ class Operation extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 
