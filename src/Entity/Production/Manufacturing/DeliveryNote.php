@@ -6,15 +6,13 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Accounting\Bill;
+use App\Entity\Embeddable\EventState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Production\Manufacturing\DeliveryNote\CurrentPlace;
 use App\Entity\Entity;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Management\Society\Company\Company;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -62,19 +60,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite le bon à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => EventState::TRANSITIONS, 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['event'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite le bon à son prochain statut de workflow'
                 ],
-                'path' => '/delivery-notes/{id}/promote/{transition}',
+                'path' => '/delivery-notes/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
                 'validate' => false
             ]
@@ -87,14 +90,14 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'DeliveryNote-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current-place', 'read:delivery-note', 'read:id', 'read:measure'],
+            'groups' => ['read:delivery-note', 'read:id', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'DeliveryNote-read',
             'skip_null_values' => false
         ],
     ),
     ORM\Entity
 ]
-class DeliveryNote extends Entity implements WorkflowInterface {
+class DeliveryNote extends Entity {
     #[
         ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
         ORM\ManyToOne,
@@ -110,18 +113,17 @@ class DeliveryNote extends Entity implements WorkflowInterface {
     private ?Company $company = null;
 
     #[
-        ApiProperty(description: 'Statut', example: 'in_creation'),
-        ORM\Embedded,
-        Serializer\Groups(['read:delivery-note'])
-    ]
-    private CurrentPlace $currentPlace;
-
-    #[
         ApiProperty(description: 'Date', readableLink: false, example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:delivery-note', 'write:delivery-note'])
     ]
     private ?DateTimeImmutable $date = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:delivery-note'])
+    ]
+    private EventState $embState;
 
     #[
         ApiProperty(description: 'Supplément de transport', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -145,7 +147,7 @@ class DeliveryNote extends Entity implements WorkflowInterface {
     private ?string $ref = null;
 
     public function __construct() {
-        $this->currentPlace = new CurrentPlace();
+        $this->embState = new EventState();
         $this->freightSurcharge = new Measure();
     }
 
@@ -157,12 +159,12 @@ class DeliveryNote extends Entity implements WorkflowInterface {
         return $this->company;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
     final public function getDate(): ?DateTimeImmutable {
         return $this->date;
+    }
+
+    final public function getEmbState(): EventState {
+        return $this->embState;
     }
 
     final public function getFreightSurcharge(): Measure {
@@ -173,19 +175,8 @@ class DeliveryNote extends Entity implements WorkflowInterface {
         return $this->ref;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
-    }
-
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function isNonBillable(): bool {
@@ -202,13 +193,13 @@ class DeliveryNote extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setDate(?DateTimeImmutable $date): self {
+        $this->date = $date;
         return $this;
     }
 
-    final public function setDate(?DateTimeImmutable $date): self {
-        $this->date = $date;
+    final public function setEmbState(EventState $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -227,8 +218,8 @@ class DeliveryNote extends Entity implements WorkflowInterface {
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 }

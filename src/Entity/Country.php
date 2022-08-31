@@ -20,10 +20,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 )]
 final class Country {
     #[ApiProperty(description: 'Code', identifier: true, example: 'FR')]
-    private string $code;
+    private readonly string $code;
 
     #[ApiProperty(description: 'Nom', example: 'France')]
-    private string $name;
+    private readonly string $name;
 
     public function __construct(string $code, string $name) {
         $this->code = $code;

@@ -10,17 +10,16 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Project\Product\KindType;
+use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Project\Product\CurrentPlace;
+use App\Entity\Embeddable\Project\Product\Product\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
-use App\Entity\Interfaces\WorkflowInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\BarCodeTrait;
-use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
 use App\Repository\Project\Product\ProductRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -29,13 +28,11 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
-    ApiFilter(filterClass: EnumFilter::class, properties: ['currentPlace.name']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'index' => 'partial', 'kind' => 'partial']),
@@ -44,7 +41,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:current-place', 'read:measure', 'read:product:collection'],
+                    'groups' => ['read:measure', 'read:product:collection', 'read:state'],
                     'openapi_definition_name' => 'Product-collection',
                     'skip_null_values' => false
                 ],
@@ -119,20 +116,25 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite le produit à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['product', 'blocker'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
                     'summary' => 'Transite le produit à son prochain statut de workflow'
                 ],
-                'path' => '/products/{id}/promote/{transition}',
-                'security' => 'is_granted(\''.Roles::ROLE_PROJECT_WRITER.'\')',
+                'path' => '/products/{id}/promote/{workflow}/to/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
             ],
             'upgrade' => [
@@ -159,7 +161,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Product-write'
         ],
         normalizationContext: [
-            'groups' => ['read:current-place', 'read:measure', 'read:product'],
+            'groups' => ['read:measure', 'read:product', 'read:state'],
             'openapi_definition_name' => 'Product-read',
             'skip_null_values' => false
         ]
@@ -167,7 +169,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends Entity implements BarCodeInterface, MeasuredInterface, WorkflowInterface {
+class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
     #[
@@ -182,8 +184,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
 
     #[
         ApiProperty(description: 'Référence', example: '54587F'),
-        Assert\Length(min: 3, max: 30),
-        ORM\Column(length: 30),
+        Assert\Length(min: 3, max: 50),
+        ORM\Column(length: 50),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $code = null;
@@ -201,19 +203,24 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     private Measure $costingManualDuration;
 
     #[
-        ApiProperty(description: 'Statut'),
-        ORM\Embedded(CurrentPlace::class),
-        Serializer\Groups(['read:product', 'read:product:collection'])
-    ]
-    private CurrentPlace $currentPlace;
-
-    #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 10, groups: ['Product-logistics']),
         ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:product', 'write:product:logistics'])
     ]
     private ?string $customsCode = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'read:product:collection'])
+    ]
+    private Blocker $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:product', 'read:product:collection'])
+    ]
+    private State $embState;
 
     #[
         ApiProperty(description: 'Date d\'expiration', example: '2021-01-12'),
@@ -248,8 +255,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
 
     #[
         ApiProperty(description: 'Indice', required: false, example: '02'),
-        Assert\Length(min: 1, max: 3, groups: ['Product-admin', 'Product-create']),
-        ORM\Column(name: '`index`', length: 3),
+        Assert\Length(min: 1, max: 10, groups: ['Product-admin', 'Product-create']),
+        ORM\Column(name: '`index`', length: 10, nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $index = null;
@@ -317,9 +324,9 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'HEATING WIRE (HSR25304)'),
-        Assert\Length(min: 3, max: 80),
+        Assert\Length(min: 3, max: 160),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
-        ORM\Column(length: 80),
+        ORM\Column(length: 160, nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
     ]
     private ?string $name = null;
@@ -339,10 +346,13 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     ]
     private Measure $packaging;
 
+    #[ORM\Column(nullable: true)]
+    private ?string $packagingIncorrect = null;
+
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Type de packaging'),
-        Assert\Length(max: 30, groups: ['Product-create', 'Product-production']),
-        ORM\Column(length: 30),
+        Assert\Length(max: 60, groups: ['Product-create', 'Product-production']),
+        ORM\Column(length: 60, nullable: true),
         Serializer\Groups(['create:product', 'read:product', 'write:product:production'])
     ]
     private ?string $packagingKind = null;
@@ -392,7 +402,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['create:product', 'read:product'])
     ]
     private ?Unit $unit = null;
@@ -407,9 +417,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     public function __construct() {
         $this->autoDuration = new Measure();
         $this->children = new ArrayCollection();
-        $this->currentPlace = new CurrentPlace();
         $this->costingAutoDuration = new Measure();
         $this->costingManualDuration = new Measure();
+        $this->embBlocker = new Blocker();
+        $this->embState = new State();
         $this->forecastVolume = new Measure();
         $this->manualDuration = new Measure();
         $this->maxProto = new Measure();
@@ -428,7 +439,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
     public function __clone() {
         parent::__clone();
         $this->children = new ArrayCollection();
-        $this->currentPlace = new CurrentPlace();
+        $this->embBlocker = new Blocker();
+        $this->embState = new State();
         $this->internalIndex = 1;
         $this->parent = null;
     }
@@ -447,6 +459,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
 
     final public function getAutoDuration(): Measure {
         return $this->autoDuration;
+    }
+
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
     /**
@@ -468,12 +484,16 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this->costingManualDuration;
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
-    }
-
     final public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    final public function getEmbBlocker(): Blocker {
+        return $this->embBlocker;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     final public function getEndOfLife(): ?DateTimeImmutable {
@@ -557,6 +577,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this->packaging;
     }
 
+    final public function getPackagingIncorrect(): ?string {
+        return $this->packagingIncorrect;
+    }
+
     final public function getPackagingKind(): ?string {
         return $this->packagingKind;
     }
@@ -577,9 +601,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this->productionDelay;
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function getTransfertPriceSupplies(): Measure {
@@ -596,16 +619,6 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
 
     final public function getWeight(): Measure {
         return $this->weight;
-    }
-
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
     }
 
     final public function isManagedCopper(): bool {
@@ -627,6 +640,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this;
     }
 
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
+        return $this;
+    }
+
     final public function setCode(?string $code): self {
         $this->code = $code;
         return $this;
@@ -642,13 +660,18 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this;
     }
 
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setCustomsCode(?string $customsCode): self {
+        $this->customsCode = $customsCode;
         return $this;
     }
 
-    final public function setCustomsCode(?string $customsCode): self {
-        $this->customsCode = $customsCode;
+    final public function setEmbBlocker(Blocker $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -732,6 +755,11 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this;
     }
 
+    final public function setPackagingIncorrect(?string $packagingIncorrect): self {
+        $this->packagingIncorrect = $packagingIncorrect;
+        return $this;
+    }
+
     final public function setPackagingKind(?string $packagingKind): self {
         $this->packagingKind = $packagingKind;
         return $this;
@@ -757,8 +785,8 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface, Wor
         return $this;
     }
 
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 

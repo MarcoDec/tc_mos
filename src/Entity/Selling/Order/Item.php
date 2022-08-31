@@ -3,15 +3,16 @@
 namespace App\Entity\Selling\Order;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
+use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Selling\Order\Item\CurrentPlace;
-use App\Entity\Interfaces\WorkflowInterface;
+use App\Entity\Embeddable\Selling\Order\Item\State;
 use App\Entity\Item as BaseItem;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
@@ -20,6 +21,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template-extends BaseItem<I, Order>
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -51,93 +53,101 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Transite la ligne à son prochain statut de workflow',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'transition',
-                        'required' => true,
-                        'schema' => [
-                            'enum' => CurrentPlace::TRANSITIONS,
-                            'type' => 'string'
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['selling_order_item', 'closer'], 'type' => 'string']
                         ]
-                    ]],
+                    ],
                     'requestBody' => null,
-                    'summary' => 'Transite le la ligne à son prochain statut de workflow'
+                    'summary' => 'Transite la ligne à son prochain statut de workflow'
                 ],
-                'path' => '/customer-order-items/{id}/promote/{transition}',
+                'path' => '/selling-order-items/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
         ],
-        shortName: 'CustomerOrderItem',
+        shortName: 'SellingOrderItem',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:item', 'write:measure'],
-            'openapi_definition_name' => 'CustomerOrderItem-write'
+            'openapi_definition_name' => 'SellingOrderItem-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:measure'],
-            'openapi_definition_name' => 'CustomerOrderItem-read',
+            'groups' => ['read:id', 'read:item', 'read:measure', 'read:state'],
+            'openapi_definition_name' => 'SellingOrderItem-read',
             'skip_null_values' => false
         ]
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'item_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
-    ORM\Table(name: 'customer_order_item')
+    ORM\Table(name: 'selling_order_item')
 ]
-abstract class Item extends BaseItem implements WorkflowInterface {
-    public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
-
-    #[
-        ApiProperty(description: 'Commande', example: '/api/selling-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class),
-        Serializer\Groups(['read:item', 'write:item'])
-    ]
-    protected $order;
+abstract class Item extends BaseItem {
+    final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
     #[
         ApiProperty(description: 'Accusé de réception envoyé ?', example: false),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private bool $arSent = false;
+    protected bool $arSent = false;
 
     #[
-        ApiProperty(description: 'Statut'),
         ORM\Embedded,
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:item'])
     ]
-    private CurrentPlace $currentPlace;
+    protected Closer $embBlocker;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:item'])
+    ]
+    protected State $embState;
+
+    #[
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne(targetEntity: Order::class),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected $order;
 
     public function __construct() {
         parent::__construct();
-        $this->currentPlace = new CurrentPlace();
+        $this->embBlocker = new Closer();
+        $this->embState = new State();
     }
 
-    final public function getCurrentPlace(): CurrentPlace {
-        return $this->currentPlace;
+    final public function getBlocker(): string {
+        return $this->embBlocker->getState();
     }
 
-    #[Pure]
-    final public function getState(): ?string {
-        return $this->currentPlace->getName();
+    final public function getEmbBlocker(): Closer {
+        return $this->embBlocker;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
+    }
+
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function isArSent(): bool {
         return $this->arSent;
-    }
-
-    #[Pure]
-    final public function isDeletable(): bool {
-        return $this->currentPlace->isDeletable();
-    }
-
-    #[Pure]
-    final public function isFrozen(): bool {
-        return $this->currentPlace->isFrozen();
     }
 
     /**
@@ -151,16 +161,32 @@ abstract class Item extends BaseItem implements WorkflowInterface {
     /**
      * @return $this
      */
-    final public function setCurrentPlace(CurrentPlace $currentPlace): self {
-        $this->currentPlace = $currentPlace;
+    final public function setBlocker(string $state): self {
+        $this->embBlocker->setState($state);
         return $this;
     }
 
     /**
      * @return $this
      */
-    final public function setState(?string $state): self {
-        $this->currentPlace->setName($state);
+    final public function setEmbBlocker(Closer $embBlocker): self {
+        $this->embBlocker = $embBlocker;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 }
