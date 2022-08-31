@@ -7,6 +7,8 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Purchase\Order\Item;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -37,20 +39,20 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:receipt'],
+            'groups' => ['write:measure', 'write:receipt'],
             'openapi_definition_name' => 'Receipt-write'
         ],
         normalizationContext: [
-            'groups' => ['read:receipt', 'read:id'],
+            'groups' => ['read:measure', 'read:receipt', 'read:id'],
             'openapi_definition_name' => 'Receipt-read',
             'skip_null_values' => false
         ]
     ),
     ORM\Entity(readOnly: true)
 ]
-class Receipt extends Entity {
+class Receipt extends Entity implements MeasuredInterface {
     #[
-        ApiProperty(description: 'Date', example: '2022-27-03'),
+        ApiProperty(description: 'Date', example: '2022-03-27'),
         ORM\Column(type: 'datetime_immutable', nullable: true),
         Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
@@ -86,8 +88,16 @@ class Receipt extends Entity {
         return $this->item;
     }
 
+    final public function getMeasures(): array {
+        return [$this->quantity];
+    }
+
     final public function getQuantity(): Measure {
         return $this->quantity;
+    }
+
+    final public function getUnit(): ?Unit {
+        return $this->item?->getUnit();
     }
 
     /**
