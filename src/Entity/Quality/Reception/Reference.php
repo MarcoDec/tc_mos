@@ -4,6 +4,7 @@ namespace App\Entity\Quality\Reception;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Doctrine\DBAL\Types\ItemType;
+use App\Doctrine\DBAL\Types\Quality\Reception\CheckType;
 use App\Entity\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,19 +15,13 @@ use Doctrine\ORM\Mapping as ORM;
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
-    ORM\DiscriminatorColumn(name: 'type', type: 'item_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
 abstract class Reference extends Entity {
-    public const KIND_DIM = 'Dimensionnel';
-    public const KIND_DOC = 'Documentaire';
-    public const KIND_GON = 'GO/NOGO';
-    public const KIND_QTE = 'Quantitatif';
-    public const KIND_VIS = 'Visuel';
-    public const KINDS = [self::KIND_DOC, self::KIND_DIM, self::KIND_GON, self::KIND_VIS, self::KIND_QTE];
-    public const TYPES = [ItemType::TYPE_COMPONENT => ComponentReference::class, ItemType::TYPE_PRODUCT => ProductReference::class];
+    final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentReference::class, ItemType::TYPE_PRODUCT => ProductReference::class];
 
     /** @var Collection<int, F> */
     protected Collection $families;
@@ -35,8 +30,14 @@ abstract class Reference extends Entity {
     protected Collection $items;
 
     #[
+        ApiProperty(description: 'Type', example: CheckType::TYPE_QTE, openapiContext: ['enum' => CheckType::TYPES]),
+        ORM\Column(type: 'check_kind', options: ['default' => CheckType::TYPE_QTE])
+    ]
+    private ?string $kind = CheckType::TYPE_QTE;
+
+    #[
         ApiProperty(description: 'Nom ', required: true, example: 'Dimensions'),
-        ORM\Column(length: 40)
+        ORM\Column(length: 100)
     ]
     private ?string $name = null;
 
@@ -83,6 +84,10 @@ abstract class Reference extends Entity {
         return $this->items;
     }
 
+    final public function getKind(): ?string {
+        return $this->kind;
+    }
+
     final public function getName(): ?string {
         return $this->name;
     }
@@ -108,6 +113,14 @@ abstract class Reference extends Entity {
         if ($this->items->contains($item)) {
             $this->items->removeElement($item);
         }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setKind(?string $kind): self {
+        $this->kind = $kind;
         return $this;
     }
 

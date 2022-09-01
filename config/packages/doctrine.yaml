@@ -18,6 +18,7 @@ doctrine:
       bill_state: App\Doctrine\DBAL\Types\Embeddable\Accounting\BillStateType
       blocker_state: App\Doctrine\DBAL\Types\Embeddable\BlockerStateType
       char: App\Doctrine\DBAL\Types\CharType
+      check_kind: App\Doctrine\DBAL\Types\Quality\Reception\CheckType
       closer_state: App\Doctrine\DBAL\Types\Embeddable\CloserStateType
       component_manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\ComponentManufacturingOperationStateType
       copper: App\Doctrine\DBAL\Types\Embeddable\CopperType
