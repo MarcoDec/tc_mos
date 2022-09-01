@@ -788,6 +788,7 @@ SQL);
 CREATE TABLE `check` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `emb_state_state` ENUM('asked', 'blocked', 'closed') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:check_state)',
     `receipt_id` INT UNSIGNED DEFAULT NULL,
     `reference_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_3C8EAC132B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`),
@@ -795,8 +796,8 @@ CREATE TABLE `check` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `check` (`receipt_id`)
-SELECT `receipt`.`id`
+INSERT INTO `check` (`emb_state_state`, `receipt_id`)
+SELECT 'closed', `receipt`.`id`
 FROM `component_controle_reception_ordersupplier`
 INNER JOIN `receipt` ON `component_controle_reception_ordersupplier`.`id_ordersupplier_component` = `receipt`.`old_id`
 SQL);
@@ -3775,6 +3776,7 @@ CREATE TABLE `receipt` (
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `emb_state_state` ENUM('asked', 'blocked', 'closed') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:check_state)',
     `item_id` INT UNSIGNED DEFAULT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
@@ -3783,10 +3785,11 @@ CREATE TABLE `receipt` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `receipt` (`old_id`, `date`, `item_id`, `quantity_code`, `quantity_value`)
+INSERT INTO `receipt` (`old_id`, `date`, `emb_state_state`, `item_id`, `quantity_code`, `quantity_value`)
 SELECT
     `purchase_order_item`.`old_id`,
     `purchase_order_item`.`receipt_date`,
+    'closed',
     `purchase_order_item`.`id`,
     `purchase_order_item`.`confirmed_quantity_code`,
     `purchase_order_item`.`confirmed_quantity_value`

@@ -19,6 +19,7 @@ doctrine:
       blocker_state: App\Doctrine\DBAL\Types\Embeddable\BlockerStateType
       char: App\Doctrine\DBAL\Types\CharType
       check_kind: App\Doctrine\DBAL\Types\Quality\Reception\CheckType
+      check_state: App\Doctrine\DBAL\Types\Embeddable\Quality\Reception\CheckStateType
       closer_state: App\Doctrine\DBAL\Types\Embeddable\CloserStateType
       component_manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\ComponentManufacturingOperationStateType
       copper: App\Doctrine\DBAL\Types\Embeddable\CopperType
@@ -39,6 +40,7 @@ doctrine:
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
       purchase_order_item_closer_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\CloserStateType
       purchase_order_item_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\ItemStateType
+      receipt_state: App\Doctrine\DBAL\Types\Embeddable\Quality\Reception\CheckStateType
       selling_order_item_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Order\SellingOrderItemStateType
       selling_order_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Order\SellingOrderStateType
       situation_place: App\Doctrine\DBAL\Types\Hr\Employee\SituationType

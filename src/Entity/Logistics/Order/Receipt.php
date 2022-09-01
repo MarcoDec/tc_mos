@@ -2,9 +2,11 @@
 
 namespace App\Entity\Logistics\Order;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Logistics\Order\State;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
@@ -32,6 +34,33 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Créer une réception',
                     'summary' => 'Créer une réception',
                 ]
+            ],
+            'promote' => [
+                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
+                'method' => 'PATCH',
+                'openapi_context' => [
+                    'description' => 'Transite la réception à son prochain statut de workflow',
+                    'parameters' => [
+                        [
+                            'in' => 'path',
+                            'name' => 'transition',
+                            'required' => true,
+                            'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
+                        ],
+                        [
+                            'in' => 'path',
+                            'name' => 'workflow',
+                            'required' => true,
+                            'schema' => ['enum' => ['receipt'], 'type' => 'string']
+                        ]
+                    ],
+                    'requestBody' => null,
+                    'summary' => 'Transite le la réception à son prochain statut de workflow'
+                ],
+                'path' => '/receipts/{id}/promote/{workflow}/to/{transition}',
+                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_WRITER.'\')',
+                'validate' => false
             ]
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],
@@ -43,7 +72,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Receipt-write'
         ],
         normalizationContext: [
-            'groups' => ['read:measure', 'read:receipt', 'read:id'],
+            'groups' => ['read:id', 'read:measure', 'read:receipt', 'read:state'],
             'openapi_definition_name' => 'Receipt-read',
             'skip_null_values' => false
         ]
@@ -57,6 +86,12 @@ class Receipt extends Entity implements MeasuredInterface {
         Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
     private ?DateTimeImmutable $date = null;
+
+    #[
+        ORM\Embedded,
+        Serializer\Groups(['read:receipt'])
+    ]
+    private State $embState;
 
     /** @var Item<I>|null */
     #[
@@ -74,11 +109,16 @@ class Receipt extends Entity implements MeasuredInterface {
     private Measure $quantity;
 
     public function __construct() {
+        $this->embState = new State();
         $this->quantity = new Measure();
     }
 
     final public function getDate(): ?DateTimeImmutable {
         return $this->date;
+    }
+
+    final public function getEmbState(): State {
+        return $this->embState;
     }
 
     /**
@@ -96,6 +136,10 @@ class Receipt extends Entity implements MeasuredInterface {
         return $this->quantity;
     }
 
+    final public function getState(): string {
+        return $this->embState->getState();
+    }
+
     final public function getUnit(): ?Unit {
         return $this->item?->getUnit();
     }
@@ -105,6 +149,14 @@ class Receipt extends Entity implements MeasuredInterface {
      */
     final public function setDate(?DateTimeImmutable $date): self {
         $this->date = $date;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setEmbState(State $embState): self {
+        $this->embState = $embState;
         return $this;
     }
 
@@ -123,6 +175,14 @@ class Receipt extends Entity implements MeasuredInterface {
      */
     final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setState(string $state): self {
+        $this->embState->setState($state);
         return $this;
     }
 }
