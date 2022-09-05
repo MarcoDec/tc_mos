@@ -5,6 +5,7 @@ namespace App\Entity\Quality\Reception;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Quality\Reception\CheckController;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Quality\Reception\State;
 use App\Entity\Entity;
@@ -13,7 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
- * @template F of \App\Entity\Purchase\Component\Family|\App\Entity\Project\Product\Family
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
@@ -23,16 +23,36 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère les contrôles',
-                    'summary' => 'Récupère les contrôles',
+                    'summary' => 'Récupère les contrôles'
                 ]
             ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Crée un contrôle',
-                    'summary' => 'Crée un contrôle',
+                    'summary' => 'Crée un contrôle'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_QUALITY_WRITER.'\')'
             ],
+            'receipt' => [
+                'controller' => CheckController::class,
+                'deserialize' => false,
+                'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Contrôle une réception',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'id',
+                        'required' => true,
+                        'schema' => ['type' => 'integer']
+                    ]],
+                    'requestBody' => null,
+                    'summary' => 'Contrôle une réception'
+                ],
+                'path' => '/checks/receipt/{id}',
+                'read' => false,
+                'validate' => false,
+                'write' => false
+            ]
         ],
         itemOperations: [
             'get' => NO_ITEM_GET_OPERATION,
@@ -75,7 +95,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:check', 'read:id', 'read:state'],
             'openapi_definition_name' => 'Check-read',
             'skip_null_values' => false
-        ],
+        ]
     ),
     ORM\Entity,
     ORM\Table(name: '`check`')
@@ -90,12 +110,12 @@ class Check extends Entity {
     /** @var null|Receipt<I> */
     #[
         ApiProperty(description: 'Reçu', readableLink: false, example: '/api/receipts/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(cascade: ['persist'], inversedBy: 'checks'),
         Serializer\Groups(['read:check', 'write:check'])
     ]
     private ?Receipt $receipt = null;
 
-    /** @var null|Reference<F, I> */
+    /** @var null|Reference<I> */
     #[
         ApiProperty(description: 'Référence', readableLink: false, example: '/api/references/1'),
         ORM\ManyToOne,
@@ -119,7 +139,7 @@ class Check extends Entity {
     }
 
     /**
-     * @return null|Reference<F, I>
+     * @return null|Reference<I>
      */
     final public function getReference(): ?Reference {
         return $this->reference;
@@ -148,7 +168,7 @@ class Check extends Entity {
     }
 
     /**
-     * @param null|Reference<F, I> $reference
+     * @param null|Reference<I> $reference
      *
      * @return $this
      */

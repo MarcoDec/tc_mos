@@ -12,9 +12,14 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Purchase\Order\Item\Closer;
 use App\Entity\Embeddable\Purchase\Order\Item\State;
 use App\Entity\Item as BaseItem;
+use App\Entity\Logistics\Order\Receipt;
 use App\Entity\Management\Society\Company\Company;
+use App\Entity\Quality\Reception\Check;
 use App\Filter\RelationFilter;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
@@ -133,14 +138,48 @@ abstract class Item extends BaseItem {
     ]
     protected ?Company $targetCompany = null;
 
+    /** @var Collection<int, Receipt<I>> */
+    #[ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class)]
+    private Collection $receipts;
+
     public function __construct() {
         parent::__construct();
         $this->embBlocker = new Closer();
         $this->embState = new State();
+        $this->receipts = new ArrayCollection();
+    }
+
+    /**
+     * @param Receipt<I> $receipt
+     *
+     * @return $this
+     */
+    final public function addReceipt(Receipt $receipt): self {
+        if (!$this->receipts->contains($receipt)) {
+            $this->receipts->add($receipt);
+            $receipt->setItem($this);
+        }
+        return $this;
     }
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<I>>
+     */
+    final public function getChecks(): LaravelCollection {
+        $checks = $this->getReceiptChecks();
+        $itemChecks = $this->getItemChecks();
+        /** @var Receipt<I> $receipt */
+        $receipt = (new Receipt())->setItem($this);
+        foreach ($itemChecks as $check) {
+            if (!empty($id = $check->getReference()?->getId()) && $id > 0 && !$checks->offsetExists($id)) {
+                $checks->put($id, $check->setReceipt($receipt));
+            }
+        }
+        return $checks->values();
     }
 
     final public function getCopperPrice(): Measure {
@@ -155,12 +194,54 @@ abstract class Item extends BaseItem {
         return $this->embState;
     }
 
+    /**
+     * @return LaravelCollection<int, Check<I>>
+     */
+    final public function getItemChecks(): LaravelCollection {
+        /** @phpstan-ignore-next-line */
+        return $this->item?->getChecks();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<I>>
+     */
+    final public function getReceiptChecks(): LaravelCollection {
+        /** @var LaravelCollection<int, Check<I>> $checks */
+        $checks = collect($this->receipts->getValues())
+            ->map(static fn (Receipt $receipt): array => $receipt->getChecks()->getValues())
+            ->flatten();
+        /** @phpstan-ignore-next-line */
+        return $checks->mapWithKeys(static fn (Check $check): array => empty($id = $check->getReference()?->getId()) || $id <= 0 ? [] : [$id => $check]);
+    }
+
+    /**
+     * @return Collection<int, Receipt<I>>
+     */
+    final public function getReceipts(): Collection {
+        return $this->receipts;
+    }
+
     final public function getState(): string {
         return $this->embState->getState();
     }
 
     final public function getTargetCompany(): ?Company {
         return $this->targetCompany;
+    }
+
+    /**
+     * @param Receipt<I> $receipt
+     *
+     * @return $this
+     */
+    final public function removeReceipt(Receipt $receipt): self {
+        if ($this->receipts->contains($receipt)) {
+            $this->receipts->removeElement($receipt);
+            if ($receipt->getItem() === $this) {
+                $receipt->setItem(null);
+            }
+        }
+        return $this;
     }
 
     /**

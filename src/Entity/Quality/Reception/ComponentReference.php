@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
- * @template-extends Reference<Family, Component>
+ * @template-extends Reference<Component>
  */
 #[
     ApiResource(
@@ -53,7 +53,7 @@ class ComponentReference extends Reference {
 
     #[
         ApiProperty(description: 'Composants', readableLink: false, example: ['/api/components/1', '/api/components/2']),
-        ORM\ManyToMany(targetEntity: Component::class),
+        ORM\ManyToMany(targetEntity: Component::class, inversedBy: 'references'),
         Serializer\Groups(['read:reference', 'write:reference'])
     ]
     protected Collection $items;

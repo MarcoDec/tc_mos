@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
- * @template F of \App\Entity\Purchase\Component\Family|\App\Entity\Project\Product\Family
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
@@ -66,7 +65,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 abstract class Reference extends Entity {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentReference::class, ItemType::TYPE_PRODUCT => ProductReference::class];
 
-    /** @var Collection<int, F> */
+    /** @var Collection<int, (I is \App\Entity\Purchase\Component\Component ? \App\Entity\Purchase\Component\Family : \App\Entity\Project\Product\Family)> */
     protected Collection $families;
 
     /** @var Collection<int, I> */
@@ -92,7 +91,7 @@ abstract class Reference extends Entity {
     }
 
     /**
-     * @param F $family
+     * @param (I is \App\Entity\Purchase\Component\Component ? \App\Entity\Purchase\Component\Family : \App\Entity\Project\Product\Family) $family
      *
      * @return $this
      */
@@ -111,12 +110,16 @@ abstract class Reference extends Entity {
     final public function addItem($item): self {
         if (!$this->items->contains($item)) {
             $this->items->add($item);
+            /** @phpstan-ignore-next-line */
+            $item->addReference($this);
         }
         return $this;
     }
 
     /**
-     * @return Collection<int, F>
+     * @phpstan-ignore-next-line
+     *
+     * @return Collection<int, (I is \App\Entity\Purchase\Component\Component ? \App\Entity\Purchase\Component\Family : \App\Entity\Project\Product\Family)>
      */
     final public function getFamilies(): Collection {
         return $this->families;
@@ -138,7 +141,7 @@ abstract class Reference extends Entity {
     }
 
     /**
-     * @param F $family
+     * @param (I is \App\Entity\Purchase\Component\Component ? \App\Entity\Purchase\Component\Family : \App\Entity\Project\Product\Family) $family
      *
      * @return $this
      */
@@ -157,6 +160,8 @@ abstract class Reference extends Entity {
     final public function removeItem($item): self {
         if ($this->items->contains($item)) {
             $this->items->removeElement($item);
+            /** @phpstan-ignore-next-line */
+            $item->removeReference($this);
         }
         return $this;
     }

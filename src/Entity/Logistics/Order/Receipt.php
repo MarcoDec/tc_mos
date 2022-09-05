@@ -12,7 +12,10 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Order\Item;
+use App\Entity\Quality\Reception\Check;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -80,6 +83,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity(readOnly: true)
 ]
 class Receipt extends Entity implements MeasuredInterface {
+    /** @var Collection<int, Check<I>> */
+    #[ORM\OneToMany(mappedBy: 'receipt', targetEntity: Check::class)]
+    private Collection $checks;
+
     #[
         ApiProperty(description: 'Date', example: '2022-03-27'),
         ORM\Column(type: 'datetime_immutable', nullable: true),
@@ -96,7 +103,7 @@ class Receipt extends Entity implements MeasuredInterface {
     /** @var Item<I>|null */
     #[
         ApiProperty(description: 'Item', readableLink: false, example: '/api/purchase-order-items/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(inversedBy: 'receipts'),
         Serializer\Groups(['read:receipt', 'write:receipt'])
     ]
     private ?Item $item = null;
@@ -109,8 +116,29 @@ class Receipt extends Entity implements MeasuredInterface {
     private Measure $quantity;
 
     public function __construct() {
+        $this->checks = new ArrayCollection();
         $this->embState = new State();
         $this->quantity = new Measure();
+    }
+
+    /**
+     * @param Check<I> $check
+     *
+     * @return $this
+     */
+    final public function addCheck(Check $check): self {
+        if (!$this->checks->contains($check)) {
+            $this->checks->add($check);
+            $check->setReceipt($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Check<I>>
+     */
+    final public function getChecks(): Collection {
+        return $this->checks;
     }
 
     final public function getDate(): ?DateTimeImmutable {
@@ -142,6 +170,21 @@ class Receipt extends Entity implements MeasuredInterface {
 
     final public function getUnit(): ?Unit {
         return $this->item?->getUnit();
+    }
+
+    /**
+     * @param Check<I> $check
+     *
+     * @return $this
+     */
+    final public function removeCheck(Check $check): self {
+        if ($this->checks->contains($check)) {
+            $this->checks->removeElement($check);
+            if ($check->getReceipt() === $this) {
+                $check->setReceipt(null);
+            }
+        }
+        return $this;
     }
 
     /**
