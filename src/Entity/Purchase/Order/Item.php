@@ -14,6 +14,11 @@ use App\Entity\Embeddable\Purchase\Order\Item\State;
 use App\Entity\Item as BaseItem;
 use App\Entity\Logistics\Order\Receipt;
 use App\Entity\Management\Society\Company\Company;
+use App\Entity\Project\Product\Family as ProductFamily;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
+use App\Entity\Purchase\Component\Family as ComponentFamily;
+use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -167,19 +172,28 @@ abstract class Item extends BaseItem {
     }
 
     /**
-     * @return LaravelCollection<int, Check<I>>
+     * @return LaravelCollection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
     final public function getChecks(): LaravelCollection {
         $checks = $this->getReceiptChecks();
-        $itemChecks = $this->getItemChecks();
+        $createdChecks = $this->getCompanyChecks()->merge($this->getItemChecks())->merge($this->getSupplierChecks());
         /** @var Receipt<I> $receipt */
         $receipt = (new Receipt())->setItem($this);
-        foreach ($itemChecks as $check) {
+        foreach ($createdChecks as $check) {
             if (!empty($id = $check->getReference()?->getId()) && $id > 0 && !$checks->offsetExists($id)) {
+                /** @phpstan-ignore-next-line */
                 $checks->put($id, $check->setReceipt($receipt));
             }
         }
         return $checks->values();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<I, Company>>
+     */
+    final public function getCompanyChecks(): LaravelCollection {
+        /** @phpstan-ignore-next-line */
+        return $this->getCompany()?->getChecks();
     }
 
     final public function getCopperPrice(): Measure {
@@ -195,7 +209,7 @@ abstract class Item extends BaseItem {
     }
 
     /**
-     * @return LaravelCollection<int, Check<I>>
+     * @return LaravelCollection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
     final public function getItemChecks(): LaravelCollection {
         /** @phpstan-ignore-next-line */
@@ -203,10 +217,10 @@ abstract class Item extends BaseItem {
     }
 
     /**
-     * @return LaravelCollection<int, Check<I>>
+     * @return LaravelCollection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
     final public function getReceiptChecks(): LaravelCollection {
-        /** @var LaravelCollection<int, Check<I>> $checks */
+        /** @var LaravelCollection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>> $checks */
         $checks = collect($this->receipts->getValues())
             ->map(static fn (Receipt $receipt): array => $receipt->getChecks()->getValues())
             ->flatten();
@@ -223,6 +237,18 @@ abstract class Item extends BaseItem {
 
     final public function getState(): string {
         return $this->embState->getState();
+    }
+
+    final public function getSupplier(): ?Supplier {
+        return $this->order?->getSupplier();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<I, Supplier>>
+     */
+    final public function getSupplierChecks(): LaravelCollection {
+        /** @phpstan-ignore-next-line */
+        return $this->getSupplier()?->getChecks();
     }
 
     final public function getTargetCompany(): ?Company {

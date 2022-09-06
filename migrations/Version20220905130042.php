@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220831094823 extends AbstractMigration {
+final class Version20220905130042 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -703,7 +703,7 @@ CREATE TABLE `reference` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(100) NOT NULL,
     `kind` ENUM('Dimensionnel', 'Documentaire', 'GO/NOGO', 'Quantitatif', 'Visuel') DEFAULT 'Quantitatif' NOT NULL COMMENT '(DC2Type:check_kind)',
-    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)'
+    `type` ENUM('component', 'component_family', 'product', 'product_family', 'supplier') NOT NULL COMMENT '(DC2Type:check)'
 )
 SQL);
         $this->addQuery(<<<'SQL'
@@ -742,21 +742,39 @@ INNER JOIN `component` ON `component_controle_reception`.`id_component` = `compo
 SQL);
         $this->addQuery('DROP TABLE `component_controle_reception`');
         $this->addQuery(<<<'SQL'
-CREATE TABLE `component_reference_family` (
-    `component_reference_id` INT UNSIGNED NOT NULL,
-    `family_id` INT UNSIGNED NOT NULL,
-    CONSTRAINT `IDX_D42E58E262AE155E` FOREIGN KEY (`component_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `IDX_D42E58E2C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
-    PRIMARY KEY(`component_reference_id`, `family_id`)
+CREATE TABLE `company_reference_company` (
+    `company_reference_id` INT UNSIGNED NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_14523D1FE8881467` FOREIGN KEY (`company_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_14523D1F979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`company_reference_id`, `company_id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-CREATE TABLE `product_reference_family` (
-    `product_reference_id` INT UNSIGNED NOT NULL,
+CREATE TABLE `component_family_reference_component_family` (
+    `family_reference_id` INT UNSIGNED NOT NULL,
     `family_id` INT UNSIGNED NOT NULL,
-    CONSTRAINT `IDX_360BF4A39BE1FCC2` FOREIGN KEY (`product_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `IDX_360BF4A3C35E566A` FOREIGN KEY (`family_id`) REFERENCES `product_family` (`id`) ON DELETE CASCADE,
-    PRIMARY KEY(`product_reference_id`, `family_id`)
+    CONSTRAINT `IDX_99AA6A66A1380B34` FOREIGN KEY (`family_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_99AA6A66C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`family_reference_id`, `family_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_family_reference_product_family` (
+    `family_reference_id` INT UNSIGNED NOT NULL,
+    `family_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_16B96279A1380B34` FOREIGN KEY (`family_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_16B96279C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`family_reference_id`, `family_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `supplier_reference_supplier` (
+    `supplier_reference_id` INT UNSIGNED NOT NULL,
+    `supplier_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_8E963417C2C49F0` FOREIGN KEY (`supplier_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_8E963412ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`supplier_reference_id`, `supplier_id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'

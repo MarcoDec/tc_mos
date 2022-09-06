@@ -16,10 +16,15 @@ use App\Entity\Entity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -212,6 +217,10 @@ class Supplier extends Entity {
     ]
     private ?string $notes = null;
 
+    /** @var Collection<int, SupplierReference> */
+    #[ORM\ManyToMany(targetEntity: SupplierReference::class, mappedBy: 'items')]
+    private Collection $references;
+
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         ORM\JoinColumn(nullable: false),
@@ -226,12 +235,21 @@ class Supplier extends Entity {
         $this->copper = new Copper();
         $this->embBlocker = new Blocker();
         $this->embState = new State();
+        $this->references = new ArrayCollection();
     }
 
     final public function addAdministeredBy(Company $administeredBy): self {
         if (!$this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->add($administeredBy);
             $administeredBy->addSupplier($this);
+        }
+        return $this;
+    }
+
+    final public function addReference(SupplierReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
         }
         return $this;
     }
@@ -249,6 +267,19 @@ class Supplier extends Entity {
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<Component|Product, self>>
+     */
+    final public function getChecks(): LaravelCollection {
+        return collect($this->references->getValues())
+            ->map(static function (SupplierReference $reference): Check {
+                /** @var Check<Component|Product, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            })
+            ->values();
     }
 
     final public function getConfidenceCriteria(): int {
@@ -283,6 +314,13 @@ class Supplier extends Entity {
         return $this->notes;
     }
 
+    /**
+     * @return Collection<int, SupplierReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
     final public function getSociety(): ?Society {
         return $this->society;
     }
@@ -303,6 +341,14 @@ class Supplier extends Entity {
         if ($this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->removeElement($administeredBy);
             $administeredBy->removeSupplier($this);
+        }
+        return $this;
+    }
+
+    final public function removeReference(SupplierReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
         }
         return $this;
     }

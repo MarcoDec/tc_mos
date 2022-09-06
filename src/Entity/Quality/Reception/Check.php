@@ -10,11 +10,13 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Quality\Reception\State;
 use App\Entity\Entity;
 use App\Entity\Logistics\Order\Receipt;
+use App\Entity\Quality\Reception\Reference\Reference;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ * @template C of \App\Entity\Management\Society\Company\Company|\App\Entity\Purchase\Component\Component|\App\Entity\Purchase\Component\Family|\App\Entity\Purchase\Supplier\Supplier|\App\Entity\Project\Product\Family|\App\Entity\Project\Product\Product
  */
 #[
     ApiResource(
@@ -115,7 +117,7 @@ class Check extends Entity {
     ]
     private ?Receipt $receipt = null;
 
-    /** @var null|Reference<I> */
+    /** @var null|Reference<C> */
     #[
         ApiProperty(description: 'Référence', readableLink: false, example: '/api/references/1'),
         ORM\ManyToOne,
@@ -139,7 +141,7 @@ class Check extends Entity {
     }
 
     /**
-     * @return null|Reference<I>
+     * @return null|Reference<C>
      */
     final public function getReference(): ?Reference {
         return $this->reference;
@@ -168,7 +170,7 @@ class Check extends Entity {
     }
 
     /**
-     * @param null|Reference<I> $reference
+     * @param null|Reference<C> $reference
      *
      * @return $this
      */

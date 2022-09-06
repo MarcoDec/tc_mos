@@ -20,7 +20,7 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Quality\Reception\Check;
-use App\Entity\Quality\Reception\ProductReference;
+use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Project\Product\ProductRepository;
@@ -482,16 +482,21 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     }
 
     /**
-     * @return LaravelCollection<int, Check<self>>
+     * @return LaravelCollection<int, Check<self, Family|self>>
      */
     final public function getChecks(): LaravelCollection {
-        return collect($this->references->getValues())
+        /** @var LaravelCollection<int, Check<self, Family|self>> $checks */
+        $checks = collect($this->references->getValues())
             ->map(static function (ProductReference $reference): Check {
-                /** @var Check<self> $check */
+                /** @var Check<self, self> $check */
                 $check = new Check();
                 return $check->setReference($reference);
             })
             ->values();
+        if (!empty($this->family)) {
+            $checks = $checks->merge($this->family->getChecks());
+        }
+        return $checks;
     }
 
     /**

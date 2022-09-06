@@ -17,7 +17,7 @@ use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Quality\Reception\Check;
-use App\Entity\Quality\Reception\ComponentReference;
+use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
@@ -373,16 +373,21 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     }
 
     /**
-     * @return LaravelCollection<int, Check<self>>
+     * @return LaravelCollection<int, Check<self, Family|self>>
      */
     final public function getChecks(): LaravelCollection {
-        return collect($this->references->getValues())
+        /** @var LaravelCollection<int, Check<self, Family|self>> $checks */
+        $checks = collect($this->references->getValues())
             ->map(static function (ComponentReference $reference): Check {
-                /** @var Check<self> $check */
+                /** @var Check<self, self> $check */
                 $check = new Check();
                 return $check->setReference($reference);
             })
             ->values();
+        if (!empty($this->family)) {
+            $checks = $checks->merge($this->family->getChecks());
+        }
+        return $checks;
     }
 
     #[

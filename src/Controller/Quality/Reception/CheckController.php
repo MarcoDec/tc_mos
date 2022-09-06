@@ -2,9 +2,13 @@
 
 namespace App\Controller\Quality\Reception;
 
+use App\Entity\Management\Society\Company\Company;
+use App\Entity\Project\Product\Family as ProductFamily;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
+use App\Entity\Purchase\Component\Family as ComponentFamily;
 use App\Entity\Purchase\Order\Item;
+use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -14,7 +18,7 @@ final class CheckController {
     }
 
     /**
-     * @return Check<Component|Product>[]
+     * @return Check<Component|Product, Company|Component|ComponentFamily|Supplier|ProductFamily|Product>[]
      */
     public function __invoke(int $id): array {
         $item = $this->em->find(Item::class, $id);

@@ -22,7 +22,7 @@
     "humps": "^2.0.1",
     "sass": "^1.54.8",
     "vite": "^3.0.9",
-    "vite-plugin-checker": "^0.5.0",
+    "vite-plugin-checker": "^0.5.1",
     "vite-plugin-symfony": "^0.6.0"
   },
   "license": "proprietary",

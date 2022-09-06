@@ -10,8 +10,14 @@ use App\Entity\Embeddable\Logistics\Order\State;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
+use App\Entity\Project\Product\Family as ProductFamily;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
+use App\Entity\Purchase\Component\Family as ComponentFamily;
 use App\Entity\Purchase\Order\Item;
+use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -83,7 +89,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity(readOnly: true)
 ]
 class Receipt extends Entity implements MeasuredInterface {
-    /** @var Collection<int, Check<I>> */
+    /** @var Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>> */
     #[ORM\OneToMany(mappedBy: 'receipt', targetEntity: Check::class)]
     private Collection $checks;
 
@@ -122,7 +128,7 @@ class Receipt extends Entity implements MeasuredInterface {
     }
 
     /**
-     * @param Check<I> $check
+     * @param Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier> $check
      *
      * @return $this
      */
@@ -135,7 +141,7 @@ class Receipt extends Entity implements MeasuredInterface {
     }
 
     /**
-     * @return Collection<int, Check<I>>
+     * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
     final public function getChecks(): Collection {
         return $this->checks;
@@ -173,7 +179,7 @@ class Receipt extends Entity implements MeasuredInterface {
     }
 
     /**
-     * @param Check<I> $check
+     * @param Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier> $check
      *
      * @return $this
      */

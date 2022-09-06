@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Entity\Quality\Reception;
+namespace App\Entity\Quality\Reception\Reference\Management;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Project\Product\Family;
-use App\Entity\Project\Product\Product;
+use App\Entity\Management\Society\Company\Company;
+use App\Entity\Quality\Reception\Reference\Reference;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
- * @template-extends Reference<Product>
+ * @template-extends Reference<Company>
  */
 #[
     ApiResource(
@@ -33,27 +33,20 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         denormalizationContext: [
             'groups' => ['write:reference'],
-            'openapi_definition_name' => 'ProductReference-write'
+            'openapi_definition_name' => 'CompanyReference-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:reference'],
-            'openapi_definition_name' => 'ProductReference-read',
+            'openapi_definition_name' => 'CompanyReference-read',
             'skip_null_values' => false
         ]
     ),
     ORM\Entity
 ]
-class ProductReference extends Reference {
+class CompanyReference extends Reference {
     #[
-        ApiProperty(description: 'Familles', readableLink: false, example: ['/api/product-families/1', '/api/product-families/2']),
-        ORM\ManyToMany(targetEntity: Family::class),
-        Serializer\Groups(['read:reference', 'write:reference'])
-    ]
-    protected Collection $families;
-
-    #[
-        ApiProperty(description: 'Produits', readableLink: false, example: ['/api/products/1', '/api/products/2']),
-        ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'references'),
+        ApiProperty(description: 'Composants', readableLink: false, example: ['/api/companies/1', '/api/companies/2']),
+        ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'references'),
         Serializer\Groups(['read:reference', 'write:reference'])
     ]
     protected Collection $items;

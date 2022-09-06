@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Doctrine\DBAL\Types\Quality\Reception;
+namespace App\Doctrine\DBAL\Types\Quality\Reception\Check;
 
 use App\Doctrine\DBAL\Types\EnumType;
 
-final class CheckType extends EnumType {
+final class KindType extends EnumType {
     final public const TYPE_DIM = 'Dimensionnel';
     final public const TYPE_DOC = 'Documentaire';
     final public const TYPE_GON = 'GO/NOGO';

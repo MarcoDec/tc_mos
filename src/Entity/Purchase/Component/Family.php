@@ -10,11 +10,14 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Purchase\FamilyReference;
 use App\Filter\RelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -145,10 +148,15 @@ class Family extends AbstractFamily {
     ]
     private bool $copperable = false;
 
+    /** @var Collection<int, FamilyReference> */
+    #[ORM\ManyToMany(targetEntity: FamilyReference::class, mappedBy: 'items')]
+    private Collection $references;
+
     public function __construct() {
         parent::__construct();
         $this->attributes = new ArrayCollection();
         $this->components = new ArrayCollection();
+        $this->references = new ArrayCollection();
     }
 
     final public function addAttribute(Attribute $attribute): self {
@@ -170,11 +178,32 @@ class Family extends AbstractFamily {
         return $this;
     }
 
+    final public function addReference(FamilyReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
+        }
+        return $this;
+    }
+
     /**
      * @return Collection<int, Attribute>
      */
     final public function getAttributes(): Collection {
         return $this->attributes;
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<Component, self>>
+     */
+    final public function getChecks(): LaravelCollection {
+        return collect($this->references->getValues())
+            ->map(static function (FamilyReference $reference): Check {
+                /** @var Check<Component, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            })
+            ->values();
     }
 
     final public function getCode(): ?string {
@@ -198,6 +227,13 @@ class Family extends AbstractFamily {
     ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
+    }
+
+    /**
+     * @return Collection<int, FamilyReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
     }
 
     final public function hasComponents(): bool {
@@ -229,6 +265,14 @@ class Family extends AbstractFamily {
             if ($component->getFamily() === $this) {
                 $component->setFamily(null);
             }
+        }
+        return $this;
+    }
+
+    final public function removeReference(FamilyReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
         }
         return $this;
     }
