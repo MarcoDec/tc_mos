@@ -124,7 +124,7 @@ class Order extends Entity {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:order'])
+        Serializer\Groups(['read:order', 'read:supplier:receipt'])
     ]
     private Closer $embBlocker;
 
@@ -151,7 +151,7 @@ class Order extends Entity {
     #[
         ApiProperty(description: 'Référence', example: 'EJZ65'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:order', 'write:order'])
+        Serializer\Groups(['read:order', 'read:supplier:receipt', 'write:order'])
     ]
     private ?string $ref = null;
 
@@ -164,7 +164,7 @@ class Order extends Entity {
 
     #[
         ApiProperty(description: 'Fournisseur', readableLink: false, example: '/api/suppliers/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(inversedBy: 'orders'),
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Supplier $supplier = null;

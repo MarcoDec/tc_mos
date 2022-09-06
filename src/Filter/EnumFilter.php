@@ -13,11 +13,15 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
 
-final class EnumFilter extends AbstractFilter {
+/**
+ * @phpstan-type FilterSchema array{enum: string[], type: string}
+ * @phpstan-type FilterSchemaArray array{items: FilterSchema, type: 'array'}
+ */
+class EnumFilter extends AbstractFilter {
     /**
      * @param ReflectionClass<object> $class
      */
-    private static function getReflectionProperty(ReflectionClass $class, string $property): ReflectionProperty {
+    final protected static function getReflectionProperty(ReflectionClass $class, string $property): ReflectionProperty {
         $matches = [];
         if (preg_match('/(\w+)\.(.+)/', $property, $matches) === 1) {
             /** @var ReflectionNamedType $type */
@@ -30,13 +34,14 @@ final class EnumFilter extends AbstractFilter {
     }
 
     /**
-     * @return mixed[]
+     * @return array<string, array{property: string, required: bool, schema: FilterSchema|FilterSchemaArray}>
      */
     public function getDescription(string $resourceClass): array {
         $description = [];
         $metadata = $this->getClassMetadata($resourceClass);
         $reflClass = $metadata->getReflectionClass();
         foreach ($this->properties as $property => $strategy) {
+            /** @var string $property */
             $description[$property] = [
                 'property' => $property,
                 'required' => false,
@@ -50,7 +55,7 @@ final class EnumFilter extends AbstractFilter {
     }
 
     /**
-     * @param mixed $value
+     * @param string|string[] $value
      */
     protected function filterProperty(string $property, $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?string $operationName = null): void {
         if (!$this->isPropertyEnabled($property, $resourceClass) || !$this->isPropertyMapped($property, $resourceClass)) {
@@ -64,10 +69,10 @@ final class EnumFilter extends AbstractFilter {
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    private function getEnum(ReflectionProperty $property): array {
-        /** @var Collection<int, mixed> $enum */
+    final protected function getEnum(ReflectionProperty $property): array {
+        /** @var Collection<int, string> $enum */
         $enum = new Collection();
         foreach ($property->getAttributes(ApiProperty::class) as $attribute) {
             /** @var ApiProperty $apiProperty */
@@ -85,7 +90,7 @@ final class EnumFilter extends AbstractFilter {
         return $enum->values()->all();
     }
 
-    private function getType(?string $doctrineType): string {
+    final protected function getType(?string $doctrineType): string {
         return match ($doctrineType) {
             Types::ARRAY => 'array',
             Types::BIGINT, Types::INTEGER, Types::SMALLINT => 'int',

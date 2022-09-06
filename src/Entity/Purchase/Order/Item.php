@@ -21,6 +21,7 @@ use App\Entity\Purchase\Component\Family as ComponentFamily;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -34,6 +35,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -100,6 +102,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'PurchaseOrderItem-read',
             'skip_null_values' => false
         ],
+        paginationClientEnabled: true
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
