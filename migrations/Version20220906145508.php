@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220905130042 extends AbstractMigration {
+final class Version20220906145508 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -764,7 +764,7 @@ CREATE TABLE `product_family_reference_product_family` (
     `family_reference_id` INT UNSIGNED NOT NULL,
     `family_id` INT UNSIGNED NOT NULL,
     CONSTRAINT `IDX_16B96279A1380B34` FOREIGN KEY (`family_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `IDX_16B96279C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_16B96279C35E566A` FOREIGN KEY (`family_id`) REFERENCES `product_family` (`id`) ON DELETE CASCADE,
     PRIMARY KEY(`family_reference_id`, `family_id`)
 )
 SQL);
@@ -3794,7 +3794,7 @@ CREATE TABLE `receipt` (
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `emb_state_state` ENUM('asked', 'blocked', 'closed') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:check_state)',
+    `emb_state_state` ENUM('asked', 'blocked', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
     `item_id` INT UNSIGNED DEFAULT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,

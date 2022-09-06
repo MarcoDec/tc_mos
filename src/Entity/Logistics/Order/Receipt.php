@@ -37,13 +37,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les réceptions',
                     'summary' => 'Récupère les réceptions',
                 ]
-            ],
-            'post' => [
-                'openapi_context' => [
-                    'description' => 'Créer une réception',
-                    'summary' => 'Créer une réception',
-                ]
-            ],
+            ]
+        ],
+        itemOperations: [
+            'get' => NO_ITEM_GET_OPERATION,
             'promote' => [
                 'controller' => PlaceholderAction::class,
                 'deserialize' => false,
@@ -72,13 +69,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'validate' => false
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
-        ],
-        denormalizationContext: [
-            'groups' => ['write:measure', 'write:receipt'],
-            'openapi_definition_name' => 'Receipt-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:measure', 'read:receipt', 'read:state'],
@@ -86,7 +78,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity(readOnly: true)
+    ORM\Entity
 ]
 class Receipt extends Entity implements MeasuredInterface {
     /** @var Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>> */
@@ -96,9 +88,9 @@ class Receipt extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Date', example: '2022-03-27'),
         ORM\Column(type: 'datetime_immutable', nullable: true),
-        Serializer\Groups(['read:receipt', 'write:receipt'])
+        Serializer\Groups(['read:receipt'])
     ]
-    private ?DateTimeImmutable $date = null;
+    private ?DateTimeImmutable $date;
 
     #[
         ORM\Embedded,
@@ -110,19 +102,20 @@ class Receipt extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Item', readableLink: false, example: '/api/purchase-order-items/1'),
         ORM\ManyToOne(inversedBy: 'receipts'),
-        Serializer\Groups(['read:receipt', 'write:receipt'])
+        Serializer\Groups(['read:receipt'])
     ]
     private ?Item $item = null;
 
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:receipt', 'write:receipt'])
+        Serializer\Groups(['read:receipt'])
     ]
     private Measure $quantity;
 
     public function __construct() {
         $this->checks = new ArrayCollection();
+        $this->date = new DateTimeImmutable();
         $this->embState = new State();
         $this->quantity = new Measure();
     }

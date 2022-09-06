@@ -14,7 +14,7 @@ class State extends AbstractState {
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => ReceiptStateType::TYPES]),
-        ORM\Column(type: 'check_state', options: ['default' => 'asked']),
+        ORM\Column(type: 'receipt_state', options: ['default' => 'asked']),
         Serializer\Groups(['read:state'])
     ]
     protected string $state = ReceiptStateType::TYPE_STATE_ASKED;
