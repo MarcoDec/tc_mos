@@ -42,9 +42,8 @@ services:
   App\EventListener\Embeddable\MeasureListener:
     autoconfigure: false
     tags:
-      - entity: App\Entity\Interfaces\EmbeddedInterface
-        event: postLoad
-        name: doctrine.orm.entity_listener
+      - event: postLoad
+        name: doctrine.event_listener
 
   App\EventListener\Hr\Employee\NotificationListener:
     autoconfigure: false

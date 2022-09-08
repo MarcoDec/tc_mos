@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class EventState extends State {
-    final public const TRANSITIONS = [self::TR_SUPERVISE, self::TR_VALIDATE];
+    final public const TRANSITIONS = [self::TR_ACCEPT, self::TR_CLOSE, self::TR_REJECT];
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => EventStateType::TYPES]),
