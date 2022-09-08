@@ -12,6 +12,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\MappedSuperclass]
 abstract class Event extends Entity {
     #[
+        ApiProperty(description: 'Date', example: '2022-10-08'),
+        ORM\Column(type: 'datetime_immutable', nullable: true),
+        Serializer\Groups(['read:event', 'write:event'])
+    ]
+    protected ?DateTimeImmutable $date = null;
+
+    #[
+        ApiProperty(description: 'Fini', example: false),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:event'])
+    ]
+    protected bool $done = false;
+
+    #[
         ApiProperty(description: 'Compagnie dirigeante', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:event', 'write:event'])
@@ -19,26 +33,12 @@ abstract class Event extends Entity {
     protected ?Company $managingCompany = null;
 
     #[
-        ApiProperty(description: 'Date'),
-        ORM\Column(type: 'datetime_immutable', nullable: true),
-        Serializer\Groups(['read:event', 'write:event'])
-    ]
-    private ?DateTimeImmutable $date = null;
-
-    #[
-        ApiProperty(description: 'Fini', example: false),
-        ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:event'])
-    ]
-    private bool $done = false;
-
-    #[
         ApiProperty(description: 'Nom', example: 'Congés d\'été'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
         Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?string $name = null;
+    protected ?string $name = null;
 
     final public function getDate(): ?DateTimeImmutable {
         return $this->date;
