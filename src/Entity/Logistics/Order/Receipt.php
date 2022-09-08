@@ -10,6 +10,7 @@ use App\Entity\Embeddable\Logistics\Order\State;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
 use App\Entity\Project\Product\Family as ProductFamily;
@@ -87,10 +88,10 @@ class Receipt extends Entity implements MeasuredInterface {
 
     #[
         ApiProperty(description: 'Date', example: '2022-03-27'),
-        ORM\Column(type: 'datetime_immutable', nullable: true),
+        ORM\Column(type: 'datetime_immutable'),
         Serializer\Groups(['read:receipt'])
     ]
-    private ?DateTimeImmutable $date;
+    private DateTimeImmutable $date;
 
     #[
         ORM\Embedded,
@@ -113,11 +114,16 @@ class Receipt extends Entity implements MeasuredInterface {
     ]
     private Measure $quantity;
 
+    /** @var Collection<int, Stock<I>> */
+    #[ORM\ManyToMany(targetEntity: Stock::class, inversedBy: 'receipts')]
+    private Collection $stocks;
+
     public function __construct() {
         $this->checks = new ArrayCollection();
         $this->date = new DateTimeImmutable();
         $this->embState = new State();
         $this->quantity = new Measure();
+        $this->stocks = new ArrayCollection();
     }
 
     /**
@@ -134,13 +140,30 @@ class Receipt extends Entity implements MeasuredInterface {
     }
 
     /**
+     * @param Stock<I> $stock
+     *
+     * @return $this
+     */
+    final public function addStock(Stock $stock): self {
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks->add($stock);
+            $stock->addReceipt($this);
+        }
+        return $this;
+    }
+
+    final public function getBatchNumber(): string {
+        return $this->date->format('Ymd');
+    }
+
+    /**
      * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
     final public function getChecks(): Collection {
         return $this->checks;
     }
 
-    final public function getDate(): ?DateTimeImmutable {
+    final public function getDate(): DateTimeImmutable {
         return $this->date;
     }
 
@@ -163,8 +186,22 @@ class Receipt extends Entity implements MeasuredInterface {
         return $this->quantity;
     }
 
+    /**
+     * @return I|null
+     */
+    final public function getReceiptItem() {
+        return $this->item?->getItem();
+    }
+
     final public function getState(): string {
         return $this->embState->getState();
+    }
+
+    /**
+     * @return Collection<int, Stock<I>>
+     */
+    final public function getStocks(): Collection {
+        return $this->stocks;
     }
 
     final public function getUnit(): ?Unit {
@@ -187,9 +224,22 @@ class Receipt extends Entity implements MeasuredInterface {
     }
 
     /**
+     * @param Stock<I> $stock
+     *
      * @return $this
      */
-    final public function setDate(?DateTimeImmutable $date): self {
+    final public function removeStock(Stock $stock): self {
+        if ($this->stocks->contains($stock)) {
+            $this->stocks->removeElement($stock);
+            $stock->removeReceipt($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setDate(DateTimeImmutable $date): self {
         $this->date = $date;
         return $this;
     }

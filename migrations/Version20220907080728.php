@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220906145508 extends AbstractMigration {
+final class Version20220907080728 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -3793,7 +3793,7 @@ CREATE TABLE `receipt` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
     `emb_state_state` ENUM('asked', 'blocked', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
     `item_id` INT UNSIGNED DEFAULT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL,
@@ -3816,6 +3816,15 @@ WHERE `purchase_order_item`.`receipt_date` IS NOT NULL
 AND `purchase_order_item`.`receipt_quantity` > 0
 SQL);
         $this->addQuery('ALTER TABLE `purchase_order_item` DROP `receipt_date`, DROP `receipt_quantity`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `receipt_stock` (
+    `receipt_id` INT UNSIGNED NOT NULL,
+    `stock_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_AFAEE2502B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_AFAEE250DCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`receipt_id`, `stock_id`)
+)
+SQL);
     }
 
     private function upPurchaseOrders(): void {

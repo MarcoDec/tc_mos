@@ -10,9 +10,13 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Order\Order\State;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Supplier\Contact;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Selling\Order\Order as SellingOrder;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -134,6 +138,10 @@ class Order extends Entity {
     ]
     private State $embState;
 
+    /** @var Collection<int, Item<Component|Product>> */
+    #[ORM\OneToMany(mappedBy: 'order', targetEntity: Item::class)]
+    private Collection $items;
+
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
@@ -172,6 +180,18 @@ class Order extends Entity {
     public function __construct() {
         $this->embBlocker = new Closer();
         $this->embState = new State();
+        $this->items = new ArrayCollection();
+    }
+
+    /**
+     * @param Item<Component|Product> $item
+     */
+    final public function addItem(Item $item): self {
+        if (!$this->items->contains($item)) {
+            $this->items->add($item);
+            $item->setOrder($this);
+        }
+        return $this;
     }
 
     final public function getBlocker(): string {
@@ -198,6 +218,13 @@ class Order extends Entity {
         return $this->embState;
     }
 
+    /**
+     * @return Collection<int, Item<Component|Product>>
+     */
+    final public function getItems(): Collection {
+        return $this->items;
+    }
+
     final public function getNotes(): ?string {
         return $this->notes;
     }
@@ -218,8 +245,43 @@ class Order extends Entity {
         return $this->supplier;
     }
 
+    final public function hasNoReceipt(): bool {
+        foreach ($this->items as $item) {
+            if ($item->hasReceipt()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    final public function isNotReceipt(): bool {
+        return !$this->isReceipt();
+    }
+
+    final public function isReceipt(): bool {
+        foreach ($this->items as $item) {
+            if ($item->isNotReceipt()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     final public function isSupplementFret(): bool {
         return $this->supplementFret;
+    }
+
+    /**
+     * @param Item<Component|Product> $item
+     */
+    final public function removeItem(Item $item): self {
+        if ($this->items->contains($item)) {
+            $this->items->removeElement($item);
+            if ($item->getOrder() === $this) {
+                $item->setOrder(null);
+            }
+        }
+        return $this;
     }
 
     final public function setBlocker(string $state): self {

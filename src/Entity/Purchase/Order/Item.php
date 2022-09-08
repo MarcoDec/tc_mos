@@ -22,6 +22,7 @@ use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use App\Filter\RelationFilter;
 use App\Filter\SetFilter;
+use App\Repository\Purchase\Order\ItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -106,7 +107,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ItemRepository::class),
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'purchase_order_item')
 ]
@@ -134,7 +135,7 @@ abstract class Item extends BaseItem {
 
     #[
         ApiProperty(description: 'Commande', readableLink: false, example: '/api/purchase-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class),
+        ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'items'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $order;
@@ -231,6 +232,16 @@ abstract class Item extends BaseItem {
         return $checks->mapWithKeys(static fn (Check $check): array => empty($id = $check->getReference()?->getId()) || $id <= 0 ? [] : [$id => $check]);
     }
 
+    final public function getReceiptQuantity(): Measure {
+        $quantity = (new Measure())
+            ->setCode($this->getUnit()?->getCode())
+            ->setUnit($this->getUnit());
+        foreach ($this->receipts as $receipt) {
+            $quantity = $quantity->add($receipt->getQuantity());
+        }
+        return $quantity;
+    }
+
     /**
      * @return Collection<int, Receipt<I>>
      */
@@ -256,6 +267,22 @@ abstract class Item extends BaseItem {
 
     final public function getTargetCompany(): ?Company {
         return $this->targetCompany;
+    }
+
+    final public function hasNoReceipt(): bool {
+        return $this->receipts->isEmpty();
+    }
+
+    final public function hasReceipt(): bool {
+        return !$this->hasNoReceipt();
+    }
+
+    final public function isNotReceipt(): bool {
+        return !$this->isReceipt();
+    }
+
+    final public function isReceipt(): bool {
+        return $this->getReceiptQuantity()->isGreaterThanOrEqual($this->getConfirmedQuantity());
     }
 
     /**

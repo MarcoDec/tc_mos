@@ -7,7 +7,7 @@ use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Repository\Purchase\Supplier\SupplierRepository;
 
-final class SupplierDateProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface {
+final class SupplierDataProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface {
     public function __construct(private readonly SupplierRepository $repo) {
     }
 
