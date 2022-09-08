@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Illuminate\Support\Collection as LaravelCollection;
 use JetBrains\PhpStorm\Pure;
+use LogicException;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -65,6 +66,18 @@ abstract class AbstractUnit extends Entity {
         return $this;
     }
 
+    /**
+     * @param null|static $unit
+     */
+    final public function assertSameAs(?self $unit): void {
+        if ($unit === null || $unit->code === null) {
+            throw new LogicException('No code defined.');
+        }
+        if (!$this->has($unit)) {
+            throw new LogicException("Units {$this->code} and {$unit->code} aren't on the same family.");
+        }
+    }
+
     final public function getBase(): float {
         return $this->base;
     }
@@ -87,6 +100,13 @@ abstract class AbstractUnit extends Entity {
     final public function getConvertorDistance(self $unit): float {
         $distance = $this->getDistance($unit);
         return $this->isLessThan($unit) ? 1 / $distance : $distance;
+    }
+
+    /**
+     * @param static $unit
+     */
+    final public function getLess(self $unit): self {
+        return $this->base < $unit->base ? $this : $unit;
     }
 
     public function getName(): ?string {
@@ -197,13 +217,6 @@ abstract class AbstractUnit extends Entity {
         /** @var LaravelCollection<int, static> $children */
         $children = $root->getDepthChildren()->push($root)->unique->getId();
         return $children->values();
-    }
-
-    /**
-     * @param static $unit
-     */
-    private function getLess(self $unit): self {
-        return $this->base < $unit->base ? $this : $unit;
     }
 
     private function getRoot(): self {
