@@ -81,10 +81,12 @@ class EnumFilter extends AbstractFilter {
                 !empty($apiProperty->attributes)
                 && isset($apiProperty->attributes['openapi_context'])
                 && !empty($context = $apiProperty->attributes['openapi_context'])
-                && isset($context['enum'])
-                && !empty($context['enum'])
             ) {
-                $enum = $enum->merge($context['enum']);
+                if (isset($context['enum']) && !empty($context['enum'])) {
+                    $enum = $enum->merge($context['enum']);
+                } elseif (isset($context['items']['enum']) && !empty($context['items']['enum'])) {
+                    $enum = $enum->merge($context['items']['enum']);
+                }
             }
         }
         return $enum->values()->all();
