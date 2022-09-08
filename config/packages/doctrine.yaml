@@ -37,6 +37,7 @@ doctrine:
       item: App\Doctrine\DBAL\Types\ItemType
       manufacturing_order_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\OrderStateType
       notification_category: App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType
+      printer_color: App\Doctrine\DBAL\Types\Management\PrinterColorType
       product_state: App\Doctrine\DBAL\Types\Embeddable\Project\Product\ProductStateType
       product_kind: App\Doctrine\DBAL\Types\Project\Product\KindType
       purchase_order_item_closer_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\CloserStateType

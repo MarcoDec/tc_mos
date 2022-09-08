@@ -3213,6 +3213,7 @@ SQL);
 CREATE TABLE `printer` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `color` ENUM('green', 'yellow') DEFAULT 'green' NOT NULL COMMENT '(DC2Type:printer_color)',
     `company_id` INT UNSIGNED DEFAULT NULL,
     `ip` VARCHAR(255) DEFAULT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
