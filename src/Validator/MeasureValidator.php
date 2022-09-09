@@ -47,7 +47,7 @@ final class MeasureValidator extends ConstraintValidator {
         if (!empty($unit = $this->getObject()->getUnit())) {
             return $unit;
         }
-        dump($this->getObject(), $unit);
+        dump($this->getObject());
         throw new InvalidArgumentException();
     }
 }
