@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Project\Product\Product;
+use App\Repository\Selling\Order\ProductItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -39,7 +40,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: ProductItemRepository::class)
 ]
 class ProductItem extends Item {
     #[

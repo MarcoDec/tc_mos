@@ -12,6 +12,7 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Selling\Order\Item\State;
 use App\Entity\Item as BaseItem;
 use App\Filter\RelationFilter;
+use App\Repository\Selling\Order\ItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -91,7 +92,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ItemRepository::class),
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'selling_order_item')
 ]
