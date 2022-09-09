@@ -10,7 +10,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\Embeddable]
 class State extends AbstractState {
-    final public const TRANSITIONS = [self::TR_DELIVER, self::TR_PARTIALLY_DELIVER, self::TR_VALIDATE];
+    final public const TRANSITIONS = [
+        self::TR_BILL,
+        self::TR_DELIVER,
+        self::TR_PAY,
+        self::TR_PARTIALLY_DELIVER,
+        self::TR_VALIDATE
+    ];
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => SellingOrderItemStateType::TYPES]),

@@ -98,21 +98,21 @@ abstract class Event extends AbstractEvent {
         ORM\Embedded,
         Serializer\Groups(['read:event'])
     ]
-    private EventState $embState;
+    protected EventState $embState;
 
     #[
         ApiProperty(description: 'Employé', example: '/api/employees/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?Employee $employee;
+    protected ?Employee $employee;
 
     #[
         ApiProperty(description: 'Machine', readableLink: false, example: '/api/engines/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:event', 'write:event'])
     ]
-    private ?Engine $engine;
+    protected ?Engine $engine;
 
     public function __construct() {
         $this->embState = new EventState();

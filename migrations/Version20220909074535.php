@@ -4001,7 +4001,7 @@ CREATE TABLE `selling_order_item` (
     `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
     `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'partially_delivered') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_item_state)',
+    `emb_state_state` ENUM('agreed', 'billed', 'delivered', 'draft', 'paid', 'partially_delivered') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_item_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
     `price_code` VARCHAR(6) DEFAULT NULL,

@@ -341,6 +341,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->weight = new Measure();
     }
 
+    public function __clone() {
+        parent::__clone();
+        $this->attributes = new ArrayCollection();
+        $this->embBlocker = new Blocker();
+        $this->embState = new ComponentManufacturingOperationState();
+    }
+
     public static function getBarCodeTableNumber(): string {
         return self::COMPONENT_BAR_CODE_TABLE_NUMBER;
     }
