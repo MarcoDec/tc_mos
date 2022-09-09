@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
- * @template T of MeasuredInterface
+ * @template T of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
