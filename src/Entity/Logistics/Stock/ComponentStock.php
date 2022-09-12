@@ -65,7 +65,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:measure', 'read:stock'],
             'openapi_definition_name' => 'ComponentStock-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ComponentStockRepository::class)
 ]
