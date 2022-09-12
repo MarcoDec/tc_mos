@@ -9,7 +9,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -69,7 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class OutTrainer extends Entity {
+class OutTrainer extends EntityId {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,

@@ -5,7 +5,7 @@ namespace App\Entity\Management\Society;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Doctrine\DBAL\Types\Management\Society\ContactType;
 use App\Entity\Embeddable\Address;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @template T of object
  */
 #[ORM\MappedSuperclass]
-abstract class Contact extends Entity {
+abstract class Contact extends EntityId {
     /** @var null|T */
     protected $society;
 

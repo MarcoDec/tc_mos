@@ -9,7 +9,7 @@ use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Production\Manufacturing\Order\State;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
@@ -103,7 +103,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'manufacturing_order')
 ]
-class Order extends Entity implements BarCodeInterface {
+class Order extends EntityId implements BarCodeInterface {
     use BarCodeTrait;
 
     #[

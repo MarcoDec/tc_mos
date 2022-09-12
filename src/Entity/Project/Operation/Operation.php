@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Production\Manufacturing\Operation as ManufacturingOperation;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -68,7 +68,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table(name: 'project_operation'),
     UniqueEntity(['name', 'code'])
 ]
-class Operation extends Entity {
+class Operation extends EntityId {
     #[
         ApiProperty(description: 'Automatique', example: true),
         ORM\Column(options: ['default' => false]),

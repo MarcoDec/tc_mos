@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Production\Manufacturing\Expedition;
@@ -68,7 +68,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'bill_item')
 ]
-abstract class Item extends Entity implements MeasuredInterface {
+abstract class Item extends EntityId implements MeasuredInterface {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
     #[

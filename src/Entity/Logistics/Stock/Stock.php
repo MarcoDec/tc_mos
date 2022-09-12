@@ -156,13 +156,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     ]
     protected ?string $location = null;
 
-    /** @var array<int, string> */
-    #[
-        ApiProperty(description: 'Localisations', example: 'Rayon B'),
-        Serializer\Groups(['read:stock:grouped'])
-    ]
-    protected array $locations = [];
-
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure,
@@ -182,6 +175,13 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     ]
     protected ?Warehouse $warehouse = null;
 
+    /** @var array<int, string> */
+    #[
+        ApiProperty(description: 'Localisations', example: 'Rayon B'),
+        Serializer\Groups(['read:stock:grouped'])
+    ]
+    private array $locations = [];
+
     public function __construct() {
         $this->quantity = new Measure();
         $this->receipts = new ArrayCollection();
@@ -189,16 +189,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     public static function getBarCodeTableNumber(): string {
         return self::STOCK_BAR_CODE_PREFIX;
-    }
-
-    /**
-     * @return $this
-     */
-    final public function addLocation(string $location): self {
-        if (!in_array($location, $this->locations)) {
-            $this->locations[] = $location;
-        }
-        return $this;
     }
 
     /**
@@ -218,11 +208,23 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return $this->batchNumber;
     }
 
+    #[
+        ApiProperty(description: 'id', required: true, identifier: true, example: 1),
+        Serializer\Groups(['read:id'])
+    ]
+    public function getId(): int|null|string {
+        return parent::getId() ?? $this->getGroupedId();
+    }
+
     /**
      * @return null|T
      */
     final public function getItem() {
         return $this->item;
+    }
+
+    final public function getItemCode(): ?string {
+        return $this->item?->getCode();
     }
 
     final public function getLocation(): ?string {
@@ -259,18 +261,21 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return $this->warehouse;
     }
 
-    final public function isJail(): bool {
-        return $this->jail;
-    }
-
     /**
+     * @param Stock<T> $stock
+     *
      * @return $this
      */
-    final public function removeLocation(string $location): self {
-        if (false !== $key = array_search($location, $this->locations, true)) {
-            array_splice($this->locations, $key, 1);
+    final public function group(self $stock): self {
+        if (!empty($location = $stock->getLocation())) {
+            $this->addLocation($location);
         }
+        $this->add($stock->getQuantity());
         return $this;
+    }
+
+    final public function isJail(): bool {
+        return $this->jail;
     }
 
     /**
@@ -367,5 +372,19 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     final public function substract(Measure $quantity): self {
         $this->quantity = $this->quantity->substract($quantity);
         return $this;
+    }
+
+    private function add(Measure $quantity): void {
+        $this->quantity = $this->quantity->add($quantity);
+    }
+
+    private function addLocation(string $location): void {
+        if (!in_array($location, $this->locations)) {
+            $this->locations[] = $location;
+        }
+    }
+
+    private function getGroupedId(): string {
+        return "{$this->warehouse?->getId()}-{$this->item?->getId()}";
     }
 }

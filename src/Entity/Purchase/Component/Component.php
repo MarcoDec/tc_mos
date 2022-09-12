@@ -12,7 +12,7 @@ use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
@@ -166,7 +166,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
-class Component extends Entity implements BarCodeInterface, MeasuredInterface {
+class Component extends EntityId implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
     /** @var Collection<int, ComponentAttribute> */

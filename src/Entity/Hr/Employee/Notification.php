@@ -5,7 +5,7 @@ namespace App\Entity\Hr\Employee;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Hr\Employee\NotificationCategoryType;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Repository\Hr\Employee\NotificationRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -86,7 +86,7 @@ use Doctrine\ORM\Mapping as ORM;
     ),
     ORM\Entity(repositoryClass: NotificationRepository::class)
 ]
-class Notification extends Entity {
+class Notification extends EntityId {
     #[
         ApiProperty(description: 'Catégorie', example: NotificationCategoryType::TYPE_DEFAULT, openapiContext: ['enum' => NotificationCategoryType::TYPES]),
         ORM\Column(type: 'notification_category', options: ['default' => NotificationCategoryType::TYPE_DEFAULT])

@@ -5,8 +5,10 @@ namespace App\Repository\Logistics\Stock;
 use App\Entity\Logistics\Stock\ComponentStock;
 use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Logistics\Stock\Stock;
+use App\Entity\Logistics\Warehouse;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -25,12 +27,29 @@ class StockRepository extends ServiceEntityRepository {
     }
 
     /**
+     * @return (ComponentStock|ProductStock)[]
+     */
+    public function findByGrouped(Warehouse $warehouse): array {
+        /** @var (ComponentStock|ProductStock)[] $componentsStocks */
+        $componentsStocks = $this->_em->getRepository(ComponentStock::class)->findByGrouped($warehouse);
+        /** @var (ComponentStock|ProductStock)[] $productStocks */
+        $productStocks = $this->_em->getRepository(ProductStock::class)->findByGrouped($warehouse);
+        return collect($componentsStocks)->merge($productStocks)->values()->all();
+    }
+
+    /**
      * @return null|T
      */
     public function findTransfer(int $id): ?Stock {
         /** @phpstan-ignore-next-line */
         return $this->_em->getRepository(ComponentStock::class)->findTransferStock($id)
             ?? $this->_em->getRepository(ProductStock::class)->findTransferStock($id);
+    }
+
+    protected function createGroupedQueryBuilder(Warehouse $warehouse): QueryBuilder {
+        return $this->createQueryBuilder('s')
+            ->where('s.warehouse = :warehouse')
+            ->setParameter('warehouse', $warehouse->getId());
     }
 
     /**

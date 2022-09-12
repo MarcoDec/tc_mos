@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
 use App\Entity\Project\Product\Product as TechnicalSheet;
@@ -64,7 +64,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity(repositoryClass: ProductRepository::class),
     ORM\Table(name: 'product_customer')
 ]
-class Product extends Entity {
+class Product extends EntityId {
     /** @var Collection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),

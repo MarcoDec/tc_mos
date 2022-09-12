@@ -10,7 +10,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Production\Engine\CounterPart\Group as CounterPartGroup;
 use App\Entity\Production\Engine\Tool\Group as ToolGroup;
 use App\Entity\Production\Engine\Workstation\Group as WorkstationGroup;
@@ -69,7 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'engine_group')
 ]
-abstract class Group extends Entity {
+abstract class Group extends EntityId {
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPartGroup::class,
         EngineType::TYPE_TOOL => ToolGroup::class,

@@ -9,7 +9,7 @@ use App\Entity\Accounting\Bill;
 use App\Entity\Embeddable\EventState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Management\Society\Company\Company;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -97,7 +97,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class DeliveryNote extends Entity {
+class DeliveryNote extends EntityId {
     #[
         ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
         ORM\ManyToOne,

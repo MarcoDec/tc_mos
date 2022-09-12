@@ -6,7 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Society;
 use App\Entity\Project\Product\Product;
@@ -105,7 +105,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Company extends Entity {
+class Company extends EntityId {
     #[
         ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/2'),
         Assert\NotBlank,

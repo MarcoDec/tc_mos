@@ -9,7 +9,7 @@ use App\Doctrine\DBAL\Types\Project\Product\KindType;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Selling\Order\State;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Selling\Customer\BillingAddress;
 use App\Entity\Selling\Customer\Customer;
@@ -102,7 +102,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity,
     ORM\Table(name: 'selling_order')
 ]
-class Order extends Entity {
+class Order extends EntityId {
     #[
         ApiProperty(description: 'Destinataire de la commande', readableLink: false, example: '/api/billing-addresses/1'),
         ORM\ManyToOne,

@@ -92,12 +92,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     UniqueEntity('name')
 ]
 class Unit extends AbstractUnit {
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, fetch: 'EAGER')]
     protected Collection $children;
 
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/units/1'),
-        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
+        ORM\ManyToOne(targetEntity: self::class, fetch: 'EAGER', inversedBy: 'children'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected $parent;

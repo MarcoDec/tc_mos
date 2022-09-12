@@ -3,7 +3,7 @@
 namespace App\Entity\Management;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
-abstract class AbstractUnit extends Entity {
+abstract class AbstractUnit extends EntityId {
     final public const UNIT_CODE_MAX_LENGTH = 6;
 
     /** @var Collection<int, static> */

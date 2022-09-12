@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template O of Purchase\Order\Order|Selling\Order\Order
  */
 #[ORM\MappedSuperclass]
-abstract class Item extends Entity implements MeasuredInterface {
+abstract class Item extends EntityId implements MeasuredInterface {
     #[
         ApiProperty(description: 'Date de confirmation', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),

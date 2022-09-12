@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component as TechnicalSheet;
@@ -67,7 +67,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity(repositoryClass: ComponentRepository::class),
     ORM\Table(name: 'supplier_component')
 ]
-class Component extends Entity {
+class Component extends EntityId {
     #[
         ApiProperty(description: 'Référence', example: 'DH544G'),
         ORM\Column(nullable: true),

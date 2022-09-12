@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Validator as AppAssert;
@@ -65,7 +65,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'customer_product_price')
 ]
-class Price extends Entity implements MeasuredInterface {
+class Price extends EntityId implements MeasuredInterface {
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,

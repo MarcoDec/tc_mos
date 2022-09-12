@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -67,7 +67,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity,
     ORM\Table(name: 'reject_type')
 ]
-class Type extends Entity {
+class Type extends EntityId {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'sertissage dimensionnelle'),
         Assert\Length(min: 3, max: 40),

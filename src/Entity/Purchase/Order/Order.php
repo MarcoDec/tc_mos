@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Order\Order\State;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
@@ -104,7 +104,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'purchase_order')
 ]
-class Order extends Entity {
+class Order extends EntityId {
     #[
         ApiProperty(description: 'Companie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,

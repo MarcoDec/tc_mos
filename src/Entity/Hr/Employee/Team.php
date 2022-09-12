@@ -5,7 +5,7 @@ namespace App\Entity\Hr\Employee;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Hr\TimeSlot;
 use App\Entity\Management\Society\Company\Company;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -69,7 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Team extends Entity {
+class Team extends EntityId {
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,

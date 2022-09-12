@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
-abstract class Event extends Entity {
+abstract class Event extends EntityId {
     #[
         ApiProperty(description: 'Date', example: '2022-10-08'),
         ORM\Column(type: 'datetime_immutable', nullable: true),

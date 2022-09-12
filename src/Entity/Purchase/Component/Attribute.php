@@ -9,7 +9,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Purchase\Component\AttributeType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Management\Unit;
 use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
@@ -79,7 +79,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Attribute extends Entity {
+class Attribute extends EntityId {
     /** @var Collection<int, ComponentAttribute> */
     #[ORM\OneToMany(mappedBy: 'attribute', targetEntity: ComponentAttribute::class, cascade: ['remove'])]
     private Collection $attributes;

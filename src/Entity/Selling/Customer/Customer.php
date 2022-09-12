@@ -14,7 +14,7 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Selling\Customer\State;
 use App\Entity\Embeddable\Selling\Customer\WebPortal;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
@@ -129,7 +129,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class Customer extends Entity {
+class Customer extends EntityId {
     #[
         ApiProperty(description: 'Portail de gestion'),
         ORM\Embedded,

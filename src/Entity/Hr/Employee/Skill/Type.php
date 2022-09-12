@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -67,7 +67,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table(name: 'skill_type'),
     UniqueEntity('name')
 ]
-class Type extends Entity {
+class Type extends EntityId {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Assemblage'),
         Assert\Length(min: 3, max: 50),

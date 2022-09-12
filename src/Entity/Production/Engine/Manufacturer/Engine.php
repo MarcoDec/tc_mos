@@ -4,7 +4,7 @@ namespace App\Entity\Production\Engine\Manufacturer;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Production\Engine\Engine as Equipment;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -39,7 +39,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'manufacturer_engine')
 ]
-class Engine extends Entity {
+class Engine extends EntityId {
     #[
         ApiProperty(description: 'Référence'),
         ORM\Column(nullable: true),

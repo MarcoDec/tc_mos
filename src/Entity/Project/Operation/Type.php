@@ -5,7 +5,7 @@ namespace App\Entity\Project\Operation;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Purchase\Component\Family;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -67,7 +67,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table(name: 'operation_type'),
     UniqueEntity(['name'])
 ]
-class Type extends Entity {
+class Type extends EntityId {
     #[
         ApiProperty(description: 'Assemblage', example: true),
         ORM\Column(options: ['default' => false]),

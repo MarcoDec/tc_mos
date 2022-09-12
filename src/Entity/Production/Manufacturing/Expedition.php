@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Selling\Order\Item;
 use DateTimeImmutable;
@@ -64,7 +64,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class Expedition extends Entity {
+class Expedition extends EntityId {
     #[
         ApiProperty(description: 'Numéro de lot', example: '165486543'),
         ORM\Column(nullable: true),

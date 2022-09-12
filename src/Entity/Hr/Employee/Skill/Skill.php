@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Entity;
+use App\Entity\EntityId;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Hr\OutTrainer;
 use App\Entity\Production\Engine\Engine;
@@ -68,7 +68,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class Skill extends Entity {
+class Skill extends EntityId {
     #[
         ApiProperty(description: 'Employé', readableLink: false, example: '/api/employees/1'),
         ORM\ManyToOne,
