@@ -39,6 +39,21 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les stocks',
                     'summary' => 'Récupère les stocks'
                 ]
+            ],
+            'grouped' => [
+                'controller' => PlaceholderAction::class,
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:measure', 'read:stock:grouped'],
+                    'openapi_definition_name' => 'Stock-grouped',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les stocks groupés par référence et lot',
+                    'summary' => 'Récupère les stocks groupés par référence et lot'
+                ],
+                'pagination_enabled' => false,
+                'path' => '/stocks/grouped'
             ]
         ],
         itemOperations: [
@@ -116,14 +131,14 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     #[
         ApiProperty(description: 'Numéro de lot', example: '165486543'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'read:stock:grouped', 'write:stock'])
     ]
     protected ?string $batchNumber = null;
 
     /** @var null|T */
     #[
         ApiProperty(description: 'Élément', readableLink: false, example: '/api/components/1'),
-        Serializer\Groups(['read:stock'])
+        Serializer\Groups(['read:stock', 'read:stock:grouped'])
     ]
     protected $item;
 
@@ -141,11 +156,18 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     ]
     protected ?string $location = null;
 
+    /** @var array<int, string> */
+    #[
+        ApiProperty(description: 'Localisations', example: 'Rayon B'),
+        Serializer\Groups(['read:stock:grouped'])
+    ]
+    protected array $locations = [];
+
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure,
         ORM\Embedded,
-        Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'read:stock:grouped', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected Measure $quantity;
 
@@ -167,6 +189,16 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     public static function getBarCodeTableNumber(): string {
         return self::STOCK_BAR_CODE_PREFIX;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function addLocation(string $location): self {
+        if (!in_array($location, $this->locations)) {
+            $this->locations[] = $location;
+        }
+        return $this;
     }
 
     /**
@@ -197,6 +229,13 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return $this->location;
     }
 
+    /**
+     * @return array<int, string>
+     */
+    final public function getLocations(): array {
+        return $this->locations;
+    }
+
     public function getMeasures(): array {
         return [$this->quantity];
     }
@@ -222,6 +261,16 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     final public function isJail(): bool {
         return $this->jail;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function removeLocation(string $location): self {
+        if (false !== $key = array_search($location, $this->locations, true)) {
+            array_splice($this->locations, $key, 1);
+        }
+        return $this;
     }
 
     /**
@@ -268,6 +317,9 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
      */
     final public function setLocation(?string $location): self {
         $this->location = $location;
+        if ($this->location !== null) {
+            $this->addLocation($this->location);
+        }
         return $this;
     }
 

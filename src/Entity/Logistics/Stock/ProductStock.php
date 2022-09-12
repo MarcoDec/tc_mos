@@ -58,7 +58,7 @@ class ProductStock extends Stock {
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
         ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
-        Serializer\Groups(['read:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'read:stock:grouped', 'write:stock'])
     ]
     protected $item;
 }

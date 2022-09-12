@@ -74,7 +74,7 @@ class ComponentStock extends Stock {
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
         ORM\ManyToOne(targetEntity: Component::class),
-        Serializer\Groups(['read:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'read:stock:grouped', 'write:stock'])
     ]
     protected $item;
 }
