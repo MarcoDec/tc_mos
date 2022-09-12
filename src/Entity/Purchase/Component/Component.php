@@ -9,13 +9,15 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Blocker;
+use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Purchase\Component\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
@@ -24,6 +26,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -116,13 +119,13 @@ use Symfony\Component\Validator\Constraints as Assert;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['component_manufacturing_operation', 'blocker'], 'type' => 'string']
+                            'schema' => ['enum' => ['component', 'blocker'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -195,7 +198,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:component', 'read:component:collection'])
     ]
-    private State $embState;
+    private ComponentManufacturingOperationState $embState;
 
     #[
         ApiProperty(description: 'Date de fin de vie', required: false, example: '2021-11-18'),
@@ -307,11 +310,15 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private int $ppmRate = 10;
 
+    /** @var Collection<int, ComponentReference> */
+    #[ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items')]
+    private Collection $references;
+
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?Unit $unit = null;
@@ -327,10 +334,18 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
         $this->embBlocker = new Blocker();
-        $this->embState = new State();
+        $this->embState = new ComponentManufacturingOperationState();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
+        $this->references = new ArrayCollection();
         $this->weight = new Measure();
+    }
+
+    public function __clone() {
+        parent::__clone();
+        $this->attributes = new ArrayCollection();
+        $this->embBlocker = new Blocker();
+        $this->embState = new ComponentManufacturingOperationState();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -345,6 +360,14 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
+    final public function addReference(ComponentReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
+        }
+        return $this;
+    }
+
     /**
      * @return Collection<int, ComponentAttribute>
      */
@@ -354,6 +377,24 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<self, Family|self>>
+     */
+    final public function getChecks(): LaravelCollection {
+        /** @var LaravelCollection<int, Check<self, Family|self>> $checks */
+        $checks = collect($this->references->getValues())
+            ->map(static function (ComponentReference $reference): Check {
+                /** @var Check<self, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            })
+            ->values();
+        if (!empty($this->family)) {
+            $checks = $checks->merge($this->family->getChecks());
+        }
+        return $checks;
     }
 
     #[
@@ -376,7 +417,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): State {
+    final public function getEmbState(): ComponentManufacturingOperationState {
         return $this->embState;
     }
 
@@ -432,6 +473,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->ppmRate;
     }
 
+    /**
+     * @return Collection<int, ComponentReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
     final public function getState(): string {
         return $this->embState->getState();
     }
@@ -462,6 +510,14 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
+    final public function removeReference(ComponentReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
+        }
+        return $this;
+    }
+
     final public function setBlocker(string $state): self {
         $this->embBlocker->setState($state);
         return $this;
@@ -482,7 +538,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
-    final public function setEmbState(State $embState): self {
+    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
         $this->embState = $embState;
         return $this;
     }

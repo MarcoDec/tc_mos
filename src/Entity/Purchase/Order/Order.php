@@ -10,9 +10,13 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Order\Order\State;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Supplier\Contact;
 use App\Entity\Purchase\Supplier\Supplier;
-use App\Entity\Selling\Order\Order as CustomerOrder;
+use App\Entity\Selling\Order\Order as SellingOrder;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -72,18 +76,18 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['supplier_order', 'closer'], 'type' => 'string']
+                            'schema' => ['enum' => ['purchase_order', 'closer'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
                     'summary' => 'Transite la commande à son prochain statut de workflow'
                 ],
-                'path' => '/supplier-orders/{id}/promote/{workflow}/to/{transition}',
+                'path' => '/purchase-orders/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
         ],
-        shortName: 'SupplierOrder',
+        shortName: 'PurchaseOrder',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
@@ -98,7 +102,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
     ),
     ORM\Entity,
-    ORM\Table(name: 'supplier_order')
+    ORM\Table(name: 'purchase_order')
 ]
 class Order extends Entity {
     #[
@@ -116,13 +120,6 @@ class Order extends Entity {
     private ?Contact $contact = null;
 
     #[
-        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/customer-orders/1'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:order', 'write:order'])
-    ]
-    private ?CustomerOrder $customerOrder = null;
-
-    #[
         ApiProperty(description: 'Compagnie en charge de la livraison', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:order', 'write:order'])
@@ -131,7 +128,7 @@ class Order extends Entity {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:order'])
+        Serializer\Groups(['read:order', 'read:supplier:receipt'])
     ]
     private Closer $embBlocker;
 
@@ -141,6 +138,10 @@ class Order extends Entity {
     ]
     private State $embState;
 
+    /** @var Collection<int, Item<Component|Product>> */
+    #[ORM\OneToMany(mappedBy: 'order', targetEntity: Item::class)]
+    private Collection $items;
+
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
@@ -149,9 +150,16 @@ class Order extends Entity {
     private ?string $notes = null;
 
     #[
+        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:order', 'write:order'])
+    ]
+    private ?SellingOrder $order = null;
+
+    #[
         ApiProperty(description: 'Référence', example: 'EJZ65'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:order', 'write:order'])
+        Serializer\Groups(['read:order', 'read:supplier:receipt', 'write:order'])
     ]
     private ?string $ref = null;
 
@@ -164,7 +172,7 @@ class Order extends Entity {
 
     #[
         ApiProperty(description: 'Fournisseur', readableLink: false, example: '/api/suppliers/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(inversedBy: 'orders'),
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Supplier $supplier = null;
@@ -172,6 +180,18 @@ class Order extends Entity {
     public function __construct() {
         $this->embBlocker = new Closer();
         $this->embState = new State();
+        $this->items = new ArrayCollection();
+    }
+
+    /**
+     * @param Item<Component|Product> $item
+     */
+    final public function addItem(Item $item): self {
+        if (!$this->items->contains($item)) {
+            $this->items->add($item);
+            $item->setOrder($this);
+        }
+        return $this;
     }
 
     final public function getBlocker(): string {
@@ -186,10 +206,6 @@ class Order extends Entity {
         return $this->contact;
     }
 
-    final public function getCustomerOrder(): ?CustomerOrder {
-        return $this->customerOrder;
-    }
-
     final public function getDeliveryCompany(): ?Company {
         return $this->deliveryCompany;
     }
@@ -202,8 +218,19 @@ class Order extends Entity {
         return $this->embState;
     }
 
+    /**
+     * @return Collection<int, Item<Component|Product>>
+     */
+    final public function getItems(): Collection {
+        return $this->items;
+    }
+
     final public function getNotes(): ?string {
         return $this->notes;
+    }
+
+    final public function getOrder(): ?SellingOrder {
+        return $this->order;
     }
 
     final public function getRef(): ?string {
@@ -218,8 +245,43 @@ class Order extends Entity {
         return $this->supplier;
     }
 
+    final public function hasNoReceipt(): bool {
+        foreach ($this->items as $item) {
+            if ($item->hasReceipt()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    final public function isNotReceipt(): bool {
+        return !$this->isReceipt();
+    }
+
+    final public function isReceipt(): bool {
+        foreach ($this->items as $item) {
+            if ($item->isNotReceipt()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     final public function isSupplementFret(): bool {
         return $this->supplementFret;
+    }
+
+    /**
+     * @param Item<Component|Product> $item
+     */
+    final public function removeItem(Item $item): self {
+        if ($this->items->contains($item)) {
+            $this->items->removeElement($item);
+            if ($item->getOrder() === $this) {
+                $item->setOrder(null);
+            }
+        }
+        return $this;
     }
 
     final public function setBlocker(string $state): self {
@@ -234,11 +296,6 @@ class Order extends Entity {
 
     final public function setContact(?Contact $contact): self {
         $this->contact = $contact;
-        return $this;
-    }
-
-    final public function setCustomerOrder(?CustomerOrder $customerOrder): self {
-        $this->customerOrder = $customerOrder;
         return $this;
     }
 
@@ -259,6 +316,11 @@ class Order extends Entity {
 
     final public function setNotes(?string $notes): self {
         $this->notes = $notes;
+        return $this;
+    }
+
+    final public function setOrder(?SellingOrder $order): self {
+        $this->order = $order;
         return $this;
     }
 

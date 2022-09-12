@@ -16,6 +16,6 @@ final class ItemStateType extends StateType {
     ];
 
     public function getName(): string {
-        return 'supplier_order_item_state';
+        return 'purchase_order_item_state';
     }
 }

@@ -14,7 +14,7 @@ class Closer extends AbstractState {
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => CloserStateType::TYPES]),
-        ORM\Column(type: 'supplier_order_item_closer_state', options: ['default' => 'enabled']),
+        ORM\Column(type: 'purchase_order_item_closer_state', options: ['default' => 'enabled']),
         Serializer\Groups(['read:state'])
     ]
     protected string $state = CloserStateType::TYPE_STATE_ENABLED;

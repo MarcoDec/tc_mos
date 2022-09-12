@@ -2,13 +2,18 @@
 
 namespace App\Entity\Accounting;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Production\Manufacturing\Expedition;
+use App\Filter\RelationFilter;
+use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -16,6 +21,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['bill']),
     ApiResource(
         description: 'Lignes facturée',
         collectionOperations: [
@@ -62,18 +68,15 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'bill_item')
 ]
-abstract class Item extends Entity {
+abstract class Item extends Entity implements MeasuredInterface {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
-
-    /** @var I|null */
-    protected $item;
 
     #[
         ApiProperty(description: 'Facture', readableLink: false, example: '/api/bills/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?Bill $bill = null;
+    protected ?Bill $bill = null;
 
     /** @var Expedition<I>|null */
     #[
@@ -81,42 +84,46 @@ abstract class Item extends Entity {
         ORM\ManyToOne,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?Expedition $expedition = null;
+    protected ?Expedition $expedition = null;
+
+    /** @var I|null */
+    protected $item;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?string $notes = null;
+    protected ?string $notes = null;
 
     #[
         ApiProperty(description: 'Prix', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $price;
+    protected Measure $price;
 
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $quantity;
+    protected Measure $quantity;
 
     #[
         ApiProperty(description: 'Référence', example: 'TSKD'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private ?string $ref = null;
+    protected ?string $ref = null;
 
     #[
         ApiProperty(description: 'Poids', openapiContext: ['$ref' => '#/components/schemas/Measure-mass']),
         ORM\Embedded,
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private Measure $weight;
+    protected Measure $weight;
 
     public function __construct() {
         $this->price = new Measure();
@@ -142,6 +149,10 @@ abstract class Item extends Entity {
         return $this->item;
     }
 
+    final public function getMeasures(): array {
+        return [$this->price, $this->quantity, $this->weight];
+    }
+
     final public function getNotes(): ?string {
         return $this->notes;
     }
@@ -156,6 +167,10 @@ abstract class Item extends Entity {
 
     final public function getRef(): ?string {
         return $this->ref;
+    }
+
+    final public function getUnit(): ?Unit {
+        return $this->item?->getUnit();
     }
 
     final public function getWeight(): Measure {

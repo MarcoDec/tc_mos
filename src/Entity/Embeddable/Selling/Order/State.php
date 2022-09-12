@@ -3,7 +3,7 @@
 namespace App\Entity\Embeddable\Selling\Order;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Doctrine\DBAL\Types\Embeddable\Selling\Order\CustomerOrderStateType;
+use App\Doctrine\DBAL\Types\Embeddable\Selling\Order\SellingOrderStateType;
 use App\Entity\Embeddable\State as AbstractState;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -18,9 +18,9 @@ class State extends AbstractState {
     ];
 
     #[
-        ApiProperty(description: 'état', openapiContext: ['enum' => CustomerOrderStateType::TYPES]),
-        ORM\Column(type: 'customer_order_state', options: ['default' => 'draft']),
+        ApiProperty(description: 'état', openapiContext: ['enum' => SellingOrderStateType::TYPES]),
+        ORM\Column(type: 'selling_order_state', options: ['default' => 'draft']),
         Serializer\Groups(['read:state'])
     ]
-    protected string $state = CustomerOrderStateType::TYPE_STATE_DRAFT;
+    protected string $state = SellingOrderStateType::TYPE_STATE_DRAFT;
 }

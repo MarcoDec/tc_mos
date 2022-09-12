@@ -21,7 +21,7 @@ class State extends AbstractState {
 
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => ItemStateType::TYPES]),
-        ORM\Column(type: 'supplier_order_item_state', options: ['default' => 'initial']),
+        ORM\Column(type: 'purchase_order_item_state', options: ['default' => 'initial']),
         Serializer\Groups(['read:state'])
     ]
     protected string $state = ItemStateType::TYPE_STATE_INITIAL;

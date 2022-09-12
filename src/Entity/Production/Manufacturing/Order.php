@@ -7,13 +7,13 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Embeddable\Manufacturing\Order\State;
 use App\Entity\Embeddable\Measure;
+use App\Entity\Embeddable\Production\Manufacturing\Order\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
-use App\Entity\Selling\Order\Order as CustomerOrder;
+use App\Entity\Selling\Order\Order as SellingOrder;
 use App\Entity\Traits\BarCodeTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -168,11 +168,11 @@ class Order extends Entity implements BarCodeInterface {
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/customer-orders/1'),
+        ApiProperty(description: 'Commande du client', readableLink: false, example: '/api/selling-orders/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
-    private ?CustomerOrder $order = null;
+    private ?SellingOrder $order = null;
 
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
@@ -254,7 +254,7 @@ class Order extends Entity implements BarCodeInterface {
         return $this->notes;
     }
 
-    final public function getOrder(): ?CustomerOrder {
+    final public function getOrder(): ?SellingOrder {
         return $this->order;
     }
 
@@ -328,7 +328,7 @@ class Order extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    final public function setOrder(?CustomerOrder $order): self {
+    final public function setOrder(?SellingOrder $order): self {
         $this->order = $order;
         return $this;
     }

@@ -3,6 +3,7 @@
 namespace App\Entity\Selling\Order;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\ItemType;
@@ -10,6 +11,8 @@ use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Selling\Order\Item\State;
 use App\Entity\Item as BaseItem;
+use App\Filter\RelationFilter;
+use App\Repository\Selling\Order\ItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -19,6 +22,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template-extends BaseItem<I, Order>
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -61,65 +65,65 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['customer_order_item', 'closer'], 'type' => 'string']
+                            'schema' => ['enum' => ['selling_order_item', 'closer'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
                     'summary' => 'Transite la ligne à son prochain statut de workflow'
                 ],
-                'path' => '/customer-order-items/{id}/promote/{workflow}/to/{transition}',
+                'path' => '/selling-order-items/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validate' => false
             ]
         ],
-        shortName: 'CustomerOrderItem',
+        shortName: 'SellingOrderItem',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
         ],
         denormalizationContext: [
             'groups' => ['write:item', 'write:measure'],
-            'openapi_definition_name' => 'CustomerOrderItem-write'
+            'openapi_definition_name' => 'SellingOrderItem-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:item', 'read:measure', 'read:state'],
-            'openapi_definition_name' => 'CustomerOrderItem-read',
+            'openapi_definition_name' => 'SellingOrderItem-read',
             'skip_null_values' => false
         ]
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: ItemRepository::class),
     ORM\InheritanceType('SINGLE_TABLE'),
-    ORM\Table(name: 'customer_order_item')
+    ORM\Table(name: 'selling_order_item')
 ]
 abstract class Item extends BaseItem {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
-
-    #[
-        ApiProperty(description: 'Commande', example: '/api/selling-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class),
-        Serializer\Groups(['read:item', 'write:item'])
-    ]
-    protected $order;
 
     #[
         ApiProperty(description: 'Accusé de réception envoyé ?', example: false),
         ORM\Column(options: ['default' => false]),
         Serializer\Groups(['read:item', 'write:item'])
     ]
-    private bool $arSent = false;
+    protected bool $arSent = false;
 
     #[
         ORM\Embedded,
         Serializer\Groups(['read:item'])
     ]
-    private Closer $embBlocker;
+    protected Closer $embBlocker;
 
     #[
         ORM\Embedded,
         Serializer\Groups(['read:item'])
     ]
-    private State $embState;
+    protected State $embState;
+
+    #[
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
+        ORM\ManyToOne(targetEntity: Order::class),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected $order;
 
     public function __construct() {
         parent::__construct();

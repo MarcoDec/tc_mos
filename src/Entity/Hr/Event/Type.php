@@ -7,8 +7,10 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\Embeddable\EmployeeEngineStateType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Filter\EnumFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -16,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
+    ApiFilter(filterClass: EnumFilter::class, properties: ['toStatus']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Type d\'événements',
@@ -79,12 +82,29 @@ class Type extends Entity {
     ]
     private ?string $name = null;
 
+    #[
+        ApiProperty(description: 'Status', example: 'blocked', openapiContext: ['enum' => EmployeeEngineStateType::TYPES]),
+        Assert\Choice(choices: EmployeeEngineStateType::TYPES),
+        ORM\Column(type: 'employee_engine_state', nullable: true),
+        Serializer\Groups(['read:type', 'write:type'])
+    ]
+    private ?string $toStatus = null;
+
     final public function getName(): ?string {
         return $this->name;
     }
 
+    final public function getToStatus(): ?string {
+        return $this->toStatus;
+    }
+
     final public function setName(?string $name): self {
         $this->name = $name;
+        return $this;
+    }
+
+    final public function setToStatus(?string $toStatus): self {
+        $this->toStatus = $toStatus;
         return $this;
     }
 }

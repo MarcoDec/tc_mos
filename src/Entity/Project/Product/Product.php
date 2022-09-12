@@ -19,6 +19,8 @@ use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Project\Product\ProductRepository;
@@ -28,6 +30,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -385,6 +388,10 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private Measure $productionDelay;
 
+    /** @var Collection<int, ProductReference> */
+    #[ORM\ManyToMany(targetEntity: ProductReference::class, mappedBy: 'items')]
+    private Collection $references;
+
     #[
         ApiProperty(description: 'Prix de cession des composants', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
@@ -402,7 +409,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['create:product', 'read:product'])
     ]
     private ?Unit $unit = null;
@@ -431,6 +438,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->price = new Measure();
         $this->priceWithoutCopper = new Measure();
         $this->productionDelay = new Measure();
+        $this->references = new ArrayCollection();
         $this->transfertPriceSupplies = new Measure();
         $this->transfertPriceWork = new Measure();
         $this->weight = new Measure();
@@ -457,12 +465,38 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
+    final public function addReference(ProductReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
+        }
+        return $this;
+    }
+
     final public function getAutoDuration(): Measure {
         return $this->autoDuration;
     }
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<self, Family|self>>
+     */
+    final public function getChecks(): LaravelCollection {
+        /** @var LaravelCollection<int, Check<self, Family|self>> $checks */
+        $checks = collect($this->references->getValues())
+            ->map(static function (ProductReference $reference): Check {
+                /** @var Check<self, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            })
+            ->values();
+        if (!empty($this->family)) {
+            $checks = $checks->merge($this->family->getChecks());
+        }
+        return $checks;
     }
 
     /**
@@ -601,6 +635,13 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->productionDelay;
     }
 
+    /**
+     * @return Collection<int, ProductReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
     final public function getState(): string {
         return $this->embState->getState();
     }
@@ -631,6 +672,14 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
             if ($children->getParent() === $this) {
                 $children->setParent(null);
             }
+        }
+        return $this;
+    }
+
+    final public function removeReference(ProductReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
         }
         return $this;
     }

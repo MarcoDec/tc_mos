@@ -60,7 +60,7 @@ class OperationComponentTool extends Entity {
     private ?Component $component;
 
     #[
-        ApiProperty(description: 'Opération', readableLink: false, example: '/api/operations/1'),
+        ApiProperty(description: 'Opération', readableLink: false, example: '/api/manufacturing-operations/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:oct', 'write:oct'])
     ]

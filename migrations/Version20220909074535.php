@@ -275,26 +275,26 @@ SQL);
         // rank 4
         $this->upBills();
         $this->upComponentSupplierPrices();
-        $this->upCustomerOrders();
         $this->upCustomerProductPrices();
         $this->upEmployees();
         $this->upEngines();
+        $this->upSellingOrders();
         $this->upStocks();
         // rank 5
-        $this->upCustomerOrderItems();
         $this->upDeliveryNotes();
         $this->upEmployeeEvents();
         $this->upItRequests();
         $this->upManufacturingOrders();
         $this->upNotifications();
         $this->upPlannings();
+        $this->upPurchaseOrders();
+        $this->upSellingOrderItems();
         $this->upSkills();
-        $this->upSupplierOrders();
         // rank 6
         $this->upEngineEvents();
         $this->upExpeditions();
         $this->upManufacturingOperations();
-        $this->upSupplierOrderItems();
+        $this->upPurchaseOrderItems();
         // rank 7
         $this->upBillItems();
         $this->upChecks();
@@ -309,24 +309,26 @@ SQL);
         $this->addQuery('ALTER TABLE `component_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `customer_address` DROP `old_id`');
         $this->addQuery('ALTER TABLE `customer_contact` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `customer_order` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `customer_order_item` DROP `old_id`');
         $this->addQuery('ALTER TABLE `employee` DROP `old_id`, DROP `matricule`, DROP `id_society`');
         $this->addQuery('ALTER TABLE `engine` DROP `old_id`');
         $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
         $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `manufacturing_order` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `operation_type` DROP `old_id`');
         $this->addQuery('ALTER TABLE `planning` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product` DROP `old_id`, DROP `id_society`');
         $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
+        $this->addQuery('ALTER TABLE `purchase_order` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `purchase_order_item` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `receipt` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `reference` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `selling_order` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `selling_order_item` DROP `old_id`');
         $this->addQuery('ALTER TABLE `skill_type` DROP `old_id`');
         $this->addQuery('ALTER TABLE `society` DROP `old_id`');
         $this->addQuery('ALTER TABLE `stock` DROP `old_id`');
         $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
-        $this->addQuery('ALTER TABLE `supplier_order` DROP `old_id`');
         $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
     }
 
@@ -673,21 +675,54 @@ SQL);
 
     private function upChecks(): void {
         $this->addQuery(<<<'SQL'
+CREATE TABLE `component_controle_reception` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_component` INT UNSIGNED DEFAULT NULL,
+    `libelle` TEXT DEFAULT NULL,
+    `id_type_controle` INT UNSIGNED DEFAULT NULL,
+    `nb` INT UNSIGNED DEFAULT NULL,
+    `value` TEXT DEFAULT NULL,
+    `value_2` DOUBLE PRECISION DEFAULT 0 DEFAULT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL
+)
+SQL);
+        $this->insert('component_controle_reception', [
+            'id',
+            'id_component',
+            'libelle',
+            'id_type_controle',
+            'nb',
+            'value',
+            'value_2',
+            'statut'
+        ]);
+        $this->addQuery(<<<'SQL'
 CREATE TABLE `reference` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `name` VARCHAR(40) NOT NULL,
-    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)'
+    `name` VARCHAR(100) NOT NULL,
+    `kind` ENUM('Dimensionnel', 'Documentaire', 'GO/NOGO', 'Quantitatif', 'Visuel') DEFAULT 'Quantitatif' NOT NULL COMMENT '(DC2Type:check_kind)',
+    `type` ENUM('component', 'component_family', 'product', 'product_family', 'supplier') NOT NULL COMMENT '(DC2Type:check)'
 )
 SQL);
         $this->addQuery(<<<'SQL'
-CREATE TABLE `component_reference_family` (
-    `component_reference_id` INT UNSIGNED NOT NULL,
-    `family_id` INT UNSIGNED NOT NULL,
-    CONSTRAINT `IDX_D42E58E262AE155E` FOREIGN KEY (`component_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `IDX_D42E58E2C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
-    PRIMARY KEY(`component_reference_id`, `family_id`)
-)
+INSERT INTO `reference` (`old_id`, `name`, `kind`, `type`)
+SELECT
+    `component_controle_reception`.`id`,
+    `component_controle_reception`.`libelle`,
+    CASE
+        WHEN `component_controle_reception`.`id_type_controle` = 1 THEN 'Documentaire'
+        WHEN `component_controle_reception`.`id_type_controle` = 2 THEN 'Dimensionnel'
+        WHEN `component_controle_reception`.`id_type_controle` = 3 THEN 'GO/NOGO'
+        WHEN `component_controle_reception`.`id_type_controle` = 4 THEN 'Visuel'
+        ELSE 'Quantitatif'
+    END,
+    'component'
+FROM `component_controle_reception`
+INNER JOIN `component` ON `component_controle_reception`.`id_component` = `component`.`old_id`
+WHERE `component_controle_reception`.`statut` = 0
+AND `component_controle_reception`.`libelle` IS NOT NULL
 SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `component_reference_component` (
@@ -699,12 +734,47 @@ CREATE TABLE `component_reference_component` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-CREATE TABLE `product_reference_family` (
-    `product_reference_id` INT UNSIGNED NOT NULL,
+INSERT INTO `component_reference_component` (`component_reference_id`, `component_id`)
+SELECT `reference`.`id`, `component`.`id`
+FROM `component_controle_reception`
+INNER JOIN `reference` ON `component_controle_reception`.`id` = `reference`.`old_id`
+INNER JOIN `component` ON `component_controle_reception`.`id_component` = `component`.`old_id`
+SQL);
+        $this->addQuery('DROP TABLE `component_controle_reception`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `company_reference_company` (
+    `company_reference_id` INT UNSIGNED NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_14523D1FE8881467` FOREIGN KEY (`company_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_14523D1F979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`company_reference_id`, `company_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_family_reference_component_family` (
+    `family_reference_id` INT UNSIGNED NOT NULL,
     `family_id` INT UNSIGNED NOT NULL,
-    CONSTRAINT `IDX_360BF4A39BE1FCC2` FOREIGN KEY (`product_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `IDX_360BF4A3C35E566A` FOREIGN KEY (`family_id`) REFERENCES `product_family` (`id`) ON DELETE CASCADE,
-    PRIMARY KEY(`product_reference_id`, `family_id`)
+    CONSTRAINT `IDX_99AA6A66A1380B34` FOREIGN KEY (`family_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_99AA6A66C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`family_reference_id`, `family_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_family_reference_product_family` (
+    `family_reference_id` INT UNSIGNED NOT NULL,
+    `family_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_16B96279A1380B34` FOREIGN KEY (`family_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_16B96279C35E566A` FOREIGN KEY (`family_id`) REFERENCES `product_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`family_reference_id`, `family_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `supplier_reference_supplier` (
+    `supplier_reference_id` INT UNSIGNED NOT NULL,
+    `supplier_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_8E963417C2C49F0` FOREIGN KEY (`supplier_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_8E963412ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`supplier_reference_id`, `supplier_id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
@@ -717,15 +787,56 @@ CREATE TABLE `product_reference_product` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
+CREATE TABLE `component_controle_reception_ordersupplier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_ordersupplier_component` INT UNSIGNED DEFAULT NULL,
+    `valide` ENUM('À CONTRÔLER','OK','NOK') NOT NULL DEFAULT 'À CONTRÔLER',
+    `comment` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('component_controle_reception_ordersupplier', [
+            'id',
+            'statut',
+            'id_ordersupplier_component',
+            'valide',
+            'comment'
+        ]);
+        $this->addQuery(<<<'SQL'
 CREATE TABLE `check` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `emb_state_state` ENUM('asked', 'blocked', 'closed') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:check_state)',
     `receipt_id` INT UNSIGNED DEFAULT NULL,
     `reference_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_3C8EAC132B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`),
     CONSTRAINT `IDX_3C8EAC131645DEA9` FOREIGN KEY (`reference_id`) REFERENCES `reference` (`id`)
 )
 SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `check` (`emb_state_state`, `receipt_id`)
+SELECT 'closed', `receipt`.`id`
+FROM `component_controle_reception_ordersupplier`
+INNER JOIN `receipt` ON `component_controle_reception_ordersupplier`.`id_ordersupplier_component` = `receipt`.`old_id`
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_controle_reception_ordersupplier_controle` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_controle_reception` INT UNSIGNED DEFAULT NULL,
+    `id_component_controle_reception_ordersupplier` INT UNSIGNED DEFAULT NULL,
+    `value` TEXT DEFAULT NULL,
+    `description` TEXT DEFAULT NULL
+)
+SQL);
+        $this->insert('component_controle_reception_ordersupplier_controle', [
+            'id',
+            'id_controle_reception',
+            'id_component_controle_reception_ordersupplier',
+            'value',
+            'description'
+        ]);
+        $this->addQuery('DROP TABLE `component_controle_reception_ordersupplier`');
+        $this->addQuery('DROP TABLE `component_controle_reception_ordersupplier_controle`');
     }
 
     private function upColors(): void {
@@ -1022,7 +1133,7 @@ CREATE TABLE `component` (
     `copper_weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `customs_code` VARCHAR(16) DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_manufacturing_operation_state)',
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
     `forecast_volume_code` VARCHAR(6) DEFAULT NULL,
@@ -1451,200 +1562,6 @@ CREATE TABLE `customer_event` (
 SQL);
     }
 
-    private function upCustomerOrderItems(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `ordercustomer_product` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_ordercustomer` INT UNSIGNED DEFAULT NULL,
-    `id_product` INT UNSIGNED DEFAULT NULL,
-    `quantity` INT UNSIGNED DEFAULT NULL,
-    `quantity_souhaitee` INT UNSIGNED DEFAULT NULL,
-    `quantity_sent` INT UNSIGNED DEFAULT NULL,
-    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `texte` TEXT DEFAULT NULL,
-    `ref_ordercustomer_product` VARCHAR(255) DEFAULT NULL,
-    `date_souhaitee` DATE DEFAULT NULL,
-    `date_livraison` DATE DEFAULT NULL
-)
-SQL);
-        $this->insert('ordercustomer_product', [
-            'id',
-            'statut',
-            'id_ordercustomer',
-            'id_product',
-            'quantity',
-            'quantity_souhaitee',
-            'quantity_sent',
-            'price',
-            'texte',
-            'ref_ordercustomer_product',
-            'date_souhaitee',
-            'date_livraison'
-        ]);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `customer_order_item` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `old_id` INT UNSIGNED NOT NULL,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `ar_sent` BOOLEAN DEFAULT FALSE NOT NULL,
-    `component_id` INT UNSIGNED DEFAULT NULL,
-    `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
-    `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'partially_delivered') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_order_item_state)',
-    `notes` VARCHAR(255) DEFAULT NULL,
-    `order_id` INT UNSIGNED DEFAULT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
-    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `product_id` INT UNSIGNED DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `requested_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `requested_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL,
-    `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
-    CONSTRAINT `IDX_AF231B8BE2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
-    CONSTRAINT `IDX_AF231B8B8D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `customer_order` (`id`),
-    CONSTRAINT `IDX_AF231B8B4584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `customer_order_item` (
-    `old_id`,
-    `confirmed_date`,
-    `confirmed_quantity_code`,
-    `confirmed_quantity_value`,
-    `emb_blocker_state`,
-    `emb_state_state`,
-    `product_id`,
-    `notes`,
-    `order_id`,
-    `price_code`,
-    `price_value`,
-    `ref`,
-    `requested_date`,
-    `requested_quantity_code`,
-    `requested_quantity_value`,
-    `type`
-) SELECT
-    `ordercustomer_product`.`id`,
-    `ordercustomer_product`.`date_livraison`,
-    `unit`.`code`,
-    IFNULL(`ordercustomer_product`.`quantity`, 0),
-    CASE
-        WHEN `customer_order`.`emb_blocker_state` IN ('closed', 'disabled')
-            OR (`customer_order`.`emb_state_state` IN ('agreed', 'partially_delivered') AND `ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity`)
-            THEN 'closed'
-        WHEN `customer_order`.`emb_blocker_state` = 'blocked' THEN 'blocked'
-        WHEN `customer_order`.`emb_state_state` IN ('agreed', 'partially_delivered') AND `ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity` THEN 'closed'
-        ELSE 'enabled'
-    END,
-    CASE
-        WHEN `customer_order`.`emb_blocker_state` = 'closed' THEN 'delivered'
-        WHEN `customer_order`.`emb_blocker_state` LIKE 'blocked' THEN 'agreed'
-        WHEN `customer_order`.`emb_state_state` IN ('agreed', 'partially_delivered')
-            THEN IF(`ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity`, 'delivered', IF(`ordercustomer_product`.`quantity_sent` > 0, 'partially_delivered', 'agreed'))
-        ELSE 'draft'
-    END,
-    `product`.`id`,
-    `ordercustomer_product`.`texte`,
-    `customer_order`.`id`,
-    'EUR',
-    IFNULL(`ordercustomer_product`.`price`, 0),
-    `ordercustomer_product`.`ref_ordercustomer_product`,
-    `ordercustomer_product`.`date_souhaitee`,
-    `unit`.`code`,
-    IFNULL(`ordercustomer_product`.`quantity_souhaitee`, 0),
-    'product'
-FROM `ordercustomer_product`
-INNER JOIN `product` ON `ordercustomer_product`.`id_product` = `product`.`old_id`
-LEFT JOIN `unit` ON `product`.`unit_id` = `unit`.`id`
-INNER JOIN `customer_order` ON `ordercustomer_product`.`id_ordercustomer` = `customer_order`.`old_id`
-WHERE `ordercustomer_product`.`statut` = 0
-SQL);
-        $this->addQuery('DROP TABLE `ordercustomer_product`');
-    }
-
-    private function upCustomerOrders(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `ordercustomer` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_customer` INT UNSIGNED DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `id_ordercustomerstatus` INT UNSIGNED DEFAULT NULL,
-    `id_address` INT UNSIGNED DEFAULT NULL,
-    `id_society` INT UNSIGNED DEFAULT NULL,
-    `info_public` TEXT DEFAULT NULL
-)
-SQL);
-        $this->insert('ordercustomer', [
-            'id',
-            'statut',
-            'id_customer',
-            'ref',
-            'id_ordercustomerstatus',
-            'id_address',
-            'id_society',
-            'info_public'
-        ]);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `customer_order` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `old_id` INT UNSIGNED NOT NULL,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `billed_to_id` INT UNSIGNED DEFAULT NULL,
-    `company_id` INT UNSIGNED DEFAULT NULL,
-    `customer_id` INT UNSIGNED DEFAULT NULL,
-    `destination_id` INT UNSIGNED DEFAULT NULL,
-    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'partially_delivered', 'to_validate') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:customer_order_state)',
-    `kind` ENUM('EI', 'Prototype', 'Série', 'Pièce de rechange') DEFAULT 'Prototype' NOT NULL COMMENT '(DC2Type:product_kind)',
-    `notes` VARCHAR(255) DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    CONSTRAINT `IDX_3B1CE6A3994CB78` FOREIGN KEY (`billed_to_id`) REFERENCES `customer_address` (`id`),
-    CONSTRAINT `IDX_3B1CE6A3979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_3B1CE6A39395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
-    CONSTRAINT `IDX_3B1CE6A3816C6140` FOREIGN KEY (`destination_id`) REFERENCES `customer_address` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `customer_order` (`old_id`, `billed_to_id`, `company_id`, `customer_id`, `emb_blocker_state`, `emb_state_state`, `kind`, `notes`, `ref`)
-SELECT
-    `ordercustomer`.`id`,
-    `customer_address`.`id`,
-    `company`.`id`,
-    `customer`.`id`,
-    CASE
-        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (8, 10, 11) THEN 'closed'
-        WHEN `ordercustomer`.`id_ordercustomerstatus` = 12 THEN 'blocked'
-        ELSE 'enabled'
-    END,
-    CASE
-        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (2, 13) THEN 'to_validate'
-        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (3, 4, 5, 6, 11, 12) THEN 'agreed'
-        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (7, 9) THEN 'partially_delivered'
-        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (8, 10) THEN 'delivered'
-        ELSE 'draft'
-    END,
-    'Série',
-    `ordercustomer`.`info_public`,
-    `ordercustomer`.`ref`
-FROM `ordercustomer`
-INNER JOIN `society` `society_company` ON `ordercustomer`.`id_society` = `society_company`.`old_id`
-INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
-INNER JOIN `society` `society_customer` ON `ordercustomer`.`id_customer` = `society_customer`.`old_id`
-INNER JOIN `customer` ON `society_customer`.`id` = `customer`.`society_id`
-LEFT JOIN `customer_address` ON `ordercustomer`.`id_address` = `customer_address`.`old_id` AND `customer_address`.`type` = 'billing'
-WHERE `ordercustomer`.`statut` = 0
-SQL);
-        $this->addQuery('DROP TABLE `ordercustomer`');
-    }
-
     private function upCustomerProductPrices(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `product_customer_price` (
@@ -1792,6 +1709,7 @@ CREATE TABLE `delivery_note` (
     `bill_id` INT UNSIGNED DEFAULT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
     `date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `emb_state_state` ENUM('agreed', 'asked', 'closed', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:event_state)',
     `freight_surcharge_code` VARCHAR(6) DEFAULT NULL,
     `freight_surcharge_denominator` VARCHAR(6) DEFAULT NULL,
     `freight_surcharge_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -1806,6 +1724,7 @@ INSERT INTO `delivery_note` (
     `bill_id`,
     `company_id`,
     `date`,
+    `emb_state_state`,
     `freight_surcharge_code`,
     `freight_surcharge_value`,
     `non_billable`,
@@ -1814,6 +1733,7 @@ INSERT INTO `delivery_note` (
     `bill`.`id`,
     `company`.`id`,
     `deliveryform`.`date_depart`,
+    'closed',
     'EUR',
     `deliveryform`.`supplement_fret`,
     `deliveryform`.`no_invoice`,
@@ -2324,6 +2244,7 @@ CREATE TABLE `engine_event` (
     `done` BOOLEAN DEFAULT FALSE NOT NULL,
     `emergency` TINYINT UNSIGNED DEFAULT 1 COMMENT '(DC2Type:tinyint)',
     `employee_id` INT UNSIGNED DEFAULT NULL,
+    `emb_state_state` ENUM('agreed', 'asked', 'closed', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:event_state)',
     `engine_id` INT UNSIGNED DEFAULT NULL,
     `intervention_notes` TEXT DEFAULT NULL,
     `managing_company_id` INT UNSIGNED DEFAULT NULL,
@@ -2359,6 +2280,7 @@ SQL);
         ]);
         $this->addQuery(<<<'SQL'
 INSERT INTO `engine_event` (
+    `emb_state_state`,
     `date`,
     `done`,
     `engine_id`,
@@ -2367,6 +2289,7 @@ INSERT INTO `engine_event` (
     `planned_by_id`,
     `type`
 ) SELECT
+    IF(`status_planning` = 1, 'agreed', 'closed'),
     `engine_maintenance_planning`.`date_planning`,
     `engine_maintenance_planning`.`status_planning` != 1,
     `engine`.`id`,
@@ -2406,6 +2329,7 @@ SQL);
         ]);
         $this->addQuery(<<<'SQL'
 INSERT INTO `engine_event` (
+    `emb_state_state`,
     `date`,
     `done`,
     `emergency`,
@@ -2416,6 +2340,7 @@ INSERT INTO `engine_event` (
     `notes`,
     `type`
 ) SELECT
+    IF(`statut` = 2, 'closed', 'asked'),
     `engine_request_event`.`date_intervention`,
     `engine_request_event`.`statut` = 2,
     `engine_request_event`.`urgence`,
@@ -2604,7 +2529,8 @@ SQL);
 CREATE TABLE `employee_eventlist` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `motif` VARCHAR(30) NOT NULL
+    `motif` VARCHAR(30) NOT NULL,
+    `to_status` ENUM('agreed', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_engine_state)'
 )
 SQL);
         $this->insert('employee_eventlist', ['id', 'motif']);
@@ -2653,7 +2579,7 @@ CREATE TABLE `expedition` (
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CONSTRAINT `IDX_692907E126F525E` FOREIGN KEY (`item_id`) REFERENCES `customer_order_item` (`id`),
+    CONSTRAINT `IDX_692907E126F525E` FOREIGN KEY (`item_id`) REFERENCES `selling_order_item` (`id`),
     CONSTRAINT `IDX_692907E26ED0855` FOREIGN KEY (`note_id`) REFERENCES `delivery_note` (`id`),
     CONSTRAINT `IDX_692907EDCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`)
 )
@@ -2672,13 +2598,13 @@ INSERT INTO `expedition` (
     `old_expedition`.`id`,
     `old_expedition`.`batchnumber`,
     `old_expedition`.`date_livraison`,
-    `customer_order_item`.`id`,
+    `selling_order_item`.`id`,
     `old_expedition`.`location`,
     `stock`.`id`,
     'U',
     `old_expedition`.`quantity`
 FROM `old_expedition`
-LEFT JOIN `customer_order_item` ON `old_expedition`.`id_ordercustomer_product` = `customer_order_item`.`old_id`
+LEFT JOIN `selling_order_item` ON `old_expedition`.`id_ordercustomer_product` = `selling_order_item`.`old_id`
 LEFT JOIN `stock` ON `old_expedition`.`id_stock` = `stock`.`old_id`
 SQL);
         $this->addQuery('DROP TABLE `old_expedition`');
@@ -2895,7 +2821,7 @@ CREATE TABLE `manufacturing_operation` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:manufacturing_operation_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_manufacturing_operation_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `operation_id` INT UNSIGNED DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
@@ -3017,7 +2943,7 @@ CREATE TABLE `manufacturing_order` (
     `quantity_requested_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_34010DB1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB1E26A3063` FOREIGN KEY (`manufacturing_company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_34010DB18D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `customer_order` (`id`),
+    CONSTRAINT `IDX_34010DB18D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `selling_order` (`id`),
     CONSTRAINT `IDX_34010DB14584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
 )
 SQL);
@@ -3061,7 +2987,7 @@ INSERT INTO `manufacturing_order` (
     `supplier`.`id`,
     `orderfabrication`.`date_fabrication`,
     `orderfabrication`.`info_public`,
-    `customer_order`.`id`,
+    `selling_order`.`id`,
     `product`.`id`,
     `orderfabrication`.`ofnumber`,
     `unit`.`code`,
@@ -3075,7 +3001,7 @@ INNER JOIN `society` `society_company` ON `orderfabrication`.`id_society` = `soc
 INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
 INNER JOIN `society` `society_supplier` ON `orderfabrication`.`id_supplier` = `society_supplier`.`old_id`
 INNER JOIN `supplier` ON `society_supplier`.`id` = `supplier`.`society_id`
-LEFT JOIN `customer_order` ON `orderfabrication`.`id_ordercustomer` = `customer_order`.`old_id`
+LEFT JOIN `selling_order` ON `orderfabrication`.`id_ordercustomer` = `selling_order`.`old_id`
 WHERE `orderfabrication`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `orderfabrication`');
@@ -3160,43 +3086,27 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `operation_type` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `isAssemblage` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(255) NOT NULL
 )
 SQL);
         $this->insert('operation_type', ['id', 'isAssemblage', 'name']);
-        $this->addQuery('RENAME TABLE `operation_type` TO `old_operation_type`');
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `operation_type` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `old_id` INT UNSIGNED NOT NULL,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `assembly` BOOLEAN DEFAULT FALSE NOT NULL,
-    `name` VARCHAR(255) NOT NULL
-)
-SQL);
-        $this->addQuery('INSERT INTO `operation_type` (`old_id`, `assembly`, `name`) SELECT `id`, `isAssemblage`, UCFIRST(`name`) FROM `old_operation_type`');
-        $this->addQuery('DROP TABLE `old_operation_type`');
+        $this->addQuery('ALTER TABLE `operation_type` CHANGE `isAssemblage` `assembly` BOOLEAN DEFAULT FALSE NOT NULL');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `operation_type_component_family` (
     `component_family_id` INT UNSIGNED NOT NULL,
     `operation_type_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_58A4AEF9C35E566A` FOREIGN KEY (`component_family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_86314A63C54C8C93` FOREIGN KEY (`operation_type_id`) REFERENCES `operation_type` (`id`) ON DELETE CASCADE,
     PRIMARY KEY(`operation_type_id`, `component_family_id`)
 )
 SQL);
         $this->insert('operation_type_component_family', ['component_family_id', 'operation_type_id']);
         $this->addQuery(<<<'SQL'
-UPDATE `operation_type_component_family`
-LEFT JOIN `operation_type` ON `operation_type_component_family`.`operation_type_id` = `operation_type`.`old_id`
-SET `operation_type_id` = `operation_type`.`id`
-SQL);
-        $this->addQuery('DELETE FROM `operation_type_component_family` WHERE `operation_type_id` IS NULL');
-        $this->addQuery(<<<'SQL'
 ALTER TABLE `operation_type_component_family`
     CHANGE `component_family_id` `family_id` INT UNSIGNED NOT NULL,
-    CHANGE `operation_type_id` `type_id` INT UNSIGNED NOT NULL,
-    ADD CONSTRAINT `IDX_58A4AEF9C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
-    ADD CONSTRAINT `IDX_86314A63C54C8C93` FOREIGN KEY (`type_id`) REFERENCES `operation_type` (`id`) ON DELETE CASCADE
+    CHANGE `operation_type_id` `type_id` INT UNSIGNED NOT NULL
 SQL);
     }
 
@@ -3303,6 +3213,7 @@ SQL);
 CREATE TABLE `printer` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `color` ENUM('green', 'yellow') DEFAULT 'green' NOT NULL COMMENT '(DC2Type:printer_color)',
     `company_id` INT UNSIGNED DEFAULT NULL,
     `ip` VARCHAR(255) DEFAULT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
@@ -3729,6 +3640,285 @@ SQL);
         $this->addQuery('DROP TABLE `operation`');
     }
 
+    private function upPurchaseOrderItems(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordersupplier_component` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_ordersupplier` INT UNSIGNED DEFAULT NULL,
+    `open_order` VARCHAR(255) DEFAULT NULL,
+    `id_component` INT UNSIGNED DEFAULT NULL,
+    `id_product` INT UNSIGNED DEFAULT NULL,
+    `id_society_destination` INT UNSIGNED DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL,
+    `quantity_souhaitee` INT UNSIGNED DEFAULT NULL,
+    `quantity_received` INT UNSIGNED DEFAULT NULL,
+    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `price_surcharge_cu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `texte` TEXT DEFAULT NULL,
+    `refsupplier` VARCHAR(255) DEFAULT NULL DEFAULT '',
+    `invoice` TINYINT DEFAULT NULL DEFAULT 0,
+    `date_souhaitee` DATE DEFAULT NULL,
+    `date_livraison` DATE DEFAULT NULL
+)
+SQL);
+        $this->insert('ordersupplier_component', [
+            'id',
+            'statut',
+            'id_ordersupplier',
+            'open_order',
+            'id_component',
+            'id_product',
+            'id_society_destination',
+            'quantity',
+            'quantity_souhaitee',
+            'quantity_received',
+            'price',
+            'price_surcharge_cu',
+            'texte',
+            'refsupplier',
+            'invoice',
+            'date_souhaitee',
+            'date_livraison'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `purchase_order_item` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL,
+    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `copper_price_code` VARCHAR(6) DEFAULT NULL,
+    `copper_price_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `emb_blocker_state` ENUM('blocked', 'closed', 'delayed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:purchase_order_item_closer_state)',
+    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'forecast', 'initial', 'monthly', 'partially_delivered') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_item_state)',
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `order_id` INT UNSIGNED DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL,
+    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `product_id` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `requested_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `requested_quantity_code` VARCHAR(6) DEFAULT NULL,
+    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `target_company_id` INT UNSIGNED DEFAULT NULL,
+    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
+    `receipt_date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `receipt_quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_5ED948C3E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    CONSTRAINT `IDX_5ED948C38D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `purchase_order` (`id`),
+    CONSTRAINT `IDX_5ED948C34584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
+    CONSTRAINT `IDX_5ED948C3A577C247` FOREIGN KEY (`target_company_id`) REFERENCES `company` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `purchase_order_item` (
+    `old_id`,
+    `component_id`,
+    `confirmed_date`,
+    `confirmed_quantity_code`,
+    `confirmed_quantity_value`,
+    `copper_price_code`,
+    `copper_price_value`,
+    `emb_blocker_state`,
+    `emb_state_state`,
+    `notes`,
+    `order_id`,
+    `price_code`,
+    `price_value`,
+    `ref`,
+    `requested_date`,
+    `requested_quantity_code`,
+    `requested_quantity_value`,
+    `target_company_id`,
+    `type`,
+    `receipt_date`,
+    `receipt_quantity`
+) SELECT
+    `ordersupplier_component`.`id`,
+    `component`.`id`,
+    `ordersupplier_component`.`date_livraison`,
+    `unit`.`code`,
+    `ordersupplier_component`.`quantity`,
+    'EUR',
+    `ordersupplier_component`.`price_surcharge_cu`,
+    IF(
+        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_delivery')
+            OR `purchase_order`.`emb_blocker_state` = 'closed',
+        CASE
+            WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'closed'
+            WHEN IFNULL(`ordersupplier_component`.`quantity_received`, 0) > 0 THEN 'enabled'
+            ELSE 'enabled'
+        END,
+        'enabled'
+    ),
+    IF(
+        `purchase_order`.`emb_state_state` IN ('agreed', 'partially_delivery')
+            OR `purchase_order`.`emb_blocker_state` = 'closed',
+        CASE
+            WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'delivered'
+            WHEN IFNULL(`ordersupplier_component`.`quantity_received`, 0) > 0 THEN 'partially_delivered'
+            ELSE 'agreed'
+        END,
+        'draft'
+    ),
+    `ordersupplier_component`.`texte`,
+    `purchase_order`.`id`,
+    'EUR',
+    `ordersupplier_component`.`price`,
+    `ordersupplier_component`.`refsupplier`,
+    `ordersupplier_component`.`date_souhaitee`,
+    `unit`.`code`,
+    `ordersupplier_component`.`quantity_souhaitee`,
+    `company`.`id`,
+    'component',
+    `ordersupplier_component`.`date_livraison`,
+    `ordersupplier_component`.`quantity_received`
+FROM `ordersupplier_component`
+INNER JOIN `component` ON `ordersupplier_component`.`id_component` = `component`.`old_id`
+LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
+INNER JOIN `purchase_order` ON `ordersupplier_component`.`id_ordersupplier` = `purchase_order`.`old_id`
+INNER JOIN `society` ON `ordersupplier_component`.`id_society_destination` = `society`.`old_id`
+INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
+WHERE `ordersupplier_component`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `ordersupplier_component`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `receipt` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `emb_state_state` ENUM('asked', 'blocked', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
+    `item_id` INT UNSIGNED DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_5399B645126F525E` FOREIGN KEY (`item_id`) REFERENCES `purchase_order_item` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `receipt` (`old_id`, `date`, `emb_state_state`, `item_id`, `quantity_code`, `quantity_value`)
+SELECT
+    `purchase_order_item`.`old_id`,
+    `purchase_order_item`.`receipt_date`,
+    'closed',
+    `purchase_order_item`.`id`,
+    `purchase_order_item`.`confirmed_quantity_code`,
+    `purchase_order_item`.`confirmed_quantity_value`
+FROM `purchase_order_item`
+WHERE `purchase_order_item`.`receipt_date` IS NOT NULL
+AND `purchase_order_item`.`receipt_quantity` > 0
+SQL);
+        $this->addQuery('ALTER TABLE `purchase_order_item` DROP `receipt_date`, DROP `receipt_quantity`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `receipt_stock` (
+    `receipt_id` INT UNSIGNED NOT NULL,
+    `stock_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_AFAEE2502B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_AFAEE250DCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`receipt_id`, `stock_id`)
+)
+SQL);
+    }
+
+    private function upPurchaseOrders(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordersupplier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_supplier` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `id_ordersupplierstatus` INT UNSIGNED DEFAULT NULL,
+    `open_order` VARCHAR(255) DEFAULT NULL,
+    `id_address` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
+    `info_public` TEXT DEFAULT NULL COMMENT 'info interne',
+    `commentaire` TEXT DEFAULT NULL COMMENT 'info affichee sur le document envoyé'
+)
+SQL);
+        $this->insert('ordersupplier', [
+            'id',
+            'statut',
+            'id_supplier',
+            'ref',
+            'id_ordersupplierstatus',
+            'open_order',
+            'id_address',
+            'id_society',
+            'supplement_fret',
+            'info_public',
+            'commentaire'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `purchase_order` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `contact_id` INT UNSIGNED DEFAULT NULL,
+    `delivery_company_id` INT UNSIGNED DEFAULT NULL,
+    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
+    `emb_state_state` ENUM('agreed', 'cart', 'delivered', 'draft', 'initial', 'partially_delivered') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_state)',
+    `notes` TEXT DEFAULT NULL,
+    `order_id` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
+    `supplier_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_21E210B2979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_21E210B2E7A1254A` FOREIGN KEY (`contact_id`) REFERENCES `supplier_contact` (`id`),
+    CONSTRAINT `IDX_21E210B289DE8DF2` FOREIGN KEY (`delivery_company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_21E210B28D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `selling_order` (`id`),
+    CONSTRAINT `IDX_21E210B22ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `purchase_order` (
+    `old_id`,
+    `company_id`,
+    `delivery_company_id`,
+    `emb_blocker_state`,
+    `emb_state_state`,
+    `notes`,
+    `ref`,
+    `supplement_fret`,
+    `supplier_id`
+) SELECT
+    `ordersupplier`.`id`,
+    `company`.`id`,
+    `company`.`id`,
+    IF(`ordersupplier`.`id_ordersupplierstatus` IN (6, 7), 'closed', 'enabled'),
+    CASE
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 4 THEN 'agreed'
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 5 THEN 'partially_delivered'
+        WHEN `ordersupplier`.`id_ordersupplierstatus` = 6 THEN 'delivered'
+        ELSE 'draft'
+    END,
+    IF(
+        `ordersupplier`.`info_public` IS NULL,
+        `ordersupplier`.`commentaire`,
+        IF(`ordersupplier`.`commentaire` IS NULL, NULL, CONCAT(`ordersupplier`.`info_public`, `ordersupplier`.`commentaire`))
+    ),
+    `ordersupplier`.`ref`,
+    `ordersupplier`.`supplement_fret`,
+    `supplier`.`id`
+FROM `ordersupplier`
+INNER JOIN `society` `society_company` ON `ordersupplier`.`id_society` = `society_company`.`old_id`
+INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
+INNER JOIN `society` `society_supplier` ON `ordersupplier`.`id_supplier` = `society_supplier`.`old_id`
+INNER JOIN `supplier` ON `society_supplier`.`id` = `supplier`.`society_id`
+WHERE `ordersupplier`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `ordersupplier`');
+    }
+
     private function upQualityTypes(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `qualitycontrol` (
@@ -3766,6 +3956,200 @@ CREATE TABLE `reject_type` (
 SQL);
         $this->addQuery('INSERT INTO `reject_type` (`name`) SELECT UCFIRST(`libelle`) FROM `production_rejectlist`');
         $this->addQuery('DROP TABLE `production_rejectlist`');
+    }
+
+    private function upSellingOrderItems(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordercustomer_product` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_ordercustomer` INT UNSIGNED DEFAULT NULL,
+    `id_product` INT UNSIGNED DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL,
+    `quantity_souhaitee` INT UNSIGNED DEFAULT NULL,
+    `quantity_sent` INT UNSIGNED DEFAULT NULL,
+    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `texte` TEXT DEFAULT NULL,
+    `ref_ordercustomer_product` VARCHAR(255) DEFAULT NULL,
+    `date_souhaitee` DATE DEFAULT NULL,
+    `date_livraison` DATE DEFAULT NULL
+)
+SQL);
+        $this->insert('ordercustomer_product', [
+            'id',
+            'statut',
+            'id_ordercustomer',
+            'id_product',
+            'quantity',
+            'quantity_souhaitee',
+            'quantity_sent',
+            'price',
+            'texte',
+            'ref_ordercustomer_product',
+            'date_souhaitee',
+            'date_livraison'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `selling_order_item` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `ar_sent` BOOLEAN DEFAULT FALSE NOT NULL,
+    `component_id` INT UNSIGNED DEFAULT NULL,
+    `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL,
+    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
+    `emb_state_state` ENUM('agreed', 'billed', 'delivered', 'draft', 'paid', 'partially_delivered') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_item_state)',
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `order_id` INT UNSIGNED DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL,
+    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `product_id` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `requested_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
+    `requested_quantity_code` VARCHAR(6) DEFAULT NULL,
+    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
+    CONSTRAINT `IDX_8A64F230E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
+    CONSTRAINT `IDX_8A64F2308D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `selling_order` (`id`),
+    CONSTRAINT `IDX_8A64F2304584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `selling_order_item` (
+    `old_id`,
+    `confirmed_date`,
+    `confirmed_quantity_code`,
+    `confirmed_quantity_value`,
+    `emb_blocker_state`,
+    `emb_state_state`,
+    `product_id`,
+    `notes`,
+    `order_id`,
+    `price_code`,
+    `price_value`,
+    `ref`,
+    `requested_date`,
+    `requested_quantity_code`,
+    `requested_quantity_value`,
+    `type`
+) SELECT
+    `ordercustomer_product`.`id`,
+    `ordercustomer_product`.`date_livraison`,
+    `unit`.`code`,
+    IFNULL(`ordercustomer_product`.`quantity`, 0),
+    CASE
+        WHEN `selling_order`.`emb_blocker_state` IN ('closed', 'disabled')
+            OR (`selling_order`.`emb_state_state` IN ('agreed', 'partially_delivered') AND `ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity`)
+            THEN 'closed'
+        WHEN `selling_order`.`emb_blocker_state` = 'blocked' THEN 'blocked'
+        WHEN `selling_order`.`emb_state_state` IN ('agreed', 'partially_delivered') AND `ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity` THEN 'closed'
+        ELSE 'enabled'
+    END,
+    CASE
+        WHEN `selling_order`.`emb_blocker_state` = 'closed' THEN 'delivered'
+        WHEN `selling_order`.`emb_blocker_state` LIKE 'blocked' THEN 'agreed'
+        WHEN `selling_order`.`emb_state_state` IN ('agreed', 'partially_delivered')
+            THEN IF(`ordercustomer_product`.`quantity_sent` >= `ordercustomer_product`.`quantity`, 'delivered', IF(`ordercustomer_product`.`quantity_sent` > 0, 'partially_delivered', 'agreed'))
+        ELSE 'draft'
+    END,
+    `product`.`id`,
+    `ordercustomer_product`.`texte`,
+    `selling_order`.`id`,
+    'EUR',
+    IFNULL(`ordercustomer_product`.`price`, 0),
+    `ordercustomer_product`.`ref_ordercustomer_product`,
+    `ordercustomer_product`.`date_souhaitee`,
+    `unit`.`code`,
+    IFNULL(`ordercustomer_product`.`quantity_souhaitee`, 0),
+    'product'
+FROM `ordercustomer_product`
+INNER JOIN `product` ON `ordercustomer_product`.`id_product` = `product`.`old_id`
+LEFT JOIN `unit` ON `product`.`unit_id` = `unit`.`id`
+INNER JOIN `selling_order` ON `ordercustomer_product`.`id_ordercustomer` = `selling_order`.`old_id`
+WHERE `ordercustomer_product`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `ordercustomer_product`');
+    }
+
+    private function upSellingOrders(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `ordercustomer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_customer` INT UNSIGNED DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    `id_ordercustomerstatus` INT UNSIGNED DEFAULT NULL,
+    `id_address` INT UNSIGNED DEFAULT NULL,
+    `id_society` INT UNSIGNED DEFAULT NULL,
+    `info_public` TEXT DEFAULT NULL
+)
+SQL);
+        $this->insert('ordercustomer', [
+            'id',
+            'statut',
+            'id_customer',
+            'ref',
+            'id_ordercustomerstatus',
+            'id_address',
+            'id_society',
+            'info_public'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `selling_order` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `billed_to_id` INT UNSIGNED DEFAULT NULL,
+    `company_id` INT UNSIGNED DEFAULT NULL,
+    `customer_id` INT UNSIGNED DEFAULT NULL,
+    `destination_id` INT UNSIGNED DEFAULT NULL,
+    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
+    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'partially_delivered', 'to_validate') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_state)',
+    `kind` ENUM('EI', 'Prototype', 'Série', 'Pièce de rechange') DEFAULT 'Prototype' NOT NULL COMMENT '(DC2Type:product_kind)',
+    `notes` VARCHAR(255) DEFAULT NULL,
+    `ref` VARCHAR(255) DEFAULT NULL,
+    CONSTRAINT `IDX_9CCD846B994CB78` FOREIGN KEY (`billed_to_id`) REFERENCES `customer_address` (`id`),
+    CONSTRAINT `IDX_9CCD846B979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    CONSTRAINT `IDX_9CCD846B9395C3F3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+    CONSTRAINT `IDX_9CCD846B816C6140` FOREIGN KEY (`destination_id`) REFERENCES `customer_address` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `selling_order` (`old_id`, `billed_to_id`, `company_id`, `customer_id`, `emb_blocker_state`, `emb_state_state`, `kind`, `notes`, `ref`)
+SELECT
+    `ordercustomer`.`id`,
+    `customer_address`.`id`,
+    `company`.`id`,
+    `customer`.`id`,
+    CASE
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (8, 10, 11) THEN 'closed'
+        WHEN `ordercustomer`.`id_ordercustomerstatus` = 12 THEN 'blocked'
+        ELSE 'enabled'
+    END,
+    CASE
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (2, 13) THEN 'to_validate'
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (3, 4, 5, 6, 11, 12) THEN 'agreed'
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (7, 9) THEN 'partially_delivered'
+        WHEN `ordercustomer`.`id_ordercustomerstatus` IN (8, 10) THEN 'delivered'
+        ELSE 'draft'
+    END,
+    'Série',
+    `ordercustomer`.`info_public`,
+    `ordercustomer`.`ref`
+FROM `ordercustomer`
+INNER JOIN `society` `society_company` ON `ordercustomer`.`id_society` = `society_company`.`old_id`
+INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
+INNER JOIN `society` `society_customer` ON `ordercustomer`.`id_customer` = `society_customer`.`old_id`
+INNER JOIN `customer` ON `society_customer`.`id` = `customer`.`society_id`
+LEFT JOIN `customer_address` ON `ordercustomer`.`id_address` = `customer_address`.`old_id` AND `customer_address`.`type` = 'billing'
+WHERE `ordercustomer`.`statut` = 0
+SQL);
+        $this->addQuery('DROP TABLE `ordercustomer`');
     }
 
     private function upSkills(): void {
@@ -4521,268 +4905,6 @@ INNER JOIN `supplier` ON `society`.`id` = `supplier`.`society_id`
 WHERE `component_supplier`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `component_supplier`');
-    }
-
-    private function upSupplierOrderItems(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `ordersupplier_component` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_ordersupplier` INT UNSIGNED DEFAULT NULL,
-    `open_order` VARCHAR(255) DEFAULT NULL,
-    `id_component` INT UNSIGNED DEFAULT NULL,
-    `id_product` INT UNSIGNED DEFAULT NULL,
-    `id_society_destination` INT UNSIGNED DEFAULT NULL,
-    `quantity` INT UNSIGNED DEFAULT NULL,
-    `quantity_souhaitee` INT UNSIGNED DEFAULT NULL,
-    `quantity_received` INT UNSIGNED DEFAULT NULL,
-    `price` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `price_surcharge_cu` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `texte` TEXT DEFAULT NULL,
-    `refsupplier` VARCHAR(255) DEFAULT NULL DEFAULT '',
-    `invoice` TINYINT DEFAULT NULL DEFAULT 0,
-    `date_souhaitee` DATE DEFAULT NULL,
-    `date_livraison` DATE DEFAULT NULL,
-    `date` DATE DEFAULT NULL
-)
-SQL);
-        $this->insert('ordersupplier_component', [
-            'id',
-            'statut',
-            'id_ordersupplier',
-            'open_order',
-            'id_component',
-            'id_product',
-            'id_society_destination',
-            'quantity',
-            'quantity_souhaitee',
-            'quantity_received',
-            'price',
-            'price_surcharge_cu',
-            'texte',
-            'refsupplier',
-            'invoice',
-            'date_souhaitee',
-            'date_livraison',
-            'date'
-        ]);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `supplier_order_item` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `component_id` INT UNSIGNED DEFAULT NULL,
-    `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
-    `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `copper_price_code` VARCHAR(6) DEFAULT NULL,
-    `copper_price_denominator` VARCHAR(6) DEFAULT NULL,
-    `copper_price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `emb_blocker_state` ENUM('blocked', 'closed', 'delayed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:supplier_order_item_closer_state)',
-    `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'forecast', 'initial', 'monthly', 'partially_delivered') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:supplier_order_item_state)',
-    `notes` VARCHAR(255) DEFAULT NULL,
-    `order_id` INT UNSIGNED DEFAULT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
-    `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `product_id` INT UNSIGNED DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `requested_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `requested_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL,
-    `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `target_company_id` INT UNSIGNED DEFAULT NULL,
-    `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
-    `receipt_date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
-    CONSTRAINT `IDX_331BD2E0E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
-    CONSTRAINT `IDX_331BD2E08D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `supplier_order` (`id`),
-    CONSTRAINT `IDX_331BD2E04584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
-    CONSTRAINT `IDX_331BD2E0A577C247` FOREIGN KEY (`target_company_id`) REFERENCES `company` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `supplier_order_item` (
-    `component_id`,
-    `confirmed_date`,
-    `confirmed_quantity_code`,
-    `confirmed_quantity_value`,
-    `copper_price_code`,
-    `copper_price_value`,
-    `emb_blocker_state`,
-    `emb_state_state`,
-    `notes`,
-    `order_id`,
-    `price_code`,
-    `price_value`,
-    `ref`,
-    `requested_date`,
-    `requested_quantity_code`,
-    `requested_quantity_value`,
-    `target_company_id`,
-    `type`,
-    `receipt_date`
-) SELECT
-    `component`.`id`,
-    `ordersupplier_component`.`date_livraison`,
-    `unit`.`code`,
-    `ordersupplier_component`.`quantity`,
-    'EUR',
-    `ordersupplier_component`.`price_surcharge_cu`,
-    IF(
-        `supplier_order`.`emb_state_state` IN ('agreed', 'partially_delivery')
-            OR `supplier_order`.`emb_blocker_state` = 'closed',
-        CASE
-            WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'closed'
-            WHEN IFNULL(`ordersupplier_component`.`quantity_received`, 0) > 0 THEN 'enabled'
-            ELSE 'enabled'
-        END,
-        'enabled'
-    ),
-    IF(
-        `supplier_order`.`emb_state_state` IN ('agreed', 'partially_delivery')
-            OR `supplier_order`.`emb_blocker_state` = 'closed',
-        CASE
-            WHEN IFNULL(`ordersupplier_component`.`quantity`, 0) = IFNULL(`ordersupplier_component`.`quantity_received`, 0) THEN 'delivered'
-            WHEN IFNULL(`ordersupplier_component`.`quantity_received`, 0) > 0 THEN 'partially_delivered'
-            ELSE 'agreed'
-        END,
-        'draft'
-    ),
-    `ordersupplier_component`.`texte`,
-    `supplier_order`.`id`,
-    'EUR',
-    `ordersupplier_component`.`price`,
-    `ordersupplier_component`.`refsupplier`,
-    `ordersupplier_component`.`date_souhaitee`,
-    `unit`.`code`,
-    `ordersupplier_component`.`quantity_souhaitee`,
-    `company`.`id`,
-    'component',
-    `ordersupplier_component`.`date`
-FROM `ordersupplier_component`
-INNER JOIN `component` ON `ordersupplier_component`.`id_component` = `component`.`old_id`
-LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
-INNER JOIN `supplier_order` ON `ordersupplier_component`.`id_ordersupplier` = `supplier_order`.`old_id`
-INNER JOIN `society` ON `ordersupplier_component`.`id_society_destination` = `society`.`old_id`
-INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
-WHERE `ordersupplier_component`.`statut` = 0
-SQL);
-        $this->addQuery('DROP TABLE `ordersupplier_component`');
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `receipt` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `item_id` INT UNSIGNED DEFAULT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
-    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    CONSTRAINT `IDX_5399B645126F525E` FOREIGN KEY (`item_id`) REFERENCES `supplier_order_item` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `receipt` (`date`, `item_id`, `quantity_code`, `quantity_value`)
-SELECT
-    `supplier_order_item`.`receipt_date`,
-    `supplier_order_item`.`id`,
-    `supplier_order_item`.`confirmed_quantity_code`,
-    `supplier_order_item`.`confirmed_quantity_value`
-FROM `supplier_order_item`
-WHERE `supplier_order_item`.`receipt_date` IS NOT NULL
-AND `supplier_order_item`.`confirmed_quantity_value` > 0
-SQL);
-        $this->addQuery('ALTER TABLE `supplier_order_item` DROP `receipt_date`');
-    }
-
-    private function upSupplierOrders(): void {
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `ordersupplier` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `id_supplier` INT UNSIGNED DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `id_ordersupplierstatus` INT UNSIGNED DEFAULT NULL,
-    `open_order` VARCHAR(255) DEFAULT NULL,
-    `id_address` INT UNSIGNED DEFAULT NULL,
-    `id_society` INT UNSIGNED DEFAULT NULL,
-    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
-    `info_public` TEXT DEFAULT NULL COMMENT 'info interne',
-    `commentaire` TEXT DEFAULT NULL COMMENT 'info affichee sur le document envoyé'
-)
-SQL);
-        $this->insert('ordersupplier', [
-            'id',
-            'statut',
-            'id_supplier',
-            'ref',
-            'id_ordersupplierstatus',
-            'open_order',
-            'id_address',
-            'id_society',
-            'supplement_fret',
-            'info_public',
-            'commentaire'
-        ]);
-        $this->addQuery(<<<'SQL'
-CREATE TABLE `supplier_order` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `old_id` INT UNSIGNED NOT NULL,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `company_id` INT UNSIGNED DEFAULT NULL,
-    `contact_id` INT UNSIGNED DEFAULT NULL,
-    `customer_order_id` INT UNSIGNED DEFAULT NULL,
-    `delivery_company_id` INT UNSIGNED DEFAULT NULL,
-    `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'cart', 'delivered', 'draft', 'initial', 'partially_delivered') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:supplier_order_state)',
-    `notes` TEXT DEFAULT NULL,
-    `ref` VARCHAR(255) DEFAULT NULL,
-    `supplement_fret` BOOLEAN DEFAULT FALSE NOT NULL,
-    `supplier_id` INT UNSIGNED DEFAULT NULL,
-    CONSTRAINT `IDX_2C3291B2979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_2C3291B2E7A1254A` FOREIGN KEY (`contact_id`) REFERENCES `supplier_contact` (`id`),
-    CONSTRAINT `IDX_2C3291B2A15A2E17` FOREIGN KEY (`customer_order_id`) REFERENCES `customer_order` (`id`),
-    CONSTRAINT `IDX_2C3291B289DE8DF2` FOREIGN KEY (`delivery_company_id`) REFERENCES `company` (`id`),
-    CONSTRAINT `IDX_2C3291B22ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
-)
-SQL);
-        $this->addQuery(<<<'SQL'
-INSERT INTO `supplier_order` (
-    `old_id`,
-    `company_id`,
-    `delivery_company_id`,
-    `emb_blocker_state`,
-    `emb_state_state`,
-    `notes`,
-    `ref`,
-    `supplement_fret`,
-    `supplier_id`
-) SELECT
-    `ordersupplier`.`id`,
-    `company`.`id`,
-    `company`.`id`,
-    IF(`ordersupplier`.`id_ordersupplierstatus` IN (6, 7), 'closed', 'enabled'),
-    CASE
-        WHEN `ordersupplier`.`id_ordersupplierstatus` = 4 THEN 'agreed'
-        WHEN `ordersupplier`.`id_ordersupplierstatus` = 5 THEN 'partially_delivered'
-        WHEN `ordersupplier`.`id_ordersupplierstatus` = 6 THEN 'delivered'
-        ELSE 'draft'
-    END,
-    IF(
-        `ordersupplier`.`info_public` IS NULL,
-        `ordersupplier`.`commentaire`,
-        IF(`ordersupplier`.`commentaire` IS NULL, NULL, CONCAT(`ordersupplier`.`info_public`, `ordersupplier`.`commentaire`))
-    ),
-    `ordersupplier`.`ref`,
-    `ordersupplier`.`supplement_fret`,
-    `supplier`.`id`
-FROM `ordersupplier`
-INNER JOIN `society` `society_company` ON `ordersupplier`.`id_society` = `society_company`.`old_id`
-INNER JOIN `company` ON `society_company`.`id` = `company`.`society_id`
-INNER JOIN `society` `society_supplier` ON `ordersupplier`.`id_supplier` = `society_supplier`.`old_id`
-INNER JOIN `supplier` ON `society_supplier`.`id` = `supplier`.`society_id`
-WHERE `ordersupplier`.`statut` = 0
-SQL);
-        $this->addQuery('DROP TABLE `ordersupplier`');
     }
 
     private function upSupplies(): void {

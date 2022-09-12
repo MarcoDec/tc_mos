@@ -7,9 +7,13 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Selling\FamilyReference;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -94,11 +98,56 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
+    /** @var Collection<int, FamilyReference> */
+    #[ORM\ManyToMany(targetEntity: FamilyReference::class, mappedBy: 'items')]
+    private Collection $references;
+
+    final public function __construct() {
+        parent::__construct();
+        $this->references = new ArrayCollection();
+    }
+
+    final public function addReference(FamilyReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<Product, self>>
+     */
+    final public function getChecks(): LaravelCollection {
+        return collect($this->references->getValues())
+            ->map(static function (FamilyReference $reference): Check {
+                /** @var Check<Product, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            })
+            ->values();
+    }
+
     #[
         ApiProperty(description: 'Icône', example: '/uploads/product-families/1.jpg'),
         Serializer\Groups(['read:file'])
     ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
+    }
+
+    /**
+     * @return Collection<int, FamilyReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
+    final public function removeReference(FamilyReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
+        }
+        return $this;
     }
 }

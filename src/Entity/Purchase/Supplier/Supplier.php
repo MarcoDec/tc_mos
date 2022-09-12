@@ -16,10 +16,17 @@ use App\Entity\Entity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
+use App\Entity\Purchase\Order\Order;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
+use App\Repository\Purchase\Supplier\SupplierRepository;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -38,6 +45,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les fournisseurs',
                     'summary' => 'Récupère les fournisseurs'
                 ]
+            ],
+            'get-receipts' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:state', 'read:supplier:receipt'],
+                    'openapi_definition_name' => 'Supplier-receipt',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les fournisseurs dont les commandes attendent une réception',
+                    'summary' => 'Récupère les fournisseurs dont les commandes attendent une réception'
+                ],
+                'order' => ['name' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/suppliers/get-receipts'
             ],
             'post' => [
                 'denormalization_context' => [
@@ -124,7 +148,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: SupplierRepository::class)
 ]
 class Supplier extends Entity {
     #[
@@ -167,7 +191,7 @@ class Supplier extends Entity {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:supplier', 'read:supplier:collection'])
+        Serializer\Groups(['read:supplier', 'read:supplier:collection', 'read:supplier:receipt'])
     ]
     private Blocker $embBlocker;
 
@@ -201,7 +225,7 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
         ORM\Column,
-        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:admin'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'read:supplier:receipt', 'write:supplier', 'write:supplier:admin'])
     ]
     private ?string $name = null;
 
@@ -211,6 +235,17 @@ class Supplier extends Entity {
         Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
     ]
     private ?string $notes = null;
+
+    /** @var Collection<int, Order> */
+    #[
+        ORM\OneToMany(mappedBy: 'supplier', targetEntity: Order::class),
+        Serializer\Groups(['read:supplier:receipt'])
+    ]
+    private Collection $orders;
+
+    /** @var Collection<int, SupplierReference> */
+    #[ORM\ManyToMany(targetEntity: SupplierReference::class, mappedBy: 'items')]
+    private Collection $references;
 
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
@@ -226,12 +261,30 @@ class Supplier extends Entity {
         $this->copper = new Copper();
         $this->embBlocker = new Blocker();
         $this->embState = new State();
+        $this->orders = new ArrayCollection();
+        $this->references = new ArrayCollection();
     }
 
     final public function addAdministeredBy(Company $administeredBy): self {
         if (!$this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->add($administeredBy);
             $administeredBy->addSupplier($this);
+        }
+        return $this;
+    }
+
+    final public function addOrder(Order $order): self {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setSupplier($this);
+        }
+        return $this;
+    }
+
+    final public function addReference(SupplierReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
         }
         return $this;
     }
@@ -249,6 +302,19 @@ class Supplier extends Entity {
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<Component|Product, self>>
+     */
+    final public function getChecks(): LaravelCollection {
+        return collect($this->references->getValues())
+            ->map(static function (SupplierReference $reference): Check {
+                /** @var Check<Component|Product, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            })
+            ->values();
     }
 
     final public function getConfidenceCriteria(): int {
@@ -283,6 +349,20 @@ class Supplier extends Entity {
         return $this->notes;
     }
 
+    /**
+     * @return Collection<int, Order>
+     */
+    final public function getOrders(): Collection {
+        return $this->orders;
+    }
+
+    /**
+     * @return Collection<int, SupplierReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
     final public function getSociety(): ?Society {
         return $this->society;
     }
@@ -303,6 +383,24 @@ class Supplier extends Entity {
         if ($this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->removeElement($administeredBy);
             $administeredBy->removeSupplier($this);
+        }
+        return $this;
+    }
+
+    final public function removeOrder(Order $order): self {
+        if ($this->orders->contains($order)) {
+            $this->orders->removeElement($order);
+            if ($order->getSupplier() === $this) {
+                $order->setSupplier(null);
+            }
+        }
+        return $this;
+    }
+
+    final public function removeReference(SupplierReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
         }
         return $this;
     }
