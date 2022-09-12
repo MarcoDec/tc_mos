@@ -8,17 +8,15 @@ use App\Entity\Management\Unit;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class MeasureHydrator {
+    /** @var array<string, Unit> */
+    private array $units = [];
+
     public function __construct(private readonly EntityManagerInterface $em) {
     }
 
     public function hydrate(Measure $measure): Measure {
-        $unitRepo = $this->em->getRepository(Unit::class);
-        if ($measure->getCode() !== null) {
-            $measure->setUnit($unitRepo->findOneBy(['code' => $measure->getCode()]));
-        }
-        if ($measure->getDenominator() !== null) {
-            $measure->setDenominatorUnit($unitRepo->findOneBy(['code' => $measure->getDenominator()]));
-        }
+        $measure->setUnit($this->getUnit($measure->getCode()));
+        $measure->setDenominatorUnit($this->getUnit($measure->getDenominator()));
         return $measure;
     }
 
@@ -27,5 +25,20 @@ final class MeasureHydrator {
             $this->hydrate($measure);
         }
         return $entity;
+    }
+
+    private function getUnit(?string $code): ?Unit {
+        if ($code !== null) {
+            if (isset($this->units[$code])) {
+                return $this->units[$code];
+            }
+            /** @var null|Unit $unit */
+            $unit = $this->em->getRepository(Unit::class)->findOneBy(['code' => $code]);
+            if ($unit !== null) {
+                $this->units[$code] = $unit;
+            }
+            return $unit;
+        }
+        return null;
     }
 }
