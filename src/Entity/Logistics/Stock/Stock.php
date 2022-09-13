@@ -99,7 +99,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Transfert un stock',
                     'summary' => 'Transfert un stock'
                 ],
-                'path' => '/transfer/{id}/out'
+                'path' => '/stocks/{id}/transfer'
             ]
         ],
         attributes: [

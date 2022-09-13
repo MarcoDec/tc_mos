@@ -658,6 +658,11 @@ class Product extends EntityId implements BarCodeInterface, MeasuredInterface {
         return $this->unit;
     }
 
+    #[Serializer\Groups(['read:stock:grouped'])]
+    final public function getUnitCode(): ?string {
+        return $this->unit?->getCode();
+    }
+
     final public function getWeight(): Measure {
         return $this->weight;
     }
