@@ -25,9 +25,11 @@ final class ComponentStockRepository extends StockRepository {
 
     protected function createGroupedQueryBuilder(Warehouse $warehouse): QueryBuilder {
         return parent::createGroupedQueryBuilder($warehouse)
+            ->addSelect('f')
             ->addSelect('i')
             ->addSelect('u')
             ->innerJoin('s.item', 'i')
+            ->innerJoin('i.family', 'f')
             ->innerJoin('i.unit', 'u');
     }
 }

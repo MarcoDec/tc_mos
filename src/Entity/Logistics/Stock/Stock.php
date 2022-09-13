@@ -110,7 +110,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Stock-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:measure', 'read:stock'],
+            'groups' => ['read:measure', 'read:stock'],
             'openapi_definition_name' => 'Stock-read',
             'skip_null_values' => false
         ]
@@ -137,7 +137,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     /** @var null|T */
     #[
-        ApiProperty(description: 'Élément', readableLink: false, example: '/api/components/1'),
+        ApiProperty(description: 'Élément', example: '/api/components/1'),
         Serializer\Groups(['read:stock', 'read:stock:grouped'])
     ]
     protected $item;
@@ -191,6 +191,8 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return self::STOCK_BAR_CODE_PREFIX;
     }
 
+    abstract protected function getType(): string;
+
     /**
      * @param Receipt<T> $receipt
      *
@@ -208,9 +210,13 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return $this->batchNumber;
     }
 
+    final public function getGroupedId(): string {
+        return "{$this->warehouse?->getId()}-{$this->getType()}-{$this->item?->getId()}-{$this->getIriBatchNumber()}";
+    }
+
     #[
         ApiProperty(description: 'id', required: true, identifier: true, example: 1),
-        Serializer\Groups(['read:id'])
+        Serializer\Groups(['read:stock'])
     ]
     public function getId(): int|null|string {
         return parent::getId() ?? $this->getGroupedId();
@@ -384,7 +390,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         }
     }
 
-    private function getGroupedId(): string {
-        return "{$this->warehouse?->getId()}-{$this->item?->getId()}";
+    private function getIriBatchNumber(): ?string {
+        return empty($this->batchNumber) ? $this->batchNumber : str_replace('/', '-', $this->batchNumber);
     }
 }

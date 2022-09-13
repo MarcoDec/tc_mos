@@ -35,7 +35,7 @@ final class GroupedDataProvider implements ContextAwareCollectionDataProviderInt
         $warehouse = $this->iriConverter->getItemFromIri($context['filters']['warehouse']);
         $stocks = $this->em->getRepository(Stock::class)->findByGrouped($warehouse);
         foreach ($stocks as $stock) {
-            if (!empty($code = $stock->getItemCode())) {
+            if (!empty($code = $stock->getGroupedId())) {
                 if (isset($grouped[$code])) {
                     $grouped[$code]->group($stock);
                 } else {

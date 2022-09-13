@@ -5,6 +5,8 @@ namespace App\Entity\Logistics\Stock;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Project\Product\Product;
 use App\Filter\RelationFilter;
@@ -17,6 +19,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'warehouse']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['batchNumber' => 'partial']),
     ApiResource(
         description: 'Stock des produits',
         collectionOperations: [
@@ -46,7 +49,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ProductStock-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:measure', 'read:stock'],
+            'groups' => ['read:measure', 'read:stock'],
             'openapi_definition_name' => 'ProductStock-read',
             'skip_null_values' => false
         ],
@@ -56,10 +59,14 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class ProductStock extends Stock {
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ApiProperty(description: 'Produit', example: '/api/products/1'),
         ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
         Serializer\Groups(['read:stock', 'read:stock:grouped', 'write:stock'])
     ]
     protected $item;
+
+    final protected function getType(): string {
+        return ItemType::TYPE_PRODUCT;
+    }
 }
