@@ -1,7 +1,8 @@
 <script setup>
     import {computed, defineProps} from 'vue'
 
-    const props = defineProps({field: {required: true, type: Array}})
+    const props = defineProps({fields: {required: true, type: Array}})
+    console.log('field', props.fields);
     const alignfields = computed(() => props.fields
         .map(field => {
             function nulField(index){
@@ -10,7 +11,7 @@
             if (Array.isArray(field.children) && field.children.length > 0){
                 return [nulField(1), nulField(2), ...field.children]
             }
-            return field
+            return field 
         })
         .flat())
 </script>

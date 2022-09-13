@@ -21,6 +21,7 @@
         }
         return lastindexes
     })
+   console.log('lasts',lasts);
 
     const fieldsByLevel = computed<TableField[][]>(() => {
         const rows: TableField[][] = []
@@ -42,6 +43,7 @@
         } while (hasChild)
         return rows
     })
+   console.log('fieldsByLevel',fieldsByLevel);
 
     const levels = computed(() => {
         const levelObj = {}
@@ -52,6 +54,10 @@
     const itemsWithGhosts = computed<(TableItem | number)[]>(() => {
         const result: (TableItem | number)[] = []
         for (let i = 0, j = 1; i < props.items.length; i++, j++) {
+            console.log('iiii', props.items);
+                        console.log('items[i]', props.items[i]);
+                        console.log('items[j]', props.items[j]);
+
             result.push(props.items[i])
             if (j === props.items.length || props.items[j].length >= props.items[i].length) {
                 for (const k in levels.value){
@@ -62,6 +68,8 @@
             }
         }
         result.push(0)
+        console.log('result', result);
+        
         return result
     })
     console.log('itemsWithGhosts', itemsWithGhosts);

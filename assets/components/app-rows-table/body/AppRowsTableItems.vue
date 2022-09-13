@@ -10,7 +10,7 @@ const props = defineProps({
   fields: { required: true, type: Array },
   alignFields: { required: true, type: Array },
 });
-const lengths = computed(() => props.items.map((item) => item.length));
+const lengths = computed(() => priceItems.items.map((item) => item.length));
 const max = computed(() => Math.max(...lengths.value));
 const lasts = computed(() => {
   const lastindexes = [];
@@ -61,26 +61,28 @@ const levels = computed(() => {
 });
 const itemsWithGhosts = computed(() => {
   const result = [];
-  for (let i = 0, j = 1; i < props.items.length; i++, j++) {
-    console.log("afefffitems", props.items);
-    result.push(props.items[i]);
-    if (
-      j === props.items.length ||
-      props.items[j].length >= props.items[i].length
-    ) {
+
+  for (let i = 0, j = 1; i < priceItems.items.length; i++, j++) {
+
+    result.push(priceItems.items[i]);
+    console.log("result---> ", result);
+    
+
+    if (j === priceItems.items.length) {
       for (const k in levels.value) {
-        if (props.items[i].length >= k) {
+        if (priceItems.items.length >= k) {
           result.push(levels.value[k]);
+          console.log("result2222---> ", result);
         }
       }
     }
   }
   result.push(0);
-  return result;
-});
-console.log("alignFields222", props.alignFields);
-console.log("itemsWithGhosts", itemsWithGhosts);
+  console.log("result final---> ", result);
 
+  return result; 
+});
+console.log("itemsWithGhosts", itemsWithGhosts);
 </script>
 
 <template>
@@ -89,7 +91,7 @@ console.log("itemsWithGhosts", itemsWithGhosts);
       v-for="(item, index) in itemsWithGhosts"
       :key="item.id"
       :last="lasts.includes(index)"
-      :item="item"
+      :item="item" 
       :fields="fields"
       :align-fields="alignFields"
       :items="items"
@@ -102,6 +104,9 @@ console.log("itemsWithGhosts", itemsWithGhosts);
       :fields="fields"
       :align-fields="alignFields"
       :index="index"
+      :fields-by-level="fieldsByLevel"
+      :last="lasts.includes(index)"
+      :item="item"
     />
   </tbody>
 </template>

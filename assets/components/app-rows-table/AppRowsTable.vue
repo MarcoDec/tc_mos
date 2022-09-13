@@ -25,7 +25,7 @@ function align(field) {
   }
   return [field];
 }
-
+ 
 const alignFields = computed(() => props.fields.map(align).flat());
 console.log("fields", props.fields);
 console.log("alignFields", alignFields);

@@ -4,6 +4,8 @@
 
     const props = defineProps<{last: {required: true, type: boolean}, item: number, fields: TableField[], fieldsByLevel: TableField[][], alignFields: TableField[], index: number}>()
     const add = computed(() => typeof props.item === 'number')
+    console.log('item ***',props.item );
+    
 </script>
 
 <template>

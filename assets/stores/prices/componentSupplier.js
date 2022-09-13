@@ -15,7 +15,7 @@ export default function generatePrice(prices) {
         this.root.blur();
         this.selected = true;
         this.open();
-      },
+      }, 
     },
     getters: {
       row(state) {
@@ -23,7 +23,7 @@ export default function generatePrice(prices) {
         console.log("rows", rows);
         for (const suppliers of state.items) 
         console.log("state", suppliers);
-
+ 
         for (let i = 1; i < suppliers.prices.length; i++)
           rows.push([state.prices[i]]);
       },

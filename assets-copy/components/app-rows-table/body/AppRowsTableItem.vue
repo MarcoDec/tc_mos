@@ -4,9 +4,14 @@
     import {defineProps} from 'vue'
 
     const props = defineProps<{item: string[], alignFields: TableField[]}>()
+        console.log('item hellooo ***',props.item );
+        console.log('alignFields ====',props.alignFields );
+
     const stateFields: TableField[][] = []
     const states: TableItem[] = []
     for (const part of props.item){
+                console.log('part ====',part );
+
         const tabFields: TableField[] = []
         for (const field of props.alignFields){
             if (part.startsWith(field.prefix) && !(Array.isArray(field.children) && field.children.length > 0)){
