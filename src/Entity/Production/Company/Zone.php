@@ -25,7 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Récupère les zones',
                     'summary' => 'Récupère les zones'
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
             ],
             'post' => [
                 'openapi_context' => [

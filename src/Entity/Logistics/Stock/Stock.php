@@ -69,7 +69,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Modifie un stock',
                     'summary' => 'Modifie un stock'
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ],
             'out' => [
                 'method' => 'PATCH',
@@ -86,7 +87,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     ],
                     'summary' => 'Sortie d\'un stock'
                 ],
-                'path' => '/stocks/{id}/out'
+                'path' => '/stocks/{id}/out',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ],
             'transfer' => [
                 'controller' => PlaceholderAction::class,
@@ -99,7 +101,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Transfert un stock',
                     'summary' => 'Transfert un stock'
                 ],
-                'path' => '/stocks/{id}/transfer'
+                'path' => '/stocks/{id}/transfer',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
         attributes: [

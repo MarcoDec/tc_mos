@@ -46,7 +46,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'order' => ['code' => 'asc'],
                 'pagination_enabled' => false,
-                'path' => '/units/options'
+                'path' => '/units/options',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
             ],
             'post' => [
                 'openapi_context' => [
