@@ -399,7 +399,7 @@ class Component extends EntityId implements BarCodeInterface, MeasuredInterface 
 
     #[
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
-        Serializer\Groups(['read:component', 'read:component:collection', 'read:stock:grouped'])
+        Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:stock:grouped'])
     ]
     final public function getCode(): ?string {
         return "{$this->family?->getCode()}-{$this->getId()}";

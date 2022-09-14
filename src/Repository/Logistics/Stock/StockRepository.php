@@ -27,13 +27,15 @@ class StockRepository extends ServiceEntityRepository {
     }
 
     /**
+     * @param array<string, mixed> $filters
+     *
      * @return (ComponentStock|ProductStock)[]
      */
-    public function findByGrouped(Warehouse $warehouse): array {
+    public function findFetched(array $filters): array {
         /** @var (ComponentStock|ProductStock)[] $componentsStocks */
-        $componentsStocks = $this->_em->getRepository(ComponentStock::class)->findByGrouped($warehouse);
+        $componentsStocks = $this->_em->getRepository(ComponentStock::class)->findFetched($filters);
         /** @var (ComponentStock|ProductStock)[] $productStocks */
-        $productStocks = $this->_em->getRepository(ProductStock::class)->findByGrouped($warehouse);
+        $productStocks = $this->_em->getRepository(ProductStock::class)->findFetched($filters);
         return collect($componentsStocks)->merge($productStocks)->values()->all();
     }
 
@@ -46,10 +48,17 @@ class StockRepository extends ServiceEntityRepository {
             ?? $this->_em->getRepository(ProductStock::class)->findTransferStock($id);
     }
 
-    protected function createGroupedQueryBuilder(Warehouse $warehouse): QueryBuilder {
-        return $this->createQueryBuilder('s')
-            ->where('s.warehouse = :warehouse')
-            ->setParameter('warehouse', $warehouse->getId());
+    /**
+     * @param array<string, mixed> $filters
+     */
+    protected function createFetchedQueryBuilder(array $filters): QueryBuilder {
+        $qb = $this->createQueryBuilder('s');
+        foreach ($filters as $property => $value) {
+            if ($property === 'warehouse' && $value instanceof Warehouse) {
+                $qb->where('s.warehouse = :warehouse')->setParameter('warehouse', $value->getId());
+            }
+        }
+        return $qb;
     }
 
     /**

@@ -113,7 +113,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'Stock-write'
         ],
         normalizationContext: [
-            'groups' => ['read:measure', 'read:stock'],
+            'groups' => ['read:id', 'read:measure', 'read:stock'],
             'openapi_definition_name' => 'Stock-read',
             'skip_null_values' => false
         ],
@@ -227,7 +227,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     #[
         ApiProperty(description: 'id', required: true, identifier: true, example: 1),
-        Serializer\Groups(['read:stock'])
+        Serializer\Groups(['read:id'])
     ]
     public function getId(): int|null|string {
         return parent::getId() ?? $this->getGroupedId();

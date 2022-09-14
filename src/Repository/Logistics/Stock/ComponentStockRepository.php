@@ -3,7 +3,6 @@
 namespace App\Repository\Logistics\Stock;
 
 use App\Entity\Logistics\Stock\ComponentStock;
-use App\Entity\Logistics\Warehouse;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,13 +17,13 @@ final class ComponentStockRepository extends StockRepository {
     /**
      * @return ComponentStock[]
      */
-    public function findByGrouped(Warehouse $warehouse): array {
+    public function findFetched(array $filters): array {
         /** @phpstan-ignore-next-line */
-        return $this->createGroupedQueryBuilder($warehouse)->getQuery()->getResult();
+        return $this->createFetchedQueryBuilder($filters)->getQuery()->getResult();
     }
 
-    protected function createGroupedQueryBuilder(Warehouse $warehouse): QueryBuilder {
-        return parent::createGroupedQueryBuilder($warehouse)
+    protected function createFetchedQueryBuilder(array $filters): QueryBuilder {
+        return parent::createFetchedQueryBuilder($filters)
             ->addSelect('f')
             ->addSelect('i')
             ->addSelect('u')
