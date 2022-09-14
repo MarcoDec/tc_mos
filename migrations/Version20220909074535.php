@@ -3368,8 +3368,7 @@ CREATE TABLE `ordersupplier_component` (
     `refsupplier` VARCHAR(255) DEFAULT NULL DEFAULT '',
     `invoice` TINYINT DEFAULT NULL DEFAULT 0,
     `date_souhaitee` DATE DEFAULT NULL,
-    `date_livraison` DATE DEFAULT NULL,
-    `date` DATE DEFAULT NULL
+    `date_livraison` DATE DEFAULT NULL
 )
 SQL);
         $this->insert('ordersupplier_component', [
@@ -3389,8 +3388,7 @@ SQL);
             'refsupplier',
             'invoice',
             'date_souhaitee',
-            'date_livraison',
-            'date'
+            'date_livraison'
         ]);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `purchase_order_item` (
@@ -3419,6 +3417,8 @@ CREATE TABLE `purchase_order_item` (
     `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `target_company_id` INT UNSIGNED DEFAULT NULL,
     `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
+    `receipt_date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `receipt_quantity` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_5ED948C3E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
     CONSTRAINT `IDX_5ED948C38D9F6D38` FOREIGN KEY (`order_id`) REFERENCES `purchase_order` (`id`),
     CONSTRAINT `IDX_5ED948C34584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
@@ -3444,7 +3444,9 @@ INSERT INTO `purchase_order_item` (
     `requested_quantity_code`,
     `requested_quantity_value`,
     `target_company_id`,
-    `type`
+    `type`,
+    `receipt_date`,
+    `receipt_quantity`
 ) SELECT
     `component`.`id`,
     `ordersupplier_component`.`date_livraison`,
@@ -3481,7 +3483,9 @@ INSERT INTO `purchase_order_item` (
     `unit`.`code`,
     `ordersupplier_component`.`quantity_souhaitee`,
     `company`.`id`,
-    'component'
+    'component',
+    `ordersupplier_component`.`date_livraison`,
+    `ordersupplier_component`.`quantity_received`
 FROM `ordersupplier_component`
 INNER JOIN `component` ON `ordersupplier_component`.`id_component` = `component`.`old_id`
 LEFT JOIN `unit` ON `component`.`unit_id` = `unit`.`id`
@@ -3491,6 +3495,30 @@ INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
 WHERE `ordersupplier_component`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `ordersupplier_component`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `receipt` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `item_id` INT UNSIGNED DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_5399B645126F525E` FOREIGN KEY (`item_id`) REFERENCES `purchase_order_item` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `receipt` (`date`, `item_id`, `quantity_code`, `quantity_value`)
+SELECT
+    `purchase_order_item`.`receipt_date`,
+    `purchase_order_item`.`id`,
+    `purchase_order_item`.`confirmed_quantity_code`,
+    `purchase_order_item`.`confirmed_quantity_value`
+FROM `purchase_order_item`
+WHERE `purchase_order_item`.`receipt_date` IS NOT NULL
+AND `purchase_order_item`.`receipt_quantity` > 0
+SQL);
+        $this->addQuery('ALTER TABLE `purchase_order_item` DROP `receipt_date`, DROP `receipt_quantity`');
     }
 
     private function upPurchaseOrders(): void {
