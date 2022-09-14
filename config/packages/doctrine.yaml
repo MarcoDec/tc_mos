@@ -19,7 +19,7 @@ doctrine:
       blocker_state: App\Doctrine\DBAL\Types\Embeddable\BlockerStateType
       char: App\Doctrine\DBAL\Types\CharType
       closer_state: App\Doctrine\DBAL\Types\Embeddable\CloserStateType
-      component_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Component\ComponentStateType
+      component_manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\ComponentManufacturingOperationStateType
       copper: App\Doctrine\DBAL\Types\Embeddable\CopperType
       contact: App\Doctrine\DBAL\Types\Management\Society\ContactType
       customer_address: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
