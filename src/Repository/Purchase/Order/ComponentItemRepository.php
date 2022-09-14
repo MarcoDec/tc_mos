@@ -22,8 +22,12 @@ final class ComponentItemRepository extends ItemRepository {
 
     public function createReceiptQueryBuilder(int $id): QueryBuilder {
         return parent::createReceiptQueryBuilder($id)
-            ->addSelect('c')
-            ->innerJoin('i.item', 'c');
+            ->addSelect('item')
+            ->addSelect('item_family')
+            ->addSelect('item_references')
+            ->leftJoin('i.item', 'item')
+            ->leftJoin('item.family', 'item_family')
+            ->leftJoin('item.references', 'item_references');
     }
 
     public function findOneByReceipt(int $id): ?ComponentItem {
@@ -31,7 +35,7 @@ final class ComponentItemRepository extends ItemRepository {
         try {
             /** @phpstan-ignore-next-line */
             return $query->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException) {
             return null;
         }
     }

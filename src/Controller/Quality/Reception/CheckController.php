@@ -18,10 +18,10 @@ final class CheckController {
     }
 
     /**
-     * @return Check<Component|Product, Company|Component|ComponentFamily|Supplier|ProductFamily|Product>[]
+     * @return array<int, Check<Component|Product, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
     public function __invoke(int $id): array {
-        $item = $this->em->find(Item::class, $id);
+        $item = $this->em->getRepository(Item::class)->findOneByReceipt($id);
         if (empty($item)) {
             throw new NotFoundHttpException();
         }
@@ -30,6 +30,7 @@ final class CheckController {
             $this->em->persist($check);
         }
         $this->em->flush();
+        /** @phpstan-ignore-next-line */
         return $checks->all();
     }
 }
