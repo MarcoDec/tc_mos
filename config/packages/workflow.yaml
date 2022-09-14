@@ -156,54 +156,6 @@ framework:
           from: '%wf_place_draft%'
           to: '%wf_place_agreed%'
       type: state_machine
-    customer_order:
-      audit_trail: '%wf_audit_trail%'
-      initial_marking: '%wf_place_draft%'
-      marking_store: '%wf_marking_store%'
-      places:
-        - '%wf_place_agreed%'
-        - '%wf_place_delivered%'
-        - '%wf_place_draft%'
-        - '%wf_place_partially_delivered%'
-        - '%wf_place_to_validate%'
-      supports:
-        - App\Entity\Selling\Order\Order
-      transitions:
-        '%wf_tr_deliver%':
-          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
-          to: '%wf_place_delivered%'
-        '%wf_tr_partially_deliver%':
-          from: '%wf_place_agreed%'
-          to: '%wf_place_partially_delivered%'
-        '%wf_tr_submit_validation%':
-          from: '%wf_place_draft%'
-          to: '%wf_place_to_validate%'
-        '%wf_tr_validate%':
-          from: '%wf_place_to_validate%'
-          to: '%wf_place_agreed%'
-      type: state_machine
-    customer_order_item:
-      audit_trail: '%wf_audit_trail%'
-      initial_marking: '%wf_place_draft%'
-      marking_store: '%wf_marking_store%'
-      places:
-        - '%wf_place_agreed%'
-        - '%wf_place_delivered%'
-        - '%wf_place_draft%'
-        - '%wf_place_partially_delivered%'
-      supports:
-        - App\Entity\Selling\Order\Item
-      transitions:
-        '%wf_tr_deliver%':
-          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
-          to: '%wf_place_delivered%'
-        '%wf_tr_partially_deliver%':
-          from: '%wf_place_agreed%'
-          to: '%wf_place_partially_delivered%'
-        '%wf_tr_validate%':
-          from: '%wf_place_draft%'
-          to: '%wf_place_agreed%'
-      type: state_machine
     employee_engine:
       audit_trail: '%wf_audit_trail%'
       initial_marking: '%wf_place_warning%'
@@ -285,29 +237,7 @@ framework:
           from: [ '%wf_place_to_validate%', '%wf_place_warning%' ]
           to: '%wf_place_agreed%'
       type: state_machine
-    supplier:
-      audit_trail: '%wf_audit_trail%'
-      initial_marking: '%wf_place_draft%'
-      marking_store: '%wf_marking_store%'
-      places:
-        - '%wf_place_agreed%'
-        - '%wf_place_draft%'
-        - '%wf_place_to_validate%'
-        - '%wf_place_warning%'
-      supports:
-        - App\Entity\Purchase\Supplier\Supplier
-      transitions:
-        '%wf_tr_submit_validation%':
-          from: '%wf_place_draft%'
-          to: '%wf_place_to_validate%'
-        '%wf_tr_supervise%':
-          from: [ '%wf_place_agreed%', '%wf_place_to_validate%' ]
-          to: '%wf_place_warning%'
-        '%wf_tr_validate%':
-          from: '%wf_place_warning%'
-          to: '%wf_place_agreed%'
-      type: state_machine
-    supplier_order:
+    purchase_order:
       audit_trail: '%wf_audit_trail%'
       initial_marking: '%wf_place_initial%'
       marking_store: '%wf_marking_store%'
@@ -335,5 +265,134 @@ framework:
           to: '%wf_place_partially_delivered%'
         '%wf_tr_validate%':
           from: [ '%wf_place_cart%', '%wf_place_draft%' ]
+          to: '%wf_place_agreed%'
+      type: state_machine
+    purchase_order_item:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_initial%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_delivered%'
+        - '%wf_place_draft%'
+        - '%wf_place_forecasted%'
+        - '%wf_place_initial%'
+        - '%wf_place_monthly%'
+        - '%wf_place_partially_delivered%'
+      supports:
+        - App\Entity\Purchase\Order\Item
+      transitions:
+        '%wf_tr_create%':
+          from: '%wf_place_initial%'
+          to: '%wf_place_draft%'
+        '%wf_tr_deliver%':
+          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
+          to: '%wf_place_delivered%'
+        '%wf_tr_forecast%':
+          from: [ '%wf_place_draft%', '%wf_place_initial%', '%wf_place_monthly%' ]
+          to: '%wf_place_forecasted%'
+        '%wf_tr_month%':
+          from: '%wf_place_initial%'
+          to: '%wf_place_monthly%'
+        '%wf_tr_partially_deliver%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_partially_delivered%'
+        '%wf_tr_validate%':
+          from: [ '%wf_place_draft%', '%wf_place_forecasted%' ]
+          to: '%wf_place_agreed%'
+      type: state_machine
+    purchase_order_item_closer:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_enabled%'
+      marking_store: '%wf_marking_store_blocker%'
+      places:
+        - '%wf_place_blocked%'
+        - '%wf_place_closed%'
+        - '%wf_place_delayed%'
+        - '%wf_place_enabled%'
+      supports:
+        - App\Entity\Purchase\Order\Item
+      transitions:
+        '%wf_tr_block%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_blocked%'
+        '%wf_tr_close%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_closed%'
+        '%wf_tr_delay%':
+          from: '%wf_place_enabled%'
+          to: '%wf_place_delayed%'
+        '%wf_tr_unlock%':
+          from: [ '%wf_place_blocked%', '%wf_place_delayed%' ]
+          to: '%wf_place_enabled%'
+      type: state_machine
+    selling_order:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_delivered%'
+        - '%wf_place_draft%'
+        - '%wf_place_partially_delivered%'
+        - '%wf_place_to_validate%'
+      supports:
+        - App\Entity\Selling\Order\Order
+      transitions:
+        '%wf_tr_deliver%':
+          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
+          to: '%wf_place_delivered%'
+        '%wf_tr_partially_deliver%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_partially_delivered%'
+        '%wf_tr_submit_validation%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_to_validate%'
+        '%wf_tr_validate%':
+          from: '%wf_place_to_validate%'
+          to: '%wf_place_agreed%'
+      type: state_machine
+    selling_order_item:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_delivered%'
+        - '%wf_place_draft%'
+        - '%wf_place_partially_delivered%'
+      supports:
+        - App\Entity\Selling\Order\Item
+      transitions:
+        '%wf_tr_deliver%':
+          from: [ '%wf_place_agreed%', '%wf_place_partially_delivered%' ]
+          to: '%wf_place_delivered%'
+        '%wf_tr_partially_deliver%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_partially_delivered%'
+        '%wf_tr_validate%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_agreed%'
+      type: state_machine
+    supplier:
+      audit_trail: '%wf_audit_trail%'
+      initial_marking: '%wf_place_draft%'
+      marking_store: '%wf_marking_store%'
+      places:
+        - '%wf_place_agreed%'
+        - '%wf_place_draft%'
+        - '%wf_place_to_validate%'
+        - '%wf_place_warning%'
+      supports:
+        - App\Entity\Purchase\Supplier\Supplier
+      transitions:
+        '%wf_tr_submit_validation%':
+          from: '%wf_place_draft%'
+          to: '%wf_place_to_validate%'
+        '%wf_tr_supervise%':
+          from: [ '%wf_place_agreed%', '%wf_place_to_validate%' ]
+          to: '%wf_place_warning%'
+        '%wf_tr_validate%':
+          from: '%wf_place_warning%'
           to: '%wf_place_agreed%'
       type: state_machine
