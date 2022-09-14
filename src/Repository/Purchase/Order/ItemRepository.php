@@ -26,8 +26,22 @@ class ItemRepository extends ServiceEntityRepository {
 
     public function createReceiptQueryBuilder(int $id): QueryBuilder {
         return $this->createQueryBuilder('i')
+            ->addSelect('c')
+            ->addSelect('company')
+            ->addSelect('company_references')
             ->addSelect('o')
-            ->innerJoin('i.order', 'o')
+            ->addSelect('r')
+            ->addSelect('ref')
+            ->addSelect('s')
+            ->addSelect('s_references')
+            ->leftJoin('i.order', 'o')
+            ->leftJoin('o.company', 'company')
+            ->leftJoin('company.references', 'company_references')
+            ->leftJoin('o.supplier', 's')
+            ->leftJoin('s.references', 's_references')
+            ->leftJoin('i.receipts', 'r')
+            ->leftJoin('r.checks', 'c')
+            ->leftJoin('c.reference', 'ref')
             ->where('i.id = :id')
             ->setParameter('id', $id);
     }
