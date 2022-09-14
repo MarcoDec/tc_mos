@@ -290,6 +290,7 @@ SQL);
         $this->upSkills();
         // rank 6
         $this->upEngineEvents();
+        $this->upExpeditions();
         // clean
         $this->addQuery('DROP TABLE `country`');
         $this->addQuery('DROP TABLE `customcode`');
@@ -303,6 +304,7 @@ SQL);
         $this->addQuery('ALTER TABLE `employee` DROP `old_id`, DROP `matricule`, DROP `id_society`');
         $this->addQuery('ALTER TABLE `engine` DROP `old_id`');
         $this->addQuery('ALTER TABLE `engine_group` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `expedition` DROP `old_id`');
         $this->addQuery('ALTER TABLE `invoice_time_due` DROP `id_old_invoicetimedue`, DROP `id_old_invoicetimeduesupplier`');
         $this->addQuery('ALTER TABLE `manufacturing_order` DROP `old_id`');
         $this->addQuery('ALTER TABLE `planning` DROP `old_id`');
@@ -2257,6 +2259,77 @@ SQL);
         $this->addQuery('ALTER TABLE `employee_eventlist` CHANGE `motif` `name` VARCHAR(30) NOT NULL');
         $this->addQuery('UPDATE `employee_eventlist` SET `name` = UCFIRST(`name`)');
         $this->addQuery('RENAME TABLE `employee_eventlist` TO `event_type`');
+    }
+
+    private function upExpeditions(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `expedition` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_ordercustomer_product` INT UNSIGNED DEFAULT NULL,
+    `id_stock` INT UNSIGNED DEFAULT NULL,
+    `batchnumber` VARCHAR(255) DEFAULT NULL,
+    `location` VARCHAR(255) DEFAULT NULL,
+    `quantity` INT UNSIGNED DEFAULT NULL,
+    `date_livraison` DATE DEFAULT NULL,
+    `id_deliveryform` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('expedition', [
+            'id',
+            'statut',
+            'id_ordercustomer_product',
+            'id_stock',
+            'batchnumber',
+            'location',
+            'quantity',
+            'date_livraison',
+            'id_deliveryform'
+        ]);
+        $this->addQuery('RENAME TABLE `expedition` TO `old_expedition`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `expedition` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `batch_number` VARCHAR(255) DEFAULT NULL,
+    `date` DATE NOT NULL COMMENT '(DC2Type:date_immutable)',
+    `item_id` INT UNSIGNED DEFAULT NULL,
+    `location` VARCHAR(255) DEFAULT NULL,
+    `note_id` INT UNSIGNED DEFAULT NULL,
+    `stock_id` INT UNSIGNED DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
+    CONSTRAINT `IDX_692907E126F525E` FOREIGN KEY (`item_id`) REFERENCES `selling_order_item` (`id`),
+    CONSTRAINT `IDX_692907E26ED0855` FOREIGN KEY (`note_id`) REFERENCES `delivery_note` (`id`),
+    CONSTRAINT `IDX_692907EDCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `expedition` (
+    `old_id`,
+    `batch_number`,
+    `date`,
+    `item_id`,
+    `location`,
+    `stock_id`,
+    `quantity_code`,
+    `quantity_value`
+) SELECT
+    `old_expedition`.`id`,
+    `old_expedition`.`batchnumber`,
+    `old_expedition`.`date_livraison`,
+    `selling_order_item`.`id`,
+    `old_expedition`.`location`,
+    `stock`.`id`,
+    'U',
+    `old_expedition`.`quantity`
+FROM `old_expedition`
+LEFT JOIN `selling_order_item` ON `old_expedition`.`id_ordercustomer_product` = `selling_order_item`.`old_id`
+LEFT JOIN `stock` ON `old_expedition`.`id_stock` = `stock`.`old_id`
+SQL);
+        $this->addQuery('DROP TABLE `old_expedition`');
     }
 
     private function upIncoterms(): void {
