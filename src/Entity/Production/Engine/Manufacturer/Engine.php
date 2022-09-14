@@ -24,7 +24,17 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ]
         ],
-        shortName: 'ManufacturerEngine'
+        shortName: 'ManufacturerEngine',
+        denormalizationContext: [
+            'groups' => ['write:manufacturer-engine'],
+            'openapi_definition_name' => 'ManufacturerEngine-write'
+        ],
+        normalizationContext: [
+            'enable_max_depth' => true,
+            'groups' => ['read:manufacturer-engine', 'read:id'],
+            'openapi_definition_name' => 'ManufacturerEngine-read',
+            'skip_null_values' => false
+        ]
     ),
     ORM\Entity,
     ORM\Table(name: 'manufacturer_engine')
@@ -33,34 +43,34 @@ class Engine extends Entity {
     #[
         ApiProperty(description: 'Référence'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     private ?string $code = null;
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     private ?DateTimeImmutable $date = null;
 
     #[
         ApiProperty(description: 'Fabricant', readableLink: false, example: '/api/manufacturers/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:engine', 'write:engine'])
+        Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     private ?Manufacturer $manufacturer = null;
 
     #[
         ApiProperty(description: 'Numéro de série', example: '54544244474432'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     private ?string $serialNumber = null;
 
     public function __construct(
         #[ORM\OneToOne(inversedBy: 'manufacturerEngine'),
-        Serializer\Groups(['read:engine'])]
+        Serializer\Groups(['read:manufacturer-engine'])]
         private ?Equipment $engine = null
     ) {
     }

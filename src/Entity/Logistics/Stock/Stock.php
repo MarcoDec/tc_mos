@@ -6,7 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Doctrine\DBAL\Types\Logistics\StockType;
+use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
- * @template T of MeasuredInterface
+ * @template T of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
@@ -95,7 +95,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'skip_null_values' => false
         ]
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'stock_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity(repositoryClass: StockRepository::class),
     ORM\InheritanceType('SINGLE_TABLE')
@@ -103,9 +103,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
-    public const TYPES = [
-        StockType::TYPE_COMPONENT => ComponentStock::class,
-        StockType::TYPE_PRODUCT => ProductStock::class
+    final public const TYPES = [
+        ItemType::TYPE_COMPONENT => ComponentStock::class,
+        ItemType::TYPE_PRODUCT => ProductStock::class
     ];
 
     #[

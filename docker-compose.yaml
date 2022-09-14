@@ -63,3 +63,4 @@ services:
     restart: always
     volumes:
       - /sessions
+version: '3.3'
