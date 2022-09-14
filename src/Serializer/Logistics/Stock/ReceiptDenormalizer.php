@@ -5,6 +5,8 @@ namespace App\Serializer\Logistics\Stock;
 use ApiPlatform\Core\Api\IriConverterInterface;
 use App\Entity\Embeddable\Purchase\Order\Item\State;
 use App\Entity\Logistics\Stock\ComponentStock;
+use App\Entity\Logistics\Stock\ProductStock;
+use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Order\Item;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
@@ -22,7 +24,7 @@ final class ReceiptDenormalizer implements DenormalizerAwareInterface, Denormali
      * @param array{location: string, orderItem: string, quantity: array{code: string, value: float}, warehouse: string} $data
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []) {
-        /** @var ComponentStock $stock */
+        /** @var ComponentStock|ProductStock $stock */
         $stock = $this->denormalizer->denormalize(
             data: [
                 'location' => $data['location'],
@@ -33,7 +35,7 @@ final class ReceiptDenormalizer implements DenormalizerAwareInterface, Denormali
             format: $format,
             context: $context
         );
-        /** @var Item<Component> $item */
+        /** @var Item<Component>|Item<Product> $item */
         $item = $this->iriConverter->getItemFromIri($data['orderItem'], $context);
         $stock->setOrderItem($item);
         $workflow = $this->registry->get($item, 'purchase_order_item');
@@ -46,6 +48,6 @@ final class ReceiptDenormalizer implements DenormalizerAwareInterface, Denormali
     }
 
     public function supportsDenormalization(mixed $data, string $type, ?string $format = null): bool {
-        return is_array($data) && isset($data['orderItem']) && $type === ComponentStock::class;
+        return is_array($data) && isset($data['orderItem']) && in_array($type, [ComponentStock::class, ProductStock::class]);
     }
 }
