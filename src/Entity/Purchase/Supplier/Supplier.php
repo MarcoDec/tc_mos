@@ -46,7 +46,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les fournisseurs'
                 ]
             ],
-            'get-receipts' => [
+            'receipts' => [
                 'controller' => PlaceholderAction::class,
                 'filters' => [],
                 'method' => 'GET',
@@ -61,7 +61,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'order' => ['name' => 'asc'],
                 'pagination_enabled' => false,
-                'path' => '/suppliers/get-receipts'
+                'path' => '/suppliers/receipts'
             ],
             'post' => [
                 'denormalization_context' => [
