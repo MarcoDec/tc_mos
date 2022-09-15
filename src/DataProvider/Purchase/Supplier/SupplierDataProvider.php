@@ -22,6 +22,6 @@ final class SupplierDataProvider implements CollectionDataProviderInterface, Res
      * @param mixed[] $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Supplier::class && $operationName === 'get-receipts';
+        return $resourceClass === Supplier::class && $operationName === 'receipts';
     }
 }

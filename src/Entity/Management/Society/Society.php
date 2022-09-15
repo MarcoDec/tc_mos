@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'openapi_definition_name' => 'Society-collection'
                 ]
             ],
-            'get-options' => [
+            'options' => [
                 'controller' => PlaceholderAction::class,
                 'filters' => [],
                 'method' => 'GET',
