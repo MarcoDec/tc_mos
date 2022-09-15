@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\EntityId;
 use App\Entity\Hr\Employee\Employee;
 use App\Entity\Production\Company\Zone;
@@ -100,6 +101,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class Operation extends EntityId {
     #[
+        ApiProperty(description: 'Quantité actuelle', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+    ]
+    private Measure $actualQuantity;
+
+    #[
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-operation'])
     ]
@@ -148,6 +156,13 @@ class Operation extends EntityId {
     private ?Employee $pic = null;
 
     #[
+        ApiProperty(description: 'Quantité produite', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        ORM\Embedded,
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+    ]
+    private Measure $quantityProduced;
+
+    #[
         ApiProperty(description: 'Date de départ', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
@@ -169,9 +184,11 @@ class Operation extends EntityId {
     private ?Zone $zone = null;
 
     public function __construct() {
+        $this->actualQuantity = new Measure();
         $this->embBlocker = new Closer();
         $this->embState = new ComponentManufacturingOperationState();
         $this->operators = new ArrayCollection();
+        $this->quantityProduced = new Measure();
     }
 
     final public function addOperator(Employee $operator): self {
@@ -179,6 +196,10 @@ class Operation extends EntityId {
             $this->operators->add($operator);
         }
         return $this;
+    }
+
+    final public function getActualQuantity(): Measure {
+        return $this->actualQuantity;
     }
 
     final public function getBlocker(): string {
@@ -216,6 +237,14 @@ class Operation extends EntityId {
         return $this->pic;
     }
 
+    final public function getQuantityProduced(): Measure {
+        return $this->quantityProduced;
+    }
+
+    final public function getRef(): ?string {
+        return $this->order?->getRef();
+    }
+
     final public function getStartedDate(): ?DateTimeImmutable {
         return $this->startedDate;
     }
@@ -236,6 +265,11 @@ class Operation extends EntityId {
         if ($this->operators->contains($operator)) {
             $this->operators->removeElement($operator);
         }
+        return $this;
+    }
+
+    final public function setActualQuantity(Measure $actualQuantity): self {
+        $this->actualQuantity = $actualQuantity;
         return $this;
     }
 
@@ -271,6 +305,11 @@ class Operation extends EntityId {
 
     final public function setPic(?Employee $pic): self {
         $this->pic = $pic;
+        return $this;
+    }
+
+    final public function setQuantityProduced(Measure $quantityProduced): self {
+        $this->quantityProduced = $quantityProduced;
         return $this;
     }
 

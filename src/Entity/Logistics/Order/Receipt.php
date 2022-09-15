@@ -115,7 +115,7 @@ class Receipt extends EntityId implements MeasuredInterface {
     private Measure $quantity;
 
     /** @var Collection<int, Stock<I>> */
-    #[ORM\ManyToMany(targetEntity: Stock::class, inversedBy: 'receipts')]
+    #[ORM\ManyToMany(targetEntity: Stock::class, mappedBy: 'receipts')]
     private Collection $stocks;
 
     public function __construct() {

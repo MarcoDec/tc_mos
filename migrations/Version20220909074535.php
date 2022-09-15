@@ -2820,12 +2820,18 @@ SQL);
 CREATE TABLE `manufacturing_operation` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `actual_quantity_code` VARCHAR(6) DEFAULT NULL,
+    `actual_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `actual_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
     `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_manufacturing_operation_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `operation_id` INT UNSIGNED DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
     `pic_id` INT UNSIGNED DEFAULT NULL,
+    `quantity_produced_code` VARCHAR(6) DEFAULT NULL,
+    `quantity_produced_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_produced_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `started_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `workstation_id` INT UNSIGNED DEFAULT NULL,
     `zone_id` INT UNSIGNED DEFAULT NULL,
@@ -2838,14 +2844,20 @@ CREATE TABLE `manufacturing_operation` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `manufacturing_operation` (
+    `actual_quantity_code`,
+    `actual_quantity_value`,
     `emb_blocker_state`,
     `emb_state_state`,
     `notes`,
     `order_id`,
     `pic_id`,
+    `quantity_produced_code`,
+    `quantity_produced_value`,
     `started_date`,
     `workstation_id`
 ) SELECT
+    `unit`.`code`,
+    `production_operation`.`quantity`,
     CASE
         WHEN `production_operation`.`statut_production` = 3 THEN 'blocked'
         WHEN `production_operation`.`statut_production` = 4 THEN 'closed'
@@ -2859,10 +2871,14 @@ INSERT INTO `manufacturing_operation` (
     `production_operation`.`commentaire`,
     `manufacturing_order`.`id`,
     (SELECT MIN(`employee`.`id`) FROM `employee` WHERE `employee`.`matricule` = `production_operation`.`matricule_responsable`),
+    `unit`.`code`,
+    `production_operation`.`quantity`,
     `production_operation`.`date_debut`,
     `engine`.`id`
 FROM `production_operation`
 INNER JOIN `manufacturing_order` ON `production_operation`.`ofnumber` = `manufacturing_order`.`old_id`
+INNER JOIN `product` ON `manufacturing_order`.`product_id` = `product`.`id`
+LEFT JOIN `unit` ON `product`.`unit_id` = `unit`.`id`
 LEFT JOIN `engine` ON `production_operation`.`id_poste` = `engine`.`old_id`
 SQL);
         $this->addQuery('DROP TABLE `production_operation`');
@@ -2873,6 +2889,15 @@ CREATE TABLE `operation_employee` (
     CONSTRAINT `IDX_B8E90A2C44AC3583` FOREIGN KEY (`operation_id`) REFERENCES `manufacturing_operation` (`id`) ON DELETE CASCADE,
     CONSTRAINT `IDX_B8E90A2C8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`) ON DELETE CASCADE,
      PRIMARY KEY(`operation_id`, `employee_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `stock_operation` (
+    `stock_id` INT UNSIGNED NOT NULL,
+    `operation_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_811C4085DCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_811C408544AC3583` FOREIGN KEY (`operation_id`) REFERENCES `manufacturing_operation` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`stock_id`, `operation_id`)
 )
 SQL);
     }
@@ -2921,9 +2946,6 @@ CREATE TABLE `manufacturing_order` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `actual_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `actual_quantity_denominator` VARCHAR(6) DEFAULT NULL,
-    `actual_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
     `delivery_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
@@ -2935,9 +2957,6 @@ CREATE TABLE `manufacturing_order` (
     `order_id` INT UNSIGNED DEFAULT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
-    `quantity_produced_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_produced_denominator` VARCHAR(6) DEFAULT NULL,
-    `quantity_produced_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `quantity_requested_code` VARCHAR(6) DEFAULT NULL,
     `quantity_requested_denominator` VARCHAR(6) DEFAULT NULL,
     `quantity_requested_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
@@ -2950,8 +2969,6 @@ SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `manufacturing_order` (
     `old_id`,
-    `actual_quantity_code`,
-    `actual_quantity_value`,
     `company_id`,
     `delivery_date`,
     `emb_blocker_state`,
@@ -2963,14 +2980,10 @@ INSERT INTO `manufacturing_order` (
     `order_id`,
     `product_id`,
     `ref`,
-    `quantity_produced_code`,
-    `quantity_produced_value`,
     `quantity_requested_code`,
     `quantity_requested_value`
 ) SELECT
     `orderfabrication`.`id`,
-    `unit`.`code`,
-    `orderfabrication`.`quantity_real`,
     `company`.`id`,
     `orderfabrication`.`date_livraison`,
     CASE
@@ -2990,8 +3003,6 @@ INSERT INTO `manufacturing_order` (
     `selling_order`.`id`,
     `product`.`id`,
     `orderfabrication`.`ofnumber`,
-    `unit`.`code`,
-    `orderfabrication`.`quantity_done`,
     `unit`.`code`,
     `orderfabrication`.`quantity`
 FROM `orderfabrication`
@@ -3818,12 +3829,12 @@ AND `purchase_order_item`.`receipt_quantity` > 0
 SQL);
         $this->addQuery('ALTER TABLE `purchase_order_item` DROP `receipt_date`, DROP `receipt_quantity`');
         $this->addQuery(<<<'SQL'
-CREATE TABLE `receipt_stock` (
+CREATE TABLE `stock_receipt` (
     `receipt_id` INT UNSIGNED NOT NULL,
     `stock_id` INT UNSIGNED NOT NULL,
-    CONSTRAINT `IDX_AFAEE2502B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `IDX_AFAEE250DCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`) ON DELETE CASCADE,
-    PRIMARY KEY(`receipt_id`, `stock_id`)
+    CONSTRAINT `IDX_4A3FA6E62B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_4A3FA6E6DCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`stock_id`, `receipt_id`)
 )
 SQL);
     }

@@ -119,6 +119,17 @@ services:
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
 
+  App\Filter\RelationFilter:
+    arguments:
+      $identifiersExtractor: '@api_platform.identifiers_extractor.cached'
+      $iriConverter: '@api_platform.iri_converter'
+      $logger: '@logger'
+      $managerRegistry: '@doctrine'
+      $nameConverter: '@api_platform.name_converter'
+      $propertyAccessor: '@api_platform.property_accessor'
+      $requestStack: null
+    tags: [ api_platform.filter ]
+
   App\Migrations\Factory:
     autoconfigure: false
     arguments:
@@ -138,3 +149,18 @@ services:
   App\Serializer\ContextBuilderInterface:
     autoconfigure: false
     decorates: api_platform.serializer.context_builder
+
+  stock.export_filter:
+    arguments: [ { location: partial } ]
+    autoconfigure: false
+    autowire: false
+    parent: api_platform.doctrine.orm.search_filter
+    tags: [ api_platform.filter ]
+
+  stock.filter:
+    arguments:
+      $properties: { warehouse: ~ }
+    autoconfigure: false
+    autowire: false
+    parent: App\Filter\RelationFilter
+    tags: [ api_platform.filter ]

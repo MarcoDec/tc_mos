@@ -3,7 +3,6 @@
 namespace App\Entity\Logistics\Stock;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
-use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Embeddable\Logistics\Order\ReceiptStateType;
@@ -16,9 +15,9 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Order\Receipt;
 use App\Entity\Logistics\Warehouse;
 use App\Entity\Management\Unit;
+use App\Entity\Production\Manufacturing\Operation;
 use App\Entity\Purchase\Order\Item;
 use App\Entity\Traits\BarCodeTrait;
-use App\Filter\RelationFilter;
 use App\Repository\Logistics\Stock\StockRepository;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,18 +29,36 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template T of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
     ApiResource(
         description: 'Stock',
         collectionOperations: [
             'get' => [
+                'filters' => ['stock.filter'],
                 'openapi_context' => [
                     'description' => 'Récupère les stocks',
                     'summary' => 'Récupère les stocks'
                 ]
             ],
+            'export' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => ['stock.export_filter', 'stock.filter'],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:measure', 'read:stock:export'],
+                    'openapi_definition_name' => 'Stock-grouped',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les stocks groupés par référence et lot',
+                    'summary' => 'Récupère les stocks groupés par référence et lot'
+                ],
+                'pagination_client_enabled' => false,
+                'pagination_enabled' => false,
+                'path' => '/stocks/export'
+            ],
             'grouped' => [
                 'controller' => PlaceholderAction::class,
+                'filters' => ['stock.filter'],
                 'method' => 'GET',
                 'normalization_context' => [
                     'groups' => ['read:id', 'read:measure', 'read:stock:grouped'],
@@ -52,6 +69,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les stocks groupés par référence et lot',
                     'summary' => 'Récupère les stocks groupés par référence et lot'
                 ],
+                'pagination_client_enabled' => false,
                 'pagination_enabled' => false,
                 'path' => '/stocks/grouped'
             ]
@@ -166,12 +184,12 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure,
         ORM\Embedded,
-        Serializer\Groups(['read:stock', 'read:stock:grouped', 'receipt:stock', 'transfer:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'read:stock:export', 'read:stock:grouped', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected Measure $quantity;
 
     /** @var Collection<int, Receipt<T>> */
-    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Receipt::class, inversedBy: 'stocks', cascade: ['persist'])]
     protected Collection $receipts;
 
     #[
@@ -188,7 +206,12 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     ]
     private array $locations = [];
 
+    /** @var Collection<int, Operation> */
+    #[ORM\ManyToMany(targetEntity: Operation::class)]
+    private Collection $operations;
+
     public function __construct() {
+        $this->operations = new ArrayCollection();
         $this->quantity = new Measure();
         $this->receipts = new ArrayCollection();
     }
@@ -198,6 +221,16 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     }
 
     abstract protected function getType(): string;
+
+    /**
+     * @return $this
+     */
+    final public function addOperation(Operation $operation): self {
+        if (!$this->operations->contains($operation)) {
+            $this->operations->add($operation);
+        }
+        return $this;
+    }
 
     /**
      * @param Receipt<T> $receipt
@@ -259,6 +292,27 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return [$this->quantity];
     }
 
+    /**
+     * @return Collection<int, Operation>
+     */
+    final public function getOperations(): Collection {
+        return $this->operations;
+    }
+
+    /**
+     * @return string[]
+     */
+    #[Serializer\Groups(['read:stock:export'])]
+    final public function getOrdersRef(): array {
+        $refs = [];
+        foreach ($this->operations as $operation) {
+            if (!empty($ref = $operation->getRef())) {
+                $refs[] = $ref;
+            }
+        }
+        return $refs;
+    }
+
     final public function getQuantity(): Measure {
         return $this->quantity;
     }
@@ -293,6 +347,16 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     final public function isJail(): bool {
         return $this->jail;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function removeOperation(Operation $operation): self {
+        if ($this->operations->contains($operation)) {
+            $this->operations->removeElement($operation);
+        }
+        return $this;
     }
 
     /**
