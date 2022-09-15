@@ -39,7 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les compagnies',
                 ]
             ],
-            'get-options' => [
+            'options' => [
                 'controller' => PlaceholderAction::class,
                 'filters' => [],
                 'method' => 'GET',

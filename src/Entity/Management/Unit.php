@@ -28,10 +28,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère les unités',
-                    'summary' => 'Récupère les unités',
+                    'summary' => 'Récupère les unités'
                 ]
             ],
-            'get-options' => [
+            'options' => [
                 'controller' => PlaceholderAction::class,
                 'filters' => [],
                 'method' => 'GET',
@@ -52,7 +52,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer une unité',
-                    'summary' => 'Créer une unité',
+                    'summary' => 'Créer une unité'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
@@ -61,7 +61,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'delete' => [
                 'openapi_context' => [
                     'description' => 'Supprime une unité',
-                    'summary' => 'Supprime une unité',
+                    'summary' => 'Supprime une unité'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ],
@@ -69,7 +69,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une unité',
-                    'summary' => 'Modifie une unité',
+                    'summary' => 'Modifie une unité'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
             ]
