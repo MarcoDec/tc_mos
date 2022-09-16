@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Unit;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
@@ -78,6 +79,10 @@ abstract class Item extends Entity implements MeasuredInterface {
         $this->confirmedQuantity = new Measure();
         $this->price = new Measure();
         $this->requestedQuantity = new Measure();
+    }
+
+    final public function getCompany(): ?Company {
+        return $this->order?->getCompany();
     }
 
     final public function getConfirmedDate(): ?DateTimeImmutable {

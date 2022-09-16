@@ -2,6 +2,7 @@
 
 namespace App\Entity\Logistics\Stock;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -26,6 +27,21 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Récupère les stocks de produits',
                     'tags' => ['Stock']
                 ]
+            ],
+            'receipt' => [
+                'controller' => PlaceholderAction::class,
+                'denormalization_context' => [
+                    'groups' => ['receipt:stock', 'write:measure'],
+                    'openapi_definition_name' => 'ProductStock-receipt'
+                ],
+                'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Réceptionne une commande',
+                    'summary' => 'Réceptionne une commande',
+                    'tags' => ['Stock']
+                ],
+                'path' => '/product-stocks/receipt',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ],
             'post' => [
                 'openapi_context' => [

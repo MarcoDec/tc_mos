@@ -297,6 +297,7 @@ SQL);
         $this->upPurchaseOrderItems();
         // rank 7
         $this->upBillItems();
+        $this->upChecks();
         $this->upOperationComponentTools();
         // clean
         $this->addQuery('DROP TABLE `country`');
@@ -319,6 +320,9 @@ SQL);
         $this->addQuery('ALTER TABLE `product_customer` DROP `old_id`');
         $this->addQuery('ALTER TABLE `product_family` DROP `old_subfamily_id`');
         $this->addQuery('ALTER TABLE `purchase_order` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `purchase_order_item` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `receipt` DROP `old_id`');
+        $this->addQuery('ALTER TABLE `reference` DROP `old_id`');
         $this->addQuery('ALTER TABLE `selling_order` DROP `old_id`');
         $this->addQuery('ALTER TABLE `selling_order_item` DROP `old_id`');
         $this->addQuery('ALTER TABLE `skill_type` DROP `old_id`');
@@ -667,6 +671,172 @@ CREATE TABLE `carrier` (
 SQL);
         $this->addQuery('INSERT INTO `carrier` (`name`) SELECT `nom` FROM `old_carrier` WHERE `statut` = 0');
         $this->addQuery('DROP TABLE `old_carrier`');
+    }
+
+    private function upChecks(): void {
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_controle_reception` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_component` INT UNSIGNED DEFAULT NULL,
+    `libelle` TEXT DEFAULT NULL,
+    `id_type_controle` INT UNSIGNED DEFAULT NULL,
+    `nb` INT UNSIGNED DEFAULT NULL,
+    `value` TEXT DEFAULT NULL,
+    `value_2` DOUBLE PRECISION DEFAULT 0 DEFAULT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL
+)
+SQL);
+        $this->insert('component_controle_reception', [
+            'id',
+            'id_component',
+            'libelle',
+            'id_type_controle',
+            'nb',
+            'value',
+            'value_2',
+            'statut'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `reference` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(100) NOT NULL,
+    `kind` ENUM('Dimensionnel', 'Documentaire', 'GO/NOGO', 'Quantitatif', 'Visuel') DEFAULT 'Quantitatif' NOT NULL COMMENT '(DC2Type:check_kind)',
+    `type` ENUM('component', 'component_family', 'product', 'product_family', 'supplier') NOT NULL COMMENT '(DC2Type:check)'
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `reference` (`old_id`, `name`, `kind`, `type`)
+SELECT
+    `component_controle_reception`.`id`,
+    `component_controle_reception`.`libelle`,
+    CASE
+        WHEN `component_controle_reception`.`id_type_controle` = 1 THEN 'Documentaire'
+        WHEN `component_controle_reception`.`id_type_controle` = 2 THEN 'Dimensionnel'
+        WHEN `component_controle_reception`.`id_type_controle` = 3 THEN 'GO/NOGO'
+        WHEN `component_controle_reception`.`id_type_controle` = 4 THEN 'Visuel'
+        ELSE 'Quantitatif'
+    END,
+    'component'
+FROM `component_controle_reception`
+INNER JOIN `component` ON `component_controle_reception`.`id_component` = `component`.`old_id`
+WHERE `component_controle_reception`.`statut` = 0
+AND `component_controle_reception`.`libelle` IS NOT NULL
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_reference_component` (
+    `component_reference_id` INT UNSIGNED NOT NULL,
+    `component_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_E833EC8462AE155E` FOREIGN KEY (`component_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_E833EC84E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`component_reference_id`, `component_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `component_reference_component` (`component_reference_id`, `component_id`)
+SELECT `reference`.`id`, `component`.`id`
+FROM `component_controle_reception`
+INNER JOIN `reference` ON `component_controle_reception`.`id` = `reference`.`old_id`
+INNER JOIN `component` ON `component_controle_reception`.`id_component` = `component`.`old_id`
+SQL);
+        $this->addQuery('DROP TABLE `component_controle_reception`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `company_reference_company` (
+    `company_reference_id` INT UNSIGNED NOT NULL,
+    `company_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_14523D1FE8881467` FOREIGN KEY (`company_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_14523D1F979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`company_reference_id`, `company_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_family_reference_component_family` (
+    `family_reference_id` INT UNSIGNED NOT NULL,
+    `family_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_99AA6A66A1380B34` FOREIGN KEY (`family_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_99AA6A66C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`family_reference_id`, `family_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_family_reference_product_family` (
+    `family_reference_id` INT UNSIGNED NOT NULL,
+    `family_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_16B96279A1380B34` FOREIGN KEY (`family_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_16B96279C35E566A` FOREIGN KEY (`family_id`) REFERENCES `product_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`family_reference_id`, `family_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `supplier_reference_supplier` (
+    `supplier_reference_id` INT UNSIGNED NOT NULL,
+    `supplier_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_8E963417C2C49F0` FOREIGN KEY (`supplier_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_8E963412ADD6D8C` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`supplier_reference_id`, `supplier_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `product_reference_product` (
+    `product_reference_id` INT UNSIGNED NOT NULL,
+    `product_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_60BF93569BE1FCC2` FOREIGN KEY (`product_reference_id`) REFERENCES `reference` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_60BF93564584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`product_reference_id`, `product_id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_controle_reception_ordersupplier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_ordersupplier_component` INT UNSIGNED DEFAULT NULL,
+    `valide` ENUM('À CONTRÔLER','OK','NOK') NOT NULL DEFAULT 'À CONTRÔLER',
+    `comment` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('component_controle_reception_ordersupplier', [
+            'id',
+            'statut',
+            'id_ordersupplier_component',
+            'valide',
+            'comment'
+        ]);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `check` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `emb_state_state` ENUM('asked', 'blocked', 'closed') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:check_state)',
+    `receipt_id` INT UNSIGNED DEFAULT NULL,
+    `reference_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_3C8EAC132B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`),
+    CONSTRAINT `IDX_3C8EAC131645DEA9` FOREIGN KEY (`reference_id`) REFERENCES `reference` (`id`)
+)
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `check` (`emb_state_state`, `receipt_id`)
+SELECT 'closed', `receipt`.`id`
+FROM `component_controle_reception_ordersupplier`
+INNER JOIN `receipt` ON `component_controle_reception_ordersupplier`.`id_ordersupplier_component` = `receipt`.`old_id`
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `component_controle_reception_ordersupplier_controle` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `id_controle_reception` INT UNSIGNED DEFAULT NULL,
+    `id_component_controle_reception_ordersupplier` INT UNSIGNED DEFAULT NULL,
+    `value` TEXT DEFAULT NULL,
+    `description` TEXT DEFAULT NULL
+)
+SQL);
+        $this->insert('component_controle_reception_ordersupplier_controle', [
+            'id',
+            'id_controle_reception',
+            'id_component_controle_reception_ordersupplier',
+            'value',
+            'description'
+        ]);
+        $this->addQuery('DROP TABLE `component_controle_reception_ordersupplier`');
+        $this->addQuery('DROP TABLE `component_controle_reception_ordersupplier_controle`');
     }
 
     private function upColors(): void {
@@ -3043,6 +3213,7 @@ SQL);
 CREATE TABLE `printer` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `color` ENUM('green', 'yellow') DEFAULT 'green' NOT NULL COMMENT '(DC2Type:printer_color)',
     `company_id` INT UNSIGNED DEFAULT NULL,
     `ip` VARCHAR(255) DEFAULT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
@@ -3513,6 +3684,7 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `purchase_order_item` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `component_id` INT UNSIGNED DEFAULT NULL,
     `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
@@ -3547,6 +3719,7 @@ CREATE TABLE `purchase_order_item` (
 SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `purchase_order_item` (
+    `old_id`,
     `component_id`,
     `confirmed_date`,
     `confirmed_quantity_code`,
@@ -3568,6 +3741,7 @@ INSERT INTO `purchase_order_item` (
     `receipt_date`,
     `receipt_quantity`
 ) SELECT
+    `ordersupplier_component`.`id`,
     `component`.`id`,
     `ordersupplier_component`.`date_livraison`,
     `unit`.`code`,
@@ -3618,8 +3792,10 @@ SQL);
         $this->addQuery(<<<'SQL'
 CREATE TABLE `receipt` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `date` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `emb_state_state` ENUM('asked', 'blocked', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
     `item_id` INT UNSIGNED DEFAULT NULL,
     `quantity_code` VARCHAR(6) DEFAULT NULL,
     `quantity_denominator` VARCHAR(6) DEFAULT NULL,
@@ -3628,9 +3804,11 @@ CREATE TABLE `receipt` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `receipt` (`date`, `item_id`, `quantity_code`, `quantity_value`)
+INSERT INTO `receipt` (`old_id`, `date`, `emb_state_state`, `item_id`, `quantity_code`, `quantity_value`)
 SELECT
+    `purchase_order_item`.`old_id`,
     `purchase_order_item`.`receipt_date`,
+    'closed',
     `purchase_order_item`.`id`,
     `purchase_order_item`.`confirmed_quantity_code`,
     `purchase_order_item`.`confirmed_quantity_value`
@@ -3639,6 +3817,15 @@ WHERE `purchase_order_item`.`receipt_date` IS NOT NULL
 AND `purchase_order_item`.`receipt_quantity` > 0
 SQL);
         $this->addQuery('ALTER TABLE `purchase_order_item` DROP `receipt_date`, DROP `receipt_quantity`');
+        $this->addQuery(<<<'SQL'
+CREATE TABLE `receipt_stock` (
+    `receipt_id` INT UNSIGNED NOT NULL,
+    `stock_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_AFAEE2502B5CA896` FOREIGN KEY (`receipt_id`) REFERENCES `receipt` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_AFAEE250DCD6110` FOREIGN KEY (`stock_id`) REFERENCES `stock` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`receipt_id`, `stock_id`)
+)
+SQL);
     }
 
     private function upPurchaseOrders(): void {

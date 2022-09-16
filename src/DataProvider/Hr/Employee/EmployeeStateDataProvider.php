@@ -9,7 +9,7 @@ use App\Doctrine\DBAL\Types\Embeddable\EmployeeEngineStateType;
 use Illuminate\Support\Collection;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class EmployeeStatePlaceProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface {
+final class EmployeeStateDataProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface {
     public function __construct(private readonly TranslatorInterface $translator) {
     }
 

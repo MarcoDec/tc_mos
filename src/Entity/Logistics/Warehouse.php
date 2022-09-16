@@ -10,8 +10,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Logistics\FamilyType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Interfaces\CompanyInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,19 +22,20 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['families']),
     ApiResource(
         description: 'Entrepôt',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère les entrepôts',
-                    'summary' => 'Récupère les entrepôts',
+                    'summary' => 'Récupère les entrepôts'
                 ]
             ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer un entrepôt',
-                    'summary' => 'Créer un entrepôt',
+                    'summary' => 'Créer un entrepôt'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
@@ -41,7 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'delete' => [
                 'openapi_context' => [
                     'description' => 'Supprime un entrepôt',
-                    'summary' => 'Supprime un entrepôt',
+                    'summary' => 'Supprime un entrepôt'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
@@ -54,7 +57,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un entrepôt',
-                    'summary' => 'Modifie un entrepôt',
+                    'summary' => 'Modifie un entrepôt'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
@@ -68,12 +71,14 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:warehouse'],
-            'openapi_definition_name' => 'Warehouse-read'
+            'openapi_definition_name' => 'Warehouse-read',
+            'skip_null_values' => false
         ],
+        paginationClientEnabled: true
     ),
     ORM\Entity
 ]
-class Warehouse extends Entity {
+class Warehouse extends Entity implements CompanyInterface {
     #[
         ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
         ORM\ManyToOne,

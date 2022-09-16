@@ -6,18 +6,23 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\Embeddable\Logistics\Order\ReceiptStateType;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Logistics\Order\Receipt;
 use App\Entity\Logistics\Warehouse;
 use App\Entity\Management\Unit;
+use App\Entity\Purchase\Order\Item;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Logistics\Stock\StockRepository;
 use App\Validator as AppAssert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -32,7 +37,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère les stocks',
-                    'summary' => 'Récupère les stocks',
+                    'summary' => 'Récupère les stocks'
                 ]
             ]
         ],
@@ -40,7 +45,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'delete' => [
                 'openapi_context' => [
                     'description' => 'Supprime un stock',
-                    'summary' => 'Supprime un stock',
+                    'summary' => 'Supprime un stock'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
@@ -48,7 +53,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un stock',
-                    'summary' => 'Modifie un stock',
+                    'summary' => 'Modifie un stock'
                 ]
             ],
             'out' => [
@@ -64,7 +69,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             ]
                         ]
                     ],
-                    'summary' => 'Sortie d\'un stock',
+                    'summary' => 'Sortie d\'un stock'
                 ],
                 'path' => '/stocks/{id}/out'
             ],
@@ -77,7 +82,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'method' => 'POST',
                 'openapi_context' => [
                     'description' => 'Transfert un stock',
-                    'summary' => 'Transfert un stock',
+                    'summary' => 'Transfert un stock'
                 ],
                 'path' => '/transfer/{id}/out'
             ]
@@ -115,9 +120,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     ]
     protected ?string $batchNumber = null;
 
-    /**
-     * @var null|T
-     */
+    /** @var null|T */
     #[
         ApiProperty(description: 'Élément', readableLink: false, example: '/api/components/1'),
         Serializer\Groups(['read:stock'])
@@ -134,7 +137,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     #[
         ApiProperty(description: 'Localisation', example: 'Rayon B'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'receipt:stock', 'write:stock'])
     ]
     protected ?string $location = null;
 
@@ -142,23 +145,41 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure,
         ORM\Embedded,
-        Serializer\Groups(['read:stock', 'transfer:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected Measure $quantity;
+
+    /** @var Collection<int, Receipt<T>> */
+    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'])]
+    protected Collection $receipts;
 
     #[
         ApiProperty(description: 'Entrepôt', readableLink: false, example: '/api/warehouses/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:stock', 'transfer:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected ?Warehouse $warehouse = null;
 
     public function __construct() {
         $this->quantity = new Measure();
+        $this->receipts = new ArrayCollection();
     }
 
     public static function getBarCodeTableNumber(): string {
         return self::STOCK_BAR_CODE_PREFIX;
+    }
+
+    /**
+     * @param Receipt<T> $receipt
+     *
+     * @return $this
+     */
+    final public function addReceipt(Receipt $receipt): self {
+        if (!$this->receipts->contains($receipt)) {
+            $this->receipts->add($receipt);
+            $receipt->addStock($this);
+        }
+        return $this;
     }
 
     final public function getBatchNumber(): ?string {
@@ -184,6 +205,13 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return $this->quantity;
     }
 
+    /**
+     * @return Collection<int, Receipt<T>>
+     */
+    final public function getReceipts(): Collection {
+        return $this->receipts;
+    }
+
     public function getUnit(): ?Unit {
         return $this->item?->getUnit();
     }
@@ -194,6 +222,19 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     final public function isJail(): bool {
         return $this->jail;
+    }
+
+    /**
+     * @param Receipt<T> $receipt
+     *
+     * @return $this
+     */
+    final public function removeReceipt(Receipt $receipt): self {
+        if ($this->receipts->contains($receipt)) {
+            $this->receipts->removeElement($receipt);
+            $receipt->removeStock($this);
+        }
+        return $this;
     }
 
     /**
@@ -228,6 +269,28 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     final public function setLocation(?string $location): self {
         $this->location = $location;
         return $this;
+    }
+
+    /**
+     * @param Item<T> $item
+     *
+     * @return $this
+     */
+    #[
+        ApiProperty(description: 'Ligne de commande à réceptionner', example: '/api/purchase-order-items/1'),
+        Serializer\Groups(['receipt:stock'])
+    ]
+    final public function setOrderItem(Item $item): self {
+        /** @var Receipt<T> $receipt */
+        $receipt = new Receipt();
+        $receipt
+            ->setQuantity($this->getQuantity())
+            ->setState(ReceiptStateType::TYPE_STATE_CLOSED);
+        $item->addReceipt($receipt);
+        return $this
+            ->addReceipt($receipt)
+            ->setBatchNumber($receipt->getBatchNumber())
+            ->setItem($receipt->getReceiptItem());
     }
 
     /**

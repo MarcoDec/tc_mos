@@ -9,13 +9,18 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Society;
+use App\Entity\Project\Product\Product;
+use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Supplier\Supplier;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Management\CompanyReference;
 use App\Entity\Selling\Customer\Customer;
-use App\Entity\Selling\Customer\Product;
+use App\Entity\Selling\Customer\Product as CustomerProduct;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -34,7 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les compagnies',
                 ]
             ],
-            'get-options' => [
+            'options' => [
                 'controller' => PlaceholderAction::class,
                 'filters' => [],
                 'method' => 'GET',
@@ -190,9 +195,13 @@ class Company extends Entity {
     ]
     private int $numberOfTeamPerDay = 0;
 
-    /** @var Collection<int, Product> */
-    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'administeredBy')]
+    /** @var Collection<int, CustomerProduct> */
+    #[ORM\ManyToMany(targetEntity: CustomerProduct::class, mappedBy: 'administeredBy')]
     private Collection $products;
+
+    /** @var Collection<int, CompanyReference> */
+    #[ORM\ManyToMany(targetEntity: CompanyReference::class, mappedBy: 'items')]
+    private Collection $references;
 
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/2'),
@@ -215,6 +224,7 @@ class Company extends Entity {
     public function __construct() {
         $this->customers = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->references = new ArrayCollection();
         $this->suppliers = new ArrayCollection();
     }
 
@@ -226,10 +236,18 @@ class Company extends Entity {
         return $this;
     }
 
-    final public function addProduct(Product $product): self {
+    final public function addProduct(CustomerProduct $product): self {
         if (!$this->products->contains($product)) {
             $this->products->add($product);
             $product->addAdministeredBy($this);
+        }
+        return $this;
+    }
+
+    final public function addReference(CompanyReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
         }
         return $this;
     }
@@ -240,6 +258,19 @@ class Company extends Entity {
             $supplier->addAdministeredBy($this);
         }
         return $this;
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<Component|Product, self>>
+     */
+    final public function getChecks(): LaravelCollection {
+        return collect($this->references->getValues())
+            ->map(static function (CompanyReference $reference): Check {
+                /** @var Check<Component|Product, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            })
+            ->values();
     }
 
     final public function getCurrency(): ?Currency {
@@ -290,10 +321,17 @@ class Company extends Entity {
     }
 
     /**
-     * @return Collection<int, Product>
+     * @return Collection<int, CustomerProduct>
      */
     final public function getProducts(): Collection {
         return $this->products;
+    }
+
+    /**
+     * @return Collection<int, CompanyReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
     }
 
     final public function getSociety(): ?Society {
@@ -328,10 +366,18 @@ class Company extends Entity {
         return $this;
     }
 
-    final public function removeProduct(Product $product): self {
+    final public function removeProduct(CustomerProduct $product): self {
         if ($this->products->contains($product)) {
             $this->products->removeElement($product);
             $product->removeAdministeredBy($this);
+        }
+        return $this;
+    }
+
+    final public function removeReference(CompanyReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
         }
         return $this;
     }

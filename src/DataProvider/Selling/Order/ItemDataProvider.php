@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataProvider\Purchase\Order;
+namespace App\DataProvider\Selling\Order;
 
 use ApiPlatform\Core\DataProvider\ItemDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
@@ -19,10 +19,8 @@ final class ItemDataProvider implements ItemDataProviderInterface, RestrictedDat
     /**
      * @param int     $id
      * @param mixed[] $context
-     *
-     * @return ComponentItem|null|ProductItem
      */
-    public function getItem(string $resourceClass, $id, ?string $operationName = null, array $context = []): ?Item {
+    public function getItem(string $resourceClass, $id, ?string $operationName = null, array $context = []): ComponentItem|null|ProductItem {
         return $this->repo->findOneByPatch($id);
     }
 

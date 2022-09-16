@@ -4,6 +4,7 @@ namespace App\Entity\Management;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Doctrine\DBAL\Types\Management\PrinterColorType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
@@ -33,6 +34,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class Printer extends Entity {
     #[
+        ApiProperty(description: 'Couleur', openapiContext: ['enum' => PrinterColorType::TYPES]),
+        ORM\Column(type: 'printer_color', options: ['default' => PrinterColorType::TYPE_GREEN]),
+        Serializer\Groups(['read:printer'])
+    ]
+    private ?string $color = PrinterColorType::TYPE_GREEN;
+
+    #[
         ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:printer'])
@@ -53,6 +61,10 @@ class Printer extends Entity {
     ]
     private ?string $name = null;
 
+    final public function getColor(): ?string {
+        return $this->color;
+    }
+
     final public function getCompany(): ?Company {
         return $this->company;
     }
@@ -63,6 +75,11 @@ class Printer extends Entity {
 
     final public function getName(): ?string {
         return $this->name;
+    }
+
+    final public function setColor(?string $color): self {
+        $this->color = $color;
+        return $this;
     }
 
     final public function setCompany(?Company $company): self {

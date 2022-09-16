@@ -16,6 +16,8 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 use App\Repository\Purchase\Component\ComponentRepository;
@@ -24,6 +26,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -307,6 +310,10 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private int $ppmRate = 10;
 
+    /** @var Collection<int, ComponentReference> */
+    #[ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items')]
+    private Collection $references;
+
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
@@ -330,6 +337,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->embState = new ComponentManufacturingOperationState();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
+        $this->references = new ArrayCollection();
         $this->weight = new Measure();
     }
 
@@ -352,6 +360,14 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
+    final public function addReference(ComponentReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
+        }
+        return $this;
+    }
+
     /**
      * @return Collection<int, ComponentAttribute>
      */
@@ -361,6 +377,24 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getBlocker(): string {
         return $this->embBlocker->getState();
+    }
+
+    /**
+     * @return LaravelCollection<int, Check<self, Family|self>>
+     */
+    final public function getChecks(): LaravelCollection {
+        /** @var LaravelCollection<int, Check<self, Family|self>> $checks */
+        $checks = collect($this->references->getValues())
+            ->map(static function (ComponentReference $reference): Check {
+                /** @var Check<self, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            })
+            ->values();
+        if (!empty($this->family)) {
+            $checks = $checks->merge($this->family->getChecks());
+        }
+        return $checks;
     }
 
     #[
@@ -439,6 +473,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->ppmRate;
     }
 
+    /**
+     * @return Collection<int, ComponentReference>
+     */
+    final public function getReferences(): Collection {
+        return $this->references;
+    }
+
     final public function getState(): string {
         return $this->embState->getState();
     }
@@ -465,6 +506,14 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
             if ($attribute->getComponent() === $this) {
                 $attribute->setComponent(null);
             }
+        }
+        return $this;
+    }
+
+    final public function removeReference(ComponentReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
         }
         return $this;
     }

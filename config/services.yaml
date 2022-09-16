@@ -75,6 +75,29 @@ services:
         event: postLoad
         name: doctrine.orm.entity_listener
 
+  App\EventListener\Purchase\Order\ItemListener:
+    autoconfigure: false
+    tags:
+      - event: workflow.purchase_order_item.guard.deliver
+        method: guardDeliver
+        name: kernel.event_listener
+      - event: workflow.purchase_order_item.completed.deliver
+        method: onDeliver
+        name: kernel.event_listener
+      - event: workflow.purchase_order_item.guard.partially_deliver
+        method: guardPartiallyDeliver
+        name: kernel.event_listener
+
+  App\EventListener\Purchase\Order\OrderListener:
+    autoconfigure: false
+    tags:
+      - event: workflow.purchase_order.guard.deliver
+        method: guardDeliver
+        name: kernel.event_listener
+      - event: workflow.purchase_order.guard.partially_deliver
+        method: guardPartiallyDeliver
+        name: kernel.event_listener
+
   App\EventListener\Security\LogoutListener:
     autoconfigure: false
     tags:
