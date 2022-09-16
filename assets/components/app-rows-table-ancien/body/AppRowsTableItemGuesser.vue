@@ -12,22 +12,13 @@ const props = defineProps({
   index: { required: true, type: Number },
 });
 const add = computed(() => typeof props.item === "number");
-console.log("alignFields33", props.alignFields);
+console.log("alignFields", props.alignFields);
 console.log("fieldsByLevel", props.fieldsByLevel);
 console.log("item", props.item);
 
 </script> 
 
 <template>
-  <!-- <AppRowsTableAddItems v-if="add" :fields="fieldsByLevel[item]" />
-  <AppRowsTableItem
-    v-else
-    :last="last"
-    :fields="fields"
-    :align-fields="alignFields"
-    :item="item"
-    :index="index"
-  />-->
   <AppRowsTableAddItems v-if="add" :fields="fieldsByLevel[item]" />
   <AppRowsTableItem
     v-else
@@ -35,6 +26,6 @@ console.log("item", props.item);
     :fields="fields"
     :last="last"
     :index="index"
-     :item="item"
+    :item="item"
   />
 </template>

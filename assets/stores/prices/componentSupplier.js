@@ -1,8 +1,12 @@
 import { defineStore } from "pinia";
+import generatePrice from "./componentSuppliersPrices";
 
-export default function generatePrice(prices) {
-  return defineStore(`prices/${prices.id}`, {
+export default function generateComponentSupplier(cs) {
+  return defineStore(`component-suppliers/${cs.id}`, {
     actions: {
+      push() {
+        this.prices.push(generatePrice(prices.id));
+      },
       blur() {
         this.opened = false;
         this.selected = false;
@@ -11,60 +15,44 @@ export default function generatePrice(prices) {
         this.$reset();
         this.$dispose();
       },
+      async remove() {
+        this.prices.remove(cs.id);
+        this.dispose();
+      },
       focus() {
         this.root.blur();
         this.selected = true;
         this.open();
-      }, 
+      },
     },
     getters: {
-      row(state) {
-        const rows = [state, state.prices[0]];
-        console.log("rows", rows);
-        for (const suppliers of state.items) 
-        console.log("state", suppliers);
- 
-        for (let i = 1; i < suppliers.prices.length; i++)
-          rows.push([state.prices[i]]);
-      },
       rowspan: (state) => state.prices.length + 1,
+      row: (state) => (fields) => {
+        let row = { rowspan: this.rowspan };
+        for (const field of fields) {
+          if (typeof field.children == "undefined")
+            row[field.name] = state[field.name];
+          else row = { ...row, ...state[field.name][0].row(field.children) };
+        }
+        return row;
+      },
+      rows(state) {
+        return (fields) => {
+          const rows = [this.row(fields)];
+          console.log('aaa');
+          const priceFields = fields.find(
+            (field) => field.name === "prices"
+          ).children;
+          for (let i = 1; i < state.prices; i++)
+            rows.push(state.prices[i].row(priceFields));
+          rows.push(priceFields);
+          return rows;
+        };
+      },
     },
     state: () => ({
-      items: [
-        {
-          delai: 5,
-          delete: true,
-          id: 1,
-          indice: 1,
-          moq: 1,
-          name: "CAMION FR-MD",
-          poidsCu: "bbbbb",
-          prices: [
-            {
-              delete: false,
-              id: 1,
-              price: 1000,
-              quantite: 100,
-              ref: "afsfsfss",
-              update: true,
-              update2: false,
-            },
-            {
-              delete: false,
-              id: 3,
-              price: 1000,
-              quantite: 30,
-              ref: "azertsscssy",
-              update: true,
-              update2: false,
-            },
-          ],
-          proportion: "aaaaaa",
-          reference: "ccc",
-          update: true,
-          update2: false,
-        },
-      ],
+      ...cs,
+      prices: cs.prices.map((price) => generatePrice(price)),
     }),
   })();
 }

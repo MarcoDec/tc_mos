@@ -2,10 +2,12 @@
     import type {TableField, TableItem} from '../../../types/app-rows-table'
     import {computed, defineProps, ref} from 'vue'
 
-    defineProps<{state: TableItem, i: number, stateFields: TableField[][]}>()
+   const props=  defineProps<{state: TableItem, i: number, stateFields: TableField[][]}>()
 
     const show = ref(true)
     const td = computed(() => (show.value ? 'AppRowsTableItemField' : 'AppRowsTableItemInput'))
+console.log('sssss',props.state );
+console.log('stateFields---->',props.stateFields );
 
     function toggle(): void {
         show.value = !show.value

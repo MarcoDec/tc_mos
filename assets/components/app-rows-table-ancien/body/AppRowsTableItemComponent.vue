@@ -1,12 +1,12 @@
 <script setup>
 import { computed, defineProps, ref } from "vue";
 
-defineProps({
+const props = defineProps({
   state: { required: false, type: Array },
   i: { required: false, type: Number },
   stateFields: { required: false, type: Array },
 });
-
+console.log('je suis ici', props.state);
 const show = ref(true);
 const td = computed(() =>
   show.value ? "AppRowsTableItemField" : "AppRowsTableItemInput"

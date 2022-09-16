@@ -2,18 +2,7 @@
     import {computed, defineProps} from 'vue'
 
     const props = defineProps({fields: {required: true, type: Array}})
-    console.log('field', props.fields);
-    const alignfields = computed(() => props.fields
-        .map(field => {
-            function nulField(index){
-                return {name: `${field.name}-${index}`, type: null}
-            }
-            if (Array.isArray(field.children) && field.children.length > 0){
-                return [nulField(1), nulField(2), ...field.children]
-            }
-            return field 
-        })
-        .flat())
+
 </script>
 
 <template>
@@ -24,7 +13,7 @@
         <td>
             <AppBtn icon="plus" variant="success"/>
         </td>
-        <td v-for="field in alignfields" :key="field.name">
+        <td v-for="field in fields" :key="field.name">
             <AppInputGuesser v-if="field.type !== null" :field="field" no-label/>
         </td>
     </tr>

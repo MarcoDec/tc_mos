@@ -20,8 +20,8 @@ AppInput.emits = ['update:modelValue']
 AppInput.props = {
     disabled: {type: Boolean},
     field: generateField(),
-    form: {required: true, type: String},
-    id: {required: true, type: String},
+    form: {required: false},
+    id: {required: false, type: String},
     modelValue: {}
 }
 

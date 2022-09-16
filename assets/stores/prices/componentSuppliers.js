@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
-import generatePrice from "./componentSupplier";
+import generateComponentSupplier from "./componentSupplier";
 
-export default defineStore("prices", {
+export default defineStore("componentSuppliers", {
   actions: {
     async fetch() {
       const response = [
@@ -25,7 +25,7 @@ export default defineStore("prices", {
             },
             {
               delete: false,
-              id: 3,
+              id: 2,
               price: 1000,
               quantite: 30,
               ref: "azertsscssy",
@@ -49,7 +49,34 @@ export default defineStore("prices", {
           prices: [
             {
               delete: false,
+              id: 1,
+              price: 100,
+              quantite: 50,
+              ref: "azerty",
+              update: true,
+              update2: false,
+            },
+            {
+              delete: false,
               id: 2,
+              price: 100,
+              quantite: 50,
+              ref: "azerty",
+              update: true,
+              update2: false,
+            },
+            {
+              delete: false,
+              id: 3,
+              price: 100,
+              quantite: 50,
+              ref: "azerty",
+              update: true,
+              update2: false,
+            },
+            {
+              delete: false,
+              id: 4,
               price: 100,
               quantite: 50,
               ref: "azerty",
@@ -63,15 +90,21 @@ export default defineStore("prices", {
           update2: false,
         },
       ];
-      for (const price of response) this.items.push(generatePrice(price, this));
+      for (const price of response)
+        this.items.push(generateComponentSupplier(price, this));
     },
   },
   getters: {
-    rows: (state) => state.items.map((item) => item.row).flat(1),
+    rows: (state) => (fields) => {
+      let rows = [];
+      for (const item of state.items) {
+        rows = rows.concat(item.rows(fields));
+      }
+      rows.push(fields);
+      return rows;
+    },
   },
   state: () => ({
-    items: [
-     
-    ],
+    items: [],
   }),
 });

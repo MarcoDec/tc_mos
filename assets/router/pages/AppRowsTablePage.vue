@@ -14,14 +14,15 @@ defineProps({
 const machinePrice = useTableMachine("machine-prices");
 const priceItems = usePrices()
 console.log("prices", priceItems);
+console.log("pricesrow", priceItems.items);
+
 
 onMounted(async () => {
   await priceItems.fetch()
-  priceItems.items.map((item) => item).flat(1)
 });
 </script>
 
 <template>
   <h1>Component Suppliers Prices</h1>
-  <AppRowsTable id="prices" :fields="fields" :items="priceItems" />
+  <AppRowsTable id="prices" :fields="fields" />
 </template>
