@@ -14,14 +14,14 @@
     "xstate": "^4.33.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.0",
-    "@babel/eslint-parser": "^7.18.9",
+    "@babel/core": "^7.19.1",
+    "@babel/eslint-parser": "^7.19.1",
     "@vitejs/plugin-vue": "^3.1.0",
     "eslint": "^8.23.1",
-    "eslint-plugin-vue": "^9.4.0",
+    "eslint-plugin-vue": "^9.5.1",
     "humps": "^2.0.1",
     "sass": "^1.54.9",
-    "vite": "^3.1.0",
+    "vite": "^3.1.2",
     "vite-plugin-checker": "^0.5.1",
     "vite-plugin-symfony": "^0.6.0"
   },
