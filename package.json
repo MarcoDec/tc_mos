@@ -9,6 +9,7 @@
     "@babel/core": "^7.19.1",
     "@babel/eslint-parser": "^7.19.1",
     "@vitejs/plugin-vue": "^3.1.0",
+    "@vue/babel-plugin-jsx": "^1.1.1",
     "eslint": "^8.23.1",
     "eslint-plugin-vue": "^9.5.1",
     "sass": "^1.54.9",
@@ -21,8 +22,8 @@
   "scripts": {
     "build": "vite build && echo '*\n!.gitignore' > public/build/.gitignore",
     "dev": "sudo rm -r public/build/*; vite",
-    "eslint": "NODE_ENV=production eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}",
-    "eslint-fix": "NODE_ENV=production eslint -c .eslintrc.js --fix .eslintrc.js vite.config.js ./assets/**/*.{js,vue}",
+    "eslint": "NODE_ENV=production eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,jsx,vue}",
+    "eslint-fix": "NODE_ENV=production eslint -c .eslintrc.js --fix .eslintrc.js vite.config.js ./assets/**/*.{js,jsx,vue}",
     "postinstall": "echo '*\n!.gitignore' > node_modules/.gitignore",
     "postuninstall": "echo '*\n!.gitignore' > node_modules/.gitignore"
   }
