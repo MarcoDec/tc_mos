@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import AppLogin from '../components/pages/AppLogin'
+import AppLogin from '../components/pages/AppLogin.vue'
 import useUser from '../stores/security'
 
 const router = createRouter({

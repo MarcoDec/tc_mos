@@ -1,5 +1,5 @@
 import './app.scss'
-import App from './components/App'
+import App from './components/App.vue'
 import AppContainer from './components/AppContainer'
 import {createApp} from 'vue'
 import {createPinia} from 'pinia'
