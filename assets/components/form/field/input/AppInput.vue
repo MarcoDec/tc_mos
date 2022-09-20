@@ -3,6 +3,7 @@
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
+        disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
         id: {required: true, type: String},
@@ -18,6 +19,7 @@
 <template>
     <input
         :id="id"
+        :disabled="disabled"
         :form="form"
         :name="field.name"
         :placeholder="field.label"

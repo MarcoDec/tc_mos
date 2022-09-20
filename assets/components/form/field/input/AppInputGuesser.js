@@ -9,6 +9,10 @@ function AppInputGuesser(props, context) {
 }
 
 AppInputGuesser.emit = ['update:modelValue']
-AppInputGuesser.props = {field: {required: true, type: Object}, modelValue: {default: null, type: String}}
+AppInputGuesser.props = {
+    disabled: {type: Boolean},
+    field: {required: true, type: Object},
+    modelValue: {default: null, type: String}
+}
 
 export default AppInputGuesser

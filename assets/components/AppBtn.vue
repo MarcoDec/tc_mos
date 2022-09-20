@@ -2,6 +2,7 @@
     import {computed} from 'vue'
 
     const props = defineProps({
+        disabled: {type: Boolean},
         label: {required: true, type: String},
         type: {default: 'button', type: String},
         variant: {default: 'primary', type: String}
@@ -10,7 +11,7 @@
 </script>
 
 <template>
-    <button :class="css" :type="type" class="btn btn-sm">
+    <button :class="css" :disabled="disabled" :type="type" class="btn btn-sm">
         {{ label }}
     </button>
 </template>

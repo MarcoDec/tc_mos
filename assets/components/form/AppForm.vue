@@ -5,6 +5,7 @@
 
     const emit = defineEmits(['submit'])
     const props = defineProps({
+        disabled: {type: Boolean},
         fields: {required: true, type: Array},
         id: {required: true, type: String},
         submitLabel: {required: true, type: String}
@@ -29,10 +30,16 @@
 
 <template>
     <form :id="id" autocomplete="off" enctype="multipart/form-data" method="post" novalidate @submit="submit">
-        <AppFormGroup v-for="field in fields" :key="field.name" :field="field" :form="id" @input="input"/>
+        <AppFormGroup
+            v-for="field in fields"
+            :key="field.name"
+            :disabled="disabled"
+            :field="field"
+            :form="id"
+            @input="input"/>
         <div class="row">
             <div class="col d-inline-flex justify-content-end">
-                <AppBtn :label="submitLabel" type="submit"/>
+                <AppBtn :disabled="disabled" :label="submitLabel" type="submit"/>
             </div>
         </div>
     </form>

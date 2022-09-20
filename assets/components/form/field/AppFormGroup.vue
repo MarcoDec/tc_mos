@@ -5,6 +5,7 @@
 
     const emit = defineEmits(['input', 'update:modelValue'])
     const props = defineProps({
+        disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
         modelValue: {default: null, type: String}
@@ -22,6 +23,7 @@
         <AppLabel :field="field" :input="inputId"/>
         <AppInputGuesser
             :id="inputId"
+            :disabled="disabled"
             :field="field"
             :form="form"
             :model-value="modelValue"
