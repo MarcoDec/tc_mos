@@ -1,10 +1,14 @@
 import AppInput from './AppInput.vue'
 import {h} from 'vue'
 
-function AppInputGuesser(props) {
-    return h(AppInput, props)
+function AppInputGuesser(props, context) {
+    return h(AppInput, {
+        'onUpdate:modelValue': value => context.emit('update:modelValue', value),
+        ...props
+    })
 }
 
-AppInputGuesser.props = {field: {required: true, type: Object}}
+AppInputGuesser.emit = ['update:modelValue']
+AppInputGuesser.props = {field: {required: true, type: Object}, modelValue: {default: null, type: String}}
 
 export default AppInputGuesser

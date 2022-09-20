@@ -11,5 +11,5 @@
 </script>
 
 <template>
-    <AppForm :id="form" :fields="fields"/>
+    <AppForm :id="form" :fields="fields" submit-label="Connexion"/>
 </template>
