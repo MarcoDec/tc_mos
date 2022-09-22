@@ -28,12 +28,13 @@ final class TokenRepository extends ServiceEntityRepository {
     }
 
     public function disconnect(Employee $user): void {
-        foreach ($this->findBy(['employee' => $user]) as $token) {
-            if (!$token->isExpired()) {
-                $token->expire();
-            }
-        }
-        $this->_em->flush();
+        $this->_em->createQueryBuilder()
+            ->update($this->getClassName(), 't')
+            ->set('t.expireAt', 'DATE_SUB(t.expireAt, 1, \'MINUTE\')')
+            ->where('t.employee = :employee')
+            ->setParameter('employee', $user->getId())
+            ->getQuery()
+            ->execute();
     }
 
     public function renew(Employee $user): void {

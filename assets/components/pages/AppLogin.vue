@@ -5,12 +5,14 @@
     import AppOverlay from '../AppOverlay'
     import {useMachine} from '@xstate/vue'
     import {useRoute} from 'vue-router'
+    import useUser from '../../stores/security'
 
     const fields = [
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
     const route = useRoute()
+    const user = useUser()
     const form = `${route.name}-form`
     const {send, state} = useMachine(createMachine({
         context: {error: null},
@@ -32,8 +34,10 @@
         }
     }))
 
-    function submit() {
+    async function submit(data) {
         send('submit')
+        await user.connect(data)
+        send('success')
     }
 </script>
 

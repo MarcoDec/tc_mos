@@ -39,7 +39,6 @@ security:
     app_user_provider:
       entity:
         class: App\Entity\Hr\Employee\Employee
-        property: username
   role_hierarchy: '%ROLE_HIERARCHY%'
 
 when@prod:

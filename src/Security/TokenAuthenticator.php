@@ -7,6 +7,7 @@ use App\Repository\Api\TokenRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
@@ -17,7 +18,10 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
 final class TokenAuthenticator extends AbstractAuthenticator {
-    public function __construct(private readonly TokenRepository $tokenRepo) {
+    public function __construct(
+        private readonly TokenRepository $tokenRepo,
+        private readonly UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     private static function getBearer(Request $request): ?string {
@@ -60,6 +64,9 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     }
 
     public function supports(Request $request): ?bool {
-        return str_starts_with($request->getRequestUri(), '/api/');
+        $uri = $request->getRequestUri();
+        return $uri !== $this->urlGenerator->generate('login')
+            && $uri !== $this->urlGenerator->generate('mobile.login')
+            && str_starts_with($request->getRequestUri(), '/api/');
     }
 }

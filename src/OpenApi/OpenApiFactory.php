@@ -77,7 +77,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                         content: new ArrayObject([
                             'application/ld+json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/Employee.jsonld-Employee-read'
+                                    '$ref' => '#/components/schemas/Employee.jsonld-Employee-user'
                                 ]
                             ]
                         ])
@@ -135,6 +135,62 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     ]
                 ],
                 'required' => ['password', 'username'],
+                'type' => 'object'
+            ]),
+            'Employee.jsonld-Employee-user' => new ArrayObject([
+                'description' => 'Utilisateur',
+                'properties' => [
+                    'company' => [
+                        'anyOf' => ['$ref' => '#/components/schemas/Company.jsonld-Employee-read'],
+                        'description' => 'Compagnie',
+                        'example' => '/api/companies/1',
+                        'nullable' => true,
+                        'title' => 'Compagnie'
+                    ],
+                    'embBlocker' => ['$ref' => '#/components/schemas/Blocker.jsonld-Employee-read'],
+                    'embState' => ['$ref' => '#/components/schemas/EmployeeEngineState.jsonld-Employee-read'],
+                    'initials' => [
+                        'description' => 'Initiales',
+                        'example' => 'C.R.',
+                        'title' => 'Initiales',
+                        'type' => 'string'
+                    ],
+                    'name' => [
+                        'description' => 'Prénom',
+                        'example' => 'Super',
+                        'nullable' => false,
+                        'title' => 'Prénom',
+                        'type' => 'string'
+                    ],
+                    'roles' => [
+                        'description' => 'Rôles',
+                        'example' => ['ROLE_USER'],
+                        'items' => ['type' => 'string'],
+                        'title' => 'Rôles',
+                        'type' => 'array'
+                    ],
+                    'surname' => [
+                        'description' => 'Nom',
+                        'example' => 'Roosevelt',
+                        'title' => 'Nom',
+                        'type' => 'string'
+                    ],
+                    'token' => [
+                        'description' => 'Token',
+                        'example' => '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707',
+                        'nullable' => true,
+                        'readOnly' => true,
+                        'title' => 'Token',
+                        'type' => 'string'
+                    ],
+                    'username' => [
+                        'description' => 'identifiant',
+                        'example' => 'super',
+                        'nullable' => true,
+                        'title' => 'identifiant',
+                        'type' => 'string'
+                    ]
+                ],
                 'type' => 'object'
             ]),
             'Measure-duration' => new ArrayObject([
