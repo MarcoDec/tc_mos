@@ -2,8 +2,8 @@
 
 namespace App\Security;
 
+use App\Entity\Api\Token;
 use App\Entity\Hr\Employee\Employee;
-use App\Repository\Api\TokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,11 +21,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     public function __construct(
+        private readonly EntityManagerInterface $em,
         private readonly NormalizerInterface $normalizer,
-        private readonly TokenRepository $tokenRepo,
         private readonly TranslatorInterface $translator,
-        protected readonly UrlGeneratorInterface $urlGenerator,
-        private readonly EntityManagerInterface $em
+        protected readonly UrlGeneratorInterface $urlGenerator
     ) {
     }
 
@@ -58,7 +57,7 @@ abstract class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response {
         /** @var Employee $user */
         $user = $token->getUser();
-        $this->tokenRepo->connect($user);
+        $this->em->getRepository(Token::class)->connect($user);
         $this->em->commit();
         return new JsonResponse($this->normalizer->normalize($user, null, [
             'groups' => ['read:state', 'read:user'],

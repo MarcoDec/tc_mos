@@ -169,7 +169,7 @@ class Employee extends EntityId implements BarCodeInterface, PasswordAuthenticat
     private ?DateTimeImmutable $birthday = null;
 
     #[
-        ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:employee', 'read:user'])
     ]

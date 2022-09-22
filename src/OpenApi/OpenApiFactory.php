@@ -141,11 +141,12 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 'description' => 'Utilisateur',
                 'properties' => [
                     'company' => [
-                        'anyOf' => ['$ref' => '#/components/schemas/Company.jsonld-Employee-read'],
                         'description' => 'Compagnie',
                         'example' => '/api/companies/1',
+                        'format' => 'iri-reference',
                         'nullable' => true,
-                        'title' => 'Compagnie'
+                        'title' => 'Compagnie',
+                        'type' => 'string'
                     ],
                     'embBlocker' => ['$ref' => '#/components/schemas/Blocker.jsonld-Employee-read'],
                     'embState' => ['$ref' => '#/components/schemas/EmployeeEngineState.jsonld-Employee-read'],

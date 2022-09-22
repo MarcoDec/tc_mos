@@ -18,11 +18,13 @@ security:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
+      stateless: true
     mobile:
       custom_authenticators:
         - App\Security\MobileAuthenticator
       lazy: true
       pattern: ^/api/mobile/login$
+      stateless: true
       user_checker: App\Security\UserChecker
     main:
       custom_authenticators:
@@ -31,6 +33,7 @@ security:
       lazy: true
       logout:
         path: logout
+      stateless: true
   password_hashers:
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     App\Entity\Hr\Employee\Employee:
