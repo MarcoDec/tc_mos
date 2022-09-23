@@ -6,12 +6,13 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 final class MeasureHydrator {
-    /** @var array<string, Unit> */
-    private array $units = [];
-
-    public function __construct(private readonly EntityManagerInterface $em) {
+    public function __construct(
+        private readonly CacheInterface $cache,
+        private readonly EntityManagerInterface $em
+    ) {
     }
 
     public function hydrate(Measure $measure): Measure {
@@ -28,17 +29,8 @@ final class MeasureHydrator {
     }
 
     private function getUnit(?string $code): ?Unit {
-        if ($code !== null) {
-            if (isset($this->units[$code])) {
-                return $this->units[$code];
-            }
-            /** @var null|Unit $unit */
-            $unit = $this->em->getRepository(Unit::class)->findOneBy(['code' => $code]);
-            if ($unit !== null) {
-                $this->units[$code] = $unit;
-            }
-            return $unit;
-        }
-        return null;
+        return $code !== null
+            ? $this->cache->get("measure-unit-'$code'", fn () => $this->em->getRepository(Unit::class)->findOneBy(['code' => $code]))
+            : null;
     }
 }
