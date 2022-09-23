@@ -59,9 +59,6 @@ abstract class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
         $user = $token->getUser();
         $this->em->getRepository(Token::class)->connect($user);
         $this->em->commit();
-        return new JsonResponse($this->normalizer->normalize($user, null, [
-            'groups' => ['read:state', 'read:user'],
-            'jsonld_has_context' => false
-        ]));
+        return new JsonResponse($this->normalizer->normalize($user, 'jsonld', ['groups' => ['read:id', 'read:state', 'read:user']]));
     }
 }

@@ -140,6 +140,32 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
             'Employee.jsonld-Employee-user' => new ArrayObject([
                 'description' => 'Utilisateur',
                 'properties' => [
+                    '@context' => [
+                        'example' => '/api/contexts/Employee',
+                        'oneOf' => [
+                            ['type' => 'string'],
+                            [
+                                'additionalProperties' => true,
+                                'properties' => [
+                                    '@vocab' => ['type' => 'string'],
+                                    'hydra' => ['enum' => ['http://www.w3.org/ns/hydra/core#'], 'type' => 'string']
+                                ],
+                                'required' => ['@vocab', 'hydra'],
+                                'type' => 'object'
+                            ]
+                        ],
+                        'readOnly' => true
+                    ],
+                    '@id' => [
+                        'example' => '/api/employees/1',
+                        'readOnly' => true,
+                        'type' => 'string'
+                    ],
+                    '@type' => [
+                        'example' => 'Employee',
+                        'readOnly' => true,
+                        'type' => 'string'
+                    ],
                     'company' => [
                         'description' => 'Compagnie',
                         'example' => '/api/companies/1',
@@ -150,6 +176,14 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                     ],
                     'embBlocker' => ['$ref' => '#/components/schemas/Blocker.jsonld-Employee-read'],
                     'embState' => ['$ref' => '#/components/schemas/EmployeeEngineState.jsonld-Employee-read'],
+                    'id' => [
+                        'description' => 'id',
+                        'example' => 1,
+                        'nullable' => false,
+                        'readOnly' => true,
+                        'title' => 'id',
+                        'type' => 'string'
+                    ],
                     'initials' => [
                         'description' => 'Initiales',
                         'example' => 'C.R.',
