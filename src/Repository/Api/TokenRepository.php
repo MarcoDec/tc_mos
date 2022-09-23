@@ -43,9 +43,11 @@ final class TokenRepository extends ServiceEntityRepository {
     public function findOneBy(array $criteria, ?array $orderBy = null): ?Token {
         $query = $this->createQueryBuilder('t')
             ->addSelect('a')
-            ->addSelect('e')
+            ->addSelect('partial c.{id}')
+            ->addSelect('partial e.{embBlocker.state, embRoles.roles, embState.state, id, initials, name, password, surname, username}')
             ->innerJoin('t.employee', 'e')
             ->leftJoin('e.apiTokens', 'a')
+            ->leftJoin('e.company', 'c')
             ->where('t.token = :token')
             ->setParameter('token', $criteria['token'])
             ->getQuery();

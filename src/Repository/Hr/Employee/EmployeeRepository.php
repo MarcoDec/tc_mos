@@ -4,7 +4,6 @@ namespace App\Repository\Hr\Employee;
 
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
@@ -27,9 +26,11 @@ final class EmployeeRepository extends ServiceEntityRepository implements UserLo
 
     public function loadUserByIdentifier(string $identifier): UserInterface {
         $query = $this->createQueryBuilder('e')
-            ->select('partial e.{company, embBlocker.state, embRoles.roles, embState.state, id, initials, name, password, surname, username}')
+            ->select('partial e.{embBlocker.state, embRoles.roles, embState.state, id, initials, name, password, surname, username}')
+            ->addSelect('partial c.{id}')
             ->addSelect('t')
             ->leftJoin('e.apiTokens', 't')
+            ->leftJoin('e.company', 'c')
             ->where('e.username = :username')
             ->setParameter('username', $identifier)
             ->getQuery();
@@ -43,9 +44,6 @@ final class EmployeeRepository extends ServiceEntityRepository implements UserLo
             $e = new UserNotFoundException(sprintf('User "%s" not found.', $identifier));
             $e->setUserIdentifier($identifier);
             throw $e;
-        }
-        if (($company = $user->getCompany()) instanceof Proxy) {
-            $company->__setInitialized(true);
         }
         return $user;
     }
