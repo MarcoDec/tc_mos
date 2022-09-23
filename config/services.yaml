@@ -19,6 +19,10 @@ services:
     resource: ../src/Controller
     tags: [ controller.service_arguments ]
 
+  App\DataProvider\Purchase\Order\ItemDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
+
   api_platform.openapi.factory:
     arguments:
       $filterLocator: '@api_platform.filter_locator'

@@ -13,11 +13,18 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ComponentItem|null find($id, $lockMode = null, $lockVersion = null)
  * @method ComponentItem|null findOneBy(array $criteria, ?array $orderBy = null)
  * @method ComponentItem[]    findAll()
- * @method ComponentItem[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 final class ComponentItemRepository extends ItemRepository {
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, ComponentItem::class);
+    }
+
+    public function createByQueryBuilder(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): QueryBuilder {
+        return parent::createByQueryBuilder($criteria, $orderBy, $limit, $offset)
+            ->addSelect('item')
+            ->addSelect('item_family')
+            ->leftJoin('i.item', 'item')
+            ->leftJoin('item.family', 'item_family');
     }
 
     public function createReceiptQueryBuilder(int $id): QueryBuilder {
@@ -28,6 +35,14 @@ final class ComponentItemRepository extends ItemRepository {
             ->leftJoin('i.item', 'item')
             ->leftJoin('item.family', 'item_family')
             ->leftJoin('item.references', 'item_references');
+    }
+
+    /**
+     * @return ComponentItem[]
+     */
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
+        /** @phpstan-ignore-next-line */
+        return $this->createByQueryBuilder($criteria, $orderBy, $limit, $offset)->getQuery()->getResult();
     }
 
     public function findOneByReceipt(int $id): ?ComponentItem {

@@ -189,7 +189,7 @@ class Product extends EntityId implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Référence', example: '54587F'),
         Assert\Length(min: 3, max: 50),
         ORM\Column(length: 50),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'read:stock:grouped', 'write:product', 'write:product:admin', 'write:product:clone'])
+        Serializer\Groups(['create:product', 'read:item', 'read:product', 'read:product:collection', 'read:stock:grouped', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $code = null;
 

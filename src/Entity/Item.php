@@ -11,6 +11,7 @@ use App\Validator as AppAssert;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 /**
  * @template I of Purchase\Component\Component|Project\Product\Product
@@ -21,7 +22,8 @@ abstract class Item extends EntityId implements MeasuredInterface {
     #[
         ApiProperty(description: 'Date de confirmation', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:item', 'write:item'])
+        Serializer\Context(normalizationContext: [DateTimeNormalizer::FORMAT_KEY => 'Y-m-d']),
+        Serializer\Groups(['read:item', 'write:item']),
     ]
     protected ?DateTimeImmutable $confirmedDate = null;
 
@@ -63,6 +65,7 @@ abstract class Item extends EntityId implements MeasuredInterface {
     #[
         ApiProperty(description: 'Date de la demande', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
+        Serializer\Context(normalizationContext: [DateTimeNormalizer::FORMAT_KEY => 'Y-m-d']),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected ?DateTimeImmutable $requestedDate = null;
