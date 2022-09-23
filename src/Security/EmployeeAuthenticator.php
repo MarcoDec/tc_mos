@@ -2,8 +2,9 @@
 
 namespace App\Security;
 
+use App\Entity\Api\Token;
 use App\Entity\Hr\Employee\Employee;
-use App\Repository\Api\TokenRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,14 +21,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     public function __construct(
+        private readonly EntityManagerInterface $em,
         private readonly NormalizerInterface $normalizer,
-        private readonly TokenRepository $tokenRepo,
         private readonly TranslatorInterface $translator,
         protected readonly UrlGeneratorInterface $urlGenerator
     ) {
     }
 
     public function authenticate(Request $request): Passport {
+        $this->em->beginTransaction();
         /** @var array{password?: string, username?: string}|null $content */
         $content = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         if (empty($content)) {
@@ -42,6 +44,7 @@ abstract class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response {
+        $this->em->rollback();
         return new JsonResponse(
             data: $this->translator->trans(
                 id: empty($exception->getMessage()) ? $exception->getMessageKey() : $exception->getMessage(),
@@ -54,7 +57,8 @@ abstract class EmployeeAuthenticator extends AbstractLoginFormAuthenticator {
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response {
         /** @var Employee $user */
         $user = $token->getUser();
-        $this->tokenRepo->connect($user);
-        return new JsonResponse($this->normalizer->normalize($user, null, ['jsonld_has_context' => false]));
+        $this->em->getRepository(Token::class)->connect($user);
+        $this->em->commit();
+        return new JsonResponse($this->normalizer->normalize($user, 'jsonld', ['groups' => ['read:id', 'read:state', 'read:user']]));
     }
 }

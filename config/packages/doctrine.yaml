@@ -5,6 +5,7 @@ doctrine:
         driver: pdo_mysql
         mapping_types:
           enum: string
+        profiling_collect_backtrace: true
         url: '%env(resolve:DATABASE_URL)%'
         wrapper_class: App\Doctrine\DBAL\Connection
       migrations:
