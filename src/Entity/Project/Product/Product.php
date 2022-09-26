@@ -31,7 +31,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Illuminate\Support\Collection as LaravelCollection;
-use ReflectionClass;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -568,55 +567,6 @@ class Product extends EntityId implements BarCodeInterface, MeasuredInterface {
     }
 
     final public function getMeasures(): array {
-        $refl = new ReflectionClass($this);
-        if (!$refl->getProperty('autoDuration')->isInitialized($this)) {
-            $this->autoDuration = new Measure();
-        }
-        if (!$refl->getProperty('costingAutoDuration')->isInitialized($this)) {
-            $this->costingAutoDuration = new Measure();
-        }
-        if (!$refl->getProperty('costingManualDuration')->isInitialized($this)) {
-            $this->costingManualDuration = new Measure();
-        }
-        if (!$refl->getProperty('forecastVolume')->isInitialized($this)) {
-            $this->forecastVolume = new Measure();
-        }
-        if (!$refl->getProperty('manualDuration')->isInitialized($this)) {
-            $this->manualDuration = new Measure();
-        }
-        if (!$refl->getProperty('maxProto')->isInitialized($this)) {
-            $this->maxProto = new Measure();
-        }
-        if (!$refl->getProperty('minDelivery')->isInitialized($this)) {
-            $this->minDelivery = new Measure();
-        }
-        if (!$refl->getProperty('minProd')->isInitialized($this)) {
-            $this->minProd = new Measure();
-        }
-        if (!$refl->getProperty('minStock')->isInitialized($this)) {
-            $this->minStock = new Measure();
-        }
-        if (!$refl->getProperty('packaging')->isInitialized($this)) {
-            $this->packaging = new Measure();
-        }
-        if (!$refl->getProperty('price')->isInitialized($this)) {
-            $this->price = new Measure();
-        }
-        if (!$refl->getProperty('priceWithoutCopper')->isInitialized($this)) {
-            $this->priceWithoutCopper = new Measure();
-        }
-        if (!$refl->getProperty('productionDelay')->isInitialized($this)) {
-            $this->productionDelay = new Measure();
-        }
-        if (!$refl->getProperty('transfertPriceSupplies')->isInitialized($this)) {
-            $this->transfertPriceSupplies = new Measure();
-        }
-        if (!$refl->getProperty('transfertPriceWork')->isInitialized($this)) {
-            $this->transfertPriceWork = new Measure();
-        }
-        if (!$refl->getProperty('weight')->isInitialized($this)) {
-            $this->weight = new Measure();
-        }
         return [
             $this->autoDuration,
             $this->costingAutoDuration,

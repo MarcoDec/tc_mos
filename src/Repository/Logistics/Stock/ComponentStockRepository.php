@@ -4,7 +4,6 @@ namespace App\Repository\Logistics\Stock;
 
 use App\Entity\Logistics\Stock\ComponentStock;
 use App\Entity\Logistics\Warehouse;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,11 +25,11 @@ final class ComponentStockRepository extends StockRepository {
 
     protected function createGroupedQueryBuilder(Warehouse $warehouse): QueryBuilder {
         return parent::createGroupedQueryBuilder($warehouse)
-            ->addSelect('partial f.{code, id}')
-            ->addSelect('partial i.{id}')
+            ->addSelect('f')
+            ->addSelect('i')
             ->addSelect('u')
-            ->innerJoin('s.item', 'i', Join::WITH, 'i.deleted = FALSE')
-            ->innerJoin('i.family', 'f', Join::WITH, 'f.deleted = FALSE')
-            ->innerJoin('i.unit', 'u', Join::WITH, 'u.deleted = FALSE');
+            ->innerJoin('s.item', 'i')
+            ->innerJoin('i.family', 'f')
+            ->innerJoin('i.unit', 'u');
     }
 }

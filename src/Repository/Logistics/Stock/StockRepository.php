@@ -48,8 +48,7 @@ class StockRepository extends ServiceEntityRepository {
 
     protected function createGroupedQueryBuilder(Warehouse $warehouse): QueryBuilder {
         return $this->createQueryBuilder('s')
-            ->where('s.deleted = FALSE')
-            ->andWhere('s.warehouse = :warehouse')
+            ->where('s.warehouse = :warehouse')
             ->setParameter('warehouse', $warehouse->getId());
     }
 
