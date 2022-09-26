@@ -27,6 +27,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Illuminate\Support\Collection as LaravelCollection;
+use ReflectionClass;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -446,6 +447,19 @@ class Component extends EntityId implements BarCodeInterface, MeasuredInterface 
     }
 
     public function getMeasures(): array {
+        $refl = new ReflectionClass($this);
+        if (!$refl->getProperty('copperWeight')->isInitialized($this)) {
+            $this->copperWeight = new Measure();
+        }
+        if (!$refl->getProperty('forecastVolume')->isInitialized($this)) {
+            $this->forecastVolume = new Measure();
+        }
+        if (!$refl->getProperty('minStock')->isInitialized($this)) {
+            $this->minStock = new Measure();
+        }
+        if (!$refl->getProperty('weight')->isInitialized($this)) {
+            $this->weight = new Measure();
+        }
         return [$this->copperWeight, $this->forecastVolume, $this->minStock, $this->weight];
     }
 
