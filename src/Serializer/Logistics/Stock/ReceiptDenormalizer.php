@@ -9,7 +9,6 @@ use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Order\Item;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -18,11 +17,7 @@ use Symfony\Component\Workflow\Registry;
 final class ReceiptDenormalizer implements DenormalizerAwareInterface, DenormalizerInterface {
     use DenormalizerAwareTrait;
 
-    public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly IriConverterInterface $iriConverter,
-        private readonly Registry $registry
-    ) {
+    public function __construct(private readonly IriConverterInterface $iriConverter, private readonly Registry $registry) {
     }
 
     /**
@@ -43,9 +38,6 @@ final class ReceiptDenormalizer implements DenormalizerAwareInterface, Denormali
         /** @var Item<Component>|Item<Product> $item */
         $item = $this->iriConverter->getItemFromIri($data['orderItem'], $context);
         $stock->setOrderItem($item);
-        if (!empty($order = $item->getOrder())) {
-            $this->em->initializeObject($order);
-        }
         $workflow = $this->registry->get($item, 'purchase_order_item');
         if ($workflow->can($item, State::TR_DELIVER)) {
             $workflow->apply($item, State::TR_DELIVER);

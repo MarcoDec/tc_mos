@@ -52,7 +52,7 @@ class ItemRepository extends ServiceEntityRepository {
         return $qb;
     }
 
-    public function createReceiptQueryBuilder(int $id): QueryBuilder {
+    public function createCheckQueryBuilder(int $id): QueryBuilder {
         return $this->createQueryBuilder('i')
             ->addSelect('c')
             ->addSelect('company')
@@ -75,6 +75,17 @@ class ItemRepository extends ServiceEntityRepository {
             ->setParameter('id', $id);
     }
 
+    public function createReceiptQueryBuilder(int $id): QueryBuilder {
+        return $this->createQueryBuilder('i')
+            ->addSelect('o')
+            ->addSelect('r')
+            ->leftJoin('i.order', 'o', Join::WITH, 'o.deleted = FALSE')
+            ->leftJoin('i.receipts', 'r', Join::WITH, 'r.deleted = FALSE')
+            ->where('i.deleted = FALSE')
+            ->andWhere('i.id = :id')
+            ->setParameter('id', $id);
+    }
+
     /**
      * @param ItemFilter $criteria
      *
@@ -86,6 +97,11 @@ class ItemRepository extends ServiceEntityRepository {
         return $items->merge($this->_em->getRepository(ProductItem::class)->findBy($criteria, $orderBy, $limit, $offset))
             ->values()
             ->all();
+    }
+
+    public function findOneByCheck(int $id): ComponentItem|ProductItem|null {
+        return $this->_em->getRepository(ComponentItem::class)->findOneByCheck($id)
+            ?? $this->_em->getRepository(ProductItem::class)->findOneByCheck($id);
     }
 
     public function findOneByReceipt(int $id): ComponentItem|ProductItem|null {

@@ -30,8 +30,8 @@ final class ComponentItemRepository extends ItemRepository {
             ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
     }
 
-    public function createReceiptQueryBuilder(int $id): QueryBuilder {
-        return parent::createReceiptQueryBuilder($id)
+    public function createCheckQueryBuilder(int $id): QueryBuilder {
+        return parent::createCheckQueryBuilder($id)
             ->addSelect('family_references')
             ->addSelect('item')
             ->addSelect('item_family')
@@ -44,12 +44,30 @@ final class ComponentItemRepository extends ItemRepository {
             ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
     }
 
+    public function createReceiptQueryBuilder(int $id): QueryBuilder {
+        return parent::createReceiptQueryBuilder($id)
+            ->addSelect('item')
+            ->addSelect('u')
+            ->leftJoin('i.item', 'item', Join::WITH, 'item.deleted = FALSE')
+            ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
+    }
+
     /**
      * @return ComponentItem[]
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
         /** @phpstan-ignore-next-line */
         return $this->createByQueryBuilder($criteria, $orderBy, $limit, $offset)->getQuery()->getResult();
+    }
+
+    public function findOneByCheck(int $id): ?ComponentItem {
+        $query = $this->createCheckQueryBuilder($id)->getQuery();
+        try {
+            /** @phpstan-ignore-next-line */
+            return $query->getOneOrNullResult();
+        } catch (NonUniqueResultException) {
+            return null;
+        }
     }
 
     public function findOneByReceipt(int $id): ?ComponentItem {
