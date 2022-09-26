@@ -6,6 +6,7 @@ use App\Entity\Api\Token;
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -45,9 +46,9 @@ final class TokenRepository extends ServiceEntityRepository {
             ->addSelect('a')
             ->addSelect('partial c.{id}')
             ->addSelect('partial e.{embBlocker.state, embRoles.roles, embState.state, id, initials, name, password, surname, username}')
-            ->innerJoin('t.employee', 'e')
+            ->innerJoin('t.employee', 'e', Join::WITH, 'e.deleted = FALSE')
             ->leftJoin('e.apiTokens', 'a')
-            ->leftJoin('e.company', 'c')
+            ->leftJoin('e.company', 'c', Join::WITH, 'c.deleted = FALSE')
             ->where('t.token = :token')
             ->setParameter('token', $criteria['token'])
             ->getQuery();

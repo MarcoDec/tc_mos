@@ -4,6 +4,7 @@ namespace App\Repository\Purchase\Order;
 
 use App\Entity\Purchase\Order\ComponentItem;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -23,8 +24,10 @@ final class ComponentItemRepository extends ItemRepository {
         return parent::createByQueryBuilder($criteria, $orderBy, $limit, $offset)
             ->addSelect('item')
             ->addSelect('item_family')
-            ->leftJoin('i.item', 'item')
-            ->leftJoin('item.family', 'item_family');
+            ->addSelect('u')
+            ->leftJoin('i.item', 'item', Join::WITH, 'item.deleted = FALSE')
+            ->leftJoin('item.family', 'item_family', Join::WITH, 'item_family.deleted = FALSE')
+            ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
     }
 
     public function createReceiptQueryBuilder(int $id): QueryBuilder {

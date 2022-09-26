@@ -44,7 +44,7 @@ final class SupplierRepository extends ServiceEntityRepository {
                 alias: 'o',
                 conditionType: Join::WITH,
                 condition: sprintf(
-                    'o.deliveryCompany = :company AND o.embBlocker.state != \'%s\' AND o.embState.state IN (\'%s\', \'%s\')',
+                    'o.deleted = FALSE AND o.deliveryCompany = :company AND o.embBlocker.state != \'%s\' AND o.embState.state IN (\'%s\', \'%s\')',
                     CloserStateType::TYPE_STATE_CLOSED,
                     OrderStateType::TYPE_STATE_AGREED,
                     OrderStateType::TYPE_STATE_PARTIALLY_DELIVERED
@@ -56,13 +56,14 @@ final class SupplierRepository extends ServiceEntityRepository {
                 alias: 'i',
                 conditionType: Join::WITH,
                 condition: sprintf(
-                    'i.embBlocker.state != \'%s\' AND i.embState.state IN (\'%s\', \'%s\')',
+                    'i.deleted = FALSE AND i.embBlocker.state != \'%s\' AND i.embState.state IN (\'%s\', \'%s\')',
                     ItemCloserStateType::TYPE_STATE_CLOSED,
                     ItemStateType::TYPE_STATE_AGREED,
                     ItemStateType::TYPE_STATE_PARTIALLY_DELIVERED
                 )
             )
-            ->where(sprintf('s.embBlocker.state != \'%s\'', BlockerStateType::TYPE_STATE_DISABLED))
+            ->where('s.deleted = FALSE')
+            ->andWhere(sprintf('s.embBlocker.state != \'%s\'', BlockerStateType::TYPE_STATE_DISABLED))
             ->getQuery()
             ->getResult();
     }

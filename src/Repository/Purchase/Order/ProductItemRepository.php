@@ -4,6 +4,7 @@ namespace App\Repository\Purchase\Order;
 
 use App\Entity\Purchase\Order\ProductItem;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -22,7 +23,9 @@ final class ProductItemRepository extends ItemRepository {
     public function createByQueryBuilder(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): QueryBuilder {
         return parent::createByQueryBuilder($criteria, $orderBy, $limit, $offset)
             ->addSelect('item')
-            ->leftJoin('i.item', 'item');
+            ->addSelect('u')
+            ->leftJoin('i.item', 'item', Join::WITH, 'item.deleted = FALSE')
+            ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
     }
 
     public function createReceiptQueryBuilder(int $id): QueryBuilder {

@@ -7,6 +7,7 @@ use App\Entity\Purchase\Order\ComponentItem;
 use App\Entity\Purchase\Order\Item;
 use App\Entity\Purchase\Order\ProductItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Illuminate\Support\Collection;
@@ -35,8 +36,9 @@ class ItemRepository extends ServiceEntityRepository {
         $qb = $this->createQueryBuilder('i')
             ->addSelect('o')
             ->addSelect('r')
-            ->leftJoin('i.order', 'o')
-            ->leftJoin('i.receipts', 'r')
+            ->leftJoin('i.order', 'o', Join::WITH, 'o.deleted = FALSE')
+            ->leftJoin('i.receipts', 'r', Join::WITH, 'r.deleted = FALSE')
+            ->where('i.deleted = FALSE')
             ->setMaxResults($limit)
             ->setFirstResult($offset);
         if (isset($criteria['embState.state'])) {

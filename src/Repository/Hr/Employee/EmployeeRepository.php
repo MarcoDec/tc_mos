@@ -5,6 +5,7 @@ namespace App\Repository\Hr\Employee;
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
@@ -30,8 +31,9 @@ final class EmployeeRepository extends ServiceEntityRepository implements UserLo
             ->addSelect('partial c.{id}')
             ->addSelect('t')
             ->leftJoin('e.apiTokens', 't')
-            ->leftJoin('e.company', 'c')
-            ->where('e.username = :username')
+            ->leftJoin('e.company', 'c', Join::WITH, 'c.deleted = FALSE')
+            ->where('e.deleted = FALSE')
+            ->andWhere('e.username = :username')
             ->setParameter('username', $identifier)
             ->getQuery();
         try {
