@@ -32,12 +32,16 @@ final class ComponentItemRepository extends ItemRepository {
 
     public function createReceiptQueryBuilder(int $id): QueryBuilder {
         return parent::createReceiptQueryBuilder($id)
+            ->addSelect('family_references')
             ->addSelect('item')
             ->addSelect('item_family')
             ->addSelect('item_references')
-            ->leftJoin('i.item', 'item')
-            ->leftJoin('item.family', 'item_family')
-            ->leftJoin('item.references', 'item_references');
+            ->addSelect('u')
+            ->leftJoin('i.item', 'item', Join::WITH, 'item.deleted = FALSE')
+            ->leftJoin('item.family', 'item_family', Join::WITH, 'item_family.deleted = FALSE')
+            ->leftJoin('item_family.references', 'family_references', Join::WITH, 'family_references.deleted = FALSE')
+            ->leftJoin('item.references', 'item_references', Join::WITH, 'item_references.deleted = FALSE')
+            ->leftJoin('item.unit', 'u', Join::WITH, 'u.deleted = FALSE');
     }
 
     /**
