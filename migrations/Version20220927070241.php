@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220909074535 extends AbstractMigration {
+final class Version20220927070241 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -330,6 +330,8 @@ SQL);
         $this->addQuery('ALTER TABLE `stock` DROP `old_id`');
         $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
+        // views
+        $this->viewStockGrouped();
     }
 
     private function upAttributes(): void {
@@ -5108,5 +5110,56 @@ INNER JOIN `society` ON `society_zone`.`id_society` = `society`.`old_id`
 INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
 SQL);
         $this->addQuery('DROP TABLE `society_zone`');
+    }
+
+    private function viewStockGrouped(): void {
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stock_grouped` AS
+SELECT
+    `stocked`.`warehouse_id`,
+    CONCAT('/api/components/', `stocked`.`item_id`) AS `@item_id`,
+    'Component' AS `@item_type`,
+    `stocked`.`item_id`,
+    `stocked`.`item_code`,
+    `stocked`.`item_name`,
+    `stocked`.`item_unit_code`,
+    `stocked`.`batch_number`
+FROM (
+    SELECT
+        IF(`s`.`batch_number` IS NULL, 'NULL', `s`.`batch_number`) AS `batch_number`,
+        CONCAT(`f`.`code`, '-', `c`.`id`) AS `item_code`,
+        `s`.`component_id` AS `item_id`,
+        `c`.`name` AS `item_name`,
+        `u`.`code` AS `item_unit_code`,
+        `s`.`quantity_code`,
+        `s`.`quantity_denominator`,
+        `s`.`quantity_value`,
+        `s`.`warehouse_id`
+    FROM `stock` `s`
+    INNER JOIN `component` `c`
+        ON `s`.`component_id` = `c`.`id`
+        AND `c`.`deleted` = FALSE
+    INNER JOIN `component_family` `f`
+        ON `c`.`family_id` = `f`.`id`
+        AND `f`.`deleted` = FALSE
+    INNER JOIN `unit` `u`
+        ON `c`.`unit_id` = `u`.`id`
+        AND `u`.`deleted` = FALSE
+    WHERE `s`.`deleted` = FALSE
+    AND `s`.`type` = 'component'
+    AND `s`.`quantity_code` IS NOT NULL
+    AND `s`.`quantity_value` > 0
+) `stocked`
+GROUP BY
+    `stocked`.`warehouse_id`,
+    `stocked`.`item_id`,
+    `stocked`.`item_code`,
+    `stocked`.`batch_number`
+ORDER BY
+    `stocked`.`warehouse_id`,
+    `stocked`.`item_id`,
+    `stocked`.`item_code`,
+    `stocked`.`batch_number`
+SQL);
     }
 }
