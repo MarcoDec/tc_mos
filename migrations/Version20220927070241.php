@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220927092121 extends AbstractMigration {
+final class Version20220927070241 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -5114,38 +5114,17 @@ SQL);
 
     private function viewStockGrouped(): void {
         $this->addQuery(<<<'SQL'
-CREATE VIEW `measure_unit` AS
-WITH RECURSIVE `unit_tree`
-    (`id`, `base`, `level`, `parent_id`)
-AS (
-    SELECT
-            `unit`.`id`,
-            `unit`.`base`,
-            0 as `level`,
-            `unit`.`parent_id`
-        FROM `unit`
-        WHERE `unit`.`deleted` = FALSE
-        AND `unit`.`parent_id` IS NULL
-    UNION ALL
-    SELECT
-            `unit`.`id`,
-            `unit`.`base`,
-            `unit_tree`.`level` + 1 as `level`,
-            `unit`.`parent_id`
-        FROM `unit`, `unit_tree`
-        WHERE `unit`.`deleted` = FALSE
-        AND `unit`.`parent_id` = `unit_tree`.`id`
-)
-SELECT
-    `unit_tree`.`id`,
-    `unit_tree`.`base`,
-    `unit_tree`.`level`,
-    `unit_tree`.`parent_id`
-FROM `unit_tree`
-SQL);
-        $this->addQuery(<<<'SQL'
 CREATE VIEW `stock_grouped` AS
-WITH `stocked` AS (
+SELECT
+    `stocked`.`warehouse_id`,
+    CONCAT('/api/components/', `stocked`.`item_id`) AS `@item_id`,
+    'Component' AS `@item_type`,
+    `stocked`.`item_id`,
+    `stocked`.`item_code`,
+    `stocked`.`item_name`,
+    `stocked`.`item_unit_code`,
+    `stocked`.`batch_number`
+FROM (
     SELECT
         IF(`s`.`batch_number` IS NULL, 'NULL', `s`.`batch_number`) AS `batch_number`,
         CONCAT(`f`.`code`, '-', `c`.`id`) AS `item_code`,
@@ -5170,17 +5149,7 @@ WITH `stocked` AS (
     AND `s`.`type` = 'component'
     AND `s`.`quantity_code` IS NOT NULL
     AND `s`.`quantity_value` > 0
-)
-SELECT
-    `stocked`.`warehouse_id`,
-    CONCAT('/api/components/', `stocked`.`item_id`) AS `@item_id`,
-    'Component' AS `@item_type`,
-    `stocked`.`item_id`,
-    `stocked`.`item_code`,
-    `stocked`.`item_name`,
-    `stocked`.`item_unit_code`,
-    `stocked`.`batch_number`
-FROM `stocked`
+) `stocked`
 GROUP BY
     `stocked`.`warehouse_id`,
     `stocked`.`item_id`,
