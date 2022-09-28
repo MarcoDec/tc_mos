@@ -7,17 +7,31 @@ use App\Entity\EntityId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 use Illuminate\Support\Collection as LaravelCollection;
-use JetBrains\PhpStorm\Pure;
 use LogicException;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\MappedSuperclass]
-abstract class AbstractUnit extends EntityId {
+#[
+    Gedmo\Tree(type: 'nested'),
+    ORM\MappedSuperclass(repositoryClass: NestedTreeRepository::class)
+]
+class AbstractUnit extends EntityId {
     final public const UNIT_CODE_MAX_LENGTH = 6;
 
+    #[
+        ApiProperty(description: 'Base', required: true, example: 1),
+        Assert\NotBlank,
+        Assert\Positive,
+        ORM\Column(options: ['default' => 1]),
+        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
+    ]
+    protected float $base = 1;
+
     /** @var Collection<int, static> */
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     protected Collection $children;
 
     #[
@@ -28,6 +42,18 @@ abstract class AbstractUnit extends EntityId {
         Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
     ]
     protected ?string $code = null;
+
+    #[
+        Gedmo\TreeLeft,
+        ORM\Column(options: ['default' => 1, 'unsigned' => true])
+    ]
+    protected int $lft = 1;
+
+    #[
+        Gedmo\TreeLevel,
+        ORM\Column(options: ['default' => 0, 'unsigned' => true])
+    ]
+    protected int $lvl = 0;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Gramme'),
@@ -41,34 +67,32 @@ abstract class AbstractUnit extends EntityId {
     /** @var null|static */
     protected $parent;
 
-    #[
-        ApiProperty(description: 'Base', required: true, example: 1),
-        Assert\NotBlank,
-        Assert\Positive,
-        ORM\Column(options: ['default' => 1]),
-        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
-    ]
-    private float $base = 1;
+    protected ?NestedTreeRepository $repo = null;
 
-    #[Pure]
+    #[
+        Gedmo\TreeRight,
+        ORM\Column(options: ['default' => 2, 'unsigned' => true])
+    ]
+    protected int $rgt = 2;
+
+    /** @var null|static */
+    protected $root;
+
     public function __construct() {
         $this->children = new ArrayCollection();
     }
 
     /**
-     * @param static $children
+     * @param static $child
      */
-    final public function addChild(self $children): self {
-        if (!$this->children->contains($children)) {
-            $this->children->add($children);
-            $children->setParent($this);
+    final public function addChild(self $child): self {
+        if (!$this->children->contains($child)) {
+            $this->children->add($child);
+            $child->setParent($this);
         }
         return $this;
     }
 
-    /**
-     * @param null|static $unit
-     */
     final public function assertSameAs(?self $unit): void {
         if ($unit === null || $unit->code === null) {
             throw new LogicException('No code defined.');
@@ -93,20 +117,21 @@ abstract class AbstractUnit extends EntityId {
         return $this->code;
     }
 
-    /**
-     * @param static $unit
-     */
-    #[Pure]
     final public function getConvertorDistance(self $unit): float {
         $distance = $this->getDistance($unit);
         return $this->isLessThan($unit) ? 1 / $distance : $distance;
     }
 
-    /**
-     * @param static $unit
-     */
     final public function getLess(self $unit): self {
         return $this->base < $unit->base ? $this : $unit;
+    }
+
+    final public function getLft(): int {
+        return $this->lft;
+    }
+
+    final public function getLvl(): int {
+        return $this->lvl;
     }
 
     public function getName(): ?string {
@@ -120,12 +145,24 @@ abstract class AbstractUnit extends EntityId {
         return $this->parent;
     }
 
-    #[
-        Pure,
-        Serializer\Groups(['read:currency', 'read:unit'])
-    ]
+    #[Serializer\Groups(['read:currency', 'read:unit'])]
     final public function getParentId(): int {
         return $this->parent?->getId() ?? 0;
+    }
+
+    final public function getRepo(): ?NestedTreeRepository {
+        return $this->repo;
+    }
+
+    final public function getRgt(): int {
+        return $this->rgt;
+    }
+
+    /**
+     * @return null|static
+     */
+    final public function getRoot(): ?self {
+        return $this->root;
     }
 
     #[Serializer\Groups(['read:unit:option'])]
@@ -133,29 +170,22 @@ abstract class AbstractUnit extends EntityId {
         return $this->getCode();
     }
 
-    /**
-     * @param null|static $unit
-     */
     final public function has(?self $unit): bool {
         return $unit !== null && $this->getFamily()->contains(static fn (self $member): bool => $member->getId() === $unit->getId());
     }
 
-    /**
-     * @param static $unit
-     */
-    #[Pure]
     final public function isLessThan(self $unit): bool {
         return $this->getLess($unit) === $this;
     }
 
     /**
-     * @param static $children
+     * @param static $child
      */
-    final public function removeChild(self $children): self {
-        if ($this->children->contains($children)) {
-            $this->children->removeElement($children);
-            if ($children->getParent() === $this) {
-                $children->setParent(null);
+    final public function removeChild(self $child): self {
+        if ($this->children->contains($child)) {
+            $this->children->removeElement($child);
+            if ($child->getParent() === $this) {
+                $child->setParent(null);
             }
         }
         return $this;
@@ -171,6 +201,16 @@ abstract class AbstractUnit extends EntityId {
         return $this;
     }
 
+    final public function setLft(int $lft): self {
+        $this->lft = $lft;
+        return $this;
+    }
+
+    final public function setLvl(int $lvl): self {
+        $this->lvl = $lvl;
+        return $this;
+    }
+
     final public function setName(?string $name): self {
         $this->name = $name;
         return $this;
@@ -178,28 +218,47 @@ abstract class AbstractUnit extends EntityId {
 
     /**
      * @param null|static $parent
+     *
+     * @return $this
      */
     final public function setParent(?self $parent): self {
+        if (empty($parent)) {
+            $this->parent?->removeChild($this);
+        } else {
+            $parent->addChild($this);
+        }
         $this->parent = $parent;
         return $this;
     }
 
     /**
-     * @return LaravelCollection<int, static>
+     * @return $this
      */
-    private function getDepthChildren(): LaravelCollection {
-        /** @var LaravelCollection<int, static> $children */
-        $children = collect($this->getChildren()->getValues())
-            ->map(static fn (self $child): array => $child->getDepthChildren()->push($child)->values()->all())
-            ->flatten()
-            ->unique->getId();
-        return $children->values();
+    final public function setRepo(?NestedTreeRepository $repo): self {
+        $this->repo = $repo;
+        return $this;
+    }
+
+    final public function setRgt(int $rgt): self {
+        $this->rgt = $rgt;
+        return $this;
     }
 
     /**
-     * @param static $unit
+     * @param null|static $root
      */
-    #[Pure]
+    final public function setRoot(?self $root): self {
+        $this->root = $root;
+        return $this;
+    }
+
+    /**
+     * @return LaravelCollection<int, self>
+     */
+    private function getDepthChildren(): LaravelCollection {
+        return collect($this->repo?->children(node: $this, includeNode: true))->values();
+    }
+
     private function getDistance(self $unit): float {
         return $this->getDistanceBase() * $unit->getDistanceBase();
     }
@@ -209,21 +268,17 @@ abstract class AbstractUnit extends EntityId {
     }
 
     /**
-     * @return LaravelCollection<int, static>
+     * @return LaravelCollection<int, self>
      */
     private function getFamily(): LaravelCollection {
-        /** @var static $root */
-        $root = $this->getRoot();
-        /** @var LaravelCollection<int, static> $children */
-        $children = $root->getDepthChildren()->push($root)->unique->getId();
-        return $children->values();
-    }
-
-    private function getRoot(): self {
-        $root = $this;
-        while ($root->parent !== null) {
-            $root = $root->parent;
+        if ($this->root?->getId() === $this->getId()) {
+            return $this->getDepthChildren();
         }
-        return $root;
+        if (empty($this->root)) {
+            /** @var self[] $empty */
+            $empty = [];
+            return collect($empty);
+        }
+        return $this->root->getFamily();
     }
 }

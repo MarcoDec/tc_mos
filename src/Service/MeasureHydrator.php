@@ -33,6 +33,7 @@ final class MeasureHydrator {
             return null;
         }
         $units = $this->cache->get('measure-units', fn () => $this->repo->loadAll());
-        return $units[$code] ?? null;
+        $unit = $units[$code] ?? null;
+        return $unit?->setRepo($this->repo);
     }
 }

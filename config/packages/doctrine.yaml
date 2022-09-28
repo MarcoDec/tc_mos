@@ -68,6 +68,11 @@ doctrine:
             is_bundle: false
             prefix: App\Entity
             type: attribute
+          Tree:
+            alias: Gedmo
+            dir: '%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Tree/Entity'
+            prefix: Gedmo\Tree\Entity
+            type: attribute
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
       migrations:
         connection: migrations
@@ -80,6 +85,11 @@ doctrine:
             dir: '%kernel.project_dir%/src/Entity'
             is_bundle: false
             prefix: App\Entity
+            type: attribute
+          Tree:
+            alias: Gedmo
+            dir: '%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Tree/Entity'
+            prefix: Gedmo\Tree\Entity
             type: attribute
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
 

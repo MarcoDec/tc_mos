@@ -4,6 +4,7 @@ namespace App\Tests\Entity\Embeddable;
 
 use App\Entity\Embeddable\Measure;
 use App\Entity\Management\Unit;
+use App\Repository\Management\UnitRepository;
 use PHPUnit\Framework\TestCase;
 
 final class MeasureTest extends TestCase {
@@ -147,22 +148,53 @@ final class MeasureTest extends TestCase {
     }
 
     protected function setUp(): void {
+        $durationRepo = $this->createMock(UnitRepository::class);
         /** @var Unit $h */
-        $h = (new Unit())->setBase(3600)->setCode('h');
+        $h = (new Unit())
+            ->setRepo($durationRepo)
+            ->setBase(3600)
+            ->setCode('h');
         /** @var Unit $s */
-        $s = (new Unit())->setBase(1)->setCode('s')->addChild($h);
+        $s = (new Unit())
+            ->setRepo($durationRepo)
+            ->setBase(1)
+            ->setCode('s')
+            ->addChild($h);
+        $durationRepo->method('children')->willReturn(collect([$h, $s]));
 
+        $massRepo = $this->createMock(UnitRepository::class);
         /** @var Unit $mg */
-        $mg = (new Unit())->setBase(0.001)->setCode('mg');
+        $mg = (new Unit())
+            ->setRepo($massRepo)
+            ->setBase(0.001)
+            ->setCode('mg');
         /** @var Unit $kg */
-        $kg = (new Unit())->setBase(1000)->setCode('kg');
+        $kg = (new Unit())
+            ->setRepo($massRepo)
+            ->setBase(1000)
+            ->setCode('kg');
         /** @var Unit $g */
-        $g = (new Unit())->setBase(1)->setCode('g')->addChild($kg)->addChild($mg);
+        $g = (new Unit())
+            ->setRepo($massRepo)
+            ->setBase(1)
+            ->setCode('g')
+            ->addChild($kg)
+            ->addChild($mg);
+        $massRepo->method('children')->willReturn(collect([$mg, $kg, $g]));
 
+        $distanceRepo = $this->createMock(UnitRepository::class);
         /** @var Unit $km */
-        $km = (new Unit())->setBase(1000)->setCode('km');
+        $km = (new Unit())
+            ->setRepo($distanceRepo)
+            ->setBase(1000)
+            ->setCode('km');
         /** @var Unit $m */
-        $m = (new Unit())->setBase(1)->setCode('m')->addChild($km);
+        $m = (new Unit())
+            ->setRepo($distanceRepo)
+            ->setBase(1)
+            ->setCode('m')
+            ->addChild($km);
+        $distanceRepo->method('children')->willReturn(collect([$mg, $kg, $g]));
 
         $this->units = [
             'h' => $h,

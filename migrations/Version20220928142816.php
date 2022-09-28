@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220927070241 extends AbstractMigration {
+final class Version20220928142816 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -1465,25 +1465,35 @@ CREATE TABLE `currency` (
     `active` BOOLEAN DEFAULT FALSE NOT NULL,
     `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
     `code` CHAR(3) NOT NULL COMMENT '(DC2Type:char)',
+    `lft` INT UNSIGNED DEFAULT 1 NOT NULL,
+    `lvl` INT UNSIGNED DEFAULT 0 NOT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL,
-    CONSTRAINT `IDX_6956883F727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `currency` (`id`)
+    `rgt` INT UNSIGNED DEFAULT 2 NOT NULL,
+    `root_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_6956883F727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `currency` (`id`),
+    CONSTRAINT `IDX_6956883F79066886` FOREIGN KEY (`root_id`) REFERENCES `currency` (`id`)
 )
 SQL);
-        $currencies = collect(Currencies::getCurrencyCodes())
-            ->map(fn (string $code): string => sprintf(
-                "(%s, {$this->platform->quoteStringLiteral($code)}, %s)",
-                $code !== 'EUR' ? 1 : 'NULL',
-                in_array($code, ['CHF', 'EUR', 'MDL', 'RUB', 'TND', 'USD', 'VND']) ? 'TRUE' : 'FALSE'
-            ));
-        /** @var string $parent */
-        $parent = $currencies->first(static fn (string $query): bool => str_contains($query, 'EUR'));
-        $this->addQuery(sprintf(
-            'INSERT INTO `currency` (`parent_id`, `code`, `active`) VALUES %s',
-            $currencies
-                ->filter(static fn (string $query): bool => !str_contains($query, 'EUR'))
-                ->prepend($parent)
-                ->join(',')
-        ));
+        $codes = Currencies::getCurrencyCodes();
+        $lft = 2;
+        $rgt = 3;
+        $currencies = [];
+        foreach ($codes as $code) {
+            if ($code !== 'EUR') {
+                $currencies[] = sprintf(
+                    "(%s, {$this->platform->quoteStringLiteral($code)}, $lft, 1, 1, $rgt, 1)",
+                    in_array($code, ['CHF', 'MDL', 'RUB', 'TND', 'USD', 'VND']) ? 'TRUE' : 'FALSE'
+                );
+                $lft += 2;
+                $rgt += 2;
+            }
+        }
+        $query = <<<SQL
+INSERT INTO `currency` (`active`, `code`, `lft`, `lvl`, `parent_id`, `rgt`, `root_id`) VALUES
+(TRUE, 'EUR', 1, 0, NULL, $rgt - 1, 1),
+SQL;
+        $query .= implode(',', $currencies);
+        $this->addQuery($query);
     }
 
     private function upCustomCode(): void {
@@ -5000,24 +5010,62 @@ SQL);
     private function upUnits(): void {
         $this->addQuery(<<<'SQL'
 CREATE TABLE `unit` (
-  `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-  `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
-  `unit_short_lbl` VARCHAR(6) NOT NULL,
-  `unit_complete_lbl` VARCHAR(50) NOT NULL,
-  `parent` INT UNSIGNED DEFAULT NULL
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
+    `lft` INT UNSIGNED DEFAULT NULL,
+    `parent` INT UNSIGNED DEFAULT NULL,
+    `rgt` INT UNSIGNED DEFAULT NULL,
+    `unit_short_lbl` VARCHAR(6) NOT NULL,
+    `unit_complete_lbl` VARCHAR(50) NOT NULL
 )
 SQL);
-        $this->insert('unit', ['id', 'statut', 'base', 'unit_short_lbl', 'unit_complete_lbl', 'parent']);
+        $this->insert('unit', ['id', 'base', 'lft', 'parent', 'rgt', 'unit_short_lbl', 'unit_complete_lbl']);
+        $this->addQuery('RENAME TABLE `unit` TO `old_unit`');
         $this->addQuery(<<<'SQL'
-ALTER TABLE `unit`
-    CHANGE `parent` `parent_id` INT UNSIGNED DEFAULT NULL,
-    CHANGE `statut` `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    CHANGE `unit_complete_lbl` `name` VARCHAR(50) NOT NULL,
-    CHANGE `unit_short_lbl` `code` VARCHAR(6) NOT NULL COLLATE `utf8_bin`,
-    ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`)
+CREATE TABLE `unit` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
+    `code` VARCHAR(6) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+    `lft` INT UNSIGNED NOT NULL DEFAULT 1,
+    `lvl` INT UNSIGNED NOT NULL DEFAULT 0,
+    `name` VARCHAR(50) NOT NULL,
+    `parent_id` INT UNSIGNED DEFAULT NULL,
+    `rgt` INT UNSIGNED NOT NULL DEFAULT 2,
+    `root_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`),
+    CONSTRAINT `IDX_DCBB0C5379066886` FOREIGN KEY (`root_id`) REFERENCES `unit` (`id`)
+)
 SQL);
-        $this->addQuery('UPDATE `unit` SET `name` = UCFIRST(`name`)');
+        $this->addQuery(<<<'SQL'
+INSERT INTO `unit` (`id`, `base`, `code`, `lft`, `name`, `rgt`, `root_id`)
+SELECT
+    `id`,
+    `base`,
+    `unit_short_lbl`,
+    IFNULL(`lft`, 1),
+    UCFIRST(`unit_complete_lbl`),
+    IFNULL(`rgt`, 2),
+    `id`
+FROM `old_unit`
+WHERE `parent` IS NULL
+SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `unit` (`id`, `base`, `code`, `lft`, `lvl`, `name`, `parent_id`, `rgt`, `root_id`)
+SELECT
+    `old_unit`.`id`,
+    `old_unit`.`base`,
+    `old_unit`.`unit_short_lbl`,
+    `old_unit`.`lft`,
+    `parent`.`lvl` + 1,
+    UCFIRST(`old_unit`.`unit_complete_lbl`),
+    `old_unit`.`parent`,
+    `old_unit`.`rgt`,
+    `parent`.`root_id`
+FROM `old_unit`
+INNER JOIN `unit` `parent` ON `old_unit`.`parent` = `parent`.`id`
+SQL);
+        $this->addQuery('DROP TABLE `old_unit`');
     }
 
     private function upVatMessages(): void {
