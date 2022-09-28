@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220928142816 extends AbstractMigration {
+final class Version20220928173347 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -5162,6 +5162,90 @@ SQL);
 
     private function viewStockGrouped(): void {
         $this->addQuery(<<<'SQL'
+CREATE VIEW `stocked` AS
+SELECT
+    IF(`s`.`batch_number` IS NULL, 'NULL', `s`.`batch_number`) AS `batch_number`,
+    CONCAT(`f`.`code`, '-', `c`.`id`) AS `item_code`,
+    `s`.`component_id` AS `item_id`,
+    `c`.`name` AS `item_name`,
+    `u`.`code` AS `item_unit_code`,
+    `s`.`quantity_code`,
+    `s`.`quantity_value`,
+    `s`.`warehouse_id`
+FROM `stock` `s`
+INNER JOIN `component` `c`
+    ON `s`.`component_id` = `c`.`id`
+    AND `c`.`deleted` = FALSE
+INNER JOIN `component_family` `f`
+    ON `c`.`family_id` = `f`.`id`
+    AND `f`.`deleted` = FALSE
+INNER JOIN `unit` `u`
+    ON `c`.`unit_id` = `u`.`id`
+    AND `u`.`deleted` = FALSE
+WHERE `s`.`deleted` = FALSE
+    AND `s`.`type` = 'component'
+    AND `s`.`quantity_code` IS NOT NULL
+    AND `s`.`quantity_value` > 0
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stocked_unit` AS
+SELECT
+    `unit`.`code`,
+    `unit`.`base`,
+    IF(`unit`.`base` > 1, `unit`.`base`, 1 / `unit`.`base`) as `distance_base`
+FROM `stocked`
+INNER JOIN `unit` ON `stocked`.`quantity_code` = `unit`.`code`
+GROUP BY `unit`.`id`
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stocked_converted` AS
+SELECT
+    `stocked`.`batch_number`,
+    `stocked`.`item_code`,
+    `stocked`.`item_id`,
+    `stocked`.`item_name`,
+    `stocked`.`item_unit_code`,
+    (
+        SELECT `stocked_unit_min`.`code`
+        FROM `stocked_unit` `stocked_unit_min`
+        WHERE `stocked_unit_min`.`code` IN (
+            SELECT `stocked_unit_group`.`code`
+            FROM `stocked` `min`
+            INNER JOIN `stocked_unit` `stocked_unit_group` ON `min`.`quantity_code` = `stocked_unit_group`.`code`
+            WHERE `min`.`item_id` = `stocked`.`item_id`
+        )
+        AND `stocked_unit_min`.`base` IN (
+            SELECT MIN(`stocked_unit_group`.`base`)
+            FROM `stocked` `min`
+            INNER JOIN `stocked_unit` `stocked_unit_group` ON `min`.`quantity_code` = `stocked_unit_group`.`code`
+            WHERE `min`.`item_id` = `stocked`.`item_id`
+        )
+    ) AS `quantity_code`,
+    `stocked`.`quantity_value` * (
+        SELECT IF(
+            `stocked_unit_min`.`code` = `stocked`.`quantity_code`,
+            1,
+            `stocked_unit_min`.`distance_base` * `stocked_unit`.`distance_base`
+        )
+        FROM `stocked_unit` `stocked_unit_min`
+        WHERE `stocked_unit_min`.`code` IN (
+            SELECT `stocked_unit_group`.`code`
+            FROM `stocked` `min`
+            INNER JOIN `stocked_unit` `stocked_unit_group` ON `min`.`quantity_code` = `stocked_unit_group`.`code`
+            WHERE `min`.`item_id` = `stocked`.`item_id`
+        )
+        AND `stocked_unit_min`.`base` IN (
+            SELECT MIN(`stocked_unit_group`.`base`)
+            FROM `stocked` `min`
+            INNER JOIN `stocked_unit` `stocked_unit_group` ON `min`.`quantity_code` = `stocked_unit_group`.`code`
+            WHERE `min`.`item_id` = `stocked`.`item_id`
+        )
+    ) AS `quantity_value`,
+    `stocked`.`warehouse_id`
+FROM `stocked`
+INNER JOIN `stocked_unit` ON `stocked`.`quantity_code` = `stocked_unit`.`code`
+SQL);
+        $this->addQuery(<<<'SQL'
 CREATE VIEW `stock_grouped` AS
 SELECT
     `stocked`.`warehouse_id`,
@@ -5171,43 +5255,22 @@ SELECT
     `stocked`.`item_code`,
     `stocked`.`item_name`,
     `stocked`.`item_unit_code`,
-    `stocked`.`batch_number`
-FROM (
-    SELECT
-        IF(`s`.`batch_number` IS NULL, 'NULL', `s`.`batch_number`) AS `batch_number`,
-        CONCAT(`f`.`code`, '-', `c`.`id`) AS `item_code`,
-        `s`.`component_id` AS `item_id`,
-        `c`.`name` AS `item_name`,
-        `u`.`code` AS `item_unit_code`,
-        `s`.`quantity_code`,
-        `s`.`quantity_denominator`,
-        `s`.`quantity_value`,
-        `s`.`warehouse_id`
-    FROM `stock` `s`
-    INNER JOIN `component` `c`
-        ON `s`.`component_id` = `c`.`id`
-        AND `c`.`deleted` = FALSE
-    INNER JOIN `component_family` `f`
-        ON `c`.`family_id` = `f`.`id`
-        AND `f`.`deleted` = FALSE
-    INNER JOIN `unit` `u`
-        ON `c`.`unit_id` = `u`.`id`
-        AND `u`.`deleted` = FALSE
-    WHERE `s`.`deleted` = FALSE
-    AND `s`.`type` = 'component'
-    AND `s`.`quantity_code` IS NOT NULL
-    AND `s`.`quantity_value` > 0
-) `stocked`
+    `stocked`.`batch_number`,
+    `stocked`.`quantity_code`,
+    SUM(`stocked`.`quantity_value`) AS `quantity_value`
+FROM `stocked`
 GROUP BY
     `stocked`.`warehouse_id`,
     `stocked`.`item_id`,
     `stocked`.`item_code`,
-    `stocked`.`batch_number`
+    `stocked`.`batch_number`,
+    `stocked`.`quantity_code`
 ORDER BY
     `stocked`.`warehouse_id`,
     `stocked`.`item_id`,
     `stocked`.`item_code`,
-    `stocked`.`batch_number`
+    `stocked`.`batch_number`,
+    `stocked`.`quantity_code`
 SQL);
     }
 }
