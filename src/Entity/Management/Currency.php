@@ -8,7 +8,6 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Repository\CurrencyRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -65,17 +64,10 @@ class Currency extends AbstractUnit {
 
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/currencies/1'),
-        Gedmo\TreeParent,
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:currency'])
     ]
     protected $parent;
-
-    #[
-        Gedmo\TreeRoot,
-        ORM\ManyToOne(targetEntity: self::class)
-    ]
-    protected $root;
 
     #[
         ApiProperty(description: 'Active', example: true),

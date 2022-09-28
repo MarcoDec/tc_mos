@@ -3,13 +3,21 @@
 namespace App\Repository\Management;
 
 use App\Entity\Management\Unit;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
-use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class UnitRepository extends NestedTreeRepository {
-    public function __construct(EntityManagerInterface $em) {
-        parent::__construct($em, $em->getClassMetadata(Unit::class));
+/**
+ * @extends ServiceEntityRepository<Unit>
+ *
+ * @method null|Unit find($id, $lockMode = null, $lockVersion = null)
+ * @method null|Unit findOneBy(array $criteria, ?array $orderBy = null)
+ * @method Unit[]    findAll()
+ * @method Unit[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+final class UnitRepository extends ServiceEntityRepository {
+    public function __construct(ManagerRegistry $registry) {
+        parent::__construct($registry, Unit::class);
     }
 
     /**
@@ -47,9 +55,6 @@ class UnitRepository extends NestedTreeRepository {
         $loaded = [];
         foreach ($units as $unit) {
             self::loadUnit($unit, $loaded);
-        }
-        foreach ($units as $unit) {
-            $unit->setRepo(null);
         }
         return $units;
     }

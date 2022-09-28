@@ -16,7 +16,6 @@ use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator\Management\Unit\Base;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
@@ -100,15 +99,8 @@ class Unit extends AbstractUnit {
 
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/units/1'),
-        Gedmo\TreeParent,
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected $parent;
-
-    #[
-        Gedmo\TreeRoot,
-        ORM\ManyToOne(targetEntity: self::class)
-    ]
-    protected $root;
 }

@@ -21,9 +21,7 @@
     "unit_short_lbl": "m²",
     "unit_complete_lbl": "Mètre carré",
     "base": "1",
-    "parent": null,
-    "lft": 1,
-    "rgt": 4
+    "parent": null
   },
   {
     "id": "4",
@@ -31,9 +29,7 @@
     "unit_short_lbl": "g",
     "unit_complete_lbl": "Gramme",
     "base": "0.001",
-    "parent": "5",
-    "lft": 2,
-    "rgt": 3
+    "parent": "5"
   },
   {
     "id": "5",
@@ -41,9 +37,7 @@
     "unit_short_lbl": "Kg",
     "unit_complete_lbl": "Kilogramme",
     "base": "1",
-    "parent": null,
-    "lft": 1,
-    "rgt": 4
+    "parent": null
   },
   {
     "id": "6",
@@ -51,9 +45,7 @@
     "unit_short_lbl": "L",
     "unit_complete_lbl": "Litre",
     "base": "1",
-    "parent": null,
-    "lft": 1,
-    "rgt": 4
+    "parent": null
   },
   {
     "id": "7",
@@ -61,9 +53,7 @@
     "unit_short_lbl": "km",
     "unit_complete_lbl": "Kilomètre",
     "base": "1000",
-    "parent": "10",
-    "lft": 2,
-    "rgt": 3
+    "parent": "10"
   },
   {
     "id": "8",
@@ -71,9 +61,7 @@
     "unit_short_lbl": "ft",
     "unit_complete_lbl": "Pied",
     "base": "0.3048",
-    "parent": "10",
-    "lft": 4,
-    "rgt": 5
+    "parent": "10"
   },
   {
     "id": "9",
@@ -81,9 +69,7 @@
     "unit_short_lbl": "mL",
     "unit_complete_lbl": "Millilitre",
     "base": "0.001",
-    "parent": "6",
-    "lft": 2,
-    "rgt": 3
+    "parent": "6"
   },
   {
     "id": "10",
@@ -91,9 +77,7 @@
     "unit_short_lbl": "m",
     "unit_complete_lbl": "Mètre",
     "base": "1",
-    "parent": null,
-    "lft": 1,
-    "rgt": 8
+    "parent": null
   },
   {
     "id": "11",
@@ -101,9 +85,7 @@
     "unit_short_lbl": "s",
     "unit_complete_lbl": "Seconde",
     "base": "1",
-    "parent": null,
-    "lft": 1,
-    "rgt": 6
+    "parent": null
   },
   {
     "id": "12",
@@ -111,9 +93,7 @@
     "unit_short_lbl": "h",
     "unit_complete_lbl": "Heure",
     "base": "3600",
-    "parent": "11",
-    "lft": 2,
-    "rgt": 3
+    "parent": "11"
   },
   {
     "id": "13",
@@ -121,9 +101,7 @@
     "unit_short_lbl": "j",
     "unit_complete_lbl": "Jour",
     "base": "86400",
-    "parent": "11",
-    "lft": 4,
-    "rgt": 5
+    "parent": "11"
   },
   {
     "id": "14",
@@ -131,9 +109,7 @@
     "unit_short_lbl": "mm²",
     "unit_complete_lbl": "Millimètre carré",
     "base": "1000000",
-    "parent": "3",
-    "lft": 2,
-    "rgt": 3
+    "parent": "3"
   },
   {
     "id": "15",
@@ -149,9 +125,7 @@
     "unit_short_lbl": "mm",
     "unit_complete_lbl": "Millimètre",
     "base": "1000",
-    "parent": "10",
-    "lft": 6,
-    "rgt": 7
+    "parent": "10"
   },
   {
     "id": "17",
