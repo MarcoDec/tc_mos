@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\MappedSuperclass]
-abstract class Family extends EntityId implements FileEntity {
+abstract class Family extends Entity implements FileEntity {
     use FileTrait;
 
     /** @var Collection<int, static> */

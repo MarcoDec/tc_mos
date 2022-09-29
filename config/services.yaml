@@ -19,6 +19,11 @@ services:
     resource: ../src/Controller
     tags: [ controller.service_arguments ]
 
+  App\Controller\Logistics\Stock\StockController:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
+    tags: [ controller.service_arguments ]
+
   App\DataProvider\Purchase\Order\ItemDataProvider:
     arguments:
       $itemPerPage: '%api_platform.collection.pagination.items_per_page%'

@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Management\PrinterColorType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -32,7 +32,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity(readOnly: true)
 ]
-class Printer extends EntityId {
+class Printer extends Entity {
     #[
         ApiProperty(description: 'Couleur', openapiContext: ['enum' => PrinterColorType::TYPES]),
         ORM\Column(type: 'printer_color', options: ['default' => PrinterColorType::TYPE_GREEN]),

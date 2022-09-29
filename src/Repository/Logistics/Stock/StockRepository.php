@@ -8,7 +8,6 @@ use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Logistics\Warehouse;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -26,15 +25,42 @@ class StockRepository extends ServiceEntityRepository {
         parent::__construct($registry, $entityClass);
     }
 
+    public function countGrouped(Warehouse $warehouse): int {
+        /** @phpstan-ignore-next-line */
+        return $this->_em->getConnection()->executeQuery(
+            sql: 'SELECT COUNT(*) FROM `stock_grouped` WHERE `warehouse_id` = :warehouse',
+            params: ['warehouse' => $warehouse->getId()]
+        )->fetchOne();
+    }
+
     /**
-     * @return (ComponentStock|ProductStock)[]
+     * @return mixed[]
      */
-    public function findByGrouped(Warehouse $warehouse): array {
-        /** @var (ComponentStock|ProductStock)[] $componentsStocks */
-        $componentsStocks = $this->_em->getRepository(ComponentStock::class)->findByGrouped($warehouse);
-        /** @var (ComponentStock|ProductStock)[] $productStocks */
-        $productStocks = $this->_em->getRepository(ProductStock::class)->findByGrouped($warehouse);
-        return collect($componentsStocks)->merge($productStocks)->values()->all();
+    public function findGrouped(Warehouse $warehouse, int $limit, int $offset): array {
+        return collect($this->_em->getConnection()->executeQuery(
+            sql: "SELECT * FROM `stock_grouped` WHERE `warehouse_id` = :warehouse LIMIT $limit OFFSET $offset",
+            params: ['warehouse' => $warehouse->getId()]
+        )->fetchAllAssociative())
+            ->map(static function (array $stock): array {
+                return [
+                    'batchNumber' => $stock['batch_number'],
+                    'item' => [
+                        '@id' => $stock['@item_id'],
+                        '@type' => $stock['@item_type'],
+                        'id' => $stock['item_id'],
+                        'code' => $stock['item_code'],
+                        'name' => $stock['item_name'],
+                        'unitCode' => $stock['item_unit_code'],
+                    ],
+                    'quantity' => [
+                        'code' => $stock['quantity_code'],
+                        'value' => $stock['quantity_value']
+                    ],
+                    'warehouse_id' => $stock['warehouse_id']
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     /**
@@ -44,12 +70,6 @@ class StockRepository extends ServiceEntityRepository {
         /** @phpstan-ignore-next-line */
         return $this->_em->getRepository(ComponentStock::class)->findTransferStock($id)
             ?? $this->_em->getRepository(ProductStock::class)->findTransferStock($id);
-    }
-
-    protected function createGroupedQueryBuilder(Warehouse $warehouse): QueryBuilder {
-        return $this->createQueryBuilder('s')
-            ->where('s.warehouse = :warehouse')
-            ->setParameter('warehouse', $warehouse->getId());
     }
 
     /**
@@ -68,7 +88,7 @@ class StockRepository extends ServiceEntityRepository {
         try {
             /** @phpstan-ignore-next-line */
             return $query->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException) {
             return null;
         }
     }

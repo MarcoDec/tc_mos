@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\CompanyInterface;
 use App\Entity\Management\Society\Company\Company;
 use Doctrine\ORM\Mapping as ORM;
@@ -69,7 +69,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Zone extends EntityId implements CompanyInterface {
+class Zone extends Entity implements CompanyInterface {
     #[
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne

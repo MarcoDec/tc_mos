@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Management\Society\Society;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
@@ -68,7 +68,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Manufacturer extends EntityId {
+class Manufacturer extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Peugeot'),
         Assert\NotBlank,

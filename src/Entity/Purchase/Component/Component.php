@@ -12,7 +12,7 @@ use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
@@ -166,7 +166,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
-class Component extends EntityId implements BarCodeInterface, MeasuredInterface {
+class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
     /** @var Collection<int, ComponentAttribute> */
@@ -269,7 +269,7 @@ class Component extends EntityId implements BarCodeInterface, MeasuredInterface 
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\Column,
-        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'read:stock:grouped', 'write:component', 'write:component:admin', 'write:component:clone'])
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
     ]
     private ?string $name = null;
 
@@ -399,7 +399,7 @@ class Component extends EntityId implements BarCodeInterface, MeasuredInterface 
 
     #[
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
-        Serializer\Groups(['read:component', 'read:component:collection', 'read:item', 'read:stock:grouped'])
+        Serializer\Groups(['read:component', 'read:component:collection', 'read:item'])
     ]
     final public function getCode(): ?string {
         return "{$this->family?->getCode()}-{$this->getId()}";
@@ -486,11 +486,6 @@ class Component extends EntityId implements BarCodeInterface, MeasuredInterface 
 
     final public function getUnit(): ?Unit {
         return $this->unit;
-    }
-
-    #[Serializer\Groups(['read:stock:grouped'])]
-    final public function getUnitCode(): ?string {
-        return $this->unit?->getCode();
     }
 
     final public function getWeight(): Measure {

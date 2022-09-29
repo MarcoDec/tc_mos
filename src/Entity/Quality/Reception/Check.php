@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\Quality\Reception\CheckController;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Quality\Reception\State;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Logistics\Order\Receipt;
 use App\Entity\Quality\Reception\Reference\Reference;
 use Doctrine\ORM\Mapping as ORM;
@@ -103,7 +103,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: '`check`')
 ]
-class Check extends EntityId {
+class Check extends Entity {
     #[
         ORM\Embedded,
         Serializer\Groups(['read:check'])

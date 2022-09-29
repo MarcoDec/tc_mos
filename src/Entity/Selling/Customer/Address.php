@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Selling\Customer\AddressType;
 use App\Entity\Embeddable\Address as EmbeddableAddress;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -63,7 +63,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'customer_address')
 ]
-abstract class Address extends EntityId {
+abstract class Address extends Entity {
     final public const TYPES = [
         AddressType::TYPE_BILLING => BillingAddress::class,
         AddressType::TYPE_DELIVERY => DeliveryAddress::class

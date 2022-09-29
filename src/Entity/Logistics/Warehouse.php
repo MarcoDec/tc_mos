@@ -9,7 +9,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Logistics\FamilyType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\CompanyInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Filter\SetFilter;
@@ -76,7 +76,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Warehouse extends EntityId implements CompanyInterface {
+class Warehouse extends Entity implements CompanyInterface {
     #[
         ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
         ORM\ManyToOne,
