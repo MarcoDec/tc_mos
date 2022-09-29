@@ -65,7 +65,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ProductStock-write'
         ],
         normalizationContext: [
-            'groups' => ['read:measure', 'read:stock'],
+            'groups' => ['read:id', 'read:measure', 'read:stock'],
             'openapi_definition_name' => 'ProductStock-read',
             'skip_null_values' => false
         ],

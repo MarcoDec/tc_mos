@@ -86,10 +86,18 @@ class StockRepository extends ServiceEntityRepository {
             ->setParameter('id', $id)
             ->getQuery();
         try {
-            /** @phpstan-ignore-next-line */
-            return $query->getOneOrNullResult();
+            $stock = $query->getOneOrNullResult();
         } catch (NonUniqueResultException) {
-            return null;
+            $stock = null;
         }
+        /** @var null|T $stock */
+        if (empty($stock)) {
+            return $stock;
+        }
+        $receipts = $stock->getReceipts();
+        if (method_exists($receipts, 'setInitialized')) {
+            $receipts->setInitialized(true);
+        }
+        return $stock;
     }
 }

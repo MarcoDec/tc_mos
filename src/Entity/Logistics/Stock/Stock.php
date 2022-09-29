@@ -166,7 +166,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     protected Measure $quantity;
 
     /** @var Collection<int, Receipt<T>> */
-    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     protected Collection $receipts;
 
     #[
