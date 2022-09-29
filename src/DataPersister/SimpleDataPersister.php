@@ -37,6 +37,6 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function supports($data, array $context = []): bool {
         return $data instanceof Stock
             && isset($context['collection_operation_name'])
-            && $context['collection_operation_name'] === 'receipt';
+            && in_array($context['collection_operation_name'], ['post', 'receipt']);
     }
 }

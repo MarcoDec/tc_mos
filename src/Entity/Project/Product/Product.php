@@ -409,7 +409,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['create:product', 'read:product'])
     ]
     private ?Unit $unit = null;
