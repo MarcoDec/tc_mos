@@ -2,6 +2,7 @@
 
 namespace App\Repository\Purchase\Component;
 
+use App\Doctrine\DBAL\Types\Embeddable\BlockerStateType;
 use App\Entity\Purchase\Component\Component;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -23,8 +24,8 @@ final class ComponentRepository extends ServiceEntityRepository {
     public function expires(): void {
         $this->_em->createQueryBuilder()
             ->update($this->getClassName(), 'c')
-            ->set('c.embState.state', ':place')
-            ->setParameter('place', 'disabled')
+            ->set('c.embBlocker.state', ':place')
+            ->setParameter('place', BlockerStateType::TYPE_STATE_DISABLED)
             ->where('c.endOfLife >= NOW()')
             ->getQuery()
             ->execute();
