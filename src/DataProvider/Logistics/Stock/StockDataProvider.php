@@ -9,7 +9,7 @@ use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Repository\Logistics\Stock\StockRepository;
 
-final class TransferDataProvider implements ItemDataProviderInterface, RestrictedDataProviderInterface {
+final class StockDataProvider implements ItemDataProviderInterface, RestrictedDataProviderInterface {
     /**
      * @param StockRepository<Stock<Component|Product>> $repo
      */
@@ -23,13 +23,13 @@ final class TransferDataProvider implements ItemDataProviderInterface, Restricte
      * @return null|Stock<Component|Product>
      */
     public function getItem(string $resourceClass, $id, ?string $operationName = null, array $context = []): ?Stock {
-        return $this->repo->findTransfer($id);
+        return $this->repo->findPatch($id);
     }
 
     /**
      * @param mixed[] $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Stock::class && $operationName === 'transfer';
+        return $resourceClass === Stock::class && in_array($operationName, ['patch', 'transfer']);
     }
 }

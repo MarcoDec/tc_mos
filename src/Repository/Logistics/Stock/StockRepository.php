@@ -66,16 +66,16 @@ class StockRepository extends ServiceEntityRepository {
     /**
      * @return null|T
      */
-    public function findTransfer(int $id): ?Stock {
+    public function findPatch(int $id): ?Stock {
         /** @phpstan-ignore-next-line */
-        return $this->_em->getRepository(ComponentStock::class)->findTransferStock($id)
-            ?? $this->_em->getRepository(ProductStock::class)->findTransferStock($id);
+        return $this->_em->getRepository(ComponentStock::class)->loadPatch($id)
+            ?? $this->_em->getRepository(ProductStock::class)->loadPatch($id);
     }
 
     /**
      * @return null|T
      */
-    protected function findTransferStock(int $id): ?Stock {
+    protected function loadPatch(int $id): ?Stock {
         $query = $this
             ->createQueryBuilder('s')
             ->addSelect('i')
