@@ -41,7 +41,7 @@ class Printer extends Entity {
     private ?string $color = PrinterColorType::TYPE_GREEN;
 
     #[
-        ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Company', readableLink: false, required: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:printer'])
     ]
