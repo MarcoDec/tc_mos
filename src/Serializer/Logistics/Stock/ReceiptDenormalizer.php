@@ -21,20 +21,15 @@ final class ReceiptDenormalizer implements DenormalizerAwareInterface, Denormali
     }
 
     /**
-     * @param array{location: string, orderItem: string, quantity: array{code: string, value: float}, warehouse: string} $data
+     * @param array{location?: string, orderItem: string, quantity: array{code: string, value: float}, warehouse: string} $data
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []) {
+        $denormalizeData = ['quantity' => $data['quantity'], 'warehouse' => $data['warehouse']];
+        if (isset($data['location'])) {
+            $denormalizeData['location'] = $data['location'];
+        }
         /** @var ComponentStock|ProductStock $stock */
-        $stock = $this->denormalizer->denormalize(
-            data: [
-                'location' => $data['location'],
-                'quantity' => $data['quantity'],
-                'warehouse' => $data['warehouse']
-            ],
-            type: $type,
-            format: $format,
-            context: $context
-        );
+        $stock = $this->denormalizer->denormalize($denormalizeData, $type, $format, $context);
         /** @var Item<Component>|Item<Product> $item */
         $item = $this->iriConverter->getItemFromIri($data['orderItem'], $context);
         $stock->setOrderItem($item);

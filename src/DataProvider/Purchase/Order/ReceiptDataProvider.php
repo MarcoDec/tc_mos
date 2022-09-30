@@ -28,7 +28,7 @@ final class ReceiptDataProvider implements ItemDataProviderInterface, Restricted
      * @param mixed[] $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Item::class
+        return ($resourceClass === Item::class || is_subclass_of($resourceClass, Item::class))
             && $operationName === 'get'
             && isset($context['openapi_definition_name'])
             && in_array($context['openapi_definition_name'], ['ComponentStock-receipt', 'ProductStock-receipt']);
