@@ -38,7 +38,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
         return $data instanceof Stock
             && (
                 (isset($context['collection_operation_name']) && in_array($context['collection_operation_name'], ['post', 'receipt']))
-                || (isset($context['item_operation_name']) && $context['item_operation_name'] === 'patch')
+                || (isset($context['item_operation_name']) && in_array($context['item_operation_name'], ['out', 'patch']))
             );
     }
 }

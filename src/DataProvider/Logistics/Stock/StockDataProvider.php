@@ -30,6 +30,6 @@ final class StockDataProvider implements ItemDataProviderInterface, RestrictedDa
      * @param mixed[] $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Stock::class && in_array($operationName, ['patch', 'transfer']);
+        return $resourceClass === Stock::class && in_array($operationName, ['out', 'patch', 'transfer']);
     }
 }
