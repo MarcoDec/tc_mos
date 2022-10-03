@@ -38,7 +38,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Récupère les stocks',
                     'summary' => 'Récupère les stocks'
-                ]
+                ],
+                'pagination_client_enabled' => true
             ],
             'grouped' => [
                 'deserialize' => false,
@@ -114,8 +115,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:measure', 'read:stock'],
             'openapi_definition_name' => 'Stock-read',
             'skip_null_values' => false
-        ],
-        paginationClientEnabled: true
+        ]
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
