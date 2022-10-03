@@ -9,7 +9,7 @@ use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
@@ -99,7 +99,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Engine extends EntityId implements BarCodeInterface {
+abstract class Engine extends Entity implements BarCodeInterface {
     use BarCodeTrait;
 
     final public const TYPES = [
@@ -161,7 +161,7 @@ abstract class Engine extends EntityId implements BarCodeInterface {
     private EmployeeEngineState $embState;
 
     #[
-        ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist'], fetch: 'EAGER'),
+        ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist']),
         Serializer\Groups(['read:engine', 'write:engine']),
         Serializer\MaxDepth(1)
     ]

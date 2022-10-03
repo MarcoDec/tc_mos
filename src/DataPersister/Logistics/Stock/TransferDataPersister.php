@@ -3,10 +3,12 @@
 namespace App\DataPersister\Logistics\Stock;
 
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
+use App\Entity\Entity;
 use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use Doctrine\ORM\EntityManagerInterface;
+use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -18,6 +20,7 @@ final class TransferDataPersister implements DataPersisterInterface {
      * @param Stock<Component|Product> $data
      */
     public function persist($data): void {
+        $id = $data->getId();
         /** @var Request $request */
         $request = $this->requests->getCurrentRequest();
         /** @var Stock<Component|Product> $previous */
@@ -27,7 +30,16 @@ final class TransferDataPersister implements DataPersisterInterface {
             ->setQuantity($previous->getQuantity())
             ->substract(clone $transfered->getQuantity())
             ->setWarehouse($previous->getWarehouse());
+        if ($data->getQuantity()->getValue() <= 0) {
+            $this->em->remove($data);
+        }
         $this->em->flush();
+        if (empty($data->getId())) {
+            $refl = (new ReflectionClass(Entity::class))->getProperty('id');
+            $refl->setAccessible(true);
+            $refl->setValue($data, $id);
+            $refl->setAccessible(false);
+        }
     }
 
     public function remove($data): void {

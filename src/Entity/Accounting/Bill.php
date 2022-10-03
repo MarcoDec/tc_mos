@@ -10,7 +10,7 @@ use App\Entity\Embeddable\Accounting\State;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\VatMessage;
 use App\Entity\Selling\Customer\Contact;
@@ -102,7 +102,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Bill extends EntityId {
+class Bill extends Entity {
     #[
         ApiProperty(description: 'Date de facturation', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
@@ -111,7 +111,7 @@ class Bill extends EntityId {
     private ?DateTimeImmutable $billingDate;
 
     #[
-        ApiProperty(description: 'Companie', example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:bill', 'write:bill'])
     ]

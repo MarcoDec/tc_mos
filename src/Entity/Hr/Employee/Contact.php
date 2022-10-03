@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -66,7 +66,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity,
     ORM\Table(name: 'employee_contact')
 ]
-class Contact extends EntityId {
+class Contact extends Entity {
     #[
         ApiProperty(description: 'Employé', example: '/api/employees/1'),
         ORM\ManyToOne,

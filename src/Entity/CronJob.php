@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CronJobRepository::class)]
-class CronJob extends EntityId {
+class CronJob extends Entity {
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $last = null;
 

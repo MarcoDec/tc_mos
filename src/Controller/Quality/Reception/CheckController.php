@@ -21,7 +21,7 @@ final class CheckController {
      * @return array<int, Check<Component|Product, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
     public function __invoke(int $id): array {
-        $item = $this->em->getRepository(Item::class)->findOneByReceipt($id);
+        $item = $this->em->getRepository(Item::class)->findOneByCheck($id);
         if (empty($item)) {
             throw new NotFoundHttpException();
         }

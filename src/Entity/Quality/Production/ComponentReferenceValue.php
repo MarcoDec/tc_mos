@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Quality\Production\ComponentReferenceField;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
@@ -65,7 +65,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class ComponentReferenceValue extends EntityId {
+class ComponentReferenceValue extends Entity {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/2'),
         ORM\ManyToOne,

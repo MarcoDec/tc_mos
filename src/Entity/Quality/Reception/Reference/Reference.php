@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Quality\Reception\Check\CheckType;
 use App\Doctrine\DBAL\Types\Quality\Reception\Check\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Quality\Reception\Reference\Management\CompanyReference;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Quality\Reception\Reference\Purchase\FamilyReference as ComponentFamilyReference;
@@ -68,7 +68,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Reference extends EntityId {
+abstract class Reference extends Entity {
     final public const TYPES = [
         CheckType::TYPE_COMPANY => CompanyReference::class,
         CheckType::TYPE_COMPONENT => ComponentReference::class,

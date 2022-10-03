@@ -14,7 +14,7 @@ use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Project\Product\Product\State;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
@@ -172,7 +172,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])
 ]
-class Product extends EntityId implements BarCodeInterface, MeasuredInterface {
+class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
     #[
@@ -189,7 +189,7 @@ class Product extends EntityId implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Référence', example: '54587F'),
         Assert\Length(min: 3, max: 50),
         ORM\Column(length: 50),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'read:stock', 'read:stock:export', 'read:stock:grouped', 'write:product', 'write:product:admin', 'write:product:clone'])
+        Serializer\Groups(['create:product', 'read:item', 'read:product', 'read:product:collection', 'read:stock', 'read:stock:export', 'write:product', 'write:product:admin', 'write:product:clone'])
     ]
     private ?string $code = null;
 
@@ -330,7 +330,7 @@ class Product extends EntityId implements BarCodeInterface, MeasuredInterface {
         Assert\Length(min: 3, max: 160),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
         ORM\Column(length: 160, nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'read:stock:grouped', 'write:product', 'write:product:admin'])
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin'])
     ]
     private ?string $name = null;
 
@@ -409,7 +409,7 @@ class Product extends EntityId implements BarCodeInterface, MeasuredInterface {
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: true, example: '/api/units/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch: 'EAGER'),
+        ORM\ManyToOne,
         Serializer\Groups(['create:product', 'read:product'])
     ]
     private ?Unit $unit = null;
@@ -656,11 +656,6 @@ class Product extends EntityId implements BarCodeInterface, MeasuredInterface {
 
     final public function getUnit(): ?Unit {
         return $this->unit;
-    }
-
-    #[Serializer\Groups(['read:stock:grouped'])]
-    final public function getUnitCode(): ?string {
-        return $this->unit?->getCode();
     }
 
     final public function getWeight(): Measure {
