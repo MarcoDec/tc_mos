@@ -12,7 +12,7 @@ use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Purchase\Supplier\State;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
@@ -151,7 +151,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity(repositoryClass: SupplierRepository::class)
 ]
-class Supplier extends EntityId {
+class Supplier extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,

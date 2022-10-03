@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Production\Engine\Engine;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -62,7 +62,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Planning extends EntityId {
+class Planning extends Entity {
     #[
         ApiProperty(description: 'Equivalent', readableLink: false, example: '/api/engines/1'),
         ORM\ManyToOne,

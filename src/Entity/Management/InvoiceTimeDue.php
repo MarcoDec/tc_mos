@@ -9,7 +9,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Filter\NumericFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -72,7 +72,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(['days', 'daysAfterEndOfMonth', 'endOfMonth']),
     UniqueEntity('name')
 ]
-class InvoiceTimeDue extends EntityId {
+class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'Jours ', example: 30),
         Assert\Length(min: 0, max: 31),

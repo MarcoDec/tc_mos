@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Purchase\Component\AttributeType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Color;
 use App\Entity\Management\Unit;
@@ -56,7 +56,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity(repositoryClass: ComponentAttributeRepository::class),
     ORM\UniqueConstraint(columns: ['attribute_id', 'component_id'])
 ]
-class ComponentAttribute extends EntityId implements MeasuredInterface {
+class ComponentAttribute extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Attribut', readableLink: false, example: '/api/attributes/1'),
         ORM\JoinColumn(nullable: false),

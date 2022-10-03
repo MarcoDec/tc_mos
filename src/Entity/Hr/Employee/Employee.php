@@ -16,7 +16,7 @@ use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
@@ -140,7 +140,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]
-class Employee extends EntityId implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
+class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
     use BarCodeTrait;
 
     #[

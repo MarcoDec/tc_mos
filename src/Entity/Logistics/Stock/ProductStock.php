@@ -65,7 +65,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ProductStock-write'
         ],
         normalizationContext: [
-            'groups' => ['read:measure', 'read:stock'],
+            'groups' => ['read:id', 'read:measure', 'read:stock'],
             'openapi_definition_name' => 'ProductStock-read',
             'skip_null_values' => false
         ],
@@ -78,7 +78,7 @@ class ProductStock extends Stock {
         ApiProperty(description: 'Produit', example: '/api/products/1'),
         ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
-        Serializer\Groups(['read:stock', 'read:stock:grouped', 'write:stock'])
+        Serializer\Groups(['read:stock', 'write:stock'])
     ]
     protected $item;
 

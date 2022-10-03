@@ -101,6 +101,40 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 )
             )
         ));
+        $paths->addPath($this->getMobileLogin(), new PathItem(
+            post: new Model\Operation(
+                operationId: 'mobile-login',
+                tags: ['Auth'],
+                responses: [
+                    200 => new Model\Response(
+                        description: 'Utilisateur connecté',
+                        content: new ArrayObject([
+                            'application/ld+json' => [
+                                'schema' => [
+                                    '$ref' => '#/components/schemas/Employee.jsonld-Employee-user'
+                                ]
+                            ]
+                        ])
+                    ),
+                    400 => new Model\Response(description: 'Bad request'),
+                    401 => new Model\Response(description: 'Unauthorized'),
+                    405 => new Model\Response(description: 'Method Not Allowed'),
+                    500 => new Model\Response(description: 'Internal Server Error')
+                ],
+                summary: 'Connexion sur l\'application mobile',
+                description: 'Connexion sur l\'application mobile',
+                requestBody: new Model\RequestBody(
+                    description: 'Identifiants',
+                    content: new ArrayObject([
+                        'application/json' => [
+                            'schema' => [
+                                '$ref' => '#/components/schemas/Auth'
+                            ]
+                        ]
+                    ])
+                )
+            )
+        ));
         $paths->addPath($this->getLogout(), new PathItem(
             post: new Model\Operation(
                 operationId: 'logout',
@@ -697,6 +731,10 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
         $responseMimeTypes = $this->flattenMimeTypes($responseFormats);
 
         return [$requestMimeTypes, $responseMimeTypes];
+    }
+
+    private function getMobileLogin(): string {
+        return $this->urlGenerator->generate('mobile.login');
     }
 
     /**
