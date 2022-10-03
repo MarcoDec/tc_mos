@@ -9,7 +9,7 @@ use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Production\Manufacturing\Order\State;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
@@ -103,7 +103,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'manufacturing_order')
 ]
-class Order extends EntityId implements BarCodeInterface {
+class Order extends Entity implements BarCodeInterface {
     use BarCodeTrait;
 
     #[
@@ -114,7 +114,7 @@ class Order extends EntityId implements BarCodeInterface {
     private Measure $actualQuantity;
 
     #[
-        ApiProperty(description: 'Companie', readableLink: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
@@ -147,7 +147,7 @@ class Order extends EntityId implements BarCodeInterface {
     private int $index = 1;
 
     #[
-        ApiProperty(description: 'Companie fabricante', readableLink: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie fabricante', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]

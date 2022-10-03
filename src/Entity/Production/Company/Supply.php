@@ -6,7 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
@@ -67,7 +67,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Supply extends EntityId {
+class Supply extends Entity {
     #[
         ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
         Assert\NotBlank,

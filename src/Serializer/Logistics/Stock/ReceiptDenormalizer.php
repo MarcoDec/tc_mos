@@ -9,7 +9,6 @@ use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Order\Item;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -18,34 +17,22 @@ use Symfony\Component\Workflow\Registry;
 final class ReceiptDenormalizer implements DenormalizerAwareInterface, DenormalizerInterface {
     use DenormalizerAwareTrait;
 
-    public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly IriConverterInterface $iriConverter,
-        private readonly Registry $registry
-    ) {
+    public function __construct(private readonly IriConverterInterface $iriConverter, private readonly Registry $registry) {
     }
 
     /**
-     * @param array{location: string, orderItem: string, quantity: array{code: string, value: float}, warehouse: string} $data
+     * @param array{location?: string, orderItem: string, quantity: array{code: string, value: float}, warehouse: string} $data
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []) {
+        $denormalizeData = ['quantity' => $data['quantity'], 'warehouse' => $data['warehouse']];
+        if (isset($data['location'])) {
+            $denormalizeData['location'] = $data['location'];
+        }
         /** @var ComponentStock|ProductStock $stock */
-        $stock = $this->denormalizer->denormalize(
-            data: [
-                'location' => $data['location'],
-                'quantity' => $data['quantity'],
-                'warehouse' => $data['warehouse']
-            ],
-            type: $type,
-            format: $format,
-            context: $context
-        );
+        $stock = $this->denormalizer->denormalize($denormalizeData, $type, $format, $context);
         /** @var Item<Component>|Item<Product> $item */
         $item = $this->iriConverter->getItemFromIri($data['orderItem'], $context);
         $stock->setOrderItem($item);
-        if (!empty($order = $item->getOrder())) {
-            $this->em->initializeObject($order);
-        }
         $workflow = $this->registry->get($item, 'purchase_order_item');
         if ($workflow->can($item, State::TR_DELIVER)) {
             $workflow->apply($item, State::TR_DELIVER);

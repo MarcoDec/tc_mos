@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220909074535 extends AbstractMigration {
+final class Version20220930141408 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -330,6 +330,8 @@ SQL);
         $this->addQuery('ALTER TABLE `stock` DROP `old_id`');
         $this->addQuery('ALTER TABLE `supplier_component` DROP `old_id`');
         $this->addQuery('ALTER TABLE `warehouse` DROP `old_id`');
+        // views
+        $this->viewStockGrouped();
     }
 
     private function upAttributes(): void {
@@ -451,17 +453,17 @@ CREATE TABLE `bill_item` (
     `component_id` INT UNSIGNED DEFAULT NULL,
     `expedition_id` INT UNSIGNED DEFAULT NULL,
     `notes` VARCHAR(255) DEFAULT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
-    `weight_code` VARCHAR(6) DEFAULT NULL,
-    `weight_denominator` VARCHAR(6) DEFAULT NULL,
+    `weight_code`VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `weight_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_EC044DB41A8C12F5` FOREIGN KEY (`bill_id`) REFERENCES `bill` (`id`),
     CONSTRAINT `IDX_EC044DB4E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
@@ -558,17 +560,17 @@ CREATE TABLE `bill` (
     `due_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
     `emb_state_state` ENUM('billed', 'draft', 'partially_paid', 'paid') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:bill_state)',
-    `excl_tax_code` VARCHAR(6) DEFAULT NULL,
-    `excl_tax_denominator` VARCHAR(6) DEFAULT NULL,
+    `excl_tax_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `excl_tax_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `excl_tax_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `force_vat` ENUM('TVA par défaut selon le pays du client', 'Force AVEC TVA', 'Force SANS TVA') DEFAULT 'TVA par défaut selon le pays du client' NOT NULL COMMENT '(DC2Type:vat_message_force)',
-    `incl_tax_code` VARCHAR(6) DEFAULT NULL,
-    `incl_tax_denominator` VARCHAR(6) DEFAULT NULL,
+    `incl_tax_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `incl_tax_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `incl_tax_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `notes` TEXT DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
-    `vat_code` VARCHAR(6) DEFAULT NULL,
-    `vat_denominator` VARCHAR(6) DEFAULT NULL,
+    `vat_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `vat_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `vat_message_id` INT UNSIGNED DEFAULT NULL,
     `vat_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_7A2119E3979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
@@ -895,8 +897,8 @@ CREATE TABLE `component_attribute` (
     `attribute_id` INT UNSIGNED NOT NULL,
     `value` VARCHAR(255) DEFAULT NULL,
     `color_id` INT UNSIGNED DEFAULT NULL,
-    `measure_code` VARCHAR(6) DEFAULT NULL,
-    `measure_denominator` VARCHAR(6) DEFAULT NULL,
+    `measure_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `measure_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `measure_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     UNIQUE KEY `UNIQ_248373AAB6E62EFAE2ABAFFF` (`attribute_id`, `component_id`),
     CONSTRAINT `IDX_248373AAB6E62EFA` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`id`),
@@ -1001,28 +1003,28 @@ CREATE TABLE `component_reference_value` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `component_id` INT UNSIGNED DEFAULT NULL,
     `height_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    `height_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    `height_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `height_tolerance_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `height_tolerance_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `height_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `height_value_code` VARCHAR(6) DEFAULT NULL,
-    `height_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `height_value_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `height_value_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `height_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `section_code` VARCHAR(6) DEFAULT NULL,
-    `section_denominator` VARCHAR(6) DEFAULT NULL,
+    `section_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `section_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `section_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `tensile_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    `tensile_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    `tensile_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `tensile_tolerance_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `tensile_tolerance_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `tensile_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `tensile_value_code` VARCHAR(6) DEFAULT NULL,
-    `tensile_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `tensile_value_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `tensile_value_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `tensile_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `width_required` BOOLEAN DEFAULT TRUE NOT NULL,
-    `width_tolerance_code` VARCHAR(6) DEFAULT NULL,
-    `width_tolerance_denominator` VARCHAR(6) DEFAULT NULL,
+    `width_tolerance_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `width_tolerance_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `width_tolerance_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `width_value_code` VARCHAR(6) DEFAULT NULL,
-    `width_value_denominator` VARCHAR(6) DEFAULT NULL,
+    `width_value_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `width_value_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `width_value_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_648B6870E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
 )
@@ -1128,23 +1130,23 @@ CREATE TABLE `component` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `copper_weight_code` VARCHAR(6) DEFAULT NULL,
-    `copper_weight_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_weight_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `copper_weight_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `copper_weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `customs_code` VARCHAR(16) DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
     `emb_state_state` ENUM('agreed', 'draft', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:component_manufacturing_operation_state)',
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
-    `forecast_volume_code` VARCHAR(6) DEFAULT NULL,
-    `forecast_volume_denominator` VARCHAR(6) DEFAULT NULL,
+    `forecast_volume_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `forecast_volume_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `forecast_volume_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `index` VARCHAR(5) DEFAULT '0' NOT NULL,
     `manufacturer` VARCHAR(255) DEFAULT NULL,
     `manufacturer_code` VARCHAR(255) DEFAULT NULL,
     `managed_stock` BOOLEAN DEFAULT FALSE NOT NULL,
-    `min_stock_code` VARCHAR(6) DEFAULT NULL,
-    `min_stock_denominator` VARCHAR(6) DEFAULT NULL,
+    `min_stock_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `min_stock_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `min_stock_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `need_gasket` BOOLEAN DEFAULT 0 NOT NULL,
@@ -1153,8 +1155,8 @@ CREATE TABLE `component` (
     `parent_id` INT UNSIGNED DEFAULT NULL,
     `ppm_rate` SMALLINT UNSIGNED DEFAULT 10 NOT NULL,
     `unit_id` INT UNSIGNED NOT NULL,
-    `weight_code` VARCHAR(6) DEFAULT NULL,
-    `weight_denominator` VARCHAR(6) DEFAULT NULL,
+    `weight_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `weight_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_49FEA157C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`),
     CONSTRAINT `IDX_49FEA157727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `component` (`id`),
@@ -1252,11 +1254,11 @@ CREATE TABLE `supplier_component_price` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `component_id` INT UNSIGNED DEFAULT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     CONSTRAINT `IDX_6CCD4783E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `supplier_component` (`id`)
@@ -1577,12 +1579,12 @@ SQL);
 CREATE TABLE `customer_product_price` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_FF129864584665A` FOREIGN KEY (`product_id`) REFERENCES `product_customer` (`id`)
 )
@@ -1710,8 +1712,8 @@ CREATE TABLE `delivery_note` (
     `company_id` INT UNSIGNED DEFAULT NULL,
     `date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `emb_state_state` ENUM('agreed', 'asked', 'closed', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:event_state)',
-    `freight_surcharge_code` VARCHAR(6) DEFAULT NULL,
-    `freight_surcharge_denominator` VARCHAR(6) DEFAULT NULL,
+    `freight_surcharge_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `freight_surcharge_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `freight_surcharge_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `non_billable` BOOLEAN DEFAULT FALSE NOT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
@@ -2576,8 +2578,8 @@ CREATE TABLE `expedition` (
     `location` VARCHAR(255) DEFAULT NULL,
     `note_id` INT UNSIGNED DEFAULT NULL,
     `stock_id` INT UNSIGNED DEFAULT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_692907E126F525E` FOREIGN KEY (`item_id`) REFERENCES `selling_order_item` (`id`),
     CONSTRAINT `IDX_692907E26ED0855` FOREIGN KEY (`note_id`) REFERENCES `delivery_note` (`id`),
@@ -2921,8 +2923,8 @@ CREATE TABLE `manufacturing_order` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `actual_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `actual_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `actual_quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `actual_quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `actual_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `company_id` INT UNSIGNED DEFAULT NULL,
     `delivery_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
@@ -2935,11 +2937,11 @@ CREATE TABLE `manufacturing_order` (
     `order_id` INT UNSIGNED DEFAULT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
-    `quantity_produced_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_produced_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_produced_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_produced_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_produced_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `quantity_requested_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_requested_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_requested_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_requested_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_requested_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_34010DB1979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
     CONSTRAINT `IDX_34010DB1E26A3063` FOREIGN KEY (`manufacturing_company_id`) REFERENCES `company` (`id`),
@@ -3027,8 +3029,8 @@ CREATE TABLE `nomenclature` (
     `component_id` INT UNSIGNED NOT NULL,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `mandated` BOOLEAN DEFAULT TRUE NOT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     CONSTRAINT `IDX_799A3652E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
     CONSTRAINT `IDX_799A36524584665A` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
 )
@@ -3184,8 +3186,8 @@ CREATE TABLE `planning` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `engine_id` INT UNSIGNED DEFAULT NULL,
     `name` VARCHAR(255) NOT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_D499BFF6E78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`)
 )
@@ -3356,23 +3358,23 @@ CREATE TABLE `product` (
     `old_id` INT UNSIGNED NOT NULL,
     `id_society` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `auto_duration_code` VARCHAR(6) DEFAULT NULL,
-    `auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
+    `auto_duration_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `auto_duration_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `auto_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `code` VARCHAR(50) NOT NULL,
-    `costing_auto_duration_code` VARCHAR(6) DEFAULT NULL,
-    `costing_auto_duration_denominator` VARCHAR(6) DEFAULT NULL,
+    `costing_auto_duration_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `costing_auto_duration_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `costing_auto_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `costing_manual_duration_code` VARCHAR(6) DEFAULT NULL,
-    `costing_manual_duration_denominator` VARCHAR(6) DEFAULT NULL,
+    `costing_manual_duration_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `costing_manual_duration_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `costing_manual_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `customs_code` VARCHAR(10) DEFAULT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
     `emb_state_state` ENUM('agreed', 'draft', 'to_validate', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:product_state)',
     `end_of_life` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `family_id` INT UNSIGNED NOT NULL,
-    `forecast_volume_code` VARCHAR(6) DEFAULT NULL,
-    `forecast_volume_denominator` VARCHAR(6) DEFAULT NULL,
+    `forecast_volume_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `forecast_volume_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `forecast_volume_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `id_product_child` INT UNSIGNED NOT NULL,
     `incoterms_id` INT UNSIGNED DEFAULT NULL,
@@ -3380,47 +3382,47 @@ CREATE TABLE `product` (
     `internal_index` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '(DC2Type:tinyint)',
     `kind` enum('EI','Prototype','Série','Pièce de rechange') NOT NULL DEFAULT 'Prototype' COMMENT '(DC2Type:product_kind)',
     `managed_copper` BOOLEAN DEFAULT FALSE NOT NULL,
-    `manual_duration_code` VARCHAR(6) DEFAULT NULL,
-    `manual_duration_denominator` VARCHAR(6) DEFAULT NULL,
+    `manual_duration_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `manual_duration_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `manual_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `max_proto_code` VARCHAR(6) DEFAULT NULL,
-    `max_proto_denominator` VARCHAR(6) DEFAULT NULL,
+    `max_proto_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `max_proto_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `max_proto_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `min_delivery_code` VARCHAR(6) DEFAULT NULL,
-    `min_delivery_denominator` VARCHAR(6) DEFAULT NULL,
+    `min_delivery_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `min_delivery_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `min_delivery_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `min_prod_code` VARCHAR(6) DEFAULT NULL,
-    `min_prod_denominator` VARCHAR(6) DEFAULT NULL,
+    `min_prod_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `min_prod_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `min_prod_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `min_stock_code` VARCHAR(6) DEFAULT NULL,
-    `min_stock_denominator` VARCHAR(6) DEFAULT NULL,
+    `min_stock_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `min_stock_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `min_stock_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `name` VARCHAR(160) DEFAULT NULL,
     `notes` text DEFAULT NULL,
-    `packaging_code` VARCHAR(6) DEFAULT NULL,
-    `packaging_denominator` VARCHAR(6) DEFAULT NULL,
+    `packaging_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `packaging_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `packaging_incorrect` VARCHAR(255) DEFAULT NULL,
     `packaging_kind` VARCHAR(60) DEFAULT NULL,
     `packaging_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `price_without_copper_code` VARCHAR(6) DEFAULT NULL,
-    `price_without_copper_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_without_copper_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `price_without_copper_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `price_without_copper_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `production_delay_code` VARCHAR(6) DEFAULT NULL,
-    `production_delay_denominator` VARCHAR(6) DEFAULT NULL,
+    `production_delay_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `production_delay_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `production_delay_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `transfert_price_supplies_code` VARCHAR(6) DEFAULT NULL,
-    `transfert_price_supplies_denominator` VARCHAR(6) DEFAULT NULL,
+    `transfert_price_supplies_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `transfert_price_supplies_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `transfert_price_supplies_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `transfert_price_work_code` VARCHAR(6) DEFAULT NULL,
-    `transfert_price_work_denominator` VARCHAR(6) DEFAULT NULL,
+    `transfert_price_work_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `transfert_price_work_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `transfert_price_work_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `unit_id` INT UNSIGNED NOT NULL,
-    `weight_code` VARCHAR(6) DEFAULT NULL,
-    `weight_denominator` VARCHAR(6) DEFAULT NULL,
+    `weight_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `weight_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `weight_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_D34A04ADC35E566A` FOREIGN KEY (`family_id`) REFERENCES `product_family` (`id`),
     CONSTRAINT `IDX_D34A04AD43D02C80` FOREIGN KEY (`incoterms_id`) REFERENCES `incoterms` (`id`),
@@ -3598,16 +3600,16 @@ CREATE TABLE `project_operation` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `auto` BOOLEAN DEFAULT FALSE NOT NULL,
     `boundary` VARCHAR(255) DEFAULT NULL,
-    `cadence_code` VARCHAR(6) DEFAULT NULL,
-    `cadence_denominator` VARCHAR(6) DEFAULT NULL,
+    `cadence_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `cadence_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `cadence_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `code` VARCHAR(255) NOT NULL,
     `name` VARCHAR(255) NOT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `time_code` VARCHAR(6) DEFAULT NULL,
-    `time_denominator` VARCHAR(6) DEFAULT NULL,
+    `time_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `time_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `time_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `type_id` INT UNSIGNED DEFAULT NULL,
     CONSTRAINT `IDX_8BDE3BAC54C8C93` FOREIGN KEY (`type_id`) REFERENCES `operation_type` (`id`)
@@ -3688,24 +3690,24 @@ CREATE TABLE `purchase_order_item` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `component_id` INT UNSIGNED DEFAULT NULL,
     `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `copper_price_code` VARCHAR(6) DEFAULT NULL,
-    `copper_price_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_price_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `copper_price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `copper_price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'delayed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:purchase_order_item_closer_state)',
     `emb_state_state` ENUM('agreed', 'delivered', 'draft', 'forecast', 'initial', 'monthly', 'partially_delivered') DEFAULT 'initial' NOT NULL COMMENT '(DC2Type:purchase_order_item_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_code`VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     `requested_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `requested_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `requested_quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `target_company_id` INT UNSIGNED DEFAULT NULL,
     `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
@@ -3797,8 +3799,8 @@ CREATE TABLE `receipt` (
     `date` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
     `emb_state_state` ENUM('asked', 'blocked', 'closed', 'to_validate') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:receipt_state)',
     `item_id` INT UNSIGNED DEFAULT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     CONSTRAINT `IDX_5399B645126F525E` FOREIGN KEY (`item_id`) REFERENCES `purchase_order_item` (`id`)
 )
@@ -3997,21 +3999,21 @@ CREATE TABLE `selling_order_item` (
     `ar_sent` BOOLEAN DEFAULT FALSE NOT NULL,
     `component_id` INT UNSIGNED DEFAULT NULL,
     `confirmed_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `confirmed_quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `confirmed_quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `confirmed_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
     `emb_state_state` ENUM('agreed', 'billed', 'delivered', 'draft', 'paid', 'partially_delivered') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:selling_order_item_state)',
     `notes` VARCHAR(255) DEFAULT NULL,
     `order_id` INT UNSIGNED DEFAULT NULL,
-    `price_code` VARCHAR(6) DEFAULT NULL,
-    `price_denominator` VARCHAR(6) DEFAULT NULL,
+    `price_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `price_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `price_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
     `ref` VARCHAR(255) DEFAULT NULL,
     `requested_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
-    `requested_quantity_code` VARCHAR(6) DEFAULT NULL,
-    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `requested_quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `requested_quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `requested_quantity_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
     CONSTRAINT `IDX_8A64F230E2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`),
@@ -4353,8 +4355,8 @@ CREATE TABLE `society` (
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `ar` BOOLEAN DEFAULT FALSE NOT NULL,
     `bank_details` VARCHAR(255) DEFAULT NULL,
-    `copper_index_code` VARCHAR(6) DEFAULT NULL,
-    `copper_index_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_index_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `copper_index_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `copper_index_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `copper_managed` BOOLEAN DEFAULT FALSE NOT NULL,
@@ -4362,15 +4364,15 @@ CREATE TABLE `society` (
     `copper_type` ENUM('à la livraison','mensuel','semestriel') NOT NULL DEFAULT 'mensuel' COMMENT '(DC2Type:copper)',
     `force_vat` ENUM('TVA par défaut selon le pays du client','Force AVEC TVA','Force SANS TVA') NOT NULL DEFAULT 'TVA par défaut selon le pays du client' COMMENT '(DC2Type:vat_message_force)',
     `incoterms_id` INT UNSIGNED DEFAULT NULL,
-    `invoice_min_code` VARCHAR(6) DEFAULT NULL,
-    `invoice_min_denominator` VARCHAR(6) DEFAULT NULL,
+    `invoice_min_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `invoice_min_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `invoice_min_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `invoice_time_due_id` INT UNSIGNED DEFAULT NULL,
     `legal_form` VARCHAR(50) DEFAULT NULL,
     `name` VARCHAR(255) DEFAULT NULL,
     `notes` TEXT DEFAULT NULL,
-    `order_min_code` VARCHAR(6) DEFAULT NULL,
-    `order_min_denominator` VARCHAR(6) DEFAULT NULL,
+    `order_min_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `order_min_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `order_min_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `ppm_rate` SMALLINT UNSIGNED NOT NULL DEFAULT 10,
     `siren` VARCHAR(50) DEFAULT NULL,
@@ -4497,11 +4499,11 @@ CREATE TABLE `customer` (
     `address_email` VARCHAR(80) DEFAULT NULL,
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
-    `conveyance_duration_code` VARCHAR(6) DEFAULT NULL,
-    `conveyance_duration_denominator` VARCHAR(6) DEFAULT NULL,
+    `conveyance_duration_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `conveyance_duration_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `conveyance_duration_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
-    `copper_index_code` VARCHAR(6) DEFAULT NULL,
-    `copper_index_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_index_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `copper_index_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `copper_index_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `copper_managed` BOOLEAN DEFAULT FALSE NOT NULL,
@@ -4513,15 +4515,15 @@ CREATE TABLE `customer` (
     `equivalent_enabled` BOOLEAN DEFAULT FALSE NOT NULL,
     `invoice_by_email` BOOLEAN DEFAULT FALSE NOT NULL,
     `language` VARCHAR(255) DEFAULT NULL,
-    `monthly_outstanding_code` VARCHAR(6) DEFAULT NULL,
-    `monthly_outstanding_denominator` VARCHAR(6) DEFAULT NULL,
+    `monthly_outstanding_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `monthly_outstanding_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `monthly_outstanding_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `nb_deliveries` TINYINT UNSIGNED DEFAULT 10 NOT NULL COMMENT '(DC2Type:tinyint)',
     `nb_invoices` TINYINT UNSIGNED DEFAULT 10 NOT NULL COMMENT '(DC2Type:tinyint)',
     `notes` TEXT DEFAULT NULL,
-    `outstanding_max_code` VARCHAR(6) DEFAULT NULL,
-    `outstanding_max_denominator` VARCHAR(6) DEFAULT NULL,
+    `outstanding_max_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `outstanding_max_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `outstanding_max_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `payment_terms_id` INT UNSIGNED NOT NULL,
     `society_id` INT UNSIGNED NOT NULL,
@@ -4630,8 +4632,8 @@ CREATE TABLE `supplier` (
     `address_phone_number` VARCHAR(255) DEFAULT NULL,
     `address_zip_code` VARCHAR(10) DEFAULT NULL,
     `confidence_criteria` TINYINT UNSIGNED DEFAULT '0' NOT NULL COMMENT '(DC2Type:tinyint)',
-    `copper_index_code` VARCHAR(6) DEFAULT NULL,
-    `copper_index_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_index_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `copper_index_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `copper_index_value` DOUBLE PRECISION DEFAULT 0 NOT NULL,
     `copper_last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
     `copper_managed` BOOLEAN DEFAULT FALSE NOT NULL,
@@ -4763,8 +4765,8 @@ CREATE TABLE `stock` (
     `jail` BOOLEAN DEFAULT FALSE NOT NULL,
     `location` VARCHAR(255) DEFAULT NULL,
     `product_id` INT UNSIGNED DEFAULT NULL,
-    `quantity_code` VARCHAR(6) DEFAULT NULL,
-    `quantity_denominator` VARCHAR(6) DEFAULT NULL,
+    `quantity_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `quantity_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `quantity_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
     `type` ENUM('component', 'product') NOT NULL COMMENT '(DC2Type:item)',
     `warehouse_id` INT UNSIGNED DEFAULT NULL,
@@ -4845,19 +4847,19 @@ CREATE TABLE `supplier_component` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `code` VARCHAR(255) DEFAULT NULL,
     `component_id` INT UNSIGNED DEFAULT NULL,
-    `copper_weight_code` VARCHAR(6) DEFAULT NULL,
-    `copper_weight_denominator` VARCHAR(6) DEFAULT NULL,
+    `copper_weight_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `copper_weight_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `copper_weight_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `delivery_time_code` VARCHAR(6) DEFAULT NULL,
-    `delivery_time_denominator` VARCHAR(6) DEFAULT NULL,
+    `delivery_time_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `delivery_time_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `delivery_time_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
     `incoterms_id` INT UNSIGNED DEFAULT NULL,
     `index` VARCHAR(255) DEFAULT '0' NOT NULL,
-    `moq_code` VARCHAR(6) DEFAULT NULL,
-    `moq_denominator` VARCHAR(6) DEFAULT NULL,
+    `moq_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `moq_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `moq_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
-    `packaging_code` VARCHAR(6) DEFAULT NULL,
-    `packaging_denominator` VARCHAR(6) DEFAULT NULL,
+    `packaging_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
+    `packaging_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8_bin`,
     `packaging_kind` VARCHAR(30) DEFAULT NULL,
     `packaging_value` DOUBLE PRECISION DEFAULT '0' NOT NULL,
     `proportion` DOUBLE PRECISION UNSIGNED DEFAULT '100' NOT NULL,
@@ -5108,5 +5110,239 @@ INNER JOIN `society` ON `society_zone`.`id_society` = `society`.`old_id`
 INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
 SQL);
         $this->addQuery('DROP TABLE `society_zone`');
+    }
+
+    private function viewStockGrouped(): void {
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `convertible_unit` AS
+SELECT
+    `code`,
+    `base`,
+    IF(`base` > 1, `base`, 1 / `base`) as `distance_base`
+FROM `unit`
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stock_component` AS
+SELECT
+    IF(`s`.`batch_number` IS NULL, 'NULL', `s`.`batch_number`) AS `batch_number`,
+    CONCAT(`f`.`code`, '-', `c`.`id`) AS `item_code`,
+    `s`.`component_id` AS `item_id`,
+    `c`.`name` AS `item_name`,
+    `u`.`code` AS `item_unit_code`,
+    `s`.`quantity_code`,
+    `s`.`quantity_value`,
+    `s`.`warehouse_id`
+FROM `stock` `s`
+INNER JOIN `component` `c`
+    ON `s`.`component_id` = `c`.`id`
+    AND `c`.`deleted` = FALSE
+INNER JOIN `component_family` `f`
+    ON `c`.`family_id` = `f`.`id`
+    AND `f`.`deleted` = FALSE
+INNER JOIN `unit` `u`
+    ON `c`.`unit_id` = `u`.`id`
+    AND `u`.`deleted` = FALSE
+WHERE `s`.`deleted` = FALSE
+    AND `s`.`type` = 'component'
+    AND `s`.`quantity_code` IS NOT NULL
+    AND `s`.`quantity_value` > 0
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stock_component_converted` AS
+SELECT
+    `stock_component`.`batch_number`,
+    `stock_component`.`item_code`,
+    `stock_component`.`item_id`,
+    `stock_component`.`item_name`,
+    `stock_component`.`item_unit_code`,
+    (
+        SELECT `convertible_unit_min`.`code`
+        FROM `convertible_unit` `convertible_unit_min`
+        WHERE `convertible_unit_min`.`code` IN (
+            SELECT `convertible_unit_group`.`code`
+            FROM `stock_component` `min`
+            INNER JOIN `convertible_unit` `convertible_unit_group` ON `min`.`quantity_code` = `convertible_unit_group`.`code`
+            WHERE `min`.`item_id` = `stock_component`.`item_id`
+        )
+        AND `convertible_unit_min`.`base` IN (
+            SELECT MIN(`convertible_unit_group`.`base`)
+            FROM `stock_component` `min`
+            INNER JOIN `convertible_unit` `convertible_unit_group` ON `min`.`quantity_code` = `convertible_unit_group`.`code`
+            WHERE `min`.`item_id` = `stock_component`.`item_id`
+        )
+    ) AS `quantity_code`,
+    `stock_component`.`quantity_value` * (
+        SELECT IF(
+            `convertible_unit_min`.`code` = `stock_component`.`quantity_code`,
+            1,
+            `convertible_unit_min`.`distance_base` * `convertible_unit`.`distance_base`
+        )
+        FROM `convertible_unit` `convertible_unit_min`
+        WHERE `convertible_unit_min`.`code` IN (
+            SELECT `convertible_unit_group`.`code`
+            FROM `stock_component` `min`
+            INNER JOIN `convertible_unit` `convertible_unit_group` ON `min`.`quantity_code` = `convertible_unit_group`.`code`
+            WHERE `min`.`item_id` = `stock_component`.`item_id`
+        )
+        AND `convertible_unit_min`.`base` IN (
+            SELECT MIN(`convertible_unit_group`.`base`)
+            FROM `stock_component` `min`
+            INNER JOIN `convertible_unit` `convertible_unit_group` ON `min`.`quantity_code` = `convertible_unit_group`.`code`
+            WHERE `min`.`item_id` = `stock_component`.`item_id`
+        )
+    ) AS `quantity_value`,
+    `stock_component`.`warehouse_id`
+FROM `stock_component`
+INNER JOIN `convertible_unit` ON `stock_component`.`quantity_code` = `convertible_unit`.`code`
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stock_component_grouped` AS
+SELECT
+    `warehouse_id`,
+    CONCAT('/api/components/', `item_id`) AS `@item_id`,
+    'Component' AS `@item_type`,
+    `item_id`,
+    `item_code`,
+    `item_name`,
+    `item_unit_code`,
+    IF(`batch_number` LIKE 'NULL', NULL, `batch_number`) AS `batch_number`,
+    `quantity_code`,
+    SUM(`quantity_value`) AS `quantity_value`
+FROM `stock_component_converted`
+GROUP BY
+    `warehouse_id`,
+    `item_id`,
+    `item_code`,
+    `batch_number`
+ORDER BY
+    `warehouse_id`,
+    `item_id`,
+    `item_code`,
+    `batch_number`
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stock_product` AS
+SELECT
+    IF(`s`.`batch_number` IS NULL, 'NULL', `s`.`batch_number`) AS `batch_number`,
+    `p`.`code` AS `item_code`,
+    `s`.`product_id` AS `item_id`,
+    `p`.`name` AS `item_name`,
+    `u`.`code` AS `item_unit_code`,
+    `s`.`quantity_code`,
+    `s`.`quantity_value`,
+    `s`.`warehouse_id`
+FROM `stock` `s`
+INNER JOIN `product` `p`
+    ON `s`.`product_id` = `p`.`id`
+    AND `p`.`deleted` = FALSE
+INNER JOIN `unit` `u`
+    ON `p`.`unit_id` = `u`.`id`
+    AND `u`.`deleted` = FALSE
+WHERE `s`.`deleted` = FALSE
+    AND `s`.`type` = 'product'
+    AND `s`.`quantity_code` IS NOT NULL
+    AND `s`.`quantity_value` > 0
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stock_product_converted` AS
+SELECT
+    `stock_product`.`batch_number`,
+    `stock_product`.`item_code`,
+    `stock_product`.`item_id`,
+    `stock_product`.`item_name`,
+    `stock_product`.`item_unit_code`,
+    (
+        SELECT `convertible_unit_min`.`code`
+        FROM `convertible_unit` `convertible_unit_min`
+        WHERE `convertible_unit_min`.`code` IN (
+            SELECT `convertible_unit_group`.`code`
+            FROM `stock_product` `min`
+            INNER JOIN `convertible_unit` `convertible_unit_group` ON `min`.`quantity_code` = `convertible_unit_group`.`code`
+            WHERE `min`.`item_id` = `stock_product`.`item_id`
+        )
+        AND `convertible_unit_min`.`base` IN (
+            SELECT MIN(`convertible_unit_group`.`base`)
+            FROM `stock_product` `min`
+            INNER JOIN `convertible_unit` `convertible_unit_group` ON `min`.`quantity_code` = `convertible_unit_group`.`code`
+            WHERE `min`.`item_id` = `stock_product`.`item_id`
+        )
+    ) AS `quantity_code`,
+    `stock_product`.`quantity_value` * (
+        SELECT IF(
+            `convertible_unit_min`.`code` = `stock_product`.`quantity_code`,
+            1,
+            `convertible_unit_min`.`distance_base` * `convertible_unit`.`distance_base`
+        )
+        FROM `convertible_unit` `convertible_unit_min`
+        WHERE `convertible_unit_min`.`code` IN (
+            SELECT `convertible_unit_group`.`code`
+            FROM `stock_product` `min`
+            INNER JOIN `convertible_unit` `convertible_unit_group` ON `min`.`quantity_code` = `convertible_unit_group`.`code`
+            WHERE `min`.`item_id` = `stock_product`.`item_id`
+        )
+        AND `convertible_unit_min`.`base` IN (
+            SELECT MIN(`convertible_unit_group`.`base`)
+            FROM `stock_product` `min`
+            INNER JOIN `convertible_unit` `convertible_unit_group` ON `min`.`quantity_code` = `convertible_unit_group`.`code`
+            WHERE `min`.`item_id` = `stock_product`.`item_id`
+        )
+    ) AS `quantity_value`,
+    `stock_product`.`warehouse_id`
+FROM `stock_product`
+INNER JOIN `convertible_unit` ON `stock_product`.`quantity_code` = `convertible_unit`.`code`
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stock_product_grouped` AS
+SELECT
+    `warehouse_id`,
+    CONCAT('/api/products/', `item_id`) AS `@item_id`,
+    'Product' AS `@item_type`,
+    `item_id`,
+    `item_code`,
+    `item_name`,
+    `item_unit_code`,
+    IF(`batch_number` LIKE 'NULL', NULL, `batch_number`) AS `batch_number`,
+    `quantity_code`,
+    SUM(`quantity_value`) AS `quantity_value`
+FROM `stock_product_converted`
+GROUP BY
+    `warehouse_id`,
+    `item_id`,
+    `item_code`,
+    `batch_number`
+ORDER BY
+    `warehouse_id`,
+    `item_id`,
+    `item_code`,
+    `batch_number`
+SQL);
+        $this->addQuery(<<<'SQL'
+CREATE VIEW `stock_grouped` AS
+SELECT
+    `warehouse_id`,
+    `@item_id`,
+    `@item_type`,
+    `item_id`,
+    `item_code`,
+    `item_name`,
+    `item_unit_code`,
+    `batch_number`,
+    `quantity_code`,
+    `quantity_value`
+FROM `stock_component_grouped`
+UNION
+SELECT
+    `warehouse_id`,
+    `@item_id`,
+    `@item_type`,
+    `item_id`,
+    `item_code`,
+    `item_name`,
+    `item_unit_code`,
+    `batch_number`,
+    `quantity_code`,
+    `quantity_value`
+FROM `stock_product_grouped`
+SQL);
     }
 }

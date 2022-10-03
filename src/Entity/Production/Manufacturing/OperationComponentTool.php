@@ -5,7 +5,7 @@ namespace App\Entity\Production\Manufacturing;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Production\Engine\Tool\Tool;
 use App\Entity\Purchase\Component\Component;
 use Doctrine\ORM\Mapping as ORM;
@@ -44,7 +44,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class OperationComponentTool extends EntityId {
+class OperationComponentTool extends Entity {
     #[
         ApiProperty(description: 'Numéro de lot', example: '165486543'),
         ORM\Column(nullable: true),

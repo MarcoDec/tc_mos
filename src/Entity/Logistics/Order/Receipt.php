@@ -8,7 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Logistics\Order\State;
 use App\Entity\Embeddable\Measure;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Management\Society\Company\Company;
@@ -81,7 +81,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class Receipt extends EntityId implements MeasuredInterface {
+class Receipt extends Entity implements MeasuredInterface {
     /** @var Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>> */
     #[ORM\OneToMany(mappedBy: 'receipt', targetEntity: Check::class)]
     private Collection $checks;

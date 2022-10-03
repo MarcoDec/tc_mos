@@ -233,6 +233,7 @@ abstract class Item extends BaseItem {
         return $checks->mapWithKeys(static fn (Check $check): array => empty($id = $check->getReference()?->getId()) || $id <= 0 ? [] : [$id => $check]);
     }
 
+    #[Serializer\Groups(['read:item'])]
     final public function getReceiptQuantity(): Measure {
         $quantity = (new Measure())
             ->setCode($this->getUnit()?->getCode())

@@ -26,7 +26,7 @@ abstract class Entity {
         ApiProperty(description: 'id', required: true, identifier: true, example: 1),
         Serializer\Groups(['read:id'])
     ]
-    public function getId(): int|null|string {
+    public function getId(): ?int {
         return $this->id;
     }
 

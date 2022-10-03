@@ -8,7 +8,6 @@ use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Logistics\Warehouse;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -26,45 +25,57 @@ class StockRepository extends ServiceEntityRepository {
         parent::__construct($registry, $entityClass);
     }
 
-    /**
-     * @param array<string, mixed> $filters
-     *
-     * @return (ComponentStock|ProductStock)[]
-     */
-    public function findFetched(array $filters): array {
-        /** @var (ComponentStock|ProductStock)[] $componentsStocks */
-        $componentsStocks = $this->_em->getRepository(ComponentStock::class)->findFetched($filters);
-        /** @var (ComponentStock|ProductStock)[] $productStocks */
-        $productStocks = $this->_em->getRepository(ProductStock::class)->findFetched($filters);
-        return collect($componentsStocks)->merge($productStocks)->values()->all();
-    }
-
-    /**
-     * @return null|T
-     */
-    public function findTransfer(int $id): ?Stock {
+    public function countGrouped(Warehouse $warehouse): int {
         /** @phpstan-ignore-next-line */
-        return $this->_em->getRepository(ComponentStock::class)->findTransferStock($id)
-            ?? $this->_em->getRepository(ProductStock::class)->findTransferStock($id);
+        return $this->_em->getConnection()->executeQuery(
+            sql: 'SELECT COUNT(*) FROM `stock_grouped` WHERE `warehouse_id` = :warehouse',
+            params: ['warehouse' => $warehouse->getId()]
+        )->fetchOne();
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @return mixed[]
      */
-    protected function createFetchedQueryBuilder(array $filters): QueryBuilder {
-        $qb = $this->createQueryBuilder('s');
-        foreach ($filters as $property => $value) {
-            if ($property === 'warehouse' && $value instanceof Warehouse) {
-                $qb->where('s.warehouse = :warehouse')->setParameter('warehouse', $value->getId());
-            }
-        }
-        return $qb;
+    public function findGrouped(Warehouse $warehouse, int $limit, int $offset): array {
+        return collect($this->_em->getConnection()->executeQuery(
+            sql: "SELECT * FROM `stock_grouped` WHERE `warehouse_id` = :warehouse LIMIT $limit OFFSET $offset",
+            params: ['warehouse' => $warehouse->getId()]
+        )->fetchAllAssociative())
+            ->map(static function (array $stock): array {
+                return [
+                    'batchNumber' => $stock['batch_number'],
+                    'item' => [
+                        '@id' => $stock['@item_id'],
+                        '@type' => $stock['@item_type'],
+                        'id' => $stock['item_id'],
+                        'code' => $stock['item_code'],
+                        'name' => $stock['item_name'],
+                        'unitCode' => $stock['item_unit_code'],
+                    ],
+                    'quantity' => [
+                        'code' => $stock['quantity_code'],
+                        'value' => $stock['quantity_value']
+                    ],
+                    'warehouse_id' => $stock['warehouse_id']
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     /**
      * @return null|T
      */
-    protected function findTransferStock(int $id): ?Stock {
+    public function findPatch(int $id): ?Stock {
+        /** @phpstan-ignore-next-line */
+        return $this->_em->getRepository(ComponentStock::class)->loadPatch($id)
+            ?? $this->_em->getRepository(ProductStock::class)->loadPatch($id);
+    }
+
+    /**
+     * @return null|T
+     */
+    protected function loadPatch(int $id): ?Stock {
         $query = $this
             ->createQueryBuilder('s')
             ->addSelect('i')
@@ -75,10 +86,18 @@ class StockRepository extends ServiceEntityRepository {
             ->setParameter('id', $id)
             ->getQuery();
         try {
-            /** @phpstan-ignore-next-line */
-            return $query->getOneOrNullResult();
-        } catch (NonUniqueResultException $e) {
-            return null;
+            $stock = $query->getOneOrNullResult();
+        } catch (NonUniqueResultException) {
+            $stock = null;
         }
+        /** @var null|T $stock */
+        if (empty($stock)) {
+            return $stock;
+        }
+        $receipts = $stock->getReceipts();
+        if (method_exists($receipts, 'setInitialized')) {
+            $receipts->setInitialized(true);
+        }
+        return $stock;
     }
 }

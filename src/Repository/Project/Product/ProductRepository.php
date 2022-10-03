@@ -2,6 +2,7 @@
 
 namespace App\Repository\Project\Product;
 
+use App\Doctrine\DBAL\Types\Embeddable\BlockerStateType;
 use App\Entity\Project\Product\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,8 +23,8 @@ final class ProductRepository extends ServiceEntityRepository {
     public function expires(): void {
         $this->_em->createQueryBuilder()
             ->update($this->getClassName(), 'p')
-            ->set('p.embState.state', ':place')
-            ->setParameter('place', 'disabled')
+            ->set('p.embBlocker.state', ':place')
+            ->setParameter('place', BlockerStateType::TYPE_STATE_DISABLED)
             ->where('p.endOfLife >= NOW()')
             ->getQuery()
             ->execute();

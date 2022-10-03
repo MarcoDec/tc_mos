@@ -9,7 +9,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\Embeddable\EmployeeEngineStateType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Filter\EnumFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -72,7 +72,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Table(name: 'event_type'),
     UniqueEntity('name')
 ]
-class Type extends EntityId {
+class Type extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'ABSENCE'),
         Assert\Length(min: 3, max: 30),

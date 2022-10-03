@@ -2,13 +2,13 @@
 
 namespace App\Entity\It;
 
-use App\Entity\EntityId;
+use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class Request extends EntityId {
+class Request extends Entity {
     #[ORM\Column(type: 'date_immutable')]
     private ?DateTimeImmutable $askedAt = null;
 

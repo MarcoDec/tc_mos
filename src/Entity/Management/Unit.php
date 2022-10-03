@@ -11,6 +11,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Filter\NumericFilter;
 use App\Filter\RelationFilter;
+use App\Repository\Management\UnitRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator\Management\Unit\Base;
 use Doctrine\Common\Collections\Collection;
@@ -88,17 +89,17 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ]
     ),
     Base,
-    ORM\Entity,
+    ORM\Entity(repositoryClass: UnitRepository::class),
     UniqueEntity('code'),
     UniqueEntity('name')
 ]
 class Unit extends AbstractUnit {
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, fetch: 'EAGER')]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     protected Collection $children;
 
     #[
         ApiProperty(description: 'Parent ', readableLink: false, example: '/api/units/1'),
-        ORM\ManyToOne(targetEntity: self::class, fetch: 'EAGER', inversedBy: 'children'),
+        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
     protected $parent;

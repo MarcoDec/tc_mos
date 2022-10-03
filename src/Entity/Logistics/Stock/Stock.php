@@ -41,19 +41,17 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ],
             'grouped' => [
-                'controller' => PlaceholderAction::class,
+                'deserialize' => false,
                 'method' => 'GET',
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:measure', 'read:stock:grouped'],
-                    'openapi_definition_name' => 'Stock-grouped',
-                    'skip_null_values' => false
-                ],
                 'openapi_context' => [
                     'description' => 'Récupère les stocks groupés par référence et lot',
                     'summary' => 'Récupère les stocks groupés par référence et lot'
                 ],
-                'pagination_enabled' => false,
-                'path' => '/stocks/grouped'
+                'read' => false,
+                'route_name' => 'api_stocks_grouped_collection',
+                'serialize' => false,
+                'validate' => false,
+                'write' => false
             ]
         ],
         itemOperations: [
@@ -137,14 +135,14 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     #[
         ApiProperty(description: 'Numéro de lot', example: '165486543'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:stock', 'read:stock:grouped', 'write:stock'])
+        Serializer\Groups(['read:stock', 'write:stock'])
     ]
     protected ?string $batchNumber = null;
 
     /** @var null|T */
     #[
         ApiProperty(description: 'Élément', example: '/api/components/1'),
-        Serializer\Groups(['read:stock', 'read:stock:grouped'])
+        Serializer\Groups(['read:stock'])
     ]
     protected $item;
 
@@ -166,12 +164,12 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure,
         ORM\Embedded,
-        Serializer\Groups(['read:stock', 'read:stock:grouped', 'receipt:stock', 'transfer:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected Measure $quantity;
 
     /** @var Collection<int, Receipt<T>> */
-    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     protected Collection $receipts;
 
     #[
@@ -180,13 +178,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected ?Warehouse $warehouse = null;
-
-    /** @var array<int, string> */
-    #[
-        ApiProperty(description: 'Localisations', example: 'Rayon B'),
-        Serializer\Groups(['read:stock:grouped'])
-    ]
-    private array $locations = [];
 
     public function __construct() {
         $this->quantity = new Measure();
@@ -221,18 +212,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return $this->batchNumber;
     }
 
-    final public function getGroupedId(): string {
-        return "{$this->warehouse?->getId()}-{$this->getType()}-{$this->item?->getId()}-{$this->getIriBatchNumber()}";
-    }
-
-    #[
-        ApiProperty(description: 'id', required: true, identifier: true, example: 1),
-        Serializer\Groups(['read:id'])
-    ]
-    public function getId(): int|null|string {
-        return parent::getId() ?? $this->getGroupedId();
-    }
-
     /**
      * @return null|T
      */
@@ -246,13 +225,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     final public function getLocation(): ?string {
         return $this->location;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    final public function getLocations(): array {
-        return $this->locations;
     }
 
     public function getMeasures(): array {
@@ -276,19 +248,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     final public function getWarehouse(): ?Warehouse {
         return $this->warehouse;
-    }
-
-    /**
-     * @param Stock<T> $stock
-     *
-     * @return $this
-     */
-    final public function group(self $stock): self {
-        if (!empty($location = $stock->getLocation())) {
-            $this->addLocation($location);
-        }
-        $this->add($stock->getQuantity());
-        return $this;
     }
 
     final public function isJail(): bool {
@@ -339,9 +298,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
      */
     final public function setLocation(?string $location): self {
         $this->location = $location;
-        if ($this->location !== null) {
-            $this->addLocation($this->location);
-        }
         return $this;
     }
 
@@ -393,15 +349,5 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     private function add(Measure $quantity): void {
         $this->quantity = $this->quantity->add($quantity);
-    }
-
-    private function addLocation(string $location): void {
-        if (!in_array($location, $this->locations)) {
-            $this->locations[] = $location;
-        }
-    }
-
-    private function getIriBatchNumber(): ?string {
-        return empty($this->batchNumber) ? $this->batchNumber : str_replace('/', '-', $this->batchNumber);
     }
 }
