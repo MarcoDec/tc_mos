@@ -1,10 +1,10 @@
 <script setup>
     import {assign, createMachine} from 'xstate'
+    import {useRoute, useRouter} from 'vue-router'
     import AppCard from '../AppCard.vue'
     import AppForm from '../form/AppForm.vue'
     import AppOverlay from '../AppOverlay'
     import {useMachine} from '@xstate/vue'
-    import {useRoute} from 'vue-router'
     import useUser from '../../stores/security'
 
     const fields = [
@@ -12,6 +12,7 @@
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ]
     const route = useRoute()
+    const router = useRouter()
     const user = useUser()
     const form = `${route.name}-form`
     const {send, state} = useMachine(createMachine({
@@ -36,14 +37,22 @@
 
     async function submit(data) {
         send('submit')
-        await user.connect(data)
-        send('success')
+        try {
+            await user.connect(data)
+            send('success')
+            await router.push({name: 'home'})
+        } catch (error) {
+            send('fail', {error})
+        }
     }
 </script>
 
 <template>
     <AppOverlay :spinner="state.matches('loading')" class="row">
         <AppCard class="col" title="Connexion">
+            <div v-if="state.matches('error')" class="alert alert-danger" role="alert">
+                {{ state.context.error }}
+            </div>
             <AppForm
                 :id="form"
                 :disabled="state.matches('loading')"

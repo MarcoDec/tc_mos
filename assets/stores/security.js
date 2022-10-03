@@ -8,6 +8,12 @@ export default defineStore('user', () => {
     const id = ref(cookies.get('id') ?? 0)
     const isLogged = computed(() => id.value > 0)
 
+    function clear() {
+        id.value = 0
+        cookies.remove('id')
+        cookies.remove('token')
+    }
+
     function save(response) {
         id.value = response.content.id
         cookies.set('id', response.content.id)
@@ -15,22 +21,28 @@ export default defineStore('user', () => {
     }
 
     return {
+        clear,
         async connect(data) {
-            const response = await api('/api/login', 'POST', data)
-            if (response.status === 200)
+            try {
+                const response = await api('/api/login', 'POST', data)
                 save(response)
+            } catch (error) {
+                clear()
+                throw error
+            }
         },
         cookies,
         async fetch() {
-            const response = await api(`/api/employees/${id.value}`)
-            if (response.status === 200)
-                save(response)
-            else {
-                // eslint-disable-next-line require-atomic-updates
-                id.value = 0
-                cookies.remove('id')
-                cookies.remove('token')
+            if (isLogged.value) {
+                try {
+                    const response = await api(`/api/employees/${id.value}`)
+                    save(response)
+                    return
+                    // eslint-disable-next-line no-empty
+                } catch {
+                }
             }
+            clear()
         },
         id,
         isLogged,
