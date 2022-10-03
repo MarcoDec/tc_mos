@@ -5140,6 +5140,7 @@ SELECT
     `s`.`component_id` AS `item_id`,
     `c`.`name` AS `item_name`,
     `u`.`code` AS `item_unit_code`,
+    `s`.`location`,
     `s`.`quantity_code`,
     `s`.`quantity_value`,
     `s`.`warehouse_id`
@@ -5166,6 +5167,7 @@ SELECT
     `stock_component`.`item_id`,
     `stock_component`.`item_name`,
     `stock_component`.`item_unit_code`,
+    `stock_component`.`location`,
     (
         SELECT `convertible_unit_min`.`code`
         FROM `convertible_unit` `convertible_unit_min`
@@ -5216,7 +5218,8 @@ SELECT
     `item_code`,
     `item_name`,
     `item_unit_code`,
-    IF(`batch_number` LIKE 'NULL', NULL, `batch_number`) AS `batch_number`,
+    `batch_number`,
+    GROUP_CONCAT(DISTINCT `location` ORDER BY `location` SEPARATOR ',') AS `location`,
     `quantity_code`,
     SUM(`quantity_value`) AS `quantity_value`
 FROM `stock_component_converted`
@@ -5239,6 +5242,7 @@ SELECT
     `s`.`product_id` AS `item_id`,
     `p`.`name` AS `item_name`,
     `u`.`code` AS `item_unit_code`,
+    `s`.`location`,
     `s`.`quantity_code`,
     `s`.`quantity_value`,
     `s`.`warehouse_id`
@@ -5262,6 +5266,7 @@ SELECT
     `stock_product`.`item_id`,
     `stock_product`.`item_name`,
     `stock_product`.`item_unit_code`,
+    `stock_product`.`location`,
     (
         SELECT `convertible_unit_min`.`code`
         FROM `convertible_unit` `convertible_unit_min`
@@ -5312,7 +5317,8 @@ SELECT
     `item_code`,
     `item_name`,
     `item_unit_code`,
-    IF(`batch_number` LIKE 'NULL', NULL, `batch_number`) AS `batch_number`,
+    `batch_number`,
+    GROUP_CONCAT(DISTINCT `location` ORDER BY `location` SEPARATOR ',') AS `location`,
     `quantity_code`,
     SUM(`quantity_value`) AS `quantity_value`
 FROM `stock_product_converted`
@@ -5337,7 +5343,8 @@ SELECT
     `item_code`,
     `item_name`,
     `item_unit_code`,
-    `batch_number`,
+    IF(`batch_number` LIKE 'NULL', NULL, `batch_number`) AS `batch_number`,
+    `location`,
     `quantity_code`,
     `quantity_value`
 FROM `stock_component_grouped`
@@ -5350,7 +5357,8 @@ SELECT
     `item_code`,
     `item_name`,
     `item_unit_code`,
-    `batch_number`,
+    IF(`batch_number` LIKE 'NULL', NULL, `batch_number`) AS `batch_number`,
+    `location`,
     `quantity_code`,
     `quantity_value`
 FROM `stock_product_grouped`

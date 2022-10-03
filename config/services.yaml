@@ -159,17 +159,17 @@ services:
     autoconfigure: false
     decorates: api_platform.serializer.context_builder
 
-  stock.export_filter:
-    arguments: [ { location: partial } ]
-    autoconfigure: false
-    autowire: false
-    parent: api_platform.doctrine.orm.search_filter
-    tags: [ api_platform.filter ]
-
   stock.filter:
     arguments:
       $properties: { warehouse: ~ }
     autoconfigure: false
     autowire: false
     parent: App\Filter\RelationFilter
+    tags: [ api_platform.filter ]
+
+  stock.grouped_filter:
+    arguments: [ { location: partial } ]
+    autoconfigure: false
+    autowire: false
+    parent: api_platform.doctrine.orm.search_filter
     tags: [ api_platform.filter ]

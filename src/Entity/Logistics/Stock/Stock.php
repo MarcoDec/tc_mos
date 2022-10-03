@@ -40,26 +40,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'pagination_client_enabled' => true
             ],
-            'export' => [
-                'controller' => PlaceholderAction::class,
-                'filters' => ['stock.export_filter', 'stock.filter'],
-                'method' => 'GET',
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:measure', 'read:stock:export'],
-                    'openapi_definition_name' => 'Stock-grouped',
-                    'skip_null_values' => false
-                ],
-                'openapi_context' => [
-                    'description' => 'Récupère les stocks groupés par référence et lot',
-                    'summary' => 'Récupère les stocks groupés par référence et lot'
-                ],
-                'pagination_client_enabled' => false,
-                'pagination_enabled' => false,
-                'path' => '/stocks/export'
-            ],
             'grouped' => [
                 'deserialize' => false,
-                'filters' => ['stock.filter'],
+                'filters' => ['stock.filter', 'stock.grouped_filter'],
                 'method' => 'GET',
                 'openapi_context' => [
                     'description' => 'Récupère les stocks groupés par référence et lot',
@@ -181,7 +164,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         AppAssert\Measure,
         ORM\Embedded,
-        Serializer\Groups(['read:stock', 'read:stock:export', 'receipt:stock', 'transfer:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected Measure $quantity;
 
@@ -268,20 +251,6 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
      */
     final public function getOperations(): Collection {
         return $this->operations;
-    }
-
-    /**
-     * @return string[]
-     */
-    #[Serializer\Groups(['read:stock:export'])]
-    final public function getOrdersRef(): array {
-        $refs = [];
-        foreach ($this->operations as $operation) {
-            if (!empty($ref = $operation->getRef())) {
-                $refs[] = $ref;
-            }
-        }
-        return $refs;
     }
 
     final public function getQuantity(): Measure {
