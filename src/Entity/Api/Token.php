@@ -25,16 +25,11 @@ class Token {
 
     public function __construct(
         #[ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'apiTokens')]
+        ORM\ManyToOne(inversedBy: 'apiTokens')]
         private Employee $employee
     ) {
         $this->expireAt = new DateTimeImmutable('+1 hour');
         $this->token = bin2hex(random_bytes(60));
-    }
-
-    final public function expire(): self {
-        $this->expireAt = new DateTimeImmutable('-1 minute');
-        return $this;
     }
 
     final public function getEmployee(): ?Employee {
@@ -56,10 +51,5 @@ class Token {
 
     final public function isExpired(): bool {
         return $this->expireAt <= new DateTimeImmutable();
-    }
-
-    final public function renew(): self {
-        $this->expireAt = new DateTimeImmutable('+1 hour');
-        return $this;
     }
 }

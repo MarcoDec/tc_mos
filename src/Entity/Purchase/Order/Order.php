@@ -106,7 +106,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class Order extends Entity {
     #[
-        ApiProperty(description: 'Companie', readableLink: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:order', 'write:order'])
     ]

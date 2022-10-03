@@ -39,6 +39,19 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les stocks',
                     'summary' => 'Récupère les stocks'
                 ]
+            ],
+            'grouped' => [
+                'deserialize' => false,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Récupère les stocks groupés par référence et lot',
+                    'summary' => 'Récupère les stocks groupés par référence et lot'
+                ],
+                'read' => false,
+                'route_name' => 'api_stocks_grouped_collection',
+                'serialize' => false,
+                'validate' => false,
+                'write' => false
             ]
         ],
         itemOperations: [
@@ -54,7 +67,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Modifie un stock',
                     'summary' => 'Modifie un stock'
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ],
             'out' => [
                 'method' => 'PATCH',
@@ -71,7 +85,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     ],
                     'summary' => 'Sortie d\'un stock'
                 ],
-                'path' => '/stocks/{id}/out'
+                'path' => '/stocks/{id}/out',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ],
             'transfer' => [
                 'controller' => PlaceholderAction::class,
@@ -84,7 +99,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Transfert un stock',
                     'summary' => 'Transfert un stock'
                 ],
-                'path' => '/transfer/{id}/out'
+                'path' => '/stocks/{id}/transfer',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
         attributes: [
@@ -122,7 +138,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     /** @var null|T */
     #[
-        ApiProperty(description: 'Élément', readableLink: false, example: '/api/components/1'),
+        ApiProperty(description: 'Élément', example: '/api/components/1'),
         Serializer\Groups(['read:stock'])
     ]
     protected $item;
@@ -150,7 +166,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     protected Measure $quantity;
 
     /** @var Collection<int, Receipt<T>> */
-    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     protected Collection $receipts;
 
     #[
@@ -168,6 +184,8 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     public static function getBarCodeTableNumber(): string {
         return self::STOCK_BAR_CODE_PREFIX;
     }
+
+    abstract protected function getType(): string;
 
     /**
      * @param Receipt<T> $receipt
@@ -191,6 +209,10 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
      */
     final public function getItem() {
         return $this->item;
+    }
+
+    final public function getItemCode(): ?string {
+        return $this->item?->getCode();
     }
 
     final public function getLocation(): ?string {
@@ -315,5 +337,9 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     final public function substract(Measure $quantity): self {
         $this->quantity = $this->quantity->substract($quantity);
         return $this;
+    }
+
+    private function add(Measure $quantity): void {
+        $this->quantity = $this->quantity->add($quantity);
     }
 }

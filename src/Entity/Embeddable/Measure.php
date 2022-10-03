@@ -11,13 +11,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[ORM\Embeddable]
 class Measure {
     #[
-        ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true),
+        ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8_bin']),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private ?string $code = null;
 
     #[
-        ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true),
+        ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8_bin']),
         Serializer\Groups(['read:measure', 'write:measure'])
     ]
     private ?string $denominator = null;

@@ -52,6 +52,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'path' => '/checks/receipt/{id}',
                 'read' => false,
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')',
                 'validate' => false,
                 'write' => false
             ]

@@ -161,7 +161,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
     private EmployeeEngineState $embState;
 
     #[
-        ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist'], fetch: 'EAGER'),
+        ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist']),
         Serializer\Groups(['read:engine', 'write:engine']),
         Serializer\MaxDepth(1)
     ]

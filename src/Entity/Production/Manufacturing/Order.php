@@ -114,7 +114,7 @@ class Order extends Entity implements BarCodeInterface {
     private Measure $actualQuantity;
 
     #[
-        ApiProperty(description: 'Companie', readableLink: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]
@@ -147,7 +147,7 @@ class Order extends Entity implements BarCodeInterface {
     private int $index = 1;
 
     #[
-        ApiProperty(description: 'Companie fabricante', readableLink: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie fabricante', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
     ]

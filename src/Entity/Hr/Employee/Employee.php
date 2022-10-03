@@ -21,6 +21,7 @@ use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\NumericFilter;
+use App\Repository\Hr\Employee\EmployeeRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -137,7 +138,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]
 class Employee extends Entity implements BarCodeInterface, PasswordAuthenticatedUserInterface, UserInterface {
     use BarCodeTrait;
@@ -168,15 +169,15 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     private ?DateTimeImmutable $birthday = null;
 
     #[
-        ApiProperty(description: 'Companie', example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['read:employee', 'read:user'])
     ]
     private ?Company $company = null;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:employee', 'read:employee:collection'])
+        Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
     ]
     private Blocker $embBlocker;
 
@@ -185,7 +186,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:employee', 'read:employee:collection'])
+        Serializer\Groups(['read:employee', 'read:employee:collection', 'read:user'])
     ]
     private EmployeeEngineState $embState;
 
@@ -207,7 +208,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Initiales', example: 'C.R.'),
         ORM\Column,
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $initials = null;
 
@@ -228,7 +229,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $name = null;
 
@@ -270,7 +271,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Nom', example: 'Roosevelt'),
         ORM\Column,
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $surname = null;
 
@@ -294,7 +295,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user'])
     ]
     private ?string $username = null;
 
@@ -424,7 +425,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Rôles', example: [Roles::ROLE_USER]),
         Pure,
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['read:employee', 'read:user'])
     ]
     final public function getRoles(): array {
         return $this->embRoles->getRoles();
@@ -466,7 +467,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Token', example: '47e65f14b42a5398c1eea9125aaf93e44b1ddeb93ea2cca769ea897e0a285e4e7cfac21dee1a56396e15c1c5ee7c8d4e0bf692c83cda86a6462ad707'),
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['read:employee', 'read:user'])
     ]
     final public function getToken(): ?string {
         return $this->getCurrentApiToken()?->getToken();

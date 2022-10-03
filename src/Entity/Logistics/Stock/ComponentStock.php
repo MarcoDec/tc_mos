@@ -6,6 +6,8 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
@@ -18,6 +20,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['item', 'warehouse']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['batchNumber' => 'partial']),
     ApiResource(
         description: 'Stock des composants',
         collectionOperations: [
@@ -65,16 +68,21 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:measure', 'read:stock'],
             'openapi_definition_name' => 'ComponentStock-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ComponentStockRepository::class)
 ]
 class ComponentStock extends Stock {
     #[
-        ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
+        ApiProperty(description: 'Composant', example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
         ORM\ManyToOne(targetEntity: Component::class),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
     protected $item;
+
+    final protected function getType(): string {
+        return ItemType::TYPE_COMPONENT;
+    }
 }

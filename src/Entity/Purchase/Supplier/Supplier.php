@@ -61,7 +61,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'order' => ['name' => 'asc'],
                 'pagination_enabled' => false,
-                'path' => '/suppliers/receipts'
+                'path' => '/suppliers/receipts',
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ],
             'post' => [
                 'denormalization_context' => [

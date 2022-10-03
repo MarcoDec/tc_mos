@@ -12,7 +12,6 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\CompanyInterface;
 use App\Entity\Management\Society\Company\Company;
-use App\Filter\RelationFilter;
 use App\Filter\SetFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -20,7 +19,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiFilter(filterClass: SetFilter::class, properties: ['families']),
     ApiResource(
@@ -82,7 +80,7 @@ class Warehouse extends Entity implements CompanyInterface {
     #[
         ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:warehouse', 'write:warehouse'])
+        Serializer\Groups(['write:warehouse'])
     ]
     private ?Company $company = null;
 

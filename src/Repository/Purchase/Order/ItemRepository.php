@@ -7,6 +7,7 @@ use App\Entity\Purchase\Order\ComponentItem;
 use App\Entity\Purchase\Order\Item;
 use App\Entity\Purchase\Order\ProductItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Illuminate\Support\Collection;
@@ -35,8 +36,9 @@ class ItemRepository extends ServiceEntityRepository {
         $qb = $this->createQueryBuilder('i')
             ->addSelect('o')
             ->addSelect('r')
-            ->leftJoin('i.order', 'o')
-            ->leftJoin('i.receipts', 'r')
+            ->leftJoin('i.order', 'o', Join::WITH, 'o.deleted = FALSE')
+            ->leftJoin('i.receipts', 'r', Join::WITH, 'r.deleted = FALSE')
+            ->where('i.deleted = FALSE')
             ->setMaxResults($limit)
             ->setFirstResult($offset);
         if (isset($criteria['embState.state'])) {
@@ -50,7 +52,7 @@ class ItemRepository extends ServiceEntityRepository {
         return $qb;
     }
 
-    public function createReceiptQueryBuilder(int $id): QueryBuilder {
+    public function createCheckQueryBuilder(int $id): QueryBuilder {
         return $this->createQueryBuilder('i')
             ->addSelect('c')
             ->addSelect('company')
@@ -60,15 +62,27 @@ class ItemRepository extends ServiceEntityRepository {
             ->addSelect('ref')
             ->addSelect('s')
             ->addSelect('s_references')
-            ->leftJoin('i.order', 'o')
-            ->leftJoin('o.company', 'company')
-            ->leftJoin('company.references', 'company_references')
-            ->leftJoin('o.supplier', 's')
-            ->leftJoin('s.references', 's_references')
-            ->leftJoin('i.receipts', 'r')
-            ->leftJoin('r.checks', 'c')
-            ->leftJoin('c.reference', 'ref')
-            ->where('i.id = :id')
+            ->leftJoin('i.order', 'o', Join::WITH, 'o.deleted = FALSE')
+            ->leftJoin('o.company', 'company', Join::WITH, 'company.deleted = FALSE')
+            ->leftJoin('company.references', 'company_references', Join::WITH, 'company_references.deleted = FALSE')
+            ->leftJoin('o.supplier', 's', Join::WITH, 's.deleted = FALSE')
+            ->leftJoin('s.references', 's_references', Join::WITH, 's_references.deleted = FALSE')
+            ->leftJoin('i.receipts', 'r', Join::WITH, 'r.deleted = FALSE')
+            ->leftJoin('r.checks', 'c', Join::WITH, 'c.deleted = FALSE')
+            ->leftJoin('c.reference', 'ref', Join::WITH, 'ref.deleted = FALSE')
+            ->where('i.deleted = FALSE')
+            ->andWhere('i.id = :id')
+            ->setParameter('id', $id);
+    }
+
+    public function createReceiptQueryBuilder(int $id): QueryBuilder {
+        return $this->createQueryBuilder('i')
+            ->addSelect('o')
+            ->addSelect('r')
+            ->leftJoin('i.order', 'o', Join::WITH, 'o.deleted = FALSE')
+            ->leftJoin('i.receipts', 'r', Join::WITH, 'r.deleted = FALSE')
+            ->where('i.deleted = FALSE')
+            ->andWhere('i.id = :id')
             ->setParameter('id', $id);
     }
 
@@ -83,6 +97,11 @@ class ItemRepository extends ServiceEntityRepository {
         return $items->merge($this->_em->getRepository(ProductItem::class)->findBy($criteria, $orderBy, $limit, $offset))
             ->values()
             ->all();
+    }
+
+    public function findOneByCheck(int $id): ComponentItem|ProductItem|null {
+        return $this->_em->getRepository(ComponentItem::class)->findOneByCheck($id)
+            ?? $this->_em->getRepository(ProductItem::class)->findOneByCheck($id);
     }
 
     public function findOneByReceipt(int $id): ComponentItem|ProductItem|null {

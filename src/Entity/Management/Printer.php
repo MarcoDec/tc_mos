@@ -20,7 +20,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les imprimantes',
                     'summary' => 'Récupère les imprimantes',
                 ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
             ]
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],
@@ -41,7 +41,7 @@ class Printer extends Entity {
     private ?string $color = PrinterColorType::TYPE_GREEN;
 
     #[
-        ApiProperty(description: 'Company', required: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Company', readableLink: false, required: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:printer'])
     ]

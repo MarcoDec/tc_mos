@@ -44,7 +44,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Récupère les lignes',
                     'summary' => 'Récupère les lignes',
-                ]
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
             ]
         ],
         itemOperations: [

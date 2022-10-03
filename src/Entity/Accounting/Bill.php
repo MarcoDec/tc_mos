@@ -111,7 +111,7 @@ class Bill extends Entity {
     private ?DateTimeImmutable $billingDate;
 
     #[
-        ApiProperty(description: 'Companie', example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:bill', 'write:bill'])
     ]

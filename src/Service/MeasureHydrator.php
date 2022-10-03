@@ -5,20 +5,19 @@ namespace App\Service;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\Management\UnitRepository;
+use Symfony\Contracts\Cache\CacheInterface;
 
 final class MeasureHydrator {
-    public function __construct(private readonly EntityManagerInterface $em) {
+    public function __construct(
+        private readonly CacheInterface $cache,
+        private readonly UnitRepository $repo
+    ) {
     }
 
     public function hydrate(Measure $measure): Measure {
-        $unitRepo = $this->em->getRepository(Unit::class);
-        if ($measure->getCode() !== null) {
-            $measure->setUnit($unitRepo->findOneBy(['code' => $measure->getCode()]));
-        }
-        if ($measure->getDenominator() !== null) {
-            $measure->setDenominatorUnit($unitRepo->findOneBy(['code' => $measure->getDenominator()]));
-        }
+        $measure->setUnit($this->getUnit($measure->getCode()));
+        $measure->setDenominatorUnit($this->getUnit($measure->getDenominator()));
         return $measure;
     }
 
@@ -27,5 +26,13 @@ final class MeasureHydrator {
             $this->hydrate($measure);
         }
         return $entity;
+    }
+
+    private function getUnit(?string $code): ?Unit {
+        if (empty($code)) {
+            return null;
+        }
+        $units = $this->cache->get('measure-units', fn () => $this->repo->loadAll());
+        return $units[$code] ?? null;
     }
 }
