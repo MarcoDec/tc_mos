@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\Hr\Employee\EmployeeController;
 use App\Doctrine\DBAL\Types\Hr\Employee\GenderType;
 use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
@@ -123,6 +124,17 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'path' => '/employees/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
+            ],
+            'user' => [
+                'controller' => EmployeeController::class,
+                'identifiers' => [],
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Récupère l\'utilisateur courant',
+                    'summary' => 'Récupère l\'utilisateur courant'
+                ],
+                'path' => '/user',
+                'read' => false
             ]
         ],
         attributes: [

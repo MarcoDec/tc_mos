@@ -1,10 +1,11 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import AppHome from '../components/pages/AppHome'
 import AppLogin from '../components/pages/AppLogin.vue'
 import useUser from '../stores/security'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
-        {meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
+        {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
     ]
