@@ -2,6 +2,7 @@
 
 namespace App\Entity\Logistics;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -13,6 +14,7 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\CompanyInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Filter\SetFilter;
+use App\Repository\Logistics\WarehouseRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -29,6 +31,18 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les entrepôts',
                     'summary' => 'Récupère les entrepôts'
                 ]
+            ],
+            'import' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Récupère les entrepôts pour les imports',
+                    'summary' => 'Récupère les entrepôts pour les imports'
+                ],
+                'pagination_client_enabled' => false,
+                'pagination_enabled' => false,
+                'path' => '/warehouses/import'
             ],
             'post' => [
                 'openapi_context' => [
@@ -74,7 +88,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         paginationClientEnabled: true
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: WarehouseRepository::class)
 ]
 class Warehouse extends Entity implements CompanyInterface {
     #[
@@ -83,6 +97,9 @@ class Warehouse extends Entity implements CompanyInterface {
         Serializer\Groups(['write:warehouse'])
     ]
     private ?Company $company = null;
+
+    #[ORM\ManyToOne]
+    private ?Company $destination = null;
 
     /** @var string[] */
     #[
@@ -113,6 +130,10 @@ class Warehouse extends Entity implements CompanyInterface {
         return $this->company;
     }
 
+    final public function getDestination(): ?Company {
+        return $this->destination;
+    }
+
     /**
      * @return string[]
      */
@@ -134,6 +155,11 @@ class Warehouse extends Entity implements CompanyInterface {
 
     final public function setCompany(?Company $company): self {
         $this->company = $company;
+        return $this;
+    }
+
+    final public function setDestination(?Company $destination): self {
+        $this->destination = $destination;
         return $this;
     }
 
