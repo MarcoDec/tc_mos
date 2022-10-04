@@ -87,7 +87,8 @@
     "date_creation": "0000-00-00 00:00:00",
     "date_modification": "2017-03-22 13:09:39",
     "id_user_creation": null,
-    "id_user_modification": null
+    "id_user_modification": null,
+    "destination": "4"
   },
   {
     "id": "10",
@@ -97,7 +98,8 @@
     "date_creation": "0000-00-00 00:00:00",
     "date_modification": "2017-03-22 13:09:53",
     "id_user_creation": null,
-    "id_user_modification": null
+    "id_user_modification": null,
+    "destination": "1"
   },
   {
     "id": "11",
@@ -187,7 +189,8 @@
     "date_creation": "0000-00-00 00:00:00",
     "date_modification": "2018-06-18 06:06:50",
     "id_user_creation": null,
-    "id_user_modification": null
+    "id_user_modification": null,
+    "destination": "5"
   },
   {
     "id": "20",
@@ -217,7 +220,8 @@
     "date_creation": "0000-00-00 00:00:00",
     "date_modification": "2018-08-22 13:15:54",
     "id_user_creation": null,
-    "id_user_modification": null
+    "id_user_modification": null,
+    "destination": "1"
   },
   {
     "id": "23",
