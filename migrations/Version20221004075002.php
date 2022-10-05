@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20220930141408 extends AbstractMigration {
+final class Version20221004075002 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -5044,10 +5044,11 @@ CREATE TABLE `warehouse` (
     `statut` BOOLEAN DEFAULT FALSE NOT NULL,
     `id_society` INT UNSIGNED DEFAULT NULL,
     `families` SET('prison', 'production', 'réception', 'magasin pièces finies', 'expédition', 'magasin matières premières', 'camion') DEFAULT NULL COMMENT '(DC2Type:warehouse_families)',
-    `warehouse_name` VARCHAR(255) NOT NULL
+    `warehouse_name` VARCHAR(255) NOT NULL,
+    `destination` INT UNSIGNED DEFAULT NULL
 )
 SQL);
-        $this->insert('warehouse', ['id', 'statut', 'id_society', 'warehouse_name']);
+        $this->insert('warehouse', ['id', 'statut', 'id_society', 'warehouse_name', 'destination']);
         $this->addQuery('RENAME TABLE `warehouse` TO `warehouse_old`');
         $this->addQuery(<<<'SQL'
 CREATE TABLE `warehouse` (
@@ -5055,16 +5056,19 @@ CREATE TABLE `warehouse` (
   `old_id` INT UNSIGNED DEFAULT NULL,
   `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
   `company_id` INT UNSIGNED DEFAULT NULL,
+  `destination_id` INT UNSIGNED DEFAULT NULL,
   `families` SET('prison','production','réception','magasin pièces finies','expédition','magasin matières premières','camion') DEFAULT NULL COMMENT '(DC2Type:warehouse_families)',
   `name` VARCHAR(255) DEFAULT NULL,
-  CONSTRAINT `IDX_ECB38BFC979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+  CONSTRAINT `IDX_ECB38BFC979B1AD6` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+  CONSTRAINT `IDX_ECB38BFC816C6140` FOREIGN KEY (`destination_id`) REFERENCES `company` (`id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `warehouse` (`old_id`, `company_id`, `families`, `name`)
+INSERT INTO `warehouse` (`old_id`, `company_id`, `destination_id`, `families`, `name`)
 SELECT
     `warehouse_old`.`id`,
     `company`.`id`,
+    `company_destination`.`id`,
     CASE
         WHEN `warehouse_old`.`warehouse_name` LIKE '%prison%' THEN 'prison'
         WHEN `warehouse_old`.`warehouse_name` LIKE '%fabrication%' OR `warehouse_old`.`warehouse_name` LIKE '%production%' THEN 'production'
@@ -5079,6 +5083,8 @@ SELECT
 FROM `warehouse_old`
 INNER JOIN `society` ON `warehouse_old`.`id_society` = `society`.`old_id`
 INNER JOIN `company` ON `society`.`id` = `company`.`society_id`
+LEFT JOIN `society` `society_destination` ON `warehouse_old`.`destination` = `society_destination`.`old_id`
+LEFT JOIN `company` `company_destination` ON `society_destination`.`id` = `company_destination`.`society_id`
 WHERE `warehouse_old`.`statut` = 0
 SQL);
         $this->addQuery('DROP TABLE `warehouse_old`');

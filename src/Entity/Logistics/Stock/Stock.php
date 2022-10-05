@@ -38,7 +38,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Récupère les stocks',
                     'summary' => 'Récupère les stocks'
-                ]
+                ],
+                'pagination_client_enabled' => true
             ],
             'grouped' => [
                 'deserialize' => false,
@@ -122,7 +123,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\InheritanceType('SINGLE_TABLE')
 ]
 abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterface {
-    use BarCodeTrait;
+    use BarCodeTrait {
+        getBarCode as private barcode;
+    }
 
     final public const TYPES = [
         ItemType::TYPE_COMPONENT => ComponentStock::class,
@@ -198,6 +201,11 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
             $receipt->addStock($this);
         }
         return $this;
+    }
+
+    #[Serializer\Groups(['read:stock'])]
+    public function getBarCode(): string {
+        return $this->barcode();
     }
 
     final public function getBatchNumber(): ?string {
