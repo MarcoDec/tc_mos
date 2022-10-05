@@ -1,11 +1,29 @@
 services:
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   apache:
     container_name: tconcept_gpao_apache
     depends_on:
       - php
     image: tconcept/tc_apache:latest
-    ports:
-      - '8000:80'
+    #ports:
+    #  - '8000:80'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.desktop.rule=Host(`desktop.localhost`)"
+      - "traefik.http.routers.desktop.entrypoints=web"
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
@@ -58,8 +76,12 @@ services:
       PMA_HOST: mysql
     links:
       - mysql:mysql
-    ports:
-      - '8080:80'
+    #ports:
+    #  - '8080:80'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`phpmyadmin.localhost`)"
+      - "traefik.http.routers.phpmyadmin.entrypoints=web"
     restart: always
     volumes:
       - /sessions
