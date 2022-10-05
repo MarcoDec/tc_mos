@@ -2,19 +2,18 @@ import {h} from 'vue'
 
 function AppOverlay(props, context) {
     let overlay = null
-    const slot = context.slots['default']
-    const children = [typeof slot === 'function' ? slot() : null]
+    const children = [context.slots['default']()]
     if (props.spinner) {
         overlay = {class: 'opacity-75 position-relative'}
         children.push(h(
-            'div',
+            props.tag,
             {class: 'position-absolute start-50 top-50'},
-            h('div', {class: 'spinner-border', role: 'status'})
+            h(props.tag, {class: 'spinner-border', role: 'status'})
         ))
     }
-    return h('div', overlay, children)
+    return h(props.tag, overlay, children)
 }
 
-AppOverlay.props = {spinner: {type: Boolean}}
+AppOverlay.props = {spinner: {type: Boolean}, tag: {default: 'div', type: String}}
 
 export default AppOverlay

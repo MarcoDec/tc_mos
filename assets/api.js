@@ -5,7 +5,7 @@ export default async function api(url, method = 'GET', body = null) {
         headers: {Accept: 'application/ld+json', 'Content-Type': 'application/json'},
         method
     }
-    if (method !== 'GET')
+    if (method !== 'GET' && body !== null)
         init.body = JSON.stringify(body)
     const token = useCookies(['token']).get('token')
     if (token)

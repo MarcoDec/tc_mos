@@ -1,10 +1,8 @@
 <script setup>
-    import {assign, createMachine} from 'xstate'
+    import {assign, useMachine} from '../../composable/xstate'
     import {useRoute, useRouter} from 'vue-router'
     import AppCard from '../AppCard.vue'
     import AppForm from '../form/AppForm.vue'
-    import AppOverlay from '../AppOverlay'
-    import {useMachine} from '@xstate/vue'
     import useUser from '../../stores/security'
 
     const fields = [
@@ -15,7 +13,7 @@
     const router = useRouter()
     const user = useUser()
     const form = `${route.name}-form`
-    const {send, state} = useMachine(createMachine({
+    const {send, state} = useMachine({
         context: {error: null},
         id: form,
         initial: 'form',
@@ -33,7 +31,7 @@
             },
             logged: {type: 'final'}
         }
-    }))
+    })
 
     async function submit(data) {
         send('submit')
