@@ -6,6 +6,7 @@ import {useCookies} from '@vueuse/integrations/useCookies'
 export default defineStore('user', () => {
     const cookies = useCookies(['token'])
     const id = ref(0)
+    const name = ref(null)
     const isLogged = computed(() => id.value > 0)
 
     function clear() {
@@ -15,6 +16,7 @@ export default defineStore('user', () => {
 
     function save(response) {
         id.value = response.content.id
+        name.value = response.content.name
         cookies.set('token', response.content.token)
     }
 
@@ -44,6 +46,7 @@ export default defineStore('user', () => {
         },
         id,
         isLogged,
+        name,
         save
     }
 })
