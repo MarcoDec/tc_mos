@@ -1,5 +1,8 @@
 <script setup>
     import AppNavbarMenu from './AppNavbarMenu.vue'
+    import useUser from '../../stores/security'
+
+    const user = useUser()
 </script>
 
 <template>
@@ -8,7 +11,7 @@
             <span class="m-0 navbar-brand p-0">
                 T-Concept
             </span>
-            <AppNavbarMenu/>
+            <AppNavbarMenu v-if="user.isLogged"/>
         </AppContainer>
     </nav>
 </template>

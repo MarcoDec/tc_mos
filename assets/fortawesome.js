@@ -1,5 +1,8 @@
-import {faSignOutAlt, faUserCircle} from '@fortawesome/free-solid-svg-icons'
+import {faBell, faEye, faSignOutAlt, faTrash, faUserCircle} from '@fortawesome/free-solid-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
+library.add(faBell)
+library.add(faEye)
 library.add(faSignOutAlt)
+library.add(faTrash)
 library.add(faUserCircle)

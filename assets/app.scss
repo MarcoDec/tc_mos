@@ -1,4 +1,16 @@
-@use 'bootstrap/scss/bootstrap' as *;
+@use 'bootstrap/scss/bootstrap' as * with (
+  $accordion-bg: #212529,
+  $accordion-button-bg: #212529,
+  $accordion-button-color: #fff,
+  $accordion-button-active-bg: #343a40,
+  $accordion-button-active-color: #fff
+);
+
+@each $color, $value in $grays {
+  .bg-gray-#{$color} {
+    background-color: $value;
+  }
+}
 
 .bg-primary.card {
   background-color: #8ac2f1 !important;
