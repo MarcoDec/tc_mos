@@ -2,6 +2,7 @@
     import AppBtnAlert from '../../AppBtnAlert.vue'
     import AppDropdown from '../dropdown/AppDropdown.vue'
     import AppNotificationCategory from './AppNotificationCategory.vue'
+    import {onUnmounted} from 'vue'
     import {useMachine} from '../../../composable/xstate'
     import useNotifications from '../../../stores/notification/notifications'
 
@@ -15,6 +16,10 @@
             form: {on: {submit: {target: 'loading'}}},
             loading: {on: {success: {target: 'form'}}}
         }
+    })
+
+    onUnmounted(() => {
+        notifications.dispose()
     })
 </script>
 

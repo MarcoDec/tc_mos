@@ -4,6 +4,12 @@ import useCategory from './category'
 
 export default defineStore('notifications', {
     actions: {
+        dispose() {
+            for (const category of this.categories)
+                category.dispose()
+            this.$reset()
+            this.$dispose()
+        },
         async fetch() {
             const response = await api('/api/notifications')
             const categories = {}
