@@ -6,6 +6,12 @@ import useUser from '../stores/security'
 const router = createRouter({
     history: createWebHistory(), routes: [
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
+        {
+            component: AppHome,
+            meta: {title: 'Messages TVA — T-Concept GPAO'},
+            name: 'vat-messages',
+            path: '/vat-messages'
+        },
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
     ]

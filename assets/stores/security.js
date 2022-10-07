@@ -8,7 +8,9 @@ function defineUserStore() {
         const cookies = useCookies(['token'])
         const id = ref(0)
         const name = ref(null)
-        const isLogged = computed(() => id.value > 0)
+        const roles = ref([])
+        const isManagementAdmin = computed(() => roles.value.includes('ROLE_MANAGEMENT_ADMIN'))
+        const isManagementWriter = computed(() => isManagementAdmin.value || roles.value.includes('ROLE_MANAGEMENT_WRITER'))
 
         function clear() {
             store.$reset()
@@ -18,6 +20,7 @@ function defineUserStore() {
         function save(response) {
             id.value = response.content.id
             name.value = response.content.name
+            roles.value = response.content.roles
             cookies.set('token', response.content.token)
         }
 
@@ -46,7 +49,10 @@ function defineUserStore() {
                 clear()
             },
             id,
-            isLogged,
+            isLogged: computed(() => id.value > 0),
+            isManagementAdmin,
+            isManagementReader: computed(() => isManagementWriter.value || roles.value.includes('ROLE_MANAGEMENT_WRITER')),
+            isManagementWriter,
             async logout() {
                 try {
                     await api('/api/logout', 'POST')
@@ -56,6 +62,7 @@ function defineUserStore() {
                 clear()
             },
             name,
+            roles,
             save,
             setup: true
         }

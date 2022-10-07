@@ -1,5 +1,5 @@
 <script setup>
-    import AppBtnAlert from '../../AppBtnAlert.vue'
+    import AppBtnAlert from './AppBtnAlert.vue'
     import AppDropdown from '../dropdown/AppDropdown.vue'
     import AppNotificationCategory from './AppNotificationCategory.vue'
     import {onUnmounted} from 'vue'

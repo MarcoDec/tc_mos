@@ -12,6 +12,12 @@
   }
 }
 
+@each $color, $value in $theme-colors {
+  .bg-#{$color}.text-dark .disabled.dropdown-item {
+    color: $black !important;
+  }
+}
+
 .bg-primary.card {
   background-color: #8ac2f1 !important;
 }
@@ -22,6 +28,10 @@
   margin: 3.5px;
   padding: 1px;
   width: 20px;
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 .text-white .navbar-text {
