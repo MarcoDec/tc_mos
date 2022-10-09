@@ -107,13 +107,6 @@ class Order extends Entity implements BarCodeInterface {
     use BarCodeTrait;
 
     #[
-        ApiProperty(description: 'Quantité actuelle', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
-    ]
-    private Measure $actualQuantity;
-
-    #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
@@ -182,13 +175,6 @@ class Order extends Entity implements BarCodeInterface {
     private ?Product $product = null;
 
     #[
-        ApiProperty(description: 'Quantité produite', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
-    ]
-    private Measure $quantityProduced;
-
-    #[
         ApiProperty(description: 'Quantité demandée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
@@ -203,19 +189,13 @@ class Order extends Entity implements BarCodeInterface {
     private ?string $ref = null;
 
     public function __construct() {
-        $this->actualQuantity = new Measure();
         $this->embBlocker = new Closer();
         $this->embState = new State();
-        $this->quantityProduced = new Measure();
         $this->quantityRequested = new Measure();
     }
 
     public static function getBarCodeTableNumber(): string {
         return self::MANUFACTURING_ORDER_BAR_CODE_PREFIX;
-    }
-
-    final public function getActualQuantity(): Measure {
-        return $this->actualQuantity;
     }
 
     final public function getBlocker(): string {
@@ -262,10 +242,6 @@ class Order extends Entity implements BarCodeInterface {
         return $this->product;
     }
 
-    final public function getQuantityProduced(): Measure {
-        return $this->quantityProduced;
-    }
-
     final public function getQuantityRequested(): Measure {
         return $this->quantityRequested;
     }
@@ -276,11 +252,6 @@ class Order extends Entity implements BarCodeInterface {
 
     final public function getState(): string {
         return $this->embState->getState();
-    }
-
-    final public function setActualQuantity(Measure $actualQuantity): self {
-        $this->actualQuantity = $actualQuantity;
-        return $this;
     }
 
     final public function setBlocker(string $state): self {
@@ -335,11 +306,6 @@ class Order extends Entity implements BarCodeInterface {
 
     final public function setProduct(?Product $product): self {
         $this->product = $product;
-        return $this;
-    }
-
-    final public function setQuantityProduced(Measure $quantityProduced): self {
-        $this->quantityProduced = $quantityProduced;
         return $this;
     }
 

@@ -25,40 +25,38 @@ class StockRepository extends ServiceEntityRepository {
         parent::__construct($registry, $entityClass);
     }
 
-    public function countGrouped(Warehouse $warehouse): int {
+    final public function countGrouped(Warehouse $warehouse, ?string $location = null): int {
+        ['params' => $params, 'sql' => $sql] = $this->createGroupedQuery($warehouse, $location);
         /** @phpstan-ignore-next-line */
         return $this->_em->getConnection()->executeQuery(
-            sql: 'SELECT COUNT(*) FROM `stock_grouped` WHERE `warehouse_id` = :warehouse',
-            params: ['warehouse' => $warehouse->getId()]
+            sql: str_replace('SELECT *', 'SELECT COUNT(*)', $sql),
+            params: $params
         )->fetchOne();
     }
 
     /**
      * @return mixed[]
      */
-    public function findGrouped(Warehouse $warehouse, int $limit, int $offset): array {
-        return collect($this->_em->getConnection()->executeQuery(
-            sql: "SELECT * FROM `stock_grouped` WHERE `warehouse_id` = :warehouse LIMIT $limit OFFSET $offset",
-            params: ['warehouse' => $warehouse->getId()]
-        )->fetchAllAssociative())
-            ->map(static function (array $stock): array {
-                return [
-                    'batchNumber' => $stock['batch_number'],
-                    'item' => [
-                        '@id' => $stock['@item_id'],
-                        '@type' => $stock['@item_type'],
-                        'id' => $stock['item_id'],
-                        'code' => $stock['item_code'],
-                        'name' => $stock['item_name'],
-                        'unitCode' => $stock['item_unit_code'],
-                    ],
-                    'quantity' => [
-                        'code' => $stock['quantity_code'],
-                        'value' => $stock['quantity_value']
-                    ],
-                    'warehouse_id' => $stock['warehouse_id']
-                ];
-            })
+    final public function findGrouped(Warehouse $warehouse, int $limit, int $offset, ?string $location = null): array {
+        ['params' => $params, 'sql' => $sql] = $this->createGroupedQuery($warehouse, $location);
+        return collect($this->_em->getConnection()->executeQuery("$sql LIMIT $limit OFFSET $offset", $params)->fetchAllAssociative())
+            ->map(static fn (array $stock): array => [
+                'batchNumber' => $stock['batch_number'],
+                'item' => [
+                    '@id' => $stock['@item_id'],
+                    '@type' => $stock['@item_type'],
+                    'id' => $stock['item_id'],
+                    'code' => $stock['item_code'],
+                    'name' => $stock['item_name'],
+                    'unitCode' => $stock['item_unit_code'],
+                ],
+                'location' => $stock['location'],
+                'quantity' => [
+                    'code' => $stock['quantity_code'],
+                    'value' => $stock['quantity_value']
+                ],
+                'warehouse_id' => $stock['warehouse_id']
+            ])
             ->values()
             ->all();
     }
@@ -66,16 +64,29 @@ class StockRepository extends ServiceEntityRepository {
     /**
      * @return null|T
      */
-    public function findPatch(int $id): ?Stock {
+    final public function findPatch(int $id): ?Stock {
         /** @phpstan-ignore-next-line */
         return $this->_em->getRepository(ComponentStock::class)->loadPatch($id)
             ?? $this->_em->getRepository(ProductStock::class)->loadPatch($id);
     }
 
     /**
+     * @return array{params: array{location?: string, warehouse: int|null}, sql: string}
+     */
+    private function createGroupedQuery(Warehouse $warehouse, ?string $location = null): array {
+        $sql = 'SELECT * FROM `stock_grouped` WHERE `warehouse_id` = :warehouse';
+        $params = ['warehouse' => $warehouse->getId()];
+        if (!empty($location)) {
+            $sql .= ' AND `location` LIKE :location';
+            $params['location'] = "%$location%";
+        }
+        return ['params' => $params, 'sql' => $sql];
+    }
+
+    /**
      * @return null|T
      */
-    protected function loadPatch(int $id): ?Stock {
+    private function loadPatch(int $id): ?Stock {
         $query = $this
             ->createQueryBuilder('s')
             ->addSelect('i')

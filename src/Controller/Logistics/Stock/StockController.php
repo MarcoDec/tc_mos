@@ -40,7 +40,8 @@ final class StockController {
         }
         /** @var Warehouse $warehouse */
         $warehouse = $this->converter->getItemFromIri($warehouseIri);
-        $count = $this->repo->countGrouped($warehouse);
+        $location = $request->query->get('location');
+        $count = $this->repo->countGrouped($warehouse, $location);
         $page = (int) ($request->query->get('page', '1'));
         $last = ceil($count / $this->itemPerPage);
         $hydraView = [
@@ -58,7 +59,8 @@ final class StockController {
             'hydra:member' => $this->repo->findGrouped(
                 warehouse: $warehouse,
                 limit: $this->itemPerPage,
-                offset: ($page - 1) * $this->itemPerPage
+                offset: ($page - 1) * $this->itemPerPage,
+                location: $location
             ),
             'hydra:totalItems' => $count,
             'hydra:view' => $hydraView
