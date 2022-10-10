@@ -12,7 +12,7 @@
     })
 
     const route = useRoute()
-    const {state} = useTableMachine(route.name)
+    const {send, state} = useTableMachine(route.name)
     const store = useTable(route.name)
 
     await store.fetch()
@@ -30,6 +30,6 @@
                 <span class="ms-2">{{ title }}</span>
             </h1>
         </div>
-        <AppTable :fields="fields" :store="store"/>
+        <AppTable :fields="fields" :send="send" :store="store"/>
     </AppOverlay>
 </template>
