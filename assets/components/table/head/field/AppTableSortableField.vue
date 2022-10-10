@@ -24,8 +24,8 @@
         <span class="d-flex justify-content-between">
             <span>{{ field.label }}</span>
             <span class="d-flex flex-column">
-                <Fa :class="down" icon="caret-up"/>
-                <Fa :class="up" icon="caret-down"/>
+                <Fa :class="up" icon="caret-up"/>
+                <Fa :class="down" icon="caret-down"/>
             </span>
         </span>
     </th>

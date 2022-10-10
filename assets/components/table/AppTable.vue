@@ -6,7 +6,7 @@
     const props = defineProps({
         fields: {required: true, type: Array},
         id: {required: true, type: String},
-        send: {required: true, type: Function},
+        machine: {required: true, type: Object},
         store: {required: true, type: Object}
     })
     const headers = computed(() => `${props.id}-headers`)
@@ -16,7 +16,7 @@
     <div :id="id" class="row">
         <div class="col">
             <table class="table table-bordered table-hover table-responsive table-sm table-striped">
-                <AppTableHeaders :id="headers" :fields="fields" :send="send" :store="store"/>
+                <AppTableHeaders :id="headers" :fields="fields" :machine="machine" :store="store"/>
                 <AppTableItems :fields="fields" :store="store"/>
             </table>
         </div>

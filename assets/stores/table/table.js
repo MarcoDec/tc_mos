@@ -9,6 +9,11 @@ export default function useTable(id) {
                 this.search = {}
                 await this.fetch()
             },
+            async create() {
+                const response = await api(this.url, 'POST', this.createBody)
+                this.resetItems()
+                this.rows.push(useRow(response.content, this))
+            },
             dispose() {
                 for (const row of this.rows)
                     row.dispose()
@@ -60,6 +65,7 @@ export default function useTable(id) {
         },
         state: () => ({
             asc: true,
+            createBody: {},
             id,
             rows: [],
             search: {},

@@ -20,6 +20,7 @@ export default async function api(url, method = 'GET', body = null) {
     let content = null
     switch (response.status) {
     case 200:
+    case 201:
         content = await response.json()
         return {content, status: response.status}
     case 204:
@@ -27,6 +28,9 @@ export default async function api(url, method = 'GET', body = null) {
     case 401:
         content = await response.json()
         throw content
+    case 422:
+        content = await response.json()
+        throw {content, status: response.status}
     default:
         throw response.statusText
     }

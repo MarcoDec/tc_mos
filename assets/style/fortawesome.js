@@ -4,6 +4,7 @@ import {
     faCaretUp,
     faCommentsDollar,
     faEye,
+    faPlus,
     faSearch,
     faSignOutAlt,
     faSitemap,
@@ -18,6 +19,7 @@ library.add(faCaretDown)
 library.add(faCaretUp)
 library.add(faCommentsDollar)
 library.add(faEye)
+library.add(faPlus)
 library.add(faSearch)
 library.add(faSignOutAlt)
 library.add(faSitemap)
