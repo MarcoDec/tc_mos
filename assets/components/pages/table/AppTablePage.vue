@@ -5,16 +5,19 @@
     import {useRoute} from 'vue-router'
     import useTable from '../../../stores/table/table'
 
-    defineProps({
+    const props = defineProps({
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
+        sort: {required: true, type: Object},
         title: {required: true, type: String}
     })
-
     const route = useRoute()
     const {send, state} = useTableMachine(route.name)
-    const store = useTable(route.name)
 
+    const store = useTable(route.name)
+    // eslint-disable-next-line vue/no-setup-props-destructure
+    store.sorted = props.sort.name
+    store.sortName = props.sort.sortName ?? props.sort.name
     await store.fetch()
 
     onUnmounted(() => {

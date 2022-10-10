@@ -5,6 +5,8 @@ import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense
 import {readonly} from 'vue'
 import useUser from '../stores/security'
 
+const name = readonly({create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true})
+
 const router = createRouter({
     history: createWebHistory(), routes: [
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
@@ -13,11 +15,7 @@ const router = createRouter({
             meta: {title: 'Messages TVA — T-Concept GPAO'},
             name: 'vat-messages',
             path: '/vat-messages',
-            props: {
-                fields: readonly([{create: true, label: 'Nom', name: 'name', search: true, sort: true, update: true}]),
-                icon: 'comments-dollar',
-                title: 'Messages TVA'
-            }
+            props: {fields: readonly([name]), icon: 'comments-dollar', sort: name, title: 'Messages TVA'}
         },
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
