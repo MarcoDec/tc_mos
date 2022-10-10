@@ -25,7 +25,7 @@
 
 <template>
     <AppOverlay :spinner="state.matches('loading')">
-        <AppBtnAlert v-if="notifications.isEmpty" disabled icon="bell">
+        <AppBtnAlert v-if="notifications.isEmpty" class="me-2" disabled icon="bell">
             {{ notifications.readLength }}
         </AppBtnAlert>
         <AppDropdown v-else id="notifications" class="me-2">

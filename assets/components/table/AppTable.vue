@@ -17,7 +17,7 @@
         <div class="col">
             <table class="table table-bordered table-hover table-responsive table-sm table-striped">
                 <AppTableHeaders :id="headers" :fields="fields" :machine="machine" :store="store"/>
-                <AppTableItems :fields="fields" :store="store"/>
+                <AppTableItems :fields="fields" :send="machine.send" :store="store"/>
             </table>
         </div>
     </div>
