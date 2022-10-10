@@ -12,6 +12,7 @@
 
 <template>
     <tr>
+        <td/>
         <td>{{ normalizedIndex }}</td>
         <AppTableItemField v-for="field in fields" :key="field.name" :field="field" :item="item"/>
     </tr>

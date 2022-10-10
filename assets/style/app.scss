@@ -41,6 +41,16 @@
   min-width: 100%;
 }
 
+.enter-key-icon {
+  @extend .btn;
+  @extend .btn-icon;
+  background-image: url(./enter-key.svg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 20px;
+  width: 20px;
+}
+
 .pointer, th[aria-sort] {
   cursor: pointer;
 }

@@ -1,9 +1,11 @@
-import './app.scss'
-import './fortawesome'
+import './style/app.scss'
+import './style/fortawesome'
 import App from './components/App.vue'
 import AppBtn from './components/AppBtn'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
+import AppForm from './components/form/AppForm.vue'
+import AppInputGuesser from './components/form/field/input/AppInputGuesser'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
 import AppSuspense from './components/AppSuspense.vue'
@@ -18,6 +20,8 @@ const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppContainer', AppContainer)
     .component('AppDropdownItem', AppDropdownItem)
+    .component('AppForm', AppForm)
+    .component('AppInputGuesser', AppInputGuesser)
     .component('AppOverlay', AppOverlay)
     .component('AppRouterLink', AppRouterLink)
     .component('AppSuspense', AppSuspense)

@@ -14,7 +14,6 @@
     async function sort() {
         props.send('search')
         props.send('submit')
-        // eslint-disable-next-line vue/no-mutating-props
         await props.store.sort(props.field)
         props.send('success')
     }

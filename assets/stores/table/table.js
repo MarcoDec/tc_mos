@@ -5,6 +5,10 @@ import useRow from './row'
 export default function useTable(id) {
     return defineStore(id, {
         actions: {
+            async cancel() {
+                this.search = {}
+                await this.fetch()
+            },
             dispose() {
                 for (const row of this.rows)
                     row.dispose()
@@ -42,7 +46,7 @@ export default function useTable(id) {
                 return field => (this.isSorter(field) ? this.order : 'none')
             },
             fetchBody() {
-                return {...this.orderBody}
+                return {...this.orderBody, ...this.search}
             },
             isSorter: state => field => field.name === state.sorted,
             order() {
@@ -58,6 +62,7 @@ export default function useTable(id) {
             asc: true,
             id,
             rows: [],
+            search: {},
             sortName: null,
             sorted: null
         })

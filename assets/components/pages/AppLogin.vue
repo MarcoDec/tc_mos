@@ -2,7 +2,7 @@
     import {assign, useMachine} from '../../composable/xstate'
     import {useRoute, useRouter} from 'vue-router'
     import AppCard from '../AppCard.vue'
-    import AppForm from '../form/AppForm.vue'
+    import AppFormGenerator from '../form/AppFormGenerator.vue'
     import {readonly} from 'vue'
     import useUser from '../../stores/security'
 
@@ -52,7 +52,7 @@
             <div v-if="state.matches('error')" class="alert alert-danger" role="alert">
                 {{ state.context.error }}
             </div>
-            <AppForm
+            <AppFormGenerator
                 :id="form"
                 :disabled="state.matches('loading')"
                 :fields="fields"

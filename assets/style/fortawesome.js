@@ -4,8 +4,10 @@ import {
     faCaretUp,
     faCommentsDollar,
     faEye,
+    faSearch,
     faSignOutAlt,
     faSitemap,
+    faTimes,
     faTrash,
     faUserCircle
 } from '@fortawesome/free-solid-svg-icons'
@@ -16,7 +18,9 @@ library.add(faCaretDown)
 library.add(faCaretUp)
 library.add(faCommentsDollar)
 library.add(faEye)
+library.add(faSearch)
 library.add(faSignOutAlt)
 library.add(faSitemap)
+library.add(faTimes)
 library.add(faTrash)
 library.add(faUserCircle)

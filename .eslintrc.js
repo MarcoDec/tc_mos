@@ -310,7 +310,7 @@ module.exports = {
         'vue/no-multi-spaces': 'error',
         'vue/no-multiple-objects-in-class': 'error',
         'vue/no-multiple-slot-args': 'error',
-        'vue/no-mutating-props': 'error',
+        'vue/no-mutating-props': 'off',
         'vue/no-parsing-error': 'error',
         'vue/no-ref-as-operand': 'error',
         'vue/no-reserved-component-names': ['error', {

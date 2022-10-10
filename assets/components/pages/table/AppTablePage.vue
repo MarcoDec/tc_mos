@@ -30,6 +30,6 @@
                 <span class="ms-2">{{ title }}</span>
             </h1>
         </div>
-        <AppTable :fields="fields" :send="send" :store="store"/>
+        <AppTable :id="route.name" :fields="fields" :send="send" :store="store"/>
     </AppOverlay>
 </template>

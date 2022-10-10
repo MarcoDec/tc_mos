@@ -1,19 +1,22 @@
 <script setup>
     import AppTableHeaders from './head/AppTableHeaders.vue'
     import AppTableItems from './body/AppTableItems.vue'
+    import {computed} from 'vue'
 
-    defineProps({
+    const props = defineProps({
         fields: {required: true, type: Array},
+        id: {required: true, type: String},
         send: {required: true, type: Function},
         store: {required: true, type: Object}
     })
+    const headers = computed(() => `${props.id}-headers`)
 </script>
 
 <template>
-    <div class="row">
+    <div :id="id" class="row">
         <div class="col">
             <table class="table table-bordered table-hover table-responsive table-sm table-striped">
-                <AppTableHeaders :fields="fields" :send="send" :store="store"/>
+                <AppTableHeaders :id="headers" :fields="fields" :send="send" :store="store"/>
                 <AppTableItems :fields="fields" :store="store"/>
             </table>
         </div>
