@@ -3,7 +3,14 @@
   $accordion-button-bg: #212529,
   $accordion-button-color: #fff,
   $accordion-button-active-bg: #343a40,
-  $accordion-button-active-color: #fff
+  $accordion-button-active-color: #fff,
+  $container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1900px
+  )
 );
 
 @each $color, $value in $grays {
@@ -30,7 +37,11 @@
   width: 20px;
 }
 
-.pointer {
+.container {
+  min-width: 100%;
+}
+
+.pointer, th[aria-sort] {
   cursor: pointer;
 }
 

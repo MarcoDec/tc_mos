@@ -3,12 +3,13 @@
     import {useRoute, useRouter} from 'vue-router'
     import AppCard from '../AppCard.vue'
     import AppForm from '../form/AppForm.vue'
+    import {readonly} from 'vue'
     import useUser from '../../stores/security'
 
-    const fields = [
+    const fields = readonly([
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
-    ]
+    ])
     const route = useRoute()
     const router = useRouter()
     const user = useUser()

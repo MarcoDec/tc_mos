@@ -6,6 +6,7 @@ import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
+import AppSuspense from './components/AppSuspense.vue'
 import Fa from './components/Fa'
 import clone from 'lodash.clonedeep'
 import {createApp} from 'vue'
@@ -19,6 +20,7 @@ const app = createApp(App)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppOverlay', AppOverlay)
     .component('AppRouterLink', AppRouterLink)
+    .component('AppSuspense', AppSuspense)
     .component('Fa', Fa)
     .use(createPinia().use(({store}) => {
         if (store.setup) {

@@ -23,11 +23,8 @@
             </AppNavbarItem>
         </ul>
     </div>
-    <Suspense>
-        <template #fallback>
-            <span class="spinner-border text-white" role="status"/>
-        </template>
+    <AppSuspense variant="white">
         <AppNotifications/>
-    </Suspense>
+    </AppSuspense>
     <AppNavbarUser/>
 </template>
