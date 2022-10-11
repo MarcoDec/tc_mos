@@ -4,8 +4,8 @@ import {useMachine as useXstateMachine} from '@xstate/vue'
 
 export {assign}
 
-export function useMachine(machine) {
-    return useXstateMachine(createMachine({...machine, predictableActionArguments: true}))
+export function useMachine(machine, actions = null) {
+    return useXstateMachine(createMachine({...machine, predictableActionArguments: true}, actions))
 }
 
 export const tableLoading = readonly(['create.loading', 'search.loading', 'update.loading'])

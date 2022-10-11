@@ -2,8 +2,10 @@ import {
     faBell,
     faCaretDown,
     faCaretUp,
+    faCheck,
     faCommentsDollar,
     faEye,
+    faPencilAlt,
     faPlus,
     faSearch,
     faSignOutAlt,
@@ -17,8 +19,10 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 library.add(faBell)
 library.add(faCaretDown)
 library.add(faCaretUp)
+library.add(faCheck)
 library.add(faCommentsDollar)
 library.add(faEye)
+library.add(faPencilAlt)
 library.add(faPlus)
 library.add(faSearch)
 library.add(faSignOutAlt)

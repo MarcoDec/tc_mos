@@ -10,6 +10,7 @@
         store: {required: true, type: Object}
     })
     const headers = computed(() => `${props.id}-headers`)
+    const body = computed(() => `${props.id}-body`)
 </script>
 
 <template>
@@ -17,7 +18,7 @@
         <div class="col">
             <table class="table table-bordered table-hover table-responsive table-sm table-striped">
                 <AppTableHeaders :id="headers" :fields="fields" :machine="machine" :store="store"/>
-                <AppTableItems :fields="fields" :send="machine.send" :store="store"/>
+                <AppTableItems :id="body" :fields="fields" :machine="machine" :store="store"/>
             </table>
         </div>
     </div>

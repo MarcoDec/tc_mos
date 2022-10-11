@@ -1,5 +1,4 @@
 <script setup>
-    import AppTableFormField from '../AppTableFormField.vue'
     import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
@@ -35,7 +34,7 @@
             <Fa :icon="icon"/>
             <AppBtn :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
         </td>
-        <td>
+        <td class="text-center">
             <AppForm :id="form" class="d-inline m-0 p-0" @submit="submit">
                 <AppBtn :icon="icon" :label="label" :variant="variant" type="submit"/>
             </AppForm>

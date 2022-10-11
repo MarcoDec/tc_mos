@@ -25,6 +25,7 @@
         :fields="fields"
         :send="send"
         :submit="create"
+        class="table-success"
         icon="plus"
         label="Ajouter"
         reverse-icon="search"

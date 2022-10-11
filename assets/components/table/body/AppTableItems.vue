@@ -3,19 +3,21 @@
 
     defineProps({
         fields: {required: true, type: Array},
-        send: {required: true, type: Function},
+        id: {required: true, type: String},
+        machine: {required: true, type: Object},
         store: {required: true, type: Object}
     })
 </script>
 
 <template>
-    <tbody>
+    <tbody :id="id">
         <AppTableItem
             v-for="(row, i) in store.rows"
             :key="row.id"
+            :body="id"
             :fields="fields"
             :index="i"
             :item="row"
-            :send="send"/>
+            :machine="machine"/>
     </tbody>
 </template>

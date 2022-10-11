@@ -2,7 +2,10 @@ import {useCookies} from '@vueuse/integrations/useCookies'
 
 export default async function api(url, method = 'GET', body = null) {
     const init = {
-        headers: {Accept: 'application/ld+json', 'Content-Type': 'application/json'},
+        headers: {
+            Accept: 'application/ld+json',
+            'Content-Type': method === 'PATCH' ? 'application/merge-patch+json' : 'application/json'
+        },
         method
     }
     let normalizedUrl = url

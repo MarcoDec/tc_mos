@@ -9,6 +9,7 @@ import AppInputGuesser from './components/form/field/input/AppInputGuesser'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
 import AppSuspense from './components/AppSuspense.vue'
+import AppTableFormField from './components/table/AppTableFormField.vue'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm.vue'
 import Fa from './components/Fa'
 import clone from 'lodash.clonedeep'
@@ -26,6 +27,7 @@ const app = createApp(App)
     .component('AppOverlay', AppOverlay)
     .component('AppRouterLink', AppRouterLink)
     .component('AppSuspense', AppSuspense)
+    .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)
     .component('Fa', Fa)
     .use(createPinia().use(({store}) => {
