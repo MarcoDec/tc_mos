@@ -16,6 +16,6 @@
 </script>
 
 <template>
-    <AppTableItemUpdate v-if="update" :id="id" :fields="fields" :index="index" :item="item" :send="machine.send"/>
+    <AppTableItemUpdate v-if="update" :id="id" :fields="fields" :index="index" :item="item" :machine="machine"/>
     <AppTableItemRead v-else :id="id" :fields="fields" :index="index" :item="item" :send="machine.send"/>
 </template>

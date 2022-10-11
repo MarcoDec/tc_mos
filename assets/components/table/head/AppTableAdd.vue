@@ -2,18 +2,18 @@
     const props = defineProps({
         fields: {required: true, type: Array},
         id: {required: true, type: String},
-        send: {required: true, type: Function},
+        machine: {required: true, type: Object},
         store: {required: true, type: Object}
     })
 
     async function create() {
-        props.send('submit')
+        props.machine.send('submit')
         try {
             await props.store.create()
-            props.send('success')
+            props.machine.send('success')
         } catch (e) {
             if (e.status === 422)
-                props.send('fail', {violations: e.content})
+                props.machine.send('fail', {violations: e.content})
         }
     }
 </script>
@@ -23,8 +23,9 @@
         :id="id"
         v-model="store.createBody"
         :fields="fields"
-        :send="send"
+        :send="machine.send"
         :submit="create"
+        :violations="machine.state.value.context.violations"
         class="table-success"
         icon="plus"
         label="Ajouter"

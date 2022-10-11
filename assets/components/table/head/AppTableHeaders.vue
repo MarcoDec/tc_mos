@@ -21,7 +21,7 @@
             v-if="machine.state.value.matches('create')"
             :id="add"
             :fields="fields"
-            :send="machine.send"
+            :machine="machine"
             :store="store"/>
         <AppTableSearch v-else :id="search" :fields="fields" :send="machine.send" :store="store"/>
     </thead>

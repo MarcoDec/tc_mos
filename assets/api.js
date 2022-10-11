@@ -33,7 +33,7 @@ export default async function api(url, method = 'GET', body = null) {
         throw content
     case 422:
         content = await response.json()
-        throw {content, status: response.status}
+        throw {content: content.violations, status: response.status}
     default:
         throw response.statusText
     }

@@ -6,7 +6,7 @@
         id: {required: true, type: String},
         index: {required: true, type: Number},
         item: {required: true, type: Object},
-        send: {required: true, type: Function}
+        machine: {required: true, type: Object}
     })
     const form = computed(() => `${props.id}-form`)
     const normalizedIndex = computed(() => props.index + 1)
@@ -14,18 +14,18 @@
     props.item.initUpdate(props.fields)
 
     function cancel() {
-        props.send('search')
+        props.machine.send('search')
     }
 
     async function update() {
-        props.send('submit')
+        props.machine.send('submit')
         try {
             await props.item.update()
-            props.send('success')
-            props.send('search')
+            props.machine.send('success')
+            props.machine.send('search')
         } catch (e) {
             if (e.status === 422)
-                props.send('fail', {violations: e.content})
+                props.machine.send('fail', {violations: e.content})
         }
     }
 </script>
@@ -46,6 +46,7 @@
             :key="field.name"
             v-model="item.updated"
             :field="field"
-            :form="form"/>
+            :form="form"
+            :violations="machine.state.value.context.violations"/>
     </tr>
 </template>

@@ -13,7 +13,8 @@
         reverseMode: {default: 'create', type: String},
         send: {required: true, type: Function},
         submit: {required: true, type: Function},
-        variant: {default: 'secondary', type: String}
+        variant: {default: 'secondary', type: String},
+        violations: {default: () => [], type: Array}
     })
     const form = computed(() => `${props.id}-form`)
     const fullReverseLabel = computed(() => `Basculer en mode ${props.reverseLabel}`)
@@ -47,6 +48,7 @@
             :form="form"
             :label="lowerLabel"
             :model-value="modelValue"
+            :violations="violations"
             @update:model-value="input"/>
     </tr>
 </template>
