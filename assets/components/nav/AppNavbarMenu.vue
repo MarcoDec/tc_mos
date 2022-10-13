@@ -29,6 +29,9 @@
                     <AppNavbarLink icon="palette" to="colors" variant="warning">
                         Couleurs
                     </AppNavbarLink>
+                    <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
+                        Délais de paiement des factures
+                    </AppNavbarLink>
                     <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">
                         Messages TVA
                     </AppNavbarLink>

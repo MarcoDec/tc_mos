@@ -3,6 +3,7 @@
 
     const props = defineProps({
         fields: {required: true, type: Object},
+        id: {required: true, type: String},
         index: {required: true, type: Number},
         item: {required: true, type: Object},
         send: {required: true, type: Function}
@@ -21,7 +22,7 @@
 </script>
 
 <template>
-    <tr>
+    <tr :id="id">
         <td class="text-center">
             <AppBtn icon="pencil-alt" label="Modifier" @click="update"/>
             <AppBtn icon="trash" label="Supprimer" variant="danger" @click="remove"/>
@@ -29,6 +30,6 @@
         <td class="text-center">
             {{ normalizedIndex }}
         </td>
-        <AppTableItemField v-for="field in fields" :key="field.name" :field="field" :item="item"/>
+        <AppTableItemField v-for="field in fields" :key="field.name" :field="field" :item="item" :row="id"/>
     </tr>
 </template>

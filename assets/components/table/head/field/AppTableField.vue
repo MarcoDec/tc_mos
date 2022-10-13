@@ -10,6 +10,6 @@
 </script>
 
 <template>
-    <AppTableSortableField v-if="field.name" :field="field" :send="send" :store="store"/>
+    <AppTableSortableField v-if="field.sort" :field="field" :send="send" :store="store"/>
     <AppTableSimpleField v-else :field="field"/>
 </template>

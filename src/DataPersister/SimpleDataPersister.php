@@ -7,11 +7,12 @@ use App\Entity\Logistics\Stock\ComponentStock;
 use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Management\Color;
+use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\VatMessage;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * @phpstan-type Data Color|ComponentStock|ProductStock|VatMessage
+ * @phpstan-type Data Color|ComponentStock|InvoiceTimeDue|ProductStock|VatMessage
  */
 final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function __construct(private readonly EntityManagerInterface $em) {
@@ -21,7 +22,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
      * @param Data    $data
      * @param mixed[] $context
      */
-    public function persist($data, array $context = []): Color|ComponentStock|ProductStock|VatMessage {
+    public function persist($data, array $context = []): Color|ComponentStock|InvoiceTimeDue|ProductStock|VatMessage {
         $this->em->persist($data);
         $this->em->flush();
         return $data;
@@ -40,6 +41,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function supports($data, array $context = []): bool {
         return (
             $data instanceof Color
+            || $data instanceof InvoiceTimeDue
             || $data instanceof Stock
             || $data instanceof VatMessage
         ) && (

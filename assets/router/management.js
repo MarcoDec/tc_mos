@@ -19,6 +19,23 @@ export default [
     },
     {
         component: AppTablePageSuspense,
+        meta: {title: 'Délais de paiement des factures — T-Concept GPAO'},
+        name: 'invoice-time-dues',
+        path: '/invoice-time-dues',
+        props: {
+            fields: Fields.generate([
+                {...name},
+                {label: 'Jours', name: 'days', sort: false, type: 'number'},
+                {label: 'Fin du mois', name: 'endOfMonth', sort: false, type: 'boolean'},
+                {label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth', sort: false, type: 'number'}
+            ]),
+            icon: 'hourglass-half',
+            sort: readonly({...name}),
+            title: 'Délais de paiement des factures'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
         meta: {title: 'Messages TVA — T-Concept GPAO'},
         name: 'vat-messages',
         path: '/vat-messages',

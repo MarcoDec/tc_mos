@@ -13,7 +13,7 @@
         violations: {default: () => [], type: Array}
     })
     const tooltip = shallowRef(null)
-    const tooltipIgnore = readonly(['select'])
+    const tooltipIgnore = readonly(['boolean', 'color', 'select'])
     const hasContent = computed(() => props.mode === null || props.field[props.mode])
     const hasTooltip = computed(() => !tooltipIgnore.includes(props.field.type))
     const tip = computed(() => `<i class="enter-key-icon"></i> pour ${props.label}`)

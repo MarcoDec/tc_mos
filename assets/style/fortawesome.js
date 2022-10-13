@@ -5,6 +5,7 @@ import {
     faCheck,
     faCommentsDollar,
     faEye,
+    faHourglassHalf,
     faMagnet,
     faPalette,
     faPencilAlt,
@@ -25,6 +26,7 @@ library.add(faCaretUp)
 library.add(faCheck)
 library.add(faCommentsDollar)
 library.add(faEye)
+library.add(faHourglassHalf)
 library.add(faMagnet)
 library.add(faPalette)
 library.add(faPencilAlt)
