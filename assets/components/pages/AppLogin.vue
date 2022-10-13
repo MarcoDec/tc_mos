@@ -48,16 +48,18 @@
 
 <template>
     <AppOverlay :spinner="state.matches('loading')" class="row">
-        <AppCard class="col" title="Connexion">
-            <div v-if="state.matches('error')" class="alert alert-danger" role="alert">
-                {{ state.context.error }}
-            </div>
-            <AppFormGenerator
-                :id="form"
-                :disabled="state.matches('loading')"
-                :fields="fields"
-                submit-label="Connexion"
-                @submit="submit"/>
-        </AppCard>
+        <div class="col">
+            <AppCard title="Connexion">
+                <div v-if="state.matches('error')" class="alert alert-danger" role="alert">
+                    {{ state.context.error }}
+                </div>
+                <AppFormGenerator
+                    :id="form"
+                    :disabled="state.matches('loading')"
+                    :fields="fields"
+                    submit-label="Connexion"
+                    @submit="submit"/>
+            </AppCard>
+        </div>
     </AppOverlay>
 </template>

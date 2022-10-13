@@ -8,18 +8,18 @@ export default async function api(url, method = 'GET', body = null) {
         },
         method
     }
-    let normalizedUrl = url
+    const urlBuilder = new URL(url, location.origin)
     if (body !== null) {
-        if (method === 'GET')
+        if (method === 'GET') {
             for (const [key, value] of Object.entries(body))
-                normalizedUrl += `${normalizedUrl.includes('?') ? '&' : '?'}${key}=${value}`
-        else
+                urlBuilder.searchParams.append(key, value)
+        } else
             init.body = JSON.stringify(body)
     }
     const token = useCookies(['token']).get('token')
     if (token)
         init.headers.Authorization = `Bearer ${token}`
-    const response = await fetch(normalizedUrl, init)
+    const response = await fetch(urlBuilder.href, init)
     let content = null
     switch (response.status) {
     case 200:

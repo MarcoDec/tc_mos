@@ -26,6 +26,9 @@
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
                     </AppDropdownItem>
+                    <AppNavbarLink icon="palette" to="colors" variant="warning">
+                        Couleurs
+                    </AppNavbarLink>
                     <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">
                         Messages TVA
                     </AppNavbarLink>
