@@ -1,8 +1,9 @@
 <script setup>
+    import AppTableItemUpdateField from './AppTableItemUpdateField.vue'
     import {computed} from 'vue'
 
     const props = defineProps({
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         id: {required: true, type: String},
         index: {required: true, type: Number},
         item: {required: true, type: Object},
@@ -41,12 +42,13 @@
         <td class="text-center">
             {{ normalizedIndex }}
         </td>
-        <AppTableFormField
+        <AppTableItemUpdateField
             v-for="field in fields"
             :key="field.name"
             v-model="item.updated"
             :field="field"
             :form="form"
+            :item="item"
             :violations="machine.state.value.context.violations"/>
     </tr>
 </template>

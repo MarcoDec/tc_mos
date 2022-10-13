@@ -13,6 +13,7 @@ use App\Entity\Entity;
 use App\Entity\Management\Unit;
 use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
+use App\Repository\Purchase\Component\AttributeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: EnumFilter::class, properties: ['type']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['unit']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['description' => 'partial', 'name' => 'partial']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'type', 'unit.name']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'type', 'unit.code']),
     ApiResource(
         description: 'Attribut',
         collectionOperations: [
@@ -77,7 +78,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         order: ['name' => 'asc']
     ),
-    ORM\Entity
+    ORM\Entity(repositoryClass: AttributeRepository::class)
 ]
 class Attribute extends Entity {
     /** @var Collection<int, ComponentAttribute> */

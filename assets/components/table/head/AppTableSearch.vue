@@ -1,6 +1,6 @@
 <script setup>
     const props = defineProps({
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         id: {required: true, type: String},
         send: {required: true, type: Function},
         store: {required: true, type: Object}
@@ -20,7 +20,7 @@
 </script>
 
 <template>
-    <AppTableHeaderForm :id="id" v-model="store.search" :fields="fields" :send="send" :submit="search">
+    <AppTableHeaderForm :id="id" v-model="store.search" :fields="fields" :send="send" :submit="search" mode="search">
         <AppBtn icon="times" label="Annuler" variant="danger" @click="cancel"/>
     </AppTableHeaderForm>
 </template>

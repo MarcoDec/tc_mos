@@ -11,6 +11,16 @@
 <template>
     <div class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav">
+            <AppNavbarItem v-if="user.isPurchaseReader" id="purchase" icon="shopping-bag" title="Achats">
+                <template v-if="user.isPurchaseAdmin">
+                    <AppDropdownItem disabled variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="magnet" to="attributes" variant="warning">
+                        Attributs
+                    </AppNavbarLink>
+                </template>
+            </AppNavbarItem>
             <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
                 <template v-if="user.isManagementAdmin">
                     <AppDropdownItem disabled variant="warning">

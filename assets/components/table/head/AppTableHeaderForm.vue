@@ -3,10 +3,11 @@
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         icon: {default: 'search', type: String},
         id: {required: true, type: String},
         label: {default: 'Rechercher', type: String},
+        mode: {required: true, type: String},
         modelValue: {default: () => ({}), type: Object},
         reverseIcon: {default: 'plus', type: String},
         reverseLabel: {default: 'ajout', type: String},
@@ -47,6 +48,7 @@
             :field="field"
             :form="form"
             :label="lowerLabel"
+            :mode="mode"
             :model-value="modelValue"
             :violations="violations"
             @update:model-value="input"/>

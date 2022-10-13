@@ -1,6 +1,6 @@
 <script setup>
     const props = defineProps({
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         id: {required: true, type: String},
         machine: {required: true, type: Object},
         store: {required: true, type: Object}
@@ -29,6 +29,7 @@
         class="table-success"
         icon="plus"
         label="Ajouter"
+        mode="create"
         reverse-icon="search"
         reverse-label="recherche"
         reverse-mode="search"

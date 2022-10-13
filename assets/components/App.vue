@@ -12,6 +12,6 @@
 <template>
     <AppNavbar/>
     <AppContainer>
-        <RouterView/>
+        <RouterView :key="route.name"/>
     </AppContainer>
 </template>

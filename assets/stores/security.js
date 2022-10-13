@@ -11,6 +11,8 @@ function defineUserStore() {
         const roles = ref([])
         const isManagementAdmin = computed(() => roles.value.includes('ROLE_MANAGEMENT_ADMIN'))
         const isManagementWriter = computed(() => isManagementAdmin.value || roles.value.includes('ROLE_MANAGEMENT_WRITER'))
+        const isPurchaseAdmin = computed(() => roles.value.includes('ROLE_PURCHASE_ADMIN'))
+        const isPurchaseWriter = computed(() => isPurchaseAdmin.value || roles.value.includes('ROLE_PURCHASE_WRITER'))
 
         function clear() {
             store.$reset()
@@ -53,6 +55,9 @@ function defineUserStore() {
             isManagementAdmin,
             isManagementReader: computed(() => isManagementWriter.value || roles.value.includes('ROLE_MANAGEMENT_WRITER')),
             isManagementWriter,
+            isPurchaseAdmin,
+            isPurchaseReader: computed(() => isPurchaseWriter.value || roles.value.includes('ROLE_PURCHASE_WRITER')),
+            isPurchaseWriter,
             async logout() {
                 try {
                     await api('/api/logout', 'POST')

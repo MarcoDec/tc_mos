@@ -2,7 +2,7 @@
     import AppTableItem from './AppTableItem.vue'
 
     defineProps({
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         id: {required: true, type: String},
         machine: {required: true, type: Object},
         store: {required: true, type: Object}

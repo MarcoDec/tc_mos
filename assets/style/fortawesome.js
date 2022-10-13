@@ -5,9 +5,11 @@ import {
     faCheck,
     faCommentsDollar,
     faEye,
+    faMagnet,
     faPencilAlt,
     faPlus,
     faSearch,
+    faShoppingBag,
     faSignOutAlt,
     faSitemap,
     faTimes,
@@ -22,9 +24,11 @@ library.add(faCaretUp)
 library.add(faCheck)
 library.add(faCommentsDollar)
 library.add(faEye)
+library.add(faMagnet)
 library.add(faPencilAlt)
 library.add(faPlus)
 library.add(faSearch)
+library.add(faShoppingBag)
 library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faTimes)

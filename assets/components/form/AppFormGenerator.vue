@@ -5,7 +5,7 @@
     const emit = defineEmits(['submit'])
     const props = defineProps({
         disabled: {type: Boolean},
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         id: {required: true, type: String},
         submitLabel: {default: 'Modifier', type: String}
     })

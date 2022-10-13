@@ -2,7 +2,7 @@
     import AppTableField from './AppTableField.vue'
 
     defineProps({
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         send: {required: true, type: Function},
         store: {required: true, type: Object}
     })

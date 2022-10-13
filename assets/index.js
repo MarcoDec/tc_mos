@@ -5,12 +5,13 @@ import AppBtn from './components/AppBtn'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppForm from './components/form/AppForm.vue'
-import AppInputGuesser from './components/form/field/input/AppInputGuesser'
+import AppInputGuesser from './components/form/field/input/AppInputGuesser.vue'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
 import AppSuspense from './components/AppSuspense.vue'
 import AppTableFormField from './components/table/AppTableFormField.vue'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm.vue'
+import AppTableItemField from './components/table/body/read/AppTableItemField.vue'
 import Fa from './components/Fa'
 import clone from 'lodash.clonedeep'
 import {createApp} from 'vue'
@@ -29,6 +30,7 @@ const app = createApp(App)
     .component('AppSuspense', AppSuspense)
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)
+    .component('AppTableItemField', AppTableItemField)
     .component('Fa', Fa)
     .use(createPinia().use(({store}) => {
         if (store.setup) {

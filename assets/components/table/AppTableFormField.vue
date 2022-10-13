@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, onMounted, onUnmounted, ref, shallowRef} from 'vue'
+    import {computed, onMounted, onUnmounted, readonly, ref, shallowRef} from 'vue'
     import {Tooltip} from 'bootstrap'
 
     const el = ref()
@@ -8,11 +8,15 @@
         field: {required: true, type: Object},
         form: {required: true, type: String},
         label: {default: 'rechercher', type: String},
+        mode: {default: null, type: String},
         modelValue: {default: () => ({}), type: Object},
         violations: {default: () => [], type: Array}
     })
-    const tip = computed(() => `<i class="enter-key-icon"></i> pour ${props.label}`)
     const tooltip = shallowRef(null)
+    const tooltipIgnore = readonly(['select'])
+    const hasContent = computed(() => props.mode === null || props.field[props.mode])
+    const hasTooltip = computed(() => !tooltipIgnore.includes(props.field.type))
+    const tip = computed(() => `<i class="enter-key-icon"></i> pour ${props.label}`)
     const inputId = computed(() => `${props.form}-${props.field.name}`)
     const value = computed(() => props.modelValue[props.field.name])
     const violation = computed(() => props.violations.find(v => v.propertyPath === props.field.name)?.message)
@@ -34,7 +38,8 @@
         if (typeof el.value === 'undefined')
             return
         dispose()
-        tooltip.value = new Tooltip(el.value)
+        if (hasTooltip.value)
+            tooltip.value = new Tooltip(el.value.$el)
     }
 
     onMounted(instantiate)
@@ -43,20 +48,22 @@
 
 <template>
     <td>
-        <AppInputGuesser
-            :id="inputId"
-            ref="el"
-            :class="css"
-            :field="field"
-            :form="form"
-            :model-value="value"
-            :title="tip"
-            data-bs-html="true"
-            data-bs-placement="top"
-            data-bs-toogle="tooltip"
-            @update:model-value="input"/>
-        <div v-if="hasViolation" class="invalid-feedback">
-            {{ violation }}
-        </div>
+        <template v-if="hasContent">
+            <AppInputGuesser
+                :id="inputId"
+                ref="el"
+                :class="css"
+                :field="field"
+                :form="form"
+                :model-value="value"
+                :title="tip"
+                data-bs-html="true"
+                data-bs-placement="top"
+                data-bs-toogle="tooltip"
+                @update:model-value="input"/>
+            <div v-if="hasViolation" class="invalid-feedback">
+                {{ violation }}
+            </div>
+        </template>
     </td>
 </template>

@@ -1,9 +1,8 @@
 <script setup>
-    import AppTableItemField from './AppTableItemField.vue'
     import {computed} from 'vue'
 
     const props = defineProps({
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         index: {required: true, type: Number},
         item: {required: true, type: Object},
         send: {required: true, type: Function}

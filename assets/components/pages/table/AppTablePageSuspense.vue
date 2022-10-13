@@ -2,7 +2,7 @@
     import AppTablePage from './AppTablePage.vue'
 
     defineProps({
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         icon: {required: true, type: String},
         sort: {required: true, type: Object},
         title: {required: true, type: String}

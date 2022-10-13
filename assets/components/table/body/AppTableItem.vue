@@ -1,11 +1,11 @@
 <script setup>
-    import AppTableItemRead from './AppTableItemRead.vue'
-    import AppTableItemUpdate from './AppTableItemUpdate.vue'
+    import AppTableItemRead from './read/AppTableItemRead.vue'
+    import AppTableItemUpdate from './update/AppTableItemUpdate.vue'
     import {computed} from 'vue'
 
     const props = defineProps({
         body: {required: true, type: String},
-        fields: {required: true, type: Array},
+        fields: {required: true, type: Object},
         index: {required: true, type: Number},
         item: {required: true, type: Object},
         machine: {required: true, type: Object}

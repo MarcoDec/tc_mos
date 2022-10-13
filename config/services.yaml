@@ -11,6 +11,7 @@ services:
       - ../src/Entity/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
+      - ../src/Paginator/
       - ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
@@ -23,6 +24,10 @@ services:
     arguments:
       $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
     tags: [ controller.service_arguments ]
+
+  App\DataProvider\Purchase\Component\AttributeDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
 
   App\DataProvider\Purchase\Order\ItemDataProvider:
     arguments:
@@ -113,14 +118,6 @@ services:
       - dispatcher: security.event_dispatcher.main
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
-
-  App\EventListener\WriteListener:
-    autoconfigure: false
-    tags:
-      - event: kernel.view
-        method: onPost
-        name: kernel.event_listener
-        priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::POST_WRITE
 
   App\Filesystem\FileManager:
     arguments:

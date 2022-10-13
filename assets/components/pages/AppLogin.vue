@@ -3,10 +3,10 @@
     import {useRoute, useRouter} from 'vue-router'
     import AppCard from '../AppCard.vue'
     import AppFormGenerator from '../form/AppFormGenerator.vue'
-    import {readonly} from 'vue'
+    import Fields from '../../utils/Fields'
     import useUser from '../../stores/security'
 
-    const fields = readonly([
+    const fields = Fields.generate([
         {label: 'Identifiant', name: 'username'},
         {label: 'Mot de passe', name: 'password', type: 'password'}
     ])
