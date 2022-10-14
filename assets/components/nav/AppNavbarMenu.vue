@@ -38,6 +38,9 @@
                     <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">
                         Messages TVA
                     </AppNavbarLink>
+                    <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">
+                        Unités
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
         </ul>

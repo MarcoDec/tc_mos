@@ -11,6 +11,7 @@ import {
     faPencilAlt,
     faPlus,
     faPrint,
+    faRulerHorizontal,
     faSearch,
     faShoppingBag,
     faSignOutAlt,
@@ -33,6 +34,7 @@ library.add(faPalette)
 library.add(faPencilAlt)
 library.add(faPlus)
 library.add(faPrint)
+library.add(faRulerHorizontal)
 library.add(faSearch)
 library.add(faShoppingBag)
 library.add(faSignOutAlt)

@@ -1,5 +1,6 @@
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import Fields from '../utils/Fields'
+import {prepareOptions} from '../stores/option/options'
 import {readonly} from 'vue'
 
 const name = {label: 'Nom', name: 'name'}
@@ -61,6 +62,29 @@ export default [
             icon: 'print',
             sort: readonly(readonlyName),
             title: 'Imprimantes'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Unités — T-Concept GPAO'},
+        name: 'units',
+        path: '/units',
+        props: {
+            fields: Fields.generate([
+                {label: 'Code', name: 'code'},
+                {...name},
+                {label: 'Base', name: 'base', type: 'number'},
+                {
+                    label: 'Parent',
+                    name: 'parent',
+                    options: prepareOptions('units'),
+                    sortName: 'parent.code',
+                    type: 'select'
+                }
+            ]),
+            icon: 'ruler-horizontal',
+            sort: readonly({...name}),
+            title: 'Unités'
         }
     },
     {

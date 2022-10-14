@@ -2,7 +2,8 @@ import api from '../../api'
 import {defineStore} from 'pinia'
 import useOption from './option'
 
-export default function useOptions(id) {
+export default function useOptions(base) {
+    const id = `options/${base}`
     return defineStore(id, {
         actions: {
             dispose() {
@@ -25,9 +26,9 @@ export default function useOptions(id) {
         },
         getters: {
             label: state => value => state.options.find(option => option.value === value)?.text ?? null,
-            url: state => `/api/${state.id}/options`
+            url: state => `/api/${state.base}/options`
         },
-        state: () => ({id, options: []})
+        state: () => ({base, id, options: []})
     })()
 }
 
