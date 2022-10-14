@@ -7,6 +7,7 @@
     import useTable from '../../../stores/table/table'
 
     const props = defineProps({
+        disableRemove: {type: Boolean},
         fields: {required: true, type: Object},
         icon: {required: true, type: String},
         sort: {required: true, type: Object},
@@ -42,6 +43,6 @@
                 <span class="ms-2">{{ title }}</span>
             </h1>
         </div>
-        <AppTable :id="route.name" :fields="fields" :machine="machine" :store="store"/>
+        <AppTable :id="route.name" :disable-remove="disableRemove" :fields="fields" :machine="machine" :store="store"/>
     </AppOverlay>
 </template>

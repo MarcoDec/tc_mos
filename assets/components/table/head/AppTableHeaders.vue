@@ -5,6 +5,7 @@
     import {computed} from 'vue'
 
     const props = defineProps({
+        action: {type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         machine: {required: true, type: Object},
@@ -16,13 +17,13 @@
 
 <template>
     <thead :id="id" class="table-dark">
-        <AppTableFields :fields="fields" :send="machine.send" :store="store"/>
+        <AppTableFields :action="action" :fields="fields" :send="machine.send" :store="store"/>
         <AppTableAdd
             v-if="machine.state.value.matches('create')"
             :id="add"
             :fields="fields"
             :machine="machine"
             :store="store"/>
-        <AppTableSearch v-else :id="search" :fields="fields" :send="machine.send" :store="store"/>
+        <AppTableSearch v-else-if="fields.search" :id="search" :fields="fields" :send="machine.send" :store="store"/>
     </thead>
 </template>

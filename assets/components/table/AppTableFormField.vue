@@ -1,4 +1,5 @@
 <script setup>
+    import {cloneDeep, get, set} from 'lodash'
     import {computed, onMounted, onUnmounted, readonly, ref, shallowRef} from 'vue'
     import {Tooltip} from 'bootstrap'
 
@@ -18,7 +19,7 @@
     const hasTooltip = computed(() => !tooltipIgnore.includes(props.field.type))
     const tip = computed(() => `<i class="enter-key-icon"></i> pour ${props.label}`)
     const inputId = computed(() => `${props.form}-${props.field.name}`)
-    const value = computed(() => props.modelValue[props.field.name])
+    const value = computed(() => get(props.modelValue, props.field.name))
     const violation = computed(() => props.violations.find(v => v.propertyPath === props.field.name)?.message)
     const hasViolation = computed(() => Boolean(violation.value))
     const css = computed(() => ({'is-invalid': hasViolation.value}))
@@ -31,7 +32,7 @@
     }
 
     function input(v) {
-        emit('update:modelValue', {...props.modelValue, [props.field.name]: v})
+        emit('update:modelValue', set(cloneDeep(props.modelValue), props.field.name, v))
     }
 
     function instantiate() {

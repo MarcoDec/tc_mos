@@ -20,7 +20,14 @@
 </script>
 
 <template>
-    <AppTableHeaderForm :id="id" v-model="store.search" :fields="fields" :send="send" :submit="search" mode="search">
+    <AppTableHeaderForm
+        :id="id"
+        v-model="store.search"
+        :can-reverse="fields.create"
+        :fields="fields"
+        :send="send"
+        :submit="search"
+        mode="search">
         <AppBtn icon="times" label="Annuler" variant="danger" @click="cancel"/>
     </AppTableHeaderForm>
 </template>

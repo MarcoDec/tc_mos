@@ -3234,18 +3234,33 @@ CREATE TABLE `printer` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `printer` (`company_id`, `ip`, `name`) VALUES
+INSERT INTO `printer` (`color`, `company_id`, `ip`, `name`) VALUES
 (
+    'green',
     (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 1)),
     '192.168.2.115',
     'zpl'
 ),
 (
-    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 611)),
+    'green',
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = IFNULL(
+        (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 611),
+        (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 4)
+    )),
     '192.168.3.21',
     'zpl-tn'
 ),
 (
+    'yellow',
+    (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = IFNULL(
+        (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 611),
+        (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 4)
+    )),
+    '192.168.3.22',
+    'zpl-tn-2'
+),
+(
+    'green',
     (SELECT `company`.`id` FROM `company` WHERE `company`.`society_id` = (SELECT `society`.`id` FROM `society` WHERE `society`.`old_id` = 5)),
     '192.168.4.18',
     'zpl-md'

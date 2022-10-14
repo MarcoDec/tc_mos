@@ -4,7 +4,9 @@
     import {computed} from 'vue'
 
     const props = defineProps({
+        action: {type: Boolean},
         body: {required: true, type: String},
+        disableRemove: {type: Boolean},
         fields: {required: true, type: Object},
         index: {required: true, type: Number},
         item: {required: true, type: Object},
@@ -17,5 +19,13 @@
 
 <template>
     <AppTableItemUpdate v-if="update" :id="id" :fields="fields" :index="index" :item="item" :machine="machine"/>
-    <AppTableItemRead v-else :id="id" :fields="fields" :index="index" :item="item" :send="machine.send"/>
+    <AppTableItemRead
+        v-else
+        :id="id"
+        :action="action"
+        :disable-remove="disableRemove"
+        :fields="fields"
+        :index="index"
+        :item="item"
+        :send="machine.send"/>
 </template>

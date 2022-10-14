@@ -32,6 +32,9 @@
                     <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
                         Délais de paiement des factures
                     </AppNavbarLink>
+                    <AppNavbarLink icon="print" to="printers" variant="warning">
+                        Imprimantes
+                    </AppNavbarLink>
                     <AppNavbarLink icon="comments-dollar" to="vat-messages" variant="warning">
                         Messages TVA
                     </AppNavbarLink>

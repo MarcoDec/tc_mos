@@ -13,7 +13,7 @@ import AppTableFormField from './components/table/AppTableFormField.vue'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm.vue'
 import AppTableItemField from './components/table/body/read/AppTableItemField.vue'
 import Fa from './components/Fa'
-import clone from 'lodash.clonedeep'
+import {cloneDeep} from 'lodash'
 import {createApp} from 'vue'
 import {createPinia} from 'pinia'
 import router from './router'
@@ -34,8 +34,8 @@ const app = createApp(App)
     .component('Fa', Fa)
     .use(createPinia().use(({store}) => {
         if (store.setup) {
-            const state = clone(store.$state)
-            store.$reset = () => store.$patch(clone(state))
+            const state = cloneDeep(store.$state)
+            store.$reset = () => store.$patch(cloneDeep(state))
         }
     }))
 useUser().fetch().then(() => app.use(router).mount('#vue'))

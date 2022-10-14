@@ -2,6 +2,8 @@
     import {computed} from 'vue'
 
     const props = defineProps({
+        action: {type: Boolean},
+        disableRemove: {type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         index: {required: true, type: Number},
@@ -23,9 +25,9 @@
 
 <template>
     <tr :id="id">
-        <td class="text-center">
-            <AppBtn icon="pencil-alt" label="Modifier" @click="update"/>
-            <AppBtn icon="trash" label="Supprimer" variant="danger" @click="remove"/>
+        <td v-if="action" class="text-center">
+            <AppBtn v-if="fields.update" icon="pencil-alt" label="Modifier" @click="update"/>
+            <AppBtn v-if="!disableRemove" icon="trash" label="Supprimer" variant="danger" @click="remove"/>
         </td>
         <td class="text-center">
             {{ normalizedIndex }}

@@ -3,6 +3,7 @@ import FieldOptions from './FieldOptions'
 export default class Field {
     constructor(field) {
         this.create = field.create ?? true
+        this.hideLabelValue = field.hideLabelValue ?? false
         this.label = field.label
         this.name = field.name
         this.options = field.options ? new FieldOptions(field.options) : null

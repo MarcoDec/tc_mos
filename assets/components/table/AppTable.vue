@@ -4,11 +4,13 @@
     import {computed} from 'vue'
 
     const props = defineProps({
+        disableRemove: {type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         machine: {required: true, type: Object},
         store: {required: true, type: Object}
     })
+    const action = computed(() => props.fields.action || !props.disableRemove)
     const headers = computed(() => `${props.id}-headers`)
     const body = computed(() => `${props.id}-body`)
 </script>
@@ -17,8 +19,14 @@
     <div :id="id" class="row">
         <div class="col">
             <table class="table table-bordered table-hover table-responsive table-sm table-striped">
-                <AppTableHeaders :id="headers" :fields="fields" :machine="machine" :store="store"/>
-                <AppTableItems :id="body" :fields="fields" :machine="machine" :store="store"/>
+                <AppTableHeaders :id="headers" :action="action" :fields="fields" :machine="machine" :store="store"/>
+                <AppTableItems
+                    :id="body"
+                    :action="action"
+                    :disable-remove="disableRemove"
+                    :fields="fields"
+                    :machine="machine"
+                    :store="store"/>
             </table>
         </div>
     </div>

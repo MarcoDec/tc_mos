@@ -3,6 +3,7 @@ import Fields from '../utils/Fields'
 import {readonly} from 'vue'
 
 const name = {label: 'Nom', name: 'name'}
+const readonlyName = {...name, create: false, search: false, sort: false, update: false}
 
 export default [
     {
@@ -32,6 +33,34 @@ export default [
             icon: 'hourglass-half',
             sort: readonly({...name}),
             title: 'Délais de paiement des factures'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Imprimantes — T-Concept GPAO'},
+        name: 'printers',
+        path: '/printers',
+        props: {
+            disableRemove: true,
+            fields: Fields.generate([
+                readonlyName,
+                {create: false, label: 'IP', name: 'ip', search: false, sort: false, update: false},
+                {
+                    create: false,
+                    hideLabelValue: true,
+                    label: 'Couleur',
+                    name: 'color',
+                    options: [{text: '#00cc00', value: 'green'}, {text: '#ffff33', value: 'yellow'}],
+                    search: false,
+                    sort: false,
+                    type: 'color',
+                    update: false
+                },
+                {create: false, label: 'Compagnie', name: 'company.name', search: false, sort: false, update: false}
+            ]),
+            icon: 'print',
+            sort: readonly(readonlyName),
+            title: 'Imprimantes'
         }
     },
     {

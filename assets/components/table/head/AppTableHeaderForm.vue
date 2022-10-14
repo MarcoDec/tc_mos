@@ -3,6 +3,7 @@
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
+        canReverse: {type: Boolean},
         fields: {required: true, type: Object},
         icon: {default: 'search', type: String},
         id: {required: true, type: String},
@@ -33,8 +34,10 @@
 <template>
     <tr :id="id">
         <td class="text-center">
-            <Fa :icon="icon"/>
-            <AppBtn :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
+            <template v-if="canReverse">
+                <Fa :icon="icon"/>
+                <AppBtn :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
+            </template>
         </td>
         <td class="text-center">
             <AppForm :id="form" class="d-inline m-0 p-0" @submit="submit">

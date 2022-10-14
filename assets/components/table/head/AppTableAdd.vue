@@ -26,6 +26,7 @@
         :send="machine.send"
         :submit="create"
         :violations="machine.state.value.context.violations"
+        can-reverse
         class="table-success"
         icon="plus"
         label="Ajouter"

@@ -2,6 +2,7 @@
     import AppTablePage from './AppTablePage.vue'
 
     defineProps({
+        disableRemove: {type: Boolean},
         fields: {required: true, type: Object},
         icon: {required: true, type: String},
         sort: {required: true, type: Object},
@@ -11,6 +12,6 @@
 
 <template>
     <AppSuspense>
-        <AppTablePage :fields="fields" :icon="icon" :sort="sort" :title="title"/>
+        <AppTablePage :disable-remove="disableRemove" :fields="fields" :icon="icon" :sort="sort" :title="title"/>
     </AppSuspense>
 </template>
