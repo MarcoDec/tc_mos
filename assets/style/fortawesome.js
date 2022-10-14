@@ -4,8 +4,10 @@ import {
     faCaretUp,
     faCheck,
     faCommentsDollar,
+    faDatabase,
     faEye,
     faHourglassHalf,
+    faLaptop,
     faMagnet,
     faPalette,
     faPencilAlt,
@@ -27,8 +29,10 @@ library.add(faCaretDown)
 library.add(faCaretUp)
 library.add(faCheck)
 library.add(faCommentsDollar)
+library.add(faDatabase)
 library.add(faEye)
 library.add(faHourglassHalf)
+library.add(faLaptop)
 library.add(faMagnet)
 library.add(faPalette)
 library.add(faPencilAlt)

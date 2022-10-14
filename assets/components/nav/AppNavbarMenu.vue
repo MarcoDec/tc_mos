@@ -5,6 +5,7 @@
     import AppNotifications from './notification/AppNotifications.vue'
     import useUser from '../../stores/security'
 
+    const database = `${location.protocol}//${location.hostname}:8080`
     const user = useUser()
 </script>
 
@@ -42,6 +43,15 @@
                         Unités
                     </AppNavbarLink>
                 </template>
+            </AppNavbarItem>
+            <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
+                <AppDropdownItem disabled variant="warning">
+                    Administrateur
+                </AppDropdownItem>
+                <a :href="database" class="dropdown-item text-warning" target="_blank">
+                    <Fa icon="database"/>
+                    Base de données
+                </a>
             </AppNavbarItem>
         </ul>
     </div>

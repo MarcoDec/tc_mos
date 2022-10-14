@@ -51,6 +51,7 @@ function defineUserStore() {
                 clear()
             },
             id,
+            isItAdmin: computed(() => roles.value.includes('ROLE_IT_ADMIN')),
             isLogged: computed(() => id.value > 0),
             isManagementAdmin,
             isManagementReader: computed(() => isManagementWriter.value || roles.value.includes('ROLE_MANAGEMENT_WRITER')),
