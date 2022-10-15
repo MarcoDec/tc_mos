@@ -8,7 +8,7 @@ export default function useOption(option, parent) {
                 this.$dispose()
             }
         },
-        getters: {value: state => state['@id']},
-        state: () => ({...option})
+        getters: {value: state => state[state.parentStore.valueProp]},
+        state: () => ({...option, parentStore: parent})
     })()
 }

@@ -2,7 +2,7 @@ import api from '../../api'
 import {defineStore} from 'pinia'
 import useOption from './option'
 
-export default function useOptions(base) {
+export default function useOptions(base, valueProp = '@id') {
     const id = `options/${base}`
     return defineStore(id, {
         actions: {
@@ -14,7 +14,7 @@ export default function useOptions(base) {
             },
             async fetch() {
                 const response = await api(this.url)
-                for (const option of response.content['hydra:member'])
+                for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
             },
             resetItems() {
@@ -25,18 +25,33 @@ export default function useOptions(base) {
             }
         },
         getters: {
+            groups: state => {
+                if (!state.options.every(option => Boolean(option.group)))
+                    return []
+                const groups = {}
+                for (const option of state.options) {
+                    if (typeof groups[option.group] === 'undefined')
+                        groups[option.group] = []
+                    groups[option.group].push(option)
+                }
+                return Object.entries(groups).map(([group, options]) => ({label: group, options})).reverse()
+            },
+            hasGroups() {
+                return this.groups.length > 0
+            },
             label: state => value => state.options.find(option => option.value === value)?.text ?? null,
             url: state => `/api/${state.base}/options`
         },
-        state: () => ({base, id, options: []})
+        state: () => ({base, id, options: [], valueProp})
     })()
 }
 
-export function prepareOptions(id) {
+export function prepareOptions(id, valueProp = '@id') {
     return {
         generate() {
-            return useOptions(this.id)
+            return useOptions(this.id, this.valueProp)
         },
-        id
+        id,
+        valueProp
     }
 }

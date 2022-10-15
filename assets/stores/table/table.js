@@ -1,5 +1,6 @@
 import api from '../../api'
 import {defineStore} from 'pinia'
+import flat from 'flat'
 import useRow from './row'
 
 export default function useTable(id) {
@@ -12,7 +13,7 @@ export default function useTable(id) {
             async create() {
                 const response = await api(this.url, 'POST', this.createBody)
                 this.resetItems()
-                this.rows.push(useRow(response.content, this))
+                this.rows.push(useRow(response, this))
             },
             dispose() {
                 for (const row of this.rows)
@@ -23,7 +24,7 @@ export default function useTable(id) {
             async fetch() {
                 const response = await api(this.url, 'GET', this.fetchBody)
                 this.resetItems()
-                for (const row of response.content['hydra:member'])
+                for (const row of response['hydra:member'])
                     this.rows.push(useRow(row, this))
             },
             removeRow(removed) {
@@ -51,8 +52,9 @@ export default function useTable(id) {
                 return field => (this.isSorter(field) ? this.order : 'none')
             },
             fetchBody() {
-                return {...this.orderBody, ...this.search}
+                return {...this.orderBody, ...this.flatSearch}
             },
+            flatSearch: state => flat(state.search),
             isSorter: state => field => field.name === state.sorted,
             order() {
                 return `${this.orderParam}ending`

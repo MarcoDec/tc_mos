@@ -20,20 +20,18 @@ export default async function api(url, method = 'GET', body = null) {
     if (token)
         init.headers.Authorization = `Bearer ${token}`
     const response = await fetch(urlBuilder.href, init)
-    let content = null
     switch (response.status) {
     case 200:
     case 201:
-        content = await response.json()
-        return {content, status: response.status}
+        return response.json()
     case 204:
-        return {status: response.status}
+        return response.status
     case 401:
-        content = await response.json()
-        throw content
-    case 422:
-        content = await response.json()
-        throw {content: content.violations, status: response.status}
+        throw await response.json()
+    case 422: {
+        const content = await response.json()
+        throw content.violations
+    }
     default:
         throw response.statusText
     }

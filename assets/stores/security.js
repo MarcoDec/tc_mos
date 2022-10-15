@@ -9,6 +9,9 @@ function defineUserStore() {
         const id = ref(0)
         const name = ref(null)
         const roles = ref([])
+
+        const isLogisticsAdmin = computed(() => roles.value.includes('ROLE_LOGISTICS_ADMIN'))
+        const isLogisticsWriter = computed(() => isManagementAdmin.value || roles.value.includes('ROLE_LOGISTICS_WRITER'))
         const isManagementAdmin = computed(() => roles.value.includes('ROLE_MANAGEMENT_ADMIN'))
         const isManagementWriter = computed(() => isManagementAdmin.value || roles.value.includes('ROLE_MANAGEMENT_WRITER'))
         const isPurchaseAdmin = computed(() => roles.value.includes('ROLE_PURCHASE_ADMIN'))
@@ -20,18 +23,17 @@ function defineUserStore() {
         }
 
         function save(response) {
-            id.value = response.content.id
-            name.value = response.content.name
-            roles.value = response.content.roles
-            cookies.set('token', response.content.token)
+            id.value = response.id
+            name.value = response.name
+            roles.value = response.roles
+            cookies.set('token', response.token)
         }
 
         return {
             clear,
             async connect(data) {
                 try {
-                    const response = await api('/api/login', 'POST', data)
-                    save(response)
+                    save(await api('/api/login', 'POST', data))
                 } catch (error) {
                     clear()
                     throw error
@@ -41,8 +43,7 @@ function defineUserStore() {
             async fetch() {
                 if (cookies.get('token')) {
                     try {
-                        const response = await api('/api/user')
-                        save(response)
+                        save(await api('/api/user'))
                         return
                         // eslint-disable-next-line no-empty
                     } catch {
@@ -53,11 +54,14 @@ function defineUserStore() {
             id,
             isItAdmin: computed(() => roles.value.includes('ROLE_IT_ADMIN')),
             isLogged: computed(() => id.value > 0),
+            isLogisticsAdmin,
+            isLogisticsReader: computed(() => isLogisticsWriter.value || roles.value.includes('ROLE_LOGISTICS_READER')),
+            isLogisticsWriter,
             isManagementAdmin,
-            isManagementReader: computed(() => isManagementWriter.value || roles.value.includes('ROLE_MANAGEMENT_WRITER')),
+            isManagementReader: computed(() => isManagementWriter.value || roles.value.includes('ROLE_MANAGEMENT_READER')),
             isManagementWriter,
             isPurchaseAdmin,
-            isPurchaseReader: computed(() => isPurchaseWriter.value || roles.value.includes('ROLE_PURCHASE_WRITER')),
+            isPurchaseReader: computed(() => isPurchaseWriter.value || roles.value.includes('ROLE_PURCHASE_READER')),
             isPurchaseWriter,
             async logout() {
                 try {

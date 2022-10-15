@@ -53,6 +53,14 @@
                     Base de données
                 </a>
             </AppNavbarItem>
+            <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">
+                    Transporteurs
+                </AppNavbarLink>
+            </AppNavbarItem>
         </ul>
     </div>
     <AppSuspense variant="white">

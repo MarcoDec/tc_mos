@@ -16,7 +16,7 @@ final class CountryDataProvider implements CollectionDataProviderInterface, Rest
         return collect(Countries::getCountryCodes())
             ->map(static fn (string $code): Country => new Country($code))
             ->values()
-            ->sortBy->getName();
+            ->sortBy->getCode();
     }
 
     /**

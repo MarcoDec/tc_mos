@@ -13,7 +13,7 @@ export default defineStore('notifications', {
         async fetch() {
             const response = await api('/api/notifications')
             const categories = {}
-            for (const notification of response.content['hydra:member']) {
+            for (const notification of response['hydra:member']) {
                 if (!categories[notification.category])
                     categories[notification.category] = useCategory(notification.category, this)
                 categories[notification.category].push(notification)

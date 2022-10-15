@@ -13,6 +13,8 @@
   )
 );
 
+$dropdown-success: #57ec57 !default;
+
 @each $color, $value in $grays {
   .bg-gray-#{$color} {
     background-color: $value;
@@ -29,6 +31,10 @@
   background-color: #8ac2f1 !important;
 }
 
+.bg-success .dropdown-item {
+  background-color: $dropdown-success !important;
+}
+
 .btn-icon {
   height: 20px;
   line-height: .8;
@@ -41,10 +47,14 @@
   min-width: 100%;
 }
 
+.dropdown-item .text-success {
+  color: $dropdown-success !important;
+}
+
 .enter-key-icon {
   @extend .btn;
   @extend .btn-icon;
-  background-image: url(./enter-key.svg);
+  background-image: url(/img/enter-key.svg);
   background-size: cover;
   background-repeat: no-repeat;
   height: 20px;

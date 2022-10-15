@@ -1,5 +1,5 @@
 <script setup>
-    import AppOption from './AppOption.vue'
+    import AppOptionGroups from './AppOptionGroups.vue'
 
     defineProps({
         disabled: {type: Boolean},
@@ -24,6 +24,7 @@
         :value="modelValue"
         class="form-select form-select-sm"
         @input="input">
-        <AppOption v-for="option in field.options" :key="option.value" :option="option"/>
+        <AppOptionGroups v-if="field.options.hasGroups" :groups="field.options.groups"/>
+        <AppOptions v-else :options="field.options"/>
     </select>
 </template>

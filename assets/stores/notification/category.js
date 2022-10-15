@@ -17,7 +17,7 @@ export default function useCategory(category, parent) {
             },
             async reading() {
                 const response = await api(`${this.url}read-all`, 'PATCH')
-                for (const notification of response.content['hydra:member'])
+                for (const notification of response['hydra:member'])
                     this.byId[notification.id]?.reset(notification)
             },
             async remove() {

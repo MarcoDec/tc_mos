@@ -11,9 +11,8 @@
         try {
             await props.store.create()
             props.machine.send('success')
-        } catch (e) {
-            if (e.status === 422)
-                props.machine.send('fail', {violations: e.content})
+        } catch (violations) {
+            props.machine.send('fail', {violations})
         }
     }
 </script>

@@ -13,6 +13,14 @@ export default class FieldOptions {
         }
     }
 
+    get groups() {
+        return this.hasGroups ? this.options.groups : []
+    }
+
+    get hasGroups() {
+        return this.storeMode && this.options.hasGroups
+    }
+
     dispose() {
         if (this.storeMode) {
             this.initialized = false

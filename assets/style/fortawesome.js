@@ -1,5 +1,6 @@
 import {
     faBell,
+    faBoxes,
     faCaretDown,
     faCaretUp,
     faCheck,
@@ -16,6 +17,7 @@ import {
     faRulerHorizontal,
     faSearch,
     faShoppingBag,
+    faShuttleVan,
     faSignOutAlt,
     faSitemap,
     faTimes,
@@ -25,6 +27,7 @@ import {
 import {library} from '@fortawesome/fontawesome-svg-core'
 
 library.add(faBell)
+library.add(faBoxes)
 library.add(faCaretDown)
 library.add(faCaretUp)
 library.add(faCheck)
@@ -41,6 +44,7 @@ library.add(faPrint)
 library.add(faRulerHorizontal)
 library.add(faSearch)
 library.add(faShoppingBag)
+library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faTimes)

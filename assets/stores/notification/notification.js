@@ -17,8 +17,7 @@ export default function useNotification(notification, category) {
                 this.$dispose()
             },
             async reading() {
-                const response = await api(this.url, 'PATCH')
-                this.reset(response.content)
+                this.reset(await api(this.url, 'PATCH'))
             },
             async remove() {
                 await api(this.url, 'DELETE')

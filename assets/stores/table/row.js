@@ -1,3 +1,4 @@
+import {get, set} from 'lodash'
 import api from '../../api'
 import {defineStore} from 'pinia'
 
@@ -13,15 +14,14 @@ export default function useRow(row, table) {
             initUpdate(fields) {
                 this.updated = {}
                 for (const field of fields)
-                    this.updated[field.name] = this[field.name]
+                    set(this.updated, field.name, get(this, field.name))
             },
             async remove() {
                 await api(this.url, 'DELETE')
                 this.dispose()
             },
             async update() {
-                const response = await api(this.url, 'PATCH', this.updated)
-                initialState = response.content
+                initialState = await api(this.url, 'PATCH', this.updated)
                 this.$reset()
             }
         },

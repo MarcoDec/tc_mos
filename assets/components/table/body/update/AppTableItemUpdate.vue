@@ -24,9 +24,8 @@
             await props.item.update()
             props.machine.send('success')
             props.machine.send('search')
-        } catch (e) {
-            if (e.status === 422)
-                props.machine.send('fail', {violations: e.content})
+        } catch (violations) {
+            props.machine.send('fail', {violations})
         }
     }
 </script>
@@ -49,6 +48,7 @@
             :field="field"
             :form="form"
             :item="item"
+            :row="id"
             :violations="machine.state.value.context.violations"/>
     </tr>
 </template>

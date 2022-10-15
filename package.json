@@ -8,6 +8,7 @@
     "@vueuse/integrations": "^9.3.0",
     "@xstate/vue": "^2.0.0",
     "bootstrap": "^5.2.2",
+    "flat": "^5.0.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "pinia": "^2.0.23",

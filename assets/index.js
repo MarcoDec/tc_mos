@@ -6,6 +6,7 @@ import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppForm from './components/form/AppForm.vue'
 import AppInputGuesser from './components/form/field/input/AppInputGuesser.vue'
+import AppOptions from './components/form/field/input/select/AppOptions.vue'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
 import AppSuspense from './components/AppSuspense.vue'
@@ -26,6 +27,7 @@ const app = createApp(App)
     .component('AppForm', AppForm)
     .component('AppInputGuesser', AppInputGuesser)
     .component('AppOverlay', AppOverlay)
+    .component('AppOptions', AppOptions)
     .component('AppRouterLink', AppRouterLink)
     .component('AppSuspense', AppSuspense)
     .component('AppTableFormField', AppTableFormField)

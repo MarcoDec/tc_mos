@@ -10,16 +10,7 @@ export default defineConfig({
         emptyOutDir: true,
         manifest: true,
         outDir: './public/build/',
-        rollupOptions: {
-            input: {index: './assets/index.js'},
-            output: {
-                // eslint-disable-next-line consistent-return
-                manualChunks(id) {
-                    if (id.includes('AppSuspenseWrapper') || id.includes('stores/options'))
-                        return 'vendor'
-                }
-            }
-        }
+        rollupOptions: {input: {index: './assets/index.js'}}
     },
     optimizeDeps: {force: true},
     plugins: [
@@ -27,6 +18,7 @@ export default defineConfig({
         vue(),
         checker({eslint: {lintCommand: 'eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}'}})
     ],
+
     root: './',
     server: {
         fs: {allow: ['..'], strict: false},
