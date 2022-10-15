@@ -60,6 +60,14 @@
                 <AppNavbarLink icon="shuttle-van" to="carriers" variant="success">
                     Transporteurs
                 </AppNavbarLink>
+                <template v-if="user.isLogisticsAdmin">
+                    <AppDropdownItem disabled variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="file-contract" to="incoterms" variant="warning">
+                        Incoterms
+                    </AppNavbarLink>
+                </template>
             </AppNavbarItem>
         </ul>
     </div>

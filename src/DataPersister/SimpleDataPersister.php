@@ -4,6 +4,7 @@ namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Logistics\Carrier;
+use App\Entity\Logistics\Incoterms;
 use App\Entity\Logistics\Stock\ComponentStock;
 use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Logistics\Stock\Stock;
@@ -14,7 +15,7 @@ use App\Entity\Management\VatMessage;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * @phpstan-type Data Carrier|Color|ComponentStock|InvoiceTimeDue|ProductStock|Unit|VatMessage
+ * @phpstan-type Data Carrier|Color|ComponentStock|Incoterms|InvoiceTimeDue|ProductStock|Unit|VatMessage
  */
 final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function __construct(private readonly EntityManagerInterface $em) {
@@ -24,7 +25,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
      * @param Data    $data
      * @param mixed[] $context
      */
-    public function persist($data, array $context = []): Carrier|Color|ComponentStock|InvoiceTimeDue|ProductStock|Unit|VatMessage {
+    public function persist($data, array $context = []): Carrier|Color|ComponentStock|Incoterms|InvoiceTimeDue|ProductStock|Unit|VatMessage {
         $this->em->persist($data);
         $this->em->flush();
         return $data;
@@ -44,6 +45,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
         return (
             $data instanceof Carrier
             || $data instanceof Color
+            || $data instanceof Incoterms
             || $data instanceof InvoiceTimeDue
             || $data instanceof Stock
             || $data instanceof Unit

@@ -7,6 +7,7 @@ import {
     faCommentsDollar,
     faDatabase,
     faEye,
+    faFileContract,
     faHourglassHalf,
     faLaptop,
     faMagnet,
@@ -34,6 +35,7 @@ library.add(faCheck)
 library.add(faCommentsDollar)
 library.add(faDatabase)
 library.add(faEye)
+library.add(faFileContract)
 library.add(faHourglassHalf)
 library.add(faLaptop)
 library.add(faMagnet)

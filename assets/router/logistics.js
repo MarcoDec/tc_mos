@@ -26,5 +26,17 @@ export default [
             sort: readonly(name),
             title: 'Transporteurs'
         }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Incoterms — T-Concept GPAO'},
+        name: 'incoterms',
+        path: '/incoterms',
+        props: {
+            fields: Fields.generate([{label: 'Code', name: 'code'}, name]),
+            icon: 'file-contract',
+            sort: readonly(name),
+            title: 'Incoterms'
+        }
     }
 ]
