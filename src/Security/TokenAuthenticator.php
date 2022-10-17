@@ -65,7 +65,6 @@ final class TokenAuthenticator extends AbstractAuthenticator {
         $user = $token->getUser();
         $this->getRepo()->renew($user);
         $this->em->commit();
-        $this->em->clear();
         return null;
     }
 

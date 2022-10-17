@@ -22,5 +22,17 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Fabricants'
         }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Zones — T-Concept GPAO'},
+        name: 'zones',
+        path: '/zones',
+        props: {
+            fields: [{label: 'Nom', name: 'name'}],
+            icon: 'map-marked',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Zones'
+        }
     }
 ]

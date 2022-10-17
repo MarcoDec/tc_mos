@@ -76,6 +76,9 @@
                 <AppNavbarLink icon="oil-well" to="manufacturers" variant="success">
                     Fabricants
                 </AppNavbarLink>
+                <AppNavbarLink icon="map-marked" to="zones" variant="success">
+                    Zones
+                </AppNavbarLink>
             </AppNavbarItem>
         </ul>
     </div>

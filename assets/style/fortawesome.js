@@ -12,6 +12,7 @@ import {
     faIndustry,
     faLaptop,
     faMagnet,
+    faMapMarked,
     faOilWell,
     faPalette,
     faPencilAlt,
@@ -42,6 +43,7 @@ library.add(faHourglassHalf)
 library.add(faIndustry)
 library.add(faLaptop)
 library.add(faMagnet)
+library.add(faMapMarked)
 library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencilAlt)

@@ -12,11 +12,12 @@ use App\Entity\Management\Color;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Unit;
 use App\Entity\Management\VatMessage;
+use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Manufacturer\Manufacturer;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * @phpstan-type Data Carrier|Color|ComponentStock|Incoterms|InvoiceTimeDue|Manufacturer|ProductStock|Unit|VatMessage
+ * @phpstan-type Data Carrier|Color|ComponentStock|Incoterms|InvoiceTimeDue|Manufacturer|ProductStock|Unit|VatMessage|Zone
  */
 final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function __construct(private readonly EntityManagerInterface $em) {
@@ -26,7 +27,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
      * @param Data    $data
      * @param mixed[] $context
      */
-    public function persist($data, array $context = []): Carrier|Color|ComponentStock|Incoterms|InvoiceTimeDue|Manufacturer|ProductStock|Unit|VatMessage {
+    public function persist($data, array $context = []): Carrier|Color|ComponentStock|Incoterms|InvoiceTimeDue|Manufacturer|ProductStock|Unit|VatMessage|Zone {
         $this->em->persist($data);
         $this->em->flush();
         return $data;
@@ -43,18 +44,21 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
      * @param mixed[] $context
      */
     public function supports($data, array $context = []): bool {
-        return (
-            $data instanceof Carrier
-            || $data instanceof Color
-            || $data instanceof Incoterms
-            || $data instanceof InvoiceTimeDue
-            || $data instanceof Manufacturer
-            || $data instanceof Stock
-            || $data instanceof Unit
-            || $data instanceof VatMessage
-        ) && (
-            (isset($context['collection_operation_name']) && in_array($context['collection_operation_name'], ['post', 'receipt']))
-            || (isset($context['item_operation_name']) && in_array($context['item_operation_name'], ['out', 'patch']))
-        );
+        return ($data instanceof Zone && isset($context['item_operation_name']) && $context['item_operation_name'] === 'patch')
+            || (
+                (
+                    $data instanceof Carrier
+                    || $data instanceof Color
+                    || $data instanceof Incoterms
+                    || $data instanceof InvoiceTimeDue
+                    || $data instanceof Manufacturer
+                    || $data instanceof Stock
+                    || $data instanceof Unit
+                    || $data instanceof VatMessage
+                ) && (
+                    (isset($context['collection_operation_name']) && in_array($context['collection_operation_name'], ['post', 'receipt']))
+                    || (isset($context['item_operation_name']) && in_array($context['item_operation_name'], ['out', 'patch']))
+                )
+            );
     }
 }
