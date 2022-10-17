@@ -1,10 +1,5 @@
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
-import Fields from '../utils/Fields'
-import {prepareOptions} from '../stores/option/options'
 import {readonly} from 'vue'
-
-const name = {label: 'Nom', name: 'name'}
-const readonlyName = {...name, create: false, search: false, sort: false, update: false}
 
 export default [
     {
@@ -13,9 +8,9 @@ export default [
         name: 'colors',
         path: '/colors',
         props: {
-            fields: Fields.generate([{...name}, {label: 'RGB', name: 'rgb', type: 'color'}]),
+            fields: [{label: 'Nom', name: 'name'}, {label: 'RGB', name: 'rgb', type: 'color'}],
             icon: 'palette',
-            sort: readonly({...name}),
+            sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Couleurs'
         }
     },
@@ -25,14 +20,14 @@ export default [
         name: 'invoice-time-dues',
         path: '/invoice-time-dues',
         props: {
-            fields: Fields.generate([
-                {...name},
+            fields: [
+                {label: 'Nom', name: 'name'},
                 {label: 'Jours', name: 'days', sort: false, type: 'number'},
                 {label: 'Fin du mois', name: 'endOfMonth', sort: false, type: 'boolean'},
                 {label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth', sort: false, type: 'number'}
-            ]),
+            ],
             icon: 'hourglass-half',
-            sort: readonly({...name}),
+            sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Délais de paiement des factures'
         }
     },
@@ -43,8 +38,8 @@ export default [
         path: '/printers',
         props: {
             disableRemove: true,
-            fields: Fields.generate([
-                readonlyName,
+            fields: [
+                {create: false, label: 'Nom', name: 'name', search: false, sort: false, update: false},
                 {create: false, label: 'IP', name: 'ip', search: false, sort: false, update: false},
                 {
                     create: false,
@@ -58,9 +53,9 @@ export default [
                     update: false
                 },
                 {create: false, label: 'Compagnie', name: 'company.name', search: false, sort: false, update: false}
-            ]),
+            ],
             icon: 'print',
-            sort: readonly(readonlyName),
+            sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Imprimantes'
         }
     },
@@ -70,20 +65,14 @@ export default [
         name: 'units',
         path: '/units',
         props: {
-            fields: Fields.generate([
+            fields: [
                 {label: 'Code', name: 'code'},
-                {...name},
+                {label: 'Nom', name: 'name'},
                 {label: 'Base', name: 'base', type: 'number'},
-                {
-                    label: 'Parent',
-                    name: 'parent',
-                    options: prepareOptions('units'),
-                    sortName: 'parent.code',
-                    type: 'select'
-                }
-            ]),
+                {label: 'Parent', name: 'parent', options: {base: 'units'}, sortName: 'parent.code', type: 'select'}
+            ],
             icon: 'ruler-horizontal',
-            sort: readonly({...name}),
+            sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Unités'
         }
     },
@@ -93,9 +82,9 @@ export default [
         name: 'vat-messages',
         path: '/vat-messages',
         props: {
-            fields: Fields.generate([{...name}]),
+            fields: [{label: 'Nom', name: 'name'}],
             icon: 'comments-dollar',
-            sort: readonly({...name}),
+            sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Messages TVA'
         }
     }

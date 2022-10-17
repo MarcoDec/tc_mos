@@ -3,16 +3,16 @@
     import {useRoute, useRouter} from 'vue-router'
     import AppCard from '../AppCard.vue'
     import AppFormGenerator from '../form/AppFormGenerator.vue'
-    import Fields from '../../utils/Fields'
+    import useFields from '../../stores/field/fields'
     import useUser from '../../stores/security'
 
-    const fields = Fields.generate([
-        {label: 'Identifiant', name: 'username'},
-        {label: 'Mot de passe', name: 'password', type: 'password'}
-    ])
     const route = useRoute()
     const router = useRouter()
     const user = useUser()
+    const fields = useFields(route.name, [
+        {label: 'Identifiant', name: 'username'},
+        {label: 'Mot de passe', name: 'password', type: 'password'}
+    ])
     const form = `${route.name}-form`
     const {send, state} = useMachine({
         context: {error: null},

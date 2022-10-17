@@ -13,6 +13,8 @@ export default function useOptions(base, valueProp = '@id') {
                 this.$dispose()
             },
             async fetch() {
+                if (!this.fetchable)
+                    return
                 const response = await api(this.url)
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
@@ -42,16 +44,6 @@ export default function useOptions(base, valueProp = '@id') {
             label: state => value => state.options.find(option => option.value === value)?.text ?? null,
             url: state => `/api/${state.base}/options`
         },
-        state: () => ({base, id, options: [], valueProp})
+        state: () => ({base, fetchable: false, id, options: [], valueProp})
     })()
-}
-
-export function prepareOptions(id, valueProp = '@id') {
-    return {
-        generate() {
-            return useOptions(this.id, this.valueProp)
-        },
-        id,
-        valueProp
-    }
 }

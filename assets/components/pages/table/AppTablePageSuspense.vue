@@ -3,7 +3,7 @@
 
     defineProps({
         disableRemove: {type: Boolean},
-        fields: {required: true, type: Object},
+        fields: {required: true, type: Array},
         icon: {required: true, type: String},
         sort: {required: true, type: Object},
         title: {required: true, type: String}

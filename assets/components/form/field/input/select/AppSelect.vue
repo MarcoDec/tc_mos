@@ -25,6 +25,6 @@
         class="form-select form-select-sm"
         @input="input">
         <AppOptionGroups v-if="field.options.hasGroups" :groups="field.options.groups"/>
-        <AppOptions v-else :options="field.options"/>
+        <AppOptions v-else :options="field.options.options"/>
     </select>
 </template>

@@ -15,6 +15,6 @@
             Actions
         </th>
         <th>Index</th>
-        <AppTableField v-for="field in fields" :key="field.name" :field="field" :send="send" :store="store"/>
+        <AppTableField v-for="field in fields.fields" :key="field.name" :field="field" :send="send" :store="store"/>
     </tr>
 </template>

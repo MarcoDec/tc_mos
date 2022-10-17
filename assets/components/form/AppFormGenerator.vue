@@ -12,7 +12,7 @@
     const value = reactive({})
     const normalizedValue = computed(() => {
         const v = {}
-        for (const field of props.fields)
+        for (const field of props.fields.fields)
             v[field.name] = value[field.name]
         return v
     })
@@ -29,7 +29,7 @@
 <template>
     <AppForm :id="id" @submit="submit">
         <AppFormGroup
-            v-for="field in fields"
+            v-for="field in fields.fields"
             :key="field.name"
             :disabled="disabled"
             :field="field"

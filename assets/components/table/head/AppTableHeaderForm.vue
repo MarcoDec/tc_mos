@@ -46,7 +46,7 @@
             <slot/>
         </td>
         <AppTableFormField
-            v-for="field in fields"
+            v-for="field in fields.fields"
             :key="field.name"
             :field="field"
             :form="form"

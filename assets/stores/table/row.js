@@ -13,7 +13,7 @@ export default function useRow(row, table) {
             },
             initUpdate(fields) {
                 this.updated = {}
-                for (const field of fields)
+                for (const field of fields.fields)
                     set(this.updated, field.name, get(this, field.name))
             },
             async remove() {

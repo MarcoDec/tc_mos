@@ -1,9 +1,5 @@
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
-import Fields from '../utils/Fields'
-import {prepareOptions} from '../stores/option/options'
 import {readonly} from 'vue'
-
-const name = {label: 'Nom', name: 'name'}
 
 export default [
     {
@@ -12,8 +8,8 @@ export default [
         name: 'attributes',
         path: '/attributes',
         props: {
-            fields: Fields.generate([
-                name,
+            fields: [
+                {label: 'Nom', name: 'name'},
                 {label: 'Description', name: 'description'},
                 {
                     label: 'Type',
@@ -29,17 +25,11 @@ export default [
                     type: 'select',
                     update: false
                 },
-                {
-                    label: 'Unité',
-                    name: 'unit',
-                    options: prepareOptions('units'),
-                    sortName: 'unit.code',
-                    type: 'select'
-                },
+                {label: 'Unité', name: 'unit', options: {base: 'units'}, sortName: 'unit.code', type: 'select'},
                 {create: false, label: 'Familles', name: 'familiesName', search: false, sort: false, update: false}
-            ]),
+            ],
             icon: 'magnet',
-            sort: readonly(name),
+            sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Attributs'
         }
     }

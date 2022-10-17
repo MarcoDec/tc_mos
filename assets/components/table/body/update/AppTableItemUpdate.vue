@@ -42,7 +42,7 @@
             {{ normalizedIndex }}
         </td>
         <AppTableItemUpdateField
-            v-for="field in fields"
+            v-for="field in fields.fields"
             :key="field.name"
             v-model="item.updated"
             :field="field"
