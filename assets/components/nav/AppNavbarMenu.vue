@@ -69,6 +69,14 @@
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
+            <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <AppNavbarLink icon="oil-well" to="manufacturers" variant="success">
+                    Fabricants
+                </AppNavbarLink>
+            </AppNavbarItem>
         </ul>
     </div>
     <AppSuspense variant="white">

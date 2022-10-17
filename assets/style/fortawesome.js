@@ -9,8 +9,10 @@ import {
     faEye,
     faFileContract,
     faHourglassHalf,
+    faIndustry,
     faLaptop,
     faMagnet,
+    faOilWell,
     faPalette,
     faPencilAlt,
     faPlus,
@@ -37,8 +39,10 @@ library.add(faDatabase)
 library.add(faEye)
 library.add(faFileContract)
 library.add(faHourglassHalf)
+library.add(faIndustry)
 library.add(faLaptop)
 library.add(faMagnet)
+library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencilAlt)
 library.add(faPlus)
