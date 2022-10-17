@@ -2,15 +2,18 @@ import {defineStore} from 'pinia'
 import useOptions from '../option/options'
 
 export default function useField(field, fields) {
-    const id = `${fields.id}/${field.name}`
+    const id = `${fields.$id}/${field.name}`
     return defineStore(id, {
+        getters: {
+            findOption: state => value => state.options?.find(value) ?? null
+        },
         state: () => {
             const state = {
                 create: field.create ?? true,
                 hideLabelValue: field.hideLabelValue ?? true,
                 label: field.label,
                 name: field.name,
-                options: field.options ? useOptions() : null,
+                options: null,
                 search: field.search ?? true,
                 sort: field.sort ?? true,
                 type: field.type ?? 'text',

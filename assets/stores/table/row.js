@@ -26,7 +26,7 @@ export default function useRow(row, table) {
             }
         },
         getters: {
-            url: state => `${state.table.url}/${state.id}`
+            url: state => `${state.table.baseUrl}/${state.id}`
         },
         state: () => ({...initialState, table, updated: {}})
     })()

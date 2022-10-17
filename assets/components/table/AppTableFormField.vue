@@ -11,6 +11,7 @@
         label: {default: 'rechercher', type: String},
         mode: {default: null, type: String},
         modelValue: {default: () => ({}), type: Object},
+        store: {required: true, type: Object},
         violations: {default: () => [], type: Array}
     })
     const tooltip = shallowRef(null)
@@ -50,18 +51,20 @@
 <template>
     <td>
         <template v-if="hasContent">
-            <AppInputGuesser
-                :id="inputId"
-                ref="el"
-                :class="css"
-                :field="field"
-                :form="form"
-                :model-value="value"
-                :title="tip"
-                data-bs-html="true"
-                data-bs-placement="top"
-                data-bs-toogle="tooltip"
-                @update:model-value="input"/>
+            <slot :id="inputId" :css="css" :field="field" :form="form" :store="store">
+                <AppInputGuesser
+                    :id="inputId"
+                    ref="el"
+                    :class="css"
+                    :field="field"
+                    :form="form"
+                    :model-value="value"
+                    :title="tip"
+                    data-bs-html="true"
+                    data-bs-placement="top"
+                    data-bs-toogle="tooltip"
+                    @update:model-value="input"/>
+            </slot>
             <div v-if="hasViolation" class="invalid-feedback">
                 {{ violation }}
             </div>

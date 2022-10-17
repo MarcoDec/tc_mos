@@ -23,6 +23,7 @@
         v-model="store.createBody"
         :fields="fields"
         :send="machine.send"
+        :store="store"
         :submit="create"
         :violations="machine.state.value.context.violations"
         can-reverse
@@ -33,5 +34,12 @@
         reverse-icon="search"
         reverse-label="recherche"
         reverse-mode="search"
-        variant="success"/>
+        variant="success">
+        <template #form="args">
+            <slot name="btn" v-bind="args"/>
+        </template>
+        <template v-for="f in fields.fields" :key="f.name" #[f.name]="args">
+            <slot :name="f.name" v-bind="args"/>
+        </template>
+    </AppTableHeaderForm>
 </template>

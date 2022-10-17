@@ -5,6 +5,7 @@
     import {onUnmounted} from 'vue'
     import useFields from '../../../stores/field/fields'
     import {useRoute} from 'vue-router'
+    import {useSlots} from '../../../composable/table'
     import useTable from '../../../stores/table/table'
 
     const props = defineProps({
@@ -16,6 +17,7 @@
     })
     const route = useRoute()
     const machine = useTableMachine(route.name)
+    const {slots} = useSlots(props.fields)
     const storedFields = useFields(route.name, props.fields)
 
     const store = useTable(route.name)
@@ -50,6 +52,10 @@
             :disable-remove="disableRemove"
             :fields="storedFields"
             :machine="machine"
-            :store="store"/>
+            :store="store">
+            <template v-for="s in slots" :key="s.name" #[s.slot]="args">
+                <slot :name="s.slot" v-bind="args"/>
+            </template>
+        </AppTable>
     </AppOverlay>
 </template>

@@ -79,6 +79,14 @@
                 <AppNavbarLink icon="map-marked" to="zones" variant="success">
                     Zones
                 </AppNavbarLink>
+                <template v-if="user.isProductionAdmin">
+                    <AppDropdownItem disabled variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
+                        Groupes d'équipements
+                    </AppNavbarLink>
+                </template>
             </AppNavbarItem>
         </ul>
     </div>

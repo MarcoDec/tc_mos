@@ -20,6 +20,7 @@
         :field="field"
         :form="form"
         :model-value="modelValue"
+        :store="item"
         :violations="violations"
         @update:model-value="input"/>
     <AppTableItemField v-else :field="field" :item="item" :row="row"/>

@@ -14,6 +14,7 @@
         reverseLabel: {default: 'ajout', type: String},
         reverseMode: {default: 'create', type: String},
         send: {required: true, type: Function},
+        store: {required: true, type: Object},
         submit: {required: true, type: Function},
         variant: {default: 'secondary', type: String},
         violations: {default: () => [], type: Array}
@@ -40,9 +41,20 @@
             </template>
         </td>
         <td class="text-center">
-            <AppForm :id="form" class="d-inline m-0 p-0" @submit="submit">
-                <AppBtn :icon="icon" :label="label" :variant="variant" type="submit"/>
-            </AppForm>
+            <slot
+                :fields="fields"
+                :form="form"
+                :icon="icon"
+                :label="label"
+                :send="send"
+                :store="store"
+                :submit="submit"
+                :variant="variant"
+                name="form">
+                <AppForm :id="form" class="d-inline m-0 p-0" @submit="submit">
+                    <AppBtn :icon="icon" :label="label" :variant="variant" type="submit"/>
+                </AppForm>
+            </slot>
             <slot/>
         </td>
         <AppTableFormField
@@ -53,7 +65,12 @@
             :label="lowerLabel"
             :mode="mode"
             :model-value="modelValue"
+            :store="store"
             :violations="violations"
-            @update:model-value="input"/>
+            @update:model-value="input">
+            <template #default="args">
+                <slot :name="field.name" v-bind="args"/>
+            </template>
+        </AppTableFormField>
     </tr>
 </template>

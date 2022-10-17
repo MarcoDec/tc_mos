@@ -7,6 +7,7 @@ export default function useTable(id) {
     return defineStore(id, {
         actions: {
             async cancel() {
+                this.id = id
                 this.search = {}
                 await this.fetch()
             },
@@ -50,6 +51,9 @@ export default function useTable(id) {
         getters: {
             ariaSort() {
                 return field => (this.isSorter(field) ? this.order : 'none')
+            },
+            baseUrl() {
+                return `/api/${this.$id}`
             },
             fetchBody() {
                 return {...this.orderBody, ...this.flatSearch}
