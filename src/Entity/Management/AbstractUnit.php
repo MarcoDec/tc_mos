@@ -25,7 +25,7 @@ abstract class AbstractUnit extends Entity {
         Assert\Length(min: 1, max: self::UNIT_CODE_MAX_LENGTH),
         Assert\NotBlank,
         ORM\Column(length: self::UNIT_CODE_MAX_LENGTH, options: ['collation' => 'utf8_bin']),
-        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
+        Serializer\Groups(['read:currency', 'read:unit', 'read:unit:option', 'write:unit'])
     ]
     protected ?string $code = null;
 
@@ -129,7 +129,7 @@ abstract class AbstractUnit extends Entity {
     }
 
     #[Serializer\Groups(['read:unit:option'])]
-    final public function getText(): ?string {
+    public function getText(): ?string {
         return $this->getCode();
     }
 

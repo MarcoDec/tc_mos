@@ -11,7 +11,7 @@
     const color = computed(() => props.field.type === 'color')
     const id = computed(() => `${props.row}-${props.field.name}`)
     const value = computed(() => get(props.item, props.field.name))
-    const label = computed(() => props.field.options?.label(value.value) ?? value.value)
+    const label = computed(() => props.field.labelValue(value.value))
     const input = computed(() => `${id.value}-input`)
     const array = computed(() => Array.isArray(label.value))
 </script>

@@ -88,6 +88,14 @@
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
+            <AppNavbarItem v-if="user.isProjectReader" id="project" icon="project-diagram" title="Projet">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <AppNavbarLink icon="atom" to="project-operations" variant="success">
+                    Opérations
+                </AppNavbarLink>
+            </AppNavbarItem>
         </ul>
     </div>
     <AppSuspense variant="white">

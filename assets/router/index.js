@@ -4,6 +4,7 @@ import AppLogin from '../components/pages/AppLogin.vue'
 import logistics from './logistics'
 import management from './management'
 import production from './production'
+import project from './project'
 import purchase from './purchase'
 import useUser from '../stores/security'
 
@@ -12,6 +13,7 @@ const router = createRouter({
         ...logistics,
         ...management,
         ...production,
+        ...project,
         ...purchase,
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},

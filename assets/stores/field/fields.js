@@ -4,6 +4,17 @@ import useField from './field'
 export default function useFields(id, initialFields) {
     const store = defineStore(`fields/${id}`, {
         actions: {
+            dispose() {
+                for (const field of this.fields)
+                    field.dispose()
+                this.$reset()
+                this.$dispose()
+            },
+            async fetch() {
+                for (const field of this.fields)
+                    // eslint-disable-next-line no-await-in-loop
+                    await field.fetch()
+            },
             push(fields) {
                 for (const field of fields)
                     this.fields.push(useField(field, this))

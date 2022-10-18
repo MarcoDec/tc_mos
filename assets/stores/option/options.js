@@ -19,6 +19,7 @@ export default function useOptions(base, valueProp = '@id') {
                 const response = await api(this.url)
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
+                this.fetchable = false
             },
             resetItems() {
                 const options = [...this.options]

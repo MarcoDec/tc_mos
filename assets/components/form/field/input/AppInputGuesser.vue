@@ -1,6 +1,7 @@
 <script setup>
     /* eslint-disable vue/no-unused-properties */
     import AppInput from './AppInput.vue'
+    import AppInputMeasure from './AppInputMeasure.vue'
     import AppSelect from './select/AppSelect.vue'
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
@@ -11,12 +12,14 @@
         field: {required: true, type: Object},
         form: {required: true, type: String},
         id: {required: true, type: String},
-        modelValue: {default: null, type: [Boolean, Number, String]}
+        modelValue: {default: null, type: [Boolean, Number, String, Object]}
     })
     const type = computed(() => {
         switch (props.field.type) {
             case 'boolean':
                 return AppSwitch
+            case 'measure':
+                return AppInputMeasure
             case 'select':
                 return AppSelect
             default:

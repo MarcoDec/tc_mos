@@ -2,6 +2,7 @@
 
 namespace App\Entity\Management;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -20,6 +21,21 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les devises',
                     'summary' => 'Récupère les devises',
                 ]
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:unit:option'],
+                    'openapi_definition_name' => 'Currency-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les devises pour les select',
+                    'summary' => 'Récupère les devises pour les select',
+                ],
+                'order' => ['code' => 'asc'],
+                'path' => '/currencies/options'
             ]
         ],
         itemOperations: [
@@ -56,7 +72,7 @@ class Currency extends AbstractUnit {
     #[
         ApiProperty(description: 'Code ', required: true, example: 'EUR'),
         ORM\Column(type: 'char', length: 3),
-        Serializer\Groups(['read:unit', 'write:unit'])
+        Serializer\Groups(['read:currency', 'read:unit', 'read:unit:option', 'write:unit'])
     ]
     protected ?string $code = null;
 
@@ -90,6 +106,11 @@ class Currency extends AbstractUnit {
     ]
     final public function getSymbol(): ?string {
         return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;
+    }
+
+    #[Serializer\Groups(['read:unit:option'])]
+    final public function getText(): ?string {
+        return $this->getSymbol();
     }
 
     final public function isActive(): bool {

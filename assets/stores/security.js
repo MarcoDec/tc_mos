@@ -16,6 +16,8 @@ function defineUserStore() {
         const isManagementWriter = computed(() => isManagementAdmin.value || roles.value.includes('ROLE_MANAGEMENT_WRITER'))
         const isProductionAdmin = computed(() => roles.value.includes('ROLE_PRODUCTION_ADMIN'))
         const isProductionWriter = computed(() => isProductionAdmin.value || roles.value.includes('ROLE_PRODUCTION_WRITER'))
+        const isProjectAdmin = computed(() => roles.value.includes('ROLE_PROJECT_ADMIN'))
+        const isProjectWriter = computed(() => isProjectAdmin.value || roles.value.includes('ROLE_PROJECT_WRITER'))
         const isPurchaseAdmin = computed(() => roles.value.includes('ROLE_PURCHASE_ADMIN'))
         const isPurchaseWriter = computed(() => isPurchaseAdmin.value || roles.value.includes('ROLE_PURCHASE_WRITER'))
 
@@ -65,6 +67,9 @@ function defineUserStore() {
             isProductionAdmin,
             isProductionReader: computed(() => isProductionWriter.value || roles.value.includes('ROLE_PRODUCTION_READER')),
             isProductionWriter,
+            isProjectAdmin,
+            isProjectReader: computed(() => isProjectWriter.value || roles.value.includes('ROLE_PROJECT_READER')),
+            isProjectWriter,
             isPurchaseAdmin,
             isPurchaseReader: computed(() => isPurchaseWriter.value || roles.value.includes('ROLE_PURCHASE_READER')),
             isPurchaseWriter,

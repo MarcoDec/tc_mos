@@ -18,24 +18,18 @@
     const route = useRoute()
     const machine = useTableMachine(route.name)
     const {slots} = useSlots(props.fields)
-    const storedFields = useFields(route.name, props.fields)
 
     const store = useTable(route.name)
     store.sorted = props.sort.name
     store.sortName = props.sort.sortName ?? props.sort.name
     await store.fetch()
 
-    const options = []
-    for (const field of storedFields.fields)
-        if (field.options)
-            options.push(field.options.fetch())
-    await Promise.all(options)
+    const storedFields = useFields(route.name, props.fields)
+    await storedFields.fetch()
 
     onUnmounted(() => {
         store.dispose()
-        for (const field of storedFields.fields)
-            if (field.options)
-                field.options.dispose()
+        storedFields.dispose()
     })
 </script>
 

@@ -1,4 +1,5 @@
 import {
+    faAtom,
     faBell,
     faBoxes,
     faCaretDown,
@@ -18,6 +19,7 @@ import {
     faPencilAlt,
     faPlus,
     faPrint,
+    faProjectDiagram,
     faRulerHorizontal,
     faSearch,
     faShoppingBag,
@@ -31,6 +33,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
+library.add(faAtom)
 library.add(faBell)
 library.add(faBoxes)
 library.add(faCaretDown)
@@ -50,6 +53,7 @@ library.add(faPalette)
 library.add(faPencilAlt)
 library.add(faPlus)
 library.add(faPrint)
+library.add(faProjectDiagram)
 library.add(faRulerHorizontal)
 library.add(faSearch)
 library.add(faShoppingBag)

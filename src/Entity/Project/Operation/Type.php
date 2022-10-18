@@ -2,6 +2,7 @@
 
 namespace App\Entity\Project\Operation;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -23,6 +24,22 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les types de d\'opération',
                     'summary' => 'Récupère les types de d\'opération',
                 ]
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:type:option'],
+                    'openapi_definition_name' => 'OperationType-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les types pour les select',
+                    'summary' => 'Récupère les types pour les select',
+                ],
+                'order' => ['name' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/operation-types/options'
             ],
             'post' => [
                 'openapi_context' => [
@@ -112,6 +129,11 @@ class Type extends Entity {
 
     final public function getName(): ?string {
         return $this->name;
+    }
+
+    #[Serializer\Groups(['read:type:option'])]
+    final public function getText(): ?string {
+        return $this->getName();
     }
 
     final public function isAssembly(): bool {
