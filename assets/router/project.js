@@ -22,5 +22,29 @@ export default [
             sort: readonly({label: 'Code', name: 'code'}),
             title: 'Opérations'
         }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Types d\'opérations — T-Concept GPAO'},
+        name: 'operation-types',
+        path: '/operation-types',
+        props: {
+            brands: true,
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {label: 'Assemblage', name: 'assembly', sort: false, type: 'boolean'},
+                {
+                    label: 'Familles',
+                    name: 'families',
+                    options: {base: 'component-families'},
+                    search: false,
+                    sort: false,
+                    type: 'multiselect'
+                }
+            ],
+            icon: 'elementor',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Types d\'opérations'
+        }
     }
 ]

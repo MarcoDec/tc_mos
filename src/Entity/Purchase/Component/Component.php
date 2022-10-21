@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Collection;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -24,9 +25,8 @@ use App\Repository\Purchase\Component\ComponentRepository;
 use App\Validator as AppAssert;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -169,9 +169,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
 
-    /** @var Collection<int, ComponentAttribute> */
+    /** @var DoctrineCollection<int, ComponentAttribute> */
     #[ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentAttribute::class, cascade: ['remove'])]
-    private Collection $attributes;
+    private DoctrineCollection $attributes;
 
     #[
         ApiProperty(description: 'Poids cuivre', openapiContext: ['$ref' => '#/components/schemas/Measure-linear-density']),
@@ -310,9 +310,9 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private int $ppmRate = 10;
 
-    /** @var Collection<int, ComponentReference> */
+    /** @var DoctrineCollection<int, ComponentReference> */
     #[ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items')]
-    private Collection $references;
+    private DoctrineCollection $references;
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
@@ -369,9 +369,9 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     }
 
     /**
-     * @return Collection<int, ComponentAttribute>
+     * @return DoctrineCollection<int, ComponentAttribute>
      */
-    final public function getAttributes(): Collection {
+    final public function getAttributes(): DoctrineCollection {
         return $this->attributes;
     }
 
@@ -380,20 +380,19 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     }
 
     /**
-     * @return LaravelCollection<int, Check<self, Family|self>>
+     * @return Collection<int, Check<self, Family|self>>
      */
-    final public function getChecks(): LaravelCollection {
-        /** @var LaravelCollection<int, Check<self, Family|self>> $checks */
-        $checks = collect($this->references->getValues())
+    final public function getChecks(): Collection {
+        $checks = Collection::collect($this->references->getValues())
             ->map(static function (ComponentReference $reference): Check {
                 /** @var Check<self, self> $check */
                 $check = new Check();
                 return $check->setReference($reference);
-            })
-            ->values();
+            });
         if (!empty($this->family)) {
             $checks = $checks->merge($this->family->getChecks());
         }
+        /** @var Collection<int, Check<self, Family|self>> $checks */
         return $checks;
     }
 
@@ -474,9 +473,9 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     }
 
     /**
-     * @return Collection<int, ComponentReference>
+     * @return DoctrineCollection<int, ComponentReference>
      */
-    final public function getReferences(): Collection {
+    final public function getReferences(): DoctrineCollection {
         return $this->references;
     }
 

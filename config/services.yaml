@@ -6,12 +6,13 @@ services:
   App\:
     exclude:
       - ../src/Api/Resource/
+      - ../src/Collection.php
       - ../src/Controller/
       - ../src/DependencyInjection/
       - ../src/Entity/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
-      - ../src/Paginator/
+      - ../src/Paginator.php
       - ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
@@ -24,6 +25,10 @@ services:
     arguments:
       $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
     tags: [ controller.service_arguments ]
+
+  App\DataProvider\Project\Operation\TypeDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
 
   App\DataProvider\Purchase\Component\AttributeDataProvider:
     arguments:

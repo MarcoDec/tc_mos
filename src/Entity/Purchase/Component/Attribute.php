@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Collection;
 use App\Doctrine\DBAL\Types\Purchase\Component\AttributeType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -15,9 +16,8 @@ use App\Filter\EnumFilter;
 use App\Filter\RelationFilter;
 use App\Repository\Purchase\Component\AttributeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -81,9 +81,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(repositoryClass: AttributeRepository::class)
 ]
 class Attribute extends Entity {
-    /** @var Collection<int, ComponentAttribute> */
+    /** @var DoctrineCollection<int, ComponentAttribute> */
     #[ORM\OneToMany(mappedBy: 'attribute', targetEntity: ComponentAttribute::class, cascade: ['remove'])]
-    private Collection $attributes;
+    private DoctrineCollection $attributes;
 
     #[
         ApiProperty(description: 'Nom', required: false, example: 'Longueur de l\'embout'),
@@ -93,13 +93,13 @@ class Attribute extends Entity {
     ]
     private ?string $description = null;
 
-    /** @var Collection<int, Family> */
+    /** @var DoctrineCollection<int, Family> */
     #[
         ApiProperty(description: 'Familles', readableLink: false, required: true, example: ['/api/component-families/1', '/api/component-families/2']),
         ORM\ManyToMany(targetEntity: Family::class, inversedBy: 'attributes'),
         Serializer\Groups(['read:attribute'])
     ]
-    private Collection $families;
+    private DoctrineCollection $families;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Longueur'),
@@ -146,9 +146,9 @@ class Attribute extends Entity {
     }
 
     /**
-     * @return Collection<int, ComponentAttribute>
+     * @return DoctrineCollection<int, ComponentAttribute>
      */
-    final public function getAttributes(): Collection {
+    final public function getAttributes(): DoctrineCollection {
         return $this->attributes;
     }
 
@@ -157,18 +157,20 @@ class Attribute extends Entity {
     }
 
     /**
-     * @return Collection<int, Family>
+     * @return DoctrineCollection<int, Family>
      */
-    final public function getFamilies(): Collection {
+    final public function getFamilies(): DoctrineCollection {
         return $this->families;
     }
 
     /**
-     * @return LaravelCollection<int, null|string>
+     * @return Collection<int, null|string>
      */
     #[Serializer\Groups(['read:attribute'])]
-    final public function getFamiliesName(): LaravelCollection {
-        return collect($this->families)->map->getFullName()->sort()->values();
+    final public function getFamiliesName(): Collection {
+        return Collection::collect($this->families->getValues())
+            ->map(static fn (Family $family): ?string => $family->getFullName())
+            ->sort();
     }
 
     final public function getName(): ?string {

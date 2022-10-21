@@ -2,6 +2,7 @@
 
 namespace App\Repository\Logistics\Stock;
 
+use App\Collection;
 use App\Entity\Logistics\Stock\ComponentStock;
 use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Logistics\Stock\Stock;
@@ -39,7 +40,11 @@ class StockRepository extends ServiceEntityRepository {
      */
     final public function findGrouped(Warehouse $warehouse, int $limit, int $offset, ?string $location = null): array {
         ['params' => $params, 'sql' => $sql] = $this->createGroupedQuery($warehouse, $location);
-        return collect($this->_em->getConnection()->executeQuery("$sql LIMIT $limit OFFSET $offset", $params)->fetchAllAssociative())
+        return Collection::collect(
+            $this->_em->getConnection()
+                ->executeQuery("$sql LIMIT $limit OFFSET $offset", $params)
+                ->fetchAllAssociative()
+        )
             ->map(static fn (array $stock): array => [
                 'batchNumber' => $stock['batch_number'],
                 'item' => [
@@ -57,7 +62,6 @@ class StockRepository extends ServiceEntityRepository {
                 ],
                 'warehouse_id' => $stock['warehouse_id']
             ])
-            ->values()
             ->all();
     }
 

@@ -7,7 +7,7 @@ use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Attribute;
-use App\Paginator\Purchase\Component\AttributePaginator;
+use App\Paginator;
 use App\Repository\Purchase\Component\AttributeRepository;
 
 /**
@@ -25,8 +25,10 @@ final class AttributeDataProvider implements ContextAwareCollectionDataProviderI
 
     /**
      * @param Context $context
+     *
+     * @return Paginator<Attribute>
      */
-    public function getCollection(string $resourceClass, ?string $operationName = null, array $context = []): AttributePaginator {
+    public function getCollection(string $resourceClass, ?string $operationName = null, array $context = []): Paginator {
         $filters = [];
         if (isset($context['filters'])) {
             if (isset($context['filters']['description'])) {

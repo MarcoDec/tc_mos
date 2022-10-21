@@ -2,6 +2,7 @@
 
 namespace App\Repository\Purchase\Order;
 
+use App\Collection;
 use App\Doctrine\DBAL\Connection;
 use App\Entity\Purchase\Order\ComponentItem;
 use App\Entity\Purchase\Order\Item;
@@ -10,7 +11,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use Illuminate\Support\Collection;
 
 /**
  * @template I of Item
@@ -92,10 +92,8 @@ class ItemRepository extends ServiceEntityRepository {
      * @return (ComponentItem|ProductItem)[]
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array {
-        /** @var Collection<int, ComponentItem|ProductItem> $items */
-        $items = collect($this->_em->getRepository(ComponentItem::class)->findBy($criteria, $orderBy, $limit, $offset));
-        return $items->merge($this->_em->getRepository(ProductItem::class)->findBy($criteria, $orderBy, $limit, $offset))
-            ->values()
+        return Collection::collect($this->_em->getRepository(ComponentItem::class)->findBy($criteria, $orderBy, $limit, $offset))
+            ->merge($this->_em->getRepository(ProductItem::class)->findBy($criteria, $orderBy, $limit, $offset))
             ->all();
     }
 

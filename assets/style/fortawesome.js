@@ -31,6 +31,7 @@ import {
     faUserCircle,
     faWrench
 } from '@fortawesome/free-solid-svg-icons'
+import {faElementor} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
 library.add(faAtom)
@@ -41,6 +42,7 @@ library.add(faCaretUp)
 library.add(faCheck)
 library.add(faCommentsDollar)
 library.add(faDatabase)
+library.add(faElementor)
 library.add(faEye)
 library.add(faFileContract)
 library.add(faHourglassHalf)

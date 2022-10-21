@@ -2,6 +2,7 @@
 
 namespace App\Doctrine\DBAL\Types;
 
+use App\Collection;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
@@ -14,7 +15,7 @@ abstract class EnumType extends Type {
     public const TYPES = [];
 
     protected static function getStrTypes(): string {
-        return collect(static::TYPES)
+        return Collection::collect(static::TYPES)
             ->map(static fn (string $type): string => "'$type'")
             ->implode(', ');
     }

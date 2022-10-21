@@ -1,24 +1,23 @@
 <?php
 
-namespace App\Paginator\Purchase\Component;
+namespace App;
 
 use ApiPlatform\Core\DataProvider\PaginatorInterface;
-use App\Entity\Purchase\Component\Attribute;
 use ArrayIterator;
 use IteratorAggregate;
 use Traversable;
 
 /**
- * @implements IteratorAggregate<int, Attribute>
+ * @template T of \App\Entity\Entity
+ *
+ * @implements IteratorAggregate<int, T>
  *
  * @phpstan-ignore-next-line
  */
-final class AttributePaginator implements IteratorAggregate, PaginatorInterface {
-    /**
-     * @param Attribute[] $attributes
-     */
+final class Paginator implements IteratorAggregate, PaginatorInterface {
+    /** @param T[] $items */
     public function __construct(
-        private readonly array $attributes,
+        private readonly array $items,
         private readonly int $itemPerPage,
         private readonly int $page,
         private readonly int $total
@@ -26,7 +25,7 @@ final class AttributePaginator implements IteratorAggregate, PaginatorInterface 
     }
 
     public function count(): int {
-        return count($this->attributes);
+        return count($this->items);
     }
 
     public function getCurrentPage(): float {
@@ -38,7 +37,7 @@ final class AttributePaginator implements IteratorAggregate, PaginatorInterface 
     }
 
     public function getIterator(): Traversable {
-        return new ArrayIterator($this->attributes);
+        return new ArrayIterator($this->items);
     }
 
     public function getLastPage(): float {

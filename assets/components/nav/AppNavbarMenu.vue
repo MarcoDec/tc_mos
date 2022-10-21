@@ -95,6 +95,14 @@
                 <AppNavbarLink icon="atom" to="project-operations" variant="success">
                     Opérations
                 </AppNavbarLink>
+                <template v-if="user.isProjectAdmin">
+                    <AppDropdownItem disabled variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink brands icon="elementor" to="operation-types" variant="warning">
+                        Types d'opérations
+                    </AppNavbarLink>
+                </template>
             </AppNavbarItem>
         </ul>
     </div>

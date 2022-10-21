@@ -1,10 +1,10 @@
 <script setup>
     /* eslint-disable vue/no-unused-properties */
+    import {computed, defineAsyncComponent} from 'vue'
     import AppInput from './AppInput.vue'
     import AppInputMeasure from './AppInputMeasure.vue'
     import AppSelect from './select/AppSelect.vue'
     import AppSwitch from './AppSwitch.vue'
-    import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
@@ -20,6 +20,8 @@
                 return AppSwitch
             case 'measure':
                 return AppInputMeasure
+            case 'multiselect':
+                return defineAsyncComponent(() => import('./select/AppMultiselect.vue'))
             case 'select':
                 return AppSelect
             default:

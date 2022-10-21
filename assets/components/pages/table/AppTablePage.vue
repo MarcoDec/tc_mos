@@ -9,6 +9,7 @@
     import useTable from '../../../stores/table/table'
 
     const props = defineProps({
+        brands: {type: Boolean},
         disableRemove: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
@@ -37,7 +38,7 @@
     <AppOverlay :spinner="tableLoading.some(machine.state.value.matches)">
         <div class="row">
             <h1 class="col">
-                <Fa :icon="icon"/>
+                <Fa :brands="brands" :icon="icon"/>
                 <span class="ms-2">{{ title }}</span>
             </h1>
         </div>

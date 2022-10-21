@@ -5,8 +5,8 @@ namespace App\DataProvider\Hr\Employee;
 use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Api\Resource\Hr\Employee\EmployeeState;
+use App\Collection;
 use App\Doctrine\DBAL\Types\Embeddable\EmployeeEngineStateType;
-use Illuminate\Support\Collection;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class EmployeeStateDataProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface {
@@ -17,13 +17,12 @@ final class EmployeeStateDataProvider implements CollectionDataProviderInterface
      * @return Collection<int, EmployeeState>
      */
     public function getCollection(string $resourceClass, ?string $operationName = null): Collection {
-        return collect(EmployeeEngineStateType::TYPES)
+        return Collection::collect(EmployeeEngineStateType::TYPES)
             ->map(fn (string $value): EmployeeState => new EmployeeState(
                 text: $this->translator->trans($value),
                 value: $value
             ))
-            ->values()
-            ->sortBy->getText();
+            ->sortBy(static fn (EmployeeState $state): string => $state->getText());
     }
 
     /**

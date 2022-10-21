@@ -67,7 +67,7 @@ abstract class Family extends Entity implements FileEntity {
         if (empty($parent) && empty($this->name)) {
             return null;
         }
-        return "$parent\\".($this->name ?? 'null');
+        return "$parent/".($this->name ?? 'null');
     }
 
     final public function getName(): ?string {

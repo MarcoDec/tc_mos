@@ -2,6 +2,10 @@ import api from '../../api'
 import {defineStore} from 'pinia'
 import useOption from './option'
 
+function sort(a, b) {
+    return a.text.localeCompare(b.text)
+}
+
 export default function useOptions(base, valueProp = '@id') {
     const id = `options/${base}`
     return defineStore(id, {
@@ -19,6 +23,7 @@ export default function useOptions(base, valueProp = '@id') {
                 const response = await api(this.url)
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
+                this.options.sort(sort)
                 this.fetchable = false
             },
             resetItems() {

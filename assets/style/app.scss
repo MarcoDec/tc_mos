@@ -15,6 +15,10 @@
 
 $dropdown-success: #57ec57 !default;
 
+:root {
+  --ms-font-size: $input-font-size-sm;
+}
+
 @each $color, $value in $grays {
   .bg-gray-#{$color} {
     background-color: $value;

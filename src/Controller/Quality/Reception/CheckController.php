@@ -18,7 +18,7 @@ final class CheckController {
     }
 
     /**
-     * @return array<int, Check<Component|Product, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
+     * @return array<int, Check<Component, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>|Check<Product, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
     public function __invoke(int $id): array {
         $item = $this->em->getRepository(Item::class)->findOneByCheck($id);
@@ -30,7 +30,6 @@ final class CheckController {
             $this->em->persist($check);
         }
         $this->em->flush();
-        /** @phpstan-ignore-next-line */
         return $checks->all();
     }
 }

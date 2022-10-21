@@ -29,6 +29,12 @@ export default function useField(field, parent) {
                     const code = state.measure.code.labelValue(value.code)
                     return code ? `${value.value} ${code}` : value.value
                 }
+                if (state.type === 'multiselect') {
+                    const labels = []
+                    for (const el of value)
+                        labels.push(state.options.label(el))
+                    return labels
+                }
                 if (state.options)
                     return state.options.label(value)
                 return value

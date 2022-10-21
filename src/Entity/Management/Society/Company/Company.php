@@ -5,6 +5,7 @@ namespace App\Entity\Management\Society\Company;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Collection;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Currency;
@@ -18,9 +19,8 @@ use App\Entity\Selling\Customer\Customer;
 use App\Entity\Selling\Customer\Product as CustomerProduct;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -113,9 +113,9 @@ class Company extends Entity {
     ]
     private ?Currency $currency;
 
-    /** @var Collection<int, Customer> */
+    /** @var DoctrineCollection<int, Customer> */
     #[ORM\ManyToMany(targetEntity: Customer::class, mappedBy: 'administeredBy')]
-    private Collection $customers;
+    private DoctrineCollection $customers;
 
     #[
         ApiProperty(description: 'Temps de livraison', example: 7),
@@ -195,13 +195,13 @@ class Company extends Entity {
     ]
     private int $numberOfTeamPerDay = 0;
 
-    /** @var Collection<int, CustomerProduct> */
+    /** @var DoctrineCollection<int, CustomerProduct> */
     #[ORM\ManyToMany(targetEntity: CustomerProduct::class, mappedBy: 'administeredBy')]
-    private Collection $products;
+    private DoctrineCollection $products;
 
-    /** @var Collection<int, CompanyReference> */
+    /** @var DoctrineCollection<int, CompanyReference> */
     #[ORM\ManyToMany(targetEntity: CompanyReference::class, mappedBy: 'items')]
-    private Collection $references;
+    private DoctrineCollection $references;
 
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/2'),
@@ -210,9 +210,9 @@ class Company extends Entity {
     ]
     private ?Society $society = null;
 
-    /** @var Collection<int, Supplier> */
+    /** @var DoctrineCollection<int, Supplier> */
     #[ORM\ManyToMany(targetEntity: Supplier::class, mappedBy: 'administeredBy')]
-    private Collection $suppliers;
+    private DoctrineCollection $suppliers;
 
     #[
         ApiProperty(description: 'Calendrier de travail', example: '2 jours'),
@@ -261,16 +261,15 @@ class Company extends Entity {
     }
 
     /**
-     * @return LaravelCollection<int, Check<Component|Product, self>>
+     * @return Collection<int, Check<Component|Product, self>>
      */
-    final public function getChecks(): LaravelCollection {
-        return collect($this->references->getValues())
+    final public function getChecks(): Collection {
+        return Collection::collect($this->references->getValues())
             ->map(static function (CompanyReference $reference): Check {
                 /** @var Check<Component|Product, self> $check */
                 $check = new Check();
                 return $check->setReference($reference);
-            })
-            ->values();
+            });
     }
 
     final public function getCurrency(): ?Currency {
@@ -278,9 +277,9 @@ class Company extends Entity {
     }
 
     /**
-     * @return Collection<int, Customer>
+     * @return DoctrineCollection<int, Customer>
      */
-    final public function getCustomers(): Collection {
+    final public function getCustomers(): DoctrineCollection {
         return $this->customers;
     }
 
@@ -321,16 +320,16 @@ class Company extends Entity {
     }
 
     /**
-     * @return Collection<int, CustomerProduct>
+     * @return DoctrineCollection<int, CustomerProduct>
      */
-    final public function getProducts(): Collection {
+    final public function getProducts(): DoctrineCollection {
         return $this->products;
     }
 
     /**
-     * @return Collection<int, CompanyReference>
+     * @return DoctrineCollection<int, CompanyReference>
      */
-    final public function getReferences(): Collection {
+    final public function getReferences(): DoctrineCollection {
         return $this->references;
     }
 
@@ -339,9 +338,9 @@ class Company extends Entity {
     }
 
     /**
-     * @return Collection<int, Supplier>
+     * @return DoctrineCollection<int, Supplier>
      */
-    final public function getSuppliers(): Collection {
+    final public function getSuppliers(): DoctrineCollection {
         return $this->suppliers;
     }
 
