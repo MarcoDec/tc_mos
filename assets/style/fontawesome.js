@@ -7,6 +7,7 @@ import {
     faCertificate,
     faCheck,
     faCheckCircle,
+    faClock,
     faCommentsDollar,
     faDatabase,
     faEye,
@@ -46,6 +47,7 @@ library.add(faCaretUp)
 library.add(faCertificate)
 library.add(faCheck)
 library.add(faCheckCircle)
+library.add(faClock)
 library.add(faCommentsDollar)
 library.add(faDatabase)
 library.add(faElementor)

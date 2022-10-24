@@ -137,6 +137,9 @@
                     <AppNavbarLink brands icon="elementor" to="event-types" variant="warning">
                         Catégories d'événements des employés
                     </AppNavbarLink>
+                    <AppNavbarLink icon="clock" to="time-slots" variant="warning">
+                        Plages horaires
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
         </ul>

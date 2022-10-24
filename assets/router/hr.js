@@ -45,5 +45,23 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Formateurs extérieurs'
         }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Plages horaires — T-Concept GPAO'},
+        name: 'time-slots',
+        path: '/time-slots',
+        props: {
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {label: 'Début', name: 'start', type: 'time'},
+                {label: 'Début pause', name: 'startBreak', type: 'time'},
+                {label: 'Fin pause', name: 'endBreak', type: 'time'},
+                {label: 'Fin', name: 'end', type: 'time'}
+            ],
+            icon: 'clock',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Plages horaires'
+        }
     }
 ]

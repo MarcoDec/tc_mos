@@ -6,6 +6,7 @@ use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Entity;
 use App\Entity\Hr\Event\Type as EventType;
 use App\Entity\Hr\OutTrainer;
+use App\Entity\Hr\TimeSlot;
 use App\Entity\Logistics\Carrier;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Logistics\Stock\Stock;
@@ -63,6 +64,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
                     || $data instanceof QualityType
                     || $data instanceof RejectType
                     || $data instanceof Stock
+                    || $data instanceof TimeSlot
                     || $data instanceof Unit
                     || $data instanceof VatMessage
                 ) && (
