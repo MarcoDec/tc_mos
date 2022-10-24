@@ -123,6 +123,14 @@
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
+            <AppNavbarItem v-if="user.isHrReader" id="hr" icon="male" title="RH">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <AppNavbarLink icon="user-graduate" to="out-trainers" variant="success">
+                    Formateurs extérieurs
+                </AppNavbarLink>
+            </AppNavbarItem>
         </ul>
     </div>
     <AppSuspense variant="white">

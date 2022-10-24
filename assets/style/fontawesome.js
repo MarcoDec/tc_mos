@@ -15,6 +15,7 @@ import {
     faIndustry,
     faLaptop,
     faMagnet,
+    faMale,
     faMapMarked,
     faOilWell,
     faPalette,
@@ -31,6 +32,7 @@ import {
     faTimes,
     faTrash,
     faUserCircle,
+    faUserGraduate,
     faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
@@ -53,6 +55,7 @@ library.add(faHourglassHalf)
 library.add(faIndustry)
 library.add(faLaptop)
 library.add(faMagnet)
+library.add(faMale)
 library.add(faMapMarked)
 library.add(faOilWell)
 library.add(faPalette)
@@ -69,4 +72,5 @@ library.add(faSitemap)
 library.add(faTimes)
 library.add(faTrash)
 library.add(faUserCircle)
+library.add(faUserGraduate)
 library.add(faWrench)

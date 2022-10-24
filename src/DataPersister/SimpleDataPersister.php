@@ -4,6 +4,7 @@ namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Entity;
+use App\Entity\Hr\OutTrainer;
 use App\Entity\Logistics\Carrier;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Logistics\Stock\Stock;
@@ -56,6 +57,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
                     || $data instanceof Manufacturer
                     || $data instanceof Operation
                     || $data instanceof OperationType
+                    || $data instanceof OutTrainer
                     || $data instanceof QualityType
                     || $data instanceof RejectType
                     || $data instanceof Stock

@@ -10,8 +10,10 @@ function defineUserStore() {
         const name = ref(null)
         const roles = ref([])
 
+        const isHrAdmin = computed(() => roles.value.includes('ROLE_HR_ADMIN'))
+        const isHrWriter = computed(() => isHrAdmin.value || roles.value.includes('ROLE_HR_WRITER'))
         const isLogisticsAdmin = computed(() => roles.value.includes('ROLE_LOGISTICS_ADMIN'))
-        const isLogisticsWriter = computed(() => isManagementAdmin.value || roles.value.includes('ROLE_LOGISTICS_WRITER'))
+        const isLogisticsWriter = computed(() => isLogisticsAdmin.value || roles.value.includes('ROLE_LOGISTICS_WRITER'))
         const isManagementAdmin = computed(() => roles.value.includes('ROLE_MANAGEMENT_ADMIN'))
         const isManagementWriter = computed(() => isManagementAdmin.value || roles.value.includes('ROLE_MANAGEMENT_WRITER'))
         const isProductionAdmin = computed(() => roles.value.includes('ROLE_PRODUCTION_ADMIN'))
@@ -58,6 +60,9 @@ function defineUserStore() {
                 clear()
             },
             id,
+            isHrAdmin,
+            isHrReader: computed(() => isHrWriter.value || roles.value.includes('ROLE_HR_READER')),
+            isHrWriter,
             isItAdmin: computed(() => roles.value.includes('ROLE_IT_ADMIN')),
             isLogged: computed(() => id.value > 0),
             isLogisticsAdmin,
