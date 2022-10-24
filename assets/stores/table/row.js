@@ -8,7 +8,6 @@ export default function useRow(row, table) {
         actions: {
             dispose() {
                 this.table.removeRow(this)
-                this.$reset()
                 this.$dispose()
             },
             initUpdate(fields) {

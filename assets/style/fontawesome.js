@@ -4,7 +4,9 @@ import {
     faBoxes,
     faCaretDown,
     faCaretUp,
+    faCertificate,
     faCheck,
+    faCheckCircle,
     faCommentsDollar,
     faDatabase,
     faEye,
@@ -39,7 +41,9 @@ library.add(faBell)
 library.add(faBoxes)
 library.add(faCaretDown)
 library.add(faCaretUp)
+library.add(faCertificate)
 library.add(faCheck)
+library.add(faCheckCircle)
 library.add(faCommentsDollar)
 library.add(faDatabase)
 library.add(faElementor)

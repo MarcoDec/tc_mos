@@ -9,7 +9,6 @@ export default function useCategory(category, parent) {
                 this.parent.removeCategory(this)
                 for (const notification of this.notifications)
                     notification.dispose()
-                this.$reset()
                 this.$dispose()
             },
             push(notification) {

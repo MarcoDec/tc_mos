@@ -48,6 +48,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les composants'
                 ]
             ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:component:option'],
+                    'openapi_definition_name' => 'Component-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les composants pour les select',
+                    'summary' => 'Récupère les composants pour les select',
+                ],
+                'order' => ['id' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/components/options'
+            ],
             'post' => [
                 'denormalization_context' => [
                     'groups' => ['create:component', 'write:measure'],
@@ -481,6 +498,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function getState(): string {
         return $this->embState->getState();
+    }
+
+    #[Serializer\Groups(['read:component:option'])]
+    final public function getText(): ?string {
+        return $this->getCode();
     }
 
     final public function getUnit(): ?Unit {

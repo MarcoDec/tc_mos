@@ -1,14 +1,17 @@
 <script setup>
     import Multiselect from '@vueform/multiselect'
+    import {readonly} from 'vue'
 
     defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
         id: {required: true, type: String},
-        modelValue: {default: null, type: Array}
+        mode: {default: 'tags', type: String},
+        modelValue: {default: null, type: [Array, String]}
     })
     const emit = defineEmits(['update:modelValue'])
+    const css = readonly({search: 'form-control form-control-sm'})
 
     function input(value) {
         emit('update:modelValue', value)
@@ -18,14 +21,16 @@
 <template>
     <Multiselect
         :id="id"
+        :classes="css"
+        :data-mode="mode"
         :disabled="disabled"
         :form="form"
+        :mode="mode"
         :model-value="modelValue"
-        :options="field.options.options"
+        :options="field.optionsList"
         :value-prop="field.options.valueProp"
         class="text-dark"
         label="text"
-        mode="tags"
         searchable
         @update:model-value="input"/>
 </template>

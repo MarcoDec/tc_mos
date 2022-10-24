@@ -15,7 +15,7 @@
 
 $dropdown-success: #57ec57 !default;
 
-:root {
+[data-mode=tags] {
   --ms-font-size: $input-font-size-sm;
 }
 

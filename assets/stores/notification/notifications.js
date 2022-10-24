@@ -7,7 +7,6 @@ export default defineStore('notifications', {
         dispose() {
             for (const category of this.categories)
                 category.dispose()
-            this.$reset()
             this.$dispose()
         },
         async fetch() {

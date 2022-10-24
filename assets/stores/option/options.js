@@ -13,8 +13,7 @@ export default function useOptions(base, valueProp = '@id') {
             dispose() {
                 for (const option of this.options)
                     if (typeof option.dispose === 'function')
-                        option.dispose()
-                this.$reset()
+                        option.$dispose()
                 this.$dispose()
             },
             async fetch() {
@@ -30,10 +29,13 @@ export default function useOptions(base, valueProp = '@id') {
                 const options = [...this.options]
                 this.options = []
                 for (const option of options)
-                    option.dispose()
+                    option.$dispose()
             }
         },
         getters: {
+            big(state) {
+                return !this.hasGroups && state.options.length > 30
+            },
             find: state => value => state.options.find(option => option.value === value),
             groups: state => {
                 if (!state.options.every(option => Boolean(option.group)))

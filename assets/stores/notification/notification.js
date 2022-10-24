@@ -13,7 +13,6 @@ export default function useNotification(notification, category) {
         actions: {
             dispose() {
                 this.category.removeNotification(this)
-                this.$reset()
                 this.$dispose()
             },
             async reading() {
@@ -25,7 +24,7 @@ export default function useNotification(notification, category) {
             },
             reset(state) {
                 initialState = convertState({...state, category: this.category})
-                this.$state = initialState
+                this.$reset()
             }
         },
         getters: {

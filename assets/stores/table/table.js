@@ -19,7 +19,6 @@ export default function useTable(id) {
             dispose() {
                 for (const row of this.rows)
                     row.dispose()
-                this.$reset()
                 this.$dispose()
             },
             async fetch() {

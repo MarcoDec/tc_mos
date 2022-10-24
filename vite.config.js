@@ -10,7 +10,16 @@ export default defineConfig({
         emptyOutDir: true,
         manifest: true,
         outDir: './public/build/',
-        rollupOptions: {input: {index: './assets/index.js'}}
+        rollupOptions: {
+            input: {index: './assets/index.js'},
+            output: {
+                // eslint-disable-next-line consistent-return
+                manualChunks(id) {
+                    if (id.includes('fontawesome') || id.includes('fortawesome'))
+                        return 'fontawesome'
+                }
+            }
+        }
     },
     optimizeDeps: {force: true},
     plugins: [

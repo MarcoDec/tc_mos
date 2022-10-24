@@ -7,7 +7,6 @@ export default function useFields(id, initialFields) {
             dispose() {
                 for (const field of this.fields)
                     field.dispose()
-                this.$reset()
                 this.$dispose()
             },
             async fetch() {

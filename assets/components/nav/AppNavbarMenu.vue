@@ -104,6 +104,14 @@
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
+            <AppNavbarItem v-if="user.isQualityReader" id="quality" icon="certificate" title="Qualité">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <AppNavbarLink icon="check-circle" to="component-reference-values" variant="success">
+                    Relevés qualités composants
+                </AppNavbarLink>
+            </AppNavbarItem>
         </ul>
     </div>
     <AppSuspense variant="white">

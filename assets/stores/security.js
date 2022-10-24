@@ -20,6 +20,8 @@ function defineUserStore() {
         const isProjectWriter = computed(() => isProjectAdmin.value || roles.value.includes('ROLE_PROJECT_WRITER'))
         const isPurchaseAdmin = computed(() => roles.value.includes('ROLE_PURCHASE_ADMIN'))
         const isPurchaseWriter = computed(() => isPurchaseAdmin.value || roles.value.includes('ROLE_PURCHASE_WRITER'))
+        const isQualityAdmin = computed(() => roles.value.includes('ROLE_QUALITY_ADMIN'))
+        const isQualityWriter = computed(() => isQualityAdmin.value || roles.value.includes('ROLE_QUALITY_WRITER'))
 
         function clear() {
             store.$reset()
@@ -73,6 +75,9 @@ function defineUserStore() {
             isPurchaseAdmin,
             isPurchaseReader: computed(() => isPurchaseWriter.value || roles.value.includes('ROLE_PURCHASE_READER')),
             isPurchaseWriter,
+            isQualityAdmin,
+            isQualityReader: computed(() => isQualityWriter.value || roles.value.includes('ROLE_QUALITY_READER')),
+            isQualityWriter,
             async logout() {
                 try {
                     await api('/api/logout', 'POST')

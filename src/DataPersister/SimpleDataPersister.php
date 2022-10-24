@@ -17,11 +17,10 @@ use App\Entity\Production\Engine\Group;
 use App\Entity\Production\Engine\Manufacturer\Manufacturer;
 use App\Entity\Project\Operation\Operation;
 use App\Entity\Project\Operation\Type as OperationType;
+use App\Entity\Quality\Production\ComponentReferenceValue;
 use Doctrine\ORM\EntityManagerInterface;
 
-/**
- * @phpstan-type Data Carrier|Color|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|Unit|VatMessage|Zone
- */
+/** @phpstan-type Data Carrier|Color|ComponentReferenceValue|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|Unit|VatMessage|Zone */
 final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function __construct(private readonly EntityManagerInterface $em) {
     }
@@ -30,7 +29,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
      * @param Data    $data
      * @param mixed[] $context
      */
-    public function persist($data, array $context = []): Carrier|Color|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|Unit|VatMessage|Zone {
+    public function persist($data, array $context = []): Carrier|Color|ComponentReferenceValue|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|Unit|VatMessage|Zone {
         $this->em->persist($data);
         $this->em->flush();
         return $data;
@@ -43,15 +42,14 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function remove($data, array $context = []): void {
     }
 
-    /**
-     * @param mixed[] $context
-     */
+    /** @param mixed[] $context */
     public function supports($data, array $context = []): bool {
         return ($data instanceof Zone && isset($context['item_operation_name']) && $context['item_operation_name'] === 'patch')
             || (
                 (
                     $data instanceof Carrier
                     || $data instanceof Color
+                    || $data instanceof ComponentReferenceValue
                     || $data instanceof Group
                     || $data instanceof Incoterms
                     || $data instanceof InvoiceTimeDue

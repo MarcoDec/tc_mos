@@ -5,6 +5,7 @@ namespace App\Entity\Quality\Production;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Quality\Production\ComponentReferenceField;
@@ -15,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['component.id']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['component']),
     ApiResource(
         description: 'Valeur de référence du composant',
@@ -58,7 +60,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ComponentReferenceValue-write'
         ],
         normalizationContext: [
-            'groups' => ['read:component-reference-field', 'read:component-reference-value', 'read:measure'],
+            'groups' => ['read:component-reference-field', 'read:component-reference-value', 'read:id', 'read:measure'],
             'openapi_definition_name' => 'ComponentReferenceValue-read',
             'skip_null_values' => false
         ],

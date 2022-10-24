@@ -23,7 +23,10 @@ export default function useField(field, parent) {
             }
         },
         getters: {
+            big: state => state.options?.big,
             findOption: state => value => state.options?.find(value) ?? null,
+            groups: state => state.options?.groups,
+            hasGroups: state => state.options?.hasGroups,
             labelValue: state => value => {
                 if (state.type === 'measure') {
                     const code = state.measure.code.labelValue(value.code)
@@ -38,7 +41,8 @@ export default function useField(field, parent) {
                 if (state.options)
                     return state.options.label(value)
                 return value
-            }
+            },
+            optionsList: state => state.options?.options
         },
         state: () => {
             const state = {

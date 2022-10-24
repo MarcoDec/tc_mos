@@ -6,6 +6,7 @@ import management from './management'
 import production from './production'
 import project from './project'
 import purchase from './purchase'
+import quality from './quality'
 import useUser from '../stores/security'
 
 const router = createRouter({
@@ -15,6 +16,7 @@ const router = createRouter({
         ...production,
         ...project,
         ...purchase,
+        ...quality,
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
