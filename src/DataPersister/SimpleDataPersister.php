@@ -18,9 +18,10 @@ use App\Entity\Production\Engine\Manufacturer\Manufacturer;
 use App\Entity\Project\Operation\Operation;
 use App\Entity\Project\Operation\Type as OperationType;
 use App\Entity\Quality\Production\ComponentReferenceValue;
+use App\Entity\Quality\Reject\Type as RejectType;
 use Doctrine\ORM\EntityManagerInterface;
 
-/** @phpstan-type Data Carrier|Color|ComponentReferenceValue|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|Unit|VatMessage|Zone */
+/** @phpstan-type Data Carrier|Color|ComponentReferenceValue|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|RejectType|Unit|VatMessage|Zone */
 final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function __construct(private readonly EntityManagerInterface $em) {
     }
@@ -29,7 +30,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
      * @param Data    $data
      * @param mixed[] $context
      */
-    public function persist($data, array $context = []): Carrier|Color|ComponentReferenceValue|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|Unit|VatMessage|Zone {
+    public function persist($data, array $context = []): Carrier|Color|ComponentReferenceValue|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|RejectType|Unit|VatMessage|Zone {
         $this->em->persist($data);
         $this->em->flush();
         return $data;
@@ -56,6 +57,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
                     || $data instanceof Manufacturer
                     || $data instanceof Operation
                     || $data instanceof OperationType
+                    || $data instanceof RejectType
                     || $data instanceof Stock
                     || $data instanceof Unit
                     || $data instanceof VatMessage

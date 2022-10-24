@@ -111,6 +111,14 @@
                 <AppNavbarLink icon="check-circle" to="component-reference-values" variant="success">
                     Relevés qualités composants
                 </AppNavbarLink>
+                <template v-if="user.isQualityAdmin">
+                    <AppDropdownItem disabled variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink brands icon="elementor" to="reject-types" variant="warning">
+                        Catégories de rejets de production
+                    </AppNavbarLink>
+                </template>
             </AppNavbarItem>
         </ul>
     </div>

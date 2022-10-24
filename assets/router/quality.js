@@ -22,5 +22,18 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Relevés qualités composants'
         }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Catégories de rejets de production — T-Concept GPAO'},
+        name: 'reject-types',
+        path: '/reject-types',
+        props: {
+            brands: true,
+            fields: [{label: 'Nom', name: 'name'}],
+            icon: 'elementor',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Catégories de rejets de production'
+        }
     }
 ]
