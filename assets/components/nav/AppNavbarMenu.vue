@@ -118,6 +118,9 @@
                     <AppNavbarLink brands icon="elementor" to="reject-types" variant="warning">
                         Catégories de rejets de production
                     </AppNavbarLink>
+                    <AppNavbarLink brands icon="elementor" to="quality-types" variant="warning">
+                        Critères qualités
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
         </ul>

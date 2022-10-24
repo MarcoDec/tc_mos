@@ -9,7 +9,13 @@ export default [
         path: '/component-reference-values',
         props: {
             fields: [
-                {label: 'Composant', name: 'component', options: {base: 'components'}, sortName: 'component.id', type: 'select'},
+                {
+                    label: 'Composant',
+                    name: 'component',
+                    options: {base: 'components'},
+                    sortName: 'component.id',
+                    type: 'select'
+                },
                 {label: 'Hauteur', name: 'height.value', search: false, sort: false, type: 'measure'},
                 {label: 'Tolérance hauteur', name: 'height.tolerance', search: false, sort: false, type: 'measure'},
                 {label: 'Largeur', name: 'width.value', search: false, sort: false, type: 'measure'},
@@ -34,6 +40,19 @@ export default [
             icon: 'elementor',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Catégories de rejets de production'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Critères qualités — T-Concept GPAO'},
+        name: 'quality-types',
+        path: '/quality-types',
+        props: {
+            brands: true,
+            fields: [{label: 'Nom', name: 'name'}],
+            icon: 'elementor',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Critères qualités'
         }
     }
 ]

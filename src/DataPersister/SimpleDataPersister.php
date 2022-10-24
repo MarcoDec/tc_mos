@@ -3,10 +3,9 @@
 namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
+use App\Entity\Entity;
 use App\Entity\Logistics\Carrier;
 use App\Entity\Logistics\Incoterms;
-use App\Entity\Logistics\Stock\ComponentStock;
-use App\Entity\Logistics\Stock\ProductStock;
 use App\Entity\Logistics\Stock\Stock;
 use App\Entity\Management\Color;
 use App\Entity\Management\InvoiceTimeDue;
@@ -19,25 +18,25 @@ use App\Entity\Project\Operation\Operation;
 use App\Entity\Project\Operation\Type as OperationType;
 use App\Entity\Quality\Production\ComponentReferenceValue;
 use App\Entity\Quality\Reject\Type as RejectType;
+use App\Entity\Quality\Type as QualityType;
 use Doctrine\ORM\EntityManagerInterface;
 
-/** @phpstan-type Data Carrier|Color|ComponentReferenceValue|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|RejectType|Unit|VatMessage|Zone */
 final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
     public function __construct(private readonly EntityManagerInterface $em) {
     }
 
     /**
-     * @param Data    $data
+     * @param Entity  $data
      * @param mixed[] $context
      */
-    public function persist($data, array $context = []): Carrier|Color|ComponentReferenceValue|ComponentStock|Group|Incoterms|InvoiceTimeDue|Manufacturer|Operation|OperationType|ProductStock|RejectType|Unit|VatMessage|Zone {
+    public function persist($data, array $context = []): Entity {
         $this->em->persist($data);
         $this->em->flush();
         return $data;
     }
 
     /**
-     * @param Data    $data
+     * @param Entity  $data
      * @param mixed[] $context
      */
     public function remove($data, array $context = []): void {
@@ -57,6 +56,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
                     || $data instanceof Manufacturer
                     || $data instanceof Operation
                     || $data instanceof OperationType
+                    || $data instanceof QualityType
                     || $data instanceof RejectType
                     || $data instanceof Stock
                     || $data instanceof Unit
