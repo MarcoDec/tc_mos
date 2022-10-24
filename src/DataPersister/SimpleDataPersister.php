@@ -4,6 +4,7 @@ namespace App\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Entity;
+use App\Entity\Hr\Event\Type as EventType;
 use App\Entity\Hr\OutTrainer;
 use App\Entity\Logistics\Carrier;
 use App\Entity\Logistics\Incoterms;
@@ -51,6 +52,7 @@ final class SimpleDataPersister implements ContextAwareDataPersisterInterface {
                     $data instanceof Carrier
                     || $data instanceof Color
                     || $data instanceof ComponentReferenceValue
+                    || $data instanceof EventType
                     || $data instanceof Group
                     || $data instanceof Incoterms
                     || $data instanceof InvoiceTimeDue

@@ -130,6 +130,14 @@
                 <AppNavbarLink icon="user-graduate" to="out-trainers" variant="success">
                     Formateurs extérieurs
                 </AppNavbarLink>
+                <template v-if="user.isHrAdmin">
+                    <AppDropdownItem disabled variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink brands icon="elementor" to="event-types" variant="warning">
+                        Catégories d'événements des employés
+                    </AppNavbarLink>
+                </template>
             </AppNavbarItem>
         </ul>
     </div>

@@ -19,7 +19,7 @@ use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20221019152228 extends AbstractMigration {
+final class Version20221024083447 extends AbstractMigration {
     private UserPasswordHasherInterface $hasher;
 
     /** @var Collection<int, string> */
@@ -2533,7 +2533,7 @@ CREATE TABLE `employee_eventlist` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `motif` VARCHAR(30) NOT NULL,
-    `to_status` ENUM('agreed', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_engine_state)'
+    `to_status` ENUM('blocked', 'disabled', 'enabled', 'agreed', 'warning') DEFAULT NULL COMMENT '(DC2Type:employee_event_state)'
 )
 SQL);
         $this->insert('employee_eventlist', ['id', 'motif']);
