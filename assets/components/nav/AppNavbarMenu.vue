@@ -13,12 +13,6 @@
     <div class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav">
             <AppNavbarItem v-if="user.isPurchaseReader" id="purchase" icon="shopping-bag" title="Achats">
-                <AppDropdownItem disabled variant="success">
-                    Lecteur
-                </AppDropdownItem>
-                <AppNavbarLink icon="user-tag" to="supplier-show" variant="success">
-                    Fournisseur
-                </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
                     <AppDropdownItem disabled variant="warning">
                         Administrateur

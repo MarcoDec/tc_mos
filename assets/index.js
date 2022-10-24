@@ -10,13 +10,10 @@ import AppInputGuesser from './components/form/field/input/AppInputGuesser.vue'
 import AppOptions from './components/form/field/input/select/AppOptions.vue'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
-import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
 import AppSuspense from './components/AppSuspense.vue'
-import AppTab from './components/tabs/AppTab.vue'
 import AppTableFormField from './components/table/AppTableFormField.vue'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm.vue'
 import AppTableItemField from './components/table/body/read/AppTableItemField.vue'
-import AppTabs from './components/tabs/AppTabs.vue'
 import Fa from './components/Fa'
 import {cloneDeep} from 'lodash'
 import {createPinia} from 'pinia'
@@ -33,10 +30,7 @@ const app = createApp(App)
     .component('AppOverlay', AppOverlay)
     .component('AppOptions', AppOptions)
     .component('AppRouterLink', AppRouterLink)
-    .component('AppShowGuiCard', AppShowGuiCard)
     .component('AppSuspense', AppSuspense)
-    .component('AppTab', AppTab)
-    .component('AppTabs', AppTabs)
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)
     .component('AppTableItemField', AppTableItemField)
