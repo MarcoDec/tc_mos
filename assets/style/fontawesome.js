@@ -34,6 +34,7 @@ import {
     faTrash,
     faUserCircle,
     faUserGraduate,
+    faUserTag,
     faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
@@ -75,4 +76,5 @@ library.add(faTimes)
 library.add(faTrash)
 library.add(faUserCircle)
 library.add(faUserGraduate)
+library.add(faUserTag)
 library.add(faWrench)

@@ -1,3 +1,4 @@
+import AppShowGui from '../components/pages/AppShowGui.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 
@@ -32,5 +33,11 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Attributs'
         }
+    },
+    {
+        component: AppShowGui,
+        meta: {container: false, title: 'Fournisseur — T-Concept GPAO'},
+        name: 'supplier',
+        path: '/supplier'
     }
 ]

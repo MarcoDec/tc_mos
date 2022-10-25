@@ -65,6 +65,77 @@ $dropdown-success: #57ec57 !default;
   width: 20px;
 }
 
+.gui {
+  @extend .bg-secondary;
+  bottom: 2px;
+  left: 2px;
+  position: absolute;
+  right: 2px;
+  top: 48px;
+}
+
+.gui-bottom {
+  bottom: 0;
+  height: calc(100% - var(--gui-ratio));
+  left: 0;
+  position: absolute;
+  right: 0;
+
+  .gui-card {
+    @extend .bg-danger;
+    bottom: 4px;
+    left: 4px;
+    position: absolute;
+    right: 4px;
+    top: 2px;
+  }
+}
+
+.gui-left {
+  height: var(--gui-ratio);
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 50%;
+
+  .gui-card {
+    @extend .bg-info;
+    bottom: 2px;
+    left: 4px;
+    position: absolute;
+    right: 2px;
+    top: 4px;
+  }
+}
+
+.gui-resizer {
+  background-color: black;
+  cursor: row-resize;
+  left: 4px;
+  margin: 0;
+  padding: 2px;
+  position: absolute;
+  right: 4px;
+  top: 1px;
+}
+
+.gui-right {
+  height: var(--gui-ratio);
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+
+  .gui-card {
+    @extend .bg-warning;
+    bottom: 2px;
+    left: 2px;
+    position: absolute;
+    right: 4px;
+    top: 4px;
+  }
+}
+
 .pointer, th[aria-sort] {
   cursor: pointer;
 }

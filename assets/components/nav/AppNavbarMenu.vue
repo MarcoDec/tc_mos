@@ -3,9 +3,12 @@
     import AppNavbarLink from './link/AppNavbarLink.vue'
     import AppNavbarUser from './AppNavbarUser.vue'
     import AppNotifications from './notification/AppNotifications.vue'
+    import {computed} from 'vue'
+    import {useBrowserLocation} from '@vueuse/core'
     import useUser from '../../stores/security'
 
-    const database = `${location.protocol}//${location.hostname}:8080`
+    const location = useBrowserLocation()
+    const database = computed(() => `${location.value.protocol}//${location.value.hostname}:8080`)
     const user = useUser()
 </script>
 
@@ -13,6 +16,12 @@
     <div class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav">
             <AppNavbarItem v-if="user.isPurchaseReader" id="purchase" icon="shopping-bag" title="Achats">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <AppNavbarLink icon="user-tag" to="supplier" variant="success">
+                    Fournisseur
+                </AppNavbarLink>
                 <template v-if="user.isPurchaseAdmin">
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
