@@ -66,12 +66,32 @@ $dropdown-success: #57ec57 !default;
 }
 
 .gui {
+  --gui-margin: 2px;
+  --gui-margin-between: calc(var(--gui-margin) - 1px);
+
   @extend .bg-secondary;
-  bottom: 2px;
-  left: 2px;
+  bottom: var(--gui-margin);
+  left: var(--gui-margin);
   position: absolute;
-  right: 2px;
-  top: 48px;
+  right: var(--gui-margin);
+  top: calc(46px + var(--gui-margin));
+
+  .gui-card > :first-child {
+    bottom: var(--gui-margin);
+    left: var(--gui-margin);
+    position: absolute;
+    right: var(--gui-margin);
+    top: var(--gui-margin);
+
+    .tab-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 42px;
+      overflow: auto;
+    }
+  }
 }
 
 .gui-bottom {
@@ -83,11 +103,11 @@ $dropdown-success: #57ec57 !default;
 
   .gui-card {
     @extend .bg-danger;
-    bottom: 4px;
-    left: 4px;
+    bottom: var(--gui-margin);
+    left: var(--gui-margin);
     position: absolute;
-    right: 4px;
-    top: 2px;
+    right: var(--gui-margin);
+    top: var(--gui-margin-between);
   }
 }
 
@@ -100,23 +120,23 @@ $dropdown-success: #57ec57 !default;
 
   .gui-card {
     @extend .bg-info;
-    bottom: 2px;
-    left: 4px;
+    bottom: var(--gui-margin-between);
+    left: var(--gui-margin);
     position: absolute;
-    right: 2px;
-    top: 4px;
+    right: var(--gui-margin-between);
+    top: var(--gui-margin);
   }
 }
 
 .gui-resizer {
   background-color: black;
   cursor: row-resize;
-  left: 4px;
+  left: var(--gui-margin);
   margin: 0;
-  padding: 2px;
+  padding: 1px;
   position: absolute;
-  right: 4px;
-  top: 1px;
+  right: var(--gui-margin);
+  top: var(--gui-margin-between);
 }
 
 .gui-right {
@@ -128,11 +148,11 @@ $dropdown-success: #57ec57 !default;
 
   .gui-card {
     @extend .bg-warning;
-    bottom: 2px;
-    left: 2px;
+    bottom: var(--gui-margin-between);
+    left: var(--gui-margin-between);
     position: absolute;
-    right: 4px;
-    top: 4px;
+    right: var(--gui-margin);
+    top: var(--gui-margin);
   }
 }
 

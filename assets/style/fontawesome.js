@@ -1,5 +1,7 @@
 import {
+    faAddressCard,
     faAtom,
+    faBars,
     faBell,
     faBoxes,
     faCaretDown,
@@ -12,12 +14,15 @@ import {
     faDatabase,
     faEye,
     faFileContract,
+    faFileInvoiceDollar,
+    faFolder,
     faHourglassHalf,
     faIndustry,
     faLaptop,
     faMagnet,
     faMale,
     faMapMarked,
+    faMapMarkedAlt,
     faOilWell,
     faPalette,
     faPencilAlt,
@@ -40,7 +45,9 @@ import {
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
+library.add(faAddressCard)
 library.add(faAtom)
+library.add(faBars)
 library.add(faBell)
 library.add(faBoxes)
 library.add(faCaretDown)
@@ -54,12 +61,15 @@ library.add(faDatabase)
 library.add(faElementor)
 library.add(faEye)
 library.add(faFileContract)
+library.add(faFileInvoiceDollar)
+library.add(faFolder)
 library.add(faHourglassHalf)
 library.add(faIndustry)
 library.add(faLaptop)
 library.add(faMagnet)
 library.add(faMale)
 library.add(faMapMarked)
+library.add(faMapMarkedAlt)
 library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencilAlt)
