@@ -14,8 +14,8 @@
             data-bs-toggle="tab"
             role="tab"
             type="button">
-            <Fa :icon="tab.icon"/>
-            {{ tab.title }}
+            <Fa :icon="tab.icon" class="me-1"/>
+            <span class="nav-link-text">{{ tab.title }}</span>
         </button>
     </li>
 </template>

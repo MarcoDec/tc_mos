@@ -7,13 +7,15 @@
     import {useBrowserLocation} from '@vueuse/core'
     import useUser from '../../stores/security'
 
+    defineProps({id: {required: true, type: String}})
+
     const location = useBrowserLocation()
     const database = computed(() => `${location.value.protocol}//${location.value.hostname}:8080`)
     const user = useUser()
 </script>
 
 <template>
-    <div class="collapse navbar-collapse">
+    <div :id="id" class="collapse navbar-collapse">
         <ul class="me-auto navbar-nav">
             <AppNavbarItem v-if="user.isPurchaseReader" id="purchase" icon="shopping-bag" title="Achats">
                 <AppDropdownItem disabled variant="success">

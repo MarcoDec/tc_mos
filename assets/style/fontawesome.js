@@ -17,6 +17,7 @@ import {
     faFileInvoiceDollar,
     faFolder,
     faHourglassHalf,
+    faIcons,
     faIndustry,
     faLaptop,
     faMagnet,
@@ -29,9 +30,12 @@ import {
     faPlus,
     faPrint,
     faProjectDiagram,
+    faPuzzlePiece,
+    faReceipt,
     faRulerHorizontal,
     faSearch,
     faShoppingBag,
+    faShoppingCart,
     faShuttleVan,
     faSignOutAlt,
     faSitemap,
@@ -64,6 +68,7 @@ library.add(faFileContract)
 library.add(faFileInvoiceDollar)
 library.add(faFolder)
 library.add(faHourglassHalf)
+library.add(faIcons)
 library.add(faIndustry)
 library.add(faLaptop)
 library.add(faMagnet)
@@ -76,9 +81,12 @@ library.add(faPencilAlt)
 library.add(faPlus)
 library.add(faPrint)
 library.add(faProjectDiagram)
+library.add(faPuzzlePiece)
+library.add(faReceipt)
 library.add(faRulerHorizontal)
 library.add(faSearch)
 library.add(faShoppingBag)
+library.add(faShoppingCart)
 library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSitemap)

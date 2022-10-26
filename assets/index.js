@@ -1,5 +1,6 @@
 import './style/app.scss'
 import './style/fontawesome'
+import 'bootstrap'
 import {createApp, defineAsyncComponent} from 'vue'
 import App from './components/App.vue'
 import AppBtn from './components/AppBtn'

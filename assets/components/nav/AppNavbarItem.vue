@@ -1,36 +1,16 @@
 <script setup>
-    import {computed, onMounted, onUnmounted, ref, shallowRef} from 'vue'
-    import {Dropdown} from 'bootstrap'
+    import {computed} from 'vue'
 
-    const dropdown = shallowRef(null)
-    const el = ref()
     const props = defineProps({
         icon: {required: true, type: String},
         id: {required: true, type: String},
         title: {required: true, type: String}
     })
     const dropdownId = computed(() => `${props.id}-dropdown`)
-
-    function dispose() {
-        if (dropdown.value !== null) {
-            dropdown.value.dispose()
-            dropdown.value = null
-        }
-    }
-
-    function instantiate() {
-        if (typeof el.value === 'undefined')
-            return
-        dispose()
-        dropdown.value = new Dropdown(el.value)
-    }
-
-    onMounted(instantiate)
-    onUnmounted(dispose)
 </script>
 
 <template>
-    <li :id="id" ref="el" class="dropdown nav-item">
+    <li :id="id" class="dropdown nav-item">
         <span
             :id="dropdownId"
             aria-expanded="false"
