@@ -146,8 +146,8 @@ $dropdown-success: #57ec57 !default;
 }
 
 @media (width < 800px) {
-  .gui-card .nav-link-text {
-    display: none;
+  .gui-card .nav-link-text, .tab-icon {
+    display: none !important;
   }
 }
 
@@ -166,6 +166,11 @@ $dropdown-success: #57ec57 !default;
       > :first-child {
         display: flex;
         flex-direction: column;
+      }
+
+      .tab-icon {
+        display: flex;
+        flex-direction: row;
       }
     }
   }
@@ -189,6 +194,11 @@ $dropdown-success: #57ec57 !default;
         display: flex;
         flex-direction: column;
       }
+
+      .tab-icon {
+        display: flex;
+        flex-direction: row;
+      }
     }
 
     #gui-left {
@@ -198,6 +208,11 @@ $dropdown-success: #57ec57 !default;
       > :first-child {
         display: flex;
         flex-direction: row;
+      }
+
+      .tab-icon {
+        display: flex;
+        flex-direction: column;
       }
     }
   }
@@ -235,10 +250,6 @@ $dropdown-success: #57ec57 !default;
     height: var(--gui-height);
     position: relative;
     width: 100%;
-  }
-
-  .tab-icon .form-check {
-    display: none;
   }
 }
 

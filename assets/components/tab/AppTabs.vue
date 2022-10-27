@@ -4,8 +4,8 @@
     import useTabs from '../../stores/tab/tabs'
 
     const iconMode = ref(false)
-    const css = computed(() => ({'icon-mode': iconMode.value}))
     const props = defineProps({id: {required: true, type: String}})
+    const css = computed(() => ({'icon-mode': iconMode.value}))
     const icon = computed(() => `${props.id}-icon`)
     const tabs = useTabs(props.id)
 
@@ -17,7 +17,7 @@
 <template>
     <div :id="id" :class="css" class="d-flex">
         <ul class="bg-white nav nav-tabs" role="tablist">
-            <li class="d-flex nav-item tab-icon" role="presentation" title="Icônes">
+            <li class="nav-item tab-icon" role="presentation" title="Icônes">
                 <label :for="icon" class="form-check-label">
                     <Fa icon="icons"/>
                 </label>
