@@ -20,7 +20,7 @@
             <Fa :icon="icon"/>
             {{ title }}
         </span>
-        <ul :aria-labelledby="dropdownId" class="dropdown-menu dropdown-menu-dark">
+        <ul :aria-labelledby="dropdownId" class="dropdown-menu dropdown-menu-dark m-0">
             <slot/>
         </ul>
     </li>

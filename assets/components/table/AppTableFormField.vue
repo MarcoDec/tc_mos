@@ -63,6 +63,7 @@
                     data-bs-html="true"
                     data-bs-placement="top"
                     data-bs-toogle="tooltip"
+                    data-bs-trigger="hover"
                     @update:model-value="input"/>
             </slot>
             <div v-if="hasViolation" class="invalid-feedback">

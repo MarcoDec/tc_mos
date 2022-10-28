@@ -1,7 +1,15 @@
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
+import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
 import {readonly} from 'vue'
 
 export default [
+    {
+        component: AppTreePageSuspense,
+        meta: {title: 'Familles de produits — T-Concept GPAO'},
+        name: 'product-families',
+        path: '/product-families',
+        props: {label: 'produits'}
+    },
     {
         component: AppTablePageSuspense,
         meta: {title: 'Opérations — T-Concept GPAO'},

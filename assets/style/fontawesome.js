@@ -9,6 +9,8 @@ import {
     faCertificate,
     faCheck,
     faCheckCircle,
+    faChevronDown,
+    faChevronUp,
     faClock,
     faCommentsDollar,
     faDatabase,
@@ -20,6 +22,7 @@ import {
     faIcons,
     faIndustry,
     faLaptop,
+    faLayerGroup,
     faMagnet,
     faMale,
     faMapMarked,
@@ -59,6 +62,8 @@ library.add(faCaretUp)
 library.add(faCertificate)
 library.add(faCheck)
 library.add(faCheckCircle)
+library.add(faChevronDown)
+library.add(faChevronUp)
 library.add(faClock)
 library.add(faCommentsDollar)
 library.add(faDatabase)
@@ -71,6 +76,7 @@ library.add(faHourglassHalf)
 library.add(faIcons)
 library.add(faIndustry)
 library.add(faLaptop)
+library.add(faLayerGroup)
 library.add(faMagnet)
 library.add(faMale)
 library.add(faMapMarked)

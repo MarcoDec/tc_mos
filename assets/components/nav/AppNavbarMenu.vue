@@ -110,6 +110,9 @@
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
                     </AppDropdownItem>
+                    <AppNavbarLink icon="layer-group" to="product-families" variant="warning">
+                        Familles de produits
+                    </AppNavbarLink>
                     <AppNavbarLink brands icon="elementor" to="operation-types" variant="warning">
                         Types d'opérations
                     </AppNavbarLink>
