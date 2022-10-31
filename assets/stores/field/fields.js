@@ -24,6 +24,7 @@ export default function useFields(id, initialFields) {
                 return this.create || this.search || this.update
             },
             create: state => state.fields.some(field => field.create),
+            file: state => state.fields.some(field => field.type === 'file'),
             findOption: state => (name, value) => state.fields.find(field => field.name === name)?.findOption(value) ?? null,
             search: state => state.fields.some(field => field.search),
             update: state => state.fields.some(field => field.update)

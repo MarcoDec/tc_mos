@@ -7,12 +7,12 @@
         field: {required: true, type: Object},
         form: {required: true, type: String},
         id: {required: true, type: String},
-        modelValue: {default: null, type: [Number, String]}
+        modelValue: {default: '', type: [Number, String]}
     })
     const type = computed(() => props.field.type ?? 'text')
 
     function input(e) {
-        emit('update:modelValue', props.field.type === 'number' ? parseFloat(e.target.value) : e.target.value)
+        emit('update:modelValue', e.target.value)
     }
 </script>
 

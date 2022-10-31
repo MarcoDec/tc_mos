@@ -9,6 +9,9 @@ export default function useTree(id) {
                 for (const node of this.nodes)
                     node.blur()
             },
+            async create(data) {
+                this.nodes.push(useNode(await api(this.url, 'POST', data), this))
+            },
             dispose() {
                 for (const node of this.nodes)
                     node.dispose()
@@ -24,9 +27,13 @@ export default function useTree(id) {
             }
         },
         getters: {
-            find: state => iri => state.nodes.find(node => node['@id'] === iri),
+            find: state => iri => state.nodes.find(node => node['@id'] === iri) ?? null,
             findByParent: state => iri => state.nodes.filter(node => node.parent === iri),
+            hasSelected() {
+                return this.selected !== null
+            },
             roots: state => state.nodes.filter(node => node.root),
+            selected: state => state.nodes.find(node => node.selected) ?? null,
             url: state => `/api/${state.id}`
         },
         state: () => ({id, nodes: []})

@@ -1,8 +1,6 @@
 <script setup>
     import {assign, useMachine} from '../../composable/xstate'
     import {useRoute, useRouter} from 'vue-router'
-    import AppCard from '../AppCard.vue'
-    import AppFormGenerator from '../form/AppFormGenerator.vue'
     import {onUnmounted} from 'vue'
     import useFields from '../../stores/field/fields'
     import useUser from '../../stores/security'

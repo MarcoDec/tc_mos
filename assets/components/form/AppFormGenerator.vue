@@ -1,39 +1,45 @@
 <script setup>
-    import {computed, reactive} from 'vue'
+    import {reactive, ref} from 'vue'
     import AppFormGroup from './field/AppFormGroup.vue'
 
     const emit = defineEmits(['submit'])
+    const form = ref()
     const props = defineProps({
         disabled: {type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
-        submitLabel: {default: 'Modifier', type: String}
+        submitLabel: {default: 'Modifier', type: String},
+        violations: {default: () => [], type: Array}
     })
     const value = reactive({})
-    const normalizedValue = computed(() => {
-        const v = {}
-        for (const field of props.fields.fields)
-            v[field.name] = value[field.name]
-        return v
-    })
 
     function input(field, v) {
         value[field.name] = v
     }
 
     function submit() {
-        emit('submit', normalizedValue.value)
+        let normalizedValue = null
+        if (props.fields.file)
+            normalizedValue = new FormData(form.value.$el)
+        else {
+            normalizedValue = {}
+            for (const field of props.fields.fields)
+                normalizedValue[field.name] = value[field.name]
+        }
+        emit('submit', normalizedValue)
     }
 </script>
 
 <template>
-    <AppForm :id="id" @submit="submit">
+    <AppForm :id="id" ref="form" @submit="submit">
         <AppFormGroup
             v-for="field in fields.fields"
             :key="field.name"
             :disabled="disabled"
             :field="field"
             :form="id"
+            :model-value="value"
+            :violations="violations"
             @input="input"/>
         <div class="row">
             <div class="col d-inline-flex justify-content-end">
