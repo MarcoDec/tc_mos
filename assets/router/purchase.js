@@ -1,5 +1,6 @@
 import AppShowGui from '../components/pages/AppShowGui.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
+import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
 import {readonly} from 'vue'
 
 export default [
@@ -32,6 +33,23 @@ export default [
             icon: 'magnet',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Attributs'
+        }
+    },
+    {
+        component: AppTreePageSuspense,
+        meta: {title: 'Familles de composants — T-Concept GPAO'},
+        name: 'component-families',
+        path: '/component-families',
+        props: {
+            fields: [
+                {label: 'Parent', name: 'parent', options: {existing: 'component-families'}, type: 'select'},
+                {label: 'Code', name: 'code'},
+                {label: 'Nom', name: 'name'},
+                {label: 'Cuivre', name: 'copperable', type: 'boolean'},
+                {label: 'Code douanier', name: 'customsCode'},
+                {label: 'Icône', name: 'file', type: 'file'}
+            ],
+            label: 'composants'
         }
     },
     {

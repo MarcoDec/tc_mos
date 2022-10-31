@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import {defineStore} from 'pinia'
+import {defineStore, getActivePinia} from 'pinia'
 import useOptions from '../option/options'
 
 export default function useField(field, parent) {
@@ -18,7 +18,7 @@ export default function useField(field, parent) {
             async fetch() {
                 if (this.measure !== null)
                     await this.measure.code.fetch()
-                if (this.options !== null)
+                if (this.options !== null && this.options.$id.startsWith('options/'))
                     await this.options.fetch()
             }
         },
@@ -61,6 +61,9 @@ export default function useField(field, parent) {
                 if (Array.isArray(field.options)) {
                     state.options = useOptions(`${id}/${field.name}`, 'value')
                     state.options.options = field.options
+                } else if (field.options.existing) {
+                    // eslint-disable-next-line no-underscore-dangle
+                    state.options = getActivePinia()._s.get(field.options.existing)
                 } else {
                     state.options = useOptions(field.options.base, field.options.value ?? '@id')
                     state.options.fetchable = true

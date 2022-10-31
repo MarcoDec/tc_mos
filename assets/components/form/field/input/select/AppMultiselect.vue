@@ -32,7 +32,11 @@
         class="text-dark"
         label="text"
         searchable
-        @update:model-value="input"/>
+        @update:model-value="input">
+        <template #afterlist>
+            <input :name="field.name" :value="modelValue" type="hidden"/>
+        </template>
+    </Multiselect>
 </template>
 
 <style src="@vueform/multiselect/themes/default.css"/>

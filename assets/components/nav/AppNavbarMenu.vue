@@ -31,6 +31,9 @@
                     <AppNavbarLink icon="magnet" to="attributes" variant="warning">
                         Attributs
                     </AppNavbarLink>
+                    <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
+                        Familles de composants
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">

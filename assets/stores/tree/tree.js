@@ -27,6 +27,7 @@ export default function useTree(id) {
             }
         },
         getters: {
+            big: state => state.options.length > 30,
             find: state => iri => state.nodes.find(node => node['@id'] === iri) ?? null,
             findByParent: state => iri => state.nodes.filter(node => node.parent === iri),
             hasIcon() {
@@ -38,6 +39,7 @@ export default function useTree(id) {
             icon() {
                 return this.selected?.filepath ?? null
             },
+            options: state => state.nodes.map(node => node.option),
             roots: state => state.nodes.filter(node => node.root),
             selected: state => state.nodes.find(node => node.selected) ?? null,
             selectedKey() {
@@ -48,6 +50,6 @@ export default function useTree(id) {
             },
             url: state => `/api/${state.id}`
         },
-        state: () => ({id, nodes: []})
+        state: () => ({id, nodes: [], valueProp: '@id'})
     })()
 }

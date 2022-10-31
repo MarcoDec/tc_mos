@@ -4,7 +4,7 @@
     import {useRoute} from 'vue-router'
     import useTree from '../../../stores/tree/tree'
 
-    defineProps({label: {required: true, type: String}})
+    defineProps({fields: {required: true, type: Array}, label: {required: true, type: String}})
 
     const route = useRoute()
     const tree = useTree(route.name)
@@ -22,5 +22,5 @@
             Familles de {{ label }}
         </h1>
     </div>
-    <AppTree :tree="tree"/>
+    <AppTree :fields="fields" :tree="tree"/>
 </template>

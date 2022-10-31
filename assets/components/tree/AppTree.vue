@@ -3,7 +3,7 @@
     import AppTreeCard from './card/AppTreeCard.vue'
     import {useRoute} from 'vue-router'
 
-    defineProps({tree: {required: true, type: Object}})
+    defineProps({fields: {required: true, type: Array}, tree: {required: true, type: Object}})
 
     const route = useRoute()
     const machine = useMachine({
@@ -33,6 +33,6 @@
         <div class="col-lg-3 col-md-6 col-sm-12">
             <AppTreeNodes :nodes="tree.roots"/>
         </div>
-        <AppTreeCard :machine="machine" :tree="tree" class="col"/>
+        <AppTreeCard :fields="fields" :machine="machine" :tree="tree" class="col"/>
     </AppOverlay>
 </template>

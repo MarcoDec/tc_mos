@@ -2,7 +2,7 @@
     /* eslint-disable vue/no-unused-properties */
     import AppTreePage from './AppTreePage.vue'
 
-    defineProps({label: {required: true, type: String}})
+    defineProps({fields: {required: true, type: Array}, label: {required: true, type: String}})
 </script>
 
 <template>

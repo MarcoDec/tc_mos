@@ -8,7 +8,15 @@ export default [
         meta: {title: 'Familles de produits — T-Concept GPAO'},
         name: 'product-families',
         path: '/product-families',
-        props: {label: 'produits'}
+        props: {
+            fields: [
+                {label: 'Parent', name: 'parent', options: {existing: 'product-families'}, type: 'select'},
+                {label: 'Nom', name: 'name'},
+                {label: 'Code douanier', name: 'customsCode'},
+                {label: 'Icône', name: 'file', type: 'file'}
+            ],
+            label: 'produits'
+        }
     },
     {
         component: AppTablePageSuspense,

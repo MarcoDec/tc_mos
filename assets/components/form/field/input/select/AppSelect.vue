@@ -26,7 +26,7 @@
         :disabled="disabled"
         :field="field"
         :form="form"
-        :value="modelValue"
+        :model-value="modelValue"
         mode="single"
         @update:model-value="update"/>
     <select

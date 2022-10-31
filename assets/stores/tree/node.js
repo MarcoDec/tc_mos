@@ -46,6 +46,9 @@ export default function useNode(node, tree) {
                 return this.children.length > 0
             },
             icon: state => `chevron-${state.opened ? 'up' : 'down'}`,
+            option(state) {
+                return {'@id': this['@id'], text: state.fullName}
+            },
             parentStore: state => state.tree.find(state.parent),
             root: state => state.parent === null,
             url: state => `${state.tree.url}/${state.id}`
