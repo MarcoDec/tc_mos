@@ -4,14 +4,17 @@
         machine: {required: true, type: Object},
         tree: {required: true, type: Object}
     })
+    props.tree.selected.initUpdate(props.fields)
 
     async function submit(data) {
         props.machine.send('submit')
         try {
-            await props.tree.create(data)
+            await props.tree.selected.update(data)
+            props.tree.selected.initUpdate(props.fields)
             props.machine.send('success')
         } catch (violations) {
-            props.machine.send('fail', {violations})
+            console.error(violations)
+            // props.machine.send('fail', {violations})
         }
     }
 </script>
@@ -20,7 +23,7 @@
     <AppTreeForm
         :fields="fields"
         :machine="machine"
-        submit-label="Créer"
-        title="Créer une nouvelle famille"
+        :model-value="props.tree.selected.updated"
+        submit-label="Modifier"
         @submit="submit"/>
 </template>

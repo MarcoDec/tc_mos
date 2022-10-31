@@ -29,13 +29,22 @@ export default function useTree(id) {
         getters: {
             find: state => iri => state.nodes.find(node => node['@id'] === iri) ?? null,
             findByParent: state => iri => state.nodes.filter(node => node.parent === iri),
+            hasIcon() {
+                return this.icon !== null
+            },
             hasSelected() {
                 return this.selected !== null
+            },
+            icon() {
+                return this.selected?.filepath ?? null
             },
             roots: state => state.nodes.filter(node => node.root),
             selected: state => state.nodes.find(node => node.selected) ?? null,
             selectedKey() {
                 return this.selected?.id ?? 'new'
+            },
+            title() {
+                return this.selected?.fullName ?? 'Créer une nouvelle famille'
             },
             url: state => `/api/${state.id}`
         },

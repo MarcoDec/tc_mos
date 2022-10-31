@@ -2,7 +2,7 @@
     import {computed, onUnmounted} from 'vue'
     import AppTreeFormCreate from './AppTreeFormCreate.vue'
     import AppTreeFormUpdate from './AppTreeFormUpdate.vue'
-    import useFields from '../../../stores/field/fields'
+    import useFields from '../../../../stores/field/fields'
     import {useRoute} from 'vue-router'
 
     const props = defineProps({machine: {required: true, type: Object}, tree: {required: true, type: Object}})

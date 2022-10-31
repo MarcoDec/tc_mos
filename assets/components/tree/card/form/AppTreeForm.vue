@@ -6,8 +6,7 @@
         fields: {required: true, type: Object},
         machine: {required: true, type: Object},
         modelValue: {default: () => ({}), type: Object},
-        submitLabel: {default: 'Modifier', type: String},
-        title: {required: true, type: String}
+        submitLabel: {default: 'Modifier', type: String}
     })
 
     const emit = defineEmits(['submit'])
@@ -20,13 +19,11 @@
 </script>
 
 <template>
-    <AppCard :title="title">
-        <AppFormGenerator
-            :id="id"
-            :fields="fields"
-            :model-value="modelValue"
-            :submit-label="submitLabel"
-            :violations="machine.state.value.context.violations"
-            @submit="submit"/>
-    </AppCard>
+    <AppFormGenerator
+        :id="id"
+        :fields="fields"
+        :model-value="modelValue"
+        :submit-label="submitLabel"
+        :violations="machine.state.value.context.violations"
+        @submit="submit"/>
 </template>

@@ -1,6 +1,6 @@
 <script setup>
     import {assign, useMachine} from '../../composable/xstate'
-    import AppTreeFormGuesser from './form/AppTreeFormGuesser.vue'
+    import AppTreeCard from './card/AppTreeCard.vue'
     import {useRoute} from 'vue-router'
 
     defineProps({tree: {required: true, type: Object}})
@@ -33,6 +33,6 @@
         <div class="col-lg-3 col-md-6 col-sm-12">
             <AppTreeNodes :nodes="tree.roots"/>
         </div>
-        <AppTreeFormGuesser :machine="machine" :tree="tree" class="col"/>
+        <AppTreeCard :machine="machine" :tree="tree" class="col"/>
     </AppOverlay>
 </template>
