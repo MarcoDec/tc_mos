@@ -1,6 +1,9 @@
+import {get, set} from 'lodash'
+import api from '../../api'
 import {defineStore} from 'pinia'
 
 export default function useNode(node, tree) {
+    let initialState = {...node}
     return defineStore(`${tree.$id}/${node.id}`, {
         actions: {
             blur() {
@@ -16,9 +19,20 @@ export default function useNode(node, tree) {
                 this.selected = true
                 this.open()
             },
+            initUpdate(fields) {
+                this.updated = {}
+                for (const field of fields.fields)
+                    if (field.type !== 'file')
+                        set(this.updated, field.name, get(this, field.name))
+            },
             open() {
                 this.opened = true
                 this.parentStore?.open()
+            },
+            async update(data) {
+                initialState = await api(this.url, 'POST', data)
+                this.$reset()
+                this.focus()
             }
         },
         getters: {
@@ -29,8 +43,9 @@ export default function useNode(node, tree) {
             },
             icon: state => `chevron-${state.opened ? 'up' : 'down'}`,
             parentStore: state => state.tree.find(state.parent),
-            root: state => state.parent === null
+            root: state => state.parent === null,
+            url: state => `${state.tree.url}/${state.id}`
         },
-        state: () => ({...node, opened: false, selected: false, tree})
+        state: () => ({...initialState, opened: false, selected: false, tree, updated: {}})
     })()
 }

@@ -1,6 +1,7 @@
 <script setup>
-    import {reactive, ref} from 'vue'
+    import {reactive, ref, watch} from 'vue'
     import AppFormGroup from './field/AppFormGroup.vue'
+    import {cloneDeep} from 'lodash'
 
     const emit = defineEmits(['submit'])
     const form = ref()
@@ -8,10 +9,11 @@
         disabled: {type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
+        modelValue: {default: () => ({}), type: Object},
         submitLabel: {default: 'Modifier', type: String},
         violations: {default: () => [], type: Array}
     })
-    const value = reactive({})
+    const value = reactive(cloneDeep(props.modelValue))
 
     function input(field, v) {
         value[field.name] = v
@@ -28,6 +30,14 @@
         }
         emit('submit', normalizedValue)
     }
+
+    watch(() => props.modelValue, newValue => {
+        const keys = Object.keys(value)
+        for (const key of keys)
+            delete value[key]
+        for (const [key, v] of Object.entries(newValue))
+            value[key] = v
+    })
 </script>
 
 <template>

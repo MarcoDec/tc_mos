@@ -5,6 +5,7 @@
     defineProps({
         fields: {required: true, type: Object},
         machine: {required: true, type: Object},
+        modelValue: {default: () => ({}), type: Object},
         submitLabel: {default: 'Modifier', type: String},
         title: {required: true, type: String}
     })
@@ -23,6 +24,7 @@
         <AppFormGenerator
             :id="id"
             :fields="fields"
+            :model-value="modelValue"
             :submit-label="submitLabel"
             :violations="machine.state.value.context.violations"
             @submit="submit"/>

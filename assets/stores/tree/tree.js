@@ -34,6 +34,9 @@ export default function useTree(id) {
             },
             roots: state => state.nodes.filter(node => node.root),
             selected: state => state.nodes.find(node => node.selected) ?? null,
+            selectedKey() {
+                return this.selected?.id ?? 'new'
+            },
             url: state => `/api/${state.id}`
         },
         state: () => ({id, nodes: []})

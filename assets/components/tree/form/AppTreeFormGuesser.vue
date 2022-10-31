@@ -20,5 +20,5 @@
 </script>
 
 <template>
-    <component :is="form" :fields="fields" :machine="machine" :tree="tree"/>
+    <component :is="form" :key="tree.selectedKey" :fields="fields" :machine="machine" :tree="tree"/>
 </template>
