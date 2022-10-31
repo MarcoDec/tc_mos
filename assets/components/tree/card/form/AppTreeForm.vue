@@ -21,9 +21,14 @@
 <template>
     <AppFormGenerator
         :id="id"
+        :disabled="machine.state.value.matches('loading')"
         :fields="fields"
         :model-value="modelValue"
         :submit-label="submitLabel"
         :violations="machine.state.value.context.violations"
-        @submit="submit"/>
+        @submit="submit">
+        <template #default="args">
+            <slot v-bind="args"/>
+        </template>
+    </AppFormGenerator>
 </template>

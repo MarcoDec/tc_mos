@@ -6,6 +6,20 @@
     })
     props.tree.selected.initUpdate(props.fields)
 
+    function blur() {
+        props.tree.blur()
+    }
+
+    async function remove(data) {
+        props.machine.send('submit')
+        try {
+            await props.tree.selected.remove(data)
+            props.machine.send('success')
+        } catch (violations) {
+            props.machine.send('fail', {violations})
+        }
+    }
+
     async function submit(data) {
         props.machine.send('submit')
         try {
@@ -13,8 +27,7 @@
             props.tree.selected.initUpdate(props.fields)
             props.machine.send('success')
         } catch (violations) {
-            console.error(violations)
-            // props.machine.send('fail', {violations})
+            props.machine.send('fail', {violations})
         }
     }
 </script>
@@ -25,5 +38,30 @@
         :machine="machine"
         :model-value="props.tree.selected.updated"
         submit-label="Modifier"
-        @submit="submit"/>
+        @submit="submit">
+        <template #default="{disabled, label, type}">
+            <AppBtn :disabled="disabled" :label="label" :type="type">
+                <Fa icon="pencil-alt"/>
+                {{ label }}
+            </AppBtn>
+            <AppBtn
+                :disabled="disabled"
+                class="ms-1"
+                label="Annuler"
+                variant="warning"
+                @click="blur">
+                <Fa icon="times"/>
+                Annuler
+            </AppBtn>
+            <AppBtn
+                :disabled="disabled"
+                class="ms-1"
+                label="Supprimer"
+                variant="danger"
+                @click="remove">
+                <Fa icon="trash"/>
+                Supprimer
+            </AppBtn>
+        </template>
+    </AppTreeForm>
 </template>

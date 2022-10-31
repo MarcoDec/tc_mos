@@ -29,6 +29,10 @@ export default function useNode(node, tree) {
                 this.opened = true
                 this.parentStore?.open()
             },
+            async remove() {
+                await api(this.url, 'DELETE')
+                this.dispose()
+            },
             async update(data) {
                 initialState = await api(this.url, 'POST', data)
                 this.$reset()

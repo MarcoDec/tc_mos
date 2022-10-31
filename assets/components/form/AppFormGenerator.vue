@@ -53,7 +53,9 @@
             @input="input"/>
         <div class="row">
             <div class="col d-inline-flex justify-content-end">
-                <AppBtn :disabled="disabled" :label="submitLabel" type="submit"/>
+                <slot :disabled="disabled" :label="submitLabel" type="submit">
+                    <AppBtn :disabled="disabled" :label="submitLabel" type="submit"/>
+                </slot>
             </div>
         </div>
     </AppForm>
