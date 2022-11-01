@@ -8,7 +8,7 @@ use IteratorAggregate;
 use Traversable;
 
 /**
- * @template T of \App\Entity\Entity
+ * @template T of object
  *
  * @implements IteratorAggregate<int, T>
  *

@@ -3,6 +3,7 @@
 namespace App\Entity\Logistics\Stock;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Embeddable\Logistics\Order\ReceiptStateType;
@@ -18,6 +19,7 @@ use App\Entity\Management\Unit;
 use App\Entity\Production\Manufacturing\Operation;
 use App\Entity\Purchase\Order\Item;
 use App\Entity\Traits\BarCodeTrait;
+use App\Filter\RelationFilter;
 use App\Repository\Logistics\Stock\StockRepository;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -29,30 +31,15 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template T of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
     ApiResource(
         description: 'Stock',
         collectionOperations: [
             'get' => [
-                'filters' => ['stock.filter'],
                 'openapi_context' => [
                     'description' => 'Récupère les stocks',
                     'summary' => 'Récupère les stocks'
-                ],
-                'pagination_client_enabled' => true
-            ],
-            'grouped' => [
-                'deserialize' => false,
-                'filters' => ['stock.filter', 'stock.grouped_filter'],
-                'method' => 'GET',
-                'openapi_context' => [
-                    'description' => 'Récupère les stocks groupés par référence et lot',
-                    'summary' => 'Récupère les stocks groupés par référence et lot'
-                ],
-                'read' => false,
-                'route_name' => 'api_stocks_grouped_collection',
-                'serialize' => false,
-                'validate' => false,
-                'write' => false
+                ]
             ]
         ],
         itemOperations: [
@@ -115,7 +102,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:measure', 'read:stock'],
             'openapi_definition_name' => 'Stock-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
