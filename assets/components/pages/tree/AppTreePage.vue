@@ -22,5 +22,7 @@
             Familles de {{ label }}
         </h1>
     </div>
-    <AppTree :fields="fields" :tree="tree"/>
+    <AppTree :fields="fields" :tree="tree">
+        <slot :tree="tree"/>
+    </AppTree>
 </template>

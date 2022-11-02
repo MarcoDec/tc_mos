@@ -37,6 +37,10 @@ export default function useNode(node, tree) {
                 initialState = await api(this.url, 'POST', data)
                 this.$reset()
                 this.focus()
+            },
+            async updateAttributes(data) {
+                const response = await api(this.url, 'PATCH', data)
+                return response.attributes
             }
         },
         getters: {

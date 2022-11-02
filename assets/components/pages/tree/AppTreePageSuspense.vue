@@ -1,12 +1,13 @@
 <script setup>
-    /* eslint-disable vue/no-unused-properties */
-    import AppTreePage from './AppTreePage.vue'
-
-    defineProps({fields: {required: true, type: Array}, label: {required: true, type: String}})
+    defineProps({
+        fields: {required: true, type: Array},
+        label: {required: true, type: String},
+        tag: {default: 'AppTreePage', type: [String, Object]}
+    })
 </script>
 
 <template>
     <AppSuspense>
-        <AppTreePage v-bind="$props"/>
+        <component :is="tag" :fields="fields" :label="label"/>
     </AppSuspense>
 </template>

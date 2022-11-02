@@ -1,5 +1,6 @@
 import AppShowGui from '../components/pages/AppShowGui.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
+import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
 import {readonly} from 'vue'
 
@@ -49,7 +50,8 @@ export default [
                 {label: 'Code douanier', name: 'customsCode'},
                 {label: 'Icône', name: 'file', type: 'file'}
             ],
-            label: 'composants'
+            label: 'composants',
+            tag: AppTreePageAttribute
         }
     },
     {

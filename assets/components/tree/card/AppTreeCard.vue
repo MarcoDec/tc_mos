@@ -13,7 +13,10 @@
     <AppCard :title="tree.title">
         <div class="row">
             <AppTreeFormGuesser :fields="fields" :machine="machine" :tree="tree" class="col"/>
-            <AppTreeImg :tree="tree" class="col"/>
+            <div class="col">
+                <AppTreeImg :tree="tree"/>
+                <slot/>
+            </div>
         </div>
     </AppCard>
 </template>

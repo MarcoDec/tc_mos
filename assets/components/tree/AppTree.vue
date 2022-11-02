@@ -33,6 +33,8 @@
         <div class="col-lg-3 col-md-6 col-sm-12">
             <AppTreeNodes :nodes="tree.roots"/>
         </div>
-        <AppTreeCard :fields="fields" :machine="machine" :tree="tree" class="col"/>
+        <AppTreeCard :fields="fields" :machine="machine" :tree="tree" class="col">
+            <slot/>
+        </AppTreeCard>
     </AppOverlay>
 </template>

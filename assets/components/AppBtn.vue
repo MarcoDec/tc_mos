@@ -13,9 +13,9 @@
 
 <template>
     <button :class="css" :disabled="disabled" :title="label" :type="type" class="btn">
+        <Fa v-if="icon" :icon="icon"/>
         <slot>
-            <Fa v-if="icon" :icon="icon"/>
-            <template v-else>
+            <template v-if="!icon">
                 {{ label }}
             </template>
         </slot>
