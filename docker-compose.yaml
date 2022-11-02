@@ -9,7 +9,18 @@ services:
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
-      - ./docker/apache:/etc/apache2/sites-enabled:delegated
+      - ./docker/apache/main:/etc/apache2/sites-enabled:delegated
+  apache_api:
+    container_name: tconcept_gpao_apache_api
+    depends_on:
+      - php
+    image: tconcept/tc_apache:latest
+    ports:
+      - '8002:80'
+    restart: always
+    volumes:
+      - .:/var/www/html/TConcept-GPAO:cached
+      - ./docker/apache/api:/etc/apache2/sites-enabled:delegated
   mysql:
     build:
       args:
