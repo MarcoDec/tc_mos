@@ -8,3 +8,6 @@ services:
       - ../src/Entity/
       - ../src/Kernel.php
     resource: ../src/
+  App\Migrations\Factory:
+    autoconfigure: false
+    decorates: doctrine.migrations.migrations_factory
