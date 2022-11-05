@@ -6,7 +6,6 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\MappedSuperclass]
 abstract class Entity {
@@ -17,8 +16,7 @@ abstract class Entity {
         ApiProperty(description: 'Id', example: 1),
         ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
-        ORM\Id,
-        Serializer\Groups('id')
+        ORM\Id
     ]
     private ?int $id = null;
 

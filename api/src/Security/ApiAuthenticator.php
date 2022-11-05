@@ -15,12 +15,10 @@ use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ApiAuthenticator extends AbstractLoginFormAuthenticator {
     public function __construct(
-        private readonly NormalizerInterface $normalizer,
         private readonly TranslatorInterface $trans,
         private readonly UrlGeneratorInterface $url
     ) {
@@ -48,7 +46,7 @@ class ApiAuthenticator extends AbstractLoginFormAuthenticator {
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response {
-        return new JsonResponse($this->normalizer->normalize($token->getUser(), 'jsonld'));
+        return new JsonResponse(status: JsonResponse::HTTP_NO_CONTENT);
     }
 
     protected function getLoginUrl(Request $request): string {

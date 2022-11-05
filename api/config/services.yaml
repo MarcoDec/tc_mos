@@ -1,13 +1,16 @@
 services:
   _defaults:
-    autoconfigure: true
+    autoconfigure: false
     autowire: true
   App\:
+    autoconfigure: true
     exclude:
+      - ../src/Collection.php
       - ../src/DependencyInjection/
       - ../src/Entity/
       - ../src/Kernel.php
     resource: ../src/
   App\Migrations\Factory:
-    autoconfigure: false
     decorates: doctrine.migrations.migrations_factory
+  App\OpenApi\OpenApiFactory:
+    decorates: api_platform.openapi.factory

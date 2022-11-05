@@ -33,15 +33,5 @@ SQL);
             $this->platform->quoteStringLiteral((string) $user->getPassword()),
             $this->platform->quoteStringLiteral((string) $user->getUsername())
         ));
-        $this->addSql(<<<'SQL'
-CREATE TABLE `token` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT 0 NOT NULL,
-    `employee_id` INT UNSIGNED NOT NULL,
-    `expire_at` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-    `token` CHAR(120) NOT NULL COMMENT '(DC2Type:char)',
-    CONSTRAINT `IDX_5F37A13B8C03F15C` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
-)
-SQL);
     }
 }

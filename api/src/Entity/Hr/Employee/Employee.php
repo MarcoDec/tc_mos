@@ -6,14 +6,11 @@ namespace App\Entity\Hr\Employee;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Entity;
-use App\Entity\Token;
 use App\Repository\Hr\Employee\EmployeeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -22,30 +19,33 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ApiResource(
         description: 'Employé',
         operations: [
-            new Get(
-                uriTemplate: '/user',
-                openapiContext: [
-                    'description' => 'Récupère l\'utilisateur courant',
-                    'summary' => 'Récupère l\'utilisateur courant'
-                ]
-            ),
             new Post(
                 uriTemplate: '/login',
-                openapiContext: ['description' => 'Connexion', 'summary' => 'Connexion']
+                status: JsonResponse::HTTP_NO_CONTENT,
+                openapiContext: [
+                    'description' => 'Connexion',
+                    'responses' => [
+                        204 => ['description' => 'Connexion réussie'],
+                        400 => ['description' => 'none'],
+                        401 => ['description' => 'Unauthorized'],
+                        422 => ['description' => 'none']
+                    ],
+                    'summary' => 'Connexion'
+                ],
+                read: false,
+                deserialize: false,
+                validate: false,
+                write: false,
+                serialize: false
             )
         ],
         inputFormats: 'json',
         outputFormats: 'jsonld',
-        normalizationContext: ['groups' => ['id', 'user'], 'swagger_definition_name' => 'user'],
         denormalizationContext: ['groups' => ['auth'], 'swagger_definition_name' => 'auth']
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]
 class Employee extends Entity implements PasswordAuthenticatedUserInterface, UserInterface {
-    /** @var Collection<int, Token> */
-    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
-    private Collection $apiTokens;
-
     #[
         ApiProperty(description: 'Mot de passe', example: 'super'),
         ORM\Column(type: 'char', length: 60, nullable: true),
@@ -56,27 +56,11 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     #[
         ApiProperty(description: 'Identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
-        Serializer\Groups(['auth', 'user'])
+        Serializer\Groups('auth')
     ]
     private ?string $username = null;
 
-    public function __construct() {
-        $this->apiTokens = new ArrayCollection();
-    }
-
-    final public function addApiToken(Token $apiToken): self {
-        if ($this->apiTokens->contains($apiToken) === false) {
-            $this->apiTokens->add($apiToken);
-        }
-        return $this;
-    }
-
     public function eraseCredentials(): void {
-    }
-
-    /** @return Collection<int, Token> */
-    public function getApiTokens(): Collection {
-        return $this->apiTokens;
     }
 
     public function getPassword(): ?string {
@@ -94,13 +78,6 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
 
     public function getUsername(): ?string {
         return $this->username;
-    }
-
-    final public function removeApiToken(Token $apiToken): self {
-        if ($this->apiTokens->contains($apiToken)) {
-            $this->apiTokens->removeElement($apiToken);
-        }
-        return $this;
     }
 
     public function setPassword(?string $password): self {
