@@ -32,6 +32,27 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     ],
                     'summary' => 'Connexion'
                 ],
+                shortName: 'Auth',
+                read: false,
+                deserialize: false,
+                validate: false,
+                write: false,
+                serialize: false
+            ),
+            new Post(
+                uriTemplate: '/logout',
+                status: JsonResponse::HTTP_NO_CONTENT,
+                openapiContext: [
+                    'description' => 'Déconnexion',
+                    'requestBody' => ['content' => []],
+                    'responses' => [
+                        204 => ['description' => 'Déconnexion réussie'],
+                        400 => ['description' => 'none'],
+                        422 => ['description' => 'none']
+                    ],
+                    'summary' => 'Déconnexion'
+                ],
+                shortName: 'Auth',
                 read: false,
                 deserialize: false,
                 validate: false,
@@ -41,7 +62,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         inputFormats: 'json',
         outputFormats: 'jsonld',
-        denormalizationContext: ['groups' => ['auth'], 'swagger_definition_name' => 'auth']
+        denormalizationContext: ['groups' => ['auth']]
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]

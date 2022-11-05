@@ -14,3 +14,8 @@ services:
     decorates: doctrine.migrations.migrations_factory
   App\OpenApi\OpenApiFactory:
     decorates: api_platform.openapi.factory
+  App\Security\LogoutListener:
+    tags:
+      - dispatcher: security.event_dispatcher.main
+        event: Symfony\Component\Security\Http\Event\LogoutEvent
+        name: kernel.event_listener
