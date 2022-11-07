@@ -47,7 +47,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         inputFormats: 'json',
         outputFormats: 'jsonld',
-        normalizationContext: ['groups' => ['attribute-read'], 'skip_null_values' => false],
+        normalizationContext: [
+            'groups' => ['attribute-read', 'id'],
+            'skip_null_values' => false,
+            'openapi_definition_name' => 'attribute-read'
+        ],
         denormalizationContext: ['groups' => ['attribute-write']],
         order: ['name' => 'asc']
     ),

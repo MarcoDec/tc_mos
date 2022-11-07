@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity\Management;
 
-use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -13,8 +11,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Entity;
-use App\Filter\OrderFilter;
-use App\Filter\SearchFilter;
 use App\State\PersistProcessor;
 use App\State\RemoveProcessor;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,14 +19,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: NumericFilter::class, properties: ['base']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['base', 'code', 'name', 'parent.code']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'exact', 'name' => 'partial', 'parent' => 'exact']),
     ApiResource(
         description: 'Unité',
         operations: [
             new GetCollection(
-                openapiContext: ['description' => 'Récupère les unités', 'summary' => 'Récupère les unités']
+                uriTemplate: '/units/options',
+                openapiContext: [
+                    'description' => 'Récupère les unités pour les select',
+                    'summary' => 'Récupère les unités pour les select'
+                ],
+                paginationEnabled: false,
+                normalizationContext: [
+                    'groups' => ['id', 'unit-option'],
+                    'skip_null_values' => false,
+                    'openapi_definition_name' => 'unit-option'
+                ]
+            ),
+            new GetCollection(
+                openapiContext: ['description' => 'Récupère les unités', 'summary' => 'Récupère les unités'],
+                filters: ['unit.numeric_filter', 'unit.order_filter', 'unit.search_filter']
             ),
             new Post(
                 openapiContext: ['description' => 'Créer une unité', 'summary' => 'Créer une unité'],
@@ -48,7 +55,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         inputFormats: 'json',
         outputFormats: 'jsonld',
-        normalizationContext: ['groups' => ['unit-read'], 'skip_null_values' => false],
+        normalizationContext: [
+            'groups' => ['id', 'unit-read'],
+            'skip_null_values' => false,
+            'openapi_definition_name' => 'unit-read'
+        ],
         denormalizationContext: ['groups' => ['unit-write']],
         order: ['code' => 'asc']
     ),
@@ -105,6 +116,11 @@ class Unit extends Entity {
     ]
     public function getParent(): ?self {
         return $this->parent;
+    }
+
+    #[ApiProperty(required: true), Serializer\Groups('unit-option')]
+    public function getText(): ?string {
+        return $this->code;
     }
 
     public function setBase(float $base): self {

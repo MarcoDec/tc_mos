@@ -1,0 +1,13 @@
+services:
+  unit.numeric_filter:
+    arguments: [ { base: ~ } ]
+    parent: api_platform.doctrine.orm.numeric_filter
+    tags: [ api_platform.filter ]
+  unit.order_filter:
+    arguments: [ { base: ~, code: ~, name: ~, parent.code: ~ } ]
+    parent: api_platform.doctrine.orm.order_filter
+    tags: [ api_platform.filter ]
+  unit.search_filter:
+    arguments: [ { code: exact, name: partial, parent: exact } ]
+    parent: api_platform.doctrine.orm.search_filter
+    tags: [ api_platform.filter ]
