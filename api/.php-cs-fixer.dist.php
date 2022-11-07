@@ -182,7 +182,6 @@ return (new PhpCsFixer\Config())
         'no_unreachable_default_argument_value' => true,
         'no_useless_sprintf' => true,
         'nullable_type_declaration_for_default_null_value' => true,
-        'phpdoc_to_param_type' => true,
         'phpdoc_to_property_type' => true,
         'phpdoc_to_return_type' => true,
         'regular_callable_call' => true,

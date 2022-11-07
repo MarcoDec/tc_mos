@@ -1,8 +1,13 @@
 doctrine:
   dbal:
+    connections:
+      default:
+        mapping_types:
+          enum: string
+        url: '%env(resolve:DATABASE_URL)%'
     types:
+      attribute: App\Doctrine\Type\Purchase\Component\AttributeType
       char: App\Doctrine\Type\CharType
-    url: '%env(resolve:DATABASE_URL)%'
   orm:
     auto_generate_proxy_classes: true
     auto_mapping: true

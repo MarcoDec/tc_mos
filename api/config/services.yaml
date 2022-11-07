@@ -7,6 +7,7 @@ services:
     exclude:
       - ../src/Collection.php
       - ../src/DependencyInjection/
+      - ../src/Doctrine/Type/
       - ../src/Entity/
       - ../src/Kernel.php
     resource: ../src/
@@ -14,6 +15,8 @@ services:
     decorates: doctrine.migrations.migrations_factory
   App\OpenApi\OpenApiFactory:
     decorates: api_platform.openapi.factory
+  App\OpenApi\SchemaFactory:
+    decorates: api_platform.json_schema.schema_factory
   App\Security\LogoutListener:
     tags:
       - dispatcher: security.event_dispatcher.main
