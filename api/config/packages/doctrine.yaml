@@ -5,19 +5,37 @@ doctrine:
         mapping_types:
           enum: string
         url: '%env(resolve:DATABASE_URL)%'
+      migrations:
+        mapping_types:
+          enum: string
+        url: '%env(resolve:DATABASE_ROOT_URL)%'
+    default_connection: default
     types:
       attribute: App\Doctrine\Type\Purchase\Component\AttributeType
       char: App\Doctrine\Type\CharType
   orm:
     auto_generate_proxy_classes: true
-    auto_mapping: true
-    mappings:
-      App:
-        alias: App
-        dir: '%kernel.project_dir%/src/Entity'
-        is_bundle: false
-        prefix: App\Entity
-    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    default_entity_manager: default
+    entity_managers:
+      default:
+        auto_mapping: true
+        connection: default
+        mappings:
+          App:
+            alias: App
+            dir: '%kernel.project_dir%/src/Entity'
+            is_bundle: false
+            prefix: App\Entity
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+      migrations:
+        connection: migrations
+        mappings:
+          App:
+            alias: App
+            dir: '%kernel.project_dir%/src/Entity'
+            is_bundle: false
+            prefix: App\Entity
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
 when@dev:
   doctrine:
     dbal:

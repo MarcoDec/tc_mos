@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20221107080520 extends AbstractMigration {
+final class Version20221107104530 extends AbstractMigration {
     /** @var array<int, string> */
     private const EMPTY = [];
 
@@ -39,58 +39,23 @@ final class Version20221107080520 extends AbstractMigration {
     }
 
     public function up(Schema $schema): void {
+        $this->addSql(<<<'SQL'
+CREATE FUNCTION UCFIRST (s VARCHAR(255))
+    RETURNS VARCHAR(255) DETERMINISTIC
+    RETURN CONCAT(UCASE(LEFT(s, 1)), LCASE(SUBSTRING(s, 2)))
+SQL);
         $this->defineQueries();
         $procedure = self::getVersion();
         $this->addSql("CREATE PROCEDURE $procedure() BEGIN {$this->getQueries()}; END");
         $this->addSql("CALL $procedure");
         $this->addSql("DROP PROCEDURE $procedure");
+        $this->addSql('DROP FUNCTION UCFIRST');
     }
 
     private function defineQueries(): void {
-        $this->push(<<<'SQL'
-CREATE TABLE `attribut` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
-    `description` VARCHAR(255) DEFAULT NULL,
-    `libelle` VARCHAR(100) NOT NULL,
-    `attribut_id_family` VARCHAR(255) DEFAULT NULL,
-    `unit_id` INT DEFAULT NULL,
-    `type` VARCHAR(255) DEFAULT NULL
-)
-SQL);
-        $this->insert('attribut');
-        $this->push(<<<'SQL'
-CREATE TABLE `attribute` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `description` VARCHAR(255) DEFAULT NULL,
-    `name` VARCHAR(255) NOT NULL,
-    `type` ENUM('bool','color','int','percent','text','unit') NOT NULL COMMENT '(DC2Type:attribute)'
-)
-SQL);
-        $this->push(<<<'SQL'
-INSERT INTO `attribute` (`description`, `name`, `type`)
-SELECT `description`, `libelle`, `type`
-FROM `attribut`
-WHERE `statut` = FALSE
-SQL);
-        $this->push(<<<'SQL'
-CREATE TABLE `employee` (
-    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
-    `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `username` VARCHAR(20) DEFAULT NULL
-)
-SQL);
-        ($user = new Employee())
-            ->setUsername('super')
-            ->setPassword($this->hasher->hashPassword($user, 'super'));
-        $this->push(sprintf(
-            'INSERT INTO `employee` (`password`, `username`) VALUES (%s, %s)',
-            $this->platform->quoteStringLiteral((string) $user->getPassword()),
-            $this->platform->quoteStringLiteral((string) $user->getUsername())
-        ));
-        $this->push('DROP TABLE `attribut`');
+        $this->upAttributes();
+        $this->upUnits();
+        $this->upEmployees();
     }
 
     private function getQueries(): string {
@@ -139,5 +104,87 @@ SQL);
 
     private function push(string $query): void {
         $this->queries = $this->queries->push($query);
+    }
+
+    private function upAttributes(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `attribut` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `description` VARCHAR(255) DEFAULT NULL,
+    `libelle` VARCHAR(100) NOT NULL,
+    `attribut_id_family` VARCHAR(255) DEFAULT NULL,
+    `unit_id` INT DEFAULT NULL,
+    `type` VARCHAR(255) DEFAULT NULL
+)
+SQL);
+        $this->insert('attribut');
+        $this->push(<<<'SQL'
+CREATE TABLE `attribute` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `description` VARCHAR(255) DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `type` ENUM('bool','color','int','percent','text','unit') NOT NULL COMMENT '(DC2Type:attribute)'
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `attribute` (`description`, `name`, `type`)
+SELECT `description`, UCFIRST(`libelle`), `type`
+FROM `attribut`
+WHERE `statut` = FALSE
+SQL);
+    }
+
+    private function upEmployees(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `employee` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `username` VARCHAR(20) DEFAULT NULL
+)
+SQL);
+        ($user = new Employee())
+            ->setUsername('super')
+            ->setPassword($this->hasher->hashPassword($user, 'super'));
+        $this->push(sprintf(
+            'INSERT INTO `employee` (`password`, `username`) VALUES (%s, %s)',
+            $this->platform->quoteStringLiteral((string) $user->getPassword()),
+            $this->platform->quoteStringLiteral((string) $user->getUsername())
+        ));
+        $this->push('DROP TABLE `attribut`');
+    }
+
+    private function upUnits(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `unit` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
+    `unit_short_lbl` VARCHAR(6) NOT NULL,
+    `unit_complete_lbl` VARCHAR(50) NOT NULL,
+    `parent` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('unit');
+        $this->push('RENAME TABLE `unit` TO `old_unit`');
+        $this->push(<<<'SQL'
+CREATE TABLE `unit` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
+    `code` VARCHAR(6) NOT NULL COLLATE `utf8mb3_bin`,
+    `name` VARCHAR(50) NOT NULL,
+    `parent_id` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `unit` (`id`, `base`, `code`, `name`, `parent_id`)
+SELECT `id`, `base`, `unit_short_lbl`, UCFIRST(`unit_complete_lbl`), `parent`
+FROM `old_unit`
+SQL);
+        $this->push('DROP TABLE `old_unit`');
+        $this->push('ALTER TABLE `unit` ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`)');
     }
 }

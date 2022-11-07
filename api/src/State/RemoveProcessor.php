@@ -19,6 +19,7 @@ class RemoveProcessor implements ProcessorInterface {
      * @param mixed[] $context
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Entity {
+        $this->em->beginTransaction();
         $this->em
             ->createQueryBuilder()
             ->update($operation->getClass(), 'd')
@@ -27,6 +28,7 @@ class RemoveProcessor implements ProcessorInterface {
             ->setParameter('id', $data->getId())
             ->getQuery()
             ->execute();
+        $this->em->commit();
         return $data;
     }
 }

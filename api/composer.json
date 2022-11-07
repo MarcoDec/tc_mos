@@ -30,7 +30,12 @@
   "extra": {
     "patches": {
       "api-platform/core": {
+        "Unfinalize ApiPlatform\\Doctrine\\Orm\\Filter\\OrderFilter": "./patches/api-platform/core/src/Doctrine/Orm/Filter/OrderFilter.patch",
         "Unfinalize ApiPlatform\\Doctrine\\Orm\\Filter\\SearchFilter": "./patches/api-platform/core/src/Doctrine/Orm/Filter/SearchFilter.patch"
+      },
+      "doctrine/dbal": {
+        "Doctrine\\DBAL\\Schema\\Comparator::doCompareSchemas to protected": "./patches/doctrine/dbal/src/Schema/Comparator.patch",
+        "use App\\Doctrine\\Comparator": "./patches/doctrine/dbal/src/Schema/MySQLSchemaManager.patch"
       }
     },
     "symfony": {

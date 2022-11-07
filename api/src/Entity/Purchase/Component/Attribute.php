@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity\Purchase\Component;
 
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
@@ -14,6 +13,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Purchase\Component\EnumAttributeType;
 use App\Entity\Entity;
+use App\Filter\OrderFilter;
 use App\Filter\SearchFilter;
 use App\State\PersistProcessor;
 use App\State\RemoveProcessor;
