@@ -1,12 +1,21 @@
 security:
   access_control:
+    - { methods: [ POST ], path: ^/api/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { methods: [ GET ], path: '^/api/docs.{_format}', roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/api/\w+, roles: IS_AUTHENTICATED_FULLY }
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-    main:
+    login:
+      context: api
       custom_authenticators:
         - App\Security\ApiAuthenticator
+      lazy: true
+      methods: [ POST ]
+      pattern: ^/api/login$
+    main:
+      context: api
       lazy: true
       logout:
         path: _api_/logout_post

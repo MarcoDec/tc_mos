@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DoctrineMigrations;
 
 use App\Collection;
+use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Hr\Employee\Employee;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
@@ -14,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20221107104530 extends AbstractMigration {
+final class Version20221108082249 extends AbstractMigration {
     /** @var array<int, string> */
     private const EMPTY = [];
 
@@ -142,6 +143,7 @@ CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `roles` SET('ROLE_MANAGEMENT_ADMIN','ROLE_PURCHASE_ADMIN') NOT NULL COMMENT '(DC2Type:role)',
     `username` VARCHAR(20) DEFAULT NULL
 )
 SQL);
@@ -149,8 +151,9 @@ SQL);
             ->setUsername('super')
             ->setPassword($this->hasher->hashPassword($user, 'super'));
         $this->push(sprintf(
-            'INSERT INTO `employee` (`password`, `username`) VALUES (%s, %s)',
+            'INSERT INTO `employee` (`password`, `roles`, `username`) VALUES (%s, %s, %s)',
             $this->platform->quoteStringLiteral((string) $user->getPassword()),
+            $this->platform->quoteStringLiteral(implode(',', [Role::ROLE_MANAGEMENT_ADMIN, Role::ROLE_PURCHASE_ADMIN])),
             $this->platform->quoteStringLiteral((string) $user->getUsername())
         ));
         $this->push('DROP TABLE `attribut`');

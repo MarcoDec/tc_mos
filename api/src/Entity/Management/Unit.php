@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Entity;
 use App\State\PersistProcessor;
 use App\State\RemoveProcessor;
@@ -61,7 +62,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'unit-read'
         ],
         denormalizationContext: ['groups' => ['unit-write']],
-        order: ['code' => 'asc']
+        order: ['code' => 'asc'],
+        security: Role::GRANTED_MANAGEMENT_ADMIN
     ),
     ORM\Entity,
     UniqueEntity(fields: ['code', 'deleted'], ignoreNull: true),

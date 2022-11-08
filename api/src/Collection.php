@@ -16,6 +16,14 @@ class Collection {
     public function __construct(private readonly array $items) {
     }
 
+    /**
+     * @param  non-empty-string  $separator
+     * @return self<int, string>
+     */
+    public static function explode(string $separator, string $array): self {
+        return new self(explode($separator, $array));
+    }
+
     public function count(): int {
         return count($this->items);
     }

@@ -22,6 +22,6 @@ enum EnumAttributeType: string {
 
     /** @return string[] */
     public static function values(): array {
-        return (new Collection(self::cases()))->map(static fn (self $case): string => $case->name)->toArray();
+        return (new Collection(self::cases()))->map(static fn (self $case): string => $case->value)->toArray();
     }
 }

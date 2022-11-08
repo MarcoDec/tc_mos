@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Doctrine\Type\Hr\Employee\Role;
 use App\Doctrine\Type\Purchase\Component\EnumAttributeType;
 use App\Entity\Entity;
 use App\Filter\OrderFilter;
@@ -53,7 +54,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'attribute-read'
         ],
         denormalizationContext: ['groups' => ['attribute-write']],
-        order: ['name' => 'asc']
+        order: ['name' => 'asc'],
+        security: Role::GRANTED_PURCHASE_ADMIN
     ),
     ORM\Entity,
     UniqueEntity(fields: ['name', 'deleted'], ignoreNull: false)

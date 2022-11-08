@@ -7,6 +7,8 @@ namespace App\Entity\Hr\Employee;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
+use App\Collection;
+use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Entity;
 use App\Repository\Hr\Employee\EmployeeRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -74,12 +76,20 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
     ]
     private ?string $password = null;
 
+    /** @var Collection<int, Role> */
+    #[ORM\Column(type: 'role')]
+    private Collection $roles;
+
     #[
         ApiProperty(description: 'Identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
         Serializer\Groups('auth')
     ]
     private ?string $username = null;
+
+    public function __construct() {
+        $this->roles = new Collection([]);
+    }
 
     public function eraseCredentials(): void {
     }
@@ -90,7 +100,7 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
 
     /** @return string[] */
     public function getRoles(): array {
-        return [];
+        return $this->roles->map(static fn (Role $role): string => $role->value)->values();
     }
 
     public function getUserIdentifier(): string {
