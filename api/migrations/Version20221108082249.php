@@ -54,9 +54,11 @@ SQL);
     }
 
     private function defineQueries(): void {
-        $this->upAttributes();
+        // rank 1
         $this->upUnits();
         $this->upEmployees();
+        // rank 2
+        $this->upAttributes();
     }
 
     private function getQueries(): string {
@@ -115,8 +117,8 @@ CREATE TABLE `attribut` (
     `description` VARCHAR(255) DEFAULT NULL,
     `libelle` VARCHAR(100) NOT NULL,
     `attribut_id_family` VARCHAR(255) DEFAULT NULL,
-    `unit_id` INT DEFAULT NULL,
-    `type` VARCHAR(255) DEFAULT NULL
+    `type` VARCHAR(255) DEFAULT NULL,
+    `unit_id` INT DEFAULT NULL
 )
 SQL);
         $this->insert('attribut');
@@ -126,15 +128,18 @@ CREATE TABLE `attribute` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `description` VARCHAR(255) DEFAULT NULL,
     `name` VARCHAR(255) NOT NULL,
-    `type` ENUM('bool','color','int','percent','text','unit') NOT NULL COMMENT '(DC2Type:attribute)'
+    `type` ENUM('bool','color','int','percent','text','unit') NOT NULL COMMENT '(DC2Type:attribute)',
+    `unit_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
 )
 SQL);
         $this->push(<<<'SQL'
-INSERT INTO `attribute` (`description`, `name`, `type`)
-SELECT `description`, UCFIRST(`libelle`), `type`
+INSERT INTO `attribute` (`description`, `name`, `type`, `unit_id`)
+SELECT `description`, UCFIRST(`libelle`), `type`, `unit_id`
 FROM `attribut`
 WHERE `statut` = FALSE
 SQL);
+        $this->push('DROP TABLE `attribut`');
     }
 
     private function upEmployees(): void {
@@ -156,7 +161,6 @@ SQL);
             $this->platform->quoteStringLiteral(implode(',', [Role::ROLE_MANAGEMENT_ADMIN, Role::ROLE_PURCHASE_ADMIN])),
             $this->platform->quoteStringLiteral((string) $user->getUsername())
         ));
-        $this->push('DROP TABLE `attribut`');
     }
 
     private function upUnits(): void {

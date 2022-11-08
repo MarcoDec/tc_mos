@@ -13,9 +13,9 @@ class AttributeType extends EnumType {
         return $value->value;
     }
 
-    /** @param string $value */
-    public function convertToPHPValue($value, AbstractPlatform $platform): EnumAttributeType {
-        return EnumAttributeType::from($value);
+    /** @param null|string $value */
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?EnumAttributeType {
+        return $value === null ? $value : EnumAttributeType::from($value);
     }
 
     public function getName(): string {

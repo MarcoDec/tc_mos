@@ -14,9 +14,12 @@ use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Hr\Employee\Role;
 use App\Doctrine\Type\Purchase\Component\EnumAttributeType;
 use App\Entity\Entity;
+use App\Entity\Management\Unit;
 use App\Filter\OrderFilter;
 use App\Filter\SearchFilter;
+use App\Repository\Purchase\Component\AttributeRepository;
 use App\State\PersistProcessor;
+use App\State\Purchase\Component\AttributeProvider;
 use App\State\RemoveProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -24,8 +27,11 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['description', 'name', 'type']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['description' => 'partial', 'name' => 'partial', 'type' => 'exact']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['description', 'name', 'type', 'unit.code']),
+    ApiFilter(
+        filterClass: SearchFilter::class,
+        properties: ['description' => 'partial', 'name' => 'partial', 'type' => 'exact', 'unit' => 'exact']
+    ),
     ApiResource(
         description: 'Attribut',
         operations: [
@@ -43,6 +49,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             new Patch(
                 inputFormats: ['json' => ['application/merge-patch+json']],
                 openapiContext: ['description' => 'Modifie un attribut', 'summary' => 'Modifie un attribut'],
+                provider: AttributeProvider::class,
                 processor: PersistProcessor::class
             )
         ],
@@ -57,7 +64,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         order: ['name' => 'asc'],
         security: Role::GRANTED_PURCHASE_ADMIN
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: AttributeRepository::class),
     UniqueEntity(fields: ['name', 'deleted'], ignoreNull: false)
 ]
 class Attribute extends Entity {
@@ -75,6 +82,9 @@ class Attribute extends Entity {
 
     #[Assert\NotBlank, ORM\Column(type: 'attribute')]
     private EnumAttributeType $type = EnumAttributeType::TYPE_TEXT;
+
+    #[ORM\ManyToOne(inversedBy: 'attributes')]
+    private ?Unit $unit = null;
 
     #[
         ApiProperty(description: 'Description', required: true, example: 'Longueur de l\'embout'),
@@ -103,6 +113,14 @@ class Attribute extends Entity {
     }
 
     #[
+        ApiProperty(description: 'Unité', readableLink: false, writableLink: false, required: true, example: '/api/units/1'),
+        Serializer\Groups('attribute-read')
+    ]
+    public function getUnit(): ?Unit {
+        return $this->unit;
+    }
+
+    #[
         ApiProperty(description: 'Description', required: false, example: 'Longueur de l\'embout'),
         Serializer\Groups('attribute-write')
     ]
@@ -128,6 +146,20 @@ class Attribute extends Entity {
     ]
     public function setType(string $type): self {
         $this->type = EnumAttributeType::from(trim($type));
+        return $this;
+    }
+
+    #[
+        ApiProperty(description: 'Unité', readableLink: false, writableLink: false, required: false, example: '/api/units/1'),
+        Serializer\Groups('attribute-write')
+    ]
+    public function setUnit(?Unit $unit): self {
+        if ($this->unit === $unit) {
+            return $this;
+        }
+        $this->unit?->removeAttribute($this);
+        $this->unit = $unit;
+        $this->unit?->addAttribute($this);
         return $this;
     }
 }
