@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20221108082249 extends AbstractMigration {
+final class Version20221109134903 extends AbstractMigration {
     /** @var array<int, string> */
     private const EMPTY = [];
 
@@ -171,7 +171,9 @@ CREATE TABLE `unit` (
     `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
     `unit_short_lbl` VARCHAR(6) NOT NULL,
     `unit_complete_lbl` VARCHAR(50) NOT NULL,
-    `parent` INT UNSIGNED DEFAULT NULL
+    `parent` INT UNSIGNED DEFAULT NULL,
+    `lft` INT NOT NULL,
+    `rgt` INT NOT NULL
 )
 SQL);
         $this->insert('unit');
@@ -182,16 +184,33 @@ CREATE TABLE `unit` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
     `code` VARCHAR(6) NOT NULL COLLATE `utf8mb3_bin`,
+    `lft` INT NOT NULL,
+    `lvl` INT NOT NULL,
     `name` VARCHAR(50) NOT NULL,
-    `parent_id` INT UNSIGNED DEFAULT NULL
+    `parent_id` INT UNSIGNED DEFAULT NULL,
+    `rgt` INT NOT NULL,
+    `root_id` INT UNSIGNED DEFAULT NULL
 )
 SQL);
         $this->push(<<<'SQL'
-INSERT INTO `unit` (`id`, `base`, `code`, `name`, `parent_id`)
-SELECT `id`, `base`, `unit_short_lbl`, UCFIRST(`unit_complete_lbl`), `parent`
+INSERT INTO `unit` (`id`, `base`, `code`, `lft`, `lvl`, `name`, `parent_id`, `rgt`, `root_id`)
+SELECT
+    `id`,
+    `base`,
+    `unit_short_lbl`,
+    `lft`,
+    IF(`parent` IS NULL, 0, 1),
+    UCFIRST(`unit_complete_lbl`),
+    `parent`,
+    `rgt`,
+    IFNULL(`parent`, `id`)
 FROM `old_unit`
 SQL);
         $this->push('DROP TABLE `old_unit`');
-        $this->push('ALTER TABLE `unit` ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`)');
+        $this->push(<<<'SQL'
+ALTER TABLE `unit`
+    ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`),
+    ADD CONSTRAINT `IDX_DCBB0C5379066886` FOREIGN KEY (`root_id`) REFERENCES `unit` (`id`)
+SQL);
     }
 }

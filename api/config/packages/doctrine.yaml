@@ -1,3 +1,16 @@
+parameters:
+  app.doctrine.mappings:
+    App:
+      alias: App
+      dir: '%kernel.project_dir%/src/Entity'
+      is_bundle: false
+      prefix: App\Entity
+    gedmo_tree:
+      alias: GedmoTree
+      dir: '%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Tree/Entity'
+      is_bundle: false
+      prefix: Gedmo\Tree\Entity
+      type: attribute
 doctrine:
   dbal:
     connections:
@@ -21,21 +34,11 @@ doctrine:
       default:
         auto_mapping: true
         connection: default
-        mappings:
-          App:
-            alias: App
-            dir: '%kernel.project_dir%/src/Entity'
-            is_bundle: false
-            prefix: App\Entity
+        mappings: '%app.doctrine.mappings%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
       migrations:
         connection: migrations
-        mappings:
-          App:
-            alias: App
-            dir: '%kernel.project_dir%/src/Entity'
-            is_bundle: false
-            prefix: App\Entity
+        mappings: '%app.doctrine.mappings%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
 when@dev:
   doctrine:

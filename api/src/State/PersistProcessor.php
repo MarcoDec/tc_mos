@@ -19,8 +19,10 @@ class PersistProcessor implements ProcessorInterface {
      * @param mixed[] $context
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Entity {
+        $this->em->beginTransaction();
         $this->em->persist($data);
         $this->em->flush();
+        $this->em->commit();
         return $data;
     }
 }

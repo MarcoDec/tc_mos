@@ -21,6 +21,7 @@ use App\State\RemoveProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -63,7 +64,6 @@ use Symfony\Component\Validator\Constraints as Assert;
             new Patch(
                 inputFormats: ['json' => ['application/merge-patch+json']],
                 openapiContext: ['description' => 'Modifie une unité', 'summary' => 'Modifie une unité'],
-                provider: UnitProvider::class,
                 processor: PersistProcessor::class
             )
         ],
@@ -78,6 +78,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         order: ['code' => 'asc'],
         security: Role::GRANTED_MANAGEMENT_ADMIN
     ),
+    Gedmo\Tree(type: 'nested'),
     ORM\Entity(repositoryClass: UnitRepository::class),
     UniqueEntity(fields: ['code', 'deleted'], ignoreNull: true),
     UniqueEntity(fields: ['name', 'deleted'], ignoreNull: true)
@@ -99,13 +100,6 @@ class Unit extends Entity {
     ]
     private float $base = 1;
 
-    /** @var Collection<int, self> */
-    #[
-        Assert\Count(exactly: 0, exactMessage: 'This unit has children.', groups: ['delete']),
-        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)
-    ]
-    private Collection $children;
-
     #[
         ApiProperty(description: 'Code', example: 'g'),
         Assert\Length(min: 1, max: 6),
@@ -114,6 +108,12 @@ class Unit extends Entity {
         Serializer\Groups(['unit-read', 'unit-write'])
     ]
     private ?string $code = null;
+
+    #[Gedmo\TreeLeft, ORM\Column]
+    private ?int $lft = null;
+
+    #[Gedmo\TreeLevel, ORM\Column]
+    private ?int $lvl = null;
 
     #[
         ApiProperty(description: 'Nom', example: 'Gramme'),
@@ -124,26 +124,23 @@ class Unit extends Entity {
     ]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+    #[Gedmo\TreeParent, ORM\ManyToOne(targetEntity: self::class)]
     private ?self $parent = null;
+
+    #[Gedmo\TreeRight, ORM\Column]
+    private ?int $rgt = null;
+
+    #[Gedmo\TreeRoot, ORM\ManyToOne(targetEntity: self::class)]
+    private ?self $root = null;
 
     public function __construct() {
         $this->attributes = new ArrayCollection();
-        $this->children = new ArrayCollection();
     }
 
     public function addAttribute(Attribute $attribute): self {
         if ($this->attributes->contains($attribute) === false) {
             $this->attributes->add($attribute);
             $attribute->setUnit($this);
-        }
-        return $this;
-    }
-
-    public function addChild(self $child): self {
-        if ($this->children->contains($child) === false) {
-            $this->children->add($child);
-            $child->setParent($this);
         }
         return $this;
     }
@@ -157,13 +154,16 @@ class Unit extends Entity {
         return $this->base;
     }
 
-    /** @return Collection<int, self> */
-    public function getChildren(): Collection {
-        return $this->children;
-    }
-
     public function getCode(): ?string {
         return $this->code;
+    }
+
+    public function getLft(): ?int {
+        return $this->lft;
+    }
+
+    public function getLvl(): ?int {
+        return $this->lvl;
     }
 
     public function getName(): ?string {
@@ -178,9 +178,22 @@ class Unit extends Entity {
         return $this->parent;
     }
 
+    public function getRgt(): ?int {
+        return $this->rgt;
+    }
+
+    public function getRoot(): ?self {
+        return $this->root;
+    }
+
     #[ApiProperty(required: true), Serializer\Groups('unit-option')]
     public function getText(): ?string {
         return $this->code;
+    }
+
+    #[Assert\IsFalse(message: 'This unit has children.', groups: ['delete'])]
+    public function hasChildren(): bool {
+        return $this->rgt - $this->lft > 1;
     }
 
     public function removeAttribute(Attribute $attribute): self {
@@ -188,16 +201,6 @@ class Unit extends Entity {
             $this->attributes->removeElement($attribute);
             if ($attribute->getUnit() === $this) {
                 $attribute->setUnit(null);
-            }
-        }
-        return $this;
-    }
-
-    public function removeChild(self $child): self {
-        if ($this->children->contains($child)) {
-            $this->children->removeElement($child);
-            if ($child->getParent() === $this) {
-                $child->setParent(null);
             }
         }
         return $this;
@@ -213,6 +216,16 @@ class Unit extends Entity {
         return $this;
     }
 
+    public function setLft(?int $lft): self {
+        $this->lft = $lft;
+        return $this;
+    }
+
+    public function setLvl(?int $lvl): self {
+        $this->lvl = $lvl;
+        return $this;
+    }
+
     public function setName(?string $name): self {
         $this->name = $name;
         return $this;
@@ -223,12 +236,17 @@ class Unit extends Entity {
         Serializer\Groups('unit-write')
     ]
     public function setParent(?self $parent): self {
-        if ($this->parent === $parent) {
-            return $this;
-        }
-        $this->parent?->removeChild($this);
         $this->parent = $parent;
-        $this->parent?->addChild($this);
+        return $this;
+    }
+
+    public function setRgt(?int $rgt): self {
+        $this->rgt = $rgt;
+        return $this;
+    }
+
+    public function setRoot(?self $root): self {
+        $this->root = $root;
         return $this;
     }
 }

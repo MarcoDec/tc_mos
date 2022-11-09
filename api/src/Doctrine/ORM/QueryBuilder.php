@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Doctrine;
+namespace App\Doctrine\ORM;
 
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder as DoctrineQueryBuilder;

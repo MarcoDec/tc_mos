@@ -21,6 +21,7 @@ class DatabaseLoadCommand extends Command {
         $run('doctrine:database:drop', ['--force' => true]);
         $run('doctrine:database:create');
         $run('doctrine:migrations:migrate', ['--all-or-nothing' => true]);
+        $run(TreeVerifyCommand::getDefaultName());
         return self::SUCCESS;
     }
 }

@@ -5,7 +5,9 @@
     "unit_short_lbl": "U",
     "unit_complete_lbl": "Pièce",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 1,
+    "rgt": 2
   },
   {
     "id": "2",
@@ -13,7 +15,9 @@
     "unit_short_lbl": "ml",
     "unit_complete_lbl": "Mètre linéaire",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 3,
+    "rgt": 4
   },
   {
     "id": "3",
@@ -21,7 +25,9 @@
     "unit_short_lbl": "m²",
     "unit_complete_lbl": "Mètre carré",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 5,
+    "rgt": 8
   },
   {
     "id": "4",
@@ -29,7 +35,9 @@
     "unit_short_lbl": "g",
     "unit_complete_lbl": "Gramme",
     "base": "0.001",
-    "parent": "5"
+    "parent": "5",
+    "lft": 10,
+    "rgt": 11
   },
   {
     "id": "5",
@@ -37,7 +45,9 @@
     "unit_short_lbl": "Kg",
     "unit_complete_lbl": "Kilogramme",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 9,
+    "rgt": 12
   },
   {
     "id": "6",
@@ -45,7 +55,9 @@
     "unit_short_lbl": "L",
     "unit_complete_lbl": "Litre",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 13,
+    "rgt": 16
   },
   {
     "id": "7",
@@ -53,7 +65,9 @@
     "unit_short_lbl": "km",
     "unit_complete_lbl": "Kilomètre",
     "base": "1000",
-    "parent": "10"
+    "parent": "10",
+    "lft": 18,
+    "rgt": 19
   },
   {
     "id": "8",
@@ -61,7 +75,9 @@
     "unit_short_lbl": "ft",
     "unit_complete_lbl": "Pied",
     "base": "0.3048",
-    "parent": "10"
+    "parent": "10",
+    "lft": 20,
+    "rgt": 21
   },
   {
     "id": "9",
@@ -69,7 +85,9 @@
     "unit_short_lbl": "mL",
     "unit_complete_lbl": "Millilitre",
     "base": "0.001",
-    "parent": "6"
+    "parent": "6",
+    "lft": 14,
+    "rgt": 15
   },
   {
     "id": "10",
@@ -77,7 +95,9 @@
     "unit_short_lbl": "m",
     "unit_complete_lbl": "Mètre",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 17,
+    "rgt": 24
   },
   {
     "id": "11",
@@ -85,7 +105,9 @@
     "unit_short_lbl": "s",
     "unit_complete_lbl": "Seconde",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 25,
+    "rgt": 30
   },
   {
     "id": "12",
@@ -93,7 +115,9 @@
     "unit_short_lbl": "h",
     "unit_complete_lbl": "Heure",
     "base": "3600",
-    "parent": "11"
+    "parent": "11",
+    "lft": 26,
+    "rgt": 27
   },
   {
     "id": "13",
@@ -101,7 +125,9 @@
     "unit_short_lbl": "j",
     "unit_complete_lbl": "Jour",
     "base": "86400",
-    "parent": "11"
+    "parent": "11",
+    "lft": 28,
+    "rgt": 29
   },
   {
     "id": "14",
@@ -109,7 +135,9 @@
     "unit_short_lbl": "mm²",
     "unit_complete_lbl": "Millimètre carré",
     "base": "1000000",
-    "parent": "3"
+    "parent": "3",
+    "lft": 6,
+    "rgt": 7
   },
   {
     "id": "15",
@@ -117,7 +145,9 @@
     "unit_short_lbl": "A",
     "unit_complete_lbl": "Ampère",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 31,
+    "rgt": 32
   },
   {
     "id": "16",
@@ -125,7 +155,9 @@
     "unit_short_lbl": "mm",
     "unit_complete_lbl": "Millimètre",
     "base": "1000",
-    "parent": "10"
+    "parent": "10",
+    "lft": 22,
+    "rgt": 23
   },
   {
     "id": "17",
@@ -133,7 +165,9 @@
     "unit_short_lbl": "°C",
     "unit_complete_lbl": "Degré Celsius",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 33,
+    "rgt": 34
   },
   {
     "id": "18",
@@ -141,7 +175,9 @@
     "unit_short_lbl": "V",
     "unit_complete_lbl": "Volt",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 35,
+    "rgt": 36
   },
   {
     "id": "19",
@@ -149,7 +185,9 @@
     "unit_short_lbl": "W",
     "unit_complete_lbl": "Watt",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 37,
+    "rgt": 38
   },
   {
     "id": "20",
@@ -157,7 +195,9 @@
     "unit_short_lbl": "Ω",
     "unit_complete_lbl": "Ohm",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 39,
+    "rgt": 40
   },
   {
     "id": "21",
@@ -165,6 +205,8 @@
     "unit_short_lbl": "fds",
     "unit_complete_lbl": "Fin de série",
     "base": "1",
-    "parent": null
+    "parent": null,
+    "lft": 41,
+    "rgt": 42
   }
 ]
