@@ -63,6 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             new Patch(
                 inputFormats: ['json' => ['application/merge-patch+json']],
                 openapiContext: ['description' => 'Modifie une unité', 'summary' => 'Modifie une unité'],
+                provider: UnitProvider::class,
                 processor: PersistProcessor::class
             )
         ],
@@ -98,6 +99,13 @@ class Unit extends Entity {
     ]
     private float $base = 1;
 
+    /** @var Collection<int, self> */
+    #[
+        Assert\Count(exactly: 0, exactMessage: 'This unit has children.', groups: ['delete']),
+        ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)
+    ]
+    private Collection $children;
+
     #[
         ApiProperty(description: 'Code', example: 'g'),
         Assert\Length(min: 1, max: 6),
@@ -116,17 +124,26 @@ class Unit extends Entity {
     ]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
     private ?self $parent = null;
 
     public function __construct() {
         $this->attributes = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function addAttribute(Attribute $attribute): self {
         if ($this->attributes->contains($attribute) === false) {
             $this->attributes->add($attribute);
             $attribute->setUnit($this);
+        }
+        return $this;
+    }
+
+    public function addChild(self $child): self {
+        if ($this->children->contains($child) === false) {
+            $this->children->add($child);
+            $child->setParent($this);
         }
         return $this;
     }
@@ -138,6 +155,11 @@ class Unit extends Entity {
 
     public function getBase(): float {
         return $this->base;
+    }
+
+    /** @return Collection<int, self> */
+    public function getChildren(): Collection {
+        return $this->children;
     }
 
     public function getCode(): ?string {
@@ -171,6 +193,16 @@ class Unit extends Entity {
         return $this;
     }
 
+    public function removeChild(self $child): self {
+        if ($this->children->contains($child)) {
+            $this->children->removeElement($child);
+            if ($child->getParent() === $this) {
+                $child->setParent(null);
+            }
+        }
+        return $this;
+    }
+
     public function setBase(float $base): self {
         $this->base = $base;
         return $this;
@@ -191,7 +223,12 @@ class Unit extends Entity {
         Serializer\Groups('unit-write')
     ]
     public function setParent(?self $parent): self {
+        if ($this->parent === $parent) {
+            return $this;
+        }
+        $this->parent?->removeChild($this);
         $this->parent = $parent;
+        $this->parent?->addChild($this);
         return $this;
     }
 }

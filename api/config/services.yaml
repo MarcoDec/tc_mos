@@ -7,6 +7,8 @@ services:
     exclude:
       - ../src/Collection.php
       - ../src/DependencyInjection/
+      - ../src/Doctrine/Comparator.php
+      - ../src/Doctrine/QueryBuilder.php
       - ../src/Doctrine/Type/
       - ../src/Entity/
       - ../src/Kernel.php

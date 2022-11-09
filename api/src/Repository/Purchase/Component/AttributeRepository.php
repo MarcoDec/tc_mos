@@ -5,25 +5,22 @@ declare(strict_types=1);
 namespace App\Repository\Purchase\Component;
 
 use App\Entity\Purchase\Component\Attribute;
-use App\Repository\Management\UnitRepository;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Repository\EntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/** @extends ServiceEntityRepository<Attribute> */
-class AttributeRepository extends ServiceEntityRepository {
+/** @extends EntityRepository<Attribute> */
+class AttributeRepository extends EntityRepository {
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Attribute::class);
     }
 
     public function findEager(int $id): ?Attribute {
         /* @phpstan-ignore-next-line */
-        return UnitRepository::joinEager(
-            qb: $this->createQueryBuilder('a')
-                ->where('a.deleted = FALSE')
-                ->andWhere('a.id = :id')
-                ->setParameter('id', $id),
-            join: 'a.unit'
-        )
+        return $this->createQueryBuilder('a')
+            ->addLeftJoin('a.unit', 'u')
+            ->addLeftJoin('u.attributes', 'u_a')
+            ->andWhere('a.id = :id')
+            ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
     }
