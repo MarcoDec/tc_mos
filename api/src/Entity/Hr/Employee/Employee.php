@@ -91,6 +91,13 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
         $this->roles = new Collection([]);
     }
 
+    public function addRole(Role $role): self {
+        if ($this->roles->contains($role) === false) {
+            $this->roles = $this->roles->push($role);
+        }
+        return $this;
+    }
+
     public function eraseCredentials(): void {
     }
 
@@ -109,6 +116,13 @@ class Employee extends Entity implements PasswordAuthenticatedUserInterface, Use
 
     public function getUsername(): ?string {
         return $this->username;
+    }
+
+    public function removeRole(Role $role): self {
+        if ($this->roles->contains($role)) {
+            $this->roles->remove($role);
+        }
+        return $this;
     }
 
     public function setPassword(?string $password): self {

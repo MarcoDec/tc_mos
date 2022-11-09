@@ -24,6 +24,11 @@ class Collection {
         return new self(explode($separator, $array));
     }
 
+    /** @param T $item */
+    public function contains(mixed $item): bool {
+        return in_array($item, $this->items, true);
+    }
+
     public function count(): int {
         return count($this->items);
     }
@@ -82,6 +87,14 @@ class Collection {
      */
     public function push(mixed $item): self {
         return new self([...$this->values(), $item]);
+    }
+
+    /**
+     * @param  T          $removed
+     * @return self<K, T>
+     */
+    public function remove(mixed $removed): self {
+        return $this->filter(static fn (mixed $item): bool => $item !== $removed);
     }
 
     /** @return array<K, T> */

@@ -8,19 +8,26 @@ use App\Collection;
 
 enum Role: string {
     case MANAGEMENT_ADMIN = 'ROLE_MANAGEMENT_ADMIN';
+    case PROJECT_ADMIN = 'ROLE_PROJECT_ADMIN';
     case PURCHASE_ADMIN = 'ROLE_PURCHASE_ADMIN';
 
     /** @var string[] */
-    public const ENUM = [self::ROLE_MANAGEMENT_ADMIN, self::ROLE_PURCHASE_ADMIN];
+    public const ENUM = [self::ROLE_MANAGEMENT_ADMIN, self::ROLE_PROJECT_ADMIN, self::ROLE_PURCHASE_ADMIN];
 
     /** @var string */
     public const GRANTED_MANAGEMENT_ADMIN = 'is_granted(\''.self::ROLE_MANAGEMENT_ADMIN.'\')';
+
+    /** @var string */
+    public const GRANTED_PROJECT_ADMIN = 'is_granted(\''.self::ROLE_PROJECT_ADMIN.'\')';
 
     /** @var string */
     public const GRANTED_PURCHASE_ADMIN = 'is_granted(\''.self::ROLE_PURCHASE_ADMIN.'\')';
 
     /** @var string */
     public const ROLE_MANAGEMENT_ADMIN = 'ROLE_MANAGEMENT_ADMIN';
+
+    /** @var string */
+    public const ROLE_PROJECT_ADMIN = 'ROLE_PROJECT_ADMIN';
 
     /** @var string */
     public const ROLE_PURCHASE_ADMIN = 'ROLE_PURCHASE_ADMIN';

@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20221109134903 extends AbstractMigration {
+final class Version20221109175717 extends AbstractMigration {
     /** @var array<int, string> */
     private const EMPTY = [];
 
@@ -55,8 +55,9 @@ SQL);
 
     private function defineQueries(): void {
         // rank 1
-        $this->upUnits();
         $this->upEmployees();
+        $this->upFamilies();
+        $this->upUnits();
         // rank 2
         $this->upAttributes();
     }
@@ -148,19 +149,75 @@ CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `roles` SET('ROLE_MANAGEMENT_ADMIN','ROLE_PURCHASE_ADMIN') NOT NULL COMMENT '(DC2Type:role)',
+    `roles` SET('ROLE_MANAGEMENT_ADMIN','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN') NOT NULL COMMENT '(DC2Type:role)',
     `username` VARCHAR(20) DEFAULT NULL
 )
 SQL);
         ($user = new Employee())
             ->setUsername('super')
-            ->setPassword($this->hasher->hashPassword($user, 'super'));
+            ->setPassword($this->hasher->hashPassword($user, 'super'))
+            ->addRole(Role::MANAGEMENT_ADMIN)
+            ->addRole(Role::PROJECT_ADMIN)
+            ->addRole(Role::PURCHASE_ADMIN);
         $this->push(sprintf(
             'INSERT INTO `employee` (`password`, `roles`, `username`) VALUES (%s, %s, %s)',
             $this->platform->quoteStringLiteral((string) $user->getPassword()),
-            $this->platform->quoteStringLiteral(implode(',', [Role::ROLE_MANAGEMENT_ADMIN, Role::ROLE_PURCHASE_ADMIN])),
+            $this->platform->quoteStringLiteral(implode(',', $user->getRoles())),
             $this->platform->quoteStringLiteral((string) $user->getUsername())
         ));
+    }
+
+    private function upFamilies(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `product_family` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `customsCode` VARCHAR(255) DEFAULT NULL,
+    `family_name` VARCHAR(25) NOT NULL,
+    `icon` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('product_family');
+        $this->push(<<<'SQL'
+CREATE TABLE `product_subfamily` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `subfamily_name` VARCHAR(50) NOT NULL,
+    `id_family` INT UNSIGNED UNSIGNED NOT NULL
+)
+SQL);
+        $this->insert('product_subfamily');
+        $this->push(<<<'SQL'
+CREATE TABLE `family` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `customs_code` VARCHAR(10) DEFAULT NULL,
+    `lft` INT DEFAULT NULL,
+    `lvl` INT DEFAULT NULL,
+    `name` VARCHAR(30) NOT NULL,
+    `parent_id` INT UNSIGNED DEFAULT NULL,
+    `rgt` INT DEFAULT NULL,
+    `root_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_A5E6215B727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `family` (`id`),
+    CONSTRAINT `IDX_A5E6215B79066886` FOREIGN KEY (`root_id`) REFERENCES `family` (`id`)
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `family` (`old_id`, `customs_code`, `name`)
+SELECT `id`, `customsCode`, UCFIRST(`family_name`)
+FROM `product_family`
+WHERE `statut` = FALSE
+SQL);
+        $this->push('UPDATE `family` SET `root_id` = `id`');
+        $this->push(<<<'SQL'
+INSERT INTO `family` (`old_id`, `name`, `parent_id`, `root_id`)
+SELECT `product_subfamily`.`id`, UCFIRST(`product_subfamily`.`subfamily_name`), `family`.`id`, `family`.`id`
+FROM `product_subfamily`
+INNER JOIN `family` ON `product_subfamily`.`id_family` = `family`.`old_id`
+SQL);
+        $this->push('DROP TABLE `product_family`');
+        $this->push('DROP TABLE `product_subfamily`');
+        $this->push('ALTER TABLE `family` DROP `old_id`');
     }
 
     private function upUnits(): void {
@@ -171,9 +228,7 @@ CREATE TABLE `unit` (
     `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
     `unit_short_lbl` VARCHAR(6) NOT NULL,
     `unit_complete_lbl` VARCHAR(50) NOT NULL,
-    `parent` INT UNSIGNED DEFAULT NULL,
-    `lft` INT NOT NULL,
-    `rgt` INT NOT NULL
+    `parent` INT UNSIGNED DEFAULT NULL
 )
 SQL);
         $this->insert('unit');
@@ -184,26 +239,17 @@ CREATE TABLE `unit` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
     `code` VARCHAR(6) NOT NULL COLLATE `utf8mb3_bin`,
-    `lft` INT NOT NULL,
-    `lvl` INT NOT NULL,
+    `lft` INT DEFAULT NULL,
+    `lvl` INT DEFAULT NULL,
     `name` VARCHAR(50) NOT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL,
-    `rgt` INT NOT NULL,
+    `rgt` INT DEFAULT NULL,
     `root_id` INT UNSIGNED DEFAULT NULL
 )
 SQL);
         $this->push(<<<'SQL'
-INSERT INTO `unit` (`id`, `base`, `code`, `lft`, `lvl`, `name`, `parent_id`, `rgt`, `root_id`)
-SELECT
-    `id`,
-    `base`,
-    `unit_short_lbl`,
-    `lft`,
-    IF(`parent` IS NULL, 0, 1),
-    UCFIRST(`unit_complete_lbl`),
-    `parent`,
-    `rgt`,
-    IFNULL(`parent`, `id`)
+INSERT INTO `unit` (`id`, `base`, `code`, `name`, `parent_id`, `root_id`)
+SELECT `id`, `base`, `unit_short_lbl`, UCFIRST(`unit_complete_lbl`), `parent`, IFNULL(`parent`, `id`)
 FROM `old_unit`
 SQL);
         $this->push('DROP TABLE `old_unit`');

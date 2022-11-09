@@ -84,9 +84,9 @@ class SchemaFactory implements SchemaFactoryInterface {
         $definition->offsetSet(
             key: 'required',
             value: (new Collection($required))
-                ->filter(static fn (string $propertyName): bool => self::filter($context, $refl->getProperty($propertyName)) !== false
-                    && self::filter($context, $refl->getMethod('get'.ucfirst($propertyName))) !== false
-                    && self::filter($context, $refl->getMethod('set'.ucfirst($propertyName))) !== false)
+                ->filter(static fn (string $propertyName): bool => $refl->hasProperty($propertyName) && self::filter($context, $refl->getProperty($propertyName)) !== false
+                    && $refl->hasMethod($get = 'get'.ucfirst($propertyName)) && self::filter($context, $refl->getMethod($get)) !== false
+                    && $refl->hasMethod($set = 'set'.ucfirst($propertyName)) && self::filter($context, $refl->getMethod($set)) !== false)
                 ->values()
         );
         return $schema;

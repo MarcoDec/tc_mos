@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use DoctrineMigrations\Version20221109175717;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -16,12 +17,15 @@ class DatabaseLoadCommand extends Command {
         $run = function (string $cmd, array $options = []) use ($output): void {
             $output->writeln("<fg=green>$cmd</>");
             $options['command'] = $cmd;
-            $this->getApplication()->find($cmd)->run(new ArrayInput($options), $output);
+            $input = new ArrayInput($options);
+            $input->setInteractive(false);
+            $this->getApplication()->find($cmd)->run($input, $output);
         };
         $run('doctrine:database:drop', ['--force' => true]);
         $run('doctrine:database:create');
-        $run('doctrine:migrations:migrate', ['--all-or-nothing' => true]);
-        $run(TreeVerifyCommand::getDefaultName());
+        $run('doctrine:migrations:migrate', ['version' => Version20221109175717::class]);
+        $run(TreeRecoverCommand::getDefaultName());
+        $run('doctrine:migrations:migrate');
         return self::SUCCESS;
     }
 }

@@ -14,7 +14,7 @@ abstract class Entity {
     private bool $deleted = false;
 
     #[
-        ApiProperty(description: 'Id', example: 1),
+        ApiProperty(description: 'Id', required: true, example: 1),
         ORM\Column(options: ['unsigned' => true]),
         ORM\GeneratedValue,
         ORM\Id,
