@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\UnicodeString;
 
-final class Version20221109175717 extends AbstractMigration {
+final class Version20221110092601 extends AbstractMigration {
     /** @var array<int, string> */
     private const EMPTY = [];
 
@@ -55,8 +55,9 @@ SQL);
 
     private function defineQueries(): void {
         // rank 1
+        $this->upComponentFamilies();
         $this->upEmployees();
-        $this->upFamilies();
+        $this->upProductFamilies();
         $this->upUnits();
         // rank 2
         $this->upAttributes();
@@ -143,6 +144,77 @@ SQL);
         $this->push('DROP TABLE `attribut`');
     }
 
+    private function upComponentFamilies(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `component_family` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `family_name` VARCHAR(25) NOT NULL,
+    `copperable` BOOLEAN DEFAULT FALSE NOT NULL,
+    `customsCode` VARCHAR(255) DEFAULT NULL,
+    `icon` INT UNSIGNED DEFAULT NULL,
+    `prefix` VARCHAR(3) DEFAULT NULL
+)
+SQL);
+        $this->insert('component_family');
+        $this->push(<<<'SQL'
+CREATE TABLE `component_subfamily` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `subfamily_name` VARCHAR(50) NOT NULL,
+    `id_family` INT UNSIGNED NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL
+)
+SQL);
+        $this->insert('component_subfamily');
+        $this->push(<<<'SQL'
+CREATE TABLE `family` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` CHAR(3) NOT NULL COMMENT '(DC2Type:char)',
+    `copperable` BOOLEAN DEFAULT FALSE NOT NULL,
+    `customs_code` VARCHAR(10) DEFAULT NULL,
+    `lft` INT DEFAULT NULL,
+    `lvl` INT DEFAULT NULL,
+    `name` VARCHAR(30) NOT NULL,
+    `parent_id` INT UNSIGNED DEFAULT NULL,
+    `rgt` INT DEFAULT NULL,
+    `root_id` INT UNSIGNED DEFAULT NULL,
+    CONSTRAINT `IDX_79FF2A21727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `family` (`id`),
+    CONSTRAINT `IDX_79FF2A2179066886` FOREIGN KEY (`root_id`) REFERENCES `family` (`id`)
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `family` (`old_id`, `code`, `copperable`, `customs_code`, `name`)
+SELECT
+    `id`,
+    UPPER(SUBSTR(IFNULL(`prefix`, `family_name`), 1, 3)),
+    `copperable`,
+    `customsCode`,
+    UCFIRST(`family_name`)
+FROM `component_family`
+WHERE `statut` = FALSE
+SQL);
+        $this->push('UPDATE `family` SET `root_id` = `id`');
+        $this->push(<<<'SQL'
+INSERT INTO `family` (`old_id`, `code`, `copperable`, `name`, `parent_id`, `root_id`)
+SELECT
+    `component_subfamily`.`id`,
+    `family`.`code`,
+    `family`.`copperable`,
+    UCFIRST(`component_subfamily`.`subfamily_name`),
+    `family`.`id`,
+    `family`.`id`
+FROM `component_subfamily`
+INNER JOIN `family` ON `component_subfamily`.`id_family` = `family`.`old_id`
+WHERE `component_subfamily`.`statut` = FALSE
+SQL);
+        $this->push('DROP TABLE `component_family`');
+        $this->push('DROP TABLE `component_subfamily`');
+        $this->push('ALTER TABLE `family` DROP `old_id`');
+        $this->push('RENAME TABLE `family` TO `component_family`');
+    }
+
     private function upEmployees(): void {
         $this->push(<<<'SQL'
 CREATE TABLE `employee` (
@@ -167,7 +239,7 @@ SQL);
         ));
     }
 
-    private function upFamilies(): void {
+    private function upProductFamilies(): void {
         $this->push(<<<'SQL'
 CREATE TABLE `product_family` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -198,8 +270,8 @@ CREATE TABLE `family` (
     `parent_id` INT UNSIGNED DEFAULT NULL,
     `rgt` INT DEFAULT NULL,
     `root_id` INT UNSIGNED DEFAULT NULL,
-    CONSTRAINT `IDX_A5E6215B727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `family` (`id`),
-    CONSTRAINT `IDX_A5E6215B79066886` FOREIGN KEY (`root_id`) REFERENCES `family` (`id`)
+    CONSTRAINT `IDX_C79A60FF727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `family` (`id`),
+    CONSTRAINT `IDX_C79A60FF79066886` FOREIGN KEY (`root_id`) REFERENCES `family` (`id`)
 )
 SQL);
         $this->push(<<<'SQL'
@@ -218,6 +290,7 @@ SQL);
         $this->push('DROP TABLE `product_family`');
         $this->push('DROP TABLE `product_subfamily`');
         $this->push('ALTER TABLE `family` DROP `old_id`');
+        $this->push('RENAME TABLE `family` TO `product_family`');
     }
 
     private function upUnits(): void {

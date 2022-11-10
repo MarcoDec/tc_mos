@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Project\Product;
+namespace App\Entity\Purchase\Component;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
@@ -23,8 +23,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
-        shortName: 'ProductFamily',
-        description: 'Familles de produit',
+        shortName: 'ComponentFamily',
+        description: 'Familles de composant',
         operations: [
             new GetCollection(
                 openapiContext: ['description' => 'Récupère les familles', 'summary' => 'Récupère les familles']
@@ -47,25 +47,37 @@ use Symfony\Component\Validator\Constraints as Assert;
         inputFormats: 'json',
         outputFormats: 'jsonld',
         normalizationContext: [
-            'groups' => ['id', 'product-family-read'],
+            'groups' => ['id', 'component-family-read'],
             'skip_null_values' => false,
-            'openapi_definition_name' => 'product-family-read'
+            'openapi_definition_name' => 'component-family-read'
         ],
-        denormalizationContext: ['groups' => ['product-family-write']],
+        denormalizationContext: ['groups' => ['component-family-write']],
         order: ['name' => 'asc'],
         paginationEnabled: false,
         security: Role::GRANTED_PROJECT_ADMIN
     ),
     Gedmo\Tree(type: 'nested'),
     ORM\Entity(repositoryClass: NestedTreeRepository::class),
-    ORM\Table(name: 'product_family'),
+    ORM\Table(name: 'component_family'),
     UniqueEntity(fields: ['name', 'deleted', 'parent'], ignoreNull: false)
 ]
 class Family extends Entity {
     #[
+        ApiProperty(description: 'Code', example: 'CAB'),
+        Assert\Length(exactly: 3),
+        Assert\NotBlank,
+        ORM\Column(type: 'char', length: 3),
+        Serializer\Groups(['component-family-read', 'component-family-write'])
+    ]
+    private ?string $code = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $copperable = false;
+
+    #[
         Assert\Length(min: 4, max: 10),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['product-family-read', 'product-family-write'])
+        Serializer\Groups(['component-family-read', 'component-family-write'])
     ]
     private ?string $customsCode = null;
 
@@ -76,11 +88,11 @@ class Family extends Entity {
     private ?int $lvl = null;
 
     #[
-        ApiProperty(description: 'Nom', example: 'Faisceaux'),
+        ApiProperty(description: 'Nom', example: 'Câbles'),
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['product-family-read', 'product-family-write'])
+        Serializer\Groups(['component-family-read', 'component-family-write'])
     ]
     private ?string $name = null;
 
@@ -93,15 +105,19 @@ class Family extends Entity {
     #[Gedmo\TreeRoot, ORM\ManyToOne(targetEntity: self::class)]
     private ?self $root = null;
 
+    public function getCode(): ?string {
+        return $this->code;
+    }
+
     #[
         ApiProperty(description: 'Code douanier', required: true, example: '8544300089'),
-        Serializer\Groups('product-family-read')
+        Serializer\Groups('component-family-read')
     ]
     public function getCustomsCode(): ?string {
         return $this->customsCode;
     }
 
-    #[ApiProperty(description: 'Nom complet', required: true, example: 'Faisceaux'), Serializer\Groups('product-family-read')]
+    #[ApiProperty(description: 'Nom complet', required: true, example: 'Câbles'), Serializer\Groups('component-family-read')]
     public function getFullName(): ?string {
         return empty($this->parent) ? $this->name : "{$this->parent->getFullName()}/$this->name";
     }
@@ -119,8 +135,8 @@ class Family extends Entity {
     }
 
     #[
-        ApiProperty(description: 'Parent', readableLink: false, writableLink: false, required: true, example: '/api/product-families/1'),
-        Serializer\Groups('product-family-read')
+        ApiProperty(description: 'Parent', readableLink: false, writableLink: false, required: true, example: '/api/component-families/1'),
+        Serializer\Groups('component-family-read')
     ]
     public function getParent(): ?self {
         return $this->parent;
@@ -140,8 +156,30 @@ class Family extends Entity {
     }
 
     #[
+        ApiProperty(description: 'Cuivré', required: true, example: true),
+        Serializer\Groups('component-family-read')
+    ]
+    public function isCopperable(): bool {
+        return $this->copperable;
+    }
+
+    public function setCode(?string $code): self {
+        $this->code = $code;
+        return $this;
+    }
+
+    #[
+        ApiProperty(description: 'Cuivré', required: false, example: true),
+        Serializer\Groups('component-family-write')
+    ]
+    public function setCopperable(bool $copperable): self {
+        $this->copperable = $copperable;
+        return $this;
+    }
+
+    #[
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
-        Serializer\Groups('product-family-write')
+        Serializer\Groups('component-family-write')
     ]
     public function setCustomsCode(?string $customsCode): self {
         $this->customsCode = $customsCode;
@@ -164,8 +202,8 @@ class Family extends Entity {
     }
 
     #[
-        ApiProperty(description: 'Parent', readableLink: false, writableLink: false, required: false, example: '/api/product-families/1'),
-        Serializer\Groups('product-family-write')
+        ApiProperty(description: 'Parent', readableLink: false, writableLink: false, required: false, example: '/api/component-families/1'),
+        Serializer\Groups('component-family-write')
     ]
     public function setParent(?self $parent): self {
         $this->parent = $parent;

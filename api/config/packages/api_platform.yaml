@@ -1,4 +1,5 @@
 api_platform:
   description: Application de gestion de la production de T-Concept
+  path_segment_name_generator: api_platform.path_segment_name_generator.dash
   title: T-Concept-GPAO
   version: 4.0.0

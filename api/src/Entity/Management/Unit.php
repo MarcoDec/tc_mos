@@ -81,8 +81,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
     ),
     Gedmo\Tree(type: 'nested'),
     ORM\Entity(repositoryClass: UnitRepository::class),
-    UniqueEntity(fields: ['code', 'deleted'], ignoreNull: true),
-    UniqueEntity(fields: ['name', 'deleted'], ignoreNull: true)
+    UniqueEntity(fields: ['code', 'deleted'], ignoreNull: false),
+    UniqueEntity(fields: ['name', 'deleted'], ignoreNull: false)
 ]
 class Unit extends Entity {
     /** @var Collection<int, Attribute> */
