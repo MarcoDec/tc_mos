@@ -14,6 +14,8 @@ use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Entity;
 use App\State\PersistProcessor;
 use App\State\RemoveProcessor;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
@@ -62,6 +64,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(fields: ['name', 'deleted', 'parent'], ignoreNull: false)
 ]
 class Family extends Entity {
+    /** @var Collection<int, Attribute> */
+    #[ORM\ManyToMany(targetEntity: Attribute::class, mappedBy: 'families')]
+    private Collection $attributes;
+
     #[
         ApiProperty(description: 'Code', example: 'CAB'),
         Assert\Length(exactly: 3),
@@ -104,6 +110,23 @@ class Family extends Entity {
 
     #[Gedmo\TreeRoot, ORM\ManyToOne(targetEntity: self::class)]
     private ?self $root = null;
+
+    public function __construct() {
+        $this->attributes = new ArrayCollection();
+    }
+
+    public function addAttribute(Attribute $attribute): self {
+        if ($this->attributes->contains($attribute) === false) {
+            $this->attributes->add($attribute);
+            $attribute->addFamily($this);
+        }
+        return $this;
+    }
+
+    /** @return Collection<int, Attribute> */
+    public function getAttributes(): Collection {
+        return $this->attributes;
+    }
 
     public function getCode(): ?string {
         return $this->code;
@@ -161,6 +184,14 @@ class Family extends Entity {
     ]
     public function isCopperable(): bool {
         return $this->copperable;
+    }
+
+    public function removeAttribute(Attribute $attribute): self {
+        if ($this->attributes->contains($attribute)) {
+            $this->attributes->removeElement($attribute);
+            $attribute->removeFamily($this);
+        }
+        return $this;
     }
 
     public function setCode(?string $code): self {

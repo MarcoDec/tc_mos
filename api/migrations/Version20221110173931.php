@@ -7,33 +7,13 @@ namespace DoctrineMigrations;
 use App\Collection;
 use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Hr\Employee\Employee;
-use Doctrine\DBAL\Connection;
+use App\Migrations\Migration;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Migrations\AbstractMigration;
 use InvalidArgumentException;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\String\UnicodeString;
 
-final class Version20221110092601 extends AbstractMigration {
-    /** @var array<int, string> */
-    private const EMPTY = [];
-
+final class Version20221110173931 extends Migration {
     private UserPasswordHasherInterface $hasher;
-
-    /** @var Collection<int, string> */
-    private Collection $queries;
-
-    public function __construct(Connection $connection, LoggerInterface $logger) {
-        parent::__construct($connection, $logger);
-        $this->queries = new Collection(self::EMPTY);
-    }
-
-    private static function getVersion(): string {
-        $matches = [];
-        preg_match('/Version\d+/', self::class, $matches);
-        return $matches[0];
-    }
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
         $this->hasher = $hasher;
@@ -45,15 +25,11 @@ CREATE FUNCTION UCFIRST (s VARCHAR(255))
     RETURNS VARCHAR(255) DETERMINISTIC
     RETURN CONCAT(UCASE(LEFT(s, 1)), LCASE(SUBSTRING(s, 2)))
 SQL);
-        $this->defineQueries();
-        $procedure = self::getVersion();
-        $this->addSql("CREATE PROCEDURE $procedure() BEGIN {$this->getQueries()}; END");
-        $this->addSql("CALL $procedure");
-        $this->addSql("DROP PROCEDURE $procedure");
+        parent::up($schema);
         $this->addSql('DROP FUNCTION UCFIRST');
     }
 
-    private function defineQueries(): void {
+    protected function defineQueries(): void {
         // rank 1
         $this->upComponentFamilies();
         $this->upEmployees();
@@ -61,14 +37,6 @@ SQL);
         $this->upUnits();
         // rank 2
         $this->upAttributes();
-    }
-
-    private function getQueries(): string {
-        return (new UnicodeString($this->queries->implode(';')))
-            ->replaceMatches('/\s+/', ' ')
-            ->replace('( ', '(')
-            ->replace(' )', ')')
-            ->toString();
     }
 
     private function insert(string $table): void {
@@ -107,10 +75,6 @@ SQL);
         ));
     }
 
-    private function push(string $query): void {
-        $this->queries = $this->queries->push($query);
-    }
-
     private function upAttributes(): void {
         $this->push(<<<'SQL'
 CREATE TABLE `attribut` (
@@ -132,16 +96,26 @@ CREATE TABLE `attribute` (
     `name` VARCHAR(255) NOT NULL,
     `type` ENUM('bool','color','int','percent','text','unit') NOT NULL COMMENT '(DC2Type:attribute)',
     `unit_id` INT UNSIGNED DEFAULT NULL,
+    `attribut_id_family` VARCHAR(255) DEFAULT NULL,
     CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
 )
 SQL);
         $this->push(<<<'SQL'
-INSERT INTO `attribute` (`description`, `name`, `type`, `unit_id`)
-SELECT `description`, UCFIRST(`libelle`), `type`, `unit_id`
+INSERT INTO `attribute` (`description`, `name`, `type`, `unit_id`, `attribut_id_family`)
+SELECT `description`, UCFIRST(`libelle`), `type`, `unit_id`, `attribut_id_family`
 FROM `attribut`
 WHERE `statut` = FALSE
 SQL);
         $this->push('DROP TABLE `attribut`');
+        $this->push(<<<'SQL'
+CREATE TABLE `attribute_family` (
+    `attribute_id` INT UNSIGNED NOT NULL,
+    `family_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_87070F01B6E62EFA` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_87070F01C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`attribute_id`, `family_id`)
+)
+SQL);
     }
 
     private function upComponentFamilies(): void {
@@ -211,7 +185,6 @@ WHERE `component_subfamily`.`statut` = FALSE
 SQL);
         $this->push('DROP TABLE `component_family`');
         $this->push('DROP TABLE `component_subfamily`');
-        $this->push('ALTER TABLE `family` DROP `old_id`');
         $this->push('RENAME TABLE `family` TO `component_family`');
     }
 

@@ -31,11 +31,6 @@ class UnitProvider implements ProviderInterface {
         if (empty($uriVariables['id'])) {
             throw new InvalidArgumentException('$uriVariables[\'id\'] is missing.');
         }
-        dump([
-            '$operation' => $operation,
-            '$uriVariables' => $uriVariables,
-            '$context' => $context
-        ]);
         /* @phpstan-ignore-next-line */
         return $operation instanceof Delete || (
             isset($context['operation_name'])

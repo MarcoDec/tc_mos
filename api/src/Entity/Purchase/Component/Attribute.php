@@ -20,7 +20,10 @@ use App\Filter\SearchFilter;
 use App\Repository\Purchase\Component\AttributeRepository;
 use App\State\PersistProcessor;
 use App\State\Purchase\Component\AttributeProvider;
+use App\State\Purchase\Component\AttributesProvider;
 use App\State\RemoveProcessor;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -37,7 +40,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
         description: 'Attribut',
         operations: [
             new GetCollection(
-                openapiContext: ['description' => 'Récupère les attributs', 'summary' => 'Récupère les attributs']
+                openapiContext: ['description' => 'Récupère les attributs', 'summary' => 'Récupère les attributs'],
+                provider: AttributesProvider::class
             ),
             new Post(
                 openapiContext: ['description' => 'Créer un attribut', 'summary' => 'Créer un attribut'],
@@ -72,6 +76,10 @@ class Attribute extends Entity {
     #[Assert\Length(min: 3, max: 255), ORM\Column(nullable: true)]
     private ?string $description = null;
 
+    /** @var Collection<int, Family> */
+    #[ORM\ManyToMany(targetEntity: Family::class, inversedBy: 'attributes')]
+    private Collection $families;
+
     #[
         ApiProperty(description: 'Nom', example: 'Longueur'),
         Assert\Length(min: 3, max: 255),
@@ -87,12 +95,38 @@ class Attribute extends Entity {
     #[Assert\NotBlank(groups: ['unit']), ORM\ManyToOne(inversedBy: 'attributes')]
     private ?Unit $unit = null;
 
+    public function __construct() {
+        $this->families = new ArrayCollection();
+    }
+
+    public function addFamily(Family $family): self {
+        if ($this->families->contains($family) === false) {
+            $this->families->add($family);
+            $family->addAttribute($this);
+        }
+        return $this;
+    }
+
     #[
         ApiProperty(description: 'Description', required: true, example: 'Longueur de l\'embout'),
         Serializer\Groups('attribute-read')
     ]
     public function getDescription(): ?string {
         return $this->description;
+    }
+
+    /** @return Collection<int, Family> */
+    public function getFamilies(): Collection {
+        return $this->families;
+    }
+
+    /** @return array<int, null|string> */
+    #[
+        ApiProperty(description: 'Familles de composant', readableLink: false, writableLink: false, example: ['Câbles']),
+        Serializer\Groups('attribute-read')
+    ]
+    public function getFamiliesName(): array {
+        return $this->families->map(static fn (Family $family): ?string => $family->getFullName())->getValues();
     }
 
     public function getName(): ?string {
@@ -119,6 +153,14 @@ class Attribute extends Entity {
     ]
     public function getUnit(): ?Unit {
         return $this->unit;
+    }
+
+    public function removeFamily(Family $family): self {
+        if ($this->families->contains($family)) {
+            $this->families->removeElement($family);
+            $family->removeAttribute($this);
+        }
+        return $this;
     }
 
     #[
