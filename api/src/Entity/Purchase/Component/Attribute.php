@@ -25,6 +25,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['description', 'name', 'type', 'unit.code']),
@@ -83,7 +84,7 @@ class Attribute extends Entity {
     #[Assert\NotBlank, ORM\Column(type: 'attribute')]
     private EnumAttributeType $type = EnumAttributeType::TYPE_TEXT;
 
-    #[ORM\ManyToOne(inversedBy: 'attributes')]
+    #[Assert\NotBlank(groups: ['unit']), ORM\ManyToOne(inversedBy: 'attributes')]
     private ?Unit $unit = null;
 
     #[
@@ -161,5 +162,12 @@ class Attribute extends Entity {
         $this->unit = $unit;
         $this->unit?->addAttribute($this);
         return $this;
+    }
+
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context): void {
+        if ($this->type === EnumAttributeType::TYPE_UNIT) {
+            $context->getViolations()->addAll($context->getValidator()->validate(value: $this, groups: ['unit']));
+        }
     }
 }
