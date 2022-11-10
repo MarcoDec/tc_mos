@@ -1,3 +1,4 @@
+A unit without a parent must have a base equal to {{ compared_value }}.: Une unité sans parent doit avoir une base égale à {{ compared_value }}.
 This family has children.: Cette famille a des enfants.
 This unit has children.: Cette unité a des enfants.
 This unit is associated with attributes.: Cette unité est associée à des attributs.

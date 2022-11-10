@@ -25,6 +25,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[
     ApiResource(
@@ -93,6 +94,11 @@ class Unit extends Entity {
 
     #[
         ApiProperty(description: 'Base', example: 1),
+        Assert\IdenticalTo(
+            value: 1.0,
+            message: 'A unit without a parent must have a base equal to {{ compared_value }}.',
+            groups: ['base']
+        ),
         Assert\NotBlank,
         Assert\Positive,
         ORM\Column(options: ['default' => 1]),
@@ -248,5 +254,12 @@ class Unit extends Entity {
     public function setRoot(?self $root): self {
         $this->root = $root;
         return $this;
+    }
+
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context): void {
+        if (empty($this->parent)) {
+            $context->getViolations()->addAll($context->getValidator()->validate(value: $this, groups: ['base']));
+        }
     }
 }
