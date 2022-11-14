@@ -29,6 +29,18 @@ use Symfony\Component\Validator\Constraints as Assert;
         description: 'Familles de composant',
         operations: [
             new GetCollection(
+                uriTemplate: '/component-families/options',
+                openapiContext: [
+                    'description' => 'Récupère les familles pour les select',
+                    'summary' => 'Récupère les familles pour les select'
+                ],
+                normalizationContext: [
+                    'groups' => ['id', 'family-option'],
+                    'skip_null_values' => false,
+                    'openapi_definition_name' => 'family-option'
+                ]
+            ),
+            new GetCollection(
                 openapiContext: ['description' => 'Récupère les familles', 'summary' => 'Récupère les familles']
             ),
             new Post(
@@ -171,6 +183,11 @@ class Family extends Entity {
 
     public function getRoot(): ?self {
         return $this->root;
+    }
+
+    #[ApiProperty(required: true), Serializer\Groups('family-option')]
+    public function getText(): ?string {
+        return $this->getFullName();
     }
 
     #[Assert\IsFalse(message: 'This family has children.', groups: ['delete'])]
