@@ -12,7 +12,6 @@ use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Entity;
 use App\State\FamilyPersistProcessor;
-use App\State\PersistProcessor;
 use App\State\RemoveProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -47,17 +46,12 @@ use Symfony\Component\Validator\Constraints as Assert;
             ),
             new Post(
                 openapiContext: ['description' => 'Créer une famille', 'summary' => 'Créer une famille'],
-                processor: PersistProcessor::class
+                processor: FamilyPersistProcessor::class
             ),
             new Post(
                 uriTemplate: '/component-families/{id}',
-                inputFormats: 'multipart',
                 status: JsonResponse::HTTP_OK,
                 openapiContext: ['description' => 'Modifie une famille', 'summary' => 'Modifie une famille'],
-                denormalizationContext: [
-                    'groups' => ['component-family-write'],
-                    'openapi_definition_name' => 'component-family-multipart'
-                ],
                 processor: FamilyPersistProcessor::class
             ),
             new Delete(
@@ -66,7 +60,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 processor: RemoveProcessor::class
             )
         ],
-        inputFormats: 'json',
+        inputFormats: 'multipart',
         outputFormats: 'jsonld',
         normalizationContext: [
             'groups' => ['id', 'component-family-read'],
@@ -158,6 +152,10 @@ class Family extends Entity {
     ]
     public function getCustomsCode(): ?string {
         return $this->customsCode;
+    }
+
+    public function getDir(): string {
+        return 'component-families';
     }
 
     public function getFile(): ?File {

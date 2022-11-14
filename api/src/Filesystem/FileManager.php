@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filesystem;
 
-use App\Entity\Purchase\Component\Family;
+use App\Entity\Project\Product\Family as ProductFamily;
+use App\Entity\Purchase\Component\Family as ComponentFamily;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -20,12 +21,12 @@ class FileManager {
         }
     }
 
-    public function uploadIcon(Family $family): void {
+    public function uploadIcon(ComponentFamily|ProductFamily $family): void {
         $file = $family->getFile();
         if ($file instanceof UploadedFile === false) {
             return;
         }
-        $dir = new Directory("$this->dir/component-families");
+        $dir = new Directory("$this->dir/{$family->getDir()}");
         if (empty($existing = $dir->startsWith($family->generateIconName())) === false) {
             $this->fs->remove($existing);
         }

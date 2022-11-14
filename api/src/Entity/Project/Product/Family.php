@@ -8,16 +8,17 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Entity;
-use App\State\PersistProcessor;
+use App\State\FamilyPersistProcessor;
 use App\State\RemoveProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,20 +32,21 @@ use Symfony\Component\Validator\Constraints as Assert;
             ),
             new Post(
                 openapiContext: ['description' => 'Créer une famille', 'summary' => 'Créer une famille'],
-                processor: PersistProcessor::class
+                processor: FamilyPersistProcessor::class
+            ),
+            new Post(
+                uriTemplate: '/product-families/{id}',
+                status: JsonResponse::HTTP_OK,
+                openapiContext: ['description' => 'Modifie une famille', 'summary' => 'Modifie une famille'],
+                processor: FamilyPersistProcessor::class
             ),
             new Delete(
                 openapiContext: ['description' => 'Supprime une famille', 'summary' => 'Supprime une famille'],
                 validationContext: ['groups' => ['delete']],
                 processor: RemoveProcessor::class
-            ),
-            new Patch(
-                inputFormats: ['json' => ['application/merge-patch+json']],
-                openapiContext: ['description' => 'Modifie une famille', 'summary' => 'Modifie une famille'],
-                processor: PersistProcessor::class
             )
         ],
-        inputFormats: 'json',
+        inputFormats: 'multipart',
         outputFormats: 'jsonld',
         normalizationContext: [
             'groups' => ['id', 'product-family-read'],
@@ -69,19 +71,16 @@ class Family extends Entity {
     ]
     private ?string $customsCode = null;
 
+    #[Serializer\Groups('product-family-write')]
+    private ?File $file = null;
+
     #[Gedmo\TreeLeft, ORM\Column]
     private ?int $lft = null;
 
     #[Gedmo\TreeLevel, ORM\Column]
     private ?int $lvl = null;
 
-    #[
-        ApiProperty(description: 'Nom', example: 'Faisceaux'),
-        Assert\Length(min: 3, max: 30),
-        Assert\NotBlank,
-        ORM\Column(length: 30),
-        Serializer\Groups(['product-family-read', 'product-family-write'])
-    ]
+    #[Assert\Length(min: 3, max: 30), Assert\NotBlank, ORM\Column(length: 30)]
     private ?string $name = null;
 
     #[Gedmo\TreeParent, ORM\ManyToOne(targetEntity: self::class)]
@@ -93,6 +92,14 @@ class Family extends Entity {
     #[Gedmo\TreeRoot, ORM\ManyToOne(targetEntity: self::class)]
     private ?self $root = null;
 
+    public function generateFullIconName(): string {
+        return $this->generateIconName().($this->file?->getExtension() ?: $this->file?->guessExtension());
+    }
+
+    public function generateIconName(): string {
+        return "{$this->getId()}.";
+    }
+
     #[
         ApiProperty(description: 'Code douanier', required: true, example: '8544300089'),
         Serializer\Groups('product-family-read')
@@ -101,9 +108,22 @@ class Family extends Entity {
         return $this->customsCode;
     }
 
+    public function getDir(): string {
+        return 'product-families';
+    }
+
+    public function getFile(): ?File {
+        return $this->file;
+    }
+
     #[ApiProperty(description: 'Nom complet', required: true, example: 'Faisceaux'), Serializer\Groups('product-family-read')]
     public function getFullName(): ?string {
         return empty($this->parent) ? $this->name : "{$this->parent->getFullName()}/$this->name";
+    }
+
+    #[Serializer\Groups('product-family-read')]
+    public function getIcon(): ?string {
+        return empty($this->file) ? null : explode('/public', $this->file->getPathname())[1];
     }
 
     public function getLft(): ?int {
@@ -114,6 +134,7 @@ class Family extends Entity {
         return $this->lvl;
     }
 
+    #[ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'), Serializer\Groups('product-family-read')]
     public function getName(): ?string {
         return $this->name;
     }
@@ -148,6 +169,11 @@ class Family extends Entity {
         return $this;
     }
 
+    public function setFile(?File $file): self {
+        $this->file = $file;
+        return $this;
+    }
+
     public function setLft(?int $lft): self {
         $this->lft = $lft;
         return $this;
@@ -158,6 +184,7 @@ class Family extends Entity {
         return $this;
     }
 
+    #[ApiProperty(description: 'Nom', required: false, example: 'Faisceaux'), Serializer\Groups('product-family-write')]
     public function setName(?string $name): self {
         $this->name = $name;
         return $this;
