@@ -8,7 +8,6 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Entity;
@@ -20,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -35,9 +35,9 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Récupère les familles pour les select'
                 ],
                 normalizationContext: [
-                    'groups' => ['id', 'family-option'],
+                    'groups' => ['id', 'component-family-option'],
                     'skip_null_values' => false,
-                    'openapi_definition_name' => 'family-option'
+                    'openapi_definition_name' => 'component-family-option'
                 ]
             ),
             new GetCollection(
@@ -47,15 +47,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                 openapiContext: ['description' => 'Créer une famille', 'summary' => 'Créer une famille'],
                 processor: PersistProcessor::class
             ),
+            new Post(
+                uriTemplate: '/component-families/{id}',
+                inputFormats: 'multipart',
+                status: JsonResponse::HTTP_OK,
+                openapiContext: ['description' => 'Modifie une famille', 'summary' => 'Modifie une famille'],
+                denormalizationContext: [
+                    'groups' => ['component-family-write'],
+                    'openapi_definition_name' => 'component-family-multipart'
+                ],
+                processor: PersistProcessor::class
+            ),
             new Delete(
                 openapiContext: ['description' => 'Supprime une famille', 'summary' => 'Supprime une famille'],
                 validationContext: ['groups' => ['delete']],
                 processor: RemoveProcessor::class
-            ),
-            new Patch(
-                inputFormats: ['json' => ['application/merge-patch+json']],
-                openapiContext: ['description' => 'Modifie une famille', 'summary' => 'Modifie une famille'],
-                processor: PersistProcessor::class
             )
         ],
         inputFormats: 'json',
@@ -185,7 +191,7 @@ class Family extends Entity {
         return $this->root;
     }
 
-    #[ApiProperty(required: true), Serializer\Groups('family-option')]
+    #[ApiProperty(required: true), Serializer\Groups('component-family-option')]
     public function getText(): ?string {
         return $this->getFullName();
     }

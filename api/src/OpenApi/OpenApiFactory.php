@@ -18,7 +18,7 @@ class OpenApiFactory implements OpenApiFactoryInterface {
     /** @param array{base_url?: string} $context */
     public function __invoke(array $context = []): OpenApi {
         $openapi = $this->wrapped->__invoke($context);
-        $paths = clone $openapi->getPaths();
+        $paths = $openapi->getPaths();
         foreach ($openapi->getPaths()->getPaths() as $path => $item) {
             /** @var PathItem $item */
             $get = $item->getGet();
@@ -31,7 +31,7 @@ class OpenApiFactory implements OpenApiFactoryInterface {
             }
             $post = $item->getPost();
             if (empty($post) === false) {
-                $item = $item->withPost($post->withResponses(
+                $item = $item->withPost($post = $post->withResponses(
                     (new Collection($post->getResponses()))
                         ->filter(static fn (Response $response): bool => $response->getDescription() !== 'none')
                         ->toArray()

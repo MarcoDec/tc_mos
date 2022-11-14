@@ -27,10 +27,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 openapiContext: [
                     'description' => 'Connexion',
                     'responses' => [
-                        204 => ['description' => 'Connexion réussie'],
-                        400 => ['description' => 'none'],
-                        401 => ['description' => 'Unauthorized'],
-                        422 => ['description' => 'none']
+                        JsonResponse::HTTP_NO_CONTENT => ['description' => 'Connexion réussie'],
+                        JsonResponse::HTTP_BAD_REQUEST => ['description' => 'none'],
+                        JsonResponse::HTTP_UNAUTHORIZED => ['description' => 'Unauthorized'],
+                        JsonResponse::HTTP_UNPROCESSABLE_ENTITY => ['description' => 'none']
                     ],
                     'summary' => 'Connexion'
                 ],
@@ -48,9 +48,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Déconnexion',
                     'requestBody' => ['content' => []],
                     'responses' => [
-                        204 => ['description' => 'Déconnexion réussie'],
-                        400 => ['description' => 'none'],
-                        422 => ['description' => 'none']
+                        JsonResponse::HTTP_NO_CONTENT => ['description' => 'Déconnexion réussie'],
+                        JsonResponse::HTTP_BAD_REQUEST => ['description' => 'none'],
+                        JsonResponse::HTTP_UNPROCESSABLE_ENTITY => ['description' => 'none']
                     ],
                     'summary' => 'Déconnexion'
                 ],
