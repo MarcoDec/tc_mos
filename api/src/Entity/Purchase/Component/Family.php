@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Entity;
+use App\State\FamilyPersistProcessor;
 use App\State\PersistProcessor;
 use App\State\RemoveProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,6 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -56,7 +58,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'groups' => ['component-family-write'],
                     'openapi_definition_name' => 'component-family-multipart'
                 ],
-                processor: PersistProcessor::class
+                processor: FamilyPersistProcessor::class
             ),
             new Delete(
                 openapiContext: ['description' => 'Supprime une famille', 'summary' => 'Supprime une famille'],
@@ -86,13 +88,7 @@ class Family extends Entity {
     #[ORM\ManyToMany(targetEntity: Attribute::class, mappedBy: 'families')]
     private Collection $attributes;
 
-    #[
-        ApiProperty(description: 'Code', example: 'CAB'),
-        Assert\Length(exactly: 3),
-        Assert\NotBlank,
-        ORM\Column(type: 'char', length: 3),
-        Serializer\Groups(['component-family-read', 'component-family-write'])
-    ]
+    #[Assert\Length(exactly: 3), Assert\NotBlank, ORM\Column(type: 'char', length: 3)]
     private ?string $code = null;
 
     #[ORM\Column(options: ['default' => false])]
@@ -105,19 +101,16 @@ class Family extends Entity {
     ]
     private ?string $customsCode = null;
 
+    #[Serializer\Groups('component-family-write')]
+    private ?File $file = null;
+
     #[Gedmo\TreeLeft, ORM\Column]
     private ?int $lft = null;
 
     #[Gedmo\TreeLevel, ORM\Column]
     private ?int $lvl = null;
 
-    #[
-        ApiProperty(description: 'Nom', example: 'Câbles'),
-        Assert\Length(min: 3, max: 30),
-        Assert\NotBlank,
-        ORM\Column(length: 30),
-        Serializer\Groups(['component-family-read', 'component-family-write'])
-    ]
+    #[Assert\Length(min: 3, max: 30), Assert\NotBlank, ORM\Column(length: 30)]
     private ?string $name = null;
 
     #[Gedmo\TreeParent, ORM\ManyToOne(targetEntity: self::class)]
@@ -141,11 +134,20 @@ class Family extends Entity {
         return $this;
     }
 
+    public function generateFullIconName(): string {
+        return $this->generateIconName().($this->file?->getExtension() ?: $this->file?->guessExtension());
+    }
+
+    public function generateIconName(): string {
+        return "{$this->getId()}.";
+    }
+
     /** @return Collection<int, Attribute> */
     public function getAttributes(): Collection {
         return $this->attributes;
     }
 
+    #[ApiProperty(description: 'Code', required: true, example: 'CAB'), Serializer\Groups('component-family-read')]
     public function getCode(): ?string {
         return $this->code;
     }
@@ -158,9 +160,18 @@ class Family extends Entity {
         return $this->customsCode;
     }
 
+    public function getFile(): ?File {
+        return $this->file;
+    }
+
     #[ApiProperty(description: 'Nom complet', required: true, example: 'Câbles'), Serializer\Groups('component-family-read')]
     public function getFullName(): ?string {
         return empty($this->parent) ? $this->name : "{$this->parent->getFullName()}/$this->name";
+    }
+
+    #[Serializer\Groups('component-family-read')]
+    public function getIcon(): ?string {
+        return empty($this->file) ? null : explode('/public', $this->file->getPathname())[1];
     }
 
     public function getLft(): ?int {
@@ -171,6 +182,7 @@ class Family extends Entity {
         return $this->lvl;
     }
 
+    #[ApiProperty(description: 'Nom', required: true, example: 'Câbles'), Serializer\Groups('component-family-read')]
     public function getName(): ?string {
         return $this->name;
     }
@@ -217,6 +229,7 @@ class Family extends Entity {
         return $this;
     }
 
+    #[ApiProperty(description: 'Code', required: false, example: 'CAB'), Serializer\Groups('component-family-write')]
     public function setCode(?string $code): self {
         $this->code = $code;
         return $this;
@@ -240,6 +253,11 @@ class Family extends Entity {
         return $this;
     }
 
+    public function setFile(?File $file): self {
+        $this->file = $file;
+        return $this;
+    }
+
     public function setLft(?int $lft): self {
         $this->lft = $lft;
         return $this;
@@ -250,6 +268,7 @@ class Family extends Entity {
         return $this;
     }
 
+    #[ApiProperty(description: 'Nom', required: false, example: 'Câbles'), Serializer\Groups('component-family-write')]
     public function setName(?string $name): self {
         $this->name = $name;
         return $this;

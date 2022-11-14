@@ -22,6 +22,7 @@ class DatabaseLoadCommand extends Command {
             $this->getApplication()->find($cmd)->run($input, $output);
         };
         $run('doctrine:database:drop', ['--force' => true]);
+        $run(CleanUploadsCommand::getDefaultName());
         $run('doctrine:database:create');
         $run('doctrine:migrations:migrate', ['version' => Version20221110173931::class]);
         $run(TreeRecoverCommand::getDefaultName());

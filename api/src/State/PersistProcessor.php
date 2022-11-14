@@ -22,7 +22,11 @@ class PersistProcessor implements ProcessorInterface {
         $this->em->beginTransaction();
         $this->em->persist($data);
         $this->em->flush();
+        $this->postPersist($data);
         $this->em->commit();
         return $data;
+    }
+
+    protected function postPersist(Entity $data): void {
     }
 }

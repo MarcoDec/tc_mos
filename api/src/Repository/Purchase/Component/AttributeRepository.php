@@ -93,7 +93,7 @@ class AttributeRepository extends EntityRepository {
     private function joinItem(QueryBuilder $qb, QueryNameGenerator $generator): QueryBuilder {
         $qb = $this->resetDQLJoin($qb);
         $root = $qb->getRootAliases()[0];
-        $unit = (new Collection($qb->getAllAliases()))->find(static fn (string $alias): bool => str_starts_with($alias, 'unit_'));
+        $unit = (new Collection($qb->getAllAliases()))->startsWith('unit_');
         if (empty($unit)) {
             $qb->addLeftJoin("$root.unit", $unit = $generator->generateJoinAlias('unit'));
         }

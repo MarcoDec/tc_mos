@@ -95,6 +95,16 @@ class Collection {
     }
 
     /**
+     * @template L of int|string
+     * @template U
+     * @param  array<L, U>    $items
+     * @return self<K|L, T|U>
+     */
+    public function merge(array $items): self {
+        return new self(array_merge($this->items, $items));
+    }
+
+    /**
      * @param  T            $item
      * @return self<int, T>
      */
@@ -108,6 +118,11 @@ class Collection {
      */
     public function remove(mixed $removed): self {
         return $this->filter(static fn (mixed $item): bool => $item !== $removed);
+    }
+
+    public function startsWith(string $start): ?string {
+        /* @phpstan-ignore-next-line */
+        return $this->find(static fn (string $item): bool => str_starts_with($item, $start));
     }
 
     /** @return array<K, T> */

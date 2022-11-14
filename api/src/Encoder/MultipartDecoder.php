@@ -28,6 +28,7 @@ class MultipartDecoder implements DecoderInterface {
                     return $element;
                 }
             })
+            ->merge($request->files->all())
             ->toArray();
     }
 

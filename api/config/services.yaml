@@ -11,8 +11,12 @@ services:
       - ../src/Doctrine/ORM/
       - ../src/Doctrine/Type/
       - ../src/Entity/
+      - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
     resource: ../src/
+  App\Filesystem\FileManager:
+    arguments:
+      $dir: '%kernel.project_dir%/public/uploads'
   App\Migrations\Factory:
     decorates: doctrine.migrations.migrations_factory
   App\OpenApi\OpenApiFactory:
