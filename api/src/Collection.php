@@ -42,6 +42,19 @@ class Collection {
     }
 
     /**
+     * @param  callable(T): bool $call
+     * @return null|T
+     */
+    public function find(callable $call): mixed {
+        foreach ($this->items as $item) {
+            if ($call($item)) {
+                return $item;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @param  K      $key
      * @return null|T
      */

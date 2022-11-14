@@ -23,6 +23,7 @@ services:
     autoconfigure: true
     arguments:
       $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection
+      $itemExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.item
     tags: [ doctrine.repository_service ]
   App\Security\LogoutListener:
     tags:

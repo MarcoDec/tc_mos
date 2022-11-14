@@ -21,6 +21,6 @@ class AttributesProvider implements ProviderInterface {
      * @return Attribute[]|Paginator<Attribute>
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|Paginator {
-        return $this->em->getRepository(Attribute::class)->provide($operation, $uriVariables, $context);
+        return $this->em->getRepository(Attribute::class)->provideCollection($operation, $uriVariables, $context);
     }
 }
