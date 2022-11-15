@@ -71,7 +71,7 @@ class Family extends Entity {
     ]
     private ?string $customsCode = null;
 
-    #[Serializer\Groups('product-family-write')]
+    #[Assert\Image,Serializer\Groups('product-family-write')]
     private ?File $file = null;
 
     #[Gedmo\TreeLeft, ORM\Column]
