@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
@@ -46,6 +47,10 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
             new Post(
                 openapiContext: ['description' => 'Créer un attribut', 'summary' => 'Créer un attribut'],
                 processor: PersistProcessor::class
+            ),
+            new Get(
+                openapiContext: ['description' => 'Récupère un attribut', 'summary' => 'Récupère un attribut'],
+                provider: AttributeProvider::class
             ),
             new Delete(
                 openapiContext: ['description' => 'Supprime un attribut', 'summary' => 'Supprime un attribut'],

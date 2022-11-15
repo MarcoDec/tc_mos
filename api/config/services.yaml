@@ -23,7 +23,19 @@ services:
     decorates: api_platform.openapi.factory
   App\OpenApi\SchemaFactory:
     decorates: api_platform.json_schema.schema_factory
+  App\Repository\Management\UnitRepository:
+    autoconfigure: true
+    arguments:
+      $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection
+      $itemExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.item
+    tags: [ doctrine.repository_service ]
   App\Repository\Purchase\Component\AttributeRepository:
+    autoconfigure: true
+    arguments:
+      $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection
+      $itemExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.item
+    tags: [ doctrine.repository_service ]
+  App\Repository\Purchase\Component\FamilyRepository:
     autoconfigure: true
     arguments:
       $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection

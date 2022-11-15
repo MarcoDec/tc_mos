@@ -8,16 +8,19 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Hr\Employee\Role;
 use App\Entity\Entity;
+use App\Repository\Purchase\Component\FamilyRepository;
 use App\State\FamilyPersistProcessor;
+use App\State\PersistProcessor;
+use App\State\Purchase\Component\FamilyProvider;
 use App\State\RemoveProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -58,6 +61,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                 openapiContext: ['description' => 'Supprime une famille', 'summary' => 'Supprime une famille'],
                 validationContext: ['groups' => ['delete']],
                 processor: RemoveProcessor::class
+            ),
+            new Patch(
+                inputFormats: ['json' => ['application/merge-patch+json']],
+                openapiContext: ['description' => 'Modifie les attributs', 'summary' => 'Modifie les attributs'],
+                normalizationContext: [
+                    'groups' => ['id', 'component-family-attribute'],
+                    'skip_null_values' => false,
+                    'openapi_definition_name' => 'component-family-read-attribute'
+                ],
+                denormalizationContext: [
+                    'groups' => ['component-family-attribute'],
+                    'openapi_definition_name' => 'component-family-write-attribute'
+                ],
+                provider: FamilyProvider::class,
+                processor: PersistProcessor::class
             )
         ],
         inputFormats: 'multipart',
@@ -73,13 +91,23 @@ use Symfony\Component\Validator\Constraints as Assert;
         security: Role::GRANTED_PROJECT_ADMIN
     ),
     Gedmo\Tree(type: 'nested'),
-    ORM\Entity(repositoryClass: NestedTreeRepository::class),
+    ORM\Entity(repositoryClass: FamilyRepository::class),
     ORM\Table(name: 'component_family'),
     UniqueEntity(fields: ['name', 'deleted', 'parent'], ignoreNull: false)
 ]
 class Family extends Entity {
     /** @var Collection<int, Attribute> */
-    #[ORM\ManyToMany(targetEntity: Attribute::class, mappedBy: 'families')]
+    #[
+        ApiProperty(
+            description: 'Attributs',
+            readableLink: false,
+            writableLink: false,
+            required: true,
+            example: ['/api/attributes/1', '/api/attributes/2']
+        ),
+        ORM\ManyToMany(targetEntity: Attribute::class, mappedBy: 'families'),
+        Serializer\Groups('component-family-attribute')
+    ]
     private Collection $attributes;
 
     #[Assert\Length(exactly: 3), Assert\NotBlank, ORM\Column(type: 'char', length: 3)]
@@ -95,7 +123,7 @@ class Family extends Entity {
     ]
     private ?string $customsCode = null;
 
-    #[Assert\Image,Serializer\Groups('component-family-write')]
+    #[Assert\Image, Serializer\Groups('component-family-write')]
     private ?File $file = null;
 
     #[Gedmo\TreeLeft, ORM\Column]

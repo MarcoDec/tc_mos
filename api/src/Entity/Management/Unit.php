@@ -48,13 +48,13 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
                 openapiContext: ['description' => 'Récupère les unités', 'summary' => 'Récupère les unités'],
                 filters: ['unit.numeric_filter', 'unit.order_filter', 'unit.search_filter']
             ),
-            new Get(
-                openapiContext: ['description' => 'Récupère une unité', 'summary' => 'Récupère une unité'],
-                provider: UnitProvider::class
-            ),
             new Post(
                 openapiContext: ['description' => 'Créer une unité', 'summary' => 'Créer une unité'],
                 processor: PersistProcessor::class
+            ),
+            new Get(
+                openapiContext: ['description' => 'Récupère une unité', 'summary' => 'Récupère une unité'],
+                provider: UnitProvider::class
             ),
             new Delete(
                 openapiContext: ['description' => 'Supprime une unité', 'summary' => 'Supprime une unité'],
