@@ -32,19 +32,23 @@ use Symfony\Component\Validator\Constraints as Assert;
         operations: [
             new GetCollection(
                 openapiContext: ['description' => 'Récupère les transporteurs', 'summary' => 'Récupère les transporteurs'],
+                security: Role::GRANTED_LOGISTICS_READER,
                 filters: ['unit.numeric_filter', 'unit.order_filter', 'unit.search_filter']
             ),
             new Post(
                 openapiContext: ['description' => 'Créer un transporteur', 'summary' => 'Créer un transporteur'],
+                security: Role::GRANTED_LOGISTICS_WRITER,
                 processor: PersistProcessor::class
             ),
             new Delete(
                 openapiContext: ['description' => 'Supprime un transporteur', 'summary' => 'Supprime un transporteur'],
+                security: Role::GRANTED_LOGISTICS_ADMIN,
                 processor: RemoveProcessor::class
             ),
             new Patch(
                 inputFormats: ['json' => ['application/merge-patch+json']],
                 openapiContext: ['description' => 'Modifie un transporteur', 'summary' => 'Modifie un transporteur'],
+                security: Role::GRANTED_LOGISTICS_WRITER,
                 processor: PersistProcessor::class
             )
         ],
@@ -56,8 +60,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'carrier-read'
         ],
         denormalizationContext: ['groups' => ['address', 'carrier-write']],
-        order: ['name' => 'asc'],
-        security: Role::GRANTED_MANAGEMENT_ADMIN
+        order: ['name' => 'asc']
     ),
     ORM\Entity
 ]

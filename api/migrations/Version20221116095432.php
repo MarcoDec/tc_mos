@@ -227,13 +227,14 @@ CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `roles` SET('ROLE_MANAGEMENT_ADMIN','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN') NOT NULL COMMENT '(DC2Type:role)',
+    `roles` SET('ROLE_LOGISTICS_ADMIN','ROLE_LOGISTICS_READER','ROLE_LOGISTICS_WRITER','ROLE_MANAGEMENT_ADMIN','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN','ROLE_USER') NOT NULL COMMENT '(DC2Type:role)',
     `username` VARCHAR(20) DEFAULT NULL
 )
 SQL);
         ($user = new Employee())
             ->setUsername('super')
             ->setPassword($this->hasher->hashPassword($user, 'super'))
+            ->addRole(Role::LOGISTICS_ADMIN)
             ->addRole(Role::MANAGEMENT_ADMIN)
             ->addRole(Role::PROJECT_ADMIN)
             ->addRole(Role::PURCHASE_ADMIN);

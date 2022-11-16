@@ -25,6 +25,7 @@ security:
     users:
       entity:
         class: App\Entity\Hr\Employee\Employee
+  role_hierarchy: !php/const App\Doctrine\Type\Hr\Employee\Role::ROLE_HIERARCHY
 when@test:
   security:
     password_hashers:
