@@ -12,7 +12,7 @@ use Doctrine\DBAL\Schema\Schema;
 use InvalidArgumentException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221110173931 extends Migration {
+final class Version20221116095432 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -31,6 +31,7 @@ SQL);
 
     protected function defineQueries(): void {
         // rank 1
+        $this->upCarriers();
         $this->upComponentFamilies();
         $this->upEmployees();
         $this->upProductFamilies();
@@ -59,7 +60,7 @@ SQL);
                             ->map(function (bool|float|int|null|string $column): string {
                                 if (is_string($column)) {
                                     $column = trim($column);
-                                    if ($column === '') {
+                                    if ($column === '' || $column === '0000-00-00 00:00:00') {
                                         $column = null;
                                     }
                                 }
@@ -116,6 +117,38 @@ CREATE TABLE `attribute_family` (
     PRIMARY KEY(`attribute_id`, `family_id`)
 )
 SQL);
+    }
+
+    private function upCarriers(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `carrier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `nom` TEXT NOT NULL,
+    `date_creation` DATETIME DEFAULT NULL,
+    `date_modification` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `id_user_creation` INT UNSIGNED DEFAULT NULL,
+    `id_user_modification` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('carrier');
+        $this->push('RENAME TABLE `carrier` TO `old_carrier`');
+        $this->push(<<<'SQL'
+CREATE TABLE `carrier` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
+    `address_city` VARCHAR(50) DEFAULT NULL,
+    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `address_email` VARCHAR(80) DEFAULT NULL,
+    `address_phone_number` VARCHAR(18) DEFAULT NULL,
+    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `name` VARCHAR(50) NOT NULL
+)
+SQL);
+        $this->push('INSERT INTO `carrier` (`name`) SELECT `nom` FROM `old_carrier` WHERE `statut` = FALSE');
+        $this->push('DROP TABLE `old_carrier`');
     }
 
     private function upComponentFamilies(): void {
