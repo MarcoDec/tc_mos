@@ -32,8 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         operations: [
             new GetCollection(
                 openapiContext: ['description' => 'Récupère les transporteurs', 'summary' => 'Récupère les transporteurs'],
-                security: Role::GRANTED_LOGISTICS_READER,
-                filters: ['unit.numeric_filter', 'unit.order_filter', 'unit.search_filter']
+                security: Role::GRANTED_LOGISTICS_READER
             ),
             new Post(
                 openapiContext: ['description' => 'Créer un transporteur', 'summary' => 'Créer un transporteur'],

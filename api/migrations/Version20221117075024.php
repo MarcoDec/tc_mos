@@ -12,7 +12,7 @@ use Doctrine\DBAL\Schema\Schema;
 use InvalidArgumentException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221116095432 extends Migration {
+final class Version20221117075024 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -32,6 +32,7 @@ SQL);
     protected function defineQueries(): void {
         // rank 1
         $this->upCarriers();
+        $this->upColors();
         $this->upComponentFamilies();
         $this->upEmployees();
         $this->upProductFamilies();
@@ -149,6 +150,28 @@ CREATE TABLE `carrier` (
 SQL);
         $this->push('INSERT INTO `carrier` (`name`) SELECT `nom` FROM `old_carrier` WHERE `statut` = FALSE');
         $this->push('DROP TABLE `old_carrier`');
+    }
+
+    private function upColors(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `couleur` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `ral` VARCHAR(10) DEFAULT NULL,
+    `rgb` VARCHAR(7) DEFAULT NULL
+)
+SQL);
+        $this->insert('couleur');
+        $this->push(<<<'SQL'
+CREATE TABLE `color` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(20) NOT NULL,
+    `rgb` CHAR(7) NOT NULL COMMENT '(DC2Type:char)'
+)
+SQL);
+        $this->push('INSERT INTO `color` (`name`, `rgb`) SELECT `name`, `rgb` FROM `couleur`');
+        $this->push('DROP TABLE `couleur`');
     }
 
     private function upComponentFamilies(): void {

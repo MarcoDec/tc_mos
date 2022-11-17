@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use DoctrineMigrations\Version20221116095432;
+use DoctrineMigrations\Version20221117075024;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -24,7 +24,7 @@ class DatabaseLoadCommand extends Command {
         $run('doctrine:database:drop', ['--force' => true]);
         $run(CleanUploadsCommand::getDefaultName());
         $run('doctrine:database:create');
-        $run('doctrine:migrations:migrate', ['version' => Version20221116095432::class]);
+        $run('doctrine:migrations:migrate', ['version' => Version20221117075024::class]);
         $run(TreeRecoverCommand::getDefaultName());
         $run('doctrine:migrations:migrate');
         return self::SUCCESS;
