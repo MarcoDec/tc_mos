@@ -21,6 +21,8 @@ services:
     decorates: doctrine.migrations.migrations_factory
   App\OpenApi\OpenApiFactory:
     decorates: api_platform.openapi.factory
+  App\OpenApi\OpenApiNormalizer:
+    decorates: api_platform.openapi.normalizer
   App\OpenApi\SchemaFactory:
     decorates: api_platform.json_schema.schema_factory
   App\Repository\Management\UnitRepository:

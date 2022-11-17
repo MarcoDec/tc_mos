@@ -80,6 +80,15 @@ class Collection {
         return new self(array_combine($keys = $this->keys()->toArray(), array_map($call, $this->items, $keys)));
     }
 
+    /**
+     * @template L of int|string
+     * @param  callable(K, T): L $call
+     * @return self<L, T>
+     */
+    public function mapKeys(callable $call): self {
+        return new self(array_combine(array_map($call, $this->keys()->toArray(), $this->items), $this->items));
+    }
+
     /** @return self<int, K> */
     public function maxKeys(): self {
         $keys = new self(self::EMPTY);
@@ -118,6 +127,23 @@ class Collection {
      */
     public function remove(mixed $removed): self {
         return $this->filter(static fn (mixed $item): bool => $item !== $removed);
+    }
+
+    /**
+     * @param  callable(T, T): int $call
+     * @return self<K, T>
+     */
+    public function sortBy(callable $call): self {
+        $items = $this->items;
+        usort($items, $call);
+        return new self($items);
+    }
+
+    /** @return self<K, T> */
+    public function sortKeys(): self {
+        $items = $this->items;
+        ksort($items);
+        return new self($items);
     }
 
     public function startsWith(string $start): ?string {
