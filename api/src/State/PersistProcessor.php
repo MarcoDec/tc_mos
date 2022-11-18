@@ -6,6 +6,7 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Dto\Generator;
 use App\Entity\Entity;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -14,11 +15,14 @@ class PersistProcessor implements ProcessorInterface {
     }
 
     /**
-     * @param Entity  $data
-     * @param mixed[] $uriVariables
-     * @param mixed[] $context
+     * @param Entity|Generator $data
+     * @param mixed[]          $uriVariables
+     * @param mixed[]          $context
      */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Entity {
+        if ($data instanceof Generator) {
+            $data = $data->generate();
+        }
         $this->em->beginTransaction();
         $this->em->persist($data);
         $this->em->flush();

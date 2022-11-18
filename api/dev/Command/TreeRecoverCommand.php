@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\Management\Unit;
+use App\Entity\Management\Unit\Unit;
 use App\Entity\Project\Product\Family as ProductFamily;
 use App\Entity\Purchase\Component\Family as ComponentFamily;
 use Doctrine\ORM\EntityManagerInterface;

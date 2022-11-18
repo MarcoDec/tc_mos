@@ -27,6 +27,7 @@ doctrine:
       attribute: App\Doctrine\Type\Purchase\Component\AttributeType
       char: App\Doctrine\Type\CharType
       role: App\Doctrine\Type\Hr\Employee\RoleType
+      unit: App\Doctrine\Type\Management\Unit\UnitType
   orm:
     auto_generate_proxy_classes: true
     default_entity_manager: default

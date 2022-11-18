@@ -15,7 +15,7 @@ use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Hr\Employee\Role;
 use App\Doctrine\Type\Purchase\Component\EnumAttributeType;
 use App\Entity\Entity;
-use App\Entity\Management\Unit;
+use App\Entity\Management\Unit\Unit;
 use App\Filter\OrderFilter;
 use App\Filter\SearchFilter;
 use App\Repository\Purchase\Component\AttributeRepository;

@@ -8,7 +8,7 @@ use ApiPlatform\Doctrine\Orm\State\ItemProvider;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\Management\Unit;
+use App\Entity\Management\Unit\Unit;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** @implements ProviderInterface<Unit> */

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Management;
+namespace App\Entity\Management\Unit;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
@@ -12,6 +12,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Doctrine\Type\Hr\Employee\Role;
+use App\Doctrine\Type\Management\Unit\UnitType;
+use App\Dto\Management\Unit\UnitGenerator;
 use App\Entity\Entity;
 use App\Entity\Purchase\Component\Attribute;
 use App\Repository\Management\UnitRepository;
@@ -50,6 +52,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
             ),
             new Post(
                 openapiContext: ['description' => 'Créer une unité', 'summary' => 'Créer une unité'],
+                input: UnitGenerator::class,
                 processor: PersistProcessor::class
             ),
             new Get(
@@ -65,6 +68,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
             new Patch(
                 inputFormats: ['json' => ['application/merge-patch+json']],
                 openapiContext: ['description' => 'Modifie une unité', 'summary' => 'Modifie une unité'],
+                denormalizationContext: ['groups' => ['unit-write']],
                 processor: PersistProcessor::class
             )
         ],
@@ -75,16 +79,18 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
             'skip_null_values' => false,
             'openapi_definition_name' => 'unit-read'
         ],
-        denormalizationContext: ['groups' => ['unit-write']],
         order: ['code' => 'asc'],
         security: Role::GRANTED_MANAGEMENT_ADMIN
     ),
     Gedmo\Tree(type: 'nested'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'unit'),
+    ORM\DiscriminatorMap(UnitType::TYPES),
     ORM\Entity(repositoryClass: UnitRepository::class),
+    ORM\InheritanceType('SINGLE_TABLE'),
     UniqueEntity(fields: ['code', 'deleted'], ignoreNull: false),
     UniqueEntity(fields: ['name', 'deleted'], ignoreNull: false)
 ]
-class Unit extends Entity {
+abstract class Unit extends Entity {
     /** @var Collection<int, Attribute> */
     #[
         Assert\Count(exactly: 0, exactMessage: 'This unit is associated with attributes.', groups: ['delete']),

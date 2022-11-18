@@ -331,7 +331,8 @@ CREATE TABLE `unit` (
     `base` DOUBLE PRECISION DEFAULT 1 NOT NULL,
     `unit_short_lbl` VARCHAR(6) NOT NULL,
     `unit_complete_lbl` VARCHAR(50) NOT NULL,
-    `parent` INT UNSIGNED DEFAULT NULL
+    `parent` INT UNSIGNED DEFAULT NULL,
+    `type` ENUM('area','boolean','electrical-resistance','electric-current','length','mass','power','temperature','time','unitary','voltage','volume') NOT NULL COMMENT '(DC2Type:unit)'
 )
 SQL);
         $this->insert('unit');
@@ -347,12 +348,13 @@ CREATE TABLE `unit` (
     `name` VARCHAR(50) NOT NULL,
     `parent_id` INT UNSIGNED DEFAULT NULL,
     `rgt` INT DEFAULT NULL,
-    `root_id` INT UNSIGNED DEFAULT NULL
+    `root_id` INT UNSIGNED DEFAULT NULL,
+    `type` ENUM('area','boolean','electrical-resistance','electric-current','length','mass','power','temperature','time','unitary','voltage','volume') NOT NULL COMMENT '(DC2Type:unit)'
 )
 SQL);
         $this->push(<<<'SQL'
-INSERT INTO `unit` (`id`, `base`, `code`, `name`, `parent_id`, `root_id`)
-SELECT `id`, `base`, `unit_short_lbl`, UCFIRST(`unit_complete_lbl`), `parent`, IFNULL(`parent`, `id`)
+INSERT INTO `unit` (`id`, `base`, `code`, `name`, `parent_id`, `root_id`, `type`)
+SELECT `id`, `base`, `unit_short_lbl`, UCFIRST(`unit_complete_lbl`), `parent`, IFNULL(`parent`, `id`), `type`
 FROM `old_unit`
 SQL);
         $this->push('DROP TABLE `old_unit`');
