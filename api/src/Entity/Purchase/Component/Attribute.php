@@ -97,7 +97,7 @@ class Attribute extends Entity {
     #[Assert\NotBlank, ORM\Column(type: 'attribute')]
     private EnumAttributeType $type = EnumAttributeType::TYPE_TEXT;
 
-    #[Assert\NotBlank(groups: ['unit']), ORM\ManyToOne(inversedBy: 'attributes')]
+    #[Assert\NotBlank(groups: ['unit']), ORM\ManyToOne]
     private ?Unit $unit = null;
 
     public function __construct() {
@@ -163,7 +163,6 @@ class Attribute extends Entity {
     public function removeFamily(Family $family): self {
         if ($this->families->contains($family)) {
             $this->families->removeElement($family);
-            $family->removeAttribute($this);
         }
         return $this;
     }
@@ -202,12 +201,7 @@ class Attribute extends Entity {
         Serializer\Groups('attribute-write')
     ]
     public function setUnit(?Unit $unit): self {
-        if ($this->unit === $unit) {
-            return $this;
-        }
-        $this->unit?->removeAttribute($this);
         $this->unit = $unit;
-        $this->unit?->addAttribute($this);
         return $this;
     }
 

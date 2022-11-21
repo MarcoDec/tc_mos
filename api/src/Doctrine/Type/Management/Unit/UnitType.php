@@ -7,6 +7,7 @@ namespace App\Doctrine\Type\Management\Unit;
 use App\Doctrine\Type\EnumType;
 use App\Entity\Management\Unit\Area;
 use App\Entity\Management\Unit\Boolean;
+use App\Entity\Management\Unit\Currency;
 use App\Entity\Management\Unit\ElectricalResistance;
 use App\Entity\Management\Unit\ElectricCurrent;
 use App\Entity\Management\Unit\Length;
@@ -24,6 +25,7 @@ class UnitType extends EnumType {
     final public const ENUM = [
         self::TYPE_AREA,
         self::TYPE_BOOLEAN,
+        self::TYPE_CURRENCY,
         self::TYPE_ELECTRICAL_RESISTANCE,
         self::TYPE_ELECTRIC_CURRENT,
         self::TYPE_LENGTH,
@@ -43,6 +45,7 @@ class UnitType extends EnumType {
     final public const TYPES = [
         self::TYPE_AREA => Area::class,
         self::TYPE_BOOLEAN => Boolean::class,
+        self::TYPE_CURRENCY => Currency::class,
         self::TYPE_ELECTRICAL_RESISTANCE => ElectricalResistance::class,
         self::TYPE_ELECTRIC_CURRENT => ElectricCurrent::class,
         self::TYPE_LENGTH => Length::class,
@@ -60,6 +63,9 @@ class UnitType extends EnumType {
 
     /** @var 'boolean' */
     private const TYPE_BOOLEAN = 'boolean';
+
+    /** @var 'currency' */
+    private const TYPE_CURRENCY = 'currency';
 
     /** @var 'electric-current' */
     private const TYPE_ELECTRIC_CURRENT = 'electric-current';

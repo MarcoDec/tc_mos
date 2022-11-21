@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[ORM\MappedSuperclass]
 abstract class Entity {
-    #[ORM\Column(options: ['default' => false])]
+    #[ORM\Column(options: ['default' => false]), Serializer\Groups(['unit-read', 'unit-write'])]
     private bool $deleted = false;
 
     #[
@@ -28,5 +28,10 @@ abstract class Entity {
 
     public function isDeleted(): bool {
         return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): self {
+        $this->deleted = $deleted;
+        return $this;
     }
 }

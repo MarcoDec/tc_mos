@@ -6,7 +6,6 @@ namespace App\Entity\Management\Unit;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
@@ -15,13 +14,9 @@ use App\Doctrine\Type\Hr\Employee\Role;
 use App\Doctrine\Type\Management\Unit\UnitType;
 use App\Dto\Management\Unit\UnitGenerator;
 use App\Entity\Entity;
-use App\Entity\Purchase\Component\Attribute;
-use App\Repository\Management\UnitRepository;
+use App\Repository\Management\Unit\UnitRepository;
 use App\State\Management\UnitProvider;
 use App\State\PersistProcessor;
-use App\State\RemoveProcessor;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -59,12 +54,6 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
                 openapiContext: ['description' => 'Récupère une unité', 'summary' => 'Récupère une unité'],
                 provider: UnitProvider::class
             ),
-            new Delete(
-                openapiContext: ['description' => 'Supprime une unité', 'summary' => 'Supprime une unité'],
-                validationContext: ['groups' => ['delete']],
-                provider: UnitProvider::class,
-                processor: RemoveProcessor::class
-            ),
             new Patch(
                 inputFormats: ['json' => ['application/merge-patch+json']],
                 openapiContext: ['description' => 'Modifie une unité', 'summary' => 'Modifie une unité'],
@@ -87,17 +76,10 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
     ORM\DiscriminatorMap(UnitType::TYPES),
     ORM\Entity(repositoryClass: UnitRepository::class),
     ORM\InheritanceType('SINGLE_TABLE'),
-    UniqueEntity(fields: ['code', 'deleted'], ignoreNull: false),
-    UniqueEntity(fields: ['name', 'deleted'], ignoreNull: false)
+    UniqueEntity(fields: 'code', ignoreNull: false),
+    UniqueEntity(fields: 'name', ignoreNull: false)
 ]
 abstract class Unit extends Entity {
-    /** @var Collection<int, Attribute> */
-    #[
-        Assert\Count(exactly: 0, exactMessage: 'This unit is associated with attributes.', groups: ['delete']),
-        ORM\OneToMany(mappedBy: 'unit', targetEntity: Attribute::class)
-    ]
-    private Collection $attributes;
-
     #[
         ApiProperty(description: 'Base', example: 1),
         Assert\IdenticalTo(
@@ -116,7 +98,7 @@ abstract class Unit extends Entity {
         ApiProperty(description: 'Code', example: 'g'),
         Assert\Length(min: 1, max: 6),
         Assert\NotBlank,
-        ORM\Column(length: 6, options: ['collation' => 'utf8mb3_bin']),
+        ORM\Column(length: 6, unique: true, options: ['collation' => 'utf8mb3_bin']),
         Serializer\Groups(['unit-read', 'unit-write'])
     ]
     private ?string $code = null;
@@ -131,7 +113,7 @@ abstract class Unit extends Entity {
         ApiProperty(description: 'Nom', example: 'Gramme'),
         Assert\Length(min: 5, max: 50),
         Assert\NotBlank,
-        ORM\Column(length: 50),
+        ORM\Column(length: 50, unique: true),
         Serializer\Groups(['unit-read', 'unit-write'])
     ]
     private ?string $name = null;
@@ -144,23 +126,6 @@ abstract class Unit extends Entity {
 
     #[Gedmo\TreeRoot, ORM\ManyToOne(targetEntity: self::class)]
     private ?self $root = null;
-
-    public function __construct() {
-        $this->attributes = new ArrayCollection();
-    }
-
-    public function addAttribute(Attribute $attribute): self {
-        if ($this->attributes->contains($attribute) === false) {
-            $this->attributes->add($attribute);
-            $attribute->setUnit($this);
-        }
-        return $this;
-    }
-
-    /** @return Collection<int, Attribute> */
-    public function getAttributes(): Collection {
-        return $this->attributes;
-    }
 
     public function getBase(): float {
         return $this->base;
@@ -201,21 +166,6 @@ abstract class Unit extends Entity {
     #[ApiProperty(required: true), Serializer\Groups('unit-option')]
     public function getText(): ?string {
         return $this->code;
-    }
-
-    #[Assert\IsFalse(message: 'This unit has children.', groups: ['delete'])]
-    public function hasChildren(): bool {
-        return $this->rgt - $this->lft > 1;
-    }
-
-    public function removeAttribute(Attribute $attribute): self {
-        if ($this->attributes->contains($attribute)) {
-            $this->attributes->removeElement($attribute);
-            if ($attribute->getUnit() === $this) {
-                $attribute->setUnit(null);
-            }
-        }
-        return $this;
     }
 
     public function setBase(float $base): self {

@@ -10,9 +10,10 @@ use App\Entity\Hr\Employee\Employee;
 use App\Migrations\Migration;
 use Doctrine\DBAL\Schema\Schema;
 use InvalidArgumentException;
+use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221117075024 extends Migration {
+final class Version20221121091916 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -349,7 +350,9 @@ CREATE TABLE `unit` (
     `parent_id` INT UNSIGNED DEFAULT NULL,
     `rgt` INT DEFAULT NULL,
     `root_id` INT UNSIGNED DEFAULT NULL,
-    `type` ENUM('area','boolean','electrical-resistance','electric-current','length','mass','power','temperature','time','unitary','voltage','volume') NOT NULL COMMENT '(DC2Type:unit)'
+    `type` ENUM('area','boolean','currency','electrical-resistance','electric-current','length','mass','power','temperature','time','unitary','voltage','volume') NOT NULL COMMENT '(DC2Type:unit)',
+    UNIQUE KEY `UNIQ_DCBB0C5377153098` (`code`),
+    UNIQUE KEY `UNIQ_DCBB0C535E237E06` (`name`)
 )
 SQL);
         $this->push(<<<'SQL'
@@ -363,5 +366,14 @@ ALTER TABLE `unit`
     ADD CONSTRAINT `IDX_DCBB0C53727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `unit` (`id`),
     ADD CONSTRAINT `IDX_DCBB0C5379066886` FOREIGN KEY (`root_id`) REFERENCES `unit` (`id`)
 SQL);
+        $this->push("INSERT INTO `unit` (`id`, `base`, `code`, `name`, `type`) VALUES (22, 1, 'EUR', {$this->platform->quoteStringLiteral(Currencies::getName('EUR'))}, 'currency')");
+        $this->push('UPDATE `unit` SET `root_id` = 22 WHERE `id` = 22');
+        $this->push(
+            'INSERT INTO `unit` (`code`, `name`, `parent_id`, `root_id`, `type`) VALUES '
+            .(new Collection(Currencies::getCurrencyCodes()))
+                ->filter(static fn (string $code): bool => $code !== 'EUR')
+                ->map(fn (string $code): string => "({$this->platform->quoteStringLiteral($code)}, {$this->platform->quoteStringLiteral(Currencies::getName($code))}, 22, 22, 'currency')")
+                ->implode(',')
+        );
     }
 }
