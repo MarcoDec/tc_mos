@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221121123632 extends Migration {
+final class Version20221121130428 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -38,6 +38,7 @@ SQL);
         $this->upCronJobs();
         $this->upEmployeeEventTypes();
         $this->upEmployees();
+        $this->upIncoterms();
         $this->upProductFamilies();
         $this->upUnits();
         // rank 2
@@ -304,6 +305,29 @@ SQL);
             $this->platform->quoteStringLiteral(implode(',', $user->getRoles())),
             $this->platform->quoteStringLiteral((string) $user->getUsername())
         ));
+    }
+
+    private function upIncoterms(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `incoterms` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `code` VARCHAR(30) DEFAULT NULL,
+    `label` VARCHAR(60) DEFAULT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL
+)
+SQL);
+        $this->insert('incoterms');
+        $this->push('RENAME TABLE `incoterms` TO `old_incoterms`');
+        $this->push(<<<'SQL'
+CREATE TABLE `incoterms` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(25) NOT NULL,
+    `name` VARCHAR(50) NOT NULL
+)
+SQL);
+        $this->push('INSERT INTO `incoterms` (`code`, `name`) SELECT `code`, `label` FROM `old_incoterms` WHERE `statut` = FALSE');
+        $this->push('DROP TABLE `old_incoterms`');
     }
 
     private function upProductFamilies(): void {
