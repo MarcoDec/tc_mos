@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221121130428 extends Migration {
+final class Version20221121141714 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -39,6 +39,7 @@ SQL);
         $this->upEmployeeEventTypes();
         $this->upEmployees();
         $this->upIncoterms();
+        $this->upInvoiceTimeDues();
         $this->upProductFamilies();
         $this->upUnits();
         // rank 2
@@ -328,6 +329,40 @@ CREATE TABLE `incoterms` (
 SQL);
         $this->push('INSERT INTO `incoterms` (`code`, `name`) SELECT `code`, `label` FROM `old_incoterms` WHERE `statut` = FALSE');
         $this->push('DROP TABLE `old_incoterms`');
+    }
+
+    private function upInvoiceTimeDues(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `invoicetimedue` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `libelle` VARCHAR(255) NOT NULL,
+    `days` TINYINT UNSIGNED NOT NULL,
+    `endofmonth` BOOLEAN NOT NULL,
+    `date_creation` DATETIME DEFAULT NULL,
+    `date_modification` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `id_user_creation` INT UNSIGNED DEFAULT NULL,
+    `id_user_modification` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('invoicetimedue');
+        $this->push(<<<'SQL'
+CREATE TABLE `invoice_time_due` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `days` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `days_after_end_of_month` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '(DC2Type:tinyint)',
+    `end_of_month` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(40) NOT NULL
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `invoice_time_due` (`days`, `end_of_month`, `name`)
+SELECT `days`, `endofmonth`, UCFIRST(`libelle`)
+FROM `invoicetimedue`
+WHERE `statut` = FALSE
+SQL);
+        $this->push('DROP TABLE `invoicetimedue`');
     }
 
     private function upProductFamilies(): void {

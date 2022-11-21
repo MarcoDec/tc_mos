@@ -28,6 +28,7 @@ doctrine:
       char: App\Doctrine\Type\CharType
       employee_event: App\Doctrine\Type\Hr\Employee\Event\EmployeeEventType
       role: App\Doctrine\Type\Hr\Employee\RoleType
+      tinyint: App\Doctrine\Type\Tinyint
       unit: App\Doctrine\Type\Management\Unit\UnitType
   orm:
     auto_generate_proxy_classes: true
