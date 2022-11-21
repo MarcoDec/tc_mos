@@ -13,9 +13,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(name: 'gpao:currency:rate', description: 'CRON de mise à jour des taux de change des devises.'), CronJob('@daily')]
-final class CurrencyRateCommand extends Command {
-    public function __construct(private readonly HttpClientInterface $client, private readonly CurrencyRepository $currencyRepo) {
-        parent::__construct();
+class CurrencyRateCommand extends Command {
+    public function __construct(
+        private readonly HttpClientInterface $client,
+        private readonly CurrencyRepository $currencyRepo,
+        ?string $name = null
+    ) {
+        parent::__construct($name);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {

@@ -7,7 +7,7 @@ namespace App\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class CronJob {
+class CronJob {
     public function __construct(private readonly string $period) {
     }
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 return (new PhpCsFixer\Config())
     ->setFinder((new PhpCsFixer\Finder())
         ->in(__DIR__)
-        ->exclude(['public/bundles', 'var']))
+        ->exclude(['public/bundles', 'public/uploads', 'patches', 'var']))
     ->setRiskyAllowed(true)
     ->setRules([
         // Alias

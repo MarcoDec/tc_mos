@@ -20,7 +20,7 @@ use Rector\Strict\Rector\Ternary\BooleanInTernaryOperatorRuleFixerRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
 
 return static function (RectorConfig $rector): void {
-    $rector->paths([__DIR__.'/bin', __DIR__.'/config', __DIR__.'/migrations', __DIR__.'/src']);
+    $rector->paths([__DIR__.'/bin', __DIR__.'/config', __DIR__.'/dev', __DIR__.'/migrations', __DIR__.'/src']);
     $rector->phpVersion(PhpVersion::PHP_81);
     $rector->phpstanConfig(__DIR__.'/phpstan.neon.dist');
     $rector->sets([

@@ -89,6 +89,22 @@ class Collection {
         return new self(array_combine(array_map($call, $this->keys()->toArray(), $this->items), $this->items));
     }
 
+    /**
+     * @template L of int|string
+     * @template U
+     * @param  callable(T): array<L, U> $call
+     * @return self<L, U>
+     */
+    public function mapWithKeys(callable $call): self {
+        $items = [];
+        foreach ($this->items as $item) {
+            foreach ($call($item) as $key => $value) {
+                $items[$key] = $value;
+            }
+        }
+        return new self($items);
+    }
+
     /** @return self<int, K> */
     public function maxKeys(): self {
         $keys = new self(self::EMPTY);

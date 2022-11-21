@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221121091916 extends Migration {
+final class Version20221121101302 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -35,6 +35,7 @@ SQL);
         $this->upCarriers();
         $this->upColors();
         $this->upComponentFamilies();
+        $this->upCronJobs();
         $this->upEmployees();
         $this->upProductFamilies();
         $this->upUnits();
@@ -243,6 +244,19 @@ SQL);
         $this->push('DROP TABLE `component_family`');
         $this->push('DROP TABLE `component_subfamily`');
         $this->push('RENAME TABLE `family` TO `component_family`');
+    }
+
+    private function upCronJobs(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `cron_job` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `command` CHAR(20) NOT NULL COMMENT '(DC2Type:char)',
+    `last` DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `next` DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `period` CHAR(6) NOT NULL COMMENT '(DC2Type:char)'
+)
+SQL);
     }
 
     private function upEmployees(): void {
