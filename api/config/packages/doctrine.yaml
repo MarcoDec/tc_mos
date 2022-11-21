@@ -26,6 +26,7 @@ doctrine:
     types:
       attribute: App\Doctrine\Type\Purchase\Component\AttributeType
       char: App\Doctrine\Type\CharType
+      employee_event: App\Doctrine\Type\Hr\Employee\Event\EmployeeEventType
       role: App\Doctrine\Type\Hr\Employee\RoleType
       unit: App\Doctrine\Type\Management\Unit\UnitType
   orm:

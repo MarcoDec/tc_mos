@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221121101302 extends Migration {
+final class Version20221121123632 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -36,6 +36,7 @@ SQL);
         $this->upColors();
         $this->upComponentFamilies();
         $this->upCronJobs();
+        $this->upEmployeeEventTypes();
         $this->upEmployees();
         $this->upProductFamilies();
         $this->upUnits();
@@ -106,7 +107,7 @@ CREATE TABLE `attribute` (
 SQL);
         $this->push(<<<'SQL'
 INSERT INTO `attribute` (`description`, `name`, `type`, `unit_id`, `attribut_id_family`)
-SELECT `description`, UCFIRST(`libelle`), `type`, `unit_id`, `attribut_id_family`
+SELECT UCFIRST(`description`), UCFIRST(`libelle`), `type`, `unit_id`, `attribut_id_family`
 FROM `attribut`
 WHERE `statut` = FALSE
 SQL);
@@ -172,7 +173,7 @@ CREATE TABLE `color` (
     `rgb` CHAR(7) NOT NULL COMMENT '(DC2Type:char)'
 )
 SQL);
-        $this->push('INSERT INTO `color` (`name`, `rgb`) SELECT `name`, `rgb` FROM `couleur`');
+        $this->push('INSERT INTO `color` (`name`, `rgb`) SELECT UCFIRST(`name`), `rgb` FROM `couleur`');
         $this->push('DROP TABLE `couleur`');
     }
 
@@ -259,19 +260,40 @@ CREATE TABLE `cron_job` (
 SQL);
     }
 
+    private function upEmployeeEventTypes(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `employee_eventlist` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `motif` VARCHAR(255) NOT NULL
+)
+SQL);
+        $this->insert('employee_eventlist');
+        $this->push(<<<'SQL'
+CREATE TABLE `employee_event_type` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(30) NOT NULL,
+    `to_status` ENUM('agreed','warning') DEFAULT NULL COMMENT '(DC2Type:employee_event)'
+)
+SQL);
+        $this->push('INSERT INTO `employee_event_type` (`name`) SELECT UCFIRST(`motif`) FROM `employee_eventlist`');
+        $this->push('DROP TABLE `employee_eventlist`');
+    }
+
     private function upEmployees(): void {
         $this->push(<<<'SQL'
 CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `roles` SET('ROLE_LOGISTICS_ADMIN','ROLE_LOGISTICS_READER','ROLE_LOGISTICS_WRITER','ROLE_MANAGEMENT_ADMIN','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN','ROLE_USER') NOT NULL COMMENT '(DC2Type:role)',
+    `roles` SET('ROLE_HR_ADMIN','ROLE_LOGISTICS_ADMIN','ROLE_LOGISTICS_READER','ROLE_LOGISTICS_WRITER','ROLE_MANAGEMENT_ADMIN','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN','ROLE_USER') NOT NULL COMMENT '(DC2Type:role)',
     `username` VARCHAR(20) DEFAULT NULL
 )
 SQL);
         ($user = new Employee())
             ->setUsername('super')
             ->setPassword($this->hasher->hashPassword($user, 'super'))
+            ->addRole(Role::HR_ADMIN)
             ->addRole(Role::LOGISTICS_ADMIN)
             ->addRole(Role::MANAGEMENT_ADMIN)
             ->addRole(Role::PROJECT_ADMIN)

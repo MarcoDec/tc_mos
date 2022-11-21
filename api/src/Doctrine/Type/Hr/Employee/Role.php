@@ -7,6 +7,7 @@ namespace App\Doctrine\Type\Hr\Employee;
 use App\Collection;
 
 enum Role: string {
+    case HR_ADMIN = 'ROLE_HR_ADMIN';
     case LOGISTICS_ADMIN = 'ROLE_LOGISTICS_ADMIN';
     case LOGISTICS_READER = 'ROLE_LOGISTICS_READER';
     case LOGISTICS_WRITER = 'ROLE_LOGISTICS_WRITER';
@@ -14,6 +15,9 @@ enum Role: string {
     case PROJECT_ADMIN = 'ROLE_PROJECT_ADMIN';
     case PURCHASE_ADMIN = 'ROLE_PURCHASE_ADMIN';
     case USER = 'ROLE_USER';
+
+    /** @var string */
+    public const GRANTED_HR_ADMIN = 'is_granted(\''.self::ROLE_HR_ADMIN.'\')';
 
     /** @var string */
     public const GRANTED_LOGISTICS_ADMIN = 'is_granted(\''.self::ROLE_LOGISTICS_ADMIN.'\')';
@@ -35,6 +39,7 @@ enum Role: string {
 
     /** @var array<string, string> */
     public const ROLE_HIERARCHY = [
+        self::ROLE_HR_ADMIN => self::ROLE_USER,
         self::ROLE_LOGISTICS_ADMIN => self::ROLE_LOGISTICS_WRITER,
         self::ROLE_LOGISTICS_READER => self::ROLE_USER,
         self::ROLE_LOGISTICS_WRITER => self::ROLE_LOGISTICS_READER,
@@ -42,6 +47,9 @@ enum Role: string {
         self::ROLE_PROJECT_ADMIN => self::ROLE_USER,
         self::ROLE_PURCHASE_ADMIN => self::ROLE_USER
     ];
+
+    /** @var string */
+    public const ROLE_HR_ADMIN = 'ROLE_HR_ADMIN';
 
     /** @var string */
     public const ROLE_LOGISTICS_ADMIN = 'ROLE_LOGISTICS_ADMIN';
