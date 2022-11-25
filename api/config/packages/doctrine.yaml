@@ -27,6 +27,7 @@ doctrine:
       attribute: App\Doctrine\Type\Purchase\Component\AttributeType
       char: App\Doctrine\Type\CharType
       employee_event: App\Doctrine\Type\Hr\Employee\Event\EmployeeEventType
+      notification: App\Doctrine\Type\Hr\Employee\NotificationType
       role: App\Doctrine\Type\Hr\Employee\RoleType
       tinyint: App\Doctrine\Type\Tinyint
       unit: App\Doctrine\Type\Management\Unit\UnitType

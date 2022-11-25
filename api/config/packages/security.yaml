@@ -3,6 +3,8 @@ security:
     - { methods: [ POST ], path: ^/api/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
     - { methods: [ GET ], path: '^/api/docs.{_format}', roles: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/api/\w+, roles: IS_AUTHENTICATED_FULLY }
+  access_decision_manager:
+    allow_if_all_abstain: true
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/

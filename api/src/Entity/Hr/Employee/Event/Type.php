@@ -96,8 +96,8 @@ class Type extends Entity {
         ),
         Serializer\Groups('employee-event-type-read')
     ]
-    public function getToStatus(): ?EnumEmployeeEventType {
-        return $this->toStatus;
+    public function getToStatus(): ?string {
+        return $this->toStatus?->value;
     }
 
     public function setName(?string $name): self {
@@ -114,8 +114,8 @@ class Type extends Entity {
         ),
         Serializer\Groups('employee-event-type-write')
     ]
-    public function setToStatus(?EnumEmployeeEventType $toStatus): self {
-        $this->toStatus = $toStatus;
+    public function setToStatus(?string $toStatus): self {
+        $this->toStatus = $toStatus === null ? $toStatus : EnumEmployeeEventType::from(trim($toStatus));
         return $this;
     }
 }

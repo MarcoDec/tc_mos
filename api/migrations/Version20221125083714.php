@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221121141714 extends Migration {
+final class Version20221125083714 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -44,6 +44,24 @@ SQL);
         $this->upUnits();
         // rank 2
         $this->upAttributes();
+        $this->upNotifications();
+    }
+
+    private function generateEmployee(string $username): string {
+        ($user = new Employee())
+            ->setUsername($username)
+            ->setPassword($this->hasher->hashPassword($user, 'super'))
+            ->addRole(Role::HR_ADMIN)
+            ->addRole(Role::LOGISTICS_ADMIN)
+            ->addRole(Role::MANAGEMENT_ADMIN)
+            ->addRole(Role::PROJECT_ADMIN)
+            ->addRole(Role::PURCHASE_ADMIN);
+        return sprintf(
+            '(%s, %s, %s)',
+            $this->platform->quoteStringLiteral((string) $user->getPassword()),
+            $this->platform->quoteStringLiteral(implode(',', $user->getRoles())),
+            $this->platform->quoteStringLiteral((string) $user->getUsername())
+        );
     }
 
     private function insert(string $table): void {
@@ -101,7 +119,7 @@ CREATE TABLE `attribute` (
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `description` VARCHAR(255) DEFAULT NULL,
     `name` VARCHAR(255) NOT NULL,
-    `type` ENUM('bool','color','int','percent','text','unit') NOT NULL COMMENT '(DC2Type:attribute)',
+    `type` ENUM('bool','color','int','percent','text','unit') DEFAULT 'text' NOT NULL COMMENT '(DC2Type:attribute)',
     `unit_id` INT UNSIGNED DEFAULT NULL,
     `attribut_id_family` VARCHAR(255) DEFAULT NULL,
     CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
@@ -292,20 +310,10 @@ CREATE TABLE `employee` (
     `username` VARCHAR(20) DEFAULT NULL
 )
 SQL);
-        ($user = new Employee())
-            ->setUsername('super')
-            ->setPassword($this->hasher->hashPassword($user, 'super'))
-            ->addRole(Role::HR_ADMIN)
-            ->addRole(Role::LOGISTICS_ADMIN)
-            ->addRole(Role::MANAGEMENT_ADMIN)
-            ->addRole(Role::PROJECT_ADMIN)
-            ->addRole(Role::PURCHASE_ADMIN);
-        $this->push(sprintf(
-            'INSERT INTO `employee` (`password`, `roles`, `username`) VALUES (%s, %s, %s)',
-            $this->platform->quoteStringLiteral((string) $user->getPassword()),
-            $this->platform->quoteStringLiteral(implode(',', $user->getRoles())),
-            $this->platform->quoteStringLiteral((string) $user->getUsername())
-        ));
+        $this->push('INSERT INTO `employee` (`password`, `roles`, `username`) VALUES '.implode(',', [
+            $this->generateEmployee('super'),
+            $this->generateEmployee('super-tn')
+        ]));
     }
 
     private function upIncoterms(): void {
@@ -363,6 +371,21 @@ FROM `invoicetimedue`
 WHERE `statut` = FALSE
 SQL);
         $this->push('DROP TABLE `invoicetimedue`');
+    }
+
+    private function upNotifications(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `notification` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` TINYINT(1) DEFAULT 0 NOT NULL,
+    `category` ENUM('default') DEFAULT 'default' NOT NULL COMMENT '(DC2Type:notification)',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+    `read` TINYINT(1) DEFAULT 0 NOT NULL,
+    `subject` VARCHAR(50) NOT NULL,
+    `user_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_BF5476CAA76ED395` FOREIGN KEY (`user_id`) REFERENCES `employee` (`id`)
+)
+SQL);
     }
 
     private function upProductFamilies(): void {

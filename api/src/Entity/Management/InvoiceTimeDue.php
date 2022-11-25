@@ -69,20 +69,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     UniqueEntity(fields: ['name', 'deleted'], ignoreNull: false)
 ]
 class InvoiceTimeDue extends Entity {
-    #[
-        ApiProperty(description: 'Jours ', example: 30),
-        Assert\Range(min: 0, max: 30),
-        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
-        Serializer\Groups(['invoice-time-due-read', 'invoice-time-due-write'])
-    ]
+    #[Assert\Range(min: 0, max: 30), ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true])]
     private int $days = 0;
 
-    #[
-        ApiProperty(description: 'Jours après la fin du mois ', example: 15),
-        Assert\Range(min: 0, max: 30),
-        ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
-        Serializer\Groups(['invoice-time-due-read', 'invoice-time-due-write'])
-    ]
+    #[Assert\Range(min: 0, max: 30), ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true])]
     private int $daysAfterEndOfMonth = 0;
 
     #[
@@ -101,10 +91,18 @@ class InvoiceTimeDue extends Entity {
     ]
     private ?string $name = null;
 
+    #[
+        ApiProperty(description: 'Jours ', required: true, default: 0, example: 30),
+        Serializer\Groups('invoice-time-due-read')
+    ]
     public function getDays(): int {
         return $this->days;
     }
 
+    #[
+        ApiProperty(description: 'Jours après la fin du mois ', required: true, default: 0, example: 15),
+        Serializer\Groups('invoice-time-due-read')
+    ]
     public function getDaysAfterEndOfMonth(): int {
         return $this->daysAfterEndOfMonth;
     }
@@ -113,21 +111,37 @@ class InvoiceTimeDue extends Entity {
         return $this->name;
     }
 
+    #[
+        ApiProperty(description: 'Fin du mois ', required: true, default: false, example: true),
+        Serializer\Groups('invoice-time-due-read')
+    ]
     public function isEndOfMonth(): bool {
         return $this->endOfMonth;
     }
 
+    #[
+        ApiProperty(description: 'Jours ', required: false, default: 0, example: 30),
+        Serializer\Groups('invoice-time-due-write')
+    ]
     public function setDays(int $days): self {
         $this->days = $days;
         return $this;
     }
 
+    #[
+        ApiProperty(description: 'Jours après la fin du mois ', required: false, default: 0, example: 15),
+        Serializer\Groups('invoice-time-due-write')
+    ]
     public function setDaysAfterEndOfMonth(int $daysAfterEndOfMonth): self {
         $this->daysAfterEndOfMonth = $daysAfterEndOfMonth;
         $this->setEndOfMonth($this->endOfMonth);
         return $this;
     }
 
+    #[
+        ApiProperty(description: 'Fin du mois ', required: false, default: false, example: true),
+        Serializer\Groups('invoice-time-due-write')
+    ]
     public function setEndOfMonth(bool $endOfMonth): self {
         $this->endOfMonth = $endOfMonth || $this->daysAfterEndOfMonth > 0;
         return $this;

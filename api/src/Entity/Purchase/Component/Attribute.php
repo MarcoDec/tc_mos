@@ -94,7 +94,7 @@ class Attribute extends Entity {
     ]
     private ?string $name = null;
 
-    #[Assert\NotBlank, ORM\Column(type: 'attribute')]
+    #[Assert\NotBlank, ORM\Column(type: 'attribute', options: ['default' => EnumAttributeType::DEFAULT])]
     private EnumAttributeType $type = EnumAttributeType::TYPE_TEXT;
 
     #[Assert\NotBlank(groups: ['unit']), ORM\ManyToOne]

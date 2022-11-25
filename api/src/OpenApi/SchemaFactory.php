@@ -85,7 +85,10 @@ class SchemaFactory implements SchemaFactoryInterface {
             key: 'required',
             value: (new Collection($required))
                 ->filter(static fn (string $propertyName): bool => $refl->hasProperty($propertyName) && self::filter($context, $refl->getProperty($propertyName)) !== false
-                    && $refl->hasMethod($get = 'get'.ucfirst($propertyName)) && self::filter($context, $refl->getMethod($get)) !== false
+                    && (
+                        ($refl->hasMethod($get = 'get'.ucfirst($propertyName)) && self::filter($context, $refl->getMethod($get)) !== false)
+                        || ($refl->hasMethod($is = 'is'.ucfirst($propertyName)) && self::filter($context, $refl->getMethod($is)) !== false)
+                    )
                     && $refl->hasMethod($set = 'set'.ucfirst($propertyName)) && self::filter($context, $refl->getMethod($set)) !== false)
                 ->values()
         );
