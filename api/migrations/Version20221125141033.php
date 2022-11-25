@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221125120243 extends Migration {
+final class Version20221125141033 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -31,6 +31,8 @@ SQL);
     }
 
     protected function defineQueries(): void {
+        // rank 0
+        $this->upCountries();
         // rank 1
         $this->upCarriers();
         $this->upColors();
@@ -40,12 +42,15 @@ SQL);
         $this->upEmployees();
         $this->upIncoterms();
         $this->upInvoiceTimeDues();
+        $this->upOutTrainers();
         $this->upProductFamilies();
         $this->upUnits();
         // rank 2
         $this->upAttributes();
         $this->upNotifications();
         $this->upOperationTypes();
+        // clean
+        $this->push('DROP TABLE country');
     }
 
     private function generateEmployee(string $username): string {
@@ -268,6 +273,26 @@ SQL);
         $this->push('RENAME TABLE `family` TO `component_family`');
     }
 
+    private function upCountries(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `country` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(2) NOT NULL,
+    `code_iso` VARCHAR(3) DEFAULT NULL,
+    `libelle` TEXT,
+    `in_eu` BOOLEAN DEFAULT FALSE NOT NULL,
+    `active` BOOLEAN DEFAULT TRUE NOT NULL,
+    `phone_prefix` VARCHAR(255) DEFAULT NULL,
+    `date_creation` DATETIME DEFAULT NULL,
+    `date_modification` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `id_user_creation` INT UNSIGNED DEFAULT NULL,
+    `id_user_modification` INT UNSIGNED DEFAULT NULL
+)
+SQL);
+        $this->insert('country');
+    }
+
     private function upCronJobs(): void {
         $this->push(<<<'SQL'
 CREATE TABLE `cron_job` (
@@ -442,6 +467,61 @@ SQL);
         $this->push('DROP TABLE `operation_type_component_family`');
         $this->push('RENAME TABLE `type_family` TO `operation_type_component_family`');
         $this->push('ALTER TABLE `operation_type` DROP `old_id`');
+    }
+
+    private function upOutTrainers(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `employee_extformateur` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `nom` VARCHAR(255) NOT NULL,
+    `prenom` VARCHAR(255) NOT NULL,
+    `address` VARCHAR(255) NOT NULL,
+    `code_postal` INT UNSIGNED NOT NULL,
+    `ville` VARCHAR(255) NOT NULL,
+    `id_phone_prefix` INT UNSIGNED NOT NULL,
+    `tel` VARCHAR(255) NOT NULL,
+    `society` VARCHAR(255) NOT NULL,
+    `id_user_creation` INT UNSIGNED NOT NULL,
+    `date_creation` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
+SQL);
+        $this->insert('employee_extformateur');
+        $this->push(<<<'SQL'
+CREATE TABLE `out_trainer` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `address_address` VARCHAR(160) DEFAULT NULL,
+    `address_address2` VARCHAR(110) DEFAULT NULL,
+    `address_city` VARCHAR(50) DEFAULT NULL,
+    `address_country` CHAR(2) DEFAULT NULL COMMENT '(DC2Type:char)',
+    `address_email` VARCHAR(80) DEFAULT NULL,
+    `address_phone_number` VARCHAR(18) DEFAULT NULL,
+    `address_zip_code` VARCHAR(10) DEFAULT NULL,
+    `name` VARCHAR(30) NOT NULL,
+    `surname` VARCHAR(30) NOT NULL
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `out_trainer` (
+    `address_address`,
+    `address_city`,
+    `address_country`,
+    `address_phone_number`,
+    `address_zip_code`,
+    `name`,
+    `surname`
+) SELECT
+    `employee_extformateur`.`address`,
+    `employee_extformateur`.`ville`,
+    UPPER(`country`.`code`),
+    `employee_extformateur`.`tel`,
+    `employee_extformateur`.`code_postal`,
+    UCFIRST(`employee_extformateur`.`prenom`),
+    UPPER(`employee_extformateur`.`nom`)
+FROM `employee_extformateur`
+LEFT JOIN `country` ON `employee_extformateur`.`id_phone_prefix` = `country`.`id`
+SQL);
+        $this->push('DROP TABLE `employee_extformateur`');
     }
 
     private function upProductFamilies(): void {

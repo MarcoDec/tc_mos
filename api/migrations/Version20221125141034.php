@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace DoctrineMigrations;
 
 use App\Migrations\Migration;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 
-final class Version20221125120244 extends Migration {
+final class Version20221125141034 extends Migration {
     /** @var string[] */
     private const TABLES = ['component_family', 'product_family', 'unit'];
 
@@ -48,5 +51,21 @@ END WHILE
 SQL);
         $this->push('ALTER TABLE `attribute` DROP `attribut_id_family`');
         $this->push('ALTER TABLE `component_family` DROP `old_id`');
+        $resultTrainers = $this->connection->executeQuery('SELECT `id`, `address_country`, `address_phone_number` FROM `out_trainer` WHERE `address_phone_number` IS NOT NULL');
+        /** @var array{address_country: string, address_phone_number: string, id: int}[] $trainers */
+        $trainers = $resultTrainers->fetchAllAssociative();
+        $util = PhoneNumberUtil::getInstance();
+        foreach ($trainers as $trainer) {
+            try {
+                $phone = $util->parse($trainer['address_phone_number'], $trainer['address_country']);
+            } catch (NumberParseException) {
+                $phone = null;
+            }
+            /** @var string $phone */
+            $phone = $phone !== null && $util->isValidNumber($phone)
+                ? $this->connection->quote($util->format($phone, PhoneNumberFormat::INTERNATIONAL))
+                : 'NULL';
+            $this->push(sprintf('UPDATE `out_trainer` SET `address_phone_number` = %s WHERE `id` = %s', $phone, $trainer['id']));
+        }
     }
 }
