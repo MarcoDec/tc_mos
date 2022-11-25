@@ -32,22 +32,22 @@ use Symfony\Component\Validator\Constraints as Assert;
         operations: [
             new GetCollection(
                 openapiContext: ['description' => 'Récupère les formateurs', 'summary' => 'Récupère les formateurs'],
-                security: Role::GRANTED_LOGISTICS_READER
+                security: Role::GRANTED_HR_READER
             ),
             new Post(
                 openapiContext: ['description' => 'Créer un formateur', 'summary' => 'Créer un formateur'],
-                security: Role::GRANTED_LOGISTICS_WRITER,
+                security: Role::GRANTED_HR_WRITER,
                 processor: PersistProcessor::class
             ),
             new Delete(
                 openapiContext: ['description' => 'Supprime un formateur', 'summary' => 'Supprime un formateur'],
-                security: Role::GRANTED_LOGISTICS_ADMIN,
+                security: Role::GRANTED_HR_ADMIN,
                 processor: RemoveProcessor::class
             ),
             new Patch(
                 inputFormats: ['json' => ['application/merge-patch+json']],
                 openapiContext: ['description' => 'Modifie un formateur', 'summary' => 'Modifie un formateur'],
-                security: Role::GRANTED_LOGISTICS_WRITER,
+                security: Role::GRANTED_HR_WRITER,
                 processor: PersistProcessor::class
             )
         ],
