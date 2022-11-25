@@ -29,16 +29,8 @@ class RemoveProcessor implements ProcessorInterface {
                 throw new BadRequestHttpException((string) $violation->getMessage());
             }
         }
-        $this->em->beginTransaction();
-        $this->em
-            ->createQueryBuilder()
-            ->update($operation->getClass(), 'd')
-            ->set('d.deleted', true)
-            ->where('d.id = :id')
-            ->setParameter('id', $data->getId())
-            ->getQuery()
-            ->execute();
-        $this->em->commit();
+        $data->setDeleted(true);
+        $this->em->flush();
         return $data;
     }
 }

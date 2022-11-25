@@ -6,7 +6,7 @@ namespace DoctrineMigrations;
 
 use App\Migrations\Migration;
 
-final class Version20221125083715 extends Migration {
+final class Version20221125120244 extends Migration {
     /** @var string[] */
     private const TABLES = ['component_family', 'product_family', 'unit'];
 

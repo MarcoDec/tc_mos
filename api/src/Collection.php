@@ -62,6 +62,11 @@ class Collection {
         return $this->items[$key] ?? null;
     }
 
+    /** @param K $key */
+    public function has(string|int $key): bool {
+        return isset($this->items[$key]);
+    }
+
     public function implode(string $separator): string {
         return implode($separator, $this->items);
     }

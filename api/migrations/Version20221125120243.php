@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221125083714 extends Migration {
+final class Version20221125120243 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -45,6 +45,7 @@ SQL);
         // rank 2
         $this->upAttributes();
         $this->upNotifications();
+        $this->upOperationTypes();
     }
 
     private function generateEmployee(string $username): string {
@@ -77,7 +78,7 @@ SQL);
             "INSERT INTO `$table` (%s) VALUES %s",
             $rows->maxKeys()->implode(', '),
             $rows
-                ->filter(static fn (Collection $row): bool => (int) $row->get('id') > 0)
+                ->filter(static fn (Collection $row): bool => $row->has('id') === false || (int) $row->get('id') > 0)
                 ->map(
                     fn (Collection $row): string => '('
                         .$row
@@ -386,6 +387,61 @@ CREATE TABLE `notification` (
     CONSTRAINT `IDX_BF5476CAA76ED395` FOREIGN KEY (`user_id`) REFERENCES `employee` (`id`)
 )
 SQL);
+    }
+
+    private function upOperationTypes(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `operation_type` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `isAssemblage` BOOLEAN DEFAULT FALSE NOT NULL
+)
+SQL);
+        $this->insert('operation_type');
+        $this->push(<<<'SQL'
+CREATE TABLE `type` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `old_id` INT UNSIGNED NOT NULL,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `assembly` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(40) NOT NULL
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `type` (`old_id`, `assembly`, `name`)
+SELECT `id`, `isAssemblage`, UCFIRST(`name`)
+FROM `operation_type`
+SQL);
+        $this->push('DROP TABLE `operation_type`');
+        $this->push('RENAME TABLE `type` TO `operation_type`');
+        $this->push(<<<'SQL'
+CREATE TABLE `operation_type_component_family` (
+    `operation_type_id` INT UNSIGNED NOT NULL,
+    `component_family_id` INT UNSIGNED NOT NULL
+)
+SQL);
+        $this->insert('operation_type_component_family');
+        $this->push(<<<'SQL'
+CREATE TABLE `type_family` (
+    `family_id` INT UNSIGNED NOT NULL,
+    `type_id` INT UNSIGNED NOT NULL,
+    CONSTRAINT `IDX_58A4AEF9C35E566A` FOREIGN KEY (`family_id`) REFERENCES `component_family` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `IDX_86314A63C54C8C93` FOREIGN KEY (`type_id`) REFERENCES `operation_type` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY(`type_id`, `family_id`)
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `type_family` (`family_id`, `type_id`)
+SELECT `component_family`.`id`, `operation_type`.`id`
+FROM `operation_type_component_family`
+INNER JOIN `component_family`
+    ON `operation_type_component_family`.`operation_type_id` = `component_family`.`old_id`
+    AND `component_family`.`parent_id` IS NULL
+INNER JOIN `operation_type` ON `operation_type_component_family`.`component_family_id` = `operation_type`.`old_id`
+SQL);
+        $this->push('DROP TABLE `operation_type_component_family`');
+        $this->push('RENAME TABLE `type_family` TO `operation_type_component_family`');
+        $this->push('ALTER TABLE `operation_type` DROP `old_id`');
     }
 
     private function upProductFamilies(): void {
