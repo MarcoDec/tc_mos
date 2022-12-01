@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221201084942 extends Migration {
+final class Version20221201133607 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -45,6 +45,7 @@ SQL);
         $this->upInvoiceTimeDues();
         $this->upOutTrainers();
         $this->upProductFamilies();
+        $this->upQualityTypes();
         $this->upUnits();
         // rank 2
         $this->upAttributes();
@@ -63,7 +64,8 @@ SQL);
             ->addRole(Role::MANAGEMENT_ADMIN)
             ->addRole(Role::PROJECT_ADMIN)
             ->addRole(Role::PRODUCTION_ADMIN)
-            ->addRole(Role::PURCHASE_ADMIN);
+            ->addRole(Role::PURCHASE_ADMIN)
+            ->addRole(Role::QUALITY_ADMIN);
         return sprintf(
             '(%s, %s, %s)',
             $this->platform->quoteStringLiteral((string) $user->getPassword()),
@@ -334,7 +336,7 @@ CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `roles` SET('ROLE_HR_ADMIN','ROLE_LOGISTICS_ADMIN','ROLE_LOGISTICS_READER','ROLE_LOGISTICS_WRITER','ROLE_MANAGEMENT_ADMIN','ROLE_PRODUCTION_ADMIN','ROLE_PRODUCTION_READER','ROLE_PRODUCTION_WRITER','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN','ROLE_USER') NOT NULL COMMENT '(DC2Type:role)',
+    `roles` SET('ROLE_HR_ADMIN','ROLE_HR_READER','ROLE_HR_WRITER','ROLE_LOGISTICS_ADMIN','ROLE_LOGISTICS_READER','ROLE_LOGISTICS_WRITER','ROLE_MANAGEMENT_ADMIN','ROLE_PRODUCTION_ADMIN','ROLE_PRODUCTION_READER','ROLE_PRODUCTION_WRITER','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN','ROLE_QUALITY_ADMIN','ROLE_QUALITY_READER','ROLE_QUALITY_WRITER','ROLE_USER') NOT NULL COMMENT '(DC2Type:role)',
     `username` VARCHAR(20) DEFAULT NULL
 )
 SQL);
@@ -609,6 +611,26 @@ SQL);
         $this->push('DROP TABLE `product_subfamily`');
         $this->push('ALTER TABLE `family` DROP `old_id`');
         $this->push('RENAME TABLE `family` TO `product_family`');
+    }
+
+    private function upQualityTypes(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `qualitycontrol` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `qualitycontrol` VARCHAR(255) NOT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL
+)
+SQL);
+        $this->insert('qualitycontrol');
+        $this->push(<<<'SQL'
+CREATE TABLE `quality_type` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(40) NOT NULL
+)
+SQL);
+        $this->push('INSERT INTO `quality_type` (`name`) SELECT UCFIRST(`qualitycontrol`) FROM `qualitycontrol`');
+        $this->push('DROP TABLE `qualitycontrol`');
     }
 
     private function upUnits(): void {

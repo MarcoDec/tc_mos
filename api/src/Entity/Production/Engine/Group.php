@@ -58,7 +58,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'engine-group-read'
         ],
         order: ['code' => 'asc'],
-        security: Role::GRANTED_MANAGEMENT_ADMIN
+        security: Role::GRANTED_PRODUCTION_ADMIN
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'engine'),
     ORM\DiscriminatorMap(EngineType::TYPES),

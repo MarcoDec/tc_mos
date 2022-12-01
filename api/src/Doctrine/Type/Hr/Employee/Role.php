@@ -19,6 +19,9 @@ enum Role: string {
     case PRODUCTION_WRITER = 'ROLE_PRODUCTION_WRITER';
     case PROJECT_ADMIN = 'ROLE_PROJECT_ADMIN';
     case PURCHASE_ADMIN = 'ROLE_PURCHASE_ADMIN';
+    case QUALITY_ADMIN = 'ROLE_QUALITY_ADMIN';
+    case QUALITY_READER = 'ROLE_QUALITY_READER';
+    case QUALITY_WRITER = 'ROLE_QUALITY_WRITER';
     case USER = 'ROLE_USER';
 
     /** @var string */
@@ -57,6 +60,15 @@ enum Role: string {
     /** @var string */
     public const GRANTED_PURCHASE_ADMIN = 'is_granted(\''.self::ROLE_PURCHASE_ADMIN.'\')';
 
+    /** @var string */
+    public const GRANTED_QUALITY_ADMIN = 'is_granted(\''.self::ROLE_QUALITY_ADMIN.'\')';
+
+    /** @var string */
+    public const GRANTED_QUALITY_READER = 'is_granted(\''.self::ROLE_QUALITY_READER.'\')';
+
+    /** @var string */
+    public const GRANTED_QUALITY_WRITER = 'is_granted(\''.self::ROLE_QUALITY_WRITER.'\')';
+
     /** @var array<string, string> */
     public const ROLE_HIERARCHY = [
         self::ROLE_HR_ADMIN => self::ROLE_HR_WRITER,
@@ -70,7 +82,10 @@ enum Role: string {
         self::ROLE_PRODUCTION_ADMIN => self::ROLE_PRODUCTION_WRITER,
         self::ROLE_PRODUCTION_READER => self::ROLE_USER,
         self::ROLE_PRODUCTION_WRITER => self::ROLE_PRODUCTION_READER,
-        self::ROLE_PURCHASE_ADMIN => self::ROLE_USER
+        self::ROLE_PURCHASE_ADMIN => self::ROLE_USER,
+        self::ROLE_QUALITY_ADMIN => self::ROLE_QUALITY_WRITER,
+        self::ROLE_QUALITY_READER => self::ROLE_USER,
+        self::ROLE_QUALITY_WRITER => self::ROLE_QUALITY_READER
     ];
 
     /** @var string */
@@ -108,6 +123,15 @@ enum Role: string {
 
     /** @var string */
     public const ROLE_PURCHASE_ADMIN = 'ROLE_PURCHASE_ADMIN';
+
+    /** @var string */
+    public const ROLE_QUALITY_ADMIN = 'ROLE_QUALITY_ADMIN';
+
+    /** @var string */
+    public const ROLE_QUALITY_READER = 'ROLE_QUALITY_READER';
+
+    /** @var string */
+    public const ROLE_QUALITY_WRITER = 'ROLE_QUALITY_WRITER';
 
     /** @var string */
     public const ROLE_USER = 'ROLE_USER';

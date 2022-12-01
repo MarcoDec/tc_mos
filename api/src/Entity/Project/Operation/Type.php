@@ -32,30 +32,18 @@ use Symfony\Component\Validator\Constraints as Assert;
         shortName: 'OperationType',
         description: 'Type d\'opération',
         operations: [
-            new GetCollection(openapiContext: [
-                'description' => 'Récupère les types d\'opération',
-                'summary' => 'Récupère les types d\'opération'
-            ]),
+            new GetCollection(openapiContext: ['description' => 'Récupère les types', 'summary' => 'Récupère les types']),
             new Post(
-                openapiContext: [
-                    'description' => 'Créer un type d\'opération',
-                    'summary' => 'Créer un type d\'opération'
-                ],
+                openapiContext: ['description' => 'Créer un type', 'summary' => 'Créer un type'],
                 processor: PersistProcessor::class
             ),
             new Delete(
-                openapiContext: [
-                    'description' => 'Supprime un type d\'opération',
-                    'summary' => 'Supprime un type d\'opération'
-                ],
+                openapiContext: ['description' => 'Supprime un type', 'summary' => 'Supprime un type'],
                 processor: RemoveProcessor::class
             ),
             new Patch(
                 inputFormats: ['json' => ['application/merge-patch+json']],
-                openapiContext: [
-                    'description' => 'Modifie un type d\'opération',
-                    'summary' => 'Modifie un type d\'opération'
-                ],
+                openapiContext: ['description' => 'Modifie un type', 'summary' => 'Modifie un type'],
                 processor: PersistProcessor::class
             )
         ],

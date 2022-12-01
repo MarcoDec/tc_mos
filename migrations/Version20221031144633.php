@@ -238,13 +238,13 @@ SQL);
         $this->upComponentFamilies(); // 3
         $this->upCrons(); // 3
         $this->upCurrencies(); // 3
-        $this->upEngineGroups();
+        $this->upEngineGroups(); // 3
         $this->upEventTypes(); // 3
         $this->upIncoterms(); // 3
         $this->upInvoiceTimeDue(); // 3
         $this->upOutTrainers(); // 3
         $this->upProductFamilies(); // 3
-        $this->upQualityTypes();
+        $this->upQualityTypes(); // 3
         $this->upRejectTypes();
         $this->upSkillTypes();
         $this->upTimeSlots();
