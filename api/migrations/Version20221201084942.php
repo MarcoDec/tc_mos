@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221125141033 extends Migration {
+final class Version20221201084942 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -40,6 +40,7 @@ SQL);
         $this->upCronJobs();
         $this->upEmployeeEventTypes();
         $this->upEmployees();
+        $this->upEngineGroups();
         $this->upIncoterms();
         $this->upInvoiceTimeDues();
         $this->upOutTrainers();
@@ -50,7 +51,7 @@ SQL);
         $this->upNotifications();
         $this->upOperationTypes();
         // clean
-        $this->push('DROP TABLE country');
+        $this->push('DROP TABLE `country`');
     }
 
     private function generateEmployee(string $username): string {
@@ -61,6 +62,7 @@ SQL);
             ->addRole(Role::LOGISTICS_ADMIN)
             ->addRole(Role::MANAGEMENT_ADMIN)
             ->addRole(Role::PROJECT_ADMIN)
+            ->addRole(Role::PRODUCTION_ADMIN)
             ->addRole(Role::PURCHASE_ADMIN);
         return sprintf(
             '(%s, %s, %s)',
@@ -247,7 +249,7 @@ SQL);
 INSERT INTO `family` (`old_id`, `code`, `copperable`, `customs_code`, `name`)
 SELECT
     `id`,
-    UPPER(SUBSTR(IFNULL(`prefix`, `family_name`), 1, 3)),
+    UCASE(SUBSTR(IFNULL(`prefix`, `family_name`), 1, 3)),
     `copperable`,
     `customsCode`,
     UCFIRST(`family_name`)
@@ -332,7 +334,7 @@ CREATE TABLE `employee` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `password` CHAR(60) DEFAULT NULL COMMENT '(DC2Type:char)',
-    `roles` SET('ROLE_HR_ADMIN','ROLE_LOGISTICS_ADMIN','ROLE_LOGISTICS_READER','ROLE_LOGISTICS_WRITER','ROLE_MANAGEMENT_ADMIN','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN','ROLE_USER') NOT NULL COMMENT '(DC2Type:role)',
+    `roles` SET('ROLE_HR_ADMIN','ROLE_LOGISTICS_ADMIN','ROLE_LOGISTICS_READER','ROLE_LOGISTICS_WRITER','ROLE_MANAGEMENT_ADMIN','ROLE_PRODUCTION_ADMIN','ROLE_PRODUCTION_READER','ROLE_PRODUCTION_WRITER','ROLE_PROJECT_ADMIN','ROLE_PURCHASE_ADMIN','ROLE_USER') NOT NULL COMMENT '(DC2Type:role)',
     `username` VARCHAR(20) DEFAULT NULL
 )
 SQL);
@@ -340,6 +342,37 @@ SQL);
             $this->generateEmployee('super'),
             $this->generateEmployee('super-tn')
         ]));
+    }
+
+    private function upEngineGroups(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `engine_group` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `libelle` VARCHAR(255) NOT NULL,
+    `code` VARCHAR(3) NOT NULL,
+    `id_family_group` INT UNSIGNED NOT NULL,
+    `organe_securite` BOOLEAN DEFAULT FALSE NOT NULL,
+    `formation_specifique` INT NOT NULL DEFAULT 0
+)
+SQL);
+        $this->insert('engine_group');
+        $this->push('RENAME TABLE `engine_group` TO `old_engine_group`');
+        $this->push(<<<'SQL'
+CREATE TABLE `engine_group` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `code` VARCHAR(3) NOT NULL,
+    `name` VARCHAR(35) NOT NULL,
+    `safety_device` BOOLEAN DEFAULT FALSE NOT NULL,
+    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)'
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `engine_group` (`code`, `name`, `safety_device`, `type`)
+SELECT UCASE(`code`), UCFIRST(`libelle`), `organe_securite` != FALSE, IF(`id_family_group` = 1, 'workstation', 'tool')
+FROM `old_engine_group`
+SQL);
+        $this->push('DROP TABLE `old_engine_group`');
     }
 
     private function upIncoterms(): void {
@@ -513,11 +546,11 @@ INSERT INTO `out_trainer` (
 ) SELECT
     `employee_extformateur`.`address`,
     `employee_extformateur`.`ville`,
-    UPPER(`country`.`code`),
+    UCASE(`country`.`code`),
     `employee_extformateur`.`tel`,
     `employee_extformateur`.`code_postal`,
     UCFIRST(`employee_extformateur`.`prenom`),
-    UPPER(`employee_extformateur`.`nom`)
+    UCASE(`employee_extformateur`.`nom`)
 FROM `employee_extformateur`
 LEFT JOIN `country` ON `employee_extformateur`.`id_phone_prefix` = `country`.`id`
 SQL);

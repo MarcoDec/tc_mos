@@ -14,6 +14,9 @@ enum Role: string {
     case LOGISTICS_READER = 'ROLE_LOGISTICS_READER';
     case LOGISTICS_WRITER = 'ROLE_LOGISTICS_WRITER';
     case MANAGEMENT_ADMIN = 'ROLE_MANAGEMENT_ADMIN';
+    case PRODUCTION_ADMIN = 'ROLE_PRODUCTION_ADMIN';
+    case PRODUCTION_READER = 'ROLE_PRODUCTION_READER';
+    case PRODUCTION_WRITER = 'ROLE_PRODUCTION_WRITER';
     case PROJECT_ADMIN = 'ROLE_PROJECT_ADMIN';
     case PURCHASE_ADMIN = 'ROLE_PURCHASE_ADMIN';
     case USER = 'ROLE_USER';
@@ -40,6 +43,15 @@ enum Role: string {
     public const GRANTED_MANAGEMENT_ADMIN = 'is_granted(\''.self::ROLE_MANAGEMENT_ADMIN.'\')';
 
     /** @var string */
+    public const GRANTED_PRODUCTION_ADMIN = 'is_granted(\''.self::ROLE_PRODUCTION_ADMIN.'\')';
+
+    /** @var string */
+    public const GRANTED_PRODUCTION_READER = 'is_granted(\''.self::ROLE_PRODUCTION_READER.'\')';
+
+    /** @var string */
+    public const GRANTED_PRODUCTION_WRITER = 'is_granted(\''.self::ROLE_PRODUCTION_WRITER.'\')';
+
+    /** @var string */
     public const GRANTED_PROJECT_ADMIN = 'is_granted(\''.self::ROLE_PROJECT_ADMIN.'\')';
 
     /** @var string */
@@ -55,6 +67,9 @@ enum Role: string {
         self::ROLE_LOGISTICS_WRITER => self::ROLE_LOGISTICS_READER,
         self::ROLE_MANAGEMENT_ADMIN => self::ROLE_USER,
         self::ROLE_PROJECT_ADMIN => self::ROLE_USER,
+        self::ROLE_PRODUCTION_ADMIN => self::ROLE_PRODUCTION_WRITER,
+        self::ROLE_PRODUCTION_READER => self::ROLE_USER,
+        self::ROLE_PRODUCTION_WRITER => self::ROLE_PRODUCTION_READER,
         self::ROLE_PURCHASE_ADMIN => self::ROLE_USER
     ];
 
@@ -78,6 +93,15 @@ enum Role: string {
 
     /** @var string */
     public const ROLE_MANAGEMENT_ADMIN = 'ROLE_MANAGEMENT_ADMIN';
+
+    /** @var string */
+    public const ROLE_PRODUCTION_ADMIN = 'ROLE_PRODUCTION_ADMIN';
+
+    /** @var string */
+    public const ROLE_PRODUCTION_READER = 'ROLE_PRODUCTION_READER';
+
+    /** @var string */
+    public const ROLE_PRODUCTION_WRITER = 'ROLE_PRODUCTION_WRITER';
 
     /** @var string */
     public const ROLE_PROJECT_ADMIN = 'ROLE_PROJECT_ADMIN';

@@ -229,31 +229,31 @@ SQL);
 
     private function setProcedure(): void {
         // rank 0
-        $this->upCountries();
+        $this->upCountries(); // 3
         $this->upCustomCode();
         $this->upLocales();
         // rank 1
-        $this->upCarriers();
-        $this->upComponentFamilies();
-        $this->upColors();
-        $this->upCrons();
-        $this->upCurrencies();
+        $this->upCarriers(); // 3
+        $this->upColors(); // 3
+        $this->upComponentFamilies(); // 3
+        $this->upCrons(); // 3
+        $this->upCurrencies(); // 3
         $this->upEngineGroups();
-        $this->upEventTypes();
-        $this->upIncoterms();
-        $this->upInvoiceTimeDue();
-        $this->upOutTrainers();
-        $this->upProductFamilies();
+        $this->upEventTypes(); // 3
+        $this->upIncoterms(); // 3
+        $this->upInvoiceTimeDue(); // 3
+        $this->upOutTrainers(); // 3
+        $this->upProductFamilies(); // 3
         $this->upQualityTypes();
         $this->upRejectTypes();
         $this->upSkillTypes();
         $this->upTimeSlots();
-        $this->upUnits();
+        $this->upUnits(); // 3
         $this->upVatMessages();
         // rank 2
-        $this->upAttributes();
+        $this->upAttributes(); // 3
         $this->upComponents();
-        $this->upOperationTypes();
+        $this->upOperationTypes(); // 3
         $this->upProducts();
         $this->upSocieties();
         // rank 3
@@ -286,7 +286,7 @@ SQL);
         $this->upEmployeeEvents();
         $this->upItRequests();
         $this->upManufacturingOrders();
-        $this->upNotifications();
+        $this->upNotifications(); // 3
         $this->upPlannings();
         $this->upPurchaseOrders();
         $this->upSellingOrderItems();
