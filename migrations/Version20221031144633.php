@@ -245,7 +245,7 @@ SQL);
         $this->upOutTrainers(); // 3
         $this->upProductFamilies(); // 3
         $this->upQualityTypes(); // 3
-        $this->upRejectTypes();
+        $this->upRejectTypes(); // 3
         $this->upSkillTypes();
         $this->upTimeSlots();
         $this->upUnits(); // 3

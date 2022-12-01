@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class Version20221201133607 extends Migration {
+final class Version20221201134808 extends Migration {
     private UserPasswordHasherInterface $hasher;
 
     public function setHasher(UserPasswordHasherInterface $hasher): void {
@@ -46,6 +46,7 @@ SQL);
         $this->upOutTrainers();
         $this->upProductFamilies();
         $this->upQualityTypes();
+        $this->upRejectTypes();
         $this->upUnits();
         // rank 2
         $this->upAttributes();
@@ -631,6 +632,35 @@ CREATE TABLE `quality_type` (
 SQL);
         $this->push('INSERT INTO `quality_type` (`name`) SELECT UCFIRST(`qualitycontrol`) FROM `qualitycontrol`');
         $this->push('DROP TABLE `qualitycontrol`');
+    }
+
+    private function upRejectTypes(): void {
+        $this->push(<<<'SQL'
+CREATE TABLE `production_rejectlist` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `libelle` VARCHAR(255) DEFAULT NULL,
+    `statut` BOOLEAN DEFAULT FALSE NOT NULL,
+    `id_user_creation` INT UNSIGNED NOT NULL,
+    `date_creation` DATETIME DEFAULT NULL,
+    `id_user_modification` INT UNSIGNED NOT NULL,
+    `date_modification` DATETIME DEFAULT NULL
+)
+SQL);
+        $this->insert('production_rejectlist');
+        $this->push(<<<'SQL'
+CREATE TABLE `reject_type` (
+    `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
+    `name` VARCHAR(40) NOT NULL
+)
+SQL);
+        $this->push(<<<'SQL'
+INSERT INTO `reject_type` (`name`)
+SELECT UCFIRST(`libelle`)
+FROM `production_rejectlist`
+WHERE `libelle` IS NOT NULL
+SQL);
+        $this->push('DROP TABLE `production_rejectlist`');
     }
 
     private function upUnits(): void {

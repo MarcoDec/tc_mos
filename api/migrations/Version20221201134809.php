@@ -9,7 +9,7 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 
-final class Version20221201133608 extends Migration {
+final class Version20221201134809 extends Migration {
     /** @var string[] */
     private const TABLES = ['component_family', 'product_family', 'unit'];
 
