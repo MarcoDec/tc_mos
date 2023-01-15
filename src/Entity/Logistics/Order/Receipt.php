@@ -63,7 +63,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                         ]
                     ],
                     'requestBody' => null,
-                    'summary' => 'Transite le la réception à son prochain statut de workflow'
+                    'summary' => 'Transite la réception à son prochain statut de workflow'
                 ],
                 'path' => '/receipts/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')',
