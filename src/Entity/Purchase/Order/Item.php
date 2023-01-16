@@ -28,7 +28,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
@@ -36,7 +35,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @template-extends BaseItem<I, Order>
  */
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['ref']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
     ApiResource(
@@ -44,8 +42,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les lignes de commande',
-                    'summary' => 'Récupère les lignes de commande',
+                    'description' => 'Récupère les lignes',
+                    'summary' => 'Récupère les lignes',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
             ]

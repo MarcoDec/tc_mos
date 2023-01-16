@@ -3,7 +3,6 @@
 namespace App\Entity\Purchase\Order;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
@@ -20,10 +19,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use ApiPlatform\Core\Annotation\ApiFilter;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['ref']),
     ApiResource(
         description: 'Commande',
         collectionOperations: [
