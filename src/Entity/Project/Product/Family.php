@@ -5,15 +5,15 @@ namespace App\Entity\Project\Product;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Collection;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Selling\FamilyReference;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -80,7 +80,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Family extends AbstractFamily {
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
-    protected Collection $children;
+    protected DoctrineCollection $children;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Faisceaux'),
@@ -98,9 +98,9 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
-    /** @var Collection<int, FamilyReference> */
+    /** @var DoctrineCollection<int, FamilyReference> */
     #[ORM\ManyToMany(targetEntity: FamilyReference::class, mappedBy: 'items')]
-    private Collection $references;
+    private DoctrineCollection $references;
 
     public function __construct() {
         parent::__construct();
@@ -116,16 +116,15 @@ class Family extends AbstractFamily {
     }
 
     /**
-     * @return LaravelCollection<int, Check<Product, self>>
+     * @return Collection<int, Check<Product, self>>
      */
-    final public function getChecks(): LaravelCollection {
-        return collect($this->references->getValues())
+    final public function getChecks(): Collection {
+        return Collection::collect($this->references->getValues())
             ->map(static function (FamilyReference $reference): Check {
                 /** @var Check<Product, self> $check */
                 $check = new Check();
                 return $check->setReference($reference);
-            })
-            ->values();
+            });
     }
 
     #[
@@ -137,9 +136,9 @@ class Family extends AbstractFamily {
     }
 
     /**
-     * @return Collection<int, FamilyReference>
+     * @return DoctrineCollection<int, FamilyReference>
      */
-    final public function getReferences(): Collection {
+    final public function getReferences(): DoctrineCollection {
         return $this->references;
     }
 

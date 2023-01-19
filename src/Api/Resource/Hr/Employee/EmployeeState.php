@@ -26,16 +26,16 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     paginationEnabled: false
 )]
 final class EmployeeState {
-    public function __construct(private readonly string $text, private readonly string $value) {
+    public function __construct(private readonly string $id, private readonly string $text) {
+    }
+
+    #[ApiProperty(identifier: true), Serializer\Groups(['read:option'])]
+    public function getId(): string {
+        return $this->id;
     }
 
     #[Serializer\Groups(['read:option'])]
     public function getText(): string {
         return $this->text;
-    }
-
-    #[ApiProperty(identifier: true), Serializer\Groups(['read:option'])]
-    public function getValue(): string {
-        return $this->value;
     }
 }

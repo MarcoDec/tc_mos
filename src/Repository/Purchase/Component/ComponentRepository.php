@@ -46,4 +46,17 @@ final class ComponentRepository extends ServiceEntityRepository {
             return null;
         }
     }
+
+    /** @return Component[] */
+    public function findOptions(): array {
+        /** @phpstan-ignore-next-line */
+        return $this->createQueryBuilder('c')
+            ->select('partial c.{id}')
+            ->addSelect('partial f.{code, id}')
+            ->innerJoin('c.family', 'f', Join::WITH, 'f.deleted = FALSE')
+            ->where('c.deleted = FALSE')
+            ->orderBy('c.id')
+            ->getQuery()
+            ->getResult();
+    }
 }

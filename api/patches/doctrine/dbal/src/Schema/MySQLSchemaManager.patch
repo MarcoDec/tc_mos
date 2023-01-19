@@ -1,0 +1,19 @@
+--- a/vendor/doctrine/dbal/src/Schema/MySQLSchemaManager.php	2022-10-24 09:26:18.000000000 +0200
++++ b/vendor/doctrine/dbal/src/Schema/MySQLSchemaManager.php	2022-11-07 10:11:56.835259059 +0100
+@@ -2,6 +2,7 @@
+ 
+ namespace Doctrine\DBAL\Schema;
+ 
++use App\Doctrine\Comparator;
+ use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+ use Doctrine\DBAL\Platforms\MariaDb1027Platform;
+ use Doctrine\DBAL\Platforms\MySQL;
+@@ -382,7 +383,7 @@
+ 
+     public function createComparator(): Comparator
+     {
+-        return new MySQL\Comparator(
++        return new Comparator(
+             $this->_platform,
+             new CachingCollationMetadataProvider(
+                 new ConnectionCollationMetadataProvider($this->_conn),

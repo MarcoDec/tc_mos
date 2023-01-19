@@ -38,6 +38,7 @@ doctrine:
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
       employee_engine_state: App\Doctrine\DBAL\Types\Embeddable\EmployeeEngineStateType
+      employee_event_state: App\Doctrine\DBAL\Types\Embeddable\Hr\Event\EventStateType
       engine_event: App\Doctrine\DBAL\Types\Production\Engine\EventType
       engine: App\Doctrine\DBAL\Types\Production\Engine\EngineType
       event_state: App\Doctrine\DBAL\Types\Embeddable\EventStateType

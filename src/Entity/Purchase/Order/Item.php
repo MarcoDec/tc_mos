@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Collection;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -24,9 +25,8 @@ use App\Filter\RelationFilter;
 use App\Filter\SetFilter;
 use App\Repository\Purchase\Order\ItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
@@ -148,9 +148,9 @@ abstract class Item extends BaseItem {
     ]
     protected ?Company $targetCompany = null;
 
-    /** @var Collection<int, Receipt<I>> */
+    /** @var DoctrineCollection<int, Receipt<I>> */
     #[ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class)]
-    private Collection $receipts;
+    private DoctrineCollection $receipts;
 
     public function __construct() {
         parent::__construct();
@@ -177,28 +177,27 @@ abstract class Item extends BaseItem {
     }
 
     /**
-     * @return LaravelCollection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
+     * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
-    final public function getChecks(): LaravelCollection {
+    final public function getChecks(): Collection {
         $checks = $this->getReceiptChecks();
-        $createdChecks = $this->getCompanyChecks()->merge($this->getItemChecks())->merge($this->getSupplierChecks());
+        $createdChecks = $this->getItemChecks()->merge($this->getCompanyChecks())->merge($this->getSupplierChecks());
         /** @var Receipt<I> $receipt */
         $receipt = (new Receipt())->setItem($this);
         foreach ($createdChecks as $check) {
-            if (!empty($id = $check->getReference()?->getId()) && $id > 0 && !$checks->offsetExists($id)) {
+            if (!empty($id = $check->getReference()?->getId()) && $id > 0 && !$checks->has($id)) {
                 /** @phpstan-ignore-next-line */
                 $checks->put($id, $check->setReceipt($receipt));
             }
         }
-        return $checks->values();
+        return $checks;
     }
 
     /**
-     * @return LaravelCollection<int, Check<I, Company>>
+     * @return Collection<int, Check<Component|Product, Company>>
      */
-    final public function getCompanyChecks(): LaravelCollection {
-        /** @phpstan-ignore-next-line */
-        return $this->getCompany()?->getChecks();
+    final public function getCompanyChecks(): Collection {
+        return $this->getCompany()?->getChecks() ?? new Collection();
     }
 
     final public function getCopperPrice(): Measure {
@@ -214,23 +213,28 @@ abstract class Item extends BaseItem {
     }
 
     /**
-     * @return LaravelCollection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
+     * @return Collection<int, Check<Component, Component|ComponentFamily>>|Collection<int, Check<Product, Product|ProductFamily>>
      */
-    final public function getItemChecks(): LaravelCollection {
-        /** @phpstan-ignore-next-line */
-        return $this->item?->getChecks();
+    final public function getItemChecks(): Collection {
+        return $this->item?->getChecks() ?? new Collection();
     }
 
     /**
-     * @return LaravelCollection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
+     * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
-    final public function getReceiptChecks(): LaravelCollection {
-        /** @var LaravelCollection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>> $checks */
-        $checks = collect($this->receipts->getValues())
+    final public function getReceiptChecks(): Collection {
+        /** @var Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>> $checks */
+        $checks = Collection::collect($this->receipts->getValues())
             ->map(static fn (Receipt $receipt): array => $receipt->getChecks()->getValues())
             ->flatten();
+        /**
+         * @param Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier> $check
+         *
+         * @return array<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
+         */
+        $mapper = static fn (Check $check): array => empty($id = $check->getReference()?->getId()) || $id <= 0 ? [] : [$id => $check];
         /** @phpstan-ignore-next-line */
-        return $checks->mapWithKeys(static fn (Check $check): array => empty($id = $check->getReference()?->getId()) || $id <= 0 ? [] : [$id => $check]);
+        return $checks->mapWithKeys($mapper);
     }
 
     #[Serializer\Groups(['read:item'])]
@@ -245,9 +249,9 @@ abstract class Item extends BaseItem {
     }
 
     /**
-     * @return Collection<int, Receipt<I>>
+     * @return DoctrineCollection<int, Receipt<I>>
      */
-    final public function getReceipts(): Collection {
+    final public function getReceipts(): DoctrineCollection {
         return $this->receipts;
     }
 
@@ -260,11 +264,10 @@ abstract class Item extends BaseItem {
     }
 
     /**
-     * @return LaravelCollection<int, Check<I, Supplier>>
+     * @return Collection<int, Check<Component|Product, Supplier>>
      */
-    final public function getSupplierChecks(): LaravelCollection {
-        /** @phpstan-ignore-next-line */
-        return $this->getSupplier()?->getChecks();
+    final public function getSupplierChecks(): Collection {
+        return $this->getSupplier()?->getChecks() ?? new Collection();
     }
 
     final public function getTargetCompany(): ?Company {

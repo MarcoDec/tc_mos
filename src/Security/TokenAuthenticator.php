@@ -27,9 +27,6 @@ final class TokenAuthenticator extends AbstractAuthenticator {
     }
 
     private static function getBearer(Request $request): ?string {
-        if ($request->cookies->has('token')) {
-            return $request->cookies->get('token');
-        }
         $authorization = $request->headers->get('Authorization');
         if (empty($authorization)) {
             return null;

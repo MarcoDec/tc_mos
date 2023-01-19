@@ -27,8 +27,8 @@ final class EmployeeRepository extends ServiceEntityRepository implements UserLo
 
     public function loadUserByIdentifier(string $identifier): UserInterface {
         $query = $this->createQueryBuilder('e')
-            ->select('partial e.{embBlocker.state, embRoles.roles, embState.state, id, initials, name, password, surname, username}')
-            ->addSelect('partial c.{id}')
+            ->select('e')
+            ->addSelect('c')
             ->addSelect('t')
             ->leftJoin('e.apiTokens', 't')
             ->leftJoin('e.company', 'c', Join::WITH, 'c.deleted = FALSE')

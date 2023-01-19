@@ -1,33 +1,36 @@
-import Api from '../../Api'
+import api from '../../api'
 import {defineStore} from 'pinia'
+import moment from 'moment'
 
-export default function generateNotification(notification) {
-    return defineStore(`/api/notifications/${notification.id}`, {
+function convertState(state) {
+    state.createdAt = moment(state.createdAt)
+    return state
+}
+
+export default function useNotification(notification, category) {
+    let initialState = convertState({...notification, category})
+    return defineStore(`notifications/${notification.id}`, {
         actions: {
-            blur() {
-                this.opened = false
-                this.selected = false
-            },
             dispose() {
-                this.$reset()
+                this.category.removeNotification(this)
                 this.$dispose()
             },
-            focus() {
-                this.root.blur()
-                this.selected = true
-                this.open()
-            },
-            open() {
-                this.opened = true
-                this.parentStore?.open()
+            async reading() {
+                this.reset(await api(this.url, 'PATCH'))
             },
             async remove() {
-                await new Api().fetch(this.iri, 'DELETE')
-                this.root.remove(this['@id'])
+                await api(this.url, 'DELETE')
                 this.dispose()
+            },
+            reset(state) {
+                initialState = convertState({...state, category: this.category})
+                this.$reset()
             }
-
         },
-        state: () => ({...notification})
+        getters: {
+            formattedCreatedAt: state => state.createdAt.format('DD/MM/YYYY HH:mm'),
+            url: state => `/api/notifications/${state.id}`
+        },
+        state: () => ({...initialState})
     })()
 }

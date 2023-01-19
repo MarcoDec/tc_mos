@@ -3,11 +3,11 @@
 namespace App\Entity\Management;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Collection;
 use App\Entity\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Illuminate\Support\Collection as LaravelCollection;
 use JetBrains\PhpStorm\Pure;
 use LogicException;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -17,15 +17,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class AbstractUnit extends Entity {
     final public const UNIT_CODE_MAX_LENGTH = 6;
 
-    /** @var Collection<int, static> */
-    protected Collection $children;
+    /** @var DoctrineCollection<int, static> */
+    protected DoctrineCollection $children;
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'g'),
         Assert\Length(min: 1, max: self::UNIT_CODE_MAX_LENGTH),
         Assert\NotBlank,
-        ORM\Column(length: self::UNIT_CODE_MAX_LENGTH, options: ['collation' => 'utf8_bin']),
-        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
+        ORM\Column(length: self::UNIT_CODE_MAX_LENGTH, options: ['collation' => 'utf8mb3_bin']),
+        Serializer\Groups(['read:currency', 'read:unit', 'read:unit:option', 'write:unit'])
     ]
     protected ?string $code = null;
 
@@ -83,9 +83,9 @@ abstract class AbstractUnit extends Entity {
     }
 
     /**
-     * @return Collection<int, static>
+     * @return DoctrineCollection<int, static>
      */
-    final public function getChildren(): Collection {
+    final public function getChildren(): DoctrineCollection {
         return $this->children;
     }
 
@@ -129,7 +129,7 @@ abstract class AbstractUnit extends Entity {
     }
 
     #[Serializer\Groups(['read:unit:option'])]
-    final public function getText(): ?string {
+    public function getText(): ?string {
         return $this->getCode();
     }
 
@@ -185,15 +185,18 @@ abstract class AbstractUnit extends Entity {
     }
 
     /**
-     * @return LaravelCollection<int, static>
+     * @return Collection<int, static>
      */
-    private function getDepthChildren(): LaravelCollection {
-        /** @var LaravelCollection<int, static> $children */
-        $children = collect($this->getChildren()->getValues())
-            ->map(static fn (self $child): array => $child->getDepthChildren()->push($child)->values()->all())
-            ->flatten()
-            ->unique->getId();
-        return $children->values();
+    private function getDepthChildren(): Collection {
+        /**
+         * @param static $child
+         *
+         * @return Collection<int, static>
+         */
+        $mapper = static fn (self $child): Collection => $child->getDepthChildren()->push($child);
+        /** @var Collection<int, static> $children */
+        $children = Collection::collect($this->getChildren()->getValues())->map($mapper)->flatten();
+        return $children->unique(static fn (self $child): ?int => $child->getId());
     }
 
     /**
@@ -209,16 +212,18 @@ abstract class AbstractUnit extends Entity {
     }
 
     /**
-     * @return LaravelCollection<int, static>
+     * @return Collection<int, static>
      */
-    private function getFamily(): LaravelCollection {
-        /** @var static $root */
-        $root = $this->getRoot();
-        /** @var LaravelCollection<int, static> $children */
-        $children = $root->getDepthChildren()->push($root)->unique->getId();
-        return $children->values();
+    private function getFamily(): Collection {
+        return ($root = $this->getRoot())
+            ->getDepthChildren()
+            ->push($root)
+            ->unique(static fn (self $child): ?int => $child->getId());
     }
 
+    /**
+     * @return static
+     */
     private function getRoot(): self {
         $root = $this;
         while ($root->parent !== null) {

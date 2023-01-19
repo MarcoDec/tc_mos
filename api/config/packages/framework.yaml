@@ -1,0 +1,15 @@
+framework:
+  http_method_override: false
+  php_errors:
+    log: true
+  secret: '%env(APP_SECRET)%'
+  session:
+    cookie_samesite: lax
+    cookie_secure: auto
+    handler_id: null
+    storage_factory_id: session.storage.factory.native
+when@test:
+  framework:
+    session:
+      storage_factory_id: session.storage.factory.mock_file
+    test: true

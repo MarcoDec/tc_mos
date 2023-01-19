@@ -9,7 +9,18 @@ services:
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
-      - ./docker/apache:/etc/apache2/sites-enabled:delegated
+      - ./docker/apache/main:/etc/apache2/sites-enabled:delegated
+#  apache_api:
+#    container_name: tconcept_gpao_apache_api
+#    depends_on:
+#      - php
+#    image: tconcept/tc_apache:latest
+#    ports:
+#      - '8002:80'
+#    restart: always
+#    volumes:
+#      - .:/var/www/html/TConcept-GPAO:cached
+#      - ./docker/apache/api:/etc/apache2/sites-enabled:delegated
   mysql:
     build:
       args:
@@ -25,6 +36,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
       MYSQL_USER: ${DATABASE_USER}
     restart: always
+#    ports:
+#      - '3307:3306'
     volumes:
       - ./docker/mysql/db:/var/lib/mysql:delegated
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf:delegated
@@ -52,7 +65,7 @@ services:
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
   phpmyadmin:
     container_name: tconcept_gpao_phpmyadmin
-    image: phpmyadmin/phpmyadmin:5.1.3
+    image: phpmyadmin/phpmyadmin:5.2.0
     environment:
       PMA_ARBITRARY: '1'
       PMA_HOST: mysql

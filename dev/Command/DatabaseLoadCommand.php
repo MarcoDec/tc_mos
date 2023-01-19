@@ -2,14 +2,13 @@
 
 namespace App\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'gpao:database:load', description: 'Charge le schéma de la base de données puis les fixtures.')]
 final class DatabaseLoadCommand extends AbstractCommand {
-    protected static $defaultDescription = 'Charge le schéma de la base de données puis les fixtures.';
-    protected static $defaultName = 'gpao:database:load';
-
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $run = function (string $cmd, array $options = []) use ($output): void {
             $output->writeln("<fg=green>$cmd</>");
