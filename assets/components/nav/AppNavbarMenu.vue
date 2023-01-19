@@ -11,6 +11,7 @@
 
     const location = useBrowserLocation()
     const database = computed(() => `${location.value.protocol}//${location.value.hostname}:8080`)
+    const api = computed(() => `${location.value.protocol}//${location.value.hostname}:8000/api`)
     const user = useUser()
 </script>
 
@@ -65,6 +66,10 @@
                 <a :href="database" class="dropdown-item text-warning" target="_blank">
                     <Fa icon="database"/>
                     Base de données
+                </a>
+                <a :href="api" class="dropdown-item text-warning" target="_blank">
+                    <Fa icon="database"/>
+                    Application Programming Interface (API)
                 </a>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isLogisticsReader" id="logistics" icon="boxes" title="Logistique">
