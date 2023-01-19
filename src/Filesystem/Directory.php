@@ -2,14 +2,16 @@
 
 namespace App\Filesystem;
 
-use Tightenco\Collect\Support\Collection;
+use App\Collection;
+use Stringable;
 
-final class Directory {
-    /** @var Collection<string> */
-    private Collection $files;
+final class Directory implements Stringable {
+    /** @var Collection<int, string> */
+    private readonly Collection $files;
 
-    public function __construct(private string $path) {
-        $this->files = collect(scandir($path))->filter(static fn (string $file): bool => !in_array($file, ['.', '..', '.gitignore']));
+    public function __construct(private readonly string $path) {
+        $this->files = Collection::collect(scandir($path) ?: [])
+            ->filter(static fn (string $file): bool => !in_array($file, ['.', '..', '.gitignore']));
     }
 
     public function __toString(): string {

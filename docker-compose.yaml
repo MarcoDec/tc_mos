@@ -9,7 +9,18 @@ services:
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
-      - ./docker/apache:/etc/apache2/sites-enabled:delegated
+      - ./docker/apache/main:/etc/apache2/sites-enabled:delegated
+#  apache_api:
+#    container_name: tconcept_gpao_apache_api
+#    depends_on:
+#      - php
+#    image: tconcept/tc_apache:latest
+#    ports:
+#      - '8002:80'
+#    restart: always
+#    volumes:
+#      - .:/var/www/html/TConcept-GPAO:cached
+#      - ./docker/apache/api:/etc/apache2/sites-enabled:delegated
   mysql:
     build:
       args:
@@ -22,9 +33,11 @@ services:
     environment:
       MYSQL_DATABASE: ${DATABASE_DBNAME}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
       MYSQL_USER: ${DATABASE_USER}
     restart: always
+#    ports:
+#      - '3307:3306'
     volumes:
       - ./docker/mysql/db:/var/lib/mysql:delegated
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf:delegated
@@ -38,7 +51,6 @@ services:
     container_name: tconcept_gpao_php
     depends_on:
       - mysql
-      - couchdb
     ports:
       - '8001:8001'
     restart: always
@@ -53,7 +65,7 @@ services:
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
   phpmyadmin:
     container_name: tconcept_gpao_phpmyadmin
-    image: phpmyadmin/phpmyadmin:5.1.1
+    image: phpmyadmin/phpmyadmin:5.2.0
     environment:
       PMA_ARBITRARY: '1'
       PMA_HOST: mysql
@@ -64,19 +76,4 @@ services:
     restart: always
     volumes:
       - /sessions
-
-  couchdb:
-    container_name: tconcept_gpao_couchdb
-    environment:
-      COUCHDB_PASSWORD: ${COUCH_PASSWORD}
-      COUCHDB_SECRET: ${APP_SECRET}
-      COUCHDB_USER: ${COUCH_USER}
-      NODENAME: couchdb-0
-    image: couchdb:3.2.0
-    restart: always
-    ports:
-      - "5984:5984"
-      #- "5986:5986"
-    volumes:
-      - ./docker/couchdb/db:/opt/couchdb/data:delegated
-version: "3.5"
+version: '3.3'

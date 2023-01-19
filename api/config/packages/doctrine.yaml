@@ -1,0 +1,74 @@
+parameters:
+  app.doctrine.mappings:
+    App:
+      alias: App
+      dir: '%kernel.project_dir%/src/Entity'
+      is_bundle: false
+      prefix: App\Entity
+    gedmo_tree:
+      alias: GedmoTree
+      dir: '%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Tree/Entity'
+      is_bundle: false
+      prefix: Gedmo\Tree\Entity
+      type: attribute
+doctrine:
+  dbal:
+    connections:
+      default:
+        mapping_types:
+          enum: string
+        url: '%env(resolve:DATABASE_URL)%'
+      migrations:
+        mapping_types:
+          enum: string
+        url: '%env(resolve:DATABASE_ROOT_URL)%'
+    default_connection: default
+    types:
+      attribute: App\Doctrine\Type\Purchase\Component\AttributeType
+      char: App\Doctrine\Type\CharType
+      employee_event: App\Doctrine\Type\Hr\Employee\Event\EmployeeEventType
+      engine: App\Doctrine\Type\Production\Engine\EngineType
+      notification: App\Doctrine\Type\Hr\Employee\NotificationType
+      role: App\Doctrine\Type\Hr\Employee\RoleType
+      tinyint: App\Doctrine\Type\Tinyint
+      unit: App\Doctrine\Type\Management\Unit\UnitType
+  orm:
+    auto_generate_proxy_classes: true
+    default_entity_manager: default
+    entity_managers:
+      default:
+        auto_mapping: true
+        connection: default
+        mappings: '%app.doctrine.mappings%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+      migrations:
+        connection: migrations
+        mappings: '%app.doctrine.mappings%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+when@dev:
+  doctrine:
+    dbal:
+      connections:
+        default:
+          profiling_collect_backtrace: true
+when@prod:
+  doctrine:
+    orm:
+      auto_generate_proxy_classes: false
+      query_cache_driver:
+        pool: doctrine.system_cache_pool
+        type: pool
+      result_cache_driver:
+        pool: doctrine.result_cache_pool
+        type: pool
+  framework:
+    cache:
+      pools:
+        doctrine.result_cache_pool:
+          adapter: cache.app
+        doctrine.system_cache_pool:
+          adapter: cache.system
+when@test:
+  doctrine:
+    dbal:
+      dbname_suffix: '_test%env(default::TEST_TOKEN)%'
