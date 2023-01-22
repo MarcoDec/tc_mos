@@ -2068,9 +2068,30 @@ SQL);
             company: 3,
             initials: 'user',
             password: 'user',
-            roles: [],
+            roles: [Roles::ROLE_HR_WRITER],
             username: 'user'
         );
+       $this->generateEmployee(
+          company: 3,
+          initials: 'tnbad',
+          password: 'tnbad',
+          roles: [Roles::ROLE_HR_WRITER],
+          username: 'tnbad'
+       );
+       $this->generateEmployee(
+          company: 4,
+          initials: 'mdbad',
+          password: 'mdbad',
+          roles: [Roles::ROLE_HR_WRITER],
+          username: 'mdbad'
+       );
+       $this->generateEmployee(
+          company: 1,
+          initials: 'frbad',
+          password: 'frbad',
+          roles: [Roles::ROLE_HR_WRITER],
+          username: 'frbad'
+       );
         $this->addQuery(<<<'SQL'
 INSERT INTO `employee` (
     `old_id`,
