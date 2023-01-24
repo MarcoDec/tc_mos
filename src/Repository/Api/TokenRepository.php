@@ -28,7 +28,7 @@ final class TokenRepository extends ServiceEntityRepository {
     }
 
     public function disconnect(Employee $user): void {
-        foreach ($this->findBy(['employees' => $user]) as $token) {
+        foreach ($this->findBy(['employee' => $user]) as $token) {
             if (!$token->isExpired()) {
                 $token->expire();
             }

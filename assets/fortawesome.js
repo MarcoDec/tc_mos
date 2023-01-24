@@ -2,6 +2,8 @@ import {
     faAddressCard,
     faBars,
     faBoxes,
+    faCalendar,
+    faCalendarWeek,
     faCaretDown,
     faCaretUp,
     faCertificate,
@@ -92,3 +94,5 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faCalendar)
+library.add(faCalendarWeek)

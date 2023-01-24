@@ -65,6 +65,9 @@
                                 <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">
                                     Unités
                                 </AppNavbarLink>
+                                <AppNavbarLink icon="calendar" to="company" variant="success">
+                                    Agenda
+                                </AppNavbarLink>
                             </template>
                         </AppNavbarItem>
                         <AppNavbarItem id="it" icon="laptop" title="Informatique">
