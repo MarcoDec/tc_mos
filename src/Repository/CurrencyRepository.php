@@ -26,7 +26,7 @@ final class CurrencyRepository extends ServiceEntityRepository {
         foreach ($rates as $rate) {
             $this->_em->createQueryBuilder()
                 ->update($this->getClassName(), 'c')
-                ->set('c.base', ':rate')
+                ->set('c.rate', ':rate')
                 ->where('c.code = :code')
                 ->setParameters(['code' => $rate['code'], 'rate' => $rate['rate']])
                 ->getQuery()

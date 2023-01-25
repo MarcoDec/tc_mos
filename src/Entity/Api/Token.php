@@ -6,10 +6,15 @@ use App\Entity\Hr\Employee\Employee;
 use App\Repository\Api\TokenRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 
 #[ORM\Entity(repositoryClass: TokenRepository::class)]
 class Token {
+    #[
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'apiTokens')
+    ]
+    private Employee $employee;
+
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $expireAt;
 
@@ -20,16 +25,18 @@ class Token {
     ]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'char', length: 120)]
+    #[ORM\Column]
     private string $token;
 
-    public function __construct(
-        #[ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(inversedBy: 'apiTokens')]
-        private Employee $employee
-    ) {
+    final public function __construct(Employee $employee) {
+        $this->employee = $employee;
         $this->expireAt = new DateTimeImmutable('+1 hour');
         $this->token = bin2hex(random_bytes(60));
+    }
+
+    final public function expire(): self {
+        $this->expireAt = new DateTimeImmutable('-1 minute');
+        return $this;
     }
 
     final public function getEmployee(): ?Employee {
@@ -44,12 +51,12 @@ class Token {
         return $this->token;
     }
 
-    #[Pure]
-    final public function getUserIdentifier(): string {
-        return $this->employee->getUserIdentifier();
-    }
-
     final public function isExpired(): bool {
         return $this->expireAt <= new DateTimeImmutable();
+    }
+
+    final public function renew(): self {
+        $this->expireAt = new DateTimeImmutable('+1 hour');
+        return $this;
     }
 }

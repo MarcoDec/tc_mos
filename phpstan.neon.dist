@@ -1,13 +1,13 @@
 parameters:
-    excludePaths:
-        - src/Controller/TemplateController.php
-    level: 9
+    level: 8
     paths:
         - dev
         - lib
-        - migrations
         - src
-        - tests
         - utils
+    # If you're using PHP config files for Symfony 5.3+, you also need this for auto-loading of `Symfony\Config`:
+    scanDirectories:
+        - var/cache/dev/Symfony/Config
     symfony:
-        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+        # container_xml_path Symfony 5+
+        container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml

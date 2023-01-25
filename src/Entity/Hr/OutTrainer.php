@@ -5,19 +5,17 @@ namespace App\Entity\Hr;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'surname']),
-    ApiFilter(filterClass: OrderFilter::class, id: 'address-sorter', properties: Address::sorter),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'surname' => 'partial']),
     ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: Address::filter),
     ApiResource(
@@ -33,8 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un formateur extérieur',
                     'summary' => 'Créer un formateur extérieur',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
+                ]
             ]
         ],
         itemOperations: [
@@ -42,34 +39,42 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un formateur extérieur',
                     'summary' => 'Supprime un formateur extérieur',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
+                ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un formateur extérieur',
                     'summary' => 'Modifie un formateur extérieur',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
+                ]
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:address', 'write:out-trainer'],
+            'groups' => ['write:address', 'write:name', 'write:out-trainer'],
             'openapi_definition_name' => 'OutTrainer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:id', 'read:out-trainer'],
-            'openapi_definition_name' => 'OutTrainer-read',
-            'skip_null_values' => false
+            'groups' => ['read:address', 'read:id', 'read:name', 'read:out-trainer'],
+            'openapi_definition_name' => 'OutTrainer-read'
         ]
     ),
-    ORM\Entity
+    ORM\Entity,
+    ORM\Table
 ]
 class OutTrainer extends Entity {
+    use NameTrait;
+
+    #[
+        ApiProperty(description: 'Prénom', required: true, example: 'Rawaa'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    protected ?string $name = null;
+
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
@@ -78,19 +83,9 @@ class OutTrainer extends Entity {
     private Address $address;
 
     #[
-        ApiProperty(description: 'Prénom', required: true, example: 'Rawaa'),
-        Assert\Length(min: 3, max: 30),
-        Assert\NotBlank,
-        ORM\Column(length: 30),
-        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
-    ]
-    private ?string $name = null;
-
-    #[
         ApiProperty(description: 'Nom', required: true, example: 'CHRAIET'),
-        Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
-        ORM\Column(length: 30),
+        ORM\Column,
         Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
     ]
     private ?string $surname = null;
@@ -104,21 +99,12 @@ class OutTrainer extends Entity {
         return $this->address;
     }
 
-    final public function getName(): ?string {
-        return $this->name;
-    }
-
     final public function getSurname(): ?string {
         return $this->surname;
     }
 
     final public function setAddress(Address $address): self {
         $this->address = $address;
-        return $this;
-    }
-
-    final public function setName(?string $name): self {
-        $this->name = $name;
         return $this;
     }
 

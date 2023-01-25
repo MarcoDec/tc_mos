@@ -9,13 +9,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity as DoctrineUnique
 final class UniqueEntity extends DoctrineUniqueEntity {
     /**
      * @param string|string[] $fields
-     * @param string[]        $groups
      */
-    public function __construct(array|string $fields, ?array $groups = null) {
+    public function __construct(array|string $fields) {
         if (!is_array($fields)) {
             $fields = [$fields];
         }
         $fields[] = 'deleted';
-        parent::__construct(fields: $fields, ignoreNull: false, groups: $groups);
+        parent::__construct($fields);
     }
 }

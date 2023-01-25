@@ -2,15 +2,15 @@
 
 namespace App\Entity\Management;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Entity;
 use App\Repository\CurrencyRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
@@ -21,21 +21,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les devises',
                     'summary' => 'Récupère les devises',
                 ]
-            ],
-            'options' => [
-                'controller' => PlaceholderAction::class,
-                'method' => 'GET',
-                'normalization_context' => [
-                    'groups' => ['read:id', 'read:unit:option'],
-                    'openapi_definition_name' => 'Currency-options',
-                    'skip_null_values' => false
-                ],
-                'openapi_context' => [
-                    'description' => 'Récupère les devises pour les select',
-                    'summary' => 'Récupère les devises pour les select',
-                ],
-                'order' => ['code' => 'asc'],
-                'path' => '/currencies/options'
             ]
         ],
         itemOperations: [
@@ -44,47 +29,26 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Modifie une devise',
                     'summary' => 'Modifie une devise',
-                ],
-                'validate' => false
+                ]
             ]
         ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:currency'],
+            'groups' => ['write:currency', 'write:currency'],
             'openapi_definition_name' => 'Currency-write'
         ],
         normalizationContext: [
             'groups' => ['read:currency', 'read:id'],
-            'openapi_definition_name' => 'Currency-read',
-            'skip_null_values' => false
+            'openapi_definition_name' => 'Currency-read'
         ],
-        order: ['code' => 'asc'],
         paginationEnabled: false
     ),
-    ORM\Entity(repositoryClass: CurrencyRepository::class)
+    ORM\Entity(repositoryClass: CurrencyRepository::class),
+    ORM\Table
 ]
-class Currency extends AbstractUnit {
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
-    protected Collection $children;
-
-    #[
-        ApiProperty(description: 'Code ', required: true, example: 'EUR'),
-        ORM\Column(type: 'char', length: 3),
-        Serializer\Groups(['read:currency', 'read:unit', 'read:unit:option', 'write:unit'])
-    ]
-    protected ?string $code = null;
-
-    protected ?string $name = null;
-
-    #[
-        ApiProperty(description: 'Parent ', readableLink: false, example: '/api/currencies/1'),
-        ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
-        Serializer\Groups(['read:currency'])
-    ]
-    protected $parent;
-
+class Currency extends Entity {
     #[
         ApiProperty(description: 'Active', example: true),
         ORM\Column(options: ['default' => false]),
@@ -93,11 +57,36 @@ class Currency extends AbstractUnit {
     private bool $active = false;
 
     #[
+        ApiProperty(description: 'Code', required: true, example: 'EUR'),
+        Assert\NotBlank,
+        ORM\Column,
+        Serializer\Groups(['read:currency'])
+    ]
+    private ?string $code = null;
+
+    #[
+        ApiProperty(description: 'Taux (€)', required: true, example: 1),
+        Assert\NotBlank,
+        Assert\Positive,
+        ORM\Column(options: ['default' => 1, 'unsigned' => true]),
+        Serializer\Groups(['read:currency'])
+    ]
+    private float $rate = 1;
+
+    final public function getCode(): ?string {
+        return $this->code;
+    }
+
+    #[
         ApiProperty(description: 'Nom', example: 'Euro'),
         Serializer\Groups(['read:currency'])
     ]
     final public function getName(): ?string {
-        return !empty($this->getCode()) ? Currencies::getName($this->getCode()) : null;
+        return !empty($this->code) ? Currencies::getName($this->code) : null;
+    }
+
+    final public function getRate(): float {
+        return $this->rate;
     }
 
     #[
@@ -105,12 +94,7 @@ class Currency extends AbstractUnit {
         Serializer\Groups(['read:currency'])
     ]
     final public function getSymbol(): ?string {
-        return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;
-    }
-
-    #[Serializer\Groups(['read:unit:option'])]
-    final public function getText(): ?string {
-        return $this->getSymbol();
+        return !empty($this->code) ? Currencies::getSymbol($this->code) : null;
     }
 
     final public function isActive(): bool {
@@ -119,6 +103,16 @@ class Currency extends AbstractUnit {
 
     final public function setActive(bool $active): self {
         $this->active = $active;
+        return $this;
+    }
+
+    final public function setCode(?string $code): self {
+        $this->code = $code;
+        return $this;
+    }
+
+    final public function setRate(float $rate): self {
+        $this->rate = $rate;
         return $this;
     }
 }

@@ -5,18 +5,16 @@ namespace App\Entity\Management;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'rgb']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'rgb' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'ral' => 'partial', 'rgb' => 'partial']),
     ApiResource(
         description: 'Couleur',
         collectionOperations: [
@@ -30,8 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer une couleur',
                     'summary' => 'Créer une couleur',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+                ]
             ]
         ],
         itemOperations: [
@@ -39,64 +36,66 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime une couleur',
                     'summary' => 'Supprime une couleur',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+                ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une couleur',
                     'summary' => 'Modifie une couleur',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
+                ]
             ]
         ],
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:color'],
+            'groups' => ['write:color', 'write:name'],
             'openapi_definition_name' => 'Color-write'
         ],
         normalizationContext: [
-            'groups' => ['read:color', 'read:id'],
-            'openapi_definition_name' => 'Color-read',
-            'skip_null_values' => false
+            'groups' => ['read:color', 'read:id', 'read:name'],
+            'openapi_definition_name' => 'Color-read'
         ],
     ),
     ORM\Entity,
-    UniqueEntity('name'),
-    UniqueEntity('rgb')
+    ORM\Table
 ]
 class Color extends Entity {
+    use NameTrait;
+
     #[
         ApiProperty(description: 'nom', required: true, example: 'Gris'),
-        Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
-        ORM\Column(length: 20),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:name', 'write:name'])
+    ]
+    protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'ral', example: '17122018'),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
     ]
-    private ?string $name = null;
+    private ?string $ral = null;
 
     #[
         ApiProperty(description: 'rgb', example: '#848484'),
-        Assert\CssColor(formats: Assert\CssColor::HEX_LONG),
-        Assert\NotBlank,
-        ORM\Column(type: 'char', length: 7),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:color', 'write:color'])
     ]
     private ?string $rgb = null;
 
-    final public function getName(): ?string {
-        return $this->name;
+    final public function getRal(): ?string {
+        return $this->ral;
     }
 
     final public function getRgb(): ?string {
         return $this->rgb;
     }
 
-    final public function setName(?string $name): self {
-        $this->name = $name;
+    final public function setRal(?string $ral): self {
+        $this->ral = $ral;
         return $this;
     }
 

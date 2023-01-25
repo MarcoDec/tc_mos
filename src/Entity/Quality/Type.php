@@ -5,16 +5,15 @@ namespace App\Entity\Quality;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Traits\NameTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Type qualité',
@@ -29,8 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Créer un type qualité',
                     'summary' => 'Créer un type qualité',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
+                ]
             ]
         ],
         itemOperations: [
@@ -38,51 +36,40 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'openapi_context' => [
                     'description' => 'Supprime un type qualité',
                     'summary' => 'Supprime un type qualité',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
+                ]
             ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un type qualité',
                     'summary' => 'Modifie un type qualité',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
+                ]
             ]
         ],
         shortName: 'QualityType',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_QUALITY_ADMIN.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:type'],
+            'groups' => ['write:name'],
             'openapi_definition_name' => 'QualityType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:type'],
-            'openapi_definition_name' => 'QualityType-read',
-            'skip_null_values' => false
+            'groups' => ['read:id', 'read:name'],
+            'openapi_definition_name' => 'QualityType-read'
         ],
     ),
     ORM\Entity,
     ORM\Table(name: 'quality_type')
 ]
 class Type extends Entity {
+    use NameTrait;
+
     #[
         ApiProperty(description: 'Nom ', required: true, example: 'Dimensions'),
-        Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
-        ORM\Column(length: 40),
-        Serializer\Groups(['read:type', 'write:type'])
+        ORM\Column,
+        Serializer\Groups(['read:name', 'write:name'])
     ]
-    private ?string $name = null;
-
-    final public function getName(): ?string {
-        return $this->name;
-    }
-
-    final public function setName(?string $name): self {
-        $this->name = $name;
-        return $this;
-    }
+    protected ?string $name = null;
 }

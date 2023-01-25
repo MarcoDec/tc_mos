@@ -4,9 +4,9 @@ namespace App\Attributes;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_CLASS)]
+#[Attribute]
 final class CronJob {
-    public function __construct(private readonly string $period) {
+    public function __construct(private string $period) {
     }
 
     public function getPeriod(): string {

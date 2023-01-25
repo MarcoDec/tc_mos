@@ -4,16 +4,20 @@ namespace App\Command;
 
 use App\Attributes\CronJob;
 use App\Repository\CurrencyRepository;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/** @method static string getDefaultName() */
-#[AsCommand(name: 'gpao:currency:rate', description: 'CRON de mise à jour des taux de change des devises.'), CronJob('@daily')]
+/**
+ * @method static string getDefaultName()
+ */
+#[CronJob('@daily')]
 final class CurrencyRateCommand extends Command {
-    public function __construct(private readonly HttpClientInterface $client, private readonly CurrencyRepository $currencyRepo) {
+    protected static $defaultDescription = 'CRON de mise à jour des taux de change des devises.';
+    protected static $defaultName = 'gpao:currency:rate';
+
+    public function __construct(private HttpClientInterface $client, private CurrencyRepository $currencyRepo) {
         parent::__construct();
     }
 

@@ -3,109 +3,74 @@
 namespace App\Entity\Embeddable;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
-use App\Validator as AppAssert;
+use App\Validator\ZipCode;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Embeddable]
 class Address {
-    final public const filter = [
+    public const filter = [
         'address.address' => 'partial',
         'address.address2' => 'partial',
         'address.city' => 'partial',
         'address.country' => 'partial',
-        'address.email' => 'partial'
-    ];
-    final public const sorter = [
-        'address.address',
-        'address.address2',
-        'address.city',
-        'address.country',
-        'address.email'
+        'address.email' => 'partial',
     ];
 
     #[
-        ApiProperty(
-            description: 'Adresse',
-            example: '5 rue Alfred Nobel',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
-        ),
-        Assert\Length(min: 10, max: 160),
-        ORM\Column(length: 160, nullable: true),
+        ApiProperty(description: 'Adresse', example: '5 rue Alfred Nobel'),
+        Assert\Length(min: 3, max: 255),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $address = null;
 
     #[
-        ApiProperty(
-            description: 'Complément d\'adresse',
-            example: 'ZA La charrière',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
-        ),
-        Assert\Length(min: 2, max: 110),
-        ORM\Column(length: 110, nullable: true),
+        ApiProperty(description: 'Complément d\'adresse', example: 'ZA La charrière'),
+        Assert\Length(min: 3, max: 255),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $address2 = null;
 
     #[
-        ApiProperty(
-            description: 'Ville',
-            example: 'Rioz',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/addressLocality'], 'format' => 'addressLocality']
-        ),
-        Assert\Length(min: 3, max: 50),
-        ORM\Column(length: 50, nullable: true),
+        ApiProperty(description: 'Ville', example: 'Rioz'),
+        Assert\Length(min: 3, max: 255),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $city = null;
 
     #[
-        ApiProperty(
-            description: 'Pays',
-            example: 'FR',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/addressLocality'], 'format' => 'addressLocality']
-        ),
+        ApiProperty(description: 'Pays', example: 'FR'),
         Assert\Country,
-        Assert\Length(exactly: 2),
-        ORM\Column(type: 'char', length: 2, nullable: true),
+        ORM\Column(length: 2, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $country = null;
 
     #[
-        ApiProperty(description: 'E-mail', example: 'sales@tconcept.fr', openapiContext: ['format' => 'email']),
+        ApiProperty(description: 'E-mail', example: 'sales@tconcept.fr'),
         Assert\Email,
-        Assert\Length(min: 5, max: 80),
-        ORM\Column(length: 80, nullable: true),
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $email = null;
 
     #[
-        ApiProperty(
-            description: 'Numéro de téléphone',
-            example: '03 84 91 99 84',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/telephone'], 'format' => 'telephone']
-        ),
-        AppAssert\PhoneNumber,
-        Assert\Length(min: 10, max: 18),
-        ORM\Column(length: 18, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        ApiProperty(description: 'Numéro de téléphone', example: '03 84 91 99 84'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:address', 'write:address']),
+        ZipCode
     ]
     private ?string $phoneNumber = null;
 
     #[
-        ApiProperty(
-            description: 'Code postal',
-            example: '70190',
-            openapiContext: ['externalDocs' => ['url' => 'http://schema.org/postalCode'], 'format' => 'postalCode']
-        ),
-        AppAssert\ZipCode,
-        Assert\Length(min: 2, max: 10),
-        ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        ApiProperty(description: 'Code postal', example: '70190'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:address', 'write:address']),
+        ZipCode
     ]
     private ?string $zipCode = null;
 
@@ -135,14 +100,6 @@ class Address {
 
     final public function getZipCode(): ?string {
         return $this->zipCode;
-    }
-
-    final public function isEmpty(): bool {
-        return empty($this->address)
-            && empty($this->city)
-            && empty($this->country)
-            && empty($this->phone)
-            && empty($this->zip);
     }
 
     final public function setAddress(?string $address): self {

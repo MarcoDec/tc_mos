@@ -2,16 +2,36 @@
 
 namespace App\Filter;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Collection;
-
-final class RelationFilter extends SearchFilter {
+final class RelationFilter extends NumericFilter {
     /**
-     * @return array<string, array<string, mixed>>
+     * @return mixed[]
      */
     public function getDescription(string $resourceClass): array {
-        return Collection::collect(parent::getDescription($resourceClass))
-            ->filter(static fn (array $value, string $key): bool => !str_ends_with($key, '[]'))
-            ->all();
+        $description = [];
+        $metadata = $this->getClassMetadata($resourceClass);
+
+        $properties = $this->getProperties();
+        if (null === $properties) {
+            $properties = array_fill_keys($this->getClassMetadata($resourceClass)->getFieldNames(), null);
+        }
+
+        foreach ($properties as $property => $unused) {
+            if (!$metadata->hasAssociation($property)) {
+                continue;
+            }
+
+            $propertyName = $this->normalizePropertyName($property);
+            $description[$propertyName] = [
+                'property' => $propertyName,
+                'type' => $this->getType($this->getDoctrineFieldType($property, $resourceClass)),
+                'required' => false,
+            ];
+        }
+
+        return $description;
+    }
+
+    protected function emptyPropertyCondition(string $property, string $resourceClass): bool {
+        return !$this->getClassMetadata($resourceClass)->hasAssociation($property);
     }
 }

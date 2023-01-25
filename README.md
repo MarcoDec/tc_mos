@@ -12,7 +12,7 @@ Certains alias ont été définis pour rendre plus pratique la gestion des conte
 1. vérifiez que les alias présents dans le fichier [`.bash_aliases`](./.bash_aliases) n'entrent pas en conflit avec vos
    propres alias&nbsp;;
 2. ajoutez les lignes suivantes dans votre fichier de configuration de votre shell (par exemple `~/.bashrc` si vous
-   utilisez BASH)&nbsp;:
+   utilisez BASH)&nbsp;::
 
 ```sh
 # Aliases TConcept-GPAO
@@ -30,9 +30,26 @@ Depuis la racine du projet, exécutez la commande `docker:recreate`.
 Exécutez la commande `docker:php` pour entrer dans le conteneur `tconcept_gpao_php`. Une fois dans le conteneur,
 exécutez la commande `composer install` pour installer les différentes dépendances.
 
-### Base de données
+### Bases de données
 
-Pour charger la base de données, exécutez la commande `gpao:database:load`.
+#### MySQL
+
+Pour charger la base de données SQL, exécutez la commande `gpao:database:load`.
+
+La commande ci-dessus est un raccourci pour les deux commandes ci-dessous&nbsp;:
+
+```sh
+gpao:schema:update # Charge les tables en fonction du schéma défini sur les entités
+gpao:fixtures:load # Transfère les anciennes données au format JSON dans le nouveau modèle
+```
+#### CouchDB
+
+Pour initialiser la base de données NOSQL, il faudra executer les deux commandes ci-dessous&nbsp;:
+
+````shell
+php bin/console gpao:couchdb:create
+php bin/console gpao:couchdb:schema:update
+````
 
 ### Vite & Vue
 
@@ -63,6 +80,9 @@ Différents conteneurs Docker sont utilisés pour les différents services du pr
   différentes commandes Symfony&nbsp;;
 - `tconcept_gpao_phpmyadmin`&nbsp;: conteneur responsable de phpMyAdmin, pour avoir une interface de la base de données,
   accessible grâce à [http://localhost:8080](http://localhost:8080).
+- `tconcept-gpao_couchdb-server-0_1`&nbsp;: conteneur responsable de CouchDB le système de gestion de données NoSQL. L'URI principale de connexion se trouve [http://localhost:5984/_utils](http://localhost:5984/_utils)
+
+
 
 ## Cron
 
@@ -80,5 +100,10 @@ Le taux de change des devises est mis à jour par une tâche cron selon la comma
 
 ## Qualité du code
 
-Pour modifier et contrôler le code quant aux standards définis pour le projet, utilisez la
-commande&nbsp;: `gpao:fix:code`.
+### PHP Coding Standards Fixer
+
+Pour modifier le code quant aux standards définis pour le projet, utilisez la commande&nbsp;: `gpao:fix:code`.
+
+### PHPStan-GPAO/vendor/bin/phpstan analyse'
+
+Pour contrôler le code de manière statique, utilisez la commande `gpao:stan`.

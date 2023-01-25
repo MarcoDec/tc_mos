@@ -13,13 +13,13 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class FileManager {
-    private readonly string $uploadsDir;
+    private string $uploadsDir;
 
     public function __construct(
-        private readonly ResourceMetadataFactoryInterface $apiMetadatas,
-        private readonly DashPathSegmentNameGenerator $dashGenerator,
-        private readonly string $dir,
-        private readonly Filesystem $fs
+        private ResourceMetadataFactoryInterface $apiMetadatas,
+        private DashPathSegmentNameGenerator $dashGenerator,
+        private string $dir,
+        private Filesystem $fs
     ) {
         $this->uploadsDir = "$this->dir/uploads";
     }
@@ -68,7 +68,7 @@ final class FileManager {
     }
 
     private function getMetadata(FileEntity $entity): ResourceMetadata {
-        return $this->apiMetadatas->create(removeStart($entity::class, 'Proxies\\__CG__\\'));
+        return $this->apiMetadatas->create(get_class($entity));
     }
 
     private function getShortName(FileEntity $entity): ?string {
