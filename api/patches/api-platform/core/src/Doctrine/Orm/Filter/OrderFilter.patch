@@ -1,0 +1,11 @@
+--- a/vendor/api-platform/core/src/Doctrine/Orm/Filter/OrderFilter.php	2022-11-04 20:08:27.000000000 +0100
++++ b/vendor/api-platform/core/src/Doctrine/Orm/Filter/OrderFilter.php	2022-11-07 11:14:34.278794091 +0100
+@@ -36,7 +36,7 @@
+  * @author Kévin Dunglas <dunglas@gmail.com>
+  * @author Théo FIDRY <theo.fidry@gmail.com>
+  */
+-final class OrderFilter extends AbstractFilter implements OrderFilterInterface
++class OrderFilter extends AbstractFilter implements OrderFilterInterface
+ {
+     use OrderFilterTrait;
+ 

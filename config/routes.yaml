@@ -1,10 +1,20 @@
+login:
+  methods: [ post ]
+  path: /api/login
+
 logout:
+  methods: [ post ]
   path: /api/logout
 
+mobile.login:
+  methods: [ post ]
+  path: /api/mobile/login
+
 app:
-  controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+  controller: App\Controller\TemplateController
   defaults:
     template: base.html.twig
+  methods: [ get ]
   path: /{req}
   requirements:
     req: .*

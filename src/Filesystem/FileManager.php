@@ -13,13 +13,13 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class FileManager {
-    private string $uploadsDir;
+    private readonly string $uploadsDir;
 
     public function __construct(
-        private ResourceMetadataFactoryInterface $apiMetadatas,
-        private DashPathSegmentNameGenerator $dashGenerator,
-        private string $dir,
-        private Filesystem $fs
+        private readonly ResourceMetadataFactoryInterface $apiMetadatas,
+        private readonly DashPathSegmentNameGenerator $dashGenerator,
+        private readonly string $dir,
+        private readonly Filesystem $fs
     ) {
         $this->uploadsDir = "$this->dir/uploads";
     }
