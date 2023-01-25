@@ -1,5 +1,5 @@
 <script setup>
-    import {defineProps} from 'vue'
+    import {defineEmits, defineProps} from 'vue'
     defineProps({
         date: {required: true, type: String},
         id: {required: true, type: Number},
@@ -7,6 +7,7 @@
         relation: {required: true, type: String},
         relationId: {required: true, type: String}
     })
+    const emit = defineEmits(['close'])
 </script>
 
 <template>
@@ -28,7 +29,7 @@
                     <span>RelationId :{{ relationId }}</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-warning" @click="$emit('close')">
+                    <button type="button" class="btn btn-warning" @click="emit('close')">
                         OK
                     </button>
                 </div>
