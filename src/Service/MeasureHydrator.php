@@ -6,6 +6,7 @@ use App\Entity\Embeddable\Measure;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Repository\Management\UnitRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -14,11 +15,13 @@ final class MeasureHydrator {
     public function __construct(
         private readonly CacheInterface $cache,
         private readonly UnitRepository $repo,
-        private readonly RequestStack $stack
+        private readonly RequestStack $stack,
+        private LoggerInterface $logger
     ) {
     }
 
     public function hydrate(Measure $measure): Measure {
+        $this->logger->debug('MeasureHydrator:hydrate',[$measure->getCode(), $measure->getUnit()]);
         if (!$this->isSafe()) {
             return $measure;
         }
@@ -41,6 +44,7 @@ final class MeasureHydrator {
             return null;
         }
         $units = $this->cache->get('measure-units', fn () => $this->repo->loadAll());
+        $this->logger->debug("units from cache",$units);
         return $units[$code] ?? null;
     }
 

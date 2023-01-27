@@ -218,7 +218,9 @@ abstract class Item extends BaseItem {
     final public function getItemChecks(): Collection {
         return $this->item?->getChecks() ?? new Collection();
     }
-
+   public function getMeasures(): array {
+      return array_merge(parent::getMeasures(),[$this->copperPrice]);
+   }
     /**
      * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
      */
@@ -242,7 +244,7 @@ abstract class Item extends BaseItem {
         $quantity = (new Measure())
             ->setCode($this->getUnit()?->getCode())
             ->setUnit($this->getUnit());
-        foreach ($this->receipts as $receipt) {
+        foreach ($this->getReceipts() as $receipt) {
             $quantity = $quantity->add($receipt->getQuantity());
         }
         return $quantity;

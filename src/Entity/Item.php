@@ -103,7 +103,7 @@ abstract class Item extends Entity implements MeasuredInterface {
         return $this->item;
     }
 
-    final public function getMeasures(): array {
+    public function getMeasures(): array {
         return [$this->confirmedQuantity, $this->price, $this->requestedQuantity];
     }
 
