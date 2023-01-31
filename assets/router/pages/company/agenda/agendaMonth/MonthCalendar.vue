@@ -6,6 +6,7 @@
     import interactionPlugin from '@fullcalendar/interaction'
     import timeGridPlugin from '@fullcalendar/timegrid'
     import useEvents from '../../../../../stores/events/events'
+    import useUser from '../../../../../stores/hr/employee/user'
 
     const month = ref(6)
     const year = ref(2022)
@@ -17,8 +18,14 @@
     const relationId = ref('')
 
     const listEvents = useEvents()
+    const user = useUser()
+    console.log('user',user);
+
 
     const events = computed(() => listEvents.findByMonth(month.value, year.value))
+    if (user.isItAdmin) {
+        console.log('admin');
+    }
 
     function handleEventClick(event) {
         show.value = !show.value
