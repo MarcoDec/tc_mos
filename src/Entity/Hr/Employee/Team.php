@@ -89,14 +89,14 @@ class Team extends Entity {
         ApiProperty(description: 'Nom', example: 'Équipe du matin'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:team', 'write:team'])
+        Serializer\Groups(['read:team', 'write:team', 'read:employee', 'read:employee:collection'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Horaires', readableLink: false, example: '/api/time-slots/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:team', 'write:team'])
+        Serializer\Groups(['read:team', 'write:team', 'read:employee', 'read:employee:collection'])
     ]
     private ?TimeSlot $timeSlot = null;
 

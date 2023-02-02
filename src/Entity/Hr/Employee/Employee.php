@@ -18,6 +18,7 @@ use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Hr\TimeClock\Clocking;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
@@ -181,6 +182,11 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     private ?DateTimeImmutable $birthday = null;
 
     #[
+       ORM\OneToMany(mappedBy: "employee", targetEntity: Clocking::class)
+       ]
+    private Collection $clockings;
+
+    #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:employee', 'read:user'])
@@ -287,13 +293,17 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private ?string $surname = null;
 
-    #[ORM\ManyToOne(inversedBy: 'employees')]
+    #[
+       ApiProperty(description: 'Equipe', example: 'Equipe du matin'),
+       ORM\ManyToOne(inversedBy: 'employees'),
+       Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+    ]
     private ?Team $team = null;
 
     #[
         ApiProperty(description: 'Carte de pointage', example: '65465224'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['read:employee', 'read:employee:collection'])
     ]
     private ?string $timeCard = null;
 
