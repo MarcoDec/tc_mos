@@ -2,6 +2,7 @@
 
 namespace App\Repository\Hr\TimeClock;
 
+use App\Entity\Hr\Employee\Employee;
 use App\Entity\Hr\TimeClock\Clocking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,5 +22,17 @@ final class ClockingRepository extends ServiceEntityRepository {
 
    public function supportsClass(string $class): bool {
       return $class === $this->getClassName();
+   }
+
+   public function getPreviousClocking(Employee $employee): ?Clocking {
+      $employeeClockings = $this->findBy(['employee'=>$employee, 'deleted'=>false]);
+      if (count($employeeClockings)==0) {
+         return null;
+      }
+      usort($employeeClockings, function (Clocking $a, Clocking $b){
+         return $a->getDate()<$b->getDate();
+      });
+      return $employeeClockings[0];
+
    }
 }
