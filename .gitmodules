@@ -1,0 +1,3 @@
+[submodule "gpao-mobile"]
+	path = gpao-mobile
+	url = https://github.com/MarcoDec/gpao-mobile.git
