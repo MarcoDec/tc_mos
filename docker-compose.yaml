@@ -85,7 +85,7 @@ services:
       dockerfile: ../docker/mobile/Dockerfile
     ports:
       - '3000:80'
-  npm_builder:
+  npm_builder_fr:
     container_name: tconcept_gpao_badgeuse_fr
     build:
       args:
@@ -97,4 +97,31 @@ services:
       dockerfile: ../../docker/clocking/Dockerfile
     ports:
       - '3001:80'
+    restart: always
+  npm_builder_tn:
+    container_name: tconcept_gpao_badgeuse_tn
+    build:
+      args:
+        VUE_APP_API_URL_BASE: http://localhost:8000
+        VUE_APP_COMPANY: 2
+        VUE_APP_USER: tnbad
+        VUE_APP_USER_PASSWORD: tnbad
+      context: ./TConcept-Clock/vue
+      dockerfile: ../../docker/clocking/Dockerfile
+    ports:
+      - '3002:80'
+    restart: always
+  npm_builder_md:
+    container_name: tconcept_gpao_badgeuse_md
+    build:
+      args:
+        VUE_APP_API_URL_BASE: http://localhost:8000
+        VUE_APP_COMPANY: 3
+        VUE_APP_USER: mdbad
+        VUE_APP_USER_PASSWORD: mdbad
+      context: ./TConcept-Clock/vue
+      dockerfile: ../../docker/clocking/Dockerfile
+    ports:
+      - '3003:80'
+    restart: always
 version: '3.3'
