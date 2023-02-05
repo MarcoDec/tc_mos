@@ -102,8 +102,8 @@ class ItemRepository extends ServiceEntityRepository {
             ?? $this->_em->getRepository(ProductItem::class)->findOneByCheck($id);
     }
 
-    public function findOneByReceipt(int $id): ComponentItem|ProductItem|null {
-        return $this->_em->getRepository(ComponentItem::class)->findOneByReceipt($id)
-            ?? $this->_em->getRepository(ProductItem::class)->findOneByReceipt($id);
+    public function findOneByReceipt(int $id, string $resourceClass): ComponentItem|ProductItem|null {
+        return $this->_em->getRepository(ComponentItem::class)->findOneByReceipt($id,$resourceClass)
+            ?? $this->_em->getRepository(ProductItem::class)->findOneByReceipt($id,$resourceClass);
     }
 }
