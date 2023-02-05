@@ -10,18 +10,6 @@ services:
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
       - ./docker/apache/main:/etc/apache2/sites-enabled:delegated
-  apache_mobile:
-      container_name: tconcept_gpao_apache_mobile
-  #    depends_on:
-  #      - php
-      image: tconcept/tc_apache:latest
-      ports:
-        - '3000:80'
-      restart: always
-      volumes:
-        - .:/var/www/html/TConcept-GPAO:cached
-        - ./docker/apache/mobile:/etc/apache2/sites-enabled:delegated
-
 #  apache_api:
 #    container_name: tconcept_gpao_apache_api
 #    depends_on:
@@ -88,4 +76,13 @@ services:
     restart: always
     volumes:
       - /sessions
+  yarn_builder:
+    container_name: tconcept_gpao_mobile
+    build:
+      args:
+        API_HOST: http://localhost:8000
+      context: ./gpao-mobile
+      dockerfile: ../docker/mobile/Dockerfile
+    ports:
+      - '3000:80'
 version: '3.3'

@@ -1,12 +1,24 @@
-FROM node:13.12.0-alpine As builder
+FROM node:14-alpine as build
+
+ARG API_HOST
 
 WORKDIR /app
-ENV PATH /app/node_modules/.bin:$PATH
-
 COPY package.json ./
-COPY package-lock.json ./
-RUN npm install
-# RUN npm install react-script@4.0.3 -g --silent
-COPY . ./
+COPY yarn.lock ./
 
-CMD ["npm","start"]
+WORKDIR /app
+RUN ls -l
+COPY package.json ./
+COPY yarn.lock ./
+RUN yarn --pure-lockfile --non-interactive
+COPY src/ ./src
+COPY .env ./
+RUN echo "REACT_APP_DOMAIN = $API_HOST" > .env
+COPY public/ ./public
+RUN yarn build
+
+# production env
+FROM nginx:stable-alpine
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
