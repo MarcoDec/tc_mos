@@ -21,7 +21,7 @@ final class ReceiptDataProvider implements ItemDataProviderInterface, Restricted
      * @param mixed[] $context
      */
     public function getItem(string $resourceClass, $id, ?string $operationName = null, array $context = []): ComponentItem|ProductItem|null {
-        return $this->repo->findOneByReceipt($id);
+        return $this->repo->findOneByReceipt($id,$resourceClass);
     }
 
     /**

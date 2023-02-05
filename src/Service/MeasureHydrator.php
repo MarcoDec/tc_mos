@@ -21,7 +21,7 @@ final class MeasureHydrator {
     }
 
     public function hydrate(Measure $measure): Measure {
-        $this->logger->debug('MeasureHydrator:hydrate',[$measure->getCode(), $measure->getUnit()]);
+        #$this->logger->debug('MeasureHydrator:hydrate',[$measure->getCode(), $measure->getUnit()]);
         if (!$this->isSafe()) {
             return $measure;
         }
@@ -44,7 +44,7 @@ final class MeasureHydrator {
             return null;
         }
         $units = $this->cache->get('measure-units', fn () => $this->repo->loadAll());
-        $this->logger->debug("units from cache",$units);
+        #$this->logger->debug("units from cache",$units);
         return $units[$code] ?? null;
     }
 
