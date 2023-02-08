@@ -46,7 +46,7 @@ class ComponentItem extends Item {
     #[
         ApiProperty(description: 'Composant', example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
-        ORM\ManyToOne(targetEntity: Component::class),
+        ORM\ManyToOne(targetEntity: Component::class, fetch: "EAGER"),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;

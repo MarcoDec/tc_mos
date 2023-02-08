@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1",
+    "statut": "0",
+    "message": "Ventes intra-communautaire : Exonération de TVA article 262 TERI du CGI.",
+    "date_creation": "2017-11-08 09:25:55",
+    "date_modification": "2017-11-08 09:30:42",
+    "id_user_creation": "7",
+    "id_user_modification": "7"
+  },
+  {
+    "id": "2",
+    "statut": "0",
+    "message": "AUTOLIQUIDATION (art. 242 nonies A de l'annexe II au CGI)",
+    "date_creation": "2017-11-08 09:31:00",
+    "date_modification": "2017-11-08 09:31:00",
+    "id_user_creation": "7",
+    "id_user_modification": null
+  },
+  {
+    "id": "3",
+    "statut": "0",
+    "message": "Ventes en suspension de taxes en application de l'article 275 du CGI autorisation n°1320501251R\/35\/1\/2018 du 16\/01\/2018",
+    "date_creation": "2017-11-17 15:33:18",
+    "date_modification": "2018-01-24 14:12:21",
+    "id_user_creation": "29",
+    "id_user_modification": "29"
+  }
+]

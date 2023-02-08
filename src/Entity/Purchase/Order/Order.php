@@ -259,7 +259,8 @@ class Order extends Entity {
     }
 
     final public function isReceipt(): bool {
-        foreach ($this->items as $item) {
+       /** @var Item<Component|Product> $item */
+       foreach ($this->items as $item) {
             if ($item->isNotReceipt()) {
                 return false;
             }
@@ -271,9 +272,10 @@ class Order extends Entity {
         return $this->supplementFret;
     }
 
-    /**
-     * @param Item<Component|Product> $item
-     */
+   /**
+    * @param Item<Component|Product> $item
+    * @return Order
+    */
     final public function removeItem(Item $item): self {
         if ($this->items->contains($item)) {
             $this->items->removeElement($item);

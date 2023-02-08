@@ -8,6 +8,7 @@ use App\Doctrine\DBAL\Types\Management\PrinterColorType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
+use App\Repository\Management\PrinterRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -30,7 +31,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         paginationEnabled: false
     ),
-    ORM\Entity(readOnly: true)
+    ORM\Entity(repositoryClass: PrinterRepository::class, readOnly: true)
 ]
 class Printer extends Entity {
     #[
@@ -41,21 +42,21 @@ class Printer extends Entity {
     private ?string $color = PrinterColorType::TYPE_GREEN;
 
     #[
-        ApiProperty(description: 'Company', readableLink: false, required: false, example: '/api/companies/1'),
+        ApiProperty(description: 'Company', example: '/api/companies/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:printer'])
     ]
     private ?Company $company;
 
     #[
-        ApiProperty(description: 'IP', required: true, example: '192.168.2.115'),
+        ApiProperty(description: 'IP', example: '192.168.2.115'),
         ORM\Column(type: 'string', length: 255, nullable: true),
         Serializer\Groups(['read:printer'])
     ]
     private ?string $ip = null;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'zpl'),
+        ApiProperty(description: 'Nom', example: 'zpl'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:printer'])
     ]

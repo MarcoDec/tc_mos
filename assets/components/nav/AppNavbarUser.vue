@@ -1,19 +1,18 @@
 <script setup>
-    import {createMachine} from 'xstate'
-    import {useMachine} from '@xstate/vue'
+    import {useMachine} from '../../composable/xstate'
     import {useRouter} from 'vue-router'
-    import useUserStore from '../../stores/hr/employee/user'
+    import useUser from '../../stores/security'
 
     const router = useRouter()
-    const {send, state} = useMachine(createMachine({
+    const {send, state} = useMachine({
         id: 'logout',
         initial: 'btn',
         states: {
             btn: {on: {logout: {target: 'loading'}}},
             loading: {type: 'final'}
         }
-    }))
-    const user = useUserStore()
+    })
+    const user = useUser()
 
     async function logout() {
         send('logout')
@@ -30,11 +29,11 @@
         <span class="me-1 navbar-text">
             {{ user.name }}
         </span>
-        <AppOverlay id="logout" :spinner="state.matches('loading')" class="navbar-text" tag="span">
+        <AppOverlay :spinner="state.matches('loading')" class="navbar-text" tag="span">
             <AppBtn
                 :disabled="state.matches('loading')"
                 icon="sign-out-alt"
-                title="Déconnexion"
+                label="Déconnexion"
                 variant="danger"
                 @click="logout"/>
         </AppOverlay>

@@ -5,10 +5,10 @@ namespace App\Filter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use App\Collection;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\QueryBuilder;
-use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
@@ -82,6 +82,7 @@ class EnumFilter extends AbstractFilter {
                 && isset($apiProperty->attributes['openapi_context'])
                 && !empty($context = $apiProperty->attributes['openapi_context'])
             ) {
+                /** @var array{enum?: array<int, string>, items?: array{enum?: array<int, string>}} $context */
                 if (isset($context['enum']) && !empty($context['enum'])) {
                     $enum = $enum->merge($context['enum']);
                 } elseif (isset($context['items']['enum']) && !empty($context['items']['enum'])) {
@@ -89,7 +90,7 @@ class EnumFilter extends AbstractFilter {
                 }
             }
         }
-        return $enum->values()->all();
+        return $enum->all();
     }
 
     final protected function getType(?string $doctrineType): string {

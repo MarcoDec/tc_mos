@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\Hr\Employee\EmployeeController;
 use App\Doctrine\DBAL\Types\Hr\Employee\GenderType;
 use App\Doctrine\DBAL\Types\Hr\Employee\SituationType;
 use App\Entity\Api\Token;
@@ -17,6 +18,7 @@ use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Hr\TimeClock\Clocking;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
@@ -123,6 +125,17 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'path' => '/employees/{id}/promote/{workflow}/to/{transition}',
                 'security' => 'is_granted(\''.Roles::ROLE_ACCOUNTING_WRITER.'\')',
                 'validate' => false
+            ],
+            'user' => [
+                'controller' => EmployeeController::class,
+                'identifiers' => [],
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Récupère l\'utilisateur courant',
+                    'summary' => 'Récupère l\'utilisateur courant'
+                ],
+                'path' => '/user',
+                'read' => false
             ]
         ],
         attributes: [
@@ -167,6 +180,11 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?DateTimeImmutable $birthday = null;
+
+    #[
+       ORM\OneToMany(mappedBy: "employee", targetEntity: Clocking::class)
+       ]
+    private Collection $clockings;
 
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
@@ -275,13 +293,17 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private ?string $surname = null;
 
-    #[ORM\ManyToOne(inversedBy: 'employees')]
+    #[
+       ApiProperty(description: 'Equipe', example: 'Equipe du matin'),
+       ORM\ManyToOne(inversedBy: 'employees'),
+       Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+    ]
     private ?Team $team = null;
 
     #[
         ApiProperty(description: 'Carte de pointage', example: '65465224'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee'])
+        Serializer\Groups(['read:employee', 'read:employee:collection'])
     ]
     private ?string $timeCard = null;
 

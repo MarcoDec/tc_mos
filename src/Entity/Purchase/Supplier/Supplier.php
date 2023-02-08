@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Collection;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Copper;
@@ -24,9 +25,8 @@ use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
 use App\Repository\Purchase\Supplier\SupplierRepository;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Illuminate\Support\Collection as LaravelCollection;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -159,13 +159,13 @@ class Supplier extends Entity {
     ]
     private Address $address;
 
-    /** @var Collection<int, Company> */
+    /** @var DoctrineCollection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'suppliers'),
         Serializer\Groups(['read:supplier'])
     ]
-    private Collection $administeredBy;
+    private DoctrineCollection $administeredBy;
 
     #[
         ApiProperty(description: 'Critère de confiance', example: 0),
@@ -237,16 +237,16 @@ class Supplier extends Entity {
     ]
     private ?string $notes = null;
 
-    /** @var Collection<int, Order> */
+    /** @var DoctrineCollection<int, Order> */
     #[
         ORM\OneToMany(mappedBy: 'supplier', targetEntity: Order::class),
         Serializer\Groups(['read:supplier:receipt'])
     ]
-    private Collection $orders;
+    private DoctrineCollection $orders;
 
-    /** @var Collection<int, SupplierReference> */
+    /** @var DoctrineCollection<int, SupplierReference> */
     #[ORM\ManyToMany(targetEntity: SupplierReference::class, mappedBy: 'items')]
-    private Collection $references;
+    private DoctrineCollection $references;
 
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
@@ -295,9 +295,9 @@ class Supplier extends Entity {
     }
 
     /**
-     * @return Collection<int, Company>
+     * @return DoctrineCollection<int, Company>
      */
-    final public function getAdministeredBy(): Collection {
+    final public function getAdministeredBy(): DoctrineCollection {
         return $this->administeredBy;
     }
 
@@ -306,16 +306,15 @@ class Supplier extends Entity {
     }
 
     /**
-     * @return LaravelCollection<int, Check<Component|Product, self>>
+     * @return Collection<int, Check<Component|Product, self>>
      */
-    final public function getChecks(): LaravelCollection {
-        return collect($this->references->getValues())
+    final public function getChecks(): Collection {
+        return Collection::collect($this->references->getValues())
             ->map(static function (SupplierReference $reference): Check {
                 /** @var Check<Component|Product, self> $check */
                 $check = new Check();
                 return $check->setReference($reference);
-            })
-            ->values();
+            });
     }
 
     final public function getConfidenceCriteria(): int {
@@ -351,16 +350,16 @@ class Supplier extends Entity {
     }
 
     /**
-     * @return Collection<int, Order>
+     * @return DoctrineCollection<int, Order>
      */
-    final public function getOrders(): Collection {
+    final public function getOrders(): DoctrineCollection {
         return $this->orders;
     }
 
     /**
-     * @return Collection<int, SupplierReference>
+     * @return DoctrineCollection<int, SupplierReference>
      */
-    final public function getReferences(): Collection {
+    final public function getReferences(): DoctrineCollection {
         return $this->references;
     }
 

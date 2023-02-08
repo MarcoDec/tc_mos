@@ -6,11 +6,13 @@ services:
   App\:
     exclude:
       - ../src/Api/Resource/
+      - ../src/Collection.php
       - ../src/Controller/
       - ../src/DependencyInjection/
       - ../src/Entity/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
+      - ../src/Paginator.php
       - ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
@@ -19,10 +21,17 @@ services:
     resource: ../src/Controller
     tags: [ controller.service_arguments ]
 
-  App\Controller\Logistics\Stock\StockController:
+  App\DataProvider\Logistics\Stock\GroupDataProvider:
     arguments:
       $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
-    tags: [ controller.service_arguments ]
+
+  App\DataProvider\Project\Operation\TypeDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
+
+  App\DataProvider\Purchase\Component\AttributeDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
 
   App\DataProvider\Purchase\Order\ItemDataProvider:
     arguments:
@@ -114,19 +123,22 @@ services:
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
 
-  App\EventListener\WriteListener:
-    autoconfigure: false
-    tags:
-      - event: kernel.view
-        method: onPost
-        name: kernel.event_listener
-        priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::POST_WRITE
-
   App\Filesystem\FileManager:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
+
+  App\Filter\RelationFilter:
+    arguments:
+      $identifiersExtractor: '@api_platform.identifiers_extractor.cached'
+      $iriConverter: '@api_platform.iri_converter'
+      $logger: '@logger'
+      $managerRegistry: '@doctrine'
+      $nameConverter: '@api_platform.name_converter'
+      $propertyAccessor: '@api_platform.property_accessor'
+      $requestStack: null
+    tags: [ api_platform.filter ]
 
   App\Migrations\Factory:
     autoconfigure: false

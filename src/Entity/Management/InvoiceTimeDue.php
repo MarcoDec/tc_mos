@@ -75,7 +75,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'Jours ', example: 30),
-        Assert\Length(min: 0, max: 31),
+        Assert\Range(min: 0, max: 100),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
@@ -83,7 +83,7 @@ class InvoiceTimeDue extends Entity {
 
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
-        Assert\Length(min: 0, max: 31),
+        Assert\Range(min: 0, max: 100),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]

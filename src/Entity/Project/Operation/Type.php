@@ -2,11 +2,17 @@
 
 namespace App\Entity\Project\Operation;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Purchase\Component\Family;
+use App\Repository\Project\Operation\TypeRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +21,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: BooleanFilter::class, properties: ['assembly']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Type d\'opération',
         collectionOperations: [
@@ -23,6 +32,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les types de d\'opération',
                     'summary' => 'Récupère les types de d\'opération',
                 ]
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:type:option'],
+                    'openapi_definition_name' => 'OperationType-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les types pour les select',
+                    'summary' => 'Récupère les types pour les select',
+                ],
+                'order' => ['name' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/operation-types/options'
             ],
             'post' => [
                 'openapi_context' => [
@@ -63,7 +89,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity,
+    ORM\Entity(repositoryClass: TypeRepository::class),
     ORM\Table(name: 'operation_type'),
     UniqueEntity(['name'])
 ]
@@ -77,7 +103,7 @@ class Type extends Entity {
 
     /** @var Collection<int, Family> */
     #[
-        ApiProperty(description: 'Famille de produit', readableLink: false, example: ['/api/component-families/5', '/api/component-families/12']),
+        ApiProperty(description: 'Familles de composant', readableLink: false, example: ['/api/component-families/5', '/api/component-families/12']),
         ORM\JoinTable(name: 'operation_type_component_family'),
         ORM\ManyToMany(targetEntity: Family::class),
         Serializer\Groups(['read:operation-type', 'write:operation-type'])
@@ -112,6 +138,11 @@ class Type extends Entity {
 
     final public function getName(): ?string {
         return $this->name;
+    }
+
+    #[Serializer\Groups(['read:type:option'])]
+    final public function getText(): ?string {
+        return $this->getName();
     }
 
     final public function isAssembly(): bool {

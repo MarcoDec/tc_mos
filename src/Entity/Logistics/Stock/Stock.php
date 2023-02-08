@@ -16,6 +16,7 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Order\Receipt;
 use App\Entity\Logistics\Warehouse;
 use App\Entity\Management\Unit;
+use App\Entity\Production\Manufacturing\Operation;
 use App\Entity\Purchase\Order\Item;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
@@ -38,21 +39,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'openapi_context' => [
                     'description' => 'Récupère les stocks',
                     'summary' => 'Récupère les stocks'
-                ],
-                'pagination_client_enabled' => true
-            ],
-            'grouped' => [
-                'deserialize' => false,
-                'method' => 'GET',
-                'openapi_context' => [
-                    'description' => 'Récupère les stocks groupés par référence et lot',
-                    'summary' => 'Récupère les stocks groupés par référence et lot'
-                ],
-                'read' => false,
-                'route_name' => 'api_stocks_grouped_collection',
-                'serialize' => false,
-                'validate' => false,
-                'write' => false
+                ]
             ]
         ],
         itemOperations: [
@@ -115,7 +102,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:measure', 'read:stock'],
             'openapi_definition_name' => 'Stock-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\DiscriminatorMap(self::TYPES),
@@ -169,7 +157,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     protected Measure $quantity;
 
     /** @var Collection<int, Receipt<T>> */
-    #[ORM\ManyToMany(targetEntity: Receipt::class, mappedBy: 'stocks', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
+    #[ORM\ManyToMany(targetEntity: Receipt::class, inversedBy: 'stocks', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     protected Collection $receipts;
 
     #[
@@ -179,7 +167,12 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     ]
     protected ?Warehouse $warehouse = null;
 
+    /** @var Collection<int, Operation> */
+    #[ORM\ManyToMany(targetEntity: Operation::class)]
+    private Collection $operations;
+
     public function __construct() {
+        $this->operations = new ArrayCollection();
         $this->quantity = new Measure();
         $this->receipts = new ArrayCollection();
     }
@@ -189,6 +182,16 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     }
 
     abstract protected function getType(): string;
+
+    /**
+     * @return $this
+     */
+    final public function addOperation(Operation $operation): self {
+        if (!$this->operations->contains($operation)) {
+            $this->operations->add($operation);
+        }
+        return $this;
+    }
 
     /**
      * @param Receipt<T> $receipt
@@ -231,6 +234,13 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
         return [$this->quantity];
     }
 
+    /**
+     * @return Collection<int, Operation>
+     */
+    final public function getOperations(): Collection {
+        return $this->operations;
+    }
+
     final public function getQuantity(): Measure {
         return $this->quantity;
     }
@@ -252,6 +262,16 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     final public function isJail(): bool {
         return $this->jail;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function removeOperation(Operation $operation): self {
+        if ($this->operations->contains($operation)) {
+            $this->operations->removeElement($operation);
+        }
+        return $this;
     }
 
     /**

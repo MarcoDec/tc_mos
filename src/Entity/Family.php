@@ -59,6 +59,7 @@ abstract class Family extends Entity implements FileEntity {
         return $this->customsCode;
     }
 
+    #[Serializer\Groups(['read:family'])]
     final public function getFullName(): ?string {
         if (empty($this->parent)) {
             return $this->name;
@@ -67,7 +68,7 @@ abstract class Family extends Entity implements FileEntity {
         if (empty($parent) && empty($this->name)) {
             return null;
         }
-        return "$parent\\".($this->name ?? 'null');
+        return "$parent/".($this->name ?? 'null');
     }
 
     final public function getName(): ?string {

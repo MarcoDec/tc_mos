@@ -70,7 +70,7 @@ final class ComponentItemRepository extends ItemRepository {
         }
     }
 
-    public function findOneByReceipt(int $id): ?ComponentItem {
+    public function findOneByReceipt(int $id, string $ressourceClass): ?ComponentItem {
         $query = $this->createReceiptQueryBuilder($id)->getQuery();
         try {
             /** @phpstan-ignore-next-line */

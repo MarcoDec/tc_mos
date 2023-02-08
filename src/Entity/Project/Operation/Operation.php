@@ -2,13 +2,17 @@
 
 namespace App\Entity\Project\Operation;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Production\Manufacturing\Operation as ManufacturingOperation;
-use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,6 +20,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: BooleanFilter::class, properties: ['auto']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name', 'type.name']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['type']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['boundary' => 'partial', 'code' => 'partial', 'name' => 'partial']),
     ApiResource(
         description: 'Opération',
         collectionOperations: [
@@ -65,8 +73,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ),
     ORM\Entity,
-    ORM\Table(name: 'project_operation'),
-    UniqueEntity(['name', 'code'])
+    ORM\Table(name: 'project_operation')
 ]
 class Operation extends Entity {
     #[
@@ -125,7 +132,7 @@ class Operation extends Entity {
     private Measure $time;
 
     #[
-        ApiProperty(description: 'Type', required: false, example: '/api/operation-types/1'),
+        ApiProperty(description: 'Type', readableLink: false, required: false, example: '/api/operation-types/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:project-operation', 'write:project-operation'])
     ]

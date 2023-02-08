@@ -1,4 +1,4 @@
-FROM mysql:8.0.28
+FROM mysql:8.0.30
 
 RUN echo 'root:root' | chpasswd # Mot de passe root : root
 

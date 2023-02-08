@@ -15,8 +15,8 @@ export default defineConfig({
             output: {
                 // eslint-disable-next-line consistent-return
                 manualChunks(id) {
-                    if (id.includes('AppSuspenseWrapper') || id.includes('stores/options'))
-                        return 'vendor'
+                    if (id.includes('fontawesome') || id.includes('fortawesome'))
+                        return 'fontawesome'
                 }
             }
         }
@@ -27,6 +27,7 @@ export default defineConfig({
         vue(),
         checker({eslint: {lintCommand: 'eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}'}})
     ],
+
     root: './',
     server: {
         fs: {allow: ['..'], strict: false},
