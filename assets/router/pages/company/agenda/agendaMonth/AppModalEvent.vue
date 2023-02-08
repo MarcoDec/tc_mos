@@ -29,7 +29,7 @@
                     <span>RelationId :{{ relationId }}</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-warning" @click="$emit('close')">
+                    <button type="button" class="btn btn-warning" @click="emit('close')">
                         OK
                     </button>
                 </div>
