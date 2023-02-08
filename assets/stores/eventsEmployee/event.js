@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 
 export default function generateEvent(event) {
-    return defineStore(`events/${event.id}`, {
+    return defineStore(`eventsEmployee/${event.id}`, {
         actions: {
             blur() {
                 this.opened = false
@@ -23,10 +23,11 @@ export default function generateEvent(event) {
         },
         getters: {
             calendar: state => ({
+                color: 'green',
                 date: state.dateTime,
                 extendedProps: {date: state.dateTime, dateTime: state.date, id: state.id, name: state.name},
-                relation: state.relation,
-                relationId: state.relationId,
+                relation: state['@type'],
+                relationId: state.managingCompany ? state.managingCompany.replace(/[a-z && A-Z && /]/g, '') : null,
                 title: state.name
             }),
             dateTime: state => (state.date ? new Date(state.date) : null),

@@ -28,8 +28,11 @@ export default class Api {
     }
 
     async fetch(url, method = 'GET', body = null, json = true) {
+        // console.log('url',url);
+        const basedUrl = import.meta.env.VITE_basedUrl
+        // console.log('basedUrl',basedUrl + url);
         const init = {headers: {Accept: 'application/ld+json'}, method}
-        let normalizedUrl = url
+        let normalizedUrl = basedUrl + url
         if (method === 'PATCH')
             init.headers['Content-Type'] = 'application/merge-patch+json'
         else if (json)

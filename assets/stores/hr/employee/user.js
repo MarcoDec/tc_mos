@@ -1,7 +1,6 @@
 import * as Cookies from '../../../cookie'
 import Api from '../../../Api'
 import {defineStore} from 'pinia'
-
 export default defineStore('user', {
     actions: {
         async connect(fields, data) {
@@ -61,6 +60,16 @@ export default defineStore('user', {
         isLogisticsWriter() {
             return this.isLogisticsAdmin || this.has('ROLE_LOGISTICS_WRITER')
         },
+        //Maintenance
+        isMaintenanceAdmin() {
+            return this.has('ROLE_MAINTENANCE_ADMIN')
+        },
+        isMaintenanceReader() {
+            return this.isMaintenanceWriter || this.has('ROLE_MAINTENANCE_READER')
+        },
+        isMaintenanceWriter() {
+            return this.isMaintenanceAdmin || this.has('ROLE_MAINTENANCE_WRITER')
+        },
         isManagementAdmin() {
             return this.has('ROLE_MANAGEMENT_ADMIN')
         },
@@ -105,6 +114,16 @@ export default defineStore('user', {
         },
         isQualityWriter() {
             return this.isQualityAdmin || this.has('ROLE_QUALITY_WRITER')
+        },
+        //SELLING
+        isSellingAdmin() {
+            return this.has('ROLE_SELLING_ADMIN')
+        },
+        isSellingReader() {
+            return this.isSellingWriter || this.has('ROLE_SELLING_READER')
+        },
+        isSellingWriter() {
+            return this.isSellingAdmin || this.has('ROLE_SELLING_WRITER')
         }
     },
     state: () => ({id: 0, name: null, roles: []})
