@@ -3,6 +3,7 @@
 namespace App\Entity\Production\Manufacturing;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
@@ -15,11 +16,13 @@ use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
 use App\Entity\Selling\Order\Order as SellingOrder;
 use App\Entity\Traits\BarCodeTrait;
+use App\Filter\RelationFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
     ApiResource(
         description: 'OF',
         collectionOperations: [
