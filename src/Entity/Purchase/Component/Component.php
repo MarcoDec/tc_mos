@@ -229,7 +229,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Family::class, inversedBy: 'components'),
+        ORM\ManyToOne(targetEntity: Family::class, inversedBy: 'components', fetch: 'EAGER'),
         Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;
@@ -418,7 +418,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item'])
     ]
     final public function getCode(): ?string {
-        return "{$this->family?->getCode()}-{$this->getId()}";
+        if ($this->family) {
+            dump('family',$this->getFamily());
+            return $this->family->getCode()."-{$this->getId()}";
+        }
+        return "{XXXX-{$this->getId()}";
     }
 
     final public function getCopperWeight(): Measure {
