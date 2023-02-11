@@ -17,12 +17,14 @@ use App\Entity\Project\Product\Product;
 use App\Entity\Selling\Order\Order as SellingOrder;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'OF',
         collectionOperations: [
