@@ -99,6 +99,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ManufacturingOrder-read',
             'skip_null_values' => false
         ],
+        paginationClientEnabled: true
     ),
     ORM\Entity,
     ORM\Table(name: 'manufacturing_order')
