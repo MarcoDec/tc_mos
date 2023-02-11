@@ -3,6 +3,7 @@
 namespace App\Entity\Production\Manufacturing;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
@@ -15,11 +16,15 @@ use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
 use App\Entity\Selling\Order\Order as SellingOrder;
 use App\Entity\Traits\BarCodeTrait;
+use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'OF',
         collectionOperations: [
@@ -99,6 +104,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ManufacturingOrder-read',
             'skip_null_values' => false
         ],
+        paginationClientEnabled: true
     ),
     ORM\Entity,
     ORM\Table(name: 'manufacturing_order')
