@@ -58,6 +58,9 @@
                         Unités
                     </AppNavbarLink>
                 </template>
+                <AppNavbarLink icon="calendar" to="agenda" variant="success">
+                    Agenda
+                </AppNavbarLink>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
                 <AppDropdownItem disabled variant="warning">
