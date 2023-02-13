@@ -1,4 +1,4 @@
-import Api from '../../Api'
+import api from '../../api'
 import {defineStore} from 'pinia'
 import generateEvent from './event'
 
@@ -14,11 +14,8 @@ export default defineStore('eventsCompany', {
             this.$dispose()
         },
         async fetch() {
-            const response = await new Api().fetch('/api/company-events', 'GET')
-            if (response.status === 200)
-                for (const event of response.content['hydra:member']) this.items.push(generateEvent(event, this))
-            else
-                throw response.content
+            const response = await api('/api/company-events', 'GET')
+            for (const event of response['hydra:member']) this.items.push(generateEvent(event, this))
         }
     },
     getters: {

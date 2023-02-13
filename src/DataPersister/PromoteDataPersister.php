@@ -24,12 +24,17 @@ final class PromoteDataPersister implements ContextAwareDataPersisterInterface {
      * @param mixed[] $context
      */
     public function persist($data, array $context = []): Entity {
+        /** @var string $name */
+        $name = $this->getCurrentRequest()->attributes->get('workflow');
+        if (empty($name)) {
+            throw new BadRequestException('Missing "workflow" parameter.');
+        }
         /** @var string $transition */
         $transition = $this->getCurrentRequest()->attributes->get('transition');
         if (empty($transition)) {
             throw new BadRequestException('Missing "transition" parameter.');
         }
-        $workflow = $this->registry->get($data);
+        $workflow = $this->registry->get($data, $name);
         if ($workflow->can($data, $transition)) {
             $workflow->apply($data, $transition);
             $this->em->flush();

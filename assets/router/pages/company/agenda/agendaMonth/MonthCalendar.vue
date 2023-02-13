@@ -9,7 +9,7 @@
     import useEventsCustomer from '../../../../../stores/eventsCustomer/events'
     import useEventsEmployee from '../../../../../stores/eventsEmployee/events'
     import useEventsEngine from '../../../../../stores/eventsEngine/events'
-    import useUser from '../../../../../stores/hr/employee/user'
+    import useUser from '../../../../../stores/security'
 
     const today = new Date()
     const month = ref(today.getMonth() + 1)
@@ -53,16 +53,16 @@
     })
     onMounted(async () => {
         if (user.isManagementReader) {
-            await listEventsCompany.fetch()
+            listEventsCompany.fetch()
         }
         if (user.isHrReader) {
-            await listEventsEmployee.fetch()
+            listEventsEmployee.fetch()
         }
         if (user.isSellingReader) {
-            await listEventsCustomer.fetch()
+            listEventsCustomer.fetch()
         }
         if (user.isMaintenanceReader) {
-            await listEventsEngine.fetch()
+            listEventsEngine.fetch()
         }
     })
     function closeModal() {

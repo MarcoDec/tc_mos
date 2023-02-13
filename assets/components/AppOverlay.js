@@ -2,7 +2,9 @@ import {h} from 'vue'
 
 function AppOverlay(props, context) {
     let overlay = null
-    const children = [context.slots['default']()]
+    const children = []
+    if (typeof context.slots['default'] === 'function')
+        children.push(context.slots['default']())
     if (props.spinner) {
         overlay = {class: 'opacity-75 position-relative'}
         children.push(h(
