@@ -335,7 +335,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(fetch:'EAGER'),
         Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?Unit $unit = null;

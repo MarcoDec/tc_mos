@@ -3,9 +3,11 @@
 namespace App\Entity\Production\Engine;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -17,11 +19,16 @@ use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
 use App\Entity\Production\Engine\Tool\Tool;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
+use App\Filter\RelationFilter;
+//use App\Filter\SetFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone']),
+    //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',
         collectionOperations: [
