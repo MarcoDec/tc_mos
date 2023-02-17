@@ -1,4 +1,5 @@
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
+import MonthCalendar from '../router/pages/company/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
 
 export default [
@@ -87,5 +88,11 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Messages TVA'
         }
+    },
+    {
+        component: MonthCalendar,
+        meta: {container: false, title: 'Agenda — T-Concept GPAO'},
+        name: 'agenda',
+        path: '/agenda'
     }
 ]

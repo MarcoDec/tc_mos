@@ -137,7 +137,9 @@ abstract class AbstractUnit extends Entity {
      * @param null|static $unit
      */
     final public function has(?self $unit): bool {
-        return $unit !== null && $this->getFamily()->contains(static fn (self $member): bool => $member->getId() === $unit->getId());
+       $unitFamily = $this->getFamily();
+       $test = $unit !== null && ($unit->getCode() == $this->getCode()||$unitFamily->contains(static fn (self $member): bool => $member->getId() === $unit->getId()));
+       return $test;
     }
 
     /**
