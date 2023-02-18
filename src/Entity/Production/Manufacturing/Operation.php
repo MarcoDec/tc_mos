@@ -128,7 +128,7 @@ class Operation extends Entity {
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Opération', readableLink: false, example: '/api/project-operations/1'),
+        ApiProperty(description: 'Opération'),
         ORM\ManyToOne(inversedBy: 'operations'),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
