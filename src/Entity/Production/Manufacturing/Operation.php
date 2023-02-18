@@ -143,7 +143,7 @@ class Operation extends Entity {
     private Collection $operators;
 
     #[
-        ApiProperty(description: 'Commande', readableLink: false, example: '/api/manufacturing-orders/1'),
+        ApiProperty(description: 'Commande'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
@@ -171,7 +171,7 @@ class Operation extends Entity {
     private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Poste de travail', example: '/api/workstations/460'),
+        ApiProperty(description: 'Poste de travail'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
