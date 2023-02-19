@@ -144,7 +144,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     #[
         ApiProperty(description: 'Localisation', example: 'Rayon B'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:stock', 'receipt:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected ?string $location = null;
 
