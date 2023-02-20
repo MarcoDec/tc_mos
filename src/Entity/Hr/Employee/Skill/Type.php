@@ -58,8 +58,9 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'SkillType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name'],
-            'openapi_definition_name' => 'SkillType-read'
+            'groups' => ['read:id', 'read:type'],
+            'openapi_definition_name' => 'SkillType-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
@@ -72,7 +73,7 @@ class Type extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $name = null;
 

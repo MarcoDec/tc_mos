@@ -1,0 +1,98 @@
+[
+    {
+        "operation_type_id": "1",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "3",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "4",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "5",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "6",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "7",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "8",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "8",
+        "component_family_id": "5"
+    },
+    {
+        "operation_type_id": "9",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "9",
+        "component_family_id": "5"
+    },
+    {
+        "operation_type_id": "10",
+        "component_family_id": "3"
+    },
+    {
+        "operation_type_id": "11",
+        "component_family_id": "3"
+    },
+    {
+        "operation_type_id": "12",
+        "component_family_id": "3"
+    },
+    {
+        "operation_type_id": "13",
+        "component_family_id": "3"
+    },
+    {
+        "operation_type_id": "14",
+        "component_family_id": "3"
+    },
+    {
+        "operation_type_id": "15",
+        "component_family_id": "3"
+    },
+    {
+        "operation_type_id": "16",
+        "component_family_id": "3"
+    },
+    {
+        "operation_type_id": "17",
+        "component_family_id": "4"
+    },
+    {
+        "operation_type_id": "18",
+        "component_family_id": "4"
+    },
+    {
+        "operation_type_id": "19",
+        "component_family_id": "2"
+    },
+    {
+        "operation_type_id": "20",
+        "component_family_id": "8"
+    },
+    {
+        "operation_type_id": "21",
+        "component_family_id": "9"
+    },
+    {
+        "operation_type_id": "22",
+        "component_family_id": "1"
+    },
+    {
+        "operation_type_id": "16",
+        "component_family_id": "1"
+    }
+]

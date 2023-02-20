@@ -1,36 +1,40 @@
 <script setup>
-    import {FiniteStateMachineRepository, NodeRepository} from '../../store/modules'
-    import {computed, onMounted, onUnmounted} from 'vue'
-    import {useRepo, useRouter} from '../../composition'
-    import AppTreeForm from './AppTreeForm.vue'
-    import AppTreeFormVertex from './AppTreeFormVertex.vue'
-    import AppTreeNode from './AppTreeNode.vue'
+    import {assign, useMachine} from '../../composable/xstate'
+    import AppTreeCard from './card/AppTreeCard.vue'
+    import {useRoute} from 'vue-router'
 
-    const {id} = useRouter()
-    const nodeRepo = useRepo(NodeRepository)
-    const props = defineProps({fields: {required: true, type: Array}, repo: {required: true, type: Function}})
-    const form = computed(() => (nodeRepo.hasSelected ? AppTreeFormVertex : AppTreeForm))
-    const stateRepo = useRepo(FiniteStateMachineRepository)
-    const state = computed(() => stateRepo.find(id))
-    const loading = computed(() => state.value?.loading ?? false)
-    const tree = computed(() => [...nodeRepo.tree].sort((a, b) => a.label.localeCompare(b.label)))
+    defineProps({fields: {required: true, type: Array}, tree: {required: true, type: Object}})
 
-    onMounted(async () => {
-        await NodeRepository.load(props.repo, id)
-    })
-
-    onUnmounted(() => {
-        nodeRepo.destroyAll(id, props.repo)
+    const route = useRoute()
+    const machine = useMachine({
+        context: {violations: []},
+        id: route.name,
+        initial: 'form',
+        states: {
+            error: {on: {submit: {target: 'loading'}}},
+            form: {on: {submit: {actions: ['reset'], target: 'loading'}}},
+            loading: {
+                on: {
+                    fail: {actions: ['violate'], target: 'error'},
+                    success: {target: 'form'}
+                }
+            }
+        }
+    }, {
+        actions: {
+            reset: assign({violations: []}),
+            violate: assign((context, {violations}) => ({violations}))
+        }
     })
 </script>
 
 <template>
-    <AppRow :id="id">
-        <div class="col">
-            <AppOverlay :loading="loading">
-                <AppTreeNode v-for="node in tree" :key="node.id" :node="node"/>
-            </AppOverlay>
+    <AppOverlay :spinner="machine.state.value.matches('loading')" class="row">
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <AppTreeNodes :nodes="tree.roots"/>
         </div>
-        <component :is="form" :fields="fields" :repo="repo" class="col"/>
-    </AppRow>
+        <AppTreeCard :fields="fields" :machine="machine" :tree="tree" class="col">
+            <slot/>
+        </AppTreeCard>
+    </AppOverlay>
 </template>

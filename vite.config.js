@@ -11,25 +11,28 @@ export default defineConfig({
         manifest: true,
         outDir: './public/build/',
         rollupOptions: {
-            input: {index: './assets/index.js'}
+            input: {index: './assets/index.js'},
+            output: {
+                // eslint-disable-next-line consistent-return
+                manualChunks(id) {
+                    if (id.includes('fontawesome') || id.includes('fortawesome'))
+                        return 'fontawesome'
+                }
+            }
         }
     },
+    optimizeDeps: {force: true},
     plugins: [
         symfonyPlugin(),
         vue(),
         checker({eslint: {lintCommand: 'eslint -c .eslintrc.js .eslintrc.js vite.config.js ./assets/**/*.{js,vue}'}})
     ],
+
     root: './',
     server: {
-        force: true,
-        fs: {
-            allow: ['..'],
-            strict: false
-        },
+        fs: {allow: ['..'], strict: false},
         host: '0.0.0.0',
         port: 8001,
-        watch: {
-            disableGlobbing: false
-        }
+        watch: {disableGlobbing: false}
     }
 })

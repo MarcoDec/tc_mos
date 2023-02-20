@@ -27,7 +27,7 @@ abstract class Family extends Entity implements FileEntity {
     #[
         ApiProperty(description: 'Code douanier', example: '8544300089'),
         Assert\Length(min: 4, max: 10),
-        ORM\Column(length: 10, nullable: true, options: ['charset' => 'ascii']),
+        ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $customsCode = null;
@@ -59,20 +59,24 @@ abstract class Family extends Entity implements FileEntity {
         return $this->customsCode;
     }
 
+    #[Serializer\Groups(['read:family'])]
+    final public function getFullName(): ?string {
+        if (empty($this->parent)) {
+            return $this->name;
+        }
+        $parent = $this->parent->getFullName();
+        if (empty($parent) && empty($this->name)) {
+            return null;
+        }
+        return "$parent/".($this->name ?? 'null');
+    }
+
     final public function getName(): ?string {
         return $this->name;
     }
 
     final public function getParent(): ?self {
         return $this->parent;
-    }
-
-    #[
-        Pure,
-        Serializer\Groups(['read:family'])
-    ]
-    final public function getParentId(): int {
-        return $this->parent?->getId() ?? 0;
     }
 
     /**

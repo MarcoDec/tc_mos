@@ -2,7 +2,6 @@
     import {computed, defineProps, onBeforeUnmount, onMounted, ref} from 'vue'
     import anime from 'animejs'
     import moment from 'moment-timezone'
-
     let interval = null
     const DEGREES_TO_MOVE_SECOND_HAND = 360 / 60
     const DEGREES_TO_MOVE_MINUTE_HAND = 360 / 60

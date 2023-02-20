@@ -1,0 +1,224 @@
+[
+  {
+    "id": "1",
+    "subfamily_name": "Fil",
+    "id_family": "1",
+    "statut": "0"
+  },
+  {
+    "id": "2",
+    "subfamily_name": "Cordons",
+    "id_family": "1",
+    "statut": "0"
+  },
+  {
+    "id": "3",
+    "subfamily_name": "Agrafe",
+    "id_family": "2",
+    "statut": "0"
+  },
+  {
+    "id": "4",
+    "subfamily_name": "Colliers",
+    "id_family": "2",
+    "statut": "0"
+  },
+  {
+    "id": "5",
+    "subfamily_name": "Scotch",
+    "id_family": "2",
+    "statut": "0"
+  },
+  {
+    "id": "6",
+    "subfamily_name": "Gaine lisse",
+    "id_family": "3",
+    "statut": "0"
+  },
+  {
+    "id": "7",
+    "subfamily_name": "Gaine Annel&eacute;e",
+    "id_family": "3",
+    "statut": "0"
+  },
+  {
+    "id": "8",
+    "subfamily_name": "Gaine tressee",
+    "id_family": "3",
+    "statut": "0"
+  },
+  {
+    "id": "9",
+    "subfamily_name": "Accessoires",
+    "id_family": "3",
+    "statut": "0"
+  },
+  {
+    "id": "10",
+    "subfamily_name": "M&acirc;le",
+    "id_family": "4",
+    "statut": "0"
+  },
+  {
+    "id": "11",
+    "subfamily_name": "Femelle",
+    "id_family": "4",
+    "statut": "0"
+  },
+  {
+    "id": "12",
+    "subfamily_name": "Clip",
+    "id_family": "5",
+    "statut": "0"
+  },
+  {
+    "id": "13",
+    "subfamily_name": "Languette",
+    "id_family": "5",
+    "statut": "0"
+  },
+  {
+    "id": "14",
+    "subfamily_name": "Cosses",
+    "id_family": "5",
+    "statut": "0"
+  },
+  {
+    "id": "15",
+    "subfamily_name": "Joint",
+    "id_family": "5",
+    "statut": "0"
+  },
+  {
+    "id": "16",
+    "subfamily_name": "Etiquette",
+    "id_family": "6",
+    "statut": "0"
+  },
+  {
+    "id": "17",
+    "subfamily_name": "Carton",
+    "id_family": "6",
+    "statut": "0"
+  },
+  {
+    "id": "18",
+    "subfamily_name": "Gaine thermor\u00e9tractable",
+    "id_family": "3",
+    "statut": "0"
+  },
+  {
+    "id": "19",
+    "subfamily_name": "Sac",
+    "id_family": "6",
+    "statut": "0"
+  },
+  {
+    "id": "20",
+    "subfamily_name": "Accessoires",
+    "id_family": "6",
+    "statut": "0"
+  },
+  {
+    "id": "21",
+    "subfamily_name": "Autres",
+    "id_family": "7",
+    "statut": "0"
+  },
+  {
+    "id": "22",
+    "subfamily_name": "Consommable",
+    "id_family": "7",
+    "statut": "0"
+  },
+  {
+    "id": "23",
+    "subfamily_name": "Petit outillage",
+    "id_family": "7",
+    "statut": "0"
+  },
+  {
+    "id": "24",
+    "subfamily_name": "Service\/Sous-traitance",
+    "id_family": "7",
+    "statut": "0"
+  },
+  {
+    "id": "25",
+    "subfamily_name": "Accessoires",
+    "id_family": "4",
+    "statut": "0"
+  },
+  {
+    "id": "26",
+    "subfamily_name": "Accessoires",
+    "id_family": "2",
+    "statut": "0"
+  },
+  {
+    "id": "27",
+    "subfamily_name": "Mati\u00e8res plastiques",
+    "id_family": "8",
+    "statut": "0"
+  },
+  {
+    "id": "28",
+    "subfamily_name": "Autres",
+    "id_family": "2",
+    "statut": "0"
+  },
+  {
+    "id": "29",
+    "subfamily_name": "Relais",
+    "id_family": "9",
+    "statut": "0"
+  },
+  {
+    "id": "30",
+    "subfamily_name": "Diodes",
+    "id_family": "9",
+    "statut": "0"
+  },
+  {
+    "id": "31",
+    "subfamily_name": "R\u00e9sistances",
+    "id_family": "9",
+    "statut": "0"
+  },
+  {
+    "id": "32",
+    "subfamily_name": "Fusibles",
+    "id_family": "9",
+    "statut": "0"
+  },
+  {
+    "id": "33",
+    "subfamily_name": "Autres",
+    "id_family": "9",
+    "statut": "0"
+  },
+  {
+    "id": "35",
+    "subfamily_name": "Divers",
+    "id_family": "1",
+    "statut": "0"
+  },
+  {
+    "id": "36",
+    "subfamily_name": "KIT",
+    "id_family": "4",
+    "statut": "0"
+  },
+  {
+    "id": "37",
+    "subfamily_name": "Embouts",
+    "id_family": "5",
+    "statut": "0"
+  },
+  {
+    "id": "41",
+    "subfamily_name": "Rechange",
+    "id_family": "10",
+    "statut": "0"
+  }
+]

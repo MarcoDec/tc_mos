@@ -17,3 +17,9 @@
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+###> OS files ###
+**/.DS_Store
+*.icloud
+###< OS files ###
+node_modules

@@ -8,9 +8,9 @@ use ApiPlatform\Core\JsonSchema\Schema;
 use ApiPlatform\Core\JsonSchema\SchemaFactoryInterface;
 use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
 use ApiPlatform\Core\Operation\DashPathSegmentNameGenerator;
+use App\Collection;
 use App\Entity\Embeddable\Measure;
 use ArrayObject;
-use Illuminate\Support\Collection;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -120,6 +120,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
                 $definitions[$key]['properties']['@id']['example'] = "/api/{$this->dashGenerator->getSegmentName($resourceName)}/1";
                 $definitions[$key]['properties']['@type']['example'] = $resourceName;
                 if ($type === Schema::TYPE_OUTPUT) {
+                    /** @phpstan-ignore-next-line */
                     if (!isset($definitions[$key]['required'])) {
                         $definitions[$key]['required'] = [];
                     }
@@ -136,6 +137,7 @@ final class SchemaFactory implements SchemaFactoryInterface {
                 foreach (array_keys($definitions[$key]['properties']) as $property) {
                     /** @var string $property */
                     if (self::isRequired($className, $property)) {
+                        /** @phpstan-ignore-next-line */
                         if (!isset($definitions[$key]['required'])) {
                             $definitions[$key]['required'] = [];
                         }

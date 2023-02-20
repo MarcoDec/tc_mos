@@ -1,8 +1,8 @@
 <?php
 
-namespace App\EventListener\Project\Product;
+namespace App\EventListener;
 
-use App\Entity\Project\Product\Family;
+use App\Entity\Family;
 use App\Filesystem\FileManager;
 
 final class FamilyListener {

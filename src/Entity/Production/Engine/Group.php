@@ -6,7 +6,9 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Production\Engine\CounterPart\Group as CounterPartGroup;
@@ -18,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['safetyDevice']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Groupe d\'équipement',
@@ -37,6 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
             ],
+            'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un groupe d\'équipement',
@@ -50,32 +54,33 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:engine-group', 'write:name'],
+            'groups' => ['write:engine-group'],
             'openapi_definition_name' => 'EngineGroup-write'
         ],
         normalizationContext: [
-            'groups' => ['read:engine-group', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'EngineGroup-read'
+            'groups' => ['read:engine-group', 'read:id'],
+            'openapi_definition_name' => 'EngineGroup-read',
+            'skip_null_values' => false
         ]
     ),
-    ORM\DiscriminatorColumn(name: 'type', type: 'engine_type'),
+    ORM\DiscriminatorColumn(name: 'type', type: 'engine'),
     ORM\DiscriminatorMap(self::TYPES),
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'engine_group')
 ]
 abstract class Group extends Entity {
-    public const TYPES = [
-        'counter-part' => CounterPartGroup::class,
-        'tool' => ToolGroup::class,
-        'workstation' => WorkstationGroup::class
+    final public const TYPES = [
+        EngineType::TYPE_COUNTER_PART => CounterPartGroup::class,
+        EngineType::TYPE_TOOL => ToolGroup::class,
+        EngineType::TYPE_WORKSTATION => WorkstationGroup::class
     ];
 
     #[
         ApiProperty(description: 'Code ', required: true, example: 'TA'),
         Assert\Length(min: 2, max: 3),
         Assert\NotBlank,
-        ORM\Column(length: 3, options: ['charset' => 'ascii']),
+        ORM\Column(length: 3),
         Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private ?string $code = null;
@@ -85,7 +90,7 @@ abstract class Group extends Entity {
         Assert\Length(min: 3, max: 35),
         Assert\NotBlank,
         ORM\Column(length: 35),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private ?string $name = null;
 

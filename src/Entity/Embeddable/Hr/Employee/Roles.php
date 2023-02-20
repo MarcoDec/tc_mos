@@ -120,7 +120,7 @@ class Roles {
     final public const ROLE_USER = 'ROLE_USER';
 
     /** @var string[] */
-    #[ORM\Column(type: 'simple_array', options: ['charset' => 'ascii'])]
+    #[ORM\Column(type: 'simple_array')]
     private array $roles = [self::ROLE_USER];
 
     final public function addRole(string $role): self {
@@ -136,6 +136,18 @@ class Roles {
      */
     final public function getRoles(): array {
         return $this->roles;
+    }
+
+    final public function hasRole(string $role): bool {
+        if (in_array($role, $this->roles)) {
+            return true;
+        }
+        foreach (self::ROLE_HIERARCHY as $key => $value) {
+            if ($role === $value && $this->hasRole($key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     final public function removeRole(string $role): self {

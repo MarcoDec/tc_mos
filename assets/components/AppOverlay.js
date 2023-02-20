@@ -1,22 +1,21 @@
 import {h} from 'vue'
-import {useSlots} from '../composition'
 
 function AppOverlay(props, context) {
-    const slots = useSlots(context)
-    const content = props.loading
-        ? [
-            h(
-                'div',
-                {class: 'overlay'},
-                h('div', {class: 'position-relative spinner-border start-50 top-50', role: 'status'})
-            ),
-            slots
-        ]
-        : slots
-    return props.css === null ? content : h('div', {class: props.css}, content)
+    let overlay = null
+    const children = []
+    if (typeof context.slots['default'] === 'function')
+        children.push(context.slots['default']())
+    if (props.spinner) {
+        overlay = {class: 'opacity-75 position-relative'}
+        children.push(h(
+            props.tag,
+            {class: 'position-absolute start-50 top-50'},
+            h(props.tag, {class: 'spinner-border', role: 'status'})
+        ))
+    }
+    return h(props.tag, overlay, children)
 }
 
-AppOverlay.displayName = 'AppOverlay'
-AppOverlay.props = {css: {default: null, type: [Object, String]}, loading: {type: Boolean}}
+AppOverlay.props = {spinner: {type: Boolean}, tag: {default: 'div', type: String}}
 
 export default AppOverlay

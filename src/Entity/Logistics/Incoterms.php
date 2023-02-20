@@ -5,6 +5,7 @@ namespace App\Entity\Logistics;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -14,6 +15,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Incoterms',
@@ -53,25 +55,25 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:incoterms', 'write:name'],
+            'groups' => ['write:incoterms'],
             'openapi_definition_name' => 'Incoterms-write'
         ],
         normalizationContext: [
-            'groups' => ['read:incoterms', 'read:id', 'read:name'],
-            'openapi_definition_name' => 'Incoterms-read'
+            'groups' => ['read:incoterms', 'read:id'],
+            'openapi_definition_name' => 'Incoterms-read',
+            'skip_null_values' => false
         ],
     ),
     ORM\Entity,
-    ORM\Table(name: 'incoterms'),
     UniqueEntity('code'),
     UniqueEntity('name')
 ]
 class Incoterms extends Entity {
     #[
         ApiProperty(description: 'Code ', required: true, example: 'DDP'),
-        Assert\Length(min: 3, max: 11),
+        Assert\Length(min: 3, max: 25),
         Assert\NotBlank,
-        ORM\Column(length: 11),
+        ORM\Column(length: 25),
         Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
     private ?string $code = null;
@@ -81,7 +83,7 @@ class Incoterms extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms'])
     ]
     private ?string $name = null;
 

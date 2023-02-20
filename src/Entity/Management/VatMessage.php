@@ -5,6 +5,7 @@ namespace App\Entity\Management;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -14,6 +15,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Message TVA',
@@ -53,16 +55,16 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name'],
+            'groups' => ['write:vat-message'],
             'openapi_definition_name' => 'VatMessage-write'
         ],
         normalizationContext: [
-            'groups' => ['read:name', 'read:id'],
-            'openapi_definition_name' => 'VatMessage-read'
+            'groups' => ['read:vat-message', 'read:id'],
+            'openapi_definition_name' => 'VatMessage-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
-    ORM\Table,
     UniqueEntity('name')
 ]
 class VatMessage extends Entity {
@@ -70,7 +72,7 @@ class VatMessage extends Entity {
         ApiProperty(description: 'Message', required: true, example: "Ventes intra-communautaire :\u{a0}Exonération de TVA article 262 TERI\u{a0}du CGI."),
         Assert\NotBlank,
         ORM\Column(length: 120),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:vat-message', 'write:vat-message'])
     ]
     private ?string $name = null;
 

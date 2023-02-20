@@ -5,6 +5,7 @@ namespace App\Entity\Hr;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -15,6 +16,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'surname']),
+    ApiFilter(filterClass: OrderFilter::class, id: 'address-sorter', properties: Address::sorter),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'surname' => 'partial']),
     ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: Address::filter),
     ApiResource(
@@ -55,16 +58,16 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:address', 'write:name', 'write:out-trainer'],
+            'groups' => ['write:address', 'write:out-trainer'],
             'openapi_definition_name' => 'OutTrainer-write'
         ],
         normalizationContext: [
-            'groups' => ['read:address', 'read:id', 'read:name', 'read:out-trainer'],
-            'openapi_definition_name' => 'OutTrainer-read'
+            'groups' => ['read:address', 'read:id', 'read:out-trainer'],
+            'openapi_definition_name' => 'OutTrainer-read',
+            'skip_null_values' => false
         ]
     ),
-    ORM\Entity,
-    ORM\Table
+    ORM\Entity
 ]
 class OutTrainer extends Entity {
     #[
@@ -79,7 +82,7 @@ class OutTrainer extends Entity {
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:out-trainer', 'write:out-trainer'])
     ]
     private ?string $name = null;
 

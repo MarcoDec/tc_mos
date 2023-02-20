@@ -1,25 +1,18 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
-parameters:
-
 services:
-  # default configuration for services in *this* file
   _defaults:
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true
+    autowire: true
 
-  # makes classes in src/ available to be used as services
-  # this creates a service per class whose id is the fully-qualified class name
   App\:
     exclude:
+      - ../src/Api/Resource/
+      - ../src/Collection.php
       - ../src/Controller/
       - ../src/DependencyInjection/
       - ../src/Entity/
       - ../src/Filesystem/Directory.php
       - ../src/Kernel.php
+      - ../src/Paginator.php
       - ../src/Security/ApiRequest.php
       - ../src/Tests
     resource: ../src/
@@ -28,8 +21,21 @@ services:
     resource: ../src/Controller
     tags: [ controller.service_arguments ]
 
-  # add more service definitions when explicit configuration is needed
-  # please note that last definitions always *replace* previous ones
+  App\DataProvider\Logistics\Stock\GroupDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
+
+  App\DataProvider\Project\Operation\TypeDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
+
+  App\DataProvider\Purchase\Component\AttributeDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
+
+  App\DataProvider\Purchase\Order\ItemDataProvider:
+    arguments:
+      $itemPerPage: '%api_platform.collection.pagination.items_per_page%'
 
   api_platform.openapi.factory:
     arguments:
@@ -54,15 +60,21 @@ services:
   App\EventListener\Embeddable\MeasureListener:
     autoconfigure: false
     tags:
-      - entity: App\Entity\Interfaces\EmbeddedInterface
-        event: postLoad
-        name: doctrine.orm.entity_listener
+      - event: postLoad
+        name: doctrine.event_listener
 
   App\EventListener\Hr\Employee\NotificationListener:
     autoconfigure: false
     tags:
       - entity: App\Entity\Hr\Employee\Notification
         event: preRemove
+        name: doctrine.orm.entity_listener
+
+  App\EventListener\Production\Engine\EngineListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Production\Engine\Engine
+        event: postPersist
         name: doctrine.orm.entity_listener
 
   App\EventListener\HttpKernel\ExceptionListener:
@@ -74,12 +86,35 @@ services:
         name: kernel.event_listener
         priority: 2
 
-  App\EventListener\Project\Product\FamilyListener:
+  App\EventListener\FamilyListener:
     autoconfigure: false
     tags:
-      - entity: App\Entity\Project\Product\Family
+      - entity: App\Entity\Family
         event: postLoad
         name: doctrine.orm.entity_listener
+
+  App\EventListener\Purchase\Order\ItemListener:
+    autoconfigure: false
+    tags:
+      - event: workflow.purchase_order_item.guard.deliver
+        method: guardDeliver
+        name: kernel.event_listener
+      - event: workflow.purchase_order_item.completed.deliver
+        method: onDeliver
+        name: kernel.event_listener
+      - event: workflow.purchase_order_item.guard.partially_deliver
+        method: guardPartiallyDeliver
+        name: kernel.event_listener
+
+  App\EventListener\Purchase\Order\OrderListener:
+    autoconfigure: false
+    tags:
+      - event: workflow.purchase_order.guard.deliver
+        method: guardDeliver
+        name: kernel.event_listener
+      - event: workflow.purchase_order.guard.partially_deliver
+        method: guardPartiallyDeliver
+        name: kernel.event_listener
 
   App\EventListener\Security\LogoutListener:
     autoconfigure: false
@@ -88,18 +123,28 @@ services:
         event: Symfony\Component\Security\Http\Event\LogoutEvent
         name: kernel.event_listener
 
-  App\EventListener\WriteListener:
-    autoconfigure: false
-    tags:
-      - event: kernel.view
-        name: kernel.event_listener
-        priority: !php/const ApiPlatform\Core\EventListener\EventPriorities::PRE_WRITE
-
   App\Filesystem\FileManager:
     arguments:
       $dashGenerator: '@api_platform.path_segment_name_generator.dash'
       $dir: '%kernel.project_dir%/public'
     autoconfigure: false
+
+  App\Filter\RelationFilter:
+    arguments:
+      $identifiersExtractor: '@api_platform.identifiers_extractor.cached'
+      $iriConverter: '@api_platform.iri_converter'
+      $logger: '@logger'
+      $managerRegistry: '@doctrine'
+      $nameConverter: '@api_platform.name_converter'
+      $propertyAccessor: '@api_platform.property_accessor'
+      $requestStack: null
+    tags: [ api_platform.filter ]
+
+  App\Migrations\Factory:
+    autoconfigure: false
+    arguments:
+      $decorated: '@App\Migrations\Factory.inner'
+    decorates: doctrine.migrations.migrations_factory
 
   App\OpenApi\SchemaFactory:
     arguments:
@@ -110,10 +155,6 @@ services:
   App\OpenApi\OpenApiNormalizer:
     autoconfigure: false
     decorates: api_platform.openapi.normalizer
-
-  App\Security\TokenAuthenticator:
-    arguments:
-      $map: '@security.access_map'
 
   App\Serializer\ContextBuilderInterface:
     autoconfigure: false

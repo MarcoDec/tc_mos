@@ -1,14 +1,14 @@
 <script setup>
     import {computed, defineProps, ref} from 'vue'
+    import ClockAnalog from '../../clock/ClockAnalog.vue'
     import moment from 'moment-timezone'
-
     const props = defineProps({
         country: {required: true, type: String},
-        state: {required: true, type: String}
+        timezone: {required: true, type: String}
     })
-    const currentTime = ref(moment().tz(props.country))
+    const currentTime = ref(moment().tz(props.timezone))
     function updateCurrentTime() {
-        currentTime.value = moment().tz(props.country)
+        currentTime.value = moment().tz(props.timezone)
     }
     setInterval(() => updateCurrentTime(), 1 * 1000)
     const timeDigitale = computed(() => currentTime.value.format('HH:mm:ss'))
@@ -16,7 +16,7 @@
 
 <template>
     <div class="row">
-        <div class="col-5">
+        <div class="col-5 ms-1">
             <ClockAnalog
                 outer-background="none"
                 outer-border="none"
@@ -41,14 +41,14 @@
                 :second-hand-width="1"
                 :second-hand-height="28"
                 :second-hand-tail="7"
-                :country="props.country"/>
+                :country="props.timezone"/>
         </div>
         <div class="col">
-            <AppBtn variant="dark">
-                {{ state }}
+            <AppBtn label="pays" variant="dark">
+                {{ country }}
             </AppBtn>
-
             {{ timeDigitale }}
         </div>
     </div>
 </template>
+

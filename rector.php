@@ -2,27 +2,20 @@
 
 declare(strict_types=1);
 
-use Rector\Core\Configuration\Option;
-use Rector\Set\ValueObject\LevelSetList;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Rector\Config\RectorConfig;
+use Rector\Core\ValueObject\PhpVersion;
+use Rector\Set\ValueObject\SetList;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    // get parameters
-    $parameters = $containerConfigurator->parameters();
-    $parameters->set(Option::PATHS, [
+return static function (RectorConfig $config): void {
+    $config->paths([
         __DIR__.'/dev',
         __DIR__.'/lib',
+        __DIR__.'/migrations',
         __DIR__.'/src',
         __DIR__.'/tests',
         __DIR__.'/utils'
     ]);
-
-    // Define what rule sets will be applied
-    $containerConfigurator->import(LevelSetList::UP_TO_PHP_81);
-
-    // get services (needed for register a single rule)
-    // $services = $containerConfigurator->services();
-
-    // register a single rule
-    // $services->set(TypedPropertyRector::class);
+    $config->phpVersion(PhpVersion::PHP_81);
+    $config->phpstanConfig(__DIR__.'/phpstan.neon.dist');
+    $config->sets([SetList::PHP_81]);
 };

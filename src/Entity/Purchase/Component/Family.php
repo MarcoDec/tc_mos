@@ -8,18 +8,22 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Collection;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Family as AbstractFamily;
-use App\Filter\OldRelationFilter;
+use App\Entity\Quality\Reception\Check;
+use App\Entity\Quality\Reception\Reference\Purchase\FamilyReference;
+use App\Filter\RelationFilter;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['copperable']),
-    ApiFilter(filterClass: OldRelationFilter::class, properties: ['parent']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['parent']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['customsCode' => 'partial', 'name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Famille de composant',
@@ -29,6 +33,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les familles de composant',
                     'summary' => 'Récupère les familles de composant',
                 ]
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:family:option'],
+                    'openapi_definition_name' => 'ComponentFamily-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les familles pour les select',
+                    'summary' => 'Récupère les familles pour les select',
+                ],
+                'order' => ['name' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/component-families/options'
             ],
             'post' => [
                 'controller' => PlaceholderAction::class,
@@ -49,6 +70,21 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ],
             'get' => NO_ITEM_GET_OPERATION,
+            'patch' => [
+                'denormalization_context' => [
+                    'groups' => ['patch:family'],
+                    'openapi_definition_name' => 'ComponentFamily-patch-write'
+                ],
+                'normalization_context' => [
+                    'groups' => ['patch:family'],
+                    'openapi_definition_name' => 'ComponentFamily-patch-read'
+                ],
+                'openapi_context' => [
+                    'description' => 'Modifie les attributs',
+                    'summary' => 'Modifie les attributs',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
+            ],
             'post' => [
                 'controller' => PlaceholderAction::class,
                 'input_formats' => ['multipart'],
@@ -72,7 +108,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:family', 'read:file', 'read:id'],
-            'openapi_definition_name' => 'ComponentFamily-read'
+            'openapi_definition_name' => 'ComponentFamily-read',
+            'skip_null_values' => false
         ],
         paginationEnabled: false
     ),
@@ -82,13 +119,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Family extends AbstractFamily {
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
-    protected Collection $children;
+    protected DoctrineCollection $children;
 
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
-        Assert\Length(min: 3, max: 20),
+        Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
-        ORM\Column(length: 30),
+        ORM\Column(length: 40),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     protected ?string $name = null;
@@ -100,14 +137,26 @@ class Family extends AbstractFamily {
     ]
     protected $parent;
 
+    /** @var DoctrineCollection<int, Attribute> */
+    #[
+        ApiProperty(description: 'Attributs', readableLink: false, required: true, example: ['/api/attributes/1', '/api/attributes/2']),
+        ORM\ManyToMany(targetEntity: Attribute::class, mappedBy: 'families'),
+        Serializer\Groups(['patch:family'])
+    ]
+    private DoctrineCollection $attributes;
+
     #[
         ApiProperty(description: 'Code ', required: true, example: 'CAB'),
         Assert\Length(exactly: 3),
         Assert\NotBlank,
-        ORM\Column(type: 'char', length: 3, options: ['charset' => 'ascii']),
+        ORM\Column(type: 'char', length: 3),
         Serializer\Groups(['read:family', 'write:family'])
     ]
     private ?string $code = null;
+
+    /** @var DoctrineCollection<int, Component> */
+    #[ORM\OneToMany(mappedBy: 'family', targetEntity: Component::class, fetch: 'EXTRA_LAZY')]
+    private DoctrineCollection $components;
 
     #[
         ApiProperty(description: 'Cuivré ', example: true),
@@ -116,8 +165,72 @@ class Family extends AbstractFamily {
     ]
     private bool $copperable = false;
 
+    /** @var DoctrineCollection<int, FamilyReference> */
+    #[ORM\ManyToMany(targetEntity: FamilyReference::class, mappedBy: 'items')]
+    private DoctrineCollection $references;
+
+    public function __construct() {
+        parent::__construct();
+        $this->attributes = new ArrayCollection();
+        $this->components = new ArrayCollection();
+        $this->references = new ArrayCollection();
+    }
+
+    final public function addAttribute(Attribute $attribute): self {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes->add($attribute);
+            $attribute->addFamily($this);
+            foreach ($this->children as $child) {
+                $child->addAttribute($attribute);
+            }
+        }
+        return $this;
+    }
+
+    final public function addComponent(Component $component): self {
+        if (!$this->components->contains($component)) {
+            $this->components->add($component);
+            $component->setFamily($this);
+        }
+        return $this;
+    }
+
+    final public function addReference(FamilyReference $reference): self {
+        if (!$this->references->contains($reference)) {
+            $this->references->add($reference);
+            $reference->addItem($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return DoctrineCollection<int, Attribute>
+     */
+    final public function getAttributes(): DoctrineCollection {
+        return $this->attributes;
+    }
+
+    /**
+     * @return Collection<int, Check<Component, self>>
+     */
+    final public function getChecks(): Collection {
+        return Collection::collect($this->references->getValues())
+            ->map(static function (FamilyReference $reference): Check {
+                /** @var Check<Component, self> $check */
+                $check = new Check();
+                return $check->setReference($reference);
+            });
+    }
+
     final public function getCode(): ?string {
         return $this->code;
+    }
+
+    /**
+     * @return DoctrineCollection<int, Component>
+     */
+    final public function getComponents(): DoctrineCollection {
+        return $this->components;
     }
 
     final public function getCopperable(): ?bool {
@@ -130,6 +243,59 @@ class Family extends AbstractFamily {
     ]
     final public function getFilepath(): ?string {
         return parent::getFilepath();
+    }
+
+    /**
+     * @return DoctrineCollection<int, FamilyReference>
+     */
+    final public function getReferences(): DoctrineCollection {
+        return $this->references;
+    }
+
+    #[Serializer\Groups(['read:family:option'])]
+    final public function getText(): ?string {
+        return $this->getFullName();
+    }
+
+    final public function hasComponents(): bool {
+        if (!$this->components->isEmpty()) {
+            return true;
+        }
+        foreach ($this->children as $child) {
+            if ($child->hasComponents()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    final public function removeAttribute(Attribute $attribute): self {
+        if ($this->attributes->contains($attribute)) {
+            $this->attributes->removeElement($attribute);
+            $attribute->removeFamily($this);
+            foreach ($this->children as $child) {
+                $child->removeAttribute($attribute);
+            }
+        }
+        return $this;
+    }
+
+    final public function removeComponent(Component $component): self {
+        if ($this->components->contains($component)) {
+            $this->components->removeElement($component);
+            if ($component->getFamily() === $this) {
+                $component->setFamily(null);
+            }
+        }
+        return $this;
+    }
+
+    final public function removeReference(FamilyReference $reference): self {
+        if ($this->references->contains($reference)) {
+            $this->references->removeElement($reference);
+            $reference->removeItem($this);
+        }
+        return $this;
     }
 
     final public function setCode(?string $code): self {

@@ -5,8 +5,9 @@ namespace App\Entity\Hr\Event;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Doctrine\DBAL\Types\Hr\Employee\CurrentPlaceType;
+use App\Doctrine\DBAL\Types\Embeddable\Hr\Event\EventStateType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Filter\EnumFilter;
@@ -16,6 +17,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiFilter(filterClass: EnumFilter::class, properties: ['toStatus']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
@@ -57,12 +59,13 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_HR_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:name', 'write:type'],
+            'groups' => ['write:type'],
             'openapi_definition_name' => 'EventType-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:name', 'read:type'],
-            'openapi_definition_name' => 'EventType-read'
+            'groups' => ['read:id', 'read:type'],
+            'openapi_definition_name' => 'EventType-read',
+            'skip_null_values' => false
         ]
     ),
     ORM\Entity,
@@ -75,14 +78,14 @@ class Type extends Entity {
         Assert\Length(min: 3, max: 30),
         Assert\NotBlank,
         ORM\Column(length: 30),
-        Serializer\Groups(['read:name', 'write:name'])
+        Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $name = null;
 
     #[
-        ApiProperty(description: 'Status', example: 'blocked', openapiContext: ['enum' => CurrentPlaceType::TYPES]),
-        Assert\Choice(choices: CurrentPlaceType::TYPES),
-        ORM\Column(type: 'employee_current_place', nullable: true, options: ['charset' => 'ascii']),
+        ApiProperty(description: 'Status', example: 'blocked', openapiContext: ['enum' => EventStateType::TYPES]),
+        Assert\Choice(choices: EventStateType::TYPES),
+        ORM\Column(type: 'employee_event_state', nullable: true),
         Serializer\Groups(['read:type', 'write:type'])
     ]
     private ?string $toStatus = null;
