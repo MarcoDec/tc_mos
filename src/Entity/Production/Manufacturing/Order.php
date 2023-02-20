@@ -115,54 +115,54 @@ class Order extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private ?Company $company;
 
     #[
         ApiProperty(description: 'Date de livraison', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private ?DateTimeImmutable $deliveryDate = null;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private Closer $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private State $embState;
 
     #[
         ApiProperty(description: 'Index', example: 1),
         ORM\Column(name: '`index`', type: 'tinyint', options: ['default' => 1, 'unsigned' => true]),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private int $index = 1;
 
     #[
         ApiProperty(description: 'Compagnie fabricante', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private ?Company $manufacturingCompany = null;
 
     #[
         ApiProperty(description: 'Date de production', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private ?DateTimeImmutable $manufacturingDate = null;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private ?string $notes = null;
 
@@ -176,21 +176,21 @@ class Order extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private ?Product $product = null;
 
     #[
         ApiProperty(description: 'Quantité demandée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order','read:manufacturing-operation'])
     ]
     private Measure $quantityRequested;
 
     #[
         ApiProperty(description: 'Référence', example: 'EJZ65'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order'])
+        Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]
     private ?string $ref = null;
 

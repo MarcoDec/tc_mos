@@ -79,21 +79,21 @@ class Operation extends Entity {
     #[
         ApiProperty(description: 'Automatique', example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private bool $auto = false;
 
     #[
         ApiProperty(description: 'Limite', example: 'Lorem ipsum'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private ?string $boundary = null;
 
     #[
         ApiProperty(description: 'Cadence', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private Measure $cadence;
 
@@ -101,7 +101,7 @@ class Operation extends Entity {
         ApiProperty(description: 'Code', example: 'SAZ'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private ?string $code = null;
 
@@ -109,7 +109,7 @@ class Operation extends Entity {
         ApiProperty(description: 'Nom', example: 'Nom'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private ?string $name = null;
 
@@ -127,14 +127,14 @@ class Operation extends Entity {
     #[
         ApiProperty(description: 'Durée', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private Measure $time;
 
     #[
         ApiProperty(description: 'Type', readableLink: false, required: false, example: '/api/operation-types/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private ?Type $type = null;
 

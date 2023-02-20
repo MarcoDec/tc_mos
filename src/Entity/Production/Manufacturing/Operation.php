@@ -94,7 +94,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:manufacturing-operation', 'read:state'],
             'openapi_definition_name' => 'ManufacturingOperation-read',
             'skip_null_values' => false
-        ]
+        ],
+       paginationClientEnabled: true
     ),
     ORM\Entity,
     ORM\Table(name: 'manufacturing_operation')
@@ -127,7 +128,7 @@ class Operation extends Entity {
     private ?string $notes = null;
 
     #[
-        ApiProperty(description: 'Opération', readableLink: false, example: '/api/project-operations/1'),
+        ApiProperty(description: 'Opération'),
         ORM\ManyToOne(inversedBy: 'operations'),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
@@ -142,7 +143,7 @@ class Operation extends Entity {
     private Collection $operators;
 
     #[
-        ApiProperty(description: 'Commande', readableLink: false, example: '/api/manufacturing-orders/1'),
+        ApiProperty(description: 'Commande'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
@@ -163,21 +164,21 @@ class Operation extends Entity {
     private Measure $quantityProduced;
 
     #[
-        ApiProperty(description: 'Date de départ', example: '2022-03-24'),
+        ApiProperty(description: 'Date de démarrage', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/workstations/460'),
+        ApiProperty(description: 'Poste de travail'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?Workstation $workstation = null;
 
     #[
-        ApiProperty(description: 'Personne en charge', readableLink: false, example: '/api/zones/1'),
+        ApiProperty(description: 'Zone', readableLink: false, example: '/api/zones/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]

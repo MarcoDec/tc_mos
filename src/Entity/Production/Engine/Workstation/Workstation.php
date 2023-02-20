@@ -49,7 +49,7 @@ class Workstation extends Engine {
     #[
         ApiProperty(description: 'Groupe', readableLink: false, example: '/api/workstation-groups/1'),
         ORM\ManyToOne(targetEntity: Group::class),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
     ]
     protected $group;
 }

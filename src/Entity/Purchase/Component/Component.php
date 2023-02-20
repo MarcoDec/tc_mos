@@ -229,7 +229,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Famille', readableLink: false, required: true, example: '/api/component-families/1'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne(targetEntity: Family::class, inversedBy: 'components', fetch: 'EAGER'),
+        ORM\ManyToOne(targetEntity: Family::class, fetch: 'EAGER', inversedBy: 'components'),
         Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin'])
     ]
     private ?Family $family = null;
@@ -335,7 +335,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(fetch:'EAGER'),
         Serializer\Groups(['create:component', 'read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?Unit $unit = null;
@@ -419,7 +419,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     final public function getCode(): ?string {
         if ($this->family) {
-            dump('family',$this->getFamily());
             return $this->family->getCode()."-{$this->getId()}";
         }
         return "{XXXX-{$this->getId()}";
