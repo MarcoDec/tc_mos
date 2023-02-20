@@ -3,11 +3,12 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        {{ vite_entry_link_tags('app.ts') }}
         <title>T-Concept GPAO</title>
+        <link href="/img/TConcept_Logo.png" rel="icon" type="image/png"/>
+        {{ vite_entry_link_tags('index')|replace({'0.0.0.0': 'localhost'})|raw }}
+        {{ vite_entry_script_tags('index')|replace({'0.0.0.0': 'localhost'})|raw }}
     </head>
     <body>
         <div id="vue"></div>
-        {{ vite_entry_script_tags('app.ts') }}
     </body>
 </html>

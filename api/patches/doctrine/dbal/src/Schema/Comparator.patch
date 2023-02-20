@@ -1,0 +1,11 @@
+--- a/vendor/doctrine/dbal/src/Schema/Comparator.php	2022-10-24 09:26:18.000000000 +0200
++++ b/vendor/doctrine/dbal/src/Schema/Comparator.php	2022-11-07 10:01:48.969805023 +0100
+@@ -84,7 +84,7 @@
+      *
+      * @throws SchemaException
+      */
+-    private function doCompareSchemas(
++    protected function doCompareSchemas(
+         Schema $fromSchema,
+         Schema $toSchema
+     ) {

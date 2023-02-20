@@ -9,7 +9,18 @@ services:
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
-      - ./docker/apache:/etc/apache2/sites-enabled:delegated
+      - ./docker/apache/main:/etc/apache2/sites-enabled:delegated
+#  apache_api:
+#    container_name: tconcept_gpao_apache_api
+#    depends_on:
+#      - php
+#    image: tconcept/tc_apache:latest
+#    ports:
+#      - '3000:80'
+#    restart: always
+#    volumes:
+#      - .:/var/www/html/TConcept-GPAO:cached
+#      - ./docker/apache/api:/etc/apache2/sites-enabled:delegated
   mysql:
     build:
       args:
@@ -20,11 +31,13 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     container_name: tconcept_gpao_mysql
     environment:
-      MYSQL_DATABASE: sf4
-      MYSQL_PASSWORD: sf4
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: sf4
+      MYSQL_DATABASE: ${DATABASE_DBNAME}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+      MYSQL_USER: ${DATABASE_USER}
     restart: always
+#    ports:
+#      - '3307:3306'
     volumes:
       - ./docker/mysql/db:/var/lib/mysql:delegated
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf:delegated
@@ -52,7 +65,7 @@ services:
       - ./vendor:/var/www/html/TConcept-GPAO/vendor:delegated
   phpmyadmin:
     container_name: tconcept_gpao_phpmyadmin
-    image: phpmyadmin/phpmyadmin:5.1.1
+    image: phpmyadmin/phpmyadmin:5.2.0
     environment:
       PMA_ARBITRARY: '1'
       PMA_HOST: mysql
@@ -63,4 +76,52 @@ services:
     restart: always
     volumes:
       - /sessions
-version: '3.1'
+  yarn_builder:
+    container_name: tconcept_gpao_mobile
+    build:
+      args:
+        API_HOST: http://localhost:8000
+      context: ./gpao-mobile
+      dockerfile: ../docker/mobile/Dockerfile
+    ports:
+      - '3000:80'
+  npm_builder_fr:
+    container_name: tconcept_gpao_badgeuse_fr
+    build:
+      args:
+        VUE_APP_API_URL_BASE: http://localhost:8000
+        VUE_APP_COMPANY: 1
+        VUE_APP_USER: frbad
+        VUE_APP_USER_PASSWORD: frbad
+      context: ./TConcept-Clock/vue
+      dockerfile: ../../docker/clocking/Dockerfile
+    ports:
+      - '3001:80'
+    restart: always
+  npm_builder_tn:
+    container_name: tconcept_gpao_badgeuse_tn
+    build:
+      args:
+        VUE_APP_API_URL_BASE: http://localhost:8000
+        VUE_APP_COMPANY: 2
+        VUE_APP_USER: tnbad
+        VUE_APP_USER_PASSWORD: tnbad
+      context: ./TConcept-Clock/vue
+      dockerfile: ../../docker/clocking/Dockerfile
+    ports:
+      - '3002:80'
+    restart: always
+  npm_builder_md:
+    container_name: tconcept_gpao_badgeuse_md
+    build:
+      args:
+        VUE_APP_API_URL_BASE: http://localhost:8000
+        VUE_APP_COMPANY: 3
+        VUE_APP_USER: mdbad
+        VUE_APP_USER_PASSWORD: mdbad
+      context: ./TConcept-Clock/vue
+      dockerfile: ../../docker/clocking/Dockerfile
+    ports:
+      - '3003:80'
+    restart: always
+version: '3.3'

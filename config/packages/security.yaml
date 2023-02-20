@@ -1,97 +1,58 @@
 parameters:
-  # Comptabilité
-  ROLE_ACCOUNTING_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_ACCOUNTING_ADMIN
-  ROLE_ACCOUNTING_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_ACCOUNTING_READER
-  ROLE_ACCOUNTING_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_ACCOUNTING_WRITER
-  # Hiérarchie
   ROLE_HIERARCHY: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_HIERARCHY
-  # RH
-  ROLE_HR_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_HR_ADMIN
-  ROLE_HR_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_HR_READER
-  ROLE_HR_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_HR_WRITER
-  # Informatique
   ROLE_IT_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_IT_ADMIN
-  # Niveaux
-  ROLE_LEVEL_ANIMATOR: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_LEVEL_ANIMATOR
-  ROLE_LEVEL_DIRECTOR: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_LEVEL_DIRECTOR
-  ROLE_LEVEL_MANAGER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_LEVEL_MANAGER
-  ROLE_LEVEL_OPERATOR: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_LEVEL_OPERATOR
-  # Logistique
-  ROLE_LOGISTICS_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_LOGISTICS_ADMIN
-  ROLE_LOGISTICS_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_LOGISTICS_READER
-  ROLE_LOGISTICS_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_LOGISTICS_WRITER
-  # Maintenance
-  ROLE_MAINTENANCE_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_MAINTENANCE_ADMIN
-  ROLE_MAINTENANCE_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_MAINTENANCE_READER
-  ROLE_MAINTENANCE_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_MAINTENANCE_WRITER
-  # Direction
-  ROLE_MANAGEMENT_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_MANAGEMENT_ADMIN
-  ROLE_MANAGEMENT_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_MANAGEMENT_READER
-  ROLE_MANAGEMENT_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_MANAGEMENT_WRITER
-  # Production
-  ROLE_PRODUCTION_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PRODUCTION_ADMIN
-  ROLE_PRODUCTION_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PRODUCTION_READER
-  ROLE_PRODUCTION_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PRODUCTION_WRITER
-  # Projet
-  ROLE_PROJECT_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PROJECT_ADMIN
-  ROLE_PROJECT_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PROJECT_READER
-  ROLE_PROJECT_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PROJECT_WRITER
-  # Achat
-  ROLE_PURCHASE_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PURCHASE_ADMIN
-  ROLE_PURCHASE_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PURCHASE_READER
-  ROLE_PURCHASE_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_PURCHASE_WRITER
-  # Qualité
-  ROLE_QUALITY_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_QUALITY_ADMIN
-  ROLE_QUALITY_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_QUALITY_READER
-  ROLE_QUALITY_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_QUALITY_WRITER
-  # Ventes
-  ROLE_SELLING_ADMIN: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_SELLING_ADMIN
-  ROLE_SELLING_READER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_SELLING_READER
-  ROLE_SELLING_WRITER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_SELLING_WRITER
-  # Utilisateur
-  ROLE_USER: !php/const App\Entity\Embeddable\Hr\Employee\Roles::ROLE_USER
   # Accès à la documentation de l'API
   access_control_api_doc_role: IS_AUTHENTICATED_ANONYMOUSLY
 
 security:
-  # Easy way to control access for large sections of your site
-  # Note: Only the *first* access control that matches will be used
   access_control:
+    - { path: ^/api/mobile/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/api/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/api$, roles: '%access_control_api_doc_role%' }
     - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
     - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-
   access_decision_manager:
     allow_if_all_abstain: true
-
-  # https://symfony.com/doc/current/security/authenticator_manager.html
   enable_authenticator_manager: true
-
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
+      stateless: true
+    mobile:
+      custom_authenticators:
+        - App\Security\MobileAuthenticator
+      lazy: true
+      pattern: ^/api/mobile/login$
+      stateless: true
+      user_checker: App\Security\UserChecker
     main:
-      custom_authenticator: App\Security\TokenAuthenticator
+      custom_authenticators:
+        - App\Security\ApiAuthenticator
+        - App\Security\TokenAuthenticator
       lazy: true
       logout:
         path: logout
-
-      # activate different ways to authenticate
-      # https://symfony.com/doc/current/security.html#firewalls-authentication
-
-      # https://symfony.com/doc/current/security/impersonating_user.html
-      # switch_user: true
-
-  # https://symfony.com/doc/current/security.html#c-hashing-passwords
+      stateless: true
   password_hashers:
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     App\Entity\Hr\Employee\Employee:
       algorithm: auto
-
   providers:
     app_user_provider:
-      id: App\Repository\Hr\Employee\EmployeeRepository
-
+      entity:
+        class: App\Entity\Hr\Employee\Employee
   role_hierarchy: '%ROLE_HIERARCHY%'
+
+when@prod:
+  parameters:
+    access_control_api_doc_role: '%ROLE_IT_ADMIN%'
+
+when@test:
+  security:
+    password_hashers:
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+        algorithm: auto
+        cost: 4
+        time_cost: 3
+        memory_cost: 10

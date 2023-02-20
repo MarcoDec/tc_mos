@@ -12,7 +12,7 @@ Certains alias ont été définis pour rendre plus pratique la gestion des conte
 1. vérifiez que les alias présents dans le fichier [`.bash_aliases`](./.bash_aliases) n'entrent pas en conflit avec vos
    propres alias&nbsp;;
 2. ajoutez les lignes suivantes dans votre fichier de configuration de votre shell (par exemple `~/.bashrc` si vous
-   utilisez BASH)&nbsp;::
+   utilisez BASH)&nbsp;:
 
 ```sh
 # Aliases TConcept-GPAO
@@ -33,13 +33,6 @@ exécutez la commande `composer install` pour installer les différentes dépend
 ### Base de données
 
 Pour charger la base de données, exécutez la commande `gpao:database:load`.
-
-La commande ci-dessus est un raccourci pour les deux commandes ci-dessous&nbsp;:
-
-```sh
-gpao:schema:update # Charge les tables en fonction du schéma défini sur les entités
-gpao:fixtures:load # Transfère les anciennes données au format JSON dans le nouveau modèle
-```
 
 ### Vite & Vue
 
@@ -87,10 +80,5 @@ Le taux de change des devises est mis à jour par une tâche cron selon la comma
 
 ## Qualité du code
 
-### PHP Coding Standards Fixer
-
-Pour modifier le code quant aux standards définis pour le projet, utilisez la commande&nbsp;: `gpao:fix:code`.
-
-### PHPStan-GPAO/vendor/bin/phpstan analyse'
-
-Pour contrôler le code de manière statique, utilisez la commande `gpao:stan`.
+Pour modifier et contrôler le code quant aux standards définis pour le projet, utilisez la
+commande&nbsp;: `gpao:fix:code`.
