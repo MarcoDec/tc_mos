@@ -9,6 +9,7 @@ function defineUserStore() {
         const id = ref(0)
         const name = ref(null)
         const roles = ref([])
+        const company = ref(null)
         const isHrAdmin = computed(() => roles.value.includes('ROLE_HR_ADMIN'))
         const isHrWriter = computed(() => isHrAdmin.value || roles.value.includes('ROLE_HR_WRITER'))
         const isLogisticsAdmin = computed(() => roles.value.includes('ROLE_LOGISTICS_ADMIN'))
@@ -37,11 +38,13 @@ function defineUserStore() {
             id.value = response.id
             name.value = response.name
             roles.value = response.roles
+            company.value = response.company
             cookies.set('token', response.token)
         }
 
         return {
             clear,
+            company,
             async connect(data) {
                 try {
                     save(await api('/api/login', 'POST', data))
