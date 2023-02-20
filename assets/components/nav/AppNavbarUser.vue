@@ -14,15 +14,26 @@
             loading: {type: 'final'}
         }
     })
+    const TUNISIE_TIMEZONE = {country: 'Tunis', timezone: 'Africa/Tunis'}
+    const FRANCE_TIMEZONE = {country: 'France', timezone: 'Europe/Paris'}
+    const SUISSE_TIMEZONE = {country: 'Suisse', timezone: 'Europe/Zurich'}
+    const MOLDAVIE_TIMEZONE = {country: 'Moldavie', timezone: 'Europe/Bucharest'}
+
+    let timezones = []
     const user = useUser()
-
-    const country = 'Tunis'
-
-    const timezones = [
-        {country: 'Tunis', timezone: 'Africa/Tunis'},
-        {country: 'France', timezone: 'Europe/Paris'}
-    ]
-    const userTimezone = timezones.find(tz => tz.country === country)
+    switch (user.company) {
+        case '/api/companies/1': //France
+            timezones = [FRANCE_TIMEZONE, TUNISIE_TIMEZONE, SUISSE_TIMEZONE, MOLDAVIE_TIMEZONE]
+            break
+        case '/api/companies/2': //MG2C
+            timezones = [SUISSE_TIMEZONE, FRANCE_TIMEZONE, TUNISIE_TIMEZONE, MOLDAVIE_TIMEZONE]
+            break
+        case '/api/companies/3': //Tunisie Concept
+            timezones = [TUNISIE_TIMEZONE, SUISSE_TIMEZONE, FRANCE_TIMEZONE, MOLDAVIE_TIMEZONE]
+            break
+        default: //WHETEC
+            timezones = [MOLDAVIE_TIMEZONE, TUNISIE_TIMEZONE, SUISSE_TIMEZONE, FRANCE_TIMEZONE]
+    }
 
     async function logout() {
         send('logout')
@@ -36,11 +47,8 @@
         <ul class="me-auto navbar-nav">
             <span class="user">
                 <AppNavbarItem id="user" class="navbar-text" icon="user-circle" :title="user.name">
-                    <div class="timelink">
-                        <AppNavbarLinkTime :timezone="userTimezone.timezone" :country="userTimezone.country"/>
-                    </div>
                     <div v-for="tz in timezones" :key="tz.country" class="timelink">
-                        <AppNavbarLinkTime v-if="tz.country !== country" :timezone="tz.timezone" :country="tz.country"/>
+                        <AppNavbarLinkTime :timezone="tz.timezone" :country="tz.country"/>
                     </div>
                 </AppNavbarItem>
             </span>
@@ -61,6 +69,7 @@
 .timelink{
     width: 130px;
     height: 50px;
+    margin-bottom: 10px;
 }
 .user{
     margin-right:31px;

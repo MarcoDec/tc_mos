@@ -43,7 +43,7 @@
                 :second-hand-tail="7"
                 :country="props.timezone"/>
         </div>
-        <div class="col">
+        <div class="col nopadding">
             <AppBtn label="pays" variant="dark">
                 {{ country }}
             </AppBtn>
@@ -51,4 +51,11 @@
         </div>
     </div>
 </template>
+
+<style>
+   .nopadding {
+      padding: 0px;
+      padding-left: 3px
+   }
+</style>
 
