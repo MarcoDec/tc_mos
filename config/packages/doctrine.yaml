@@ -58,6 +58,7 @@ doctrine:
       purchase_order_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Order\OrderStateType
       supplier_state: App\Doctrine\DBAL\Types\Embeddable\Purchase\Supplier\SupplierStateType
       tinyint: App\Doctrine\DBAL\Types\Tinyint
+      type: App\Doctrine\Type\Type
       vat_message_force: App\Doctrine\DBAL\Types\Management\VatMessageForce
       warehouse_families: App\Doctrine\DBAL\Types\Logistics\FamilyType
   orm:
