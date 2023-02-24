@@ -18,7 +18,10 @@ use Symfony\Component\Validator\Constraints as Assert;
    ORM\InheritanceType('SINGLE_TABLE')
 ]
 class Parameter extends Entity {
-    use NameTrait;
+
+   #[ ORM\Column(type: "string")
+      ]
+   private string $name;
 
     public const PROCESSES = [
         'hr' => HrParam::class,
@@ -111,4 +114,25 @@ class Parameter extends Entity {
 
         return $this;
     }
+
+   /**
+    * @return string
+    */
+   public function getName(): string
+   {
+      return $this->name;
+   }
+
+   /**
+    * @param string $name
+    * @return Parameter
+    */
+   public function setName(string $name): self
+   {
+      $this->name = $name;
+      return $this;
+   }
+
+
+
 }
