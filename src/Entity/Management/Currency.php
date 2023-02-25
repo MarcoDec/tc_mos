@@ -83,7 +83,7 @@ class Currency extends AbstractUnit {
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:currency'])
     ]
-    protected $parent;
+    protected ?AbstractUnit $parent;
 
     #[
         ApiProperty(description: 'Active', example: true),
