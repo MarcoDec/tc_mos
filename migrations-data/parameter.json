@@ -70,23 +70,37 @@
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_CATEGORY_ENGINE",
+    "name": "ENGINE_ATTACHMENT_CATEGORIES",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Engine\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
-    "process": "Production",
+    "process": "production",
+    "value": "doc_a_date,doc_a_date/capabilité,maintenance",
+    "type": "ARRAY"
+  },
+  {
+    "name": "ENGINE_EXPIRATION_DURATION",
+    "description": "Durée en mois avant expiration",
+    "process": "production",
+    "value": "12",
+    "type": "INTEGER"
+  },
+  {
+    "name": "ENGINE_EXPIRATION_DIRECTORIES",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Engine\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "production",
     "value": "doc_a_date,doc_a_date/capabilité,maintenance",
     "type": "ARRAY"
   },
   {
     "name": "ENGINE_CHECK_MAINTENANCE",
     "description": "Active ou non la vérification des maintenances lors de démarrage de production",
-    "process": "Production",
+    "process": "production",
     "value": "TRUE",
     "type": "INTEGER"
   },
   {
     "name": "IDS_CONNECTEURS",
     "description": "Ids des familles de Connecteur à prendre en compte pour les associations avec les outillages de test. Ne pas intégrer les accessoires",
-    "process": "Production",
+    "process": "production",
     "value": "4,20,21,45",
     "type": "ARRAY"
   },

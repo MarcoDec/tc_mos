@@ -14,6 +14,7 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Production\Company\Zone;
+use App\Entity\Production\Engine\Attachment\EngineAttachment;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
 use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
 use App\Entity\Production\Engine\Tool\Tool;
@@ -22,6 +23,7 @@ use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 //use App\Filter\SetFilter;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -114,6 +116,9 @@ abstract class Engine extends Entity implements BarCodeInterface {
         EngineType::TYPE_TOOL => Tool::class,
         EngineType::TYPE_WORKSTATION => Workstation::class
     ];
+
+    #[ORM\OneToMany(mappedBy: 'engine', targetEntity: EngineAttachment::class)]
+    private Collection $attachments;
 
     #[
         ApiProperty(description: 'Marque', example: 'Apple'),
@@ -314,4 +319,22 @@ abstract class Engine extends Entity implements BarCodeInterface {
         $this->zone = $zone;
         return $this;
     }
+
+   /**
+    * @return Collection
+    */
+   public function getAttachments(): Collection
+   {
+      return $this->attachments;
+   }
+
+   /**
+    * @param Collection $attachments
+    */
+   public function setAttachments(Collection $attachments): void
+   {
+      $this->attachments = $attachments;
+   }
+
+
 }
