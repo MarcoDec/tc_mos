@@ -30,8 +30,6 @@ class FileUploadController {
         /** @var AbstractAttachment $entity */
         $entity = $request->attributes->get('data');
 
-        dump(['$entity'=>$entity]);
-
         $class = get_class($entity);
         if (!($entity instanceof AbstractAttachment)) {
             throw new RuntimeException("l'entité $class n'hérite pas de App\\Entity\\AbstractAttachment");
@@ -54,7 +52,6 @@ class FileUploadController {
         $this->entityManager->persist($entity);
         $this->entityManager->flush(); // pour récupération id utilisé par default dans getBaseFolder
         $saveFolder = $entity->getBaseFolder().'/'.$entity->getCategory();
-        dump(['$entity'=>$entity]);
         $this->fileManager->persistFile($saveFolder, $file);
         $entity->setUrl($host.'/uploads'.$saveFolder.'/'.str_replace(' ', '_', $file->getClientOriginalName()));
         $this->entityManager->flush(); // pour persist du chemin vers le fichier
