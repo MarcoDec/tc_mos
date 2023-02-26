@@ -5,13 +5,14 @@ namespace App\Doctrine\Type;
 use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use App\Collection;
 
 abstract class AbstractType extends Type {
     public const TYPES = [];
     protected const SQL = 'ENUM';
 
     final protected static function getStrTypes(): string {
-        return collect(static::TYPES)->map(static fn (string $type): string => "'$type'")->implode(', ');
+        return Collection::collect(static::TYPES)->map(static fn (string $type): string => "'$type'")->implode(', ');
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform) {
