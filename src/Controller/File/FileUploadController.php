@@ -8,6 +8,8 @@ use App\Service\ParameterManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use http\Exception\RuntimeException;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -22,11 +24,17 @@ class FileUploadController {
         $host = $request->getSchemeAndHttpHost();
         /** @var UploadedFile $file */
         $file = $request->files->get('file');
+        if ($file->getError()===1) {
+           throw new FileException($file->getErrorMessage());
+        }
         /** @var AbstractAttachment $entity */
         $entity = $request->attributes->get('data');
+
+        dump(['$entity'=>$entity]);
+
         $class = get_class($entity);
         if (!($entity instanceof AbstractAttachment)) {
-            throw new Exception("l'entité $class n'hérite pas de App\\Entity\\AbstractAttachment");
+            throw new RuntimeException("l'entité $class n'hérite pas de App\\Entity\\AbstractAttachment");
         }
         $entity->setFile($file);
 
@@ -35,9 +43,10 @@ class FileUploadController {
         $expirationDirectories = $this->parameterManager->getParameter($parameterClass, $expirationDirectoriesParameter);
         foreach ($expirationDirectories->getTypedValue() as $directory) {
             if (str_contains($entity->getCategory(), $directory)) {
-                $nbMonthParameter = $entity->getExpirationDurationParameter();
-                $nbMonth = (int) ($this->parameterManager->getParameter($parameterClass, $nbMonthParameter)->getValue());
-                $entity->setExpirationDate(new DateTime("now + $nbMonth month"));
+                $durationParameter = $entity->getExpirationDurationParameter();
+                $duration = (int) ($this->parameterManager->getParameter($parameterClass, $durationParameter)->getValue());
+                $durationUnit = $entity->getExpirationDateStr();
+                $entity->setExpirationDate(new DateTime("now + $duration $durationUnit"));
             } else {
                 $entity->setExpirationDate(null);
             }
@@ -45,8 +54,9 @@ class FileUploadController {
         $this->entityManager->persist($entity);
         $this->entityManager->flush(); // pour récupération id utilisé par default dans getBaseFolder
         $saveFolder = $entity->getBaseFolder().'/'.$entity->getCategory();
+        dump(['$entity'=>$entity]);
         $this->fileManager->persistFile($saveFolder, $file);
-        $entity->setUrl($host.'/uploads'.$saveFolder.'/'.$file->getClientOriginalName());
+        $entity->setUrl($host.'/uploads'.$saveFolder.'/'.str_replace(' ', '_', $file->getClientOriginalName()));
         $this->entityManager->flush(); // pour persist du chemin vers le fichier
         return $entity;
     }

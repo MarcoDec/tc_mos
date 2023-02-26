@@ -49,7 +49,7 @@ final class FileManager {
         $basePath = $this->getUploadsDir();
         $targetFolder = $uploadSubFolder;
         /* @phpstan-ignore-next-line */
-        $completeTargetPath = $basePath.$targetFolder.'/'.$file->getClientOriginalName();
+        $completeTargetPath = $basePath.$targetFolder.'/'.str_replace(' ', '_', $file->getClientOriginalName());
         //Check if Folder Exist
         $this->checkFolderAndCreateIfNeeded($basePath.$targetFolder);
         move_uploaded_file($file->getPathname(), $completeTargetPath);

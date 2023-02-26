@@ -14,7 +14,7 @@ abstract class AbstractAttachment extends Entity {
             ],
             'read' => true,
             'write' => true,
-            'deserialize' => false,
+            'deserialize' => false, //OK
             'method' => 'POST',
             'path' => self::API_DEFAULT_PATH,
             'controller' => self::API_DEFAULT_UPLOAD_CONTROLLER,
@@ -64,6 +64,7 @@ abstract class AbstractAttachment extends Entity {
     abstract public function getExpirationDirectoriesParameter(): string;
 
     abstract public function getExpirationDurationParameter(): string;
+    abstract public function getExpirationDateStr(): string;
 
     abstract public function getFile(): ?File;
 

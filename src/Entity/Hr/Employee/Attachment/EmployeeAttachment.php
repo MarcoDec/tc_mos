@@ -109,4 +109,9 @@ class EmployeeAttachment extends AbstractAttachment {
     public function setEmployee(Employee $employee): void {
         $this->employee = $employee;
     }
+
+   public function getExpirationDateStr(): string
+   {
+      return "month";
+   }
 }

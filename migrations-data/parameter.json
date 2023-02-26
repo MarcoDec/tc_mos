@@ -155,9 +155,9 @@
   },
   {
     "name": "EMPLOYEE_EXPIRATION_DURATION",
-    "description": "Durée en jour d'expiration des répertoires où sont stockés les fichiers périssables des employés.",
+    "description": "Durée en mois d'expiration des répertoires où sont stockés les fichiers périssables des employés.",
     "process": "hr",
-    "value": "354",
+    "value": "84",
     "type": "INTEGER"
   },
   {
