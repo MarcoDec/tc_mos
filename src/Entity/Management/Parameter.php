@@ -5,8 +5,6 @@ namespace App\Entity\Management;
 use App\Doctrine\Type\Type;
 use App\Entity\Entity;
 use App\Entity\Hr\Parameter as HrParam;
-use App\Entity\Traits\NameTrait;
-use App\Validator as AppAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,6 +16,11 @@ use Symfony\Component\Validator\Constraints as Assert;
    ORM\InheritanceType('SINGLE_TABLE')
 ]
 class Parameter extends Entity {
+
+   #[
+      ORM\Column(nullable: true)
+   ]
+   private string|null $description;
 
    #[ ORM\Column(type: "string")
       ]
@@ -130,6 +133,24 @@ class Parameter extends Entity {
    public function setName(string $name): self
    {
       $this->name = $name;
+      return $this;
+   }
+
+   /**
+    * @return string|null
+    */
+   public function getDescription(): ?string
+   {
+      return $this->description;
+   }
+
+   /**
+    * @param string|null $description
+    * @return Parameter
+    */
+   public function setDescription(?string $description): self
+   {
+      $this->description = $description;
       return $this;
    }
 
