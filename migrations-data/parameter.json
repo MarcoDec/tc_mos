@@ -35,20 +35,6 @@
     "type": "INTEGER"
   },
   {
-    "name": "IDS_TERMINAUX",
-    "description": "Ids des terminaux à prendre en compte pour les gammes de fabrication. Ne pas intégrer les joints",
-    "process": "Project",
-    "value": "22,23,24,46",
-    "type": "ARRAY"
-  },
-  {
-    "name": "IDS_JOINTS",
-    "description": "Ids des Joints à prendre en compte pour les gammes de fabrication. Ne pas intégrer les autres terminaux",
-    "process": "Project",
-    "value": "25",
-    "type": "ARRAY"
-  },
-  {
     "name": "ATTACHMENT_CATEGORY_COMPONENT",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Component\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
     "process": "Purchase",
@@ -59,34 +45,6 @@
     "name": "ATTACHMENT_COMPONENT_EXPIRATION_DATE_DIRS",
     "description": "Répertoires où sont stockés les fichiers périssables des composants.",
     "process": "Purchase",
-    "value": "doc_a_date",
-    "type": "ARRAY"
-  },
-  {
-    "name": "ATTACHMENT_CATEGORY_PRODUCT",
-    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Product\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
-    "process": "Project",
-    "value": "doc_a_date,doc_a_date/audits,dossier_affaires,dossiers_fabrication,PPAP,rapports_de_controle,technique",
-    "type": "ARRAY"
-  },
-  {
-    "name": "ATTACHMENT_PRODUCT_EXPIRATION_DATE_DIRS",
-    "description": "Répertoires où sont stockés les fichiers périssables des produits.",
-    "process": "Project",
-    "value": "doc_a_date",
-    "type": "ARRAY"
-  },
-  {
-    "name": "ATTACHMENT_CATEGORY_ENGINE",
-    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Engine\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
-    "process": "Production",
-    "value": "doc_a_date,doc_a_date/capabilité,maintenance",
-    "type": "ARRAY"
-  },
-  {
-    "name": "ATTACHMENT_ENGINE_EXPIRATION_DATE_DIRS",
-    "description": "Répertoires où sont stockés les fichiers périssables des machines.",
-    "process": "Project",
     "value": "doc_a_date",
     "type": "ARRAY"
   },
@@ -105,6 +63,62 @@
     "type": "ARRAY"
   },
   {
+    "name": "ATTACHMENT_CATEGORY_ENGINE",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Engine\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "Production",
+    "value": "doc_a_date,doc_a_date/capabilité,maintenance",
+    "type": "ARRAY"
+  },
+  {
+    "name": "ENGINE_CHECK_MAINTENANCE",
+    "description": "Active ou non la vérification des maintenances lors de démarrage de production",
+    "process": "Production",
+    "value": "TRUE",
+    "type": "INTEGER"
+  },
+  {
+    "name": "IDS_CONNECTEURS",
+    "description": "Ids des familles de Connecteur à prendre en compte pour les associations avec les outillages de test. Ne pas intégrer les accessoires",
+    "process": "Production",
+    "value": "4,20,21,45",
+    "type": "ARRAY"
+  },
+  {
+    "name": "IDS_TERMINAUX",
+    "description": "Ids des terminaux à prendre en compte pour les gammes de fabrication. Ne pas intégrer les joints",
+    "process": "Project",
+    "value": "22,23,24,46",
+    "type": "ARRAY"
+  },
+  {
+    "name": "IDS_JOINTS",
+    "description": "Ids des Joints à prendre en compte pour les gammes de fabrication. Ne pas intégrer les autres terminaux",
+    "process": "Project",
+    "value": "25",
+    "type": "ARRAY"
+  },
+  {
+    "name": "ATTACHMENT_CATEGORY_PRODUCT",
+    "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Product\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
+    "process": "Project",
+    "value": "doc_a_date,doc_a_date/audits,dossier_affaires,dossiers_fabrication,PPAP,rapports_de_controle,technique",
+    "type": "ARRAY"
+  },
+  {
+    "name": "ATTACHMENT_PRODUCT_EXPIRATION_DATE_DIRS",
+    "description": "Répertoires où sont stockés les fichiers périssables des produits.",
+    "process": "Project",
+    "value": "doc_a_date",
+    "type": "ARRAY"
+  },
+  {
+    "name": "ATTACHMENT_ENGINE_EXPIRATION_DATE_DIRS",
+    "description": "Répertoires où sont stockés les fichiers périssables des machines.",
+    "process": "Project",
+    "value": "doc_a_date",
+    "type": "ARRAY"
+  },
+  {
     "name": "ATTACHMENT_CATEGORY_CUSTOMER",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Customer\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
     "process": "Selling",
@@ -119,59 +133,59 @@
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_CATEGORY_EMPLOYEE",
+    "name": "EMPLOYEE_DIRECTORIES",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Employee\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
-    "process": "HR",
+    "process": "hr",
     "value": "contrats,doc_a_date,doc_a_date/formations,doc,qualité",
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_EMPLOYEE_EXPIRATION_DATE_DIRS",
+    "name": "EMPLOYEE_ATTACHMENT_CATEGORIES",
+    "description": "Catégories de pièce jointe",
+    "process": "hr",
+    "value": "contrats,doc,formations,qualité",
+    "type": "ARRAY"
+  },
+  {
+    "name": "EMPLOYEE_EXPIRATION_DIRECTORIES",
     "description": "Répertoires où sont stockés les fichiers périssables des employés.",
-    "process": "HR",
+    "process": "hr",
     "value": "doc_a_date",
     "type": "ARRAY"
   },
   {
-    "name": "ENGINE_CHECK_MAINTENANCE",
-    "description": "Active ou non la vérification des maintenances lors de démarrage de production",
-    "process": "Production",
-    "value": "TRUE",
+    "name": "EMPLOYEE_EXPIRATION_DURATION",
+    "description": "Durée en jour d'expiration des répertoires où sont stockés les fichiers périssables des employés.",
+    "process": "hr",
+    "value": "354",
     "type": "INTEGER"
   },
   {
     "name": "EMPLOYEE_MISSING_CHART_CATEGORY",
     "description": "Catégories d'événements à inclure sur la courbe d'absentéïsme",
-    "process": "HR",
+    "process": "hr",
     "value": "ABSENCE,mise a pied,ABANDON DE POSTE",
     "type": "ARRAY"
   },
   {
     "name": "EMPLOYEE_COMPETENCE_REMINDER",
     "description": "Nombre de jours avant le prochain rappel de formation",
-    "process": "HR",
+    "process": "hr",
     "value": "180",
     "type": "INTEGER"
   },
   {
     "name": "EMPLOYEE_CHANGE_WARNING_WORKFLOW",
     "description": "Nombre de jours avant le passage de « sous-surveillance » à « actif »",
-    "process": "HR",
+    "process": "hr",
     "value": "90",
     "type": "INTEGER"
   },
   {
-    "name": "EMPLOYEE_CHANGE_BLOCKED_WORKFLOW",
+    "name": "EMPLOYEE_BLOCKED_TO_WATCHDOG_DURATION",
     "description": "Nombre de jours avant le passage de « bloqué » à « sous-surveillance »",
-    "process": "HR",
+    "process": "hr",
     "value": "180",
     "type" : "INTEGER"
-  },
-  {
-    "name": "IDS_CONNECTEURS",
-    "description": "Ids des familles de Connecteur à prendre en compte pour les associations avec les outillages de test. Ne pas intégrer les accessoires",
-    "process": "Production",
-    "value": "4,20,21,45",
-    "type": "ARRAY"
   }
 ]
