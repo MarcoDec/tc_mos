@@ -20,6 +20,7 @@ use App\Entity\Management\Society\Society;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Order\Order;
+use App\Entity\Purchase\Supplier\Attachment\SupplierAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
 use App\Repository\Purchase\Supplier\SupplierRepository;
@@ -166,6 +167,14 @@ class Supplier extends Entity {
         Serializer\Groups(['read:supplier'])
     ]
     private DoctrineCollection $administeredBy;
+
+   /** @var DoctrineCollection<int, Company>  */
+   #[
+      ApiProperty(description: 'Documents associés', readableLink: false, example: ['/api/supplier-attachments/1']),
+      ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierAttachment::class),
+      Serializer\Groups(['read:supplier'])
+   ]
+    private DoctrineCollection $attachments;
 
     #[
         ApiProperty(description: 'Critère de confiance', example: 0),
@@ -474,4 +483,24 @@ class Supplier extends Entity {
         $this->embState->setState($state);
         return $this;
     }
+
+   /**
+    * @return DoctrineCollection
+    */
+   public function getAttachments(): DoctrineCollection
+   {
+      return $this->attachments;
+   }
+
+   /**
+    * @param DoctrineCollection $attachments
+    * @return Supplier
+    */
+   public function setAttachments(DoctrineCollection $attachments): self
+   {
+      $this->attachments = $attachments;
+      return $this;
+   }
+
+
 }

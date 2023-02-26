@@ -2,64 +2,71 @@
   {
     "name": "ID_CORDON",
     "description": "Liste des id des familles de composant de type cordon.\r\nSe présente comme une liste de numéros séparés par un virgule",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "12",
     "type": "ARRAY"
   },
   {
     "name": "IDS_CORDON_FIL",
     "description": "Liste des id des familles de composant de type fil ou cordon.\r\nSe présente sous forme de liste d'entier avec des virgules pour séparer.",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "11,12",
     "type": "ARRAY"
   },
   {
     "name": "IDS_COSSES",
     "description": "Liste des id des familles de composant de type cosse",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "22,23,24",
     "type": "ARRAY"
   },
   {
     "name": "IDS_GAINES",
     "description": "Liste des id des familles de composant de type gaine",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "19,16,17,18",
     "type": "ARRAY"
   },
   {
     "name": "COMPONENT_ALERTE_FIN_DE_VIE",
     "description": "Définie combien de jours l'alerte doit s'afficher avant la fin de vie d'un composant.",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "30",
     "type": "INTEGER"
   },
   {
     "name": "ATTACHMENT_CATEGORY_COMPONENT",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Component\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "doc_a_date,qualité,technique",
     "type": "ARRAY"
   },
   {
     "name": "ATTACHMENT_COMPONENT_EXPIRATION_DATE_DIRS",
     "description": "Répertoires où sont stockés les fichiers périssables des composants.",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "doc_a_date",
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_CATEGORY_SUPPLIER",
+    "name": "SUPPLIER_ATTACHMENT_CATEGORIES",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Supplier\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "contrats,contrats/CGA,contrats/CGV,contrats/logistique,doc_a_date,doc_a_date/assurances,doc_a_date/audits,doc_a_date/certificats_qualités,docs,qualité",
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_SUPPLIER_EXPIRATION_DATE_DIRS",
+    "name": "SUPPLIER_EXPIRATION_DIRECTORIES",
     "description": "Répertoires où sont stockés les fichiers périssables des fournisseurs.",
-    "process": "Purchase",
+    "process": "purchase",
     "value": "doc_a_date",
+    "type": "ARRAY"
+  },
+  {
+    "name": "SUPPLIER_EXPIRATION_DURATION",
+    "description": "Durée en mois d'expiration des répertoires où sont stockés les fichiers périssables des fournisseurs..",
+    "process": "purchase",
+    "value": "84",
     "type": "ARRAY"
   },
   {

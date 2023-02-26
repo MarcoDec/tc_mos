@@ -5,6 +5,7 @@ namespace App\Entity\Management;
 use App\Doctrine\Type\Type;
 use App\Entity\Entity;
 use App\Entity\Hr\Parameter as HrParam;
+use App\Entity\Purchase\Parameter as PurchaseParam;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -29,6 +30,7 @@ class Parameter extends Entity {
     public const PROCESSES = [
         'hr' => HrParam::class,
         'management' => self::class,
+        'purchase' => PurchaseParam::class
     ];
 
     #[
