@@ -49,6 +49,13 @@
     "type": "ARRAY"
   },
   {
+    "name": "COMPONENT_EXPIRATION_DURATION",
+    "description": "Durée en mois d'expiration des répertoires où sont stockés les fichiers périssables des composants..",
+    "process": "purchase",
+    "value": "84",
+    "type": "ARRAY"
+  },
+  {
     "name": "SUPPLIER_ATTACHMENT_CATEGORIES",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Supplier\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
     "process": "purchase",

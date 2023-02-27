@@ -7,7 +7,6 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\AbstractAttachment;
-use App\Entity\Hr\Employee\Employee;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Parameter;
 use App\Entity\Traits\AttachmentTrait;
@@ -37,7 +36,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'write' => false,
             'deserialize' => false,
             'method' => 'POST',
-            'path' => '/composant-attachments',
+            'path' => '/component-attachments',
             'controller' => self::API_DEFAULT_UPLOAD_CONTROLLER,
             'openapi_context' //self::API_DEFAULT_OPENAPI_CONTEXT,
             => [
