@@ -40,7 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: NumericFilter::class, properties: ['id']),
     ApiFilter(
         filterClass: SearchFilter::class,
-        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial']
+        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial', 'company'=>'exact']
     ),
     ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
     ApiResource(
@@ -150,7 +150,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:address', 'read:employee', 'read:id', 'read:state'],
             'openapi_definition_name' => 'Employee-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]
@@ -196,7 +197,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:employee', 'read:user'])
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
     ]
     private ?Company $company = null;
 
