@@ -7,6 +7,7 @@ use App\Entity\Entity;
 use App\Entity\Hr\Parameter as HrParam;
 use App\Entity\Purchase\Parameter as PurchaseParam;
 use App\Entity\Production\Parameter as ProductionParam;
+use App\Entity\Project\Parameter as ProjectParam;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -32,7 +33,8 @@ class Parameter extends Entity {
         'hr' => HrParam::class,
         'management' => self::class,
         'purchase' => PurchaseParam::class,
-        'production' => ProductionParam::class
+        'production' => ProductionParam::class,
+        'project' => ProjectParam::class
     ];
 
     #[

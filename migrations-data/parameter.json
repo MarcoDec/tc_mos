@@ -98,52 +98,52 @@
     "type": "INTEGER"
   },
   {
-    "name": "IDS_CONNECTEURS",
+    "name": "ENGINE_IDS_CONNECTEURS",
     "description": "Ids des familles de Connecteur à prendre en compte pour les associations avec les outillages de test. Ne pas intégrer les accessoires",
     "process": "production",
     "value": "4,20,21,45",
     "type": "ARRAY"
   },
   {
-    "name": "IDS_TERMINAUX",
+    "name": "PRODUCT_IDS_TERMINAUX",
     "description": "Ids des terminaux à prendre en compte pour les gammes de fabrication. Ne pas intégrer les joints",
-    "process": "Project",
+    "process": "project",
     "value": "22,23,24,46",
     "type": "ARRAY"
   },
   {
-    "name": "IDS_JOINTS",
+    "name": "PRODUCT_IDS_JOINTS",
     "description": "Ids des Joints à prendre en compte pour les gammes de fabrication. Ne pas intégrer les autres terminaux",
-    "process": "Project",
+    "process": "project",
     "value": "25",
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_CATEGORY_PRODUCT",
+    "name": "PRODUCT_ATTACHMENT_CATEGORIES",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Product\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
-    "process": "Project",
+    "process": "project",
     "value": "doc_a_date,doc_a_date/audits,dossier_affaires,dossiers_fabrication,PPAP,rapports_de_controle,technique",
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_PRODUCT_EXPIRATION_DATE_DIRS",
+    "name": "PRODUCT_EXPIRATION_DIRECTORIES",
     "description": "Répertoires où sont stockés les fichiers périssables des produits.",
-    "process": "Project",
+    "process": "project",
     "value": "doc_a_date",
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_ENGINE_EXPIRATION_DATE_DIRS",
-    "description": "Répertoires où sont stockés les fichiers périssables des machines.",
-    "process": "Project",
-    "value": "doc_a_date",
-    "type": "ARRAY"
+    "name": "PRODUCT_EXPIRATION_DURATION",
+    "description": "Durée d'expiration en mois des éléments des dossiers expirables",
+    "process": "project",
+    "value": "84",
+    "type": "INTEGER"
   },
   {
     "name": "ATTACHMENT_CATEGORY_CUSTOMER",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Customer\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
     "process": "Selling",
-    "value": "doc_a_date,doc_a_date/contrats,doc_a_date/contrats_qualités,doc_a_date/CSR,doc_a_date/résultats_audits,réclammations",
+    "value": "doc_a_date,doc_a_date/contrats,doc_a_date/contrats_qualités,doc_a_date/CSR,doc_a_date/résultats_audits,réclamations",
     "type": "ARRAY"
   },
   {
