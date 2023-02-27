@@ -17,6 +17,7 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
+use App\Entity\Purchase\Component\Attachment\ComponentAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Traits\BarCodeTrait;
@@ -185,6 +186,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
+
+   /** @var DoctrineCollection<int, ComponentAttachment> */
+    #[ ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentAttachment::class) ]
+    private DoctrineCollection $attachments;
 
     /** @var DoctrineCollection<int, ComponentAttribute> */
     #[ORM\OneToMany(mappedBy: 'component', targetEntity: ComponentAttribute::class, cascade: ['remove'])]
@@ -651,4 +656,22 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->weight = $weight;
         return $this;
     }
+
+   /**
+    * @return DoctrineCollection
+    */
+   public function getAttachments(): DoctrineCollection
+   {
+      return $this->attachments;
+   }
+
+   /**
+    * @param DoctrineCollection $attachments
+    */
+   public function setAttachments(DoctrineCollection $attachments): void
+   {
+      $this->attachments = $attachments;
+   }
+
+
 }

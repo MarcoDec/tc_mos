@@ -18,6 +18,7 @@ use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Hr\Employee\Attachment\EmployeeAttachment;
 use App\Entity\Hr\TimeClock\Clocking;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
@@ -166,6 +167,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     /** @var Collection<int, Token> */
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
     private Collection $apiTokens;
+
+   /**
+    * @var Collection<int,EmployeeAttachment>
+    */
+   #[ORM\OneToMany(mappedBy: 'employee', targetEntity: EmployeeAttachment::class)]
+   private Collection $attachments;
 
     #[
         ApiProperty(description: 'Ville de naissance', example: 'Nancy'),
@@ -325,6 +332,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->apiTokens = new ArrayCollection();
         $this->embBlocker = new Blocker();
         $this->embRoles = new Roles();
+       $this->attachments = new ArrayCollection();
         $this->embState = new EmployeeEngineState();
     }
 
@@ -335,6 +343,16 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     final public function addApiToken(Token $apiToken): self {
         if (!$this->apiTokens->contains($apiToken)) {
             $this->apiTokens->add($apiToken);
+        }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function addAttachment(EmployeeAttachment $attachment): self {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
         }
         return $this;
     }
@@ -362,6 +380,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     final public function getApiTokens(): Collection {
         return $this->apiTokens;
     }
+
+   /**
+    * @return Collection<int,EmployeeAttachment>
+    */
+   public function getAttachments(): Collection {
+      return $this->attachments;
+   }
 
     final public function getBirthCity(): ?string {
         return $this->birthCity;
@@ -532,6 +557,14 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->address = $address;
         return $this;
     }
+
+   /**
+    * @param Collection<int,EmployeeAttachment> $attachments
+    * @return void
+    */
+   public function setAttachments(Collection $attachments): void {
+      $this->attachments = $attachments;
+   }
 
     final public function setBirthCity(?string $birthCity): self {
         $this->birthCity = $birthCity;
