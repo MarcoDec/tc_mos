@@ -3,56 +3,92 @@
 
 namespace App\Entity\Hr\TimeClock;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Hr\Employee\ClockingController;
+use App\Entity\AbstractAttachment;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
+use App\Entity\Hr\Parameter;
+use App\Entity\Traits\AttachmentTrait;
 use App\Repository\Hr\TimeClock\ClockingRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-   ApiResource(description: 'Pointages',
+   ORM\Entity,
+   ApiResource(
+      description: 'Pointages',
       collectionOperations: [
          'get' => [
+            'method' => 'GET',
+            'path' => '/clockings',
+            'openapi_context' //self::API_DEFAULT_OPENAPI_CONTEXT,
+            => [
+               'description' => 'Récupère les pointages',
+               'summary' => 'Récupère les pointages'
+            ],
+            'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
             'normalization_context' => [
-               'groups' => ['read:clocking:collection'],
+               'groups' => ['read:clocking:collection', self::API_GROUP_READ],
                'openapi_definition_name' => 'Clocking-collection',
                'skip_null_values' => false
-            ],
-            'openapi_context' => [
-               'description' => 'Récupère les pointages',
-               'summary' => 'Récupère les Pointages'
             ]
          ],
          'post' => [
-            'normalization_context' => [
-               'groups' => ['read:clocking:new'],
-               'openapi_definition_name' => 'read-clocking-new',
-               'skip_null_values' => false
+            'input_formats' => [
+               'multipart' => ['multipart/form-data']
             ],
-            'denormalization_context' => [
-               'groups' => ['create:clocking'],
-               'openapi_definition_name' => 'clocking-create'
-            ],
+            'read' => true,
+            'write' => false,
+            'deserialize' => false,
+            'method' => 'POST',
+            'path' => '/clockings',
+            'controller' => ClockingController::class,
+            'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
             'openapi_context' => [
                'description' => 'Créer un pointage',
                'summary' => 'Créer un pointage'
             ],
-            'controller'=>ClockingController::class,
-            'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
+            'denormalization_context' => [
+               'groups' => ['create:clocking', self::API_GROUP_WRITE],
+               'openapi_definition_name' => 'clocking-create'
+            ],
+            'normalization_context' => [
+               'groups' => ['read:clocking:new', self::API_GROUP_READ],
+               'openapi_definition_name' => 'read-clocking-new',
+               'skip_null_values' => false
+            ]
+         ]
+      ],
+      itemOperations: [
+         'get' => [
+            'openapi_context' => [
+               'description' => 'Récupère un pointage employé',
+               'summary' => 'Récupère un pointage employé'
+            ],
+            'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+         ],
+         'delete' => [
+            'openapi_context' => [
+               'description' => 'Supprime un pointage employé',
+               'summary' => 'Supprime un pointage employé'
+            ]
          ]
       ],
       attributes: [
          'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
-      ]
+      ],
+      paginationItemsPerPage: 2
    ),
-   ORM\Entity(repositoryClass: ClockingRepository::class)
+   ApiFilter(SearchFilter::class, properties: ['employee' => 'exact'])
 ]
-class Clocking extends Entity {
+class Clocking extends AbstractAttachment {
+   use AttachmentTrait;
     #[
         ORM\Column(type: "datetime", nullable: true),
         Serializer\Groups(['read:clocking:collection','create:clocking','read:clocking:new']),
@@ -80,8 +116,16 @@ class Clocking extends Entity {
    private DateTime $creationDate;
 
    public function __construct() {
+      parent::__construct();
+      $this->hasParameter = false; // Clocking n'a pas (besoin) de paramètres
       $this->enter = false;
       $this->creationDate = new DateTime("now");
+      $this->setExpirationDate(new DateTime("now + 14 day")); // On positionne à 14 jours par défaut la durée de rétention du fichier
+   }
+
+   public function getBaseFolder(): string {
+      $path = explode('\\', Employee::class);
+      return '/'.array_pop($path).'/'.$this->getEmployee()->getId();
    }
 
    /**
@@ -155,4 +199,24 @@ class Clocking extends Entity {
         $this->employee = $employee;
         return $this;
     }
+
+   public function getExpirationDirectoriesParameter(): string
+   {
+      return '';
+   }
+
+   public function getExpirationDurationParameter(): string
+   {
+      return '';
+   }
+
+   public function getExpirationDateStr(): string
+   {
+      return 'day';
+   }
+
+   public function getParameterClass(): string
+   {
+      return '';
+   }
 }

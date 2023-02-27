@@ -57,7 +57,14 @@ abstract class AbstractAttachment extends Entity {
 
     public const OTHERS = 'OTHERS';
 
-    abstract public function getCategory(): string;
+    public bool $hasParameter;
+
+    public function __construct()
+    {
+       $this->hasParameter = true;
+    }
+
+   abstract public function getCategory(): string;
 
     abstract public function getExpirationDate(): ?DateTimeInterface;
 
