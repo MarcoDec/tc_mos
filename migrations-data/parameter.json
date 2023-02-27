@@ -140,18 +140,25 @@
     "type": "INTEGER"
   },
   {
-    "name": "ATTACHMENT_CATEGORY_CUSTOMER",
+    "name": "CUSTOMER_ATTACHMENT_CATEGORIES",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Customer\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
-    "process": "Selling",
+    "process": "selling",
     "value": "doc_a_date,doc_a_date/contrats,doc_a_date/contrats_qualités,doc_a_date/CSR,doc_a_date/résultats_audits,réclamations",
     "type": "ARRAY"
   },
   {
-    "name": "ATTACHMENT_CUSTOMER_EXPIRATION_DATE_DIRS",
+    "name": "CUSTOMER_EXPIRATION_DIRECTORIES",
     "description": "Répertoires où sont stockés les fichiers périssables des clients.",
-    "process": "Selling",
+    "process": "selling",
     "value": "doc_a_date",
     "type": "ARRAY"
+  },
+  {
+    "name": "CUSTOMER_EXPIRATION_DURATION",
+    "description": "Durée de rétention des fichiers périssables des clients.",
+    "process": "selling",
+    "value": "30",
+    "type": "INTEGER"
   },
   {
     "name": "EMPLOYEE_DIRECTORIES",
