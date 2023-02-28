@@ -24,6 +24,7 @@
 
 <template>
     <button :class="btnClass" :type="type" class="btn">
+        <slot/>
         <slot>
             <Fa v-if="icon" :icon="icon"/>
         </slot>

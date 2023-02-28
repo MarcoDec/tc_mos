@@ -70,6 +70,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class TimeSlot extends Entity {
     #[
         ApiProperty(description: 'Fin', example: '17:30'),
+        Assert\NotBlank,
         ORM\Column(type: 'time_immutable'),
         Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])
@@ -95,6 +96,7 @@ class TimeSlot extends Entity {
 
     #[
         ApiProperty(description: 'Début', example: '07:30'),
+        Assert\NotBlank,
         ORM\Column(type: 'time_immutable'),
         Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'H:i']),
         Serializer\Groups(['read:time-slot', 'write:time-slot'])

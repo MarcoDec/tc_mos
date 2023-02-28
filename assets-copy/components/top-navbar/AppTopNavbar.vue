@@ -1,16 +1,35 @@
 <script lang="ts" setup>
-    import type {Actions, Getters, State} from '../../store/security'
-    import {useNamespacedActions, useNamespacedGetters, useNamespacedState} from 'vuex-composition-helpers'
+    import {ActionTypes, MutationTypes} from '../../store/security'
+    import type {Actions, Mutations, State} from '../../store/security'
+    import {
+        useMutations,
+        useNamespacedActions,
+        useNamespacedGetters,
+        useNamespacedMutations,
+        useNamespacedState
+    } from 'vuex-composition-helpers'
+    import {MutationTypes as MutationSpinner} from '../../store/mutation'
     import {useRouter} from 'vue-router'
 
-    const hasUser = useNamespacedGetters<Getters>('security', ['hasUser']).hasUser
-    const logout = useNamespacedActions<Actions>('security', ['logout']).logout
-    const name = useNamespacedState<State>('security', ['username']).username
+    const hasUser = useNamespacedGetters('users', ['hasUser']).hasUser
+    const logout = useNamespacedActions<Actions>('users', [ActionTypes.LOGOUT_USERS])[ActionTypes.LOGOUT_USERS]
+    const name = useNamespacedState<State>('users', ['username']).username
+    const error = useNamespacedMutations<Mutations>('users', [MutationTypes.LOGOUT])[MutationTypes.LOGOUT]
+    const loader = useMutations([MutationSpinner.SPINNER])[MutationSpinner.SPINNER]
+
     const router = useRouter()
 
-    async function handleLogout(): Promise<void> {
-        await logout()
-        await router.push({name: 'login'})
+    async function onLogout(): Promise<void> {
+        loader()
+
+        try {
+            await logout()
+            await router.push({name: 'login'})
+        } finally {
+            loader()
+        }
+
+        error()
     }
 </script>
 
@@ -19,30 +38,10 @@
         <AppNavbarBrand to="home">
             T-Concept
         </AppNavbarBrand>
-        <AppNavbarCollapse>
-            <AppNavbarItem id="nav-purchase" icon="shopping-bag" title="Achats">
-                <AppNavbarLink icon="layer-group" to="component-families">
-                    Familles de composants
-                </AppNavbarLink>
-            </AppNavbarItem>
-            <AppNavbarItem id="nav-purchase" icon="shopping-bag" title="Vente">
-                <AppNavbarLink icon="layer-group" to="manufacturing-order-needs">
-                    Besoins lancement OFs
-                </AppNavbarLink>
-            </AppNavbarItem>
-            <AppNavbarItem id="nav-purchase" icon="industry" title="Production">
-                <AppNavbarLink icon="layer-group" to="product-families">
-                    Familles de produits
-                </AppNavbarLink>
-                <AppNavbarLink icon="calendar-alt" to="manufacturing-schedule">
-                    Planning de production
-                </AppNavbarLink>
-            </AppNavbarItem>
-        </AppNavbarCollapse>
         <div v-if="hasUser" class="text-white">
             <Fa icon="user-circle"/>
             {{ name }}
-            <AppBtn variant="danger" @click="handleLogout">
+            <AppBtn variant="danger" @click="onLogout">
                 <Fa icon="sign-out-alt"/>
             </AppBtn>
         </div>

@@ -1,0 +1,11 @@
+--- a/vendor/api-platform/core/src/Metadata/ApiProperty.php	2022-11-15 15:46:46.000000000 +0100
++++ b/vendor/api-platform/core/src/Metadata/ApiProperty.php	2022-11-21 16:03:40.545577511 +0100
+@@ -28,7 +28,7 @@
+      * @param bool|null   $writableLink            https://api-platform.com/docs/core/serialization/#force-iri-with-relations-of-the-same-type-parentchilds-relations
+      * @param bool|null   $required                https://api-platform.com/docs/admin/validation/#client-side-validation
+      * @param bool|null   $identifier              https://api-platform.com/docs/core/identifiers/
+-     * @param string|null $default
++     * @param bool|int|null|string $default
+      * @param mixed       $example                 https://api-platform.com/docs/core/openapi/#using-the-openapi-and-swagger-contexts
+      * @param string|null $deprecationReason       https://api-platform.com/docs/core/deprecations/#deprecating-resource-classes-operations-and-properties
+      * @param bool|null   $fetchEager              https://api-platform.com/docs/core/performance/#eager-loading

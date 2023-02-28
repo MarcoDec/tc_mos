@@ -1,44 +1,32 @@
 <script lang="ts" setup>
     import type {FormField, FormValue, FormValues} from '../../../types/bootstrap-5'
-    import {defineEmits, defineProps, ref, withDefaults} from 'vue'
+    import {defineEmits, defineProps, withDefaults} from 'vue'
     import clone from 'clone'
 
     const form = ref<HTMLFormElement>()
-    const emit = defineEmits<{
-        (e: 'submit', values: FormData): void
-        (e: 'update:modelValue', values: FormValues): void
-    }>()
+    const emit = defineEmits<{(e: 'update:values', values: Readonly<FormValues>): void, (e: 'submit'): void,
+       (e: 'submit', values: FormData): void,
+       (e: 'update:modelValue', values: FormValues): void}>()
     const props = withDefaults(
-        defineProps<{fields: FormField[], id: string, modelValue?: FormValues}>(),
-        {modelValue: () => ({})}
+        defineProps<{fields: FormField[], values?: FormValues}>(),
+        {values: () => ({})}
     )
 
-    function input(value: {value: FormValue, name: string}): void {
-        const cloned = clone(props.modelValue)
+    function input(value: Readonly<{value: FormValue, name: string}>): void {
+        const cloned = clone(props.values)
         cloned[value.name] = value.value
-        emit('update:modelValue', cloned)
-    }
-
-    function submit(): void {
-        if (typeof form.value !== 'undefined')
-            emit('submit', new FormData(form.value))
+        emit('update:values', cloned)
     }
 </script>
 
 <template>
-    <form :id="id" ref="form" autocomplete="off" @submit.prevent="submit">
+    <form autocomplete="off" @submit.prevent="emit('submit')">
         <AppFormGroup
             v-for="field in fields"
             :key="field.name"
             :field="field"
-            :form="id"
-            :model-value="modelValue[field.name]"
+            :value="values[field.name]"
             @input="input"/>
-        <div class="float-start">
-            <slot name="start"/>
-        </div>
-        <div class="float-end">
-            <slot/>
-        </div>
+        <slot name="buttons"/>
     </form>
 </template>
