@@ -11,6 +11,8 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Project\Operation\Operation as PrimaryOperation;
@@ -87,11 +89,11 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:manufacturing-operation'],
+            'groups' => ['write:manufacturing-operation', 'write:measure'],
             'openapi_definition_name' => 'ManufacturingOperation-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:manufacturing-operation', 'read:state'],
+            'groups' => ['read:id', 'read:manufacturing-operation', 'read:state', 'read:measure'],
             'openapi_definition_name' => 'ManufacturingOperation-read',
             'skip_null_values' => false
         ],
@@ -100,13 +102,19 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\Table(name: 'manufacturing_operation')
 ]
-class Operation extends Entity {
+class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Quantité actuelle', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private Measure $actualQuantity;
+   #[
+      ApiProperty(description: 'Durée', example: 'HH:mm:ss'),
+      ORM\Column(type: 'string', nullable: true),
+      Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+   ]
+   private string|null $duration = null;
 
     #[
         ORM\Embedded,
@@ -333,4 +341,30 @@ class Operation extends Entity {
         $this->zone = $zone;
         return $this;
     }
+
+   /**
+    * @return string|null
+    */
+   public function getDuration(): ?string
+   {
+      return $this->duration;
+   }
+
+   /**
+    * @param string|null $duration
+    */
+   public function setDuration(?string $duration): void
+   {
+      $this->duration = $duration;
+   }
+
+   public function getMeasures(): array
+   {
+      return [$this->actualQuantity, $this->quantityProduced];
+   }
+
+   public function getUnit(): ?Unit
+   {
+      return $this->order->getProduct()->getUnit();
+   }
 }
