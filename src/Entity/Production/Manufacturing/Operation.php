@@ -136,7 +136,7 @@ class Operation extends Entity {
 
     /** @var Collection<int, Employee> */
     #[
-        ApiProperty(description: 'Opérateurs', readableLink: false, example: ['/api/employees/1', '/api/employees/2']),
+        ApiProperty(description: 'Opérateurs'),
         ORM\ManyToMany(targetEntity: Employee::class),
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]

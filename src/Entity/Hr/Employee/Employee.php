@@ -255,7 +255,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation'])
     ]
     private ?string $name = null;
 
@@ -297,7 +297,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Nom', example: 'Roosevelt'),
         ORM\Column,
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation'])
     ]
     private ?string $surname = null;
 
@@ -325,7 +325,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'read:manufacturing-operation'])
     ]
     private ?string $username = null;
 
