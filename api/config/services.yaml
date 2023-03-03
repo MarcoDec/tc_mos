@@ -1,0 +1,70 @@
+services:
+  _defaults:
+    autoconfigure: false
+    autowire: true
+  App\:
+    autoconfigure: true
+    exclude:
+      - ../src/Collection.php
+      - ../src/Controller/
+      - ../src/DependencyInjection/
+      - ../src/Doctrine/Comparator.php
+      - ../src/Doctrine/ORM/
+      - ../src/Doctrine/Type/
+      - ../src/Entity/
+      - ../src/Filesystem/Directory.php
+      - ../src/Kernel.php
+    resource: ../src/
+  App\Controller\:
+    resource: ../src/Controller
+    tags: [ controller.service_arguments ]
+  App\Filesystem\FileManager:
+    arguments:
+      $dir: '%kernel.project_dir%/public/uploads'
+  App\Migrations\Factory:
+    decorates: doctrine.migrations.migrations_factory
+  App\OpenApi\OpenApiFactory:
+    decorates: api_platform.openapi.factory
+  App\OpenApi\OpenApiNormalizer:
+    decorates: api_platform.openapi.normalizer
+  App\OpenApi\PropertyMetadataFactory:
+    arguments:
+      $wrapped: '@api_platform.metadata.property.metadata_factory.cached.inner'
+    decorates: api_platform.metadata.property.metadata_factory.cached
+  App\OpenApi\SchemaFactory:
+    decorates: api_platform.json_schema.schema_factory
+  App\Repository\Hr\Employee\NotificationRepository:
+    autoconfigure: true
+    arguments:
+      $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection
+      $itemExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.item
+    tags: [ doctrine.repository_service ]
+  App\Repository\Management\Unit\CurrencyRepository:
+    autoconfigure: true
+    arguments:
+      $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection
+      $itemExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.item
+    tags: [ doctrine.repository_service ]
+  App\Repository\Management\Unit\UnitRepository:
+    autoconfigure: true
+    arguments:
+      $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection
+      $itemExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.item
+    tags: [ doctrine.repository_service ]
+  App\Repository\Purchase\Component\AttributeRepository:
+    autoconfigure: true
+    arguments:
+      $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection
+      $itemExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.item
+    tags: [ doctrine.repository_service ]
+  App\Repository\Purchase\Component\FamilyRepository:
+    autoconfigure: true
+    arguments:
+      $collectionExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.collection
+      $itemExtensions: !tagged_iterator api_platform.doctrine.orm.query_extension.item
+    tags: [ doctrine.repository_service ]
+  App\Security\LogoutListener:
+    tags:
+      - dispatcher: security.event_dispatcher.main
+        event: Symfony\Component\Security\Http\Event\LogoutEvent
+        name: kernel.event_listener

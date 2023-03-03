@@ -1,7 +1,0 @@
-App\Entity\Purchase\Component\Attribute:
-  deleted: statut
-  properties:
-    description:
-      new_name: description
-    libelle:
-      new_name: name

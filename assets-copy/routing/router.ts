@@ -1,7 +1,7 @@
-import type {NavigationGuardNext, RouteComponent, RouteLocationNormalized} from 'vue-router'
-import {connect, hasUser} from '../store/store'
+/* eslint-disable consistent-return,@typescript-eslint/prefer-readonly-parameter-types */
 import {createRouter, createWebHistory} from 'vue-router'
-import {initUser} from '../store/security/User'
+import Cookies from 'js-cookie'
+import type {RouteComponent} from 'vue-router'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -13,33 +13,24 @@ const router = createRouter({
             path: '/'
         },
         {
+            component: async (): Promise<RouteComponent> => import('./pages/company/agenda/AppCompany.vue'),
+            meta: {requiresAuth: false},
+            name: 'hr',
+            path: '/company'
+        },
+        {
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
+            meta: {requiresAuth: false},
             name: 'login',
             path: '/login'
-        },
-        {
-            component: async (): Promise<RouteComponent> => import('./pages/project/AppOperationList.vue'),
-            name: 'operationList',
-            path: '/operation/list'
-        },
-        {
-            component: async (): Promise<RouteComponent> => import('./pages/direction/AppCardableCollectionTable.vue'),
-            name: 'societyList',
-            path: '/society/list'
         }
     ]
 })
 
-router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext): Promise<void> => {
-    if (to.matched.some(record => record.meta.requiresAuth) && !hasUser().value) {
-        const user = await initUser()
-        if (user === null) {
-            next({name: 'login'})
-            return
-        }
-        connect(user)
-    }
-    next()
+router.beforeEach(async to => {
+    const token = Cookies.get('token') ?? ''
+    if (to.matched.some(record => record.meta.requiresAuth && record.name !== 'login') && !token)
+        return {name: 'login'}
 })
 
 export default router

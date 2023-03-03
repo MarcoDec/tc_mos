@@ -4,8 +4,8 @@
 
     const props = withDefaults(
         defineProps<{
-            size?: BootstrapSize,
-            type?: 'button' | 'reset' | 'submit',
+            size?: BootstrapSize
+            type?: 'button' | 'reset' | 'submit'
             variant?: BootstrapVariant
         }>(),
         {
