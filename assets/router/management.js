@@ -1,3 +1,4 @@
+import AppSocityListTable from './pages/direction/AppSocityListTable.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import MonthCalendar from '../router/pages/company/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
@@ -94,5 +95,22 @@ export default [
         meta: {container: false, title: 'Agenda — T-Concept GPAO'},
         name: 'agenda',
         path: '/agenda'
+    },
+    {
+        component: AppSocityListTable,
+        meta: {title: 'Listes des sociétés  — T-Concept GPAO'},
+        name: 'society-list',
+        path: '/society-list',
+        props: {
+            fields: [
+                {ajoutVisible: true, label: 'Nom', min: true, name: 'name', trie: true, type: 'text', updateVisible: true},
+                {ajoutVisible: true, label: 'Adresse', min: false, name: 'adresse', trie: true, type: 'text', updateVisible: true},
+                {ajoutVisible: true, label: 'Complément d\'adresse', min: false, name: 'complement', trie: true, type: 'text', updateVisible: true},
+                {ajoutVisible: true, label: 'Ville', min: true, name: 'ville', trie: true, type: 'text', updateVisible: true},
+                {ajoutVisible: false, label: 'Pays', min: true, name: 'pays', trie: true, type: 'text', updateVisible: true}
+            ],
+            icon: 'city',
+            title: 'Société'
+        }
     }
 ]
