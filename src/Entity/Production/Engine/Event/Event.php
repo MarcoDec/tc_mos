@@ -3,6 +3,7 @@
 namespace App\Entity\Production\Engine\Event;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Production\Engine\EventType;
@@ -15,8 +16,10 @@ use App\Entity\Maintenance\Engine\Event\Request;
 use App\Entity\Production\Engine\Engine;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Filter\DiscriminatorFilter;
 
 #[
+    ApiFilter(DiscriminatorFilter::class),
     ApiResource(
         description: 'Événement sur un équipement',
         collectionOperations: [
@@ -73,7 +76,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         shortName: 'EngineEvent',
         attributes: [
-            'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_READER.'\')'
+            'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_READER.'\')',
+            //'filters' => 'custom.search_filter'
         ],
         denormalizationContext: [
             'groups' => ['write:event'],

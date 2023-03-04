@@ -33,7 +33,7 @@ abstract class Event extends Entity {
     protected ?Company $managingCompany = null;
 
     #[
-        ApiProperty(description: 'Nom', example: 'Congés d\'été'),
+        ApiProperty(description: 'Nom', example: 'Evènement annuel'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
         Serializer\Groups(['read:event', 'write:event'])
