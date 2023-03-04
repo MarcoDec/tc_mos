@@ -23,7 +23,7 @@ use App\Filter\DiscriminatorFilter;
 #[
     ApiFilter(DiscriminatorFilter::class),
     ApiFilter(filterClass: BooleanFilter::class, properties: ['done']),
-   ApiFilter(filterClass: DateFilter::class, properties: ['date']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['date']),
     ApiResource(
         description: 'Événement sur un équipement',
         collectionOperations: [
