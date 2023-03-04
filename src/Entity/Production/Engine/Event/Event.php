@@ -110,7 +110,7 @@ abstract class Event extends AbstractEvent {
     #[
         ApiProperty(description: 'Employé', example: '/api/employees/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:event', 'write:event','read:engine-maintenance-event'])
+        Serializer\Groups(['read:event', 'write:event','read:engine-maintenance-event','write:engine-maintenance-event'])
     ]
     protected ?Employee $employee;
 
