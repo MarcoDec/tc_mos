@@ -123,14 +123,14 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Marque', example: 'Apple'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?string $brand = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'MA-1'),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?string $code = null;
 
@@ -149,14 +149,14 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
         ORM\Column,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Zone', readableLink: false, example: '/api/zones/1'),
+        ApiProperty(description: 'Zone'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?Zone $zone = null;
 
