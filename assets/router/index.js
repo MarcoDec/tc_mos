@@ -2,34 +2,24 @@ import {createRouter, createWebHistory} from 'vue-router'
 import AppAnalogClock from './pages/AppAnalogClock.vue'
 import AppHome from '../components/pages/AppHome'
 import AppLogin from '../components/pages/AppLogin.vue'
-import component from './routes/component'
-import customer from './routes/customer'
-import employee from './routes/employee'
 import hr from './hr'
 import logistics from './logistics'
 import management from './management'
-import manufacturingOrder from './routes/manufacturingOrder'
 import production from './production'
 import project from './project'
 import purchase from './purchase'
 import quality from './quality'
-import supplier from './routes/supplier'
 import useUser from '../stores/security'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
-        ...component,
-        ...customer,
-        ...employee,
         ...hr,
         ...logistics,
         ...management,
-        ...manufacturingOrder,
         ...production,
         ...project,
         ...purchase,
         ...quality,
-        ...supplier,
         {
             component: AppAnalogClock,
             meta: {requiresAuth: true},

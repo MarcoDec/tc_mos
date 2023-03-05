@@ -1,8 +1,8 @@
+import AppComponentPage from './pages/component/AppComponentPage.vue'
 import AppShowGui from '../components/pages/AppShowGui.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
-import AppComponentPage from '/components/component/AppComponentPage.vue'
 import {readonly} from 'vue'
 
 export default [
