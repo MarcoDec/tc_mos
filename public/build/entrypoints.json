@@ -4,10 +4,10 @@
   "entryPoints": {
     "index": {
       "js": [
-        "/build/index.883c8325.js"
+        "/build/index.a1857ec1.js"
       ],
       "css": [
-        "/build/index.b6efea03.css"
+        "/build/index.82868170.css"
       ],
       "preload": [
         "/build/fontawesome.f9059d7a.js"
@@ -15,10 +15,10 @@
     }
   },
   "assets": {
-    "assets/router/pages/employee/AppEmployeePage.css": "/build/AppEmployeePage.5c1ab91c.css",
     "assets/router/pages/customer/AppCustomerPage.css": "/build/AppCustomerPage.5c1ab91c.css",
     "assets/router/pages/manufacturingOrder/AppManufacturingOrderPage.css": "/build/AppManufacturingOrderPage.5c1ab91c.css",
+    "assets/router/pages/employee/AppEmployeePage.css": "/build/AppEmployeePage.5c1ab91c.css",
     "assets/router/pages/supplier/AppSupplierPage.css": "/build/AppSupplierPage.5c1ab91c.css",
-    "assets/index.css": "/build/index.b6efea03.css"
+    "assets/index.css": "/build/index.82868170.css"
   }
 }
