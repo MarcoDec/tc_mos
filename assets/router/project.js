@@ -62,5 +62,17 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Types d\'opérations'
         }
+    },
+    {
+        component: () => import('./pages/manufacturingOrder/AppManufacturingOrderPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'manufacturingOrder-list',
+        path: '/manufacturingOrder-list'
+    },
+    {
+        component: () => import('./pages/product/AppProductPage.vue'),
+        meta: {requiresAuth: true},
+        name: 'product-list',
+        path: '/product-list'
     }
 ]

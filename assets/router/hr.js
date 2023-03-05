@@ -63,5 +63,11 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Plages horaires'
         }
+    },
+    {
+        component: () => import('./pages/employee/AppEmployeePage.vue'),
+        meta: {requiresAuth: true},
+        name: 'employee-list',
+        path: '/employee-list'
     }
 ]
