@@ -20,4 +20,6 @@
 
 ###> OS files ###
 **/.DS_Store
+*.icloud
 ###< OS files ###
+node_modules

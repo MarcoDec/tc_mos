@@ -25,11 +25,15 @@ final class MeasureValidator extends ConstraintValidator {
         if (!($value instanceof Measure)) {
             throw new UnexpectedValueException($value, Measure::class);
         }
-
-        if (!$this->getUnit()->has($value->getUnit())) {
+        $unit = $this->getUnit();
+        $unitValue = $value->getUnit();
+        if (!$unitValue->has($unit)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ unit }}', (string) $this->getUnit()->getName())
                 ->addViolation();
+        }
+        if ($constraint->positive && $value->getValue() < 0) {
+            $this->context->buildViolation($constraint->positiveMessage)->addViolation();
         }
     }
 
@@ -41,7 +45,8 @@ final class MeasureValidator extends ConstraintValidator {
     }
 
     private function getUnit(): Unit {
-        if (!empty($unit = $this->getObject()->getUnit())) {
+       $myObject=$this->getObject();
+        if (!empty($unit = $myObject->getUnit())) {
             return $unit;
         }
         throw new InvalidArgumentException();
