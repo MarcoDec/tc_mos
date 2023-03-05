@@ -1,13 +1,12 @@
+import api from '../../api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../Api'
 import generateItem from './item'
 import generateSupplier from '../supplier/supplier'
 
 export const actionsItems = {
     async create(data, url = null) {
         this.reset()
-        const response = await fetchApi(url ?? this.iri, 'POST', data)
-        if (response.status === 422) throw response.content.violations
+        const response = await api(url ?? this.iri, 'POST', data)
         this.items.push(generateItem(this.iriType, response.content, this))
     },
     dispose() {

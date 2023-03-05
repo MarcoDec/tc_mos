@@ -1,7 +1,7 @@
 <script setup>
     import {defineEmits, defineProps} from 'vue'
     import AppFormField from './AppFormField.vue'
-    import AppTab from '../../tabs/AppTab.vue'
+    import AppTab from '../../tab/AppTab.vue'
 
     const emit = defineEmits(['update:modelValue'])
 

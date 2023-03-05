@@ -14,7 +14,6 @@ import purchase from './purchase'
 import quality from './quality'
 import supplier from './routes/supplier'
 import useUser from '../stores/security'
-import useUserStore from '../stores/hr/employee/user'
 
 const router = createRouter({
     history: createWebHistory(), routes: [

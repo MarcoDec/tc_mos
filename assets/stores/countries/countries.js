@@ -1,4 +1,4 @@
-import Api from '../../Api'
+import api from '../../api'
 import {defineStore} from 'pinia'
 import generateCountry from './country'
 
@@ -6,10 +6,9 @@ export default defineStore('countries', {
     actions: {
         async fetch() {
             this.$reset()
-            const response = await new Api().fetch('/api/countries/options', 'GET')
-            if (response.status === 200)
-                for (const country of response.content['hydra:member'])
-                    this.items.push(generateCountry(country, this))
+            const response = await api('/api/countries/options')
+            for (const country of response.content['hydra:member'])
+                this.items.push(generateCountry(country, this))
         }
     },
     getters: {

@@ -3,8 +3,8 @@
     import AppTablePage from '../AppTablePage'
     import {computed} from 'vue-demi'
     import useComponent from '../../../stores/component/components'
-    import {useTableMachine} from '../../../machine'
-
+    //import {useTableMachine} from '../../../machine'
+    //TODO: Récupérer machine
     const title = 'Créer un Composant'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)

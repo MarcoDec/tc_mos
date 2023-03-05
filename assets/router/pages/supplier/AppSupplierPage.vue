@@ -5,7 +5,6 @@
     import useCountries from '../../../stores/countries/countries'
     import useSuppliers from '../../../stores/supplier/suppliers'
     import {useTableMachine} from '../../../machine'
-
     const title = 'Créer un Fournisseur'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)

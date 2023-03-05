@@ -4,7 +4,6 @@
     import {computed} from 'vue-demi'
     import useEmployees from '../../../stores/employee/employees'
     import {useTableMachine} from '../../../machine'
-
     const title = 'Créer un Employee'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
@@ -38,7 +37,7 @@
         },
         {
             create: true,
-            label: 'iInitiales',
+            label: 'Initiales',
             name: 'initiales',
             sort: true,
             type: 'text',

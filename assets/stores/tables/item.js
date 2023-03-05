@@ -1,5 +1,5 @@
+import api from '../../api'
 import {defineStore} from 'pinia'
-import fetchApi from '../../Api'
 
 export const actionsItem = {
     dispose() {
@@ -7,8 +7,7 @@ export const actionsItem = {
         this.$dispose()
     },
     async update(data) {
-        const response = await fetchApi(this.iri, 'PATCH', data)
-        if (response.status === 422) throw response.content.violations
+        const response = await api(this.iri, 'PATCH', data)
         this.$state = {
             iriType: this.iriType,
             root: this.root,

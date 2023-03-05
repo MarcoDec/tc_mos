@@ -1,5 +1,5 @@
-import AppTableHeaders from './head/AppTableHeaders'
-import AppTableItems from './body/AppTableItems'
+import AppTableHeaders from './head/AppTableHeaders.vue'
+import AppTableItems from './body/AppTableItems.vue'
 import {generateTableFields} from '../props'
 import {h} from 'vue'
 

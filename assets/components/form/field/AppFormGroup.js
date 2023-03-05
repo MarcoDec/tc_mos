@@ -1,6 +1,6 @@
 import {generateField, generateLabelCols} from '../../props'
 import {h, resolveComponent} from 'vue'
-import AppLabel from './AppLabel'
+import AppLabel from './AppLabel.vue'
 
 function AppFormGroup(props, context) {
     const id = `${props.form}-${props.field.name}`

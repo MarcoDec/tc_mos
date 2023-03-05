@@ -4,17 +4,21 @@
   "entryPoints": {
     "index": {
       "js": [
-        "/build/index.e9488e0c.js"
+        "/build/index.883c8325.js"
       ],
       "css": [
-        "/build/index.cdcd63b4.css"
+        "/build/index.b6efea03.css"
       ],
       "preload": [
-        "/build/fontawesome.08747bf8.js"
+        "/build/fontawesome.f9059d7a.js"
       ]
     }
   },
   "assets": {
-    "assets/index.css": "/build/index.cdcd63b4.css"
+    "assets/router/pages/employee/AppEmployeePage.css": "/build/AppEmployeePage.5c1ab91c.css",
+    "assets/router/pages/customer/AppCustomerPage.css": "/build/AppCustomerPage.5c1ab91c.css",
+    "assets/router/pages/manufacturingOrder/AppManufacturingOrderPage.css": "/build/AppManufacturingOrderPage.5c1ab91c.css",
+    "assets/router/pages/supplier/AppSupplierPage.css": "/build/AppSupplierPage.5c1ab91c.css",
+    "assets/index.css": "/build/index.b6efea03.css"
   }
 }
