@@ -6,7 +6,7 @@ export default defineStore('countries', {
     actions: {
         async fetch() {
             this.$reset()
-            const response = await api('/api/countries/options')
+            const response = await api('/api/countries')
             for (const country of response.content['hydra:member'])
                 this.items.push(generateCountry(country, this))
         }
