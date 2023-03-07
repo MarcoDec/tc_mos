@@ -81,7 +81,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
       paginationClientEnabled: true,
       paginationItemsPerPage: 2
    ),
-   ApiFilter(SearchFilter::class, properties: ['order' => 'exact'])
+   ApiFilter(SearchFilter::class, properties: ['order' => 'exact', 'category' => 'partial'])
 ]
 class PurchaseOrderAttachment extends AbstractAttachment
 {
