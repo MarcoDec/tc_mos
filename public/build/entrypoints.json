@@ -4,17 +4,17 @@
   "entryPoints": {
     "index": {
       "js": [
-        "/build/index.e9488e0c.js"
+        "/build/index.33b32770.js"
       ],
       "css": [
-        "/build/index.cdcd63b4.css"
+        "/build/index.bc87ed3d.css"
       ],
       "preload": [
-        "/build/fontawesome.08747bf8.js"
+        "/build/fontawesome.09e3cd13.js"
       ]
     }
   },
   "assets": {
-    "assets/index.css": "/build/index.cdcd63b4.css"
+    "assets/index.css": "/build/index.bc87ed3d.css"
   }
 }

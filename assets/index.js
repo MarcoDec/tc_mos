@@ -5,7 +5,7 @@ import App from './components/App.vue'
 import AppBtn from './components/AppBtn.vue'
 import AppCard from './components/AppCard.vue'
 import AppCardShow from './components/AppCardShow.vue'
-import AppCol from './components/layout/AppCol'
+import AppCol from './components/AppCol'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppForm from './components/form/AppForm.vue'
@@ -18,16 +18,16 @@ import AppOptions from './components/form/field/input/select/AppOptions.vue'
 import AppOverlay from './components/AppOverlay'
 import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
-import AppRow from './components/layout/AppRow'
+import AppRow from './components/AppRow'
 import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
 import AppSuspense from './components/AppSuspense.vue'
-import AppTab from './components/tabs/AppTab.vue'
-import AppTable from './components/table/AppTable'
+import AppTab from './components/tab/AppTab.vue'
+import AppTable from './components/table/AppTable.vue'
 import AppTableFormField from './components/table/AppTableFormField.vue'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm.vue'
 import AppTableItemField from './components/table/body/read/AppTableItemField.vue'
-import AppTablePage from './router/pages/AppTablePage'
-import AppTabs from './components/tabs/AppTabs.vue'
+import AppTablePage from './components/pages/table/AppTablePage.vue'
+import AppTabs from './components/tab/AppTabs.vue'
 import AppTreeForm from './components/tree/card/form/AppTreeForm.vue'
 import AppTreeLabel from './components/tree/node/AppTreeLabel.vue'
 import AppTreeNodes from './components/tree/node/AppTreeNodes.vue'
@@ -45,6 +45,7 @@ const app = createApp(App)
     .component('AppContainer', AppContainer)
     .component('AppCol', AppCol)
     .component('AppRow', AppRow)
+    .component('AppShowGuiCard', AppShowGuiCard)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppForm', AppForm)
     .component('AppFormGenerator', AppFormGenerator)
@@ -53,9 +54,11 @@ const app = createApp(App)
     .component('AppModal', AppModal)
     .component('AppMultiselect', AppMultiselect)
     .component('AppOverlay', AppOverlay)
+    .component('AppPaginationItem', AppPaginationItem)
     .component('AppOptions', AppOptions)
     .component('AppRouterLink', AppRouterLink)
     .component('AppSuspense', AppSuspense)
+    .component('AppTab', AppTab)
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)
     .component('AppTableItemField', AppTableItemField)
