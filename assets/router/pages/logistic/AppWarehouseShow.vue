@@ -1,13 +1,22 @@
 <script setup>
+    console.debug('AppWarehouseShow.vue setup')
+    import AppBtn from '../../../components/AppBtn'
+    import AppCardShow from '../../../components/AppCardShow.vue'
+    import AppCol from '../../../components/layout/AppCol'
+    import AppRow from '../../../components/layout/AppRow'
+    import AppTab from '../../../components/tab/AppTab.vue'
+    import AppTable from '../../../components/table/AppTable'
+    import AppTabs from '../../../components/tab/AppTabs.vue'
+    import Fa from '../../../components/Fa'
     import {useRoute} from 'vue-router'
     import {useTableMachine} from '../../../machine'
     import {useWarehouseStocksItemsStore} from '../../../stores/production/warehouseStocksItems'
 
-    defineProps({
+    const props = defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
-
+    console.debug('AppWarehouseShow.vue', props.icon, props.title)
     const route = useRoute()
     const options = [
         {text: 'MG2C', value: 'MG2C'},
@@ -132,8 +141,8 @@
 
 <template>
     <h1>
-        <Fa :icon="icon"/>
-        {{ title }}
+        <Fa :icon="props.icon"/>
+        {{ props.title }}
     </h1>
     <AppBtn icon="trash" variant="danger"/>
     <AppBtn variant="primary">
@@ -145,7 +154,7 @@
         </AppCol>
         <AppCol>
             <AppTabs id="gui-start" class="gui-start-content" vertical>
-                <AppTab id="gui-start-main" active title="Stock" icon="cubes-stacked">
+                <AppTab id="gui-start-main" active title="Stock" icon="cubes-stacked" tabs="gui-start">
                     <h1>Stocks</h1>
                     <div class="container-fluid">
                         <AppRow>
@@ -168,7 +177,7 @@
                     </div>
                     <AppTable :id="route.name" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
                 </AppTab>
-                <AppTab id="gui-start-files" title="Volume" icon="ruler-vertical">
+                <AppTab id="gui-start-files" title="Volume" icon="ruler-vertical" tabs="gui-start">
                     <h1>Volume stock</h1>
                     <AppTable :id="route.name" :fields="Volumefields" :store="storeWarehouseStocksItems" items="Volumeitems" :machine="machine"/>
                 </AppTab>

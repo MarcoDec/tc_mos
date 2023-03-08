@@ -1,4 +1,5 @@
 <script setup>
+    import AppInputGuesser from '../../../form/field/input/AppInputGuesser'
     import {computed} from 'vue'
     import {get} from 'lodash'
 
@@ -7,11 +8,23 @@
         item: {required: true, type: Object},
         row: {required: true, type: String}
     })
+    function labelValue(thevalue) {
+        if (props.field.type === 'select') {
+            const res = props.field.options.options.find(e => e.value === thevalue.value)
+            if (typeof res === 'undefined') {
+                console.debug('AppTableItemField.vue res undefined', props.field, thevalue.value)
+                return thevalue.value
+            }
+            return res.text
+        }
+        //TODO: gérer Multiselect et measures
+        return thevalue.value
+    }
     const bool = computed(() => props.field.type === 'boolean')
     const color = computed(() => props.field.type === 'color')
     const id = computed(() => `${props.row}-${props.field.name}`)
     const value = computed(() => get(props.item, props.field.name))
-    const label = computed(() => props.field.labelValue(value.value))
+    const label = computed(() => labelValue(value)) //computed(() => props.field.label) labelValue(value.value)
     const input = computed(() => `${id.value}-input`)
     const array = computed(() => Array.isArray(label.value))
 </script>

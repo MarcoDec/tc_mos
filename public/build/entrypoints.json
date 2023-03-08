@@ -4,7 +4,7 @@
   "entryPoints": {
     "index": {
       "js": [
-        "/build/index.2e3f38a5.js"
+        "/build/index.48379d65.js"
       ],
       "css": [
         "/build/index.bc87ed3d.css"
@@ -15,7 +15,7 @@
     }
   },
   "assets": {
-    "assets/router/pages/production/AppWarehouseList.css": "/build/AppWarehouseList.4812d1e2.css",
+    "assets/router/pages/logistic/AppWarehouseList.css": "/build/AppWarehouseList.7ced81b6.css",
     "assets/index.css": "/build/index.bc87ed3d.css"
   }
 }

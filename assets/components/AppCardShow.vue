@@ -1,10 +1,12 @@
 <script setup>
     import {defineProps, ref} from 'vue'
+    import AppBtn from '../components/AppBtn'
+    import AppForm from '../components/form/AppForm'
+
     defineProps({
         fields: {default: () => [], type: Array},
         id: {required: true, type: String}
     })
-
     const updated = ref(false)
     const disable = ref(true)
 
