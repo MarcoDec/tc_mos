@@ -1,8 +1,8 @@
 import {fieldValidator, generateLabelCols} from '../props'
 import {h, resolveComponent} from 'vue'
-import AppFormGroup from './field/AppFormGroup'
+import AppFormGroupJS from './field/AppFormGroupJS'
 
-function AppForm(props, context) {
+function AppFormJS(props, context) {
     function generateSlot() {
         return context.slots['default']({
             disabled: props.disabled,
@@ -18,7 +18,7 @@ function AppForm(props, context) {
             groups.push(generateSlot())
     } else {
         for (const field of props.fields)
-            groups.push(h(AppFormGroup, {
+            groups.push(h(AppFormGroupJS, {
                 disabled: props.disabled,
                 field,
                 form: props.id,
@@ -41,7 +41,7 @@ function AppForm(props, context) {
                     typeof context.slots['default'] === 'function'
                         ? generateSlot()
                         : h(
-                            resolveComponent('AppBtn'),
+                            resolveComponent('AppBtnJS'),
                             {disabled: props.disabled, form: props.id, type: 'submit'},
                             () => props.submitLabel
                         )
@@ -75,8 +75,8 @@ function AppForm(props, context) {
     return h('form', attrs, groups)
 }
 
-AppForm.emits = ['submit', 'update:modelValue']
-AppForm.props = {
+AppFormJS.emits = ['submit', 'update:modelValue']
+AppFormJS.props = {
     disabled: {type: Boolean},
     fields: {
         required: true,
@@ -100,4 +100,4 @@ AppForm.props = {
     violations: {default: () => [], type: Array}
 }
 
-export default AppForm
+export default AppFormJS

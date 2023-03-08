@@ -1,18 +1,20 @@
 import {h, resolveComponent} from 'vue'
 import {generateTableFields} from '../../props'
 
-function AppTableItem(props, context) {
+function AppTableItemJS(props, context) {
     return h('tr', {id: props.id}, [
         h('td', {class: 'text-center'}, props.index + 1),
         h('td', {class: 'text-center'}, [
             h(resolveComponent('AppBtn'), {
                 icon: 'pencil-alt',
+                label: 'Modifier',
                 onClick: () => props.machine.send('update', {updated: props.item['@id']}),
                 title: 'Modifier',
                 variant: 'primary'
             }),
-            h(resolveComponent('AppBtn'), {
+            h(resolveComponent('AppBtnJS'), {
                 icon: 'trash',
+                label: 'supprimer',
                 async onClick() {
                     props.machine.send('submit')
                     await props.item.remove()
@@ -26,14 +28,14 @@ function AppTableItem(props, context) {
             const slot = context.slots[`cell(${field.name})`]
             return h(
                 resolveComponent('AppTableItemField'),
-                {field, id: `${props.id}-${field.name}`, item: props.item, key: field.name, machine: props.machine},
+                {field, id: `${props.id}-${field.name}`, item: props.item, key: field.name, machine: props.machine, row: props.id},
                 typeof slot === 'function' ? args => slot(args) : null
             )
         })
     ])
 }
 
-AppTableItem.props = {
+AppTableItemJS.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     index: {required: true, type: Number},
@@ -41,4 +43,4 @@ AppTableItem.props = {
     machine: {required: true, type: Object}
 }
 
-export default AppTableItem
+export default AppTableItemJS

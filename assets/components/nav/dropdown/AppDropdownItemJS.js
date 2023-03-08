@@ -1,7 +1,7 @@
 import {generateVariant} from '../../props'
 import {h} from 'vue'
 
-function AppDropdownItem(props, context) {
+function AppDropdownItemJS(props, context) {
     let css = 'dropdown-item'
     if (props.disabled)
         css += ' disabled'
@@ -12,6 +12,6 @@ function AppDropdownItem(props, context) {
     )
 }
 
-AppDropdownItem.props = {disabled: {type: Boolean}, variant: generateVariant('primary')}
+AppDropdownItemJS.props = {disabled: {type: Boolean}, variant: generateVariant('primary')}
 
-export default AppDropdownItem
+export default AppDropdownItemJS

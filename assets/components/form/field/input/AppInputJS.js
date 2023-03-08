@@ -1,7 +1,7 @@
 import {generateField} from '../../../props'
 import {h} from 'vue'
 
-function AppInput(props, context) {
+function AppInputJS(props, context) {
     return h('input', {
         autocomplete: 'off',
         class: 'form-control form-control-sm',
@@ -16,8 +16,8 @@ function AppInput(props, context) {
     })
 }
 
-AppInput.emits = ['update:modelValue']
-AppInput.props = {
+AppInputJS.emits = ['update:modelValue']
+AppInputJS.props = {
     disabled: {type: Boolean},
     field: generateField(),
     form: {required: true, type: String},
@@ -25,4 +25,4 @@ AppInput.props = {
     modelValue: {}
 }
 
-export default AppInput
+export default AppInputJS

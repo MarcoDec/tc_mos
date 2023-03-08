@@ -1,10 +1,10 @@
 <script setup>
     import {defineEmits, defineProps} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
-    import AppBtn from '../../../components/AppBtn'
-    import AppForm from '../../../components/form/AppForm'
+    import AppBtnJS from '../../../components/AppBtnJS'
+    import AppFormJS from '../../../components/form/AppFormJS'
     import AppModal from '../../../components/modal/AppModal.vue'
-    import AppTable from '../../../components/table/AppTable'
+    import AppTableJS from '../../../components/table/AppTableJS'
     import Fa from '../../../components/Fa'
     import {useTableMachine} from '../../../machine'
     import {useWarehouseListItemsStore} from '../../../stores/production/warehouseListItems'
@@ -43,36 +43,36 @@
     }
     const machine = useTableMachine(route.name)
     const storeWarehouseListItems = useWarehouseListItemsStore()
-    storeWarehouseListItems.fetchItems()
+    storeWarehouseListItems.fetch()
 </script>
 
 <template>
     <h1>
         <Fa :icon="icon"/>
         {{ title }}
-        <AppBtn variant="success" class="btnRight" data-bs-toggle="modal" data-bs-target="#split">
+        <AppBtnJS variant="success" class="btnRight" data-bs-toggle="modal" data-bs-target="#split">
             créer
-        </AppBtn>
-        <AppBtn variant="secondary" class="btnRight">
+        </AppBtnJS>
+        <AppBtnJS variant="secondary" class="btnRight">
             Flux d'entrepôts
-        </AppBtn>
+        </AppBtnJS>
     </h1>
     <AppModal id="split" title="Créer un entrepot">
-        <AppForm id="addEntrepots" :fields="formfields"/>
+        <AppFormJS id="addEntrepots" :fields="formfields"/>
         <template #buttons>
-            <AppBtn class="float-end" variant="success">
+            <AppBtnJS class="float-end" variant="success">
                 créer
-            </AppBtn>
+            </AppBtnJS>
         </template>
     </AppModal>
-    <AppTable
+    <AppTableJS
         :id="route.name" :fields="fields" :store="storeWarehouseListItems" :machine="machine" @update="update"/>
 </template>
 
 <style scoped>
-.btnRight {
-  float: right;
-  margin-right: 5px;
-  margin-left: 5px;
-}
+    .btnRight {
+      float: right;
+      margin-right: 5px;
+      margin-left: 5px;
+    }
 </style>

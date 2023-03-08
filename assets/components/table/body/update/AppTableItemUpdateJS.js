@@ -1,14 +1,14 @@
 import {h, resolveComponent} from 'vue'
-import AppTableItemUpdateField from './AppTableItemUpdateField'
+import AppTableItemUpdateFieldJS from './AppTableItemUpdateFieldJS'
 import {generateTableFields} from '../../../props'
 
-function AppTableItemUpdate(props, context) {
+function AppTableItemUpdateJS(props, context) {
     const formId = `${props.id}-update`
     return h('tr', {id: props.id}, [
         h('td', {class: 'text-center'}, props.index + 1),
         h('td', {class: 'text-center'}, [
             h(
-                resolveComponent('AppForm'),
+                resolveComponent('AppFormJS'),
                 {
                     fields: props.fields,
                     id: formId,
@@ -26,7 +26,7 @@ function AppTableItemUpdate(props, context) {
                     },
                     submitLabel: 'Modifier'
                 },
-                ({disabled, form, submitLabel, type}) => h(resolveComponent('AppBtn'), {
+                ({disabled, form, submitLabel, type}) => h(resolveComponent('AppBtnJS'), {
                     disabled,
                     form,
                     icon: 'check',
@@ -35,7 +35,7 @@ function AppTableItemUpdate(props, context) {
                     variant: 'success'
                 })
             ),
-            h(resolveComponent('AppBtn'), {
+            h(resolveComponent('AppBtnJS'), {
                 icon: 'times',
                 onClick: () => props.machine.send('search'),
                 title: 'Annuler',
@@ -45,7 +45,7 @@ function AppTableItemUpdate(props, context) {
         props.fields.map(field => {
             const slot = context.slots[`form(${field.name})`]
             return h(
-                field.update ? AppTableItemUpdateField : resolveComponent('AppTableItemField'),
+                field.update ? AppTableItemUpdateFieldJS : resolveComponent('AppTableItemField'),
                 {
                     field,
                     form: formId,
@@ -60,7 +60,7 @@ function AppTableItemUpdate(props, context) {
     ])
 }
 
-AppTableItemUpdate.props = {
+AppTableItemUpdateJS.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     index: {required: true, type: Number},
@@ -68,4 +68,4 @@ AppTableItemUpdate.props = {
     machine: {required: true, type: Object}
 }
 
-export default AppTableItemUpdate
+export default AppTableItemUpdateJS

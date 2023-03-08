@@ -1,10 +1,10 @@
 // import AppPagination from './pagination/AppPagination'
-import AppTableHeaders from './head/AppTableHeaders'
-import AppTableItems from './body/AppTableItems'
+import AppTableHeadersJS from './head/AppTableHeadersJS'
+import AppTableItemsJS from './body/AppTableItemsJS'
 import {generateTableFields} from '../props'
 import {h} from 'vue'
 
-function AppTable(props, context) {
+function AppTableJS(props, context) {
     function generateSlot(field, slots, type) {
         const slotName = `${type}(${field.name})`
         const slot = context.slots[slotName]
@@ -30,12 +30,12 @@ function AppTable(props, context) {
             {class: 'row'},
             h('table', {class: 'col table table-bordered table-hover table-responsive table-sm table-striped'}, [
                 h(
-                    AppTableHeaders,
+                    AppTableHeadersJS,
                     {fields: props.fields, id: `${props.id}-headers`, machine: props.machine, store: props.store},
                     searchSlots
                 ),
                 h(
-                    AppTableItems,
+                    AppTableItemsJS,
                     {fields: props.fields, id: `${props.id}-items`, items: props.store[props.items], machine: props.machine},
                     cellSlots
                 )
@@ -59,7 +59,7 @@ function AppTable(props, context) {
     )
 }
 
-AppTable.props = {
+AppTableJS.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     items: {default: 'items', type: String},
@@ -67,4 +67,4 @@ AppTable.props = {
     store: {required: true, type: Object}
 }
 
-export default AppTable
+export default AppTableJS

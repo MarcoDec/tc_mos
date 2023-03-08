@@ -1,15 +1,16 @@
 import {h, resolveComponent} from 'vue'
 import {generateTableFields} from '../../props'
 
-function AppTableAdd(props, context) {
+function AppTableAddJS(props, context) {
     return h(
-        resolveComponent('AppTableHeaderForm'),
+        resolveComponent('AppTableHeaderFormJS'),
         {
             fields: props.fields,
             icon: 'plus',
             id: props.id,
             label: 'Ajouter',
             machine: props.machine,
+            mode: 'create',
             reverseIcon: 'search',
             reverseLabel: 'recherche',
             reverseMode: 'search',
@@ -34,11 +35,11 @@ function AppTableAdd(props, context) {
     )
 }
 
-AppTableAdd.props = {
+AppTableAddJS.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}
 }
 
-export default AppTableAdd
+export default AppTableAddJS

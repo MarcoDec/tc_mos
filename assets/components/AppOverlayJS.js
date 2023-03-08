@@ -1,6 +1,6 @@
 import {h} from 'vue'
 
-function AppOverlay(props, context) {
+function AppOverlayJS(props, context) {
     let overlay = null
     const children = []
     if (typeof context.slots['default'] === 'function')
@@ -16,6 +16,6 @@ function AppOverlay(props, context) {
     return h(props.tag, overlay, children)
 }
 
-AppOverlay.props = {spinner: {type: Boolean}, tag: {default: 'div', type: String}}
+AppOverlayJS.props = {spinner: {type: Boolean}, tag: {default: 'div', type: String}}
 
-export default AppOverlay
+export default AppOverlayJS

@@ -1,7 +1,7 @@
 import {h, resolveComponent} from 'vue'
 import {generateVariant} from './props'
 
-function AppBtn(props, context) {
+function AppBtnJS(props, context) {
     let css = `btn btn-${props.variant}`
     const children = []
     if (typeof context.slots['default'] === 'function')
@@ -18,11 +18,11 @@ function AppBtn(props, context) {
     )
 }
 
-AppBtn.props = {
+AppBtnJS.props = {
     disabled: {type: Boolean},
     icon: {default: null, type: String},
     type: {default: 'button', type: String},
     variant: generateVariant('primary')
 }
 
-export default AppBtn
+export default AppBtnJS

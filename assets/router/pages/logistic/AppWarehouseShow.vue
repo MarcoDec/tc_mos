@@ -1,22 +1,20 @@
 <script setup>
-    console.debug('AppWarehouseShow.vue setup')
-    import AppBtn from '../../../components/AppBtn'
+    import AppBtnJS from '../../../components/AppBtnJS'
     import AppCardShow from '../../../components/AppCardShow.vue'
     import AppCol from '../../../components/layout/AppCol'
     import AppRow from '../../../components/layout/AppRow'
     import AppTab from '../../../components/tab/AppTab.vue'
-    import AppTable from '../../../components/table/AppTable'
+    import AppTableJS from '../../../components/table/AppTableJS'
     import AppTabs from '../../../components/tab/AppTabs.vue'
     import Fa from '../../../components/Fa'
     import {useRoute} from 'vue-router'
     import {useTableMachine} from '../../../machine'
     import {useWarehouseStocksItemsStore} from '../../../stores/production/warehouseStocksItems'
 
-    const props = defineProps({
+    defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
-    console.debug('AppWarehouseShow.vue', props.icon, props.title)
     const route = useRoute()
     const options = [
         {text: 'MG2C', value: 'MG2C'},
@@ -141,13 +139,13 @@
 
 <template>
     <h1>
-        <Fa :icon="props.icon"/>
-        {{ props.title }}
+        <Fa :icon="icon"/>
+        {{ title }}
     </h1>
-    <AppBtn icon="trash" variant="danger"/>
-    <AppBtn variant="primary">
+    <AppBtnJS icon="trash" variant="danger"/>
+    <AppBtnJS variant="primary">
         transfer
-    </AppBtn>
+    </AppBtnJS>
     <AppRow>
         <AppCol class="col-5">
             <AppCardShow id="addEntrepot" :fields="warehouseformfields"/>
@@ -159,27 +157,27 @@
                     <div class="container-fluid">
                         <AppRow>
                             <AppCol class="col-1">
-                                <AppBtn variant="primary">
+                                <AppBtnJS variant="primary">
                                     CSV
-                                </AppBtn>
+                                </AppBtnJS>
                             </AppCol>
                             <AppCol>
                                 <div class="input-group mb-3">
                                     <input id="inputGroupFile02" type="file" class="form-control"/>
                                     <label class="input-group-text" for="inputGroupFile02">Rechercher</label>
-                                    <AppBtn variant="success">
+                                    <AppBtnJS variant="success">
                                         Upload
-                                    </AppBtn>
+                                    </AppBtnJS>
                                 </div>
                                 <p> Format supporté : .csv ( séparé par des points virgules ) </p>
                             </AppCol>
                         </AppRow>
                     </div>
-                    <AppTable :id="route.name" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
+                    <AppTableJS :id="route.name" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
                 </AppTab>
                 <AppTab id="gui-start-files" title="Volume" icon="ruler-vertical" tabs="gui-start">
                     <h1>Volume stock</h1>
-                    <AppTable :id="route.name" :fields="Volumefields" :store="storeWarehouseStocksItems" items="Volumeitems" :machine="machine"/>
+                    <AppTableJS :id="route.name" :fields="Volumefields" :store="storeWarehouseStocksItems" items="Volumeitems" :machine="machine"/>
                 </AppTab>
             </AppTabs>
         </AppCol>

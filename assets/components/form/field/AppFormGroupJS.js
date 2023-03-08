@@ -1,8 +1,8 @@
 import {generateField, generateLabelCols} from '../../props'
 import {h, resolveComponent} from 'vue'
-import AppLabel from './AppLabel'
+import AppLabelJS from './AppLabelJS'
 
-function AppFormGroup(props, context) {
+function AppFormGroupJS(props, context) {
     const id = `${props.form}-${props.field.name}`
     const attrs = {
         disabled: props.disabled,
@@ -15,18 +15,18 @@ function AppFormGroup(props, context) {
     const children = []
     if (props.violation) {
         attrs['class'] = 'is-invalid'
-        children.push(h(resolveComponent('AppInputGuesser'), attrs))
+        children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
         children.push(h('div', {class: 'invalid-feedback'}, props.violation.message))
     } else
-        children.push(h(resolveComponent('AppInputGuesser'), attrs))
+        children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
     return h('div', {class: 'row mb-3'}, [
-        h(AppLabel, {cols: props.labelCols, field: props.field, for: id}),
+        h(AppLabelJS, {cols: props.labelCols, field: props.field, for: id}),
         h('div', {class: 'col'}, children)
     ])
 }
 
-AppFormGroup.emits = ['update:modelValue']
-AppFormGroup.props = {
+AppFormGroupJS.emits = ['update:modelValue']
+AppFormGroupJS.props = {
     disabled: {type: Boolean},
     field: generateField(),
     form: {required: true, type: String},
@@ -35,4 +35,4 @@ AppFormGroup.props = {
     violation: {default: null, type: Object}
 }
 
-export default AppFormGroup
+export default AppFormGroupJS

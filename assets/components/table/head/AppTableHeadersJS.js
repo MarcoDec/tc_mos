@@ -1,10 +1,10 @@
-import AppTableAdd from './AppTableAdd'
-import AppTableFields from './field/AppTableFields'
-import AppTableSearch from './AppTableSearch'
+import AppTableAddJS from './AppTableAddJS'
+import AppTableFieldsJS from './field/AppTableFieldsJS'
+import AppTableSearchJS from './AppTableSearchJS'
 import {generateTableFields} from '../../props'
 import {h} from 'vue'
 
-function AppTableHeaders(props, context) {
+function AppTableHeadersJS(props, context) {
     function generateFormRow(tag, type) {
         const children = {}
         if (type === 'form' && typeof context.slots.create === 'function')
@@ -28,18 +28,18 @@ function AppTableHeaders(props, context) {
     }
 
     return h('thead', {class: 'table-dark', id: props.id}, [
-        h(AppTableFields, {fields: props.fields, machine: props.machine, store: props.store}),
+        h(AppTableFieldsJS, {fields: props.fields, machine: props.machine, store: props.store}),
         props.machine.state.value.matches('create')
-            ? generateFormRow(AppTableAdd, 'form')
-            : generateFormRow(AppTableSearch, 'search')
+            ? generateFormRow(AppTableAddJS, 'form')
+            : generateFormRow(AppTableSearchJS, 'search')
     ])
 }
 
-AppTableHeaders.props = {
+AppTableHeadersJS.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}
 }
 
-export default AppTableHeaders
+export default AppTableHeadersJS

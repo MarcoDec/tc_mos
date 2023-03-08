@@ -1,6 +1,6 @@
 import {h, resolveComponent} from 'vue'
 
-function AppRouterLink(props, context) {
+function AppRouterLinkJS(props, context) {
     return h(
         resolveComponent('RouterLink'),
         {custom: true, to: {name: props.to}},
@@ -15,6 +15,6 @@ function AppRouterLink(props, context) {
     )
 }
 
-AppRouterLink.props = {css: {default: null, type: String}, to: {required: true, type: String}}
+AppRouterLinkJS.props = {css: {default: null, type: String}, to: {required: true, type: String}}
 
-export default AppRouterLink
+export default AppRouterLinkJS

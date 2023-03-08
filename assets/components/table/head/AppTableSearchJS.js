@@ -1,10 +1,11 @@
 import {h, resolveComponent} from 'vue'
 import {generateTableFields} from '../../props'
 
-function AppTableSearch(props, context) {
+function AppTableSearchJS(props, context) {
     const children = {
         default: () => h(resolveComponent('AppBtn'), {
             icon: 'times',
+            label: 'submit',
             async onClick() {
                 props.machine.send('submit')
                 await props.store.resetSearch()
@@ -17,13 +18,14 @@ function AppTableSearch(props, context) {
     if (typeof context.slots['default'] === 'function')
         children.submit = args => context.slots['default'](args)
     return h(
-        resolveComponent('AppTableHeaderForm'),
+        resolveComponent('AppTableHeaderFormJS'),
         {
             fields: props.fields,
             icon: 'search',
             id: props.id,
             label: 'Rechercher',
             machine: props.machine,
+            mode: 'search',
             modelValue: props.store.search,
             onInputValue({field, value}) {
                 props.store.search[field.name] = value
@@ -31,6 +33,7 @@ function AppTableSearch(props, context) {
             reverseIcon: 'plus',
             reverseLabel: 'ajout',
             reverseMode: 'create',
+            send: props.machine.send,
             store: props.store,
             async submit() {
                 props.machine.send('submit')
@@ -43,11 +46,11 @@ function AppTableSearch(props, context) {
     )
 }
 
-AppTableSearch.props = {
+AppTableSearchJS.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},
     store: {required: true, type: Object}
 }
 
-export default AppTableSearch
+export default AppTableSearchJS

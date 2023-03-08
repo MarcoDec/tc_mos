@@ -1,7 +1,7 @@
 import {generateTableFields, generateVariant} from '../../props'
 import {h, resolveComponent} from 'vue'
 
-function AppTableHeaderForm(props, context) {
+function AppTableHeaderFormJS(props, context) {
     const formId = `${props.id}-form`
     const formTd = [
         typeof context.slots.submit === 'function'
@@ -72,7 +72,7 @@ function AppTableHeaderForm(props, context) {
     return h('tr', {class: `table-${props.variant} text-center`, id: props.id}, children)
 }
 
-AppTableHeaderForm.props = {
+AppTableHeaderFormJS.props = {
     fields: generateTableFields(),
     icon: {required: true, type: String},
     id: {required: true, type: String},
@@ -90,4 +90,4 @@ AppTableHeaderForm.props = {
     violations: {default: () => [], type: Array}
 }
 
-export default AppTableHeaderForm
+export default AppTableHeaderFormJS

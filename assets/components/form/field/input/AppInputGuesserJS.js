@@ -20,7 +20,7 @@ function getType(field) {
     }
 }
 
-function AppInputGuesser(props, context) {
+function AppInputGuesserJS(props, context) {
     return h(getType(props.field), {
         disabled: props.disabled,
         field: props.field,
@@ -31,8 +31,8 @@ function AppInputGuesser(props, context) {
     })
 }
 
-AppInputGuesser.emits = ['update:modelValue']
-AppInputGuesser.props = {
+AppInputGuesserJS.emits = ['update:modelValue']
+AppInputGuesserJS.props = {
     disabled: {type: Boolean},
     field: generateField(),
     form: {required: true, type: String},
@@ -40,4 +40,4 @@ AppInputGuesser.props = {
     modelValue: {}
 }
 
-export default AppInputGuesser
+export default AppInputGuesserJS

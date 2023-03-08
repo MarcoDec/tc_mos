@@ -1,5 +1,5 @@
 <script setup>
-    import AppInputGuesser from '../../../form/field/input/AppInputGuesser'
+    import AppInputGuesserJS from '../../../form/field/input/AppInputGuesserJS'
     import {computed} from 'vue'
     import {get} from 'lodash'
 
@@ -31,13 +31,13 @@
 
 <template>
     <td :id="id">
-        <AppInputGuesser v-if="bool" :id="input" :field="field" :model-value="label" disabled form="none"/>
+        <AppInputGuesserJS v-if="bool" :id="input" :field="field" :model-value="label" disabled form="none"/>
         <div v-else-if="color" class="row">
             <div v-if="!field.hideLabelValue" class="col-2">
                 {{ label }}
             </div>
             <div class="col">
-                <AppInputGuesser :id="input" :field="field" :model-value="label" disabled form="none"/>
+                <AppInputGuesserJS :id="input" :field="field" :model-value="label" disabled form="none"/>
             </div>
         </div>
         <ul v-else-if="array">

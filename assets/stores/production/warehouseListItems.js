@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 
 export const useWarehouseListItemsStore = defineStore('warehouseListItems', {
     actions: {
-        fetchItems() {
+        fetch() {
             this.items = [
                 {
                     delete: false,

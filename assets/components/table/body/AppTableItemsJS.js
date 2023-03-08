@@ -1,9 +1,9 @@
-import AppTableItem from './AppTableItem'
-import AppTableItemUpdate from './update/AppTableItemUpdate'
+import AppTableItemJS from './AppTableItemJS'
+import AppTableItemUpdateJS from './update/AppTableItemUpdateJS'
 import {generateTableFields} from '../../props'
 import {h} from 'vue'
 
-function AppTableItems(props, context) {
+function AppTableItemsJS(props, context) {
     const children = {}
 
     function generateSlot(field) {
@@ -16,18 +16,18 @@ function AppTableItems(props, context) {
     props.fields.forEach(generateSlot)
     return h('tbody', {id: props.id}, props.items.map((item, index) => h(
         props.machine.state.value.matches('update') && props.machine.state.value.context.updated === item['@id']
-            ? AppTableItemUpdate
-            : AppTableItem,
+            ? AppTableItemUpdateJS
+            : AppTableItemJS,
         {fields: props.fields, id: `${props.id}-${item.id}`, index, item, key: item['@id'], machine: props.machine},
         children
     )))
 }
 
-AppTableItems.props = {
+AppTableItemsJS.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     items: {required: true, type: Object},
     machine: {required: true, type: Object}
 }
 
-export default AppTableItems
+export default AppTableItemsJS
