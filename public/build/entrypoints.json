@@ -1,16 +1,20 @@
 {
   "isProd": true,
+  "viteServer": false,
   "entryPoints": {
     "index": {
       "js": [
-        "/build/index.30d01ff6.js"
+        "/build/index.e9488e0c.js"
       ],
       "css": [
-        "/build/index.62e696ad.css"
+        "/build/index.cdcd63b4.css"
       ],
       "preload": [
-        "/build/vendor.cc296e86.js"
+        "/build/fontawesome.08747bf8.js"
       ]
     }
+  },
+  "assets": {
+    "assets/index.css": "/build/index.cdcd63b4.css"
   }
 }

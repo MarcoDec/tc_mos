@@ -3,34 +3,27 @@
     import {defineEmits, defineProps, withDefaults} from 'vue'
     import clone from 'clone'
 
-    // const form = ref<HTMLFormElement>()
-    const emit = defineEmits<{(e: 'update:modelValue', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
-
+    const emit = defineEmits<{(e: 'update:values', values: Readonly<FormValues>): void, (e: 'submit'): void}>()
     const props = withDefaults(
-        defineProps<{fields: FormField[], id: string, modelValue?: FormValues, disabled: boolean}>(),
-        {modelValue: () => ({})}
+        defineProps<{fields: FormField[], values?: FormValues}>(),
+        {values: () => ({})}
     )
 
     function input(value: Readonly<{value: FormValue, name: string}>): void {
-        const cloned = clone(props.modelValue)
+        const cloned = clone(props.values)
         cloned[value.name] = value.value
-        emit('update:modelValue', cloned)
+        emit('update:values', cloned)
     }
 </script>
 
 <template>
-    <form :id="id" autocomplete="off" @submit.prevent="emit('submit')">
+    <form autocomplete="off" @submit.prevent="emit('submit')">
         <AppFormGroup
             v-for="field in fields"
             :key="field.name"
             :field="field"
-            :form="id"
-            :model-value="modelValue[field.name]"
-            :disabled="disabled"
+            :value="values[field.name]"
             @input="input"/>
         <slot name="buttons"/>
-        <!-- <AppBtn class="float-end" type="submit">
-            Connexion
-        </AppBtn> -->
     </form>
 </template>

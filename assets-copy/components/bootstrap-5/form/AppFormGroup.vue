@@ -1,19 +1,15 @@
 <script lang="ts" setup>
     import type {FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps} from 'vue'
+    import {defineEmits, defineProps} from 'vue'
 
     const emit = defineEmits<{
-        (e: 'update:modelValue', value: FormValue): void
+        (e: 'update:value', value: FormValue): void
         (e: 'input', payload: Readonly<{value: FormValue, name: string}>): void
     }>()
-    const props = defineProps<{field: FormField, form: string, modelValue?: FormValue, disabled: boolean}>()
-    const inputFields = computed<FormField>(() => ({
-        ...props.field,
-        id: props.field.id ?? `${props.form}-${props.field.name}`
-    }))
+    const props = defineProps<{field: FormField, value?: FormValue}>()
 
     function input(value: FormValue): void {
-        emit('update:modelValue', value)
+        emit('update:value', value)
         emit('input', {name: props.field.name, value})
     }
 </script>
@@ -24,7 +20,7 @@
             {{ field.label }}
         </AppLabel>
         <AppCol>
-            <AppInputGuesser :disabled="disabled" :field="inputFields" :model-value="modelValue" @update:model-value="input"/>
+            <AppInput :field="field" :value="value" @update:value="input"/>
         </AppCol>
     </AppRow>
 </template>

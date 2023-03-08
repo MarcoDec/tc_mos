@@ -1,4 +1,6 @@
+/* eslint-disable consistent-return,@typescript-eslint/prefer-readonly-parameter-types */
 import {createRouter, createWebHistory} from 'vue-router'
+import Cookies from 'js-cookie'
 import type {RouteComponent} from 'vue-router'
 
 const router = createRouter({
@@ -11,49 +13,24 @@ const router = createRouter({
             path: '/'
         },
         {
+            component: async (): Promise<RouteComponent> => import('./pages/company/agenda/AppCompany.vue'),
+            meta: {requiresAuth: false},
+            name: 'hr',
+            path: '/company'
+        },
+        {
             component: async (): Promise<RouteComponent> => import('./pages/security/AppLogin.vue'),
             meta: {requiresAuth: false},
             name: 'login',
             path: '/login'
-        },
-        {
-            component: async (): Promise<RouteComponent> => import('./pages/production/AppWarehouseList.vue'),
-            meta: {requiresAuth: true},
-            name: 'warehouse-list',
-            path: '/warehouse/list',
-            props: {
-                fields: [
-                    {
-                        create: false,
-                        filter: true,
-                        label: 'Nom',
-                        name: 'name',
-                        sort: true,
-                        type: 'text',
-                        update: true
-                    },
-                    {
-                        create: false,
-                        filter: true,
-                        label: 'Famille',
-                        name: 'famille',
-                        options: [{text: 'prison', value: 'prison'}, {text: 'production', value: 'production'}, {text: 'réception', value: 'réception'}, {text: 'magasin piéces finies', value: 'magasinPiécesFinies'}, {text: 'expédition', value: 'expédition'}, {text: 'magasin matières premiéres', value: 'magasinMatièresPremiéres'}, {text: 'camion', value: 'camion'}],
-                        sort: false,
-                        type: 'select',
-                        update: true
-                    }
-                ],
-                icon: 'warehouse',
-                title: 'Entrepots'
-            }
-        },
-        {
-            component: async (): Promise<RouteComponent> => import('./pages/production/AppWarehouseShow.vue'),
-            meta: {requiresAuth: true},
-            name: 'warehouse-show',
-            path: '/warehouse/show'
         }
     ]
+})
+
+router.beforeEach(async to => {
+    const token = Cookies.get('token') ?? ''
+    if (to.matched.some(record => record.meta.requiresAuth && record.name !== 'login') && !token)
+        return {name: 'login'}
 })
 
 export default router

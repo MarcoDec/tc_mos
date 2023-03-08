@@ -31,8 +31,8 @@ class Address {
             example: '5 rue Alfred Nobel',
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
         ),
-        Assert\Length(min: 10, max: 70),
-        ORM\Column(length: 70, nullable: true),
+        Assert\Length(min: 10, max: 160),
+        ORM\Column(length: 160, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $address = null;
@@ -43,8 +43,8 @@ class Address {
             example: 'ZA La charrière',
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
         ),
-        Assert\Length(min: 2, max: 58),
-        ORM\Column(length: 58, nullable: true),
+        Assert\Length(min: 2, max: 110),
+        ORM\Column(length: 110, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $address2 = null;
@@ -77,8 +77,8 @@ class Address {
     #[
         ApiProperty(description: 'E-mail', example: 'sales@tconcept.fr', openapiContext: ['format' => 'email']),
         Assert\Email,
-        Assert\Length(min: 5, max: 60),
-        ORM\Column(length: 60, nullable: true),
+        Assert\Length(min: 5, max: 80),
+        ORM\Column(length: 80, nullable: true),
         Serializer\Groups(['read:address', 'write:address'])
     ]
     private ?string $email = null;
@@ -135,6 +135,14 @@ class Address {
 
     final public function getZipCode(): ?string {
         return $this->zipCode;
+    }
+
+    final public function isEmpty(): bool {
+        return empty($this->address)
+            && empty($this->city)
+            && empty($this->country)
+            && empty($this->phone)
+            && empty($this->zip);
     }
 
     final public function setAddress(?string $address): self {

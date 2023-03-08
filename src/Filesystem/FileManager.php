@@ -24,6 +24,10 @@ final class FileManager {
         $this->uploadsDir = "$this->dir/uploads";
     }
 
+    public function getUploadsDir(): string {
+        return $this->uploadsDir;
+    }
+
     public function loadFamilyIcon(Family $family): void {
         if (empty($dashedName = $this->getDashedName($family))) {
             return;
@@ -39,6 +43,16 @@ final class FileManager {
 
     public function normalizePath(?string $path): ?string {
         return !empty($path) ? removeStart($path, $this->dir) : $path;
+    }
+
+    public function persistFile(string $uploadSubFolder, File $file): void {
+        $basePath = $this->getUploadsDir();
+        $targetFolder = $uploadSubFolder;
+        /* @phpstan-ignore-next-line */
+        $completeTargetPath = $basePath.$targetFolder.'/'.str_replace(' ', '_', $file->getClientOriginalName());
+        //Check if Folder Exist
+        $this->checkFolderAndCreateIfNeeded($basePath.$targetFolder);
+        move_uploaded_file($file->getPathname(), $completeTargetPath);
     }
 
     public function uploadFamilyIcon(Family $family): void {
@@ -59,6 +73,12 @@ final class FileManager {
             throw new InvalidArgumentException("Cannot guess extension of {$file->getClientOriginalName()}.");
         }
         $family->setFile($file->move($dir, "{$family->getId()}.{$extension}"));
+    }
+
+    private function checkFolderAndCreateIfNeeded(string $folder): void {
+        if (!file_exists($folder)) {
+            mkdir($folder, 0777, true);
+        }
     }
 
     private function getDashedName(FileEntity $entity): ?string {

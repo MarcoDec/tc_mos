@@ -1,24 +1,12 @@
-import type {Actions} from './actions'
-import type {Mutations} from './mutation'
-import type {State as Security} from './security'
-import type {State} from './state'
-import type {Store} from 'vuex'
-import {actions} from './actions'
+import type {State as RootState} from './state'
 import {createStore} from 'vuex'
-import {generateSecurity} from './security'
 import {mutations} from './mutation'
 import {state} from './state'
-import {warehouseListItems} from './warehouseListItems'
-import {warehouseStocksItems} from './warehouseStocksItems'
+import {users} from './security'
+import {events} from './events'
 
-export type {Actions, State, Mutations}
-export function generateStore(security: Security): Store<State> {
-    return createStore<State>({
-        actions,
-        modules: {security: generateSecurity(security), warehouseListItems, warehouseStocksItems},
-        mutations,
-        state,
-        strict: process.env.NODE_ENV !== 'production'
-    })
-}
-export type AppStore = ReturnType<typeof generateStore>
+export type {RootState}
+const store = createStore<RootState>({modules: {users,events}, mutations, state, strict: process.env.NODE_ENV !== 'production'})
+export type RootGetters = typeof store.getters
+
+export default store

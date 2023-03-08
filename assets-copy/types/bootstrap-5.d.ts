@@ -13,27 +13,22 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
+export type FormField = {
+    label: string
+    name: string
+    type?: FormInput
+}
+
+export type FormInput = 'password' | 'text'
+
+export type FormValue = number | string
+
+export type FormValues = Record<string, FormValue>
+
 export type Tabs = {
     name: string
     isActive: boolean
 }
-
-export type FormInput = 'boolean' | 'date' | 'number' | 'password' | 'radio' | 'rating' | 'search-boolean' | 'select' | 'text'
-
-export type FormValue = boolean | number | string | null
-
-export type FormOption = {text: string, value: FormValue}
-
-export type FormField = {
-    btn?: boolean
-    id?: string
-    label: string
-    name: string
-    options?: FormOption[]
-    type?: FormInput
-}
-
-export type FormValues = Record<string, FormValue>
 
 export type Tab = {
     active: {active: boolean}
