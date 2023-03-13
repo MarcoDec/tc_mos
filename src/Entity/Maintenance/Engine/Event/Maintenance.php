@@ -91,7 +91,13 @@ class Maintenance extends Event {
     ]
     private ?Planning $plannedBy = null;
 
-    final public function getPlannedBy(): ?Planning {
+    public function __construct()
+    {
+       parent::__construct();
+       $this->name .= ": Maintenance préventive";
+    }
+
+   final public function getPlannedBy(): ?Planning {
         return $this->plannedBy;
     }
 
