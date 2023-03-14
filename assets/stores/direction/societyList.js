@@ -1,3 +1,4 @@
+import api from '../../api'
 import {defineStore} from 'pinia'
 
 export const useSocietyListStore = defineStore('societyList', {
@@ -25,8 +26,13 @@ export const useSocietyListStore = defineStore('societyList', {
                     ville: 'CERGY PONTOISE'
                 }
             ]
+        },
+        async fetch() {
+                const response = await api('/api/societies', 'GET')
+                const responseData = await response['hydra:member']
+                console.log('res:', responseData)
+                this.societies = responseData
         }
-
     },
     getters: {
 
@@ -41,6 +47,7 @@ export const useSocietyListStore = defineStore('societyList', {
             pays: '',
             update: false,
             ville: ''
-        }]
+        }],
+        societies: []
     })
 })

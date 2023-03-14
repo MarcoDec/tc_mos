@@ -15,6 +15,7 @@
 
     const storeSocietyList = useSocietyListStore()
     storeSocietyList.fetchItems()
+    storeSocietyList.fetch()
 
     const updated = ref(false)
     const AddForm = ref(false)
@@ -72,7 +73,7 @@
             <AppCardableTable
                 :create="true"
                 :fields="fields"
-                :items="storeSocietyList.items"
+                :items="storeSocietyList.societies"
                 :min="AddForm"
                 :pag="true"
                 :user="roleuser"
