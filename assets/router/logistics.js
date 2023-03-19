@@ -55,7 +55,7 @@ export default [
                     create: false,
                     filter: true,
                     label: 'Famille',
-                    name: 'famille',
+                    name: 'getFamilies',
                     // options: [{text: 'prison', value: 'prison'}, {text: 'production', value: 'production'}, {text: 'réception', value: 'réception'}, {text: 'magasin piéces finies', value: 'magasinPiécesFinies'}, {text: 'expédition', value: 'expédition'}, {text: 'magasin matières premiéres', value: 'magasinMatièresPremiéres'}, {text: 'camion', value: 'camion'}],
                     sort: false,
                     type: 'text',

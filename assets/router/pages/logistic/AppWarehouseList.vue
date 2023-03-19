@@ -7,34 +7,20 @@
     import AppTableJS from '../../../components/table/AppTableJS'
     import Fa from '../../../components/Fa'
     import {useTableMachine} from '../../../machine'
-    import {useWarehouseListItemsStore} from '../../../stores/production/warehouseListItems'
+    import {useWarehouseListItemsStore} from '../../../stores/logistic/warehouses/warehouseListItems'
 
-    defineProps({
+    const props = defineProps({
         fields: {default: () => [], type: Array},
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
-
+    console.debug(props.fields, props.icon, props.title)
     const route = useRoute()
     const router = useRouter()
 
-    const options = [
-        {text: 'MG2C', value: 'MG2C'},
-        {text: 'TCONCEPT', value: 'TCONCEPT'},
-        {text: 'TUNISIE CONCEPT', value: 'TUNISIECONCEPT'},
-        {text: 'WHETEC', value: 'WHETEC'}
-    ]
-    const optionsFamille = [
-        {text: 'prison', value: 'prison'},
-        {text: 'production', value: 'production'},
-        {text: 'camion', value: 'camion'},
-        {text: 'expédition', value: 'expédition'}
-    ]
-
     const formfields = [
-        {label: 'Compagnie ', name: 'compagnie', options: {label: value => options.find(option => option.type === value)?.text ?? null, options}, type: 'select'},
         {label: 'Nom *', name: 'name', type: 'text'},
-        {label: 'Famille ', name: 'famille', options: {label: value => optionsFamille.find(option => option.type === value)?.text ?? null, options: optionsFamille}, type: 'select'}
+        {label: 'Famille ', name: 'getFamilies()', type: 'text'}
     ]
     const emit = defineEmits(['update'])
     async function update(item) {
