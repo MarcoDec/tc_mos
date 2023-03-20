@@ -1,0 +1,176 @@
+{
+  "assets/index.js": {
+    "file": "index.aeeddaf6.js",
+    "src": "assets/index.js",
+    "isEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js"
+    ],
+    "dynamicImports": [
+      "assets/router/pages/component/AppcomponentFormShow.vue",
+      "assets/router/pages/customer/AppCustomerFormShow.vue",
+      "assets/router/pages/employee/AppEmployeeFormShow.vue",
+      "assets/router/pages/equipment/AppWorkstationFormShow.vue",
+      "assets/router/pages/equipment/AppToolFormShow.vue",
+      "assets/router/pages/equipment/AppTestCounterPartFormShow.vue",
+      "_vendor.3c5bca8b.js",
+      "assets/router/pages/hr/event/AppTablePageEventType.vue",
+      "assets/router/pages/hr/AppTablePageOutTrainer.vue",
+      "assets/router/pages/logistics/AppTablePageCarrier.vue",
+      "assets/router/pages/management/AppTablePageColor.js",
+      "assets/router/pages/management/AppCurrencies.vue",
+      "assets/router/pages/management/AppTablePageUnit.vue",
+      "assets/router/pages/product/AppProductFormShow.vue",
+      "assets/router/pages/production/engine/AppTablePageEngineGroup.vue",
+      "assets/router/pages/AppTreePage.vue",
+      "assets/router/pages/supplier/AppSupplierFormShow.vue"
+    ],
+    "css": [
+      "index.2537810e.css"
+    ]
+  },
+  "_vendor.3c5bca8b.js": {
+    "file": "vendor.3c5bca8b.js",
+    "isDynamicEntry": true
+  },
+  "assets/router/pages/component/AppcomponentFormShow.vue": {
+    "file": "AppcomponentFormShow.e696cced.js",
+    "src": "assets/router/pages/component/AppcomponentFormShow.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/customer/AppCustomerFormShow.vue": {
+    "file": "AppCustomerFormShow.50a38f45.js",
+    "src": "assets/router/pages/customer/AppCustomerFormShow.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/employee/AppEmployeeFormShow.vue": {
+    "file": "AppEmployeeFormShow.881f34f5.js",
+    "src": "assets/router/pages/employee/AppEmployeeFormShow.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/equipment/AppWorkstationFormShow.vue": {
+    "file": "AppWorkstationFormShow.73f117a4.js",
+    "src": "assets/router/pages/equipment/AppWorkstationFormShow.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/equipment/AppToolFormShow.vue": {
+    "file": "AppToolFormShow.46cd74b7.js",
+    "src": "assets/router/pages/equipment/AppToolFormShow.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/equipment/AppTestCounterPartFormShow.vue": {
+    "file": "AppTestCounterPartFormShow.0bc7b827.js",
+    "src": "assets/router/pages/equipment/AppTestCounterPartFormShow.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/hr/event/AppTablePageEventType.vue": {
+    "file": "AppTablePageEventType.b9d5f39f.js",
+    "src": "assets/router/pages/hr/event/AppTablePageEventType.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "assets/index.js",
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/hr/AppTablePageOutTrainer.vue": {
+    "file": "AppTablePageOutTrainer.f308a451.js",
+    "src": "assets/router/pages/hr/AppTablePageOutTrainer.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "assets/index.js",
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/logistics/AppTablePageCarrier.vue": {
+    "file": "AppTablePageCarrier.3ccb4005.js",
+    "src": "assets/router/pages/logistics/AppTablePageCarrier.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "assets/index.js",
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/management/AppTablePageColor.js": {
+    "file": "AppTablePageColor.a7b16e92.js",
+    "src": "assets/router/pages/management/AppTablePageColor.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "assets/index.js",
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/management/AppCurrencies.vue": {
+    "file": "AppCurrencies.05a1775d.js",
+    "src": "assets/router/pages/management/AppCurrencies.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js",
+      "assets/index.js"
+    ],
+    "css": [
+      "AppCurrencies.529c8f14.css"
+    ]
+  },
+  "assets/router/pages/management/AppTablePageUnit.vue": {
+    "file": "AppTablePageUnit.f2a2588a.js",
+    "src": "assets/router/pages/management/AppTablePageUnit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "assets/index.js",
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/product/AppProductFormShow.vue": {
+    "file": "AppProductFormShow.3d61777f.js",
+    "src": "assets/router/pages/product/AppProductFormShow.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "assets/index.js",
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/production/engine/AppTablePageEngineGroup.vue": {
+    "file": "AppTablePageEngineGroup.e1be8986.js",
+    "src": "assets/router/pages/production/engine/AppTablePageEngineGroup.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "assets/index.js",
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/AppTreePage.vue": {
+    "file": "AppTreePage.e1ab8631.js",
+    "src": "assets/router/pages/AppTreePage.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "assets/index.js",
+      "_vendor.3c5bca8b.js"
+    ]
+  },
+  "assets/router/pages/supplier/AppSupplierFormShow.vue": {
+    "file": "AppSupplierFormShow.6611023a.js",
+    "src": "assets/router/pages/supplier/AppSupplierFormShow.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor.3c5bca8b.js"
+    ]
+  }
+}
