@@ -89,7 +89,7 @@ services:
     container_name: tconcept_gpao_badgeuse_fr
     build:
       args:
-        VUE_APP_API_URL_BASE: http://localhost:8000
+        VUE_APP_API_URL_BASE: http://localhost:8000/api
         VUE_APP_COMPANY: 1
         VUE_APP_USER: frbad
         VUE_APP_USER_PASSWORD: frbad
@@ -102,7 +102,7 @@ services:
     container_name: tconcept_gpao_badgeuse_tn
     build:
       args:
-        VUE_APP_API_URL_BASE: http://localhost:8000
+        VUE_APP_API_URL_BASE: http://localhost:8000/api
         VUE_APP_COMPANY: 2
         VUE_APP_USER: tnbad
         VUE_APP_USER_PASSWORD: tnbad
@@ -115,7 +115,7 @@ services:
     container_name: tconcept_gpao_badgeuse_md
     build:
       args:
-        VUE_APP_API_URL_BASE: http://localhost:8000
+        VUE_APP_API_URL_BASE: http://localhost:8000/api
         VUE_APP_COMPANY: 3
         VUE_APP_USER: mdbad
         VUE_APP_USER_PASSWORD: mdbad
