@@ -10,12 +10,12 @@
     const roleuser = ref('reader')
 
     const formData = ref({
-        adresse: null, complement: null, name: null, pays: null, ville: null
+        adresse: "aaaaa", complement: null, name: null, pays: null, ville: null
     })
 
     const storeSocietyList = useSocietyListStore()
-    storeSocietyList.fetchItems()
     storeSocietyList.fetch()
+    
 
     const updated = ref(false)
     const AddForm = ref(false)
@@ -30,6 +30,16 @@
             ville: null
         }
         formData.value = itemsNull
+    }
+    function ajoutSociety(formData){
+        const itemsAjoutData = {
+            adresse: null,
+            complement: null,
+            name: null,
+            pays: null,
+            ville: null
+        }
+        console.log('ttttt',formData);
     }
     function annule(){
         AddForm.value = false
@@ -55,6 +65,10 @@
         }
         formData.value = itemsData
     }
+    function deleted(id){
+        storeSocietyList.delated(id)
+        storeSocietyList.fetch()
+    }
 </script>
 
 <template>
@@ -78,7 +92,8 @@
                 :pag="true"
                 :user="roleuser"
                 form="formSocietyCardableTable"
-                @update="update"/>
+                @update="update"
+                @deleted="deleted"/>
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
@@ -91,9 +106,9 @@
                     </h4>
                 </AppRow>
                 <br/>
-                <AppFormCadable id="addSociety" :fields="fields" :model-value="formData" label-cols/>
+                <AppFormCardable id="addSociety" :fields="fields" :model-value="formData" label-cols/>
                 <AppCol class="btnright">
-                    <AppBtn class="btnleft" label="Ajout" variant="success" size="sm">
+                    <AppBtn class="btnleft" label="Ajout" variant="success" size="sm" >
                         <Fa icon="plus"/> Ajouter
                     </AppBtn>
                 </AppCol>
@@ -110,7 +125,7 @@
                     </h4>
                 </AppRow>
                 <br/>
-                <AppFormCadable id="updateSociety" :fields="fields" :model-value="formData"/>
+                <AppFormCardable id="updateSociety" :fields="fields" :model-value="formData"/>
                 <AppCol class="btnright">
                     <AppBtn class="btnleft" label="retour" variant="success" size="sm">
                         <Fa icon="pencil-alt"/> Modifier

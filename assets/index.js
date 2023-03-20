@@ -9,7 +9,7 @@ import AppCol from './components/layout/AppCol'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppForm from './components/form/AppForm.vue'
-import AppFormCadable from './components/form-cardable/AppFormCardable'
+import AppFormCardable from './components/form-cardable/AppFormCardable'
 import AppFormGenerator from './components/form/AppFormGenerator.vue'
 import AppInput from './components/form/field/input/AppInput.vue'
 import AppInputGuesser from './components/form/field/input/AppInputGuesser.vue'
@@ -40,7 +40,7 @@ const app = createApp(App)
     .component('AppCardableTable', AppCardableTable)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppForm', AppForm)
-    .component('AppFormCadable', AppFormCadable)
+    .component('AppFormCardable', AppFormCardable)
     .component('AppFormGenerator', AppFormGenerator)
     .component('AppInput', AppInput)
     .component('AppInputGuesser', AppInputGuesser)

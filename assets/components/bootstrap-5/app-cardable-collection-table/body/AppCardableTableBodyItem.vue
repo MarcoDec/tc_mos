@@ -6,9 +6,12 @@
         fields: {required: true, type: Array},
         items: {required: true, type: Array}
     })
-    const emit = defineEmits(['update'])
+    const emit = defineEmits(['deleted', 'update'])
     function update(item) {
         emit('update', item)
+    }
+    function deleted(id){
+        emit('deleted', id)
     }
 </script>
 
@@ -17,6 +20,6 @@
         <th scope="row">
             {{ index + 1 }}
         </th>
-        <AppCardableTableBody :item="item" :fields="fields" @update="update"/>
+        <AppCardableTableBody :item="item" :fields="fields" @update="update" @deleted="deleted"/>
     </tr>
 </template>

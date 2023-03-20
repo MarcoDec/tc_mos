@@ -1,6 +1,5 @@
 <script setup>
     import {computed, defineEmits, defineProps, ref} from 'vue'
-    import AppCardableTableAddRow from './head/AppCardableTableAddRow.vue'
     import AppCardableTableBodyHeader from './body/AppCardableTableBodyHeader.vue'
     import AppCardableTableBodyItem from './body/AppCardableTableBodyItem.vue'
     import AppCardableTableHeader from './head/AppCardableTableHeader.vue'
@@ -15,31 +14,25 @@
         user: {required: true, type: String}
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
-    const emit = defineEmits(['update'])
+    const emit = defineEmits(['deleted', 'update'])
     function update(item){
         emit('update', item)
     }
-
-    const opened = ref(false)
-
-    function ajout() {
-        opened.value = true
+    function deleted(id){
+        emit('deleted', id)
     }
-    function bascule(){
-        opened.value = false
-    }
+
 </script>
 
 <template>
     <table class="table table-bordered table-hover table-striped">
         <AppCardableTableHeader :fields="displayedFileds"/>
         <tbody>
-            <AppCardableTableBodyHeader v-if="!opened" :form="form" :create="create" :fields="displayedFileds" :user="user" @open="ajout"/>
-            <AppCardableTableAddRow v-else :fields="displayedFileds" @close="bascule"/>
+            <AppCardableTableBodyHeader :form="form" :create="create" :fields="displayedFileds" :user="user"/>
             <tr class="bg-dark">
                 <td colspan="10"/>
             </tr>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" @update="update"/>
+            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">

@@ -1,28 +1,21 @@
 <script setup>
     import {defineEmits, defineProps, ref} from 'vue'
     import AppCardableTableItem from './AppCardableTableItem.vue'
-    import AppCardableTableUpdateItem from './AppCardableTableUpdateItem.vue'
 
     defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object}
     })
 
-    const ajout = ref(false)
-    const emit = defineEmits(['update'])
-
-    function ajoute() {
-        ajout.value = true
-    }
-    function AnnuleAjout() {
-        ajout.value = false
-    }
+    const emit = defineEmits(['deleted', 'update'])
     function update(item){
         emit('update', item)
+    }
+    function deleted(id){
+        emit('deleted', id)
     }
 </script>
 
 <template>
-    <AppCardableTableItem v-if="!ajout" :fields="fields" :item="item" @ajoute="ajoute" @update="update"/>
-    <AppCardableTableUpdateItem v-else :fields="fields" @annule-ajout="AnnuleAjout"/>
+    <AppCardableTableItem  :fields="fields" :item="item"  @update="update" @deleted="deleted" /> 
 </template>

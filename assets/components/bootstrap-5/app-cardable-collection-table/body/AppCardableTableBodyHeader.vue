@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineEmits, defineProps} from 'vue'
+    import {computed, defineProps} from 'vue'
 
     import clone from 'clone'
 
@@ -17,11 +17,7 @@
         }
         return cloned
     }))
-    const emit = defineEmits(['open'])
 
-    function ajout(){
-        emit('open')
-    }
 </script>
 
 <template>
@@ -30,9 +26,6 @@
             <Fa icon="filter"/>
         </th>
         <td>
-            <button v-if="create && user !== 'reader'" class="btngris" @click="ajout">
-                <Fa icon="plus-circle"/>
-            </button>
             <button class="btngris">
                 <Fa icon="search"/>
             </button>

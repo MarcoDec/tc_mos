@@ -5,25 +5,24 @@
         item: {required: true, type: Object}
     })
 
-    const emit = defineEmits(['ajoute', 'update'])
+    const emit = defineEmits(['deleted', 'update'])
 
-    function ajoute(){
-        emit('ajoute')
-    }
+   
     function update(){
         emit('update', props.item)
+    }
+    function deleted(){
+        const id = Number(props.item['@id'].match(/\d+/)[0]);
+        emit('deleted', id)
     }
 </script>
 
 <template>
     <td>
-        <button v-if="item.ajout" class="btn btn-icon btn-primary btn-sm mx-2" @click="ajoute">
-            <Fa icon="pencil-alt"/>
-        </button>
-        <button v-if="item.update" class="btn btn-icon btn-secondary btn-sm mx-2" @click="update">
+        <button  class="btn btn-icon btn-secondary btn-sm mx-2" @click="update">
             <Fa icon="eye"/>
         </button>
-        <button v-if="item.deletable" class="btn btn-danger btn-icon btn-sm mx-2">
+        <button  class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted">
             <Fa icon="trash"/>
         </button>
     </td>
