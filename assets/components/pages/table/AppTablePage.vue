@@ -31,7 +31,6 @@
     onUnmounted(() => {
         store.dispose()
         storedFields.dispose()
-        console.log('store', store) 
     })
 </script>
 

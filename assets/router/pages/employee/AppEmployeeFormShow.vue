@@ -31,25 +31,25 @@
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
-        <AppTab id="gui-start-main" active title="Généralités" icon="pencil">
+        <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
             <AppCardShow id="addGeneralites"/>
         </AppTab>
-        <AppTab id="gui-start-Informations" title="Informations personelles" icon="circle-info">
+        <AppTab id="gui-start-Informations" title="Informations personelles" icon="circle-info" tabs="gui-start">
             <AppCardShow id="addInfo" :fields="Informationsfields"/>
         </AppTab>
-        <AppTab id="gui-start-contacts" title="Contacts" icon="file-contract">
+        <AppTab id="gui-start-contacts" title="Contacts" icon="file-contract" tabs="gui-start">
             <AppCardShow id="addContacts"/>
         </AppTab>
-        <AppTab id="gui-start-droits" title="Droits" icon="clipboard-check">
+        <AppTab id="gui-start-droits" title="Droits" icon="clipboard-check" tabs="gui-start">
             <AppCardShow id="addDroits"/>
         </AppTab>
-        <AppTab id="gui-start-accés" title="Accés" icon="arrow-right-to-bracket">
+        <AppTab id="gui-start-accés" title="Accés" icon="arrow-right-to-bracket" tabs="gui-start">
             <AppCardShow id="addAccés" :fields="Accèsfields"/>
         </AppTab>
-        <AppTab id="gui-start-files" title="Fichiers" icon="laptop">
+        <AppTab id="gui-start-files" title="Fichiers" icon="laptop" tabs="gui-start">
             <AppCardShow id="addFichiers"/>
         </AppTab>
-        <AppTab id="gui-start-production" title="Production" icon="industry">
+        <AppTab id="gui-start-production" title="Production" icon="industry" tabs="gui-start">
             <AppCardShow id="addProduction" :fields="Productionfields"/>
         </AppTab>
     </AppTabs>

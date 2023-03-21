@@ -40,7 +40,9 @@ $dropdown-success: #57ec57 !default;
 .bg-success .dropdown-item {
   background-color: $dropdown-success !important;
 }
-
+.d-flex{
+  flex-direction: column;
+}
 .btn-icon {
   height: 20px;
   line-height: .8;

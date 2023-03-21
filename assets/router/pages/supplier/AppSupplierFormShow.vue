@@ -31,25 +31,25 @@
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
-        <AppTab id="gui-start-main" active title="Généralités" icon="pencil">
+        <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
             <AppCardShow id="addGeneralites" :fields="Géneralitésfields"/>
         </AppTab>
-        <AppTab id="gui-start-files" title="Fichiers" icon="laptop">
+        <AppTab id="gui-start-files" title="Fichiers" icon="laptop" tabs="gui-start">
             <AppCardShow id="addFichiers"/>
         </AppTab>
-        <AppTab id="gui-start-quality" title="Qualité" icon="certificate">
+        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">
             <AppCardShow id="addQualite" :fields="Qualitéfields"/>
         </AppTab>
-        <AppTab id="gui-start-purchase-logistics" title="Achat/Logistique" icon="bag-shopping">
+        <AppTab id="gui-start-purchase-logistics" title="Achat/Logistique" icon="bag-shopping" tabs="gui-start">
             <AppCardShow id="addAchatLogistique" :fields="Achatfields"/>
         </AppTab>
-        <AppTab id="gui-start-accounting" title="Comptabilité" icon="industry">
+        <AppTab id="gui-start-accounting" title="Comptabilité" icon="industry" tabs="gui-start">
             <AppCardShow id="addComptabilite" :fields="Comptabilitéfields"/>
         </AppTab>
-        <AppTab id="gui-start-addresses" title="Adresses" icon="location-dot">
+        <AppTab id="gui-start-addresses" title="Adresses" icon="location-dot" tabs="gui-start">
             <AppCardShow id="addAdresses"/>
         </AppTab>
-        <AppTab id="gui-start-contacts" title="Contacts" icon="file-contract">
+        <AppTab id="gui-start-contacts" title="Contacts" icon="file-contract" tabs="gui-start">
             <AppCardShow id="addContacts"/>
         </AppTab>
     </AppTabs>

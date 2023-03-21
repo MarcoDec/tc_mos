@@ -19,17 +19,17 @@
 </script>
 
 <template>
-    <AppTabs id="gui-start" class="gui-start-content">
-        <AppTab id="gui-start-main" active title="Généralités" icon="pencil">
+    <AppTabs id="gui-start" class="gui-start-content" >
+        <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
             <AppCardShow id="addGeneralites"/>
         </AppTab>
-        <AppTab id="gui-start-quality" title="Qualité" icon="certificate">
+        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">
             <AppCardShow id="addQualite" :fields="Qualitéfields"/>
         </AppTab>
-        <AppTab id="gui-start-purchase-logistics" title="Logistique" icon="pallet">
+        <AppTab id="gui-start-purchase-logistics" title="Logistique" icon="pallet" tabs="gui-start">
             <AppCardShow id="addLogistique"/>
         </AppTab>
-        <AppTab id="gui-start-addresses" title="Adresses\Contacts" icon="file-contract">
+        <AppTab id="gui-start-addresses" title="Adresses\Contacts" icon="file-contract" tabs="gui-start">
             <AppCardShow id="addContacts" :fields="Contactsfields"/>
         </AppTab>
     </AppTabs>
