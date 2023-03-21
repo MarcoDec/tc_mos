@@ -13,6 +13,7 @@ export type BootstrapVariant =
     | 'warning'
     | 'white'
 
+<<<<<<< HEAD
 export type Tabs = {
     name: string
     isActive: boolean
@@ -35,6 +36,25 @@ export type FormField = {
 
 export type FormValues = Record<string, FormValue>
 
+=======
+export type FormField = {
+    label: string
+    name: string
+    type?: FormInput
+}
+
+export type FormInput = 'password' | 'text'
+
+export type FormValue = number | string
+
+export type FormValues = Record<string, FormValue>
+
+export type Tabs = {
+    name: string
+    isActive: boolean
+}
+
+>>>>>>> feature/vue/warehouse
 export type Tab = {
     active: {active: boolean}
     icon: string
@@ -42,4 +62,8 @@ export type Tab = {
     labelledby: string
     target: string
     title: string
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> feature/vue/warehouse

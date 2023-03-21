@@ -11,7 +11,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Filter\NumericFilter;
-use App\Repository\Management\InvoiceTimeDueRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -69,14 +68,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity(repositoryClass: InvoiceTimeDueRepository::class),
+    ORM\Entity,
     UniqueEntity(['days', 'daysAfterEndOfMonth', 'endOfMonth']),
     UniqueEntity('name')
 ]
 class InvoiceTimeDue extends Entity {
     #[
         ApiProperty(description: 'Jours ', example: 30),
-        Assert\Length(min: 0, max: 31),
+        Assert\Range(min: 0, max: 100),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]
@@ -84,7 +83,7 @@ class InvoiceTimeDue extends Entity {
 
     #[
         ApiProperty(description: 'Jours après la fin du mois ', example: 0),
-        Assert\Length(min: 0, max: 31),
+        Assert\Range(min: 0, max: 100),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Serializer\Groups(['read:invoice-time-due', 'write:invoice-time-due'])
     ]

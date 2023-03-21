@@ -4,6 +4,7 @@ import {defineAsyncComponent} from 'vue'
 export * from './card'
 export * from './form'
 export * from './layout'
+<<<<<<< HEAD
 export * from './modal'
 export * from './navbar'
 export * from './tab'
@@ -12,3 +13,10 @@ export const AppAlert = defineAsyncComponent<Component>(async () => import('./Ap
 export const AppBadge = defineAsyncComponent<Component>(async () => import('./AppBadge.vue'))
 export const AppBtn = defineAsyncComponent<Component>(async () => import('./AppBtn.vue'))
 export const AppCardShow = defineAsyncComponent<Component>(async () => import('./AppCardShow.vue'))
+=======
+export * from './navbar'
+export * from './tab'
+export * from './modal'
+
+export const AppBtn = defineAsyncComponent<Component>(async () => import('./AppBtn.vue'))
+>>>>>>> feature/vue/warehouse

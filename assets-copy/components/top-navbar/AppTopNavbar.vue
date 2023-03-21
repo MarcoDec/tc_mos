@@ -22,7 +22,11 @@
         <div v-if="hasUser" class="text-white">
             <Fa icon="user-circle"/>
             {{ name }}
+<<<<<<< HEAD
             <AppBtn variant="danger" @click="handleLogout">
+=======
+            <AppBtn variant="danger" @click="onLogout">
+>>>>>>> feature/vue/warehouse
                 <Fa icon="sign-out-alt"/>
             </AppBtn>
         </div>

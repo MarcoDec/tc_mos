@@ -16,6 +16,7 @@
 </script>
 
 <template>
+<<<<<<< HEAD
     <input
         :id="field.id"
         :class="sizeClass"
@@ -27,4 +28,7 @@
         autocomplete="off"
         class="form-control"
         @input="input"/>
+=======
+    <input :class="sizeClass" :name="field.name" :type="type" :value="value" class="form-control" @input="input"/>
+>>>>>>> feature/vue/warehouse
 </template>

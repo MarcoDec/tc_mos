@@ -1,5 +1,4 @@
 import './app.scss'
-import * as Cookies from './cookie'
 import * as components from './components'
 import {createApp, defineAsyncComponent} from 'vue'
 import App from './routing/App.vue'

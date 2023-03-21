@@ -1,4 +1,4 @@
-import Api from '../../Api'
+import api from '../../api'
 import {defineStore} from 'pinia'
 
 export default function generateItem(iriType, item, root) {
@@ -9,15 +9,13 @@ export default function generateItem(iriType, item, root) {
                 this.$dispose()
             },
             async remove() {
-                await new Api().fetch(this.iri, 'DELETE')
+                await api().fetch(this.iri, 'DELETE')
                 this.root.remove(this['@id'])
                 this.dispose()
             },
             async update(fields, data) {
-                const response = await new Api(fields).fetch(this.iri, 'PATCH', data)
-                if (response.status === 422)
-                    throw response.content.violations
-                this.$state = {iriType: this.iriType, root: this.root, ...response.content}
+                const response = await api(fields).fetch(this.iri, 'PATCH', data)
+                this.$state = {iriType: this.iriType, root: this.root, ...response}
             }
         },
         getters: {

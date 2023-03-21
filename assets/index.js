@@ -1,54 +1,134 @@
-import './app.scss'
-import './fortawesome'
-import App from './App'
-import AppBtn from './components/AppBtn'
-import AppCard from './components/AppCard'
+import './style/app.scss'
+import './style/fontawesome'
+import 'bootstrap'
+import App from './components/App.vue'
+import AppBtn from './components/AppBtn.vue'
+import AppBtnJS from './components/AppBtnJS'
+import AppCard from './components/AppCard.vue'
+import AppCardJS from './components/AppCardJS'
 import AppCardShow from './components/AppCardShow.vue'
-import AppContainer from './components/layout/AppContainer'
-import AppDropdownItem from './components/nav/AppDropdownItem'
-import AppForm from './components/form/AppForm'
-import AppInput from './components/form/field/input/AppInput'
-import AppInputGuesser from './components/form/field/input/AppInputGuesser'
-import AppOverlay from './components/AppOverlay'
+import AppCol from './components/AppCol'
+import AppContainer from './components/AppContainer'
+import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
+import AppDropdownItemJS from './components/nav/dropdown/AppDropdownItemJS'
+import AppForm from './components/form/AppForm.vue'
+import AppFormGenerator from './components/form/AppFormGenerator.vue'
+import AppFormGroup from './components/form/field/AppFormGroup.vue'
+import AppFormGroupJS from './components/form/field/AppFormGroupJS'
+import AppFormJS from './components/form/AppFormJS'
+import AppInput from './components/form/field/input/AppInput.vue'
+import AppInputGuesser from './components/form/field/input/AppInputGuesser.vue'
+import AppInputGuesserJS from './components/form/field/input/AppInputGuesserJS'
+import AppInputJS from './components/form/field/input/AppInputJS'
+import AppLabel from './components/form/field/AppLabel.vue'
+import AppLabelJS from './components/form/field/AppLabelJS'
+import AppModal from './components/modal/AppModal.vue'
+import AppMultiselect from './components/form/field/input/select/AppMultiselect.vue'
+import AppOptions from './components/form/field/input/select/AppOptions.vue'
+import AppOverlayJS from './components/AppOverlayJS'
 import AppPaginationItem from './components/table/pagination/AppPaginationItem'
-import AppRouterLink from './components/nav/AppRouterLink'
+import AppRouterLink from './components/nav/link/AppRouterLink.vue'
+import AppRouterLinkJS from './components/nav/link/AppRouterLinkJS'
+import AppRow from './components/AppRow'
 import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
-import AppTab from './components/tabs/AppTab.vue'
-import AppTableFormField from './components/table/AppTableFormField'
-import AppTableHeaderForm from './components/table/head/AppTableHeaderForm'
-import AppTableItemField from './components/table/body/AppTableItemField.vue'
-import AppTabs from './components/tabs/AppTabs.vue'
-import AppTreeLabel from './components/tree/AppTreeLabel'
+import AppSuspense from './components/AppSuspense.vue'
+import AppTab from './components/tab/AppTab.vue'
+import AppTable from './components/table/AppTable.vue'
+import AppTableAdd from './components/table/head/AppTableAdd.vue'
+import AppTableAddJS from './components/table/head/AppTableAddJS'
+import AppTableFields from './components/table/head/field/AppTableFields.vue'
+import AppTableFieldsJS from './components/table/head/field/AppTableFieldsJS'
+import AppTableFormField from './components/table/AppTableFormField.vue'
+import AppTableFormFieldJS from './components/table/AppTableFormFieldJS'
+import AppTableHeaderForm from './components/table/head/AppTableHeaderForm.vue'
+import AppTableHeaderFormJS from './components/table/head/AppTableHeaderFormJS'
+import AppTableHeaders from './components/table/head/AppTableHeaders.vue'
+import AppTableHeadersJS from './components/table/head/AppTableHeadersJS'
+import AppTableItem from './components/table/body/AppTableItem.vue'
+import AppTableItemField from './components/table/body/read/AppTableItemField.vue'
+import AppTableItemJS from './components/table/body/AppTableItemJS'
+import AppTableItemUpdate from './components/table/body/update/AppTableItemUpdate.vue'
+import AppTableItemUpdateField from './components/table/body/update/AppTableItemUpdateField.vue'
+import AppTableItemUpdateFieldJS from './components/table/body/update/AppTableItemUpdateFieldJS'
+import AppTableItemUpdateJS from './components/table/body/update/AppTableItemUpdateJS'
+import AppTableItems from './components/table/body/AppTableItems.vue'
+import AppTableItemsJS from './components/table/body/AppTableItemsJS'
+import AppTableJS from './components/table/AppTableJS'
+import AppTablePage from './components/pages/table/AppTablePage.vue'
+import AppTableSearch from './components/table/head/AppTableSearch.vue'
+import AppTableSearchJS from './components/table/head/AppTableSearchJS'
+import AppTabs from './components/tab/AppTabs.vue'
+import AppTreeForm from './components/tree/card/form/AppTreeForm.vue'
+import AppTreeLabel from './components/tree/node/AppTreeLabel.vue'
+import AppTreeNodes from './components/tree/node/AppTreeNodes.vue'
+import AppTreePage from './components/pages/tree/AppTreePage.vue'
 import Fa from './components/Fa'
 import {createApp} from 'vue'
-import {createPinia} from 'pinia'
+import pinia from './stores'
 import router from './router'
-import useUserStore from './stores/hr/employee/user'
+import useUser from './stores/security'
 
 const app = createApp(App)
     .component('AppBtn', AppBtn)
+    .component('AppBtnJS', AppBtnJS)
     .component('AppCard', AppCard)
+    .component('AppCardJS', AppCardJS)
     .component('AppCardShow', AppCardShow)
     .component('AppContainer', AppContainer)
-    .component('AppDropdownItem', AppDropdownItem)
-    .component('AppForm', AppForm)
-    .component('AppInput', AppInput)
-    .component('AppInputGuesser', AppInputGuesser)
-    .component('AppOverlay', AppOverlay)
-    .component('AppPaginationItem', AppPaginationItem)
-    .component('AppRouterLink', AppRouterLink)
+    .component('AppCol', AppCol)
+    .component('AppRow', AppRow)
     .component('AppShowGuiCard', AppShowGuiCard)
+    .component('AppDropdownItem', AppDropdownItem)
+    .component('AppDropdownItemJS', AppDropdownItemJS)
+    .component('AppForm', AppForm)
+    .component('AppFormJS', AppFormJS)
+    .component('AppFormGenerator', AppFormGenerator)
+    .component('AppFormGroup', AppFormGroup)
+    .component('AppFormGroupJS', AppFormGroupJS)
+    .component('AppInput', AppInput)
+    .component('AppInputJS', AppInputJS)
+    .component('AppInputGuesser', AppInputGuesser)
+    .component('AppInputGuesserJS', AppInputGuesserJS)
+    .component('AppLabel', AppLabel)
+    .component('AppLabelJS', AppLabelJS)
+    .component('AppModal', AppModal)
+    .component('AppMultiselect', AppMultiselect)
+    .component('AppOverlay', AppOverlayJS)
+    .component('AppPaginationItem', AppPaginationItem)
+    .component('AppOptions', AppOptions)
+    .component('AppRouterLink', AppRouterLink)
+    .component('AppRouterLinkJS', AppRouterLinkJS)
+    .component('AppSuspense', AppSuspense)
     .component('AppTab', AppTab)
     .component('AppTableFormField', AppTableFormField)
+    .component('AppTableFormFieldJS', AppTableFormFieldJS)
+    .component('AppTableHeaders', AppTableHeaders)
+    .component('AppTableHeadersJS', AppTableHeadersJS)
     .component('AppTableHeaderForm', AppTableHeaderForm)
+    .component('AppTableHeaderFormJS', AppTableHeaderFormJS)
+    .component('AppTableItem', AppTableItem)
     .component('AppTableItemField', AppTableItemField)
+    .component('AppTableItemJS', AppTableItemJS)
+    .component('AppTableItemUpdate', AppTableItemUpdate)
+    .component('AppTableItemUpdateJS', AppTableItemUpdateJS)
+    .component('AppTableItems', AppTableItems)
+    .component('AppTableItemsJS', AppTableItemsJS)
+    .component('AppTableItemUpdateField', AppTableItemUpdateField)
+    .component('AppTableItemUpdateFieldJS', AppTableItemUpdateFieldJS)
+    .component('AppTable', AppTable)
+    .component('AppTableAdd', AppTableAdd)
+    .component('AppTableAddJS', AppTableAddJS)
+    .component('AppTableFields', AppTableFields)
+    .component('AppTableFieldsJS', AppTableFieldsJS)
+    .component('AppTableJS', AppTableJS)
+    .component('AppTablePage', AppTablePage)
+    .component('AppTableSearch', AppTableSearch)
+    .component('AppTableSearchJS', AppTableSearchJS)
     .component('AppTabs', AppTabs)
+    .component('AppTreeForm', AppTreeForm)
     .component('AppTreeLabel', AppTreeLabel)
+    .component('AppTreeNodes', AppTreeNodes)
+    .component('AppTreePage', AppTreePage)
     .component('Fa', Fa)
-    .use(createPinia())
-
-async function fetchUser() {
-    await useUserStore().fetch()
-}
-
-fetchUser().then(() => app.use(router).mount('#vue'))
+    .use(pinia)
+useUser().fetch().then(() => app.use(router).mount('#vue'))
