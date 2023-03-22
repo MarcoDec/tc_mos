@@ -1,15 +1,21 @@
 {
-  "isProd": false,
-  "viteServer": {
-    "origin": "http://0.0.0.0:8002",
-    "base": "/build/"
-  },
+  "isProd": true,
+  "viteServer": false,
   "entryPoints": {
     "index": {
       "js": [
-        "http://0.0.0.0:8002/build/assets/index.js"
+        "/build/index.a2e82d31.js"
+      ],
+      "css": [
+        "/build/index.82f6cac3.css"
+      ],
+      "preload": [
+        "/build/fontawesome.a48c4a4d.js"
       ]
     }
   },
-  "assets": null
+  "assets": {
+    "assets/router/pages/logistic/AppWarehouseList.css": "/build/AppWarehouseList.56f23926.css",
+    "assets/index.css": "/build/index.82f6cac3.css"
+  }
 }

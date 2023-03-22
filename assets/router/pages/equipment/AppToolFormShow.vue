@@ -19,7 +19,7 @@
 </script>
 
 <template>
-    <AppTabs id="gui-start" class="gui-start-content" >
+    <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
             <AppCardShow id="addGeneralites"/>
         </AppTab>
