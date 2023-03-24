@@ -33,7 +33,7 @@ class Address {
         ),
         Assert\Length(min: 10, max: 160),
         ORM\Column(length: 160, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['read:address', 'write:address','read:society:collection'])
     ]
     private ?string $address = null;
 
@@ -45,7 +45,7 @@ class Address {
         ),
         Assert\Length(min: 2, max: 110),
         ORM\Column(length: 110, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['read:address', 'write:address','read:society:collection'])
     ]
     private ?string $address2 = null;
 
@@ -57,7 +57,7 @@ class Address {
         ),
         Assert\Length(min: 3, max: 50),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['read:address', 'write:address','read:society:collection'])
     ]
     private ?string $city = null;
 
@@ -70,7 +70,7 @@ class Address {
         Assert\Country,
         Assert\Length(exactly: 2),
         ORM\Column(type: 'char', length: 2, nullable: true),
-        Serializer\Groups(['read:address', 'write:address'])
+        Serializer\Groups(['read:address', 'write:address','read:society:collection'])
     ]
     private ?string $country = null;
 
