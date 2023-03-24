@@ -11,10 +11,7 @@
     function labelValue(thevalue) {
         if (props.field.type === 'select') {
             const res = props.field.options.options.find(e => e.value === thevalue.value)
-            if (typeof res === 'undefined') {
-                console.debug('AppTableItemField.vue res undefined', props.field, thevalue.value)
-                return thevalue.value
-            }
+            if (typeof res === 'undefined') return thevalue.value
             return res.text
         }
         //TODO: gérer Multiselect et measures

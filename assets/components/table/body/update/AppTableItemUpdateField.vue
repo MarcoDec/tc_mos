@@ -1,4 +1,6 @@
 <script setup>
+    import AppTableFormField from './../../AppTableFormField.vue'
+    import AppTableItemField from './../read/AppTableItemField.vue'
     defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},

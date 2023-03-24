@@ -17,7 +17,7 @@ function AppTableHeaderFormJS(props, context) {
                 variant: props.submitVariant
             })
             : h(
-                resolveComponent('AppForm'),
+                resolveComponent('AppFormJS'),
                 {
                     fields: props.fields,
                     id: formId,
@@ -30,7 +30,7 @@ function AppTableHeaderFormJS(props, context) {
                     },
                     submitLabel: props.label
                 },
-                ({disabled, form, submitLabel, type}) => h(resolveComponent('AppBtn'), {
+                ({disabled, form, submitLabel, type}) => h(resolveComponent('AppBtnJS'), {
                     disabled,
                     form,
                     icon: props.icon,
@@ -45,7 +45,7 @@ function AppTableHeaderFormJS(props, context) {
     const children = [
         h('td', [
             h(resolveComponent('Fa'), {icon: props.icon}),
-            h(resolveComponent('AppBtn'), {
+            h(resolveComponent('AppBtnJS'), {
                 icon: props.reverseIcon,
                 onClick: () => props.machine.send(props.reverseMode),
                 title: `Basculer en mode ${props.reverseLabel}`,

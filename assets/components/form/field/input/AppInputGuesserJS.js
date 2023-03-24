@@ -1,7 +1,8 @@
 import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
-import AppInputNumber from './AppInputNumber'
-import AppSelect from './select/AppSelect'
+import AppInputNumberJS from './AppInputNumberJS'
+import AppMultiselect from './select/AppMultiselect.vue'
+import AppSelectJS from './select/AppSelectJS'
 import AppSwitch from './AppSwitch.vue'
 import {generateField} from '../../../props'
 
@@ -12,11 +13,13 @@ function getType(field) {
     case 'file':
         return AppInputFile
     case 'number':
-        return AppInputNumber
+        return AppInputNumberJS
     case 'select':
-        return AppSelect
+        return AppSelectJS
+    case 'multiselect':
+        return AppMultiselect
     default:
-        return resolveComponent('AppInput')
+        return resolveComponent('AppInputJS')
     }
 }
 

@@ -2,7 +2,7 @@ import AppOption from './AppOption'
 import {generateField} from '../../../../props'
 import {h} from 'vue'
 
-function AppSelect(props, context) {
+function AppSelectJS(props, context) {
     return h(
         'select',
         {
@@ -18,8 +18,8 @@ function AppSelect(props, context) {
     )
 }
 
-AppSelect.emits = ['update:modelValue']
-AppSelect.props = {
+AppSelectJS.emits = ['update:modelValue']
+AppSelectJS.props = {
     disabled: {type: Boolean},
     field: generateField(),
     form: {required: true, type: String},
@@ -27,4 +27,4 @@ AppSelect.props = {
     modelValue: {}
 }
 
-export default AppSelect
+export default AppSelectJS
