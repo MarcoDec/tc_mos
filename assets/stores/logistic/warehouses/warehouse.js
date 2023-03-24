@@ -10,15 +10,16 @@ export default function generateWarehouse(warehouse) {
             },
             async remove() {
                 await api(`/api/warehouses/${this.id}`, 'DELETE')
+                //this.warehouse.delete = true
             }
         },
         getters: {
             getFamilies: state => state.families.toString(),
             row: state => ({
                 delete: false,
-                famille: state.family,
+                famille: state.warehouse.family,
                 id: 1,
-                name: state.name,
+                name: state.warehouse.name,
                 update: false,
                 update2: true
             })
@@ -26,3 +27,25 @@ export default function generateWarehouse(warehouse) {
         state: () => ({...warehouse})
     })()
 }
+
+// export default function generateWarehouse(warehouse) {
+//     return defineStore(`warehouse/${warehouse.id}`, () => {
+//         const state = ref({...warehouse})
+//         console.debug('state', state.value)
+//         function setDelete() {
+//             state.value['delete'] = true
+//         }
+//         async function remove() {
+//             if (state.value['delete']) {
+//                 window.alert(`Element déjà supprimé\n${state.value.toString()}`)
+//             } else {
+//                 await api(`/api/warehouses/${state.value.id}`, 'DELETE')
+//                 setDelete()
+//             }
+//         }
+//         function getFamilies() {
+//             return state.value.families.toString()
+//         }
+//         return {getFamilies, remove, state}
+//     })
+// }

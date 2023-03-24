@@ -5,7 +5,7 @@ function AppTableItemJS(props, context) {
     return h('tr', {id: props.id}, [
         h('td', {class: 'text-center'}, props.index + 1),
         h('td', {class: 'text-center'}, [
-            h(resolveComponent('AppBtn'), {
+            h(resolveComponent('AppBtnJS'), {
                 icon: 'pencil-alt',
                 label: 'Modifier',
                 onClick: () => props.machine.send('update', {updated: props.item['@id']}),
@@ -19,6 +19,8 @@ function AppTableItemJS(props, context) {
                     props.machine.send('submit')
                     await props.item.remove()
                     props.machine.send('success')
+                    const deletionEvent = new Event('deletion')
+                    document.dispatchEvent(deletionEvent)
                 },
                 title: 'Supprimer',
                 variant: 'danger'
