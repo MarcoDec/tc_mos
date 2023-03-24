@@ -6,20 +6,28 @@
 
     const props = defineProps({
         create: {type: Boolean},
+        currentPage:{required: true, type: String},
         fields: {required: true, type: Array},
+        firstPage:{required: true, type: String},
         form: {required: true, type: String},
         items: {required: true, type: Array},
+        lastPage:{required: true, type: String},
         min: {type: Boolean},
+        nextPage:{required: true, type: String},
         pag: {type: Boolean},
+        previousPage:{required: true, type: String},
         user: {required: true, type: String}
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
-    const emit = defineEmits(['deleted', 'update'])
+    const emit = defineEmits(['deleted', 'getPage', 'update'])
     function update(item){
         emit('update', item)
     }
     function deleted(id){
         emit('deleted', id)
+    }
+    function getPage(nPage){
+        emit('getPage', nPage)
     }
 
 </script>
@@ -38,25 +46,19 @@
     <nav v-if="pag" aria-label="Page navigation example">
         <ul class="pagination">
             <li class="page-item">
-                <a class="page-link" href="#">Début</a>
+                <a class="page-link" href="#" @click.prevent="getPage(firstPage)">Début</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="#">Préc.</a>
+                <a class="page-link" href="#" @click.prevent="getPage(previousPage)">Préc.</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="#">1</a>
+                <a class="page-link" href="#" @click.prevent="getPage(currentPage)">{{ currentPage }}</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="#">2</a>
+                <a class="page-link" href="#" @click.prevent="getPage(nextPage)">Suiv.</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Suiv.</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Fin</a>
+                <a class="page-link" href="#" @click.prevent="getPage(lastPage)">Fin</a>
             </li>
         </ul>
     </nav>
