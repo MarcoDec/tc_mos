@@ -2,12 +2,14 @@
     import AppCardShow from '../../../components/AppCardShow.vue'
     import AppTab from '../../../components/tab/AppTab.vue'
     import AppTabs from '../../../components/tab/AppTabs.vue'
+
     const options = [
         {text: 'aaaaa', value: 'aaaaa'},
         {text: 'bbbb', value: 'bbbb'}
     ]
+
     const Attributfields = [
-        {label: 'Couleur', name: 'couleur', type: 'text'},
+        {label: 'Couleur', name: 'color', type: 'text'},
         {label: 'T° maxi (°C)', name: 'temperatureMaxi', type: 'number'},
         {label: 'Nombre des brins', name: 'NombreBrins', type: 'number'},
         {label: 'Voltage (V)', name: 'Voltage', type: 'text'},
@@ -61,22 +63,47 @@
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
-        <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
+        <AppTab
+            id="gui-start-main"
+            active
+            title="Généralités"
+            icon="pencil"
+            tabs="gui-start">
             <AppCardShow id="addGeneralites"/>
         </AppTab>
-        <AppTab id="gui-start-attribut" title="Attribut" icon="sitemap" tabs="gui-start">
+        <AppTab
+            id="gui-start-attribut"
+            title="Attribut"
+            icon="sitemap"
+            tabs="gui-start">
             <AppCardShow id="addAttribut" :fields="Attributfields"/>
         </AppTab>
-        <AppTab id="gui-start-files" title="Fichiers" icon="laptop" tabs="gui-start">
+        <AppTab
+            id="gui-start-files"
+            title="Fichiers"
+            icon="laptop"
+            tabs="gui-start">
             <AppCardShow id="addFichiers"/>
         </AppTab>
-        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">
+        <AppTab
+            id="gui-start-quality"
+            title="Qualité"
+            icon="certificate"
+            tabs="gui-start">
             <AppCardShow id="addQualite" :fields="Qualitéfields"/>
         </AppTab>
-        <AppTab id="gui-start-achat" title="Achat" icon="bag-shopping" tabs="gui-start">
+        <AppTab
+            id="gui-start-achat"
+            title="Achat"
+            icon="bag-shopping"
+            tabs="gui-start">
             <AppCardShow id="addAchat" :fields="Achatfields"/>
         </AppTab>
-        <AppTab id="gui-start-logistics" title="Logistique" icon="pallet" tabs="gui-start">
+        <AppTab
+            id="gui-start-logistics"
+            title="Logistique"
+            icon="pallet"
+            tabs="gui-start">
             <AppCardShow id="addLogistique" :fields="Logistiquefields"/>
         </AppTab>
         <AppTab

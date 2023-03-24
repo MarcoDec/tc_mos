@@ -17,6 +17,7 @@
         title: {required: true, type: String}
     })
     const route = useRoute()
+    console.log('route', route.name)
     const machine = useTableMachine(route.name)
     const {slots} = useSlots(props.fields)
 
