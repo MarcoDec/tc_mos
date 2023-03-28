@@ -2,7 +2,22 @@
     import AppCardShow from '../../../components/AppCardShow.vue'
     import AppTab from '../../../components/tab/AppTab.vue'
     import AppTabs from '../../../components/tab/AppTabs.vue'
+    import {useComponentListStore} from '../../../stores/component/component'
+    import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
 
+    const useComponentStore = useComponentShowStore()
+    const fetchComp = useComponentListStore()
+    useComponentStore.fetch()
+    fetchComp.fetch()
+    // const data = {
+    //     color: '/api/colors/2',
+    //     measure: {
+    //         code: 'U',
+    //         value: 1
+    //     },
+    //     value: 'string'
+    // }
+    // useComponentStore.update(data)
     const options = [
         {text: 'aaaaa', value: 'aaaaa'},
         {text: 'bbbb', value: 'bbbb'}
@@ -76,7 +91,7 @@
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">
-            <AppCardShow id="addAttribut" :fields="Attributfields"/>
+            <AppCardShow v-for="item in useComponentStore.componentAttribute" :key="item" id="addAttribut" :fields="Attributfields" :component-attribute="item"/>
         </AppTab>
         <AppTab
             id="gui-start-files"

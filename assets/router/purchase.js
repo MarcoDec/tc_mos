@@ -59,5 +59,35 @@ export default [
         meta: {container: false, title: 'Fournisseur — T-Concept GPAO'},
         name: 'supplier',
         path: '/supplier'
+    },
+    {
+        component: AppShowGui,
+        meta: {container: false, title: 'Production — T-Concept GPAO'},
+        name: 'product',
+        path: '/product'
+    },
+    {
+        component: AppShowGui,
+        meta: {container: false, title: 'Composant — T-Concept GPAO'},
+        name: 'component',
+        path: '/component'
+    },
+    {
+        component: AppShowGui,
+        meta: {container: false, title: 'Customer — T-Concept GPAO'},
+        name: 'customer',
+        path: '/customer'
+    },
+    {
+        component: AppShowGui,
+        meta: {container: false, title: 'Employee — T-Concept GPAO'},
+        name: 'employee',
+        path: '/employee'
+    },
+    {
+        component: AppShowGui,
+        meta: {container: false, title: 'Equipement — T-Concept GPAO'},
+        name: 'equipment',
+        path: '/equipment'
     }
 ]

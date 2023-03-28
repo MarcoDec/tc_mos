@@ -1,11 +1,20 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import {useRoute, useRouter} from 'vue-router'
+     import AppComponentFormShow from '../../router/pages/component/AppComponentFormShow.vue'
+    import AppCustomerFormShow from '../../router/pages/customer/AppCustomerFormShow.vue'
+    import AppEmployeeFormShow from '../../router/pages/employee/AppEmployeeFormShow.vue'
+    import AppProductFormShow from '../../router/pages/product/AppProductFormShow.vue'
+    import AppSupplierFormShow from '../../router/pages/supplier/AppSupplierFormShow.vue'
+    import AppToolFormShow from '../../router/pages/equipment/AppToolFormShow.vue'
     import AppTab from '../tab/AppTab.vue'
     import AppTabs from '../tab/AppTabs.vue'
 
+   
     const guiRatio = ref(0.5)
     const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
 
+    const route = useRoute()
     function resize(e) {
         const gui = e.target.parentElement.parentElement
         const height = gui.offsetHeight
@@ -31,7 +40,13 @@
     <div class="gui">
         <div class="gui-left">
             <div class="gui-card">
-                <AppTabs id="gui-left">
+                <AppComponentFormShow v-if="route.name === 'component'"/>
+                <AppCustomerFormShow v-if="route.name === 'customer'"/>
+                <AppEmployeeFormShow v-if="route.name === 'employee'"/>
+                <AppToolFormShow v-if="route.name === 'equipment'"/>
+                <AppProductFormShow v-if="route.name === 'product'"/>
+                <AppSupplierFormShow v-if="route.name === 'supplier'"/>
+                <!-- <AppTabs id="gui-left">
                     <AppTab id="gui-left-main" active icon="bars" tabs="gui-left" title="Généralités"/>
                     <AppTab id="gui-left-files" icon="folder" tabs="gui-left" title="Fichiers"/>
                     <AppTab id="gui-left-quality" icon="certificate" tabs="gui-left" title="Qualité"/>
@@ -39,7 +54,7 @@
                     <AppTab id="gui-left-accounting" icon="file-invoice-dollar" tabs="gui-left" title="Comptabilité"/>
                     <AppTab id="gui-left-addresses" icon="map-marked-alt" tabs="gui-left" title="Adresses"/>
                     <AppTab id="gui-left-contacts" icon="address-card" tabs="gui-left" title="Contacts"/>
-                </AppTabs>
+                </AppTabs> -->
             </div>
         </div>
         <div class="gui-right">

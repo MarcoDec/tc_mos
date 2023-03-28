@@ -5,7 +5,9 @@
 
     defineProps({
         fields: {default: () => [], type: Array},
+        componentAttribute: {default: () => [], type: Array},
         id: {required: true, type: String}
+
     })
     const updated = ref(false)
     const disable = ref(true)
@@ -32,10 +34,10 @@
             </div>
         </div>
         <ul v-if="disable" class="card-body">
-            <AppFormJS :id="id" :fields="fields" disabled/>
+            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
         </ul>
         <ul v-else class="card-body">
-            <AppFormJS :id="id" :fields="fields"/>
+            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute"/>
         </ul>
     </div>
 </template>
