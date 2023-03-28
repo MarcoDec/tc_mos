@@ -42,7 +42,8 @@ AppTableItemJS.props = {
     id: {required: true, type: String},
     index: {required: true, type: Number},
     item: {required: true, type: Object},
-    machine: {required: true, type: Object}
+    machine: {required: true, type: Object},
+    options: {default: {delete: true, modify: true, show: false}, required: false, type: Object}
 }
 
 export default AppTableItemJS

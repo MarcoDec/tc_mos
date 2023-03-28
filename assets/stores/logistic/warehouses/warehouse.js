@@ -10,16 +10,15 @@ export default function generateWarehouse(warehouse) {
             },
             async remove() {
                 await api(`/api/warehouses/${this.id}`, 'DELETE')
-                //this.warehouse.delete = true
             }
         },
         getters: {
             getFamilies: state => state.families.toString(),
             row: state => ({
                 delete: false,
-                famille: state.warehouse.family,
+                families: state.families,
                 id: 1,
-                name: state.warehouse.name,
+                name: state.name,
                 update: false,
                 update2: true
             })

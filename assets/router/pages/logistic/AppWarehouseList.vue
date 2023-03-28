@@ -1,11 +1,10 @@
 <script setup>
-    //import {defineEmits, defineProps} from 'vue'
     import {onMounted, onUnmounted} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
     import AppBtnJS from '../../../components/AppBtnJS'
     import AppFormJS from '../../../components/form/AppFormJS'
     import AppModal from '../../../components/modal/AppModal.vue'
-    import AppTableJS from '../../../components/table/AppTableJS'
+    import AppTableJSinVue from '../../../components/table/AppTableJSinVue.vue'
     import Fa from '../../../components/Fa'
     import api from '../../../api'
     import {useTableMachine} from '../../../machine'
@@ -23,7 +22,7 @@
     }
 
     onMounted(() => {
-        document.addEventListener('deletion',refreshStore)
+        document.addEventListener('deletion', refreshStore)
     })
 
     onUnmounted(() => {
@@ -31,8 +30,14 @@
     })
 
     const route = useRoute()
+    console.debug('route', route)
     const router = useRouter()
-
+    const options = {
+        delete: true,
+        modify: false,
+        show: true
+    }
+    console.debug('options AppWarehouseList', options)
     const addFormName = 'addEntrepots'
     const formfields = [
         {label: 'Nom *', name: 'name', type: 'text'},
@@ -89,7 +94,6 @@
         }
     ]
     let selectedFamilies = []
-
 
     async function createNewWarehouse() {
         const form = document.getElementById(addFormName)
@@ -148,8 +152,14 @@
             </AppBtnJS>
         </template>
     </AppModal>
-    <AppTableJS
-        :id="route.name" :fields="fields" :store="storeWarehouseListItems" :machine="machine" @update="update" @deletion="deletion"/>
+    <AppTableJSinVue
+        :id="route.name"
+        :fields="fields"
+        :store="storeWarehouseListItems"
+        :machine="machine"
+        :options="options"
+        @update="update"
+        @deletion="deletion"/>
 </template>
 
 <style scoped>

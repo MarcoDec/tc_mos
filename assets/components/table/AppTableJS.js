@@ -36,7 +36,7 @@ function AppTableJS(props, context) {
                 ),
                 h(
                     AppTableItemsJS,
-                    {fields: props.fields, id: `${props.id}-items`, items: props.store[props.items], machine: props.machine},
+                    {fields: props.fields, id: `${props.id}-items`, items: props.store[props.items], machine: props.machine, options: props.options},
                     cellSlots
                 )
             ])
@@ -64,6 +64,7 @@ AppTableJS.props = {
     id: {required: true, type: String},
     items: {default: 'items', type: String},
     machine: {required: true, type: Object},
+    options: {default: () => ({delete: true, modify: false, show: true}), required: false, type: Object},
     store: {required: true, type: Object}
 }
 
