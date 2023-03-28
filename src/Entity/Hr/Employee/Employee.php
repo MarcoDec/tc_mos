@@ -18,6 +18,7 @@ use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
+use App\Entity\Hr\Employee\Attachment\EmployeeAttachment;
 use App\Entity\Hr\TimeClock\Clocking;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
@@ -39,7 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: NumericFilter::class, properties: ['id']),
     ApiFilter(
         filterClass: SearchFilter::class,
-        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial']
+        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial', 'company'=>'exact']
     ),
     ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
     ApiResource(
@@ -149,7 +150,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:address', 'read:employee', 'read:id', 'read:state'],
             'openapi_definition_name' => 'Employee-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: EmployeeRepository::class)
 ]
@@ -166,6 +168,12 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     /** @var Collection<int, Token> */
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Token::class)]
     private Collection $apiTokens;
+
+   /**
+    * @var Collection<int,EmployeeAttachment>
+    */
+   #[ORM\OneToMany(mappedBy: 'employee', targetEntity: EmployeeAttachment::class)]
+   private Collection $attachments;
 
     #[
         ApiProperty(description: 'Ville de naissance', example: 'Nancy'),
@@ -189,7 +197,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:employee', 'read:user'])
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
     ]
     private ?Company $company = null;
 
@@ -247,7 +255,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation'])
     ]
     private ?string $name = null;
 
@@ -289,7 +297,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Nom', example: 'Roosevelt'),
         ORM\Column,
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation'])
     ]
     private ?string $surname = null;
 
@@ -317,7 +325,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'read:manufacturing-operation'])
     ]
     private ?string $username = null;
 
@@ -325,6 +333,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->apiTokens = new ArrayCollection();
         $this->embBlocker = new Blocker();
         $this->embRoles = new Roles();
+       $this->attachments = new ArrayCollection();
         $this->embState = new EmployeeEngineState();
     }
 
@@ -335,6 +344,16 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     final public function addApiToken(Token $apiToken): self {
         if (!$this->apiTokens->contains($apiToken)) {
             $this->apiTokens->add($apiToken);
+        }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function addAttachment(EmployeeAttachment $attachment): self {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
         }
         return $this;
     }
@@ -362,6 +381,13 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     final public function getApiTokens(): Collection {
         return $this->apiTokens;
     }
+
+   /**
+    * @return Collection<int,EmployeeAttachment>
+    */
+   public function getAttachments(): Collection {
+      return $this->attachments;
+   }
 
     final public function getBirthCity(): ?string {
         return $this->birthCity;
@@ -532,6 +558,14 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->address = $address;
         return $this;
     }
+
+   /**
+    * @param Collection<int,EmployeeAttachment> $attachments
+    * @return void
+    */
+   public function setAttachments(Collection $attachments): void {
+      $this->attachments = $attachments;
+   }
 
     final public function setBirthCity(?string $birthCity): self {
         $this->birthCity = $birthCity;

@@ -12,6 +12,7 @@ use App\Entity\Entity;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
+use App\Entity\Purchase\Order\Attachment\PurchaseOrderAttachment;
 use App\Entity\Purchase\Supplier\Contact;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Selling\Order\Order as SellingOrder;
@@ -125,6 +126,11 @@ class Order extends Entity {
         Serializer\Groups(['read:order', 'write:order'])
     ]
     private ?Company $deliveryCompany = null;
+
+    #[
+       ORM\OneToMany(mappedBy: 'order',targetEntity: PurchaseOrderAttachment::class)
+       ]
+    private Collection $deliveryForms;
 
     #[
         ORM\Embedded,

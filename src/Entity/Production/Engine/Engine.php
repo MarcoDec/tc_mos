@@ -14,6 +14,7 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Production\Company\Zone;
+use App\Entity\Production\Engine\Attachment\EngineAttachment;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
 use App\Entity\Production\Engine\Manufacturer\Engine as ManufacturerEngine;
 use App\Entity\Production\Engine\Tool\Tool;
@@ -22,6 +23,7 @@ use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 //use App\Filter\SetFilter;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -115,17 +117,20 @@ abstract class Engine extends Entity implements BarCodeInterface {
         EngineType::TYPE_WORKSTATION => Workstation::class
     ];
 
+    #[ORM\OneToMany(mappedBy: 'engine', targetEntity: EngineAttachment::class)]
+    private Collection $attachments;
+
     #[
         ApiProperty(description: 'Marque', example: 'Apple'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?string $brand = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'MA-1'),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?string $code = null;
 
@@ -144,14 +149,14 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
         ORM\Column,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Zone', readableLink: false, example: '/api/zones/1'),
+        ApiProperty(description: 'Zone'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?Zone $zone = null;
 
@@ -314,4 +319,22 @@ abstract class Engine extends Entity implements BarCodeInterface {
         $this->zone = $zone;
         return $this;
     }
+
+   /**
+    * @return Collection
+    */
+   public function getAttachments(): Collection
+   {
+      return $this->attachments;
+   }
+
+   /**
+    * @param Collection $attachments
+    */
+   public function setAttachments(Collection $attachments): void
+   {
+      $this->attachments = $attachments;
+   }
+
+
 }
