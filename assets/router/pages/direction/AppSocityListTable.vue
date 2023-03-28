@@ -18,7 +18,7 @@
 
     const updated = ref(false)
     const AddForm = ref(false)
-    let itemId = ''
+    //let itemId = ''
     function ajoute(){
         AddForm.value = true
         updated.value = false
@@ -61,7 +61,7 @@
     function update(item) {
         updated.value = true
         AddForm.value = true
-        itemId = Number(item['@id'].match(/\d+/)[0])
+        //itemId = Number(item['@id'].match(/\d+/)[0])
         const itemsData = {
             adresse: item.adresse,
             complement: item.complement,
@@ -72,25 +72,25 @@
         formData.value = itemsData
     }
     function updateSociety(){
-        console.log('itemId', itemId)
-        const form = document.getElementById('updateSociety')
-        const formData2 = new FormData(form)
-        const itemsUpdateData = {
-            address: {
-                address: formData2.get('adresse'),
-                address2: formData2.get('complement'),
-                city: formData2.get('ville'),
-                country: formData2.get('pays')
-            },
-            name: formData2.get('name')
-        }
-        console.log('itemsUpdateData', itemsUpdateData)
+        //console.log('itemId', itemId)
+        //const form = document.getElementById('updateSociety')
+        //const formData2 = new FormData(form)
+        // const itemsUpdateData = {
+        //     address: {
+        //         address: formData2.get('adresse'),
+        //         address2: formData2.get('complement'),
+        //         city: formData2.get('ville'),
+        //         country: formData2.get('pays')
+        //     },
+        //     name: formData2.get('name')
+        // }
+        //console.log('itemsUpdateData', itemsUpdateData)
     }
     function deleted(id){
         storeSocietyList.delated(id)
     }
     function getPage(nPage){
-        console.log('nPage', nPage)
+        //console.log('nPage', nPage)
         storeSocietyList.itemsPagination(nPage)
     }
 </script>

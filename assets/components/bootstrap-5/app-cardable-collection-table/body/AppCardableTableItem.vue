@@ -9,7 +9,7 @@
 
     function update(){
         emit('update', props.item)
-        console.log('item', props.item)
+        //console.log('item', props.item)
     }
     function deleted(){
         const id = Number(props.item['@id'].match(/\d+/)[0])

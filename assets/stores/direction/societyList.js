@@ -4,12 +4,12 @@ import {defineStore} from 'pinia'
 export const useSocietyListStore = defineStore('societyList', {
     actions: {
         async addSociety(payload){
-            console.log('payload', payload)
-            const response = await api('/api/societies', 'POST', payload)
-            console.log('response', response)
+            //console.log('payload', payload)
+            await api('/api/societies', 'POST', payload)
+            //console.log('response', response)
         },
         async delated(payload){
-            console.log('payload', payload)
+            //console.log('payload', payload)
             await api(`/api/societies/${payload}`, 'DELETE')
             // this.societies = this.societies.filter((society) => Number(society['@id'].match(/\d+/)[0]) !== payload)
             await this.fetch()
