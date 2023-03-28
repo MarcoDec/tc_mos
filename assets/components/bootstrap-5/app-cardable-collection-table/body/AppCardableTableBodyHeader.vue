@@ -9,6 +9,7 @@
         form: {required: true, type: String},
         user: {required: true, type: String}
     })
+    console.log(props.create, props.user)
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
 
@@ -17,7 +18,6 @@
         }
         return cloned
     }))
-
 </script>
 
 <template>
@@ -41,29 +41,29 @@
 </template>
 
 <style scoped>
-.header{
-    background-color: #c5c5c5 ;
-}
-.btngris{
-    width: 24px;
-    height: 24px;
-    margin-left: 2px;
-    margin-bottom: 4px;
-    color: #fff;
-    background-color: #6c757d;
-    border-color: #6c757d;
-    padding-left: 2px;
-    padding-bottom: 24px;
-}
-.btntimes{
-    width: 24px;
-    height: 24px;
-    margin-left: 2px;
-    margin-bottom: 4px;
-    color: #fff;
-    background-color: #dc3545;
-    border-color: #dc3545;
-    padding-left: 4px;
-    padding-bottom: 24px;
-}
+    .header{
+        background-color: #c5c5c5 ;
+    }
+    .btngris{
+        width: 24px;
+        height: 24px;
+        margin-left: 2px;
+        margin-bottom: 4px;
+        color: #fff;
+        background-color: #6c757d;
+        border-color: #6c757d;
+        padding-left: 2px;
+        padding-bottom: 24px;
+    }
+    .btntimes{
+        width: 24px;
+        height: 24px;
+        margin-left: 2px;
+        margin-bottom: 4px;
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
+        padding-left: 4px;
+        padding-bottom: 24px;
+    }
 </style>

@@ -1,21 +1,21 @@
 <script setup>
-    import {computed, defineEmits, defineProps, ref} from 'vue'
+    import {computed, defineEmits, defineProps} from 'vue'
     import AppCardableTableBodyHeader from './body/AppCardableTableBodyHeader.vue'
     import AppCardableTableBodyItem from './body/AppCardableTableBodyItem.vue'
     import AppCardableTableHeader from './head/AppCardableTableHeader.vue'
 
     const props = defineProps({
         create: {type: Boolean},
-        currentPage:{required: true, type: String},
+        currentPage: {required: true, type: String},
         fields: {required: true, type: Array},
-        firstPage:{required: true, type: String},
+        firstPage: {required: true, type: String},
         form: {required: true, type: String},
         items: {required: true, type: Array},
-        lastPage:{required: true, type: String},
+        lastPage: {required: true, type: String},
         min: {type: Boolean},
-        nextPage:{required: true, type: String},
+        nextPage: {required: true, type: String},
         pag: {type: Boolean},
-        previousPage:{required: true, type: String},
+        previousPage: {required: true, type: String},
         user: {required: true, type: String}
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
@@ -29,7 +29,6 @@
     function getPage(nPage){
         emit('getPage', nPage)
     }
-
 </script>
 
 <template>
@@ -65,7 +64,7 @@
 </template>
 
 <style scoped>
-.pagination{
-    float: right;
-}
+    .pagination{
+        float: right;
+    }
 </style>
