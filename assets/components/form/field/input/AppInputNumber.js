@@ -7,7 +7,7 @@ function AppInputNumber(props, context) {
         field: {...props.field, type: 'text'},
         form: props.form,
         id: props.id,
-        modelValue: props.modelValue,
+        modelValue: props.modelValue?.value,
         'onUpdate:modelValue': value => {
             const parsed = parseFloat(value)
             context.emit('update:modelValue', isNaN(parsed) ? 0 : parsed)

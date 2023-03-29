@@ -94,5 +94,4 @@ AppFormJS.props = {
     submitLabel: {default: null, type: String},
     violations: {default: () => [], type: Array}
 }
-
 export default AppFormJS

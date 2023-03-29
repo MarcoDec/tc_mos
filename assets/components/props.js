@@ -1,4 +1,4 @@
-const types = ['boolean', 'color', 'file', 'number', 'password', 'select', 'text', 'time', 'rating', 'date']
+const types = ['boolean', 'color', 'file', 'multiselect', 'number', 'password', 'select', 'text', 'time', 'measure']
 
 export function fieldValidator(field) {
     if (typeof field !== 'object' || field === null || Array.isArray(field)) {

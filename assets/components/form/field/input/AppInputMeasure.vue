@@ -17,23 +17,24 @@
     }
 
     function inputValue(value) {
+        console.log('value', value);
         emit('update:modelValue', {...props.modelValue, value})
     }
 </script>
 
 <template>
     <div :id="id" class="input-group">
-        <AppInputGuesser
+        <AppInputGuesserJS
             :id="valueId"
             :disabled="disabled"
-            :field="field.measure.value"
+            :field="field.name"
             :form="form"
             :model-value="modelValue?.value"
             @update:model-value="inputValue"/>
-        <AppInputGuesser
+        <AppInputGuesserJS
             :id="codeId"
             :disabled="disabled"
-            :field="field.measure.code"
+            :field="field.name"
             :form="form"
             :model-value="modelValue?.code"
             @update:model-value="codeValue"/>

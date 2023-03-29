@@ -3,18 +3,25 @@
     import AppBtnJS from './AppBtnJS'
     import AppFormJS from './form/AppFormJS'
 
-    defineProps({
+    const props = defineProps({
         fields: {default: () => [], type: Array},
         componentAttribute: {default: () => [], type: Array},
         id: {required: true, type: String}
 
     })
+    const emit = defineEmits(['update'])
     const updated = ref(false)
     const disable = ref(true)
 
     function update() {
+
         updated.value = true
         disable.value = false
+    }
+     function success() {
+        emit('update')
+        updated.value = false
+        disable.value = true
     }
     function annule() {
         updated.value = false
@@ -29,7 +36,7 @@
                 <AppBtnJS icon="pencil-alt" variant="primary" @click="update"/>
             </div>
             <div v-else>
-                <AppBtnJS icon="check" variant="success"/>
+                <AppBtnJS icon="check" variant="success"  @click="success"/>
                 <AppBtnJS icon="times" variant="danger" @click="annule"/>
             </div>
         </div>

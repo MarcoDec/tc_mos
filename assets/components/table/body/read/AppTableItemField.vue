@@ -17,7 +17,16 @@
             }
             return res.text
         }
+        if (props.field.type === 'measure') {
+            const res = thevalue.value.value + ' '+ thevalue.value.code
+            if (typeof res === 'undefined') {
+                console.debug('AppTableItemField.vue res undefined', props.field, thevalue.value)
+                return thevalue.value
+            }
+            return res
+        }
         //TODO: gérer Multiselect et measures
+
         return thevalue.value
     }
     const bool = computed(() => props.field.type === 'boolean')

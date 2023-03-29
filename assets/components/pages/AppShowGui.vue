@@ -1,7 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
-     import AppComponentFormShow from '../../router/pages/component/AppComponentFormShow.vue'
+    import AppComponentFormShow from '../../router/pages/component/AppComponentFormShow.vue'
     import AppCustomerFormShow from '../../router/pages/customer/AppCustomerFormShow.vue'
     import AppEmployeeFormShow from '../../router/pages/employee/AppEmployeeFormShow.vue'
     import AppProductFormShow from '../../router/pages/product/AppProductFormShow.vue'
@@ -10,7 +10,6 @@
     import AppTab from '../tab/AppTab.vue'
     import AppTabs from '../tab/AppTabs.vue'
 
-   
     const guiRatio = ref(0.5)
     const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
 
