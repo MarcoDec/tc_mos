@@ -102,5 +102,5 @@ class Unit extends AbstractUnit {
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:unit', 'write:unit'])
     ]
-    protected $parent;
+    protected ?AbstractUnit $parent;
 }

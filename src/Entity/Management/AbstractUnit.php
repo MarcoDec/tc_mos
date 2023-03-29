@@ -39,7 +39,12 @@ abstract class AbstractUnit extends Entity {
     protected ?string $name = null;
 
     /** @var null|static */
-    protected $parent;
+   #[
+        ApiProperty(description: "unité parente", example: '/api/units/1'),
+        ORM\ManyToOne(targetEntity: Unit::class, fetch: 'EAGER', inversedBy: 'children'),
+        Serializer\Groups(['read:unit'])
+   ]
+    protected ?AbstractUnit $parent;
 
     #[
         ApiProperty(description: 'Base', required: true, example: 1),

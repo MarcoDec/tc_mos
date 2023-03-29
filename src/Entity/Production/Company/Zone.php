@@ -80,7 +80,7 @@ class Zone extends Entity implements CompanyInterface {
         ApiProperty(description: 'Nom', example: 'Zone sertissage'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:zone', 'write:zone'])
+        Serializer\Groups(['read:zone', 'write:zone','read:engine-maintenance-event'])
     ]
     private ?string $name = null;
 

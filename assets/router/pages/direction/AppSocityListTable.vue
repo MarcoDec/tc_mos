@@ -5,8 +5,7 @@
     defineProps({
         fields: {default: () => [], type: Array},
         icon: {required: true, type: String},
-        title: {required: true, type: String},
-        modelValue:{}
+        title: {required: true, type: String}
     })
     const roleuser = ref('reader')
     const fieldsForm = [
@@ -23,10 +22,10 @@
 
     const storeSocietyList = useSocietyListStore()
     storeSocietyList.fetch()
-    
+
     const updated = ref(false)
     const AddForm = ref(false)
-    let itemId = ''
+    //let itemId = ''
     function ajoute(){
         AddForm.value = true
         updated.value = false
@@ -41,15 +40,15 @@
     }
     function ajoutSociety(){
         const form = document.getElementById('addSociety')
-        const formData= new FormData(form)
+        const formData1 = new FormData(form)
         const itemsAddData = {
-            address:{
-                address: formData.get('adresse'),
-                address2: formData.get('complement'),
-                country: formData.get('pays'),
-                city: formData.get('ville')
+            address: {
+                address: formData1.get('adresse'),
+                address2: formData1.get('complement'),
+                city: formData1.get('ville'),
+                country: formData1.get('pays')
             },
-            name: formData.get('name')
+            name: formData1.get('name')
         }
         storeSocietyList.addSociety(itemsAddData)
         // window.location.reload();
@@ -69,7 +68,7 @@
     function update(item) {
         updated.value = true
         AddForm.value = true
-        itemId = Number(item['@id'].match(/\d+/)[0])
+        //itemId = Number(item['@id'].match(/\d+/)[0])
         const itemsData = {
             adresse: item.adresse,
             complement: item.complement,
@@ -103,8 +102,8 @@
         storeSocietyList.delated(id)
     }
     function getPage(nPage){
-       console.log('nPage', nPage);
-       storeSocietyList.itemsPagination(nPage)
+        //console.log('nPage', nPage)
+        storeSocietyList.itemsPagination(nPage)
     }
 </script>
 
@@ -123,25 +122,25 @@
         <AppCol>
             <AppCardableTable
                 :create="true"
-                :currentPage="storeSocietyList.currentPage"
+                :current-page="storeSocietyList.currentPage"
                 :fields="fields"
-                :firstPage="storeSocietyList.firstPage"
+                :first-page="storeSocietyList.firstPage"
                 :items="storeSocietyList.societies"
-                :lastPage="storeSocietyList.lastPage"
+                :last-page="storeSocietyList.lastPage"
                 :min="AddForm"
-                :nextPage="storeSocietyList.nextPage"
+                :next-page="storeSocietyList.nextPage"
                 :pag="true"
-                :previousPage="storeSocietyList.previousPage"
+                :previous-page="storeSocietyList.previousPage"
                 :user="roleuser"
                 form="formSocietyCardableTable"
                 @update="update"
                 @deleted="deleted"
-                @getPage="getPage"/>
+                @get-page="getPage"/>
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
                 <AppRow>
-                    <button id="btnRetour" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                    <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
                         <Fa icon="angle-double-left"/>
                     </button>
                     <h4 class="col">
@@ -151,7 +150,7 @@
                 <br/>
                 <AppFormCardable id="addSociety" :fields="fieldsForm" :model-value="formData" label-cols/>
                 <AppCol class="btnright">
-                    <AppBtn class="btnleft" label="Ajout" variant="success" size="sm" @click="ajoutSociety()">
+                    <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutSociety">
                         <Fa icon="plus"/> Ajouter
                     </AppBtn>
                 </AppCol>
@@ -160,7 +159,7 @@
         <AppCol v-else-if="AddForm && updated" class="col-7">
             <AppCard class="bg-blue col" title="">
                 <AppRow>
-                    <button id="btnRetour" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                    <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
                         <Fa icon="angle-double-left"/>
                     </button>
                     <h4 class="col">
@@ -173,7 +172,7 @@
                 </div> -->
                 <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData"/>
                 <AppCol class="btnright">
-                    <AppBtn class="btnleft" label="retour" variant="success" size="sm" @click="updateSociety">
+                    <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">
                         <Fa icon="pencil-alt"/> Modifier
                     </AppBtn>
                 </AppCol>
@@ -183,7 +182,7 @@
 </template>
 
 <style scoped>
-.btnleft{
-    float: right;
-}
+    .btn-float-right{
+        float: right;
+    }
 </style>

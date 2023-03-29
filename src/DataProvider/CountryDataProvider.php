@@ -5,6 +5,7 @@ namespace App\DataProvider;
 use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Api\Resource\Country;
+use App\Entity\Country as AppCountry;
 use App\Collection;
 use Symfony\Component\Intl\Countries;
 
@@ -22,6 +23,6 @@ final class CountryDataProvider implements CollectionDataProviderInterface, Rest
      * @param mixed[] $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Country::class;
+        return $resourceClass === AppCountry::class;
     }
 }

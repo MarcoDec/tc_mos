@@ -3,8 +3,11 @@
 namespace App\Entity\Production\Engine\Event;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use App\Doctrine\DBAL\Types\Production\Engine\EventType;
 use App\Entity\Embeddable\EventState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -14,9 +17,14 @@ use App\Entity\Maintenance\Engine\Event\Maintenance;
 use App\Entity\Maintenance\Engine\Event\Request;
 use App\Entity\Production\Engine\Engine;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Filter\DiscriminatorFilter;
 
 #[
+    ApiFilter(DiscriminatorFilter::class),
+    ApiFilter(filterClass: BooleanFilter::class, properties: ['done']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['date']),
     ApiResource(
         description: 'Événement sur un équipement',
         collectionOperations: [
@@ -96,25 +104,26 @@ abstract class Event extends AbstractEvent {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:event'])
+        Serializer\Groups(['read:event','read:engine-maintenance-event'])
     ]
     protected EventState $embState;
 
     #[
         ApiProperty(description: 'Employé', example: '/api/employees/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:event', 'write:event'])
+        Serializer\Groups(['read:event', 'write:event','read:engine-maintenance-event','write:engine-maintenance-event'])
     ]
     protected ?Employee $employee;
 
     #[
-        ApiProperty(description: 'Machine', readableLink: false, example: '/api/engines/1'),
+        ApiProperty(description: 'Machine'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:event', 'write:event'])
+        Serializer\Groups(['read:event', 'write:event','read:engine-maintenance-event'])
     ]
     protected ?Engine $engine;
 
-    public function __construct() {
+    #[Pure] public function __construct() {
+        $this->name = "Evènement Machine";
         $this->embState = new EventState();
     }
 

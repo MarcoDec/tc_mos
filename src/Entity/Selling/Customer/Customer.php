@@ -19,6 +19,7 @@ use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
+use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -151,6 +152,11 @@ class Customer extends Entity {
         Serializer\Groups(['read:customer'])
     ]
     private Collection $administeredBy;
+
+    #[
+       ORM\OneToMany(mappedBy: 'customer',targetEntity: CustomerAttachment::class)
+       ]
+    private Collection $attachments;
 
     #[
         ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
@@ -479,4 +485,6 @@ class Customer extends Entity {
         $this->embState->setState($state);
         return $this;
     }
+
+
 }

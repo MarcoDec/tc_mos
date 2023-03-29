@@ -20,6 +20,7 @@ use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Incoterms;
 use App\Entity\Management\Unit;
+use App\Entity\Project\Product\Attachment\ProductAttachment;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
 use App\Entity\Traits\BarCodeTrait;
@@ -174,6 +175,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     use BarCodeTrait;
+
+   /** @var DoctrineCollection<int, ProductAttachment> */
+    #[ORM\OneToMany(mappedBy: 'product',targetEntity: ProductAttachment::class)]
+    private DoctrineCollection $attachments;
 
     #[
         ApiProperty(description: 'Temps auto', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
@@ -857,4 +862,21 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->weight = $weight;
         return $this;
     }
+
+   /**
+    * @return DoctrineCollection
+    */
+   public function getAttachments(): DoctrineCollection
+   {
+      return $this->attachments;
+   }
+
+   /**
+    * @param DoctrineCollection $attachments
+    */
+   public function setAttachments(DoctrineCollection $attachments): void
+   {
+      $this->attachments = $attachments;
+   }
+
 }

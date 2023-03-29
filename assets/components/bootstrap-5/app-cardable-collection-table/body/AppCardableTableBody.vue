@@ -1,5 +1,5 @@
 <script setup>
-    import {defineEmits, defineProps, ref} from 'vue'
+    import {defineEmits, defineProps} from 'vue'
     import AppCardableTableItem from './AppCardableTableItem.vue'
 
     defineProps({
@@ -17,5 +17,5 @@
 </script>
 
 <template>
-    <AppCardableTableItem  :fields="fields" :item="item"  @update="update" @deleted="deleted" /> 
+    <AppCardableTableItem :fields="fields" :item="item" @update="update" @deleted="deleted"/>
 </template>
