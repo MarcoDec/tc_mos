@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {ref} from 'vue'
     import {useSocietyListStore} from '../../../stores/direction/societyList'
 
     defineProps({
@@ -9,6 +9,13 @@
         modelValue:{}
     })
     const roleuser = ref('reader')
+    const fieldsForm = [
+                {label: 'Nom*', min: true, name: 'name', trie: true, type: 'text'},
+                {label: 'Adresse*', min: false, name: 'adresse', trie: true, type: 'text'},
+                {label: 'Complément d\'adresse*', min: false, name: 'complement', trie: true, type: 'text'},
+                {label: 'Ville*', min: true, name: 'ville', trie: true, type: 'text'},
+                {label: 'Pays*', min: true, name: 'pays', trie: true, type: 'text'}
+            ]
 
     const formData = ref({
         adresse: null, complement: null, name: null, pays: null, ville: null
@@ -86,6 +93,11 @@
             name: formData.get('name')
         }
         console.log('itemsUpdateData',itemsUpdateData);
+        const payload ={
+            id: itemId,
+            itemsUpdateData: itemsUpdateData
+        }
+        storeSocietyList.updateSociety(payload)
     }
     function deleted(id){
         storeSocietyList.delated(id)
@@ -137,7 +149,7 @@
                     </h4>
                 </AppRow>
                 <br/>
-                <AppFormCardable id="addSociety" :fields="fields" :model-value="formData" label-cols/>
+                <AppFormCardable id="addSociety" :fields="fieldsForm" :model-value="formData" label-cols/>
                 <AppCol class="btnright">
                     <AppBtn class="btnleft" label="Ajout" variant="success" size="sm" @click="ajoutSociety()">
                         <Fa icon="plus"/> Ajouter
@@ -156,7 +168,10 @@
                     </h4>
                 </AppRow>
                 <br/>
-                <AppFormCardable id="updateSociety" :fields="fields" :model-value="formData"/>
+                <!-- <div v-if="state.matches('error')" class="alert alert-danger" role="alert">
+                    {{ state.context.error }}
+                </div> -->
+                <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData"/>
                 <AppCol class="btnright">
                     <AppBtn class="btnleft" label="retour" variant="success" size="sm" @click="updateSociety">
                         <Fa icon="pencil-alt"/> Modifier

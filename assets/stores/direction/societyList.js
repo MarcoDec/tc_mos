@@ -27,6 +27,18 @@ export const useSocietyListStore = defineStore('societyList', {
             const response = await api('/api/societies', 'POST', payload)
             console.log('response', response);
         },
+        async updateSociety (payload){
+            console.log('payloadid', payload.id);
+            console.log('payloaditemsUpdateData', payload.itemsUpdateData);
+            const response = await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
+            console.log('response', response);
+            if (!response.ok) {
+                const error = new Error(
+                    responseData.message
+                  )
+                  throw error
+            }
+        },
         async itemsPagination(nPage) {
             const response = await api(`/api/societies?page=${nPage}`, 'GET')
             const responseData = await response['hydra:member']
