@@ -5,7 +5,6 @@
     import AppCardableTableHeader from './head/AppCardableTableHeader.vue'
 
     const props = defineProps({
-        create: {type: Boolean},
         currentPage: {required: true, type: String},
         fields: {required: true, type: Array},
         firstPage: {required: true, type: String},
@@ -35,7 +34,7 @@
     <table class="table table-bordered table-hover table-striped">
         <AppCardableTableHeader :fields="displayedFileds"/>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :create="create" :fields="displayedFileds" :user="user"/>
+            <AppCardableTableBodyHeader :form="form" :fields="displayedFileds" :user="user"/>
             <tr class="bg-dark">
                 <td colspan="10"/>
             </tr>

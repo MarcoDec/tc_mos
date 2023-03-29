@@ -16,7 +16,9 @@ export const useSocietyListStore = defineStore('societyList', {
         },
         async fetch() {
             const response = await api('/api/societies', 'GET')
-            this.societies = this.updatePagination(response)
+            // this.societies = this.updatePagination(response)
+            console.log(response);
+            await this.updatePagination(response)
         },
         async updateSociety (payload){
             console.log('payloadid', payload.id);
@@ -42,7 +44,8 @@ export const useSocietyListStore = defineStore('societyList', {
             this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
             this.currentPage = paginationView['@id'].match(/\d+/)[0]
             this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
-            return responseData
+            this.societies = responseData
+            // return responseData
         }
     },
     getters: {

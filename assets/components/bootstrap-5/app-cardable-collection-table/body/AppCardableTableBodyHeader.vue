@@ -4,7 +4,6 @@
     import clone from 'clone'
 
     const props = defineProps({
-        //create: {type: Boolean},
         fields: {required: true, type: Array},
         form: {required: true, type: String}
         //user: {required: true, type: String}

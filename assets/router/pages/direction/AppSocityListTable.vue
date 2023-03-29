@@ -121,7 +121,6 @@
     <AppRow>
         <AppCol>
             <AppCardableTable
-                :create="true"
                 :current-page="storeSocietyList.currentPage"
                 :fields="fields"
                 :first-page="storeSocietyList.firstPage"
