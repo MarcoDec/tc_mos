@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
     description: 'Pays',
     collectionOperations: [
         'get' => [
+            'path' => '/countries/options',
             'openapi_context' => [
                 'description' => 'Récupère les pays',
                 'summary' => 'Récupère les pays'
