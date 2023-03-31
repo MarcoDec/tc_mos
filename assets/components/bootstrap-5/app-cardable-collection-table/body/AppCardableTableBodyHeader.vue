@@ -6,9 +6,7 @@
     const props = defineProps({
         fields: {required: true, type: Array},
         form: {required: true, type: String}
-        //user: {required: true, type: String}
     })
-    //console.log(props.create, props.user)
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
 

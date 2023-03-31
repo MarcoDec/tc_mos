@@ -1,5 +1,5 @@
 <script setup>
-    import {ref} from 'vue'
+    import {ref,computed} from 'vue'
     import {useSocietyListStore} from '../../../stores/direction/societyList'
 
     defineProps({
@@ -10,10 +10,10 @@
     const roleuser = ref('reader')
     const fieldsForm = [
                 {label: 'Nom*', min: true, name: 'name', trie: true, type: 'text'},
-                {label: 'Adresse*', min: false, name: 'adresse', trie: true, type: 'text'},
-                {label: 'Complément d\'adresse*', min: false, name: 'complement', trie: true, type: 'text'},
-                {label: 'Ville*', min: true, name: 'ville', trie: true, type: 'text'},
-                {label: 'Pays*', min: true, name: 'pays', trie: true, type: 'text'}
+                {label: 'Adresse*', min: false, name: 'address', trie: true, type: 'text'},
+                {label: 'Complément d\'adresse*', min: false, name: 'address2', trie: true, type: 'text'},
+                {label: 'Ville*', min: true, name: 'city', trie: true, type: 'text'},
+                {label: 'Pays*', min: true, name: 'country', trie: true, type: 'text'}
             ]
 
     const formData = ref({
@@ -22,19 +22,37 @@
 
     const storeSocietyList = useSocietyListStore()
     storeSocietyList.fetch()
+    storeSocietyList.countryOption()
 
     const updated = ref(false)
     const AddForm = ref(false)
-    //let itemId = ''
+    let itemId = ''
+
+    const list = computed(()=> storeSocietyList.societies.map((item)=> {
+        const { address, address2, city, country} = item.address 
+        let itemsTab = []
+        const newObject = { 
+            ...item,
+            address: undefined, // Remove the original nested address object
+            address: address ?? null,
+            address2: address2 ?? null,
+            city: city ?? null,
+            country: country ?? null
+        }  
+        itemsTab.push(newObject)
+        return itemsTab
+    }) ) 
+    const itemsTable = computed(()=>list.value.reduce((acc, curr) => acc.concat(curr), [])) 
+
     function ajoute(){
         AddForm.value = true
         updated.value = false
         const itemsNull = {
-            adresse: null,
-            complement: null,
+            address: null,
+            address2: null,
             name: null,
-            pays: null,
-            ville: null
+            city: null,
+            country: null
         }
         formData.value = itemsNull
     }
@@ -43,38 +61,38 @@
         const formData1 = new FormData(form)
         const itemsAddData = {
             address: {
-                address: formData1.get('adresse'),
-                address2: formData1.get('complement'),
-                city: formData1.get('ville'),
-                country: formData1.get('pays')
+                address: formData1.get('address'),
+                address2: formData1.get('address2'),
+                city: formData1.get('city'),
+                country: formData1.get('country')
             },
             name: formData1.get('name')
         }
+        console.log('itemsAddData',itemsAddData);
         storeSocietyList.addSociety(itemsAddData)
-        // window.location.reload();
     }
     function annule(){
         AddForm.value = false
         updated.value = false
         const itemsNull = {
-            adresse: null,
-            complement: null,
+            address: null,
+            address2: null,
             name: null,
-            pays: null,
-            ville: null
+            city: null,
+            country: null
         }
         formData.value = itemsNull
     }
     function update(item) {
         updated.value = true
         AddForm.value = true
-        //itemId = Number(item['@id'].match(/\d+/)[0])
+        itemId = Number(item['@id'].match(/\d+/)[0])
         const itemsData = {
-            adresse: item.adresse,
-            complement: item.complement,
+            address: item.address,
+            address2: item.address2,
             name: item.name,
-            pays: item.pays,
-            ville: item.ville
+            city: item.city,
+            country: item.country
         }
         formData.value = itemsData
     }
@@ -84,10 +102,10 @@
         const formData= new FormData(form)
         const itemsUpdateData = {
             address:{
-                address: formData.get('adresse'),
-                address2: formData.get('complement'),
-                country: formData.get('pays'),
-                city: formData.get('ville')
+                address: formData.get('address'),
+                address2: formData.get('address2'),
+                country: formData.get('country'),
+                city: formData.get('city')
             },
             name: formData.get('name')
         }
@@ -102,7 +120,6 @@
         storeSocietyList.delated(id)
     }
     function getPage(nPage){
-        //console.log('nPage', nPage)
         storeSocietyList.itemsPagination(nPage)
     }
 </script>
@@ -124,7 +141,7 @@
                 :current-page="storeSocietyList.currentPage"
                 :fields="fields"
                 :first-page="storeSocietyList.firstPage"
-                :items="storeSocietyList.societies"
+                :items="itemsTable"
                 :last-page="storeSocietyList.lastPage"
                 :min="AddForm"
                 :next-page="storeSocietyList.nextPage"
@@ -133,7 +150,7 @@
                 :user="roleuser"
                 form="formSocietyCardableTable"
                 @update="update"
-                @deleted="deleted"
+                @deleted="deleted" 
                 @get-page="getPage"/>
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">

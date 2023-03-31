@@ -11,30 +11,27 @@ export const useSocietyListStore = defineStore('societyList', {
         async delated(payload){
             //console.log('payload', payload)
             await api(`/api/societies/${payload}`, 'DELETE')
-            // this.societies = this.societies.filter((society) => Number(society['@id'].match(/\d+/)[0]) !== payload)
-            await this.fetch()
+            this.societies = this.societies.filter((society) => Number(society['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
             const response = await api('/api/societies', 'GET')
-            // this.societies = this.updatePagination(response)
-            console.log(response);
-            await this.updatePagination(response)
+            this.societies = await this.updatePagination(response)
         },
         async updateSociety (payload){
             console.log('payloadid', payload.id);
             console.log('payloaditemsUpdateData', payload.itemsUpdateData);
             const response = await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
             console.log('response', response);
-            if (!response.ok) {
-                const error = new Error(
-                    responseData.message
-                  )
-                  throw error
-            }
+            // if (!response.ok) {
+            //     const error = new Error(
+            //         responseData.message
+            //       )
+            //       throw error
+            // }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/societies?page=${nPage}`, 'GET')
-            await this.updatePagination(response)
+            this.societies = await this.updatePagination(response)
         },
         async updatePagination(response) {
             const responseData = await response['hydra:member']
@@ -44,8 +41,15 @@ export const useSocietyListStore = defineStore('societyList', {
             this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
             this.currentPage = paginationView['@id'].match(/\d+/)[0]
             this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
-            this.societies = responseData
-            // return responseData
+            console.log('responseData',responseData);
+            return responseData
+            
+        },
+        async countryOption (){
+            const response = await api('/api/countries/options', 'GET')
+            console.log('responsecountry',response);
+            this.countries = response['hydra:member']
+            console.log('countries',this.countries);
         }
     },
     getters: {
@@ -57,6 +61,7 @@ export const useSocietyListStore = defineStore('societyList', {
         lastPage: '',
         nextPage: '',
         previousPage: '',
-        societies: []
+        societies: [],
+        countries: []
     })
 })

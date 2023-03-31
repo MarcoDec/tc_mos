@@ -6,10 +6,8 @@
     })
 
     const emit = defineEmits(['deleted', 'update'])
-
     function update(){
         emit('update', props.item)
-        //console.log('item', props.item)
     }
     function deleted(){
         const id = Number(props.item['@id'].match(/\d+/)[0])
@@ -26,7 +24,7 @@
             <Fa icon="trash"/>
         </button>
     </td>
-    <td v-for="field in fields" :key="field.name">
+    <td  v-for="field in fields" :key="field.name">
         {{ item[field.name] }}
     </td>
 </template>
