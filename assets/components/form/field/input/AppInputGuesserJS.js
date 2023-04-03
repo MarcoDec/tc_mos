@@ -3,7 +3,7 @@ import AppInputFile from './AppInputFile'
 import AppMultiselect from './select/AppMultiselect.vue'
 import AppInputNumber from './AppInputNumber.js'
 import AppInputMeasure from './AppInputMeasure.vue'
-import AppSelect from './select/AppSelect'
+import AppSelect from './select/AppSelect.vue'
 import AppSwitch from './AppSwitch.vue'
 import {generateField} from '../../../props'
 
@@ -12,14 +12,14 @@ function getType(field) {
     case 'boolean':
         return AppSwitch
     case 'number':
-            return AppInputNumber
+        return AppInputNumber
     case 'file':
         return AppInputFile
     case 'select':
         return AppSelect
     case 'multiselect':
         return AppMultiselect
-        case 'measure':
+    case 'measure':
         return AppInputMeasure
     default:
         return resolveComponent('AppInputJS')

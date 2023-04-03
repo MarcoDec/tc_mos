@@ -9,6 +9,7 @@
     const route = useRoute()
     const tree = useTree(route.name)
     await tree.fetch()
+    console.log('tree', tree)
 
     onUnmounted(() => {
         tree.dispose()

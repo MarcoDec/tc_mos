@@ -11,7 +11,6 @@ function AppFormJS(props, context) {
             type: 'submit'
         })
     }
-
     const groups = []
     if (props.noContent) {
         if (typeof context.slots['default'] === 'function')

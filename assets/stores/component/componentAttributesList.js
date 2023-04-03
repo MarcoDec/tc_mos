@@ -14,7 +14,7 @@ export const useComponentShowStore = defineStore('componentAttributes', {
             }
         },
         async update(data, id) {
-            const response = await api('/api/component-attributes/'+ id, 'PATCH', data)
+            const response = await api(`/api/component-attributes/${id}`, 'PATCH', data)
             this.fetch()
         }
 

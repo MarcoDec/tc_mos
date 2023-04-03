@@ -24,11 +24,10 @@ export default function useTable(id) {
             async fetch() {
                 const response = await api(this.url, 'GET', this.fetchBody)
                 this.resetItems()
-                console.log('row',response);
+                console.log('row', response)
                 for (const row of response['hydra:member'])
                     this.rows.push(useRow(row, this))
-                    console.log('rows',this.rows);
-
+                console.log('rows', this.rows)
             },
             removeRow(removed) {
                 this.rows = this.rows.filter(row => row.id !== removed.id)

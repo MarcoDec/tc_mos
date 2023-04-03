@@ -26,7 +26,7 @@
     store.sorted = props.sort.name
     store.sortName = props.sort.sortName ?? props.sort.name
     await store.fetch()
-console.log('store table',store);
+    console.log('store table', store)
     const storedFields = useFields(route.name, props.fields)
     await storedFields.fetch()
 

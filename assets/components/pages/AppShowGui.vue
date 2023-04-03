@@ -39,7 +39,7 @@
     <div class="gui">
         <div class="gui-left">
             <div class="gui-card">
-                <AppComponentFormShow v-if="route.name === 'component'"/>
+              <AppSuspense>  <AppComponentFormShow v-if="route.name === 'component'"/></AppSuspense>
                 <AppCustomerFormShow v-if="route.name === 'customer'"/>
                 <AppEmployeeFormShow v-if="route.name === 'employee'"/>
                 <AppToolFormShow v-if="route.name === 'equipment'"/>

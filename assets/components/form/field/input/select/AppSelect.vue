@@ -19,10 +19,12 @@
     const emit = defineEmits(['update:modelValue'])
 
     function update(v) {
+        console.log('update select', v)
         emit('update:modelValue', v)
     }
 
     function input(e) {
+        console.log('input select', e)
         update(e.target.value)
     }
 </script>

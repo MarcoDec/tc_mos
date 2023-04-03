@@ -3,22 +3,21 @@
     import AppBtnJS from './AppBtnJS'
     import AppFormJS from './form/AppFormJS'
 
-    const props = defineProps({
-        fields: {default: () => [], type: Array},
+    defineProps({
         componentAttribute: {default: () => [], type: Array},
-        id: {required: true, type: String}
+        fields: {default: () => [], type: Array},
+        id: {required: true, type: String},
 
     })
-    const emit = defineEmits(['update'])
+    const emit = defineEmits(['update', 'update:modelValue'])
     const updated = ref(false)
     const disable = ref(true)
 
     function update() {
-
         updated.value = true
         disable.value = false
     }
-     function success() {
+    function success() {
         emit('update')
         updated.value = false
         disable.value = true
@@ -36,12 +35,12 @@
                 <AppBtnJS icon="pencil-alt" variant="primary" @click="update"/>
             </div>
             <div v-else>
-                <AppBtnJS icon="check" variant="success"  @click="success"/>
+                <AppBtnJS icon="check" variant="success" @click="success"/>
                 <AppBtnJS icon="times" variant="danger" @click="annule"/>
             </div>
         </div>
         <ul v-if="disable" class="card-body">
-            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
+           <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
         </ul>
         <ul v-else class="card-body">
             <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute"/>

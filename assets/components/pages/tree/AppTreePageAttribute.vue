@@ -7,7 +7,7 @@
 
     const attributes = useAttributes()
     await attributes.fetch()
-
+    console.log('aaaaa', attributes)
     onUnmounted(() => {
         attributes.dispose()
     })

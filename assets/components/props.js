@@ -19,6 +19,7 @@ export function fieldValidator(field) {
             return false
         }
         if (field.type === 'select') {
+            console.log('field.options', field.options)
             if (typeof field.options !== 'object' || field.options === null) {
                 console.error('field.options must be defined and not null')
                 return false

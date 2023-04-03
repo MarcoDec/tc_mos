@@ -11,13 +11,14 @@
     })
     const codeId = computed(() => `${props.id}-code`)
     const valueId = computed(() => `${props.id}-value`)
+    const valueName = computed(() => `${props.field.name}-value`)
+    const codeName = computed(() => `${props.field.name}-code`)
 
     function codeValue(code) {
         emit('update:modelValue', {...props.modelValue, code})
     }
 
     function inputValue(value) {
-        console.log('value', value);
         emit('update:modelValue', {...props.modelValue, value})
     }
 </script>
@@ -29,6 +30,7 @@
             :disabled="disabled"
             :field="field.name"
             :form="form"
+            :name="valueName"
             :model-value="modelValue?.value"
             @update:model-value="inputValue"/>
         <AppInputGuesserJS
@@ -36,6 +38,7 @@
             :disabled="disabled"
             :field="field.name"
             :form="form"
+            :name="codeName"
             :model-value="modelValue?.code"
             @update:model-value="codeValue"/>
     </div>
