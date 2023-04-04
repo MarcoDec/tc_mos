@@ -187,7 +187,7 @@
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">
-            <AppCardShow v-for="item in useComponentStore.componentAttribute" id="addAttribut" :key="item" :fields="Attributfields" :component-attribute="item" @update="update(item)"/>
+            <AppCardShow v-for="item in useComponentStore.componentAttribute" id="addAttribut" :key="item" :fields="Attributfields" :component="item" @update="update(item)"/>
         </AppTab>
         <AppTab
             id="gui-start-files"
@@ -215,14 +215,14 @@
             title="Logistique"
             icon="pallet"
             tabs="gui-start">
-            <AppCardShow id="addLogistique" :fields="Logistiquefields" :component-attribute="useFetchComponentStore.component" @update="updateLogistique(useFetchComponentStore.component)"/>
+            <AppCardShow id="addLogistique" :fields="Logistiquefields" :component="useFetchComponentStore.component" @update="updateLogistique(useFetchComponentStore.component)"/>
         </AppTab>
         <AppTab
             id="gui-start-spécifications"
             title="Spécification"
             icon="file-contract"
             tabs="gui-start">
-            <AppCardShow id="addSpécification" :fields="Spécificationfields" :component-attribute="useFetchComponentStore.component" @update="updateSpecification(useFetchComponentStore.component)"/>
+            <AppCardShow id="addSpécification" :fields="Spécificationfields" :component="useFetchComponentStore.component" @update="updateSpecification(useFetchComponentStore.component)"/>
         </AppTab>
     </AppTabs>
 </template>

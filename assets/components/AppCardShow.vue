@@ -4,7 +4,7 @@
     import AppFormJS from './form/AppFormJS'
 
     defineProps({
-        componentAttribute: {default: () => [], type: Array},
+        component: {default: () => [], type: Array},
         fields: {default: () => [], type: Array},
         id: {required: true, type: String}
 
@@ -40,10 +40,10 @@
             </div>
         </div>
         <ul v-if="disable" class="card-body">
-            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
+            <AppFormJS :id="id" :fields="fields" :model-value="component" disabled/>
         </ul>
         <ul v-else class="card-body">
-            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute"/>
+            <AppFormJS :id="id" :fields="fields" :model-value="component"/>
         </ul>
     </div>
 </template>

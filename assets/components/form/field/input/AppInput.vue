@@ -12,7 +12,6 @@
     const type = computed(() => props.field.type ?? 'text')
 
     function input(e) {
-        console.log('eeeeeeeeeeee', e.target.value)
         emit('update:modelValue', e.target.value)
     }
 </script>
