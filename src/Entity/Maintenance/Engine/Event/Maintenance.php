@@ -3,12 +3,14 @@
 namespace App\Entity\Maintenance\Engine\Event;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\EventState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Maintenance\Engine\Planning;
 use App\Entity\Production\Engine\Event\Event;
+use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -79,8 +81,10 @@ ApiResource(
       'groups' => ['read:engine-maintenance-event', 'read:id', 'read:state'],
       'openapi_definition_name' => 'EngineMaintenanceEvent-read',
       'skip_null_values' => false
-   ]
+   ],
+   paginationClientEnabled: true
 ),
+   ApiFilter(filterClass: RelationFilter::class, properties: ['engine', 'engine.zone']),
    ORM\Entity]
 
 class Maintenance extends Event {
@@ -91,7 +95,13 @@ class Maintenance extends Event {
     ]
     private ?Planning $plannedBy = null;
 
-    final public function getPlannedBy(): ?Planning {
+    public function __construct()
+    {
+       parent::__construct();
+       $this->name .= ": Maintenance préventive";
+    }
+
+   final public function getPlannedBy(): ?Planning {
         return $this->plannedBy;
     }
 

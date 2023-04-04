@@ -108,7 +108,7 @@ class Society extends Entity {
         ApiProperty(description: 'Adresse'),
         Assert\Valid(groups: ['Default', 'Society-create']),
         ORM\Embedded,
-        Serializer\Groups(['create:society', 'read:society', 'write:society'])
+        Serializer\Groups(['create:society', 'read:society', 'write:society','read:address', 'read:society:collection'])
     ]
     private Address $address;
 
