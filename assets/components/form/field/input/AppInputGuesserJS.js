@@ -1,8 +1,10 @@
 import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
-import AppMultiselect from './select/AppMultiselect.vue'
-import AppInputNumber from './AppInputNumber.js'
 import AppInputMeasure from './AppInputMeasure.vue'
+import AppInputNumber from './AppInputNumber.js'
+
+import AppMultiselect from './select/AppMultiselect.vue'
+
 import AppSelect from './select/AppSelect.vue'
 import AppSwitch from './AppSwitch.vue'
 import {generateField} from '../../../props'

@@ -14,7 +14,7 @@
     const storedFields = useFields(route.name, props.fields)
     await storedFields.fetch()
     const form = computed(() => (props.tree.hasSelected ? AppTreeFormUpdate : AppTreeFormCreate))
-
+    console.log('storedFields', storedFields)
     onUnmounted(() => {
         storedFields.dispose()
     })

@@ -6,7 +6,7 @@
     defineProps({
         componentAttribute: {default: () => [], type: Array},
         fields: {default: () => [], type: Array},
-        id: {required: true, type: String},
+        id: {required: true, type: String}
 
     })
     const emit = defineEmits(['update', 'update:modelValue'])
@@ -40,7 +40,7 @@
             </div>
         </div>
         <ul v-if="disable" class="card-body">
-           <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
+            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
         </ul>
         <ul v-else class="card-body">
             <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute"/>

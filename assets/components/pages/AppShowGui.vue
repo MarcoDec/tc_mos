@@ -1,14 +1,14 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useRoute, useRouter} from 'vue-router'
     import AppComponentFormShow from '../../router/pages/component/AppComponentFormShow.vue'
     import AppCustomerFormShow from '../../router/pages/customer/AppCustomerFormShow.vue'
     import AppEmployeeFormShow from '../../router/pages/employee/AppEmployeeFormShow.vue'
     import AppProductFormShow from '../../router/pages/product/AppProductFormShow.vue'
     import AppSupplierFormShow from '../../router/pages/supplier/AppSupplierFormShow.vue'
-    import AppToolFormShow from '../../router/pages/equipment/AppToolFormShow.vue'
     import AppTab from '../tab/AppTab.vue'
     import AppTabs from '../tab/AppTabs.vue'
+    import AppToolFormShow from '../../router/pages/equipment/AppToolFormShow.vue'
+    import {useRoute} from 'vue-router'
 
     const guiRatio = ref(0.5)
     const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
@@ -39,7 +39,7 @@
     <div class="gui">
         <div class="gui-left">
             <div class="gui-card">
-              <AppSuspense>  <AppComponentFormShow v-if="route.name === 'component'"/></AppSuspense>
+                <AppSuspense>  <AppComponentFormShow v-if="route.name === 'component'"/></AppSuspense>
                 <AppCustomerFormShow v-if="route.name === 'customer'"/>
                 <AppEmployeeFormShow v-if="route.name === 'employee'"/>
                 <AppToolFormShow v-if="route.name === 'equipment'"/>

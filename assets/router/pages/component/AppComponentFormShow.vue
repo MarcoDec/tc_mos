@@ -1,12 +1,12 @@
 <script setup>
+    import {computed, onUnmounted} from 'vue'
     import AppCardShow from '../../../components/AppCardShow.vue'
     import AppTab from '../../../components/tab/AppTab.vue'
     import AppTabs from '../../../components/tab/AppTabs.vue'
+    import {useComponentAttachmentStore} from '../../../stores/component/componentAttachment'
+
     import {useComponentListStore} from '../../../stores/component/components'
     import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
-    import {useComponentAttachmentStore} from '../../../stores/component/componentAttachment'
-    import {computed, onMounted, onUnmounted, ref} from 'vue'
-    import useTable from '../../../stores/table/table'
     import useOptions from '../../../stores/option/options'
 
     const fecthOptions = useOptions('units')
@@ -75,7 +75,7 @@
             name: 'unit',
             options: {
                 label: value => optionsAtt.value.find(option => option.type === value)?.text ?? null,
-                options : optionsAtt.value
+                options: optionsAtt.value
             },
             type: 'select'
         },
@@ -111,17 +111,19 @@
         const form = document.getElementById('addLogistique')
         const formData = new FormData(form)
         const data = {
+
+            family: '/api/component-families/4',
             forecastVolume: {
                 code: 'U',
                 value: formData.get('forecastVolume')
             },
-            family: '/api/component-families/4',
             managedStock: formData.get('managedStock'),
-            unit:  formData.get('unit'),
+
             minStock: {
                 code: 'U',
                 value: formData.get('minStock')
             },
+            unit: formData.get('unit'),
             weight: {
                 code: formData.get('weight-code'),
                 value: formData.get('weight-value')
@@ -164,10 +166,7 @@
 
         fetchComponentAttachment.ajout(data)
     }
-    
-      
 
-    
     onUnmounted(() => {
         optionss.dispose()
     })
