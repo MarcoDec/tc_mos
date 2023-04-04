@@ -38,7 +38,7 @@
             <tr class="bg-dark">
                 <td colspan="10"/>
             </tr>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" :currentPage="currentPage" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" :current-page="currentPage" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">

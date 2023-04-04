@@ -1,5 +1,5 @@
 <script setup>
-    import {ref,computed} from 'vue'
+    import {computed, ref} from 'vue'
     import {useSocietyListStore} from '../../../stores/direction/societyList'
 
     defineProps({
@@ -9,12 +9,12 @@
     })
     const roleuser = ref('reader')
     const fieldsForm = [
-                {label: 'Nom*', min: true, name: 'name', trie: true, type: 'text'},
-                {label: 'Adresse*', min: false, name: 'address', trie: true, type: 'text'},
-                {label: 'Complément d\'adresse*', min: false, name: 'address2', trie: true, type: 'text'},
-                {label: 'Ville*', min: true, name: 'city', trie: true, type: 'text'},
-                {label: 'Pays*', min: true, name: 'country', trie: true, type: 'text'}
-            ]
+        {label: 'Nom*', min: true, name: 'name', trie: true, type: 'text'},
+        {label: 'Adresse*', min: false, name: 'address', trie: true, type: 'text'},
+        {label: 'Complément d\'adresse*', min: false, name: 'address2', trie: true, type: 'text'},
+        {label: 'Ville*', min: true, name: 'city', trie: true, type: 'text'},
+        {label: 'Pays*', min: true, name: 'country', trie: true, type: 'text'}
+    ]
 
     const formData = ref({
         adresse: null, complement: null, name: null, pays: null, ville: null
@@ -28,21 +28,21 @@
     const AddForm = ref(false)
     let itemId = ''
 
-    const list = computed(()=> storeSocietyList.societies.map((item)=> {
-        const { address, address2, city, country} = item.address 
-        let itemsTab = []
-        const newObject = { 
+    const list = computed(() => storeSocietyList.societies.map(item => {
+        const {address, address2, city, country} = item.address
+        const itemsTab = []
+        const newObject = {
             ...item,
-            address: undefined, // Remove the original nested address object
+            //address: undefined, // Remove the original nested address object
             address: address ?? null,
             address2: address2 ?? null,
             city: city ?? null,
             country: country ?? null
-        }  
+        }
         itemsTab.push(newObject)
         return itemsTab
-    }) ) 
-    const itemsTable = computed(()=>list.value.reduce((acc, curr) => acc.concat(curr), [])) 
+    }))
+    const itemsTable = computed(() => list.value.reduce((acc, curr) => acc.concat(curr), []))
 
     function ajoute(){
         AddForm.value = true
@@ -50,9 +50,9 @@
         const itemsNull = {
             address: null,
             address2: null,
-            name: null,
             city: null,
-            country: null
+            country: null,
+            name: null
         }
         formData.value = itemsNull
     }
@@ -68,7 +68,7 @@
             },
             name: formData1.get('name')
         }
-        console.log('itemsAddData',itemsAddData);
+        //console.log('itemsAddData', itemsAddData)
         storeSocietyList.addSociety(itemsAddData)
     }
     function annule(){
@@ -77,9 +77,9 @@
         const itemsNull = {
             address: null,
             address2: null,
-            name: null,
             city: null,
-            country: null
+            country: null,
+            name: null
         }
         formData.value = itemsNull
     }
@@ -90,29 +90,29 @@
         const itemsData = {
             address: item.address,
             address2: item.address2,
-            name: item.name,
             city: item.city,
-            country: item.country
+            country: item.country,
+            name: item.name
         }
         formData.value = itemsData
     }
     function updateSociety(){
-        console.log('itemId',itemId);
+        //console.log('itemId', itemId)
         const form = document.getElementById('updateSociety')
-        const formData= new FormData(form)
+        const formData2 = new FormData(form)
         const itemsUpdateData = {
-            address:{
-                address: formData.get('address'),
-                address2: formData.get('address2'),
-                country: formData.get('country'),
-                city: formData.get('city')
+            address: {
+                address: formData2.get('address'),
+                address2: formData2.get('address2'),
+                city: formData2.get('city'),
+                country: formData2.get('country')
             },
-            name: formData.get('name')
+            name: formData2.get('name')
         }
-        console.log('itemsUpdateData',itemsUpdateData);
-        const payload ={
+        //console.log('itemsUpdateData', itemsUpdateData)
+        const payload = {
             id: itemId,
-            itemsUpdateData: itemsUpdateData
+            itemsUpdateData
         }
         storeSocietyList.updateSociety(payload)
     }
@@ -150,7 +150,7 @@
                 :user="roleuser"
                 form="formSocietyCardableTable"
                 @update="update"
-                @deleted="deleted" 
+                @deleted="deleted"
                 @get-page="getPage"/>
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">
