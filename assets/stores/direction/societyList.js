@@ -7,10 +7,16 @@ export const useSocietyListStore = defineStore('societyList', {
             await api('/api/societies', 'POST', payload)
             //console.log('response', response)
         },
+        async countryOption() {
+            const response = await api('/api/countries/options', 'GET')
+            //console.log('responsecountry', response)
+            this.countries = response['hydra:member']
+            //console.log('countries', this.countries)
+        },
         async delated(payload){
             //console.log('payload', payload)
             await api(`/api/societies/${payload}`, 'DELETE')
-            this.societies = this.societies.filter((society) => Number(society['@id'].match(/\d+/)[0]) !== payload)
+            this.societies = this.societies.filter(society => Number(society['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
             const response = await api('/api/societies', 'GET')
@@ -21,6 +27,12 @@ export const useSocietyListStore = defineStore('societyList', {
             console.log('payloaditemsUpdateData', payload.itemsUpdateData);
             const response = await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
             console.log('response', response);
+            // if (!response.ok) {
+            //     const error = new Error(
+            //         responseData.message
+            //       )
+            //       throw error
+            // }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/societies?page=${nPage}`, 'GET')
@@ -36,7 +48,6 @@ export const useSocietyListStore = defineStore('societyList', {
             this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
             // console.log('responseData',responseData);
             return responseData
-            
         },
         async countryOption (){
             const response = await api('/api/countries/options', 'GET')
@@ -76,12 +87,12 @@ export const useSocietyListStore = defineStore('societyList', {
         })
     },
     state: () => ({
+        countries: [],
         currentPage: '',
         firstPage: '',
         lastPage: '',
         nextPage: '',
         previousPage: '',
-        societies: [],
-        countries: []
+        societies: []
     })
 })

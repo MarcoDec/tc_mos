@@ -1,5 +1,5 @@
 <script setup>
-    import {ref,computed} from 'vue'
+    import {computed, ref} from 'vue'
     import {useSocietyListStore} from '../../../stores/direction/societyList'
 
 
@@ -51,9 +51,9 @@
         const itemsNull = {
             address: null,
             address2: null,
-            name: null,
             city: null,
-            country: null
+            country: null,
+            name: null
         }
         formData.value = itemsNull
     }
@@ -69,7 +69,7 @@
             },
             name: formData1.get('name')
         }
-        console.log('itemsAddData',itemsAddData);
+        //console.log('itemsAddData', itemsAddData)
         storeSocietyList.addSociety(itemsAddData)
     }
     function annule(){
@@ -78,9 +78,9 @@
         const itemsNull = {
             address: null,
             address2: null,
-            name: null,
             city: null,
-            country: null
+            country: null,
+            name: null
         }
         formData.value = itemsNull
     }
@@ -91,29 +91,29 @@
         const itemsData = {
             address: item.address,
             address2: item.address2,
-            name: item.name,
             city: item.city,
-            country: item.country
+            country: item.country,
+            name: item.name
         }
         formData.value = itemsData
     }
     function updateSociety(){
-        console.log('itemId',itemId);
+        //console.log('itemId', itemId)
         const form = document.getElementById('updateSociety')
-        const formData= new FormData(form)
+        const formData2 = new FormData(form)
         const itemsUpdateData = {
-            address:{
-                address: formData.get('address'),
-                address2: formData.get('address2'),
-                country: formData.get('country'),
-                city: formData.get('city')
+            address: {
+                address: formData2.get('address'),
+                address2: formData2.get('address2'),
+                city: formData2.get('city'),
+                country: formData2.get('country')
             },
-            name: formData.get('name')
+            name: formData2.get('name')
         }
-        console.log('itemsUpdateData',itemsUpdateData);
-        const payload ={
+        //console.log('itemsUpdateData', itemsUpdateData)
+        const payload = {
             id: itemId,
-            itemsUpdateData: itemsUpdateData
+            itemsUpdateData
         }
         storeSocietyList.updateSociety(payload)
     }
@@ -151,7 +151,7 @@
                 :user="roleuser"
                 form="formSocietyCardableTable"
                 @update="update"
-                @deleted="deleted" 
+                @deleted="deleted"
                 @get-page="getPage"/>
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">

@@ -24,7 +24,7 @@
             <Fa icon="trash"/>
         </button>
     </td>
-    <td  v-for="field in fields" :key="field.name">
+    <td v-for="field in fields" :key="field.name">
         {{ item[field.name] }}
     </td>
 </template>
