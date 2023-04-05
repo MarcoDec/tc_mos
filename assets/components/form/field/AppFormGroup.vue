@@ -36,7 +36,7 @@
                 @update:model-value="input"/>
             <div v-if="hasViolation" class="invalid-feedback">
                 {{ violation }}
-            </div>
-        </div>
+            </div> 
+        </div>  
     </div>
 </template>

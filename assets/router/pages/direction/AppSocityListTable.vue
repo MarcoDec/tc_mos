@@ -2,47 +2,48 @@
     import {ref,computed} from 'vue'
     import {useSocietyListStore} from '../../../stores/direction/societyList'
 
-    defineProps({
+
+    const props = defineProps({
         fields: {default: () => [], type: Array},
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
     const roleuser = ref('reader')
-    const fieldsForm = [
-                {label: 'Nom*', min: true, name: 'name', trie: true, type: 'text'},
-                {label: 'Adresse*', min: false, name: 'address', trie: true, type: 'text'},
-                {label: 'Complément d\'adresse*', min: false, name: 'address2', trie: true, type: 'text'},
-                {label: 'Ville*', min: true, name: 'city', trie: true, type: 'text'},
-                {label: 'Pays*', min: true, name: 'country', trie: true, type: 'text'}
-            ]
+    
+   
+    const storeSocietyList = useSocietyListStore()
+    await storeSocietyList.fetch()
+    await storeSocietyList.countryOption()
+    const itemsTable = computed(()=>storeSocietyList.itemsSocieties.reduce((acc, curr) => acc.concat(curr), [])) 
+    // console.log('itemsTable',itemsTable);
+    const listCountry = computed(()=>storeSocietyList.countriesOption)
+    // console.log('listCountryy', listCountry);
 
     const formData = ref({
         adresse: null, complement: null, name: null, pays: null, ville: null
     })
 
-    const storeSocietyList = useSocietyListStore()
-    storeSocietyList.fetch()
-    storeSocietyList.countryOption()
 
     const updated = ref(false)
     const AddForm = ref(false)
     let itemId = ''
-
-    const list = computed(()=> storeSocietyList.societies.map((item)=> {
-        const { address, address2, city, country} = item.address 
-        let itemsTab = []
-        const newObject = { 
-            ...item,
-            address: undefined, // Remove the original nested address object
-            address: address ?? null,
-            address2: address2 ?? null,
-            city: city ?? null,
-            country: country ?? null
-        }  
-        itemsTab.push(newObject)
-        return itemsTab
-    }) ) 
-    const itemsTable = computed(()=>list.value.reduce((acc, curr) => acc.concat(curr), [])) 
+    
+    const fieldsForm = [
+                {label: 'Nom*', min: true, name: 'name', trie: true, type: 'text'},
+                {label: 'Adresse*', min: false, name: 'address', trie: true, type: 'text'},
+                {label: 'Complément d\'adresse*', min: false, name: 'address2', trie: true, type: 'text'},
+                {label: 'Ville*', min: true, name: 'city', trie: true, type: 'text'},
+                {label: 'Pays*',
+                 min: true,
+                 name: 'country',
+                 trie: true,
+                 options: {
+                    label: value =>
+                    listCountry.value.find(option => option.type === value)?.text ?? null,
+                    options:listCountry.value
+                 },
+                 type: 'select'}
+            ]
 
     function ajoute(){
         AddForm.value = true
@@ -183,9 +184,6 @@
                     </h4>
                 </AppRow>
                 <br/>
-                <!-- <div v-if="state.matches('error')" class="alert alert-danger" role="alert">
-                    {{ state.context.error }}
-                </div> -->
                 <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData"/>
                 <AppCol class="btnright">
                     <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">

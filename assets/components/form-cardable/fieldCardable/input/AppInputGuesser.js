@@ -2,7 +2,7 @@ import {h, resolveComponent} from 'vue'
 import AppGroupButton from './AppGroupButton.vue'
 import AppInputFile from './AppInputFile'
 import AppInputNumber from './AppInputNumber'
-import AppSelect from './select/AppSelect'
+import AppSelect from '../../../form/field/input/select/AppSelect.vue'
 import AppSwitch from './AppSwitch.vue'
 import {generateField} from '../../../props'
 

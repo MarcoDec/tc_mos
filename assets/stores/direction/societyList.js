@@ -4,7 +4,6 @@ import {defineStore} from 'pinia'
 export const useSocietyListStore = defineStore('societyList', {
     actions: {
         async addSociety(payload){
-            //console.log('payload', payload)
             await api('/api/societies', 'POST', payload)
             //console.log('response', response)
         },
@@ -22,12 +21,6 @@ export const useSocietyListStore = defineStore('societyList', {
             console.log('payloaditemsUpdateData', payload.itemsUpdateData);
             const response = await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
             console.log('response', response);
-            // if (!response.ok) {
-            //     const error = new Error(
-            //         responseData.message
-            //       )
-            //       throw error
-            // }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/societies?page=${nPage}`, 'GET')
@@ -41,19 +34,46 @@ export const useSocietyListStore = defineStore('societyList', {
             this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
             this.currentPage = paginationView['@id'].match(/\d+/)[0]
             this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
-            console.log('responseData',responseData);
+            // console.log('responseData',responseData);
             return responseData
             
         },
         async countryOption (){
             const response = await api('/api/countries/options', 'GET')
-            console.log('responsecountry',response);
+            // console.log('responsecountry',response)
             this.countries = response['hydra:member']
-            console.log('countries',this.countries);
+            // console.log('countries',this.countries)
         }
     },
     getters: {
-
+        countriesOption: state => state.countries.map((country)=>{
+            const opt = {
+                text: country.text,
+                value: country.code
+            }
+            return  opt
+        }),
+        itemsSocieties: state => state.societies.map((item)=> {
+            const { address, address2, city, country,email,phoneNumber,zipCode} = item.address 
+            const idAdress = item.address['@id']
+            const typeAdress = item.address['@type']
+            let itemsTab = []
+            const newObject = { 
+                ...item,
+                address: undefined, // Remove the original nested address object
+                address: address ?? null,
+                address2: address2 ?? null,
+                city: city ?? null,
+                country: country ?? null,
+                email: email ?? null,
+                phoneNumber: phoneNumber ?? null,
+                zipCode: zipCode ?? null,
+                idAdress: idAdress ?? null,
+                typeAdress:typeAdress?? null,
+            }  
+            itemsTab.push(newObject)
+            return itemsTab
+        })
     },
     state: () => ({
         currentPage: '',
