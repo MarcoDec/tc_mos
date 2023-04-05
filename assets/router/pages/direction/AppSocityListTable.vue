@@ -15,9 +15,9 @@
     await storeSocietyList.fetch()
     await storeSocietyList.countryOption()
     const itemsTable = computed(()=>storeSocietyList.itemsSocieties.reduce((acc, curr) => acc.concat(curr), [])) 
-    // console.log('itemsTable',itemsTable);
+    console.log('itemsTable',itemsTable);
     const listCountry = computed(()=>storeSocietyList.countriesOption)
-    // console.log('listCountryy', listCountry);
+    console.log('listCountryy', listCountry);
 
     const formData = ref({
         adresse: null, complement: null, name: null, pays: null, ville: null
@@ -29,20 +29,22 @@
     let itemId = ''
     
     const fieldsForm = [
-                {label: 'Nom*', min: true, name: 'name', trie: true, type: 'text'},
-                {label: 'Adresse*', min: false, name: 'address', trie: true, type: 'text'},
-                {label: 'Complément d\'adresse*', min: false, name: 'address2', trie: true, type: 'text'},
-                {label: 'Ville*', min: true, name: 'city', trie: true, type: 'text'},
+                {label: 'Nom*', name: 'name', type: 'text'},
+                {label: 'Adresse*', name: 'address', type: 'text'},
+                {label: 'Complément d\'adresse*', name: 'address2', type: 'text'},
+                {label: 'Ville*', name: 'city', type: 'text'},
                 {label: 'Pays*',
-                 min: true,
                  name: 'country',
-                 trie: true,
                  options: {
                     label: value =>
                     listCountry.value.find(option => option.type === value)?.text ?? null,
                     options:listCountry.value
                  },
-                 type: 'select'}
+                 type: 'select'
+                },
+                {label: 'zipCode*', name: 'zipCode', type: 'text'},
+                {label: 'phoneNumber*', name: 'phoneNumber', type: 'text'},
+                {label: 'email*', name: 'email', type: 'text'}
             ]
 
     function ajoute(){
@@ -53,7 +55,10 @@
             address2: null,
             city: null,
             country: null,
-            name: null
+            name: null,
+            zipCode: null,
+            phoneNumber: null,
+            email: null
         }
         formData.value = itemsNull
     }
@@ -65,7 +70,10 @@
                 address: formData1.get('address'),
                 address2: formData1.get('address2'),
                 city: formData1.get('city'),
-                country: formData1.get('country')
+                country: formData1.get('country'),
+                zipCode: formData1.get('zipCode'),
+                phoneNumber: formData1.get('phoneNumber'),
+                email: formData1.get('email')
             },
             name: formData1.get('name')
         }
@@ -80,7 +88,10 @@
             address2: null,
             city: null,
             country: null,
-            name: null
+            name: null,
+            zipCode: null,
+            phoneNumber: null,
+            email: null
         }
         formData.value = itemsNull
     }
@@ -93,7 +104,10 @@
             address2: item.address2,
             city: item.city,
             country: item.country,
-            name: item.name
+            name: item.name,
+            zipCode: item.zipCode,
+            phoneNumber: item.phoneNumber,
+            email: item.email
         }
         formData.value = itemsData
     }
@@ -106,7 +120,10 @@
                 address: formData2.get('address'),
                 address2: formData2.get('address2'),
                 city: formData2.get('city'),
-                country: formData2.get('country')
+                country: formData2.get('country'),
+                zipCode: formData2.get('zipCode'),
+                phoneNumber: formData2.get('phoneNumber'),
+                email: formData2.get('email')
             },
             name: formData2.get('name')
         }
