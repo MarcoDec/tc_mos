@@ -5,17 +5,13 @@ import generateComponentAttribute from './componentAttribute'
 export const useComponentShowStore = defineStore('componentAttributes', {
     actions: {
         async fetch() {
-            this.items = []
+            this.componentAttribute = []
             const response = await api('/api/component-attributes?component=1', 'GET')
-            this.componentAttribute = await response['hydra:member']
-            for (const component of response['hydra:member']) {
-                const item = generateComponentAttribute(component, this)
-                this.items.push(item)
+            for (const attribute of response['hydra:member']) {
+                const item = generateComponentAttribute(attribute, this)
+
+                this.componentAttribute.push(item)
             }
-        },
-        async update(data, id) {
-            await api(`/api/component-attributes/${id}`, 'PATCH', data)
-            this.fetch()
         }
 
     },
@@ -23,6 +19,8 @@ export const useComponentShowStore = defineStore('componentAttributes', {
 
     },
     state: () => ({
-        componentAttribute: []
+        componentAttribute: [],
+        items: []
+
     })
 })

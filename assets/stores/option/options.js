@@ -8,7 +8,6 @@ function sort(a, b) {
 
 export default function useOptions(base, valueProp = '@id') {
     const id = `options/${base}`
-    console.log('helloooooooooo', id)
     return defineStore(id, {
         actions: {
             dispose() {

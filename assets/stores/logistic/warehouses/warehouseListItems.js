@@ -11,6 +11,7 @@ export const useWarehouseListItemsStore = defineStore('warehouseListItems', {
             this.items = []
             const response = await api(`/api/warehouses?company=${userCompanyIri}&pagination=false`, 'GET')
             console.log('res', response)
+            this.list = response['hydra:member']
             for (const warehouse of response['hydra:member']) {
                 const warehouseStored = generateWarehouse(warehouse, this)
                 this.items.push(warehouseStored)
@@ -48,6 +49,7 @@ export const useWarehouseListItemsStore = defineStore('warehouseListItems', {
             // update: false,
             // update2: false
             //}
-        ]
+        ],
+        list: []
     })
 })

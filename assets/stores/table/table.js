@@ -27,7 +27,6 @@ export default function useTable(id) {
                 console.log('row', response)
                 for (const row of response['hydra:member'])
                     this.rows.push(useRow(row, this))
-                console.log('rows', this.rows)
             },
             removeRow(removed) {
                 this.rows = this.rows.filter(row => row.id !== removed.id)

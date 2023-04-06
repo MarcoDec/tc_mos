@@ -3,15 +3,17 @@
     import AppCardShow from '../../../components/AppCardShow.vue'
     import AppTab from '../../../components/tab/AppTab.vue'
     import AppTabs from '../../../components/tab/AppTabs.vue'
+    import generateComponentAttribute from '../../../stores/component/componentAttribute'
+    import {useColorsStore} from '../../../stores/colors/colors'
     import {useComponentAttachmentStore} from '../../../stores/component/componentAttachment'
-
     import {useComponentListStore} from '../../../stores/component/components'
     import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
     import useOptions from '../../../stores/option/options'
 
     const fecthOptions = useOptions('units')
+    const fecthColors = useColorsStore()
     await fecthOptions.fetch()
-    console.log('store', fecthOptions)
+    await fecthColors.fetch()
 
     const optionsAtt = computed(() => fecthOptions.options.map(op => {
         const text = op.text
@@ -19,29 +21,31 @@
         const optionList = {text, value}
         return optionList
     }))
-    console.log('optionsAtt', optionsAtt.value)
+    const optionsColors = computed(() => fecthColors.colors.map(op => {
+        const text = op.name
+        const value = op.id
+        const optionList = {text, value}
+        return optionList
+    }))
 
     const useFetchComponentStore = useComponentListStore()
     const useComponentStore = useComponentShowStore()
     const fetchComponentAttachment = useComponentAttachmentStore()
-    useComponentStore.fetch()
+    await useComponentStore.fetch()
     fetchComponentAttachment.fetch()
     useFetchComponentStore.fetch()
-    console.log('useFetchComponentStore', useFetchComponentStore)
-
-    const options = [
-        {text: 'aaaaa', value: 'aaaaa'},
-        {text: 'bbbb', value: 'bbbb'}
-    ]
-    console.log('options--->', options)
 
     const Attributfields = [
-        {label: 'Couleur', name: 'color', type: 'text'},
+        {label: 'Couleur', name: 'getColor', options: {
+             label: value => optionsColors.value.find(option => option.type === value)?.text ?? null,
+             options: optionsColors.value
+         },
+         type: 'select'},
         {label: 'T° maxi (°C)', name: 'temperatureMaxi', type: 'number'},
         {label: 'Nombre des brins', name: 'NombreBrins', type: 'number'},
         {label: 'Voltage (V)', name: 'Voltage', type: 'text'},
         {label: 'Dia ext maxi (mm)', name: 'DiaMaxi', type: 'number'},
-        {label: 'Norme d\'appellation', name: 'NormeAppellation', type: 'text'},
+        {label: 'Norme d\'appellation', name: 'Norme', type: 'text'},
         {
             label: 'Nombre des conducteurs',
             name: 'NombreConducteurs',
@@ -90,20 +94,22 @@
         {label: 'Info Cmde', name: 'orderInfo', type: 'text'}
     ]
 
-    function update(value){
-        console.log('je suis ici to update')
-        console.log('value==', value)
+    async function update(value){
         const form = document.getElementById('addAttribut')
         const formData = new FormData(form)
         const data = {
-            color: formData.get('color'),
+            color: `/api/colors/${formData.get('getColor')}`,
             measure: {
                 code: 'U',
                 value: 1
             },
             value: 'string'
         }
-        useComponentStore.update(data, value.id)
+        const item = generateComponentAttribute(value)
+
+        await item.updateAttributes(data)
+
+        await useComponentStore.fetch()
     }
     function updateLogistique(value){
         console.log('update logistique value==', value)
@@ -168,7 +174,7 @@
     }
 
     onUnmounted(() => {
-        optionss.dispose()
+        fecthOptions.dispose()
     })
 </script>
 
@@ -187,7 +193,7 @@
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">
-            <AppCardShow v-for="item in useComponentStore.componentAttribute" id="addAttribut" :key="item" :fields="Attributfields" :component="item" @update="update(item)"/>
+            <AppCardShow v-for="item in useComponentStore.componentAttribute" id="addAttribut" :key="item.id" :fields="Attributfields" :component-attribute="item" @update="update(item)"/>
         </AppTab>
         <AppTab
             id="gui-start-files"
@@ -215,14 +221,14 @@
             title="Logistique"
             icon="pallet"
             tabs="gui-start">
-            <AppCardShow id="addLogistique" :fields="Logistiquefields" :component="useFetchComponentStore.component" @update="updateLogistique(useFetchComponentStore.component)"/>
+            <AppCardShow id="addLogistique" :fields="Logistiquefields" :component-attribute="useFetchComponentStore.component" @update="updateLogistique(useFetchComponentStore.component)"/>
         </AppTab>
         <AppTab
             id="gui-start-spécifications"
             title="Spécification"
             icon="file-contract"
             tabs="gui-start">
-            <AppCardShow id="addSpécification" :fields="Spécificationfields" :component="useFetchComponentStore.component" @update="updateSpecification(useFetchComponentStore.component)"/>
+            <AppCardShow id="addSpécification" :fields="Spécificationfields" :component-attribute="useFetchComponentStore.component" @update="updateSpecification(useFetchComponentStore.component)"/>
         </AppTab>
     </AppTabs>
 </template>

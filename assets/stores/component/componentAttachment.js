@@ -8,7 +8,7 @@ export const useComponentAttachmentStore = defineStore('componentAttachment', {
             form.append('file', data.file)
             form.append('category', data.category)
             form.append('component', data.component)
-            const response = await api('/api/component-attachments', 'POST', form)
+            await api('/api/component-attachments', 'POST', form)
         },
         async fetch() {
             this.items = []
