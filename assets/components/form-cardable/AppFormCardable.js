@@ -1,5 +1,5 @@
 import {fieldValidator, generateLabelCols} from '../props'
-import {h, resolveComponent} from 'vue'
+import {computed, h, resolveComponent} from 'vue'
 import AppFormGroup from './fieldCardable/AppFormGroup'
 
 function AppForm(props, context) {
@@ -31,6 +31,7 @@ function AppForm(props, context) {
                 }),
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
+
         if (props.submitLabel !== null){
             groups.push(h(
                 'div',
@@ -48,6 +49,7 @@ function AppForm(props, context) {
                 )
             ))
         }
+        console.log(computed(()=>props.violations));
     }
     const attrs = {
         autocomplete: 'off',
@@ -99,5 +101,4 @@ AppForm.props = {
     submitLabel: {default: null, type: String},
     violations: {default: () => [], type: Array}
 }
-
 export default AppForm

@@ -6,6 +6,7 @@ export const useSocietyListStore = defineStore('societyList', {
         async addSociety(payload){
             await api('/api/societies', 'POST', payload)
             //console.log('response', response)
+            this.itemsPagination(this.lastPage)
         },
         async countryOption() {
             const response = await api('/api/countries/options', 'GET')
@@ -23,16 +24,13 @@ export const useSocietyListStore = defineStore('societyList', {
             this.societies = await this.updatePagination(response)
         },
         async updateSociety (payload){
-            console.log('payloadid', payload.id);
-            console.log('payloaditemsUpdateData', payload.itemsUpdateData);
+            // console.log('payloadid', payload.id);
+            // console.log('payloaditemsUpdateData', payload.itemsUpdateData);
+           
             const response = await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
             console.log('response', response);
-            // if (!response.ok) {
-            //     const error = new Error(
-            //         responseData.message
-            //       )
-            //       throw error
-            // }
+            this.itemsPagination(this.currentPage)
+            
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/societies?page=${nPage}`, 'GET')

@@ -9,6 +9,7 @@
         title: {required: true, type: String}
     })
     const roleuser = ref('reader')
+    let violations = []
     
    
     const storeSocietyList = useSocietyListStore()
@@ -17,7 +18,7 @@
     const itemsTable = computed(()=>storeSocietyList.itemsSocieties.reduce((acc, curr) => acc.concat(curr), [])) 
     console.log('itemsTable',itemsTable);
     const listCountry = computed(()=>storeSocietyList.countriesOption)
-    console.log('listCountryy', listCountry);
+    // console.log('listCountryy', listCountry);
 
     const formData = ref({
         adresse: null, complement: null, name: null, pays: null, ville: null
@@ -42,9 +43,9 @@
                  },
                  type: 'select'
                 },
-                {label: 'zipCode*', name: 'zipCode', type: 'text'},
-                {label: 'phoneNumber*', name: 'phoneNumber', type: 'text'},
-                {label: 'email*', name: 'email', type: 'text'}
+                {label: 'Zip Code*', name: 'zipCode', type: 'text'},
+                {label: 'Phone Number*', name: 'phoneNumber', type: 'text'},
+                {label: 'Email*', name: 'email', type: 'text'}
             ]
 
     function ajoute(){
@@ -62,7 +63,7 @@
         }
         formData.value = itemsNull
     }
-    function ajoutSociety(){
+    async function ajoutSociety(){
         const form = document.getElementById('addSociety')
         const formData1 = new FormData(form)
         const itemsAddData = {
@@ -78,7 +79,9 @@
             name: formData1.get('name')
         }
         //console.log('itemsAddData', itemsAddData)
-        storeSocietyList.addSociety(itemsAddData)
+        await storeSocietyList.addSociety(itemsAddData)
+        AddForm.value = false
+        updated.value = false
     }
     function annule(){
         AddForm.value = false
@@ -111,28 +114,35 @@
         }
         formData.value = itemsData
     }
-    function updateSociety(){
+    async function updateSociety(){
         //console.log('itemId', itemId)
-        const form = document.getElementById('updateSociety')
-        const formData2 = new FormData(form)
-        const itemsUpdateData = {
-            address: {
-                address: formData2.get('address'),
-                address2: formData2.get('address2'),
-                city: formData2.get('city'),
-                country: formData2.get('country'),
-                zipCode: formData2.get('zipCode'),
-                phoneNumber: formData2.get('phoneNumber'),
-                email: formData2.get('email')
-            },
-            name: formData2.get('name')
+        try {
+            const form = document.getElementById('updateSociety')
+            const formData2 = new FormData(form)
+            const itemsUpdateData = {
+                address: {
+                    address: formData2.get('address'),
+                    address2: formData2.get('address2'),
+                    city: formData2.get('city'),
+                    country: formData2.get('country'),
+                    zipCode: formData2.get('zipCode'),
+                    phoneNumber: formData2.get('phoneNumber'),
+                    email: formData2.get('email')
+                },
+                name: formData2.get('name')
+            }
+            //console.log('itemsUpdateData', itemsUpdateData)
+            const payload = {
+                id: itemId,
+                itemsUpdateData
+            }
+            await storeSocietyList.updateSociety(payload)
+            AddForm.value = false
+            updated.value = false
+        }catch (error) {
+            violations = computed(()=> error) 
+            // console.log('violations', violations);
         }
-        //console.log('itemsUpdateData', itemsUpdateData)
-        const payload = {
-            id: itemId,
-            itemsUpdateData
-        }
-        storeSocietyList.updateSociety(payload)
     }
     function deleted(id){
         storeSocietyList.delated(id)
@@ -140,6 +150,7 @@
     function getPage(nPage){
         storeSocietyList.itemsPagination(nPage)
     }
+    console.log('violations',computed(()=>violations));
 </script>
 
 <template>
@@ -201,7 +212,8 @@
                     </h4>
                 </AppRow>
                 <br/>
-                <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData"/>
+                <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData" :violations="violations"/>
+                
                 <AppCol class="btnright">
                     <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">
                         <Fa icon="pencil-alt"/> Modifier
