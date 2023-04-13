@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
+use App\Controller\Purchase\Component\ComponentController;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\ComponentManufacturingOperationState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -109,6 +110,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
+                'controller' => ComponentController::class,
+                'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifie un composant',
                     'parameters' => [[
@@ -123,8 +126,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie un composant'
                 ],
                 'path' => '/components/{id}/{process}',
-                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
-                'validation_groups' => AppAssert\ProcessGroupsGenerator::class
+                'read' => false,
+                'write' =>true,
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')'//,
+                //'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
             'promote' => [
                 'controller' => PlaceholderAction::class,
@@ -206,7 +211,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 16, groups: ['Component-logistics']),
         ORM\Column(length: 16, nullable: true),
-        Serializer\Groups(['read:component', 'write:component:logistics'])
+        Serializer\Groups(['read:component', 'write:component', 'write:component:logistics'])
     ]
     private ?string $customsCode = null;
 
