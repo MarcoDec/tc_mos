@@ -1,65 +1,84 @@
 <script setup>
-    import {defineProps} from 'vue'
-    defineProps({disabled: Boolean})
+    import {defineEmits, defineProps, ref} from 'vue'
+
+    const emit = defineEmits(['update:modelValue'])
+    const props = defineProps({
+        id: {required: true, type: String},
+        modelValue: {type: Boolean}
+    })
+
+    const ratingValue = ref(props.modelValue)
+
+    function input(value) {
+        if (ratingValue.value === value) {
+            ratingValue.value = 0
+        } else {
+            ratingValue.value = value
+        }
+        console.log('ratingValue.value', ratingValue.value)
+        emit('update:modelValue', ratingValue.value)
+    }
 </script>
 
 <template>
-    <div class="d-flex">
-        <div class="bg-success rate">
-            <div class="rating">
-                <input id="5" type="radio" name="rating" value="5" :disabled="disabled"/><label for="5">☆</label>
-                <input id="4" type="radio" name="rating" value="4" :disabled="disabled"/><label for="4">☆</label>
-                <input id="3" type="radio" name="rating" value="3" :disabled="disabled"/><label for="3">☆</label>
-                <input id="2" type="radio" name="rating" value="2" :disabled="disabled"/><label for="2">☆</label>
-                <input id="1" type="radio" name="rating" value="1" :disabled="disabled"/><label for="1">☆</label>
-            </div>
+    <div :id="id" class="container">
+        <div class="rating">
+            <label for="star5" class="star" @click="input(5)"><Fa :class="ratingValue >= 5 ? 'checked' : ''" icon="star"/>
+            </label>
+            <label for="star4" class="star" @click="input(4)"><Fa :class="ratingValue >= 4 ? 'checked' : ''" icon="star"/></label>
+            <label for="star3" class="star" @click="input(3)"><Fa :class="ratingValue >= 3 ? 'checked' : ''" icon="star"/></label>
+            <label for="star2" class="star" @click="input(2)"><Fa :class="ratingValue >= 2 ? 'checked' : ''" icon="star"/></label>
+            <label for="star1" class="star" @click="input(1)"><Fa :class="ratingValue >= 1 ? 'checked' : ''" icon="star"/></label>
         </div>
     </div>
 </template>
 
 <style scoped>
-.rate {
-  border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 6px;
-  border-top-right-radius: 6px;
-  border-top-left-radius: 6px;
+.container {
+  background: #22944e;
+  border-radius: 6px;
 }
 
 .rating {
   display: flex;
   flex-direction: row-reverse;
-  justify-content: center
+  justify-content: center;
 }
 
-.rating>input {
-  display: none
-}
-
-.rating>label {
-  position: relative;
-  width: 1em;
-  font-size: 17px;
+.rating label {
+  font-size: 20px;
   font-weight: 300;
-  color: #FFD600;
-  cursor: pointer
+  color: #444;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.rating>label::before {
-  content: "\2605";
-  position: absolute;
-  opacity: 0
+.rating label.checked:before {
+  color: #ffc107;
 }
 
-.rating>label:hover:before,
-.rating>label:hover~label:before {
-  opacity: 1 !important
+.rating label:hover ~ label:before {
+  color: #ffdb70;
 }
 
-.rating>input:checked~label:before {
-  opacity: 1
+.rating label:hover:before {
+  color: #ffc107;
 }
 
-.rating:hover>input:checked~label:before {
-  opacity: 0.4
+input:not(:checked) ~ label:hover,
+input:not(:checked) ~ label:hover ~ label {
+  color: #fd4;
+}
+
+input:checked ~ label {
+  color: #fd4;
+}
+
+.fa-star {
+  color: #444;
+}
+
+.checked {
+  color: #ffc107;
 }
 </style>

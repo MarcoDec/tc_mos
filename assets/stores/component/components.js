@@ -5,12 +5,11 @@ export const useComponentListStore = defineStore('component', {
     actions: {
         async fetch() {
             const response = await api('/api/components/1', 'GET')
-            console.log('response ***===', response)
             this.component = await response
+            console.log('this.component', this.component)
         },
         async update(data, id) {
-            const response = await api(`/api/components/${id}/admin`, 'PATCH', data)
-            console.log('api response update', response)
+            await api(`/api/components/${id}/admin`, 'PATCH', data)
             this.fetch()
         }
     },

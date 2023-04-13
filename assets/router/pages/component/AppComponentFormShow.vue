@@ -34,7 +34,8 @@
     await useComponentStore.fetch()
     fetchComponentAttachment.fetch()
     useFetchComponentStore.fetch()
-
+    console.log('useFetchComponentStore', useFetchComponentStore)
+    console.log('useComponentStore****', useComponentStore)
     const Attributfields = [
         {label: 'Couleur', name: 'getColor', options: {
              label: value => optionsColors.value.find(option => option.type === value)?.text ?? null,
@@ -68,8 +69,8 @@
         {label: 'Qualité', name: 'Qualité', type: 'number'}
     ]
     const Achatfields = [
-        {label: 'Fabricant', name: 'Fabricant', type: 'text'},
-        {label: 'Référence du Fabricant', name: 'RéférenceFabricant', type: 'text'}
+        {label: 'Fabricant', name: 'manufacturer', type: 'text'},
+        {label: 'Référence du Fabricant', name: 'manufacturerCode', type: 'text'}
     ]
     const Logistiquefields = [
         {label: 'Code douanier', name: 'code', type: 'text'},

@@ -9,7 +9,6 @@ export const useComponentShowStore = defineStore('componentAttributes', {
             const response = await api('/api/component-attributes?component=1', 'GET')
             for (const attribute of response['hydra:member']) {
                 const item = generateComponentAttribute(attribute, this)
-
                 this.componentAttribute.push(item)
             }
         }

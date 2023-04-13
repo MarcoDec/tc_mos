@@ -39,12 +39,12 @@
     <div class="gui">
         <div class="gui-left">
             <div class="gui-card">
-                <AppSuspense>  <AppComponentFormShow v-if="route.name === 'component'"/></AppSuspense>
-                <AppCustomerFormShow v-if="route.name === 'customer'"/>
-                <AppEmployeeFormShow v-if="route.name === 'employee'"/>
-                <AppToolFormShow v-if="route.name === 'equipment'"/>
-                <AppProductFormShow v-if="route.name === 'product'"/>
-                <AppSupplierFormShow v-if="route.name === 'supplier'"/>
+                <AppSuspense><AppComponentFormShow v-if="route.name === 'component'"/></AppSuspense>
+                <AppSuspense><AppCustomerFormShow v-if="route.name === 'customer'"/></AppSuspense>
+                <AppSuspense> <AppEmployeeFormShow v-if="route.name === 'employee'"/></AppSuspense>
+                <AppSuspense><AppToolFormShow v-if="route.name === 'equipment'"/></AppSuspense>
+                <AppSuspense> <AppProductFormShow v-if="route.name === 'product'"/></AppSuspense>
+                <AppSuspense> <AppSupplierFormShow v-if="route.name === 'supplier'"/></AppSuspense>
                 <!-- <AppTabs id="gui-left">
                     <AppTab id="gui-left-main" active icon="bars" tabs="gui-left" title="Généralités"/>
                     <AppTab id="gui-left-files" icon="folder" tabs="gui-left" title="Fichiers"/>

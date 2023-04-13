@@ -1,12 +1,12 @@
 import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
 import AppInputMeasure from './AppInputMeasure.vue'
-import AppInputNumber from './AppInputNumber.js'
-
+import AppInputNumber from './AppInputNumber.vue'
 import AppMultiselect from './select/AppMultiselect.vue'
-
+import AppRating from './AppRating.vue'
 import AppSelect from './select/AppSelect.vue'
 import AppSwitch from './AppSwitch.vue'
+import AppTextArea from './AppTextArea'
 import {generateField} from '../../../props'
 
 function getType(field) {
@@ -23,12 +23,18 @@ function getType(field) {
         return AppMultiselect
     case 'measure':
         return AppInputMeasure
+    case 'rating':
+        return AppRating
+    case 'textarea':
+        return AppTextArea
     default:
         return resolveComponent('AppInputJS')
     }
 }
 
 function AppInputGuesserJS(props, context) {
+    console.log('field', props.field)
+    console.log('helloo', props.modelValue)
     return h(getType(props.field), {
         disabled: props.disabled,
         field: props.field,

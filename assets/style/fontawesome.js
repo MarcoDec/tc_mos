@@ -53,6 +53,7 @@ import {
     faShuttleVan,
     faSignOutAlt,
     faSitemap,
+    faStar,
     faTimes,
     faTrash,
     faUserCircle,
@@ -127,3 +128,4 @@ library.add(faCalendarWeek)
 library.add(faWarehouse)
 library.add(faCubesStacked)
 library.add(faRulerVertical)
+library.add(faStar)
