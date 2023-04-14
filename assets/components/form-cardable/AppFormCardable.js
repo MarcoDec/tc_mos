@@ -49,7 +49,6 @@ function AppForm(props, context) {
                 )
             ))
         }
-        console.log(computed(()=>props.violations));
     }
     const attrs = {
         autocomplete: 'off',

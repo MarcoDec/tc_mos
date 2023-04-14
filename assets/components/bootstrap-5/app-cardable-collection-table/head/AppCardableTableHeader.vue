@@ -1,21 +1,14 @@
 <script setup>
-    import {defineProps, ref} from 'vue'
+    import {defineProps} from 'vue'
     import AppCardableTableHeaderfieleds from './AppCardableTableHeaderfieleds.vue'
+    
+    const emit = defineEmits(['trierAlphabet'])
 
     defineProps({
         fields: {required: true, type: Array}
     })
-
-    const trier = ref('both')
-
-    function trierAlphabet() {
-        if (trier.value === 'both'){
-            trier.value = 'desc'
-        } else if (trier.value === 'desc'){
-            trier.value = 'asc'
-        } else {
-            trier.value = 'both'
-        }
+    function trierAlphabet(payload) {
+        emit('trierAlphabet', payload)
     }
 </script>
 
@@ -26,7 +19,7 @@
             <th scope="col">
                 Actions
             </th>
-            <AppCardableTableHeaderfieleds :trier="trier" :fields="fields" @trier-alphabet="trierAlphabet"/>
+            <AppCardableTableHeaderfieleds :fields="fields" @trierAlphabet="trierAlphabet"/>
         </tr>
     </thead>
 </template>

@@ -2,32 +2,31 @@
     import {computed, ref} from 'vue'
     import {useSocietyListStore} from '../../../stores/direction/societyList'
 
-
     const props = defineProps({
         fields: {default: () => [], type: Array},
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
+
     const roleuser = ref('reader')
     let violations = []
+    const updated = ref(false)
+    const AddForm = ref(false)
+    let itemId = ''
+    const isPopupVisible = ref(false)
+    const sortable = ref(false)
+    let trierAlpha = {}
     
    
     const storeSocietyList = useSocietyListStore()
     await storeSocietyList.fetch()
     await storeSocietyList.countryOption()
     const itemsTable = computed(()=>storeSocietyList.itemsSocieties.reduce((acc, curr) => acc.concat(curr), [])) 
-    console.log('itemsTable',itemsTable);
     const listCountry = computed(()=>storeSocietyList.countriesOption)
-    // console.log('listCountryy', listCountry);
-
+    
     const formData = ref({
         adresse: null, complement: null, name: null, pays: null, ville: null
     })
-
-
-    const updated = ref(false)
-    const AddForm = ref(false)
-    let itemId = ''
     
     const fieldsForm = [
                 {label: 'Nom*', name: 'name', type: 'text'},
@@ -46,7 +45,7 @@
                 {label: 'Zip Code*', name: 'zipCode', type: 'text'},
                 {label: 'Phone Number*', name: 'phoneNumber', type: 'text'},
                 {label: 'Email*', name: 'email', type: 'text'}
-            ]
+    ]
 
     function ajoute(){
         AddForm.value = true
@@ -78,7 +77,6 @@
             },
             name: formData1.get('name')
         }
-        //console.log('itemsAddData', itemsAddData)
         await storeSocietyList.addSociety(itemsAddData)
         AddForm.value = false
         updated.value = false
@@ -97,6 +95,7 @@
             email: null
         }
         formData.value = itemsNull
+        isPopupVisible.value = false
     }
     function update(item) {
         updated.value = true
@@ -115,7 +114,6 @@
         formData.value = itemsData
     }
     async function updateSociety(){
-        //console.log('itemId', itemId)
         try {
             const form = document.getElementById('updateSociety')
             const formData2 = new FormData(form)
@@ -131,26 +129,32 @@
                 },
                 name: formData2.get('name')
             }
-            //console.log('itemsUpdateData', itemsUpdateData)
             const payload = {
                 id: itemId,
-                itemsUpdateData
+                itemsUpdateData,
+                sortable,
+                trierAlpha
             }
             await storeSocietyList.updateSociety(payload)
             AddForm.value = false
             updated.value = false
+            isPopupVisible.value = false
         }catch (error) {
-            violations = computed(()=> error) 
-            // console.log('violations', violations);
+            violations =  error
+            isPopupVisible.value = true
         }
     }
-    function deleted(id){
-        storeSocietyList.delated(id)
+    async function deleted(id){
+        await storeSocietyList.delated(id)
     }
-    function getPage(nPage){
-        storeSocietyList.itemsPagination(nPage)
+    async function getPage(nPage){
+        await storeSocietyList.paginationSortableItems({nPage, sortable,trierAlpha})
     }
-    console.log('violations',computed(()=>violations));
+    async function trierAlphabet(payload) {
+        await storeSocietyList.sortableItems(payload)
+        sortable.value = true
+        trierAlpha = computed(()=>payload) 
+    }
 </script>
 
 <template>
@@ -180,7 +184,9 @@
                 form="formSocietyCardableTable"
                 @update="update"
                 @deleted="deleted"
-                @get-page="getPage"/>
+                @get-page="getPage"
+                @trierAlphabet="trierAlphabet"
+            />
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
@@ -213,7 +219,11 @@
                 </AppRow>
                 <br/>
                 <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData" :violations="violations"/>
-                
+                <div v-if="isPopupVisible"  class="alert alert-danger" role="alert">
+                   <div v-for="violation in violations">
+                    <li>{{ violation.message}}</li>
+                   </div> 
+                </div>
                 <AppCol class="btnright">
                     <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">
                         <Fa icon="pencil-alt"/> Modifier

@@ -107,10 +107,7 @@ export default [
                 {label: 'Adresse', min: false, name: 'address', trie: true, type: 'text'},
                 {label: 'Complément d\'adresse', min: false, name: 'address2', trie: true, type: 'text'},
                 {label: 'Ville', min: true, name: 'city', trie: true, type: 'text'},
-                {label: 'Pays', min: true, name: 'country', trie: true, type: 'text'},
-                {label: 'Email', min: false, name: 'email', trie: true, type: 'text'},
-                {label: 'Phone Number', min: false, name: 'phoneNumber', trie: true, type: 'text'},
-                {label: 'Zip Code', min: false, name: 'zipCode', trie: true, type: 'text'}
+                {label: 'Pays', min: true, name: 'country', trie: true, type: 'text'}
             ],
             icon: 'city',
             title: 'Société'

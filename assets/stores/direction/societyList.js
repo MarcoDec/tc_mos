@@ -5,17 +5,13 @@ export const useSocietyListStore = defineStore('societyList', {
     actions: {
         async addSociety(payload){
             await api('/api/societies', 'POST', payload)
-            //console.log('response', response)
             this.itemsPagination(this.lastPage)
         },
         async countryOption() {
             const response = await api('/api/countries/options', 'GET')
-            //console.log('responsecountry', response)
             this.countries = response['hydra:member']
-            //console.log('countries', this.countries)
         },
         async delated(payload){
-            //console.log('payload', payload)
             await api(`/api/societies/${payload}`, 'DELETE')
             this.societies = this.societies.filter(society => Number(society['@id'].match(/\d+/)[0]) !== payload)
         },
@@ -24,35 +20,54 @@ export const useSocietyListStore = defineStore('societyList', {
             this.societies = await this.updatePagination(response)
         },
         async updateSociety (payload){
-            // console.log('payloadid', payload.id);
-            // console.log('payloaditemsUpdateData', payload.itemsUpdateData);
-           
-            const response = await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-            console.log('response', response);
-            this.itemsPagination(this.currentPage)
-            
+            await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
+            if (!payload.sortable.value) {
+                this.itemsPagination(this.currentPage)
+            }else{
+                this.paginationSortableItems({nPage:this.currentPage, sortable:payload.sortable, trierAlpha:payload.trierAlpha})
+            }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/societies?page=${nPage}`, 'GET')
             this.societies = await this.updatePagination(response)
         },
+        async countryOption (){
+            const response = await api('/api/countries/options', 'GET')
+            this.countries = response['hydra:member']
+        },
+        async sortableItems(payload) {
+            let response={}
+            if (payload.name === 'name') {
+                 response = await api(`/api/societies?order%5B${payload.name}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+            }else{
+                 response = await api(`/api/societies?order%5Baddress.${payload.name}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+            }
+            this.societies = await this.updatePagination(response)
+        },
+        async paginationSortableItems(payload) {
+            let response={}
+            if (!payload.sortable.value) {
+                response = await api(`/api/societies?page=${payload.nPage}`, 'GET')
+                this.societies = await this.updatePagination(response)
+            }else {
+                if (payload.trierAlpha.value.name === 'name') {
+                    response = await api(`/api/societies?order%5B${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                }else{
+                    response = await api(`/api/societies?order%5Baddress.${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                }
+                this.societies = await this.updatePagination(response)
+            }
+        },
         async updatePagination(response) {
             const responseData = await response['hydra:member']
             const paginationView = response['hydra:view']
-            this.firstPage = paginationView['hydra:first'].match(/\d+/)[0]
-            this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
-            this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
-            this.currentPage = paginationView['@id'].match(/\d+/)[0]
-            this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/\d+/)[0] : paginationView['@id'].match(/\d+/)[0]
-            // console.log('responseData',responseData);
+            this.firstPage = paginationView['hydra:first'].match(/page=(\d+)/)[1]
+            this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+            this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+            this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
+            this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
             return responseData
         },
-        async countryOption (){
-            const response = await api('/api/countries/options', 'GET')
-            // console.log('responsecountry',response)
-            this.countries = response['hydra:member']
-            // console.log('countries',this.countries)
-        }
     },
     getters: {
         countriesOption: state => state.countries.map((country)=>{

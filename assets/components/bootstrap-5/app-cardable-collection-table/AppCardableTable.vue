@@ -18,7 +18,7 @@
         user: {required: true, type: String}
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
-    const emit = defineEmits(['deleted', 'getPage', 'update'])
+    const emit = defineEmits(['deleted', 'getPage', 'update','trierAlphabet'])
     function update(item){
         emit('update', item)
     }
@@ -28,11 +28,15 @@
     function getPage(nPage){
         emit('getPage', nPage)
     }
+    function trierAlphabet(payload) {
+        emit('trierAlphabet', payload)
+    }
+    
 </script>
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCardableTableHeader :fields="displayedFileds"/>
+        <AppCardableTableHeader :fields="displayedFileds" @trierAlphabet="trierAlphabet"/>
         <tbody>
             <AppCardableTableBodyHeader :form="form" :fields="displayedFileds" :user="user"/>
             <tr class="bg-dark">
