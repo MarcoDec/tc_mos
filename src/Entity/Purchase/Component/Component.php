@@ -337,9 +337,32 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private int $ppmRate = 10;
 
+    #[
+        ApiProperty(description: 'Notation Qualité', required: true, example: '0'),
+        Assert\NotNull(groups: ['Component-quality']),
+        Assert\PositiveOrZero(groups: ['Component-quality']),
+        ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
+        Serializer\Groups(['read:component', 'write:component', 'write:component:quality'])
+    ]
+    private int $quality = 0;
+
+    #[
+        ApiProperty(description: 'Gestion reach', required: true, example: true),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:component', 'write:component', 'write:component:quality'])
+    ]
+    private bool $reach = false;
+
     /** @var DoctrineCollection<int, ComponentReference> */
     #[ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items')]
     private DoctrineCollection $references;
+
+    #[
+        ApiProperty(description: 'Gestion rohs', required: true, example: true),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:component', 'write:component', 'write:component:quality'])
+    ]
+    private bool $rohs = false;
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
@@ -501,12 +524,27 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     final public function getPpmRate(): int {
         return $this->ppmRate;
     }
+   
+    public function getQuality()
+    {
+        return $this->quality;
+    }
+
+    public function getReach()
+    {
+        return $this->reach;
+    }
 
     /**
      * @return DoctrineCollection<int, ComponentReference>
      */
     final public function getReferences(): DoctrineCollection {
         return $this->references;
+    }
+
+    public function getRohs()
+    {
+        return $this->rohs;
     }
 
     final public function getState(): string {
@@ -647,6 +685,27 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
+    public function setQuality($quality): self
+    {
+        $this->quality = $quality;
+
+        return $this;
+    }
+
+    public function setReach($reach):self
+    {
+        $this->reach = $reach;
+
+        return $this;
+    }
+
+    public function setRohs($rohs):self
+    {
+        $this->rohs = $rohs;
+
+        return $this;
+    }
+
     final public function setState(string $state): self {
         $this->embState->setState($state);
         return $this;
@@ -677,6 +736,5 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
    {
       $this->attachments = $attachments;
    }
-
 
 }
