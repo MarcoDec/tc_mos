@@ -81,7 +81,7 @@ class Component extends Entity {
 
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: TechnicalSheet::class, inversedBy: 'supplierComponents'),
         Serializer\Groups(['read:supplier-component', 'write:supplier-component'])
     ]
     private ?TechnicalSheet $component = null;
@@ -164,11 +164,11 @@ class Component extends Entity {
     }
 
     #[
-        ApiProperty(description: 'Meilleur prix', example: 2.356),
+        ApiProperty(description: 'Meilleur prix'),
         Serializer\Groups(['read:id', 'read:supplier-component'])
     ]
-    final public function getBestPrice():float {
-        $bestPrice=0.0;
+    final public function getBestPrice():Measure {
+        $bestPrice=new Measure();
         //On récupère tous les prix
         $prices = $this->getPrices();
         dump(['prices'=>$prices]);
@@ -183,7 +183,7 @@ class Component extends Entity {
             usort($filteredPrices, function( $a,  $b){
                     return $b->getPrice()->getValue() < $a->getPrice()->getValue();
                 });
-            $bestPrice = $filteredPrices[0]->getPrice()->getValue();
+            $bestPrice = $filteredPrices[0]->getPrice();
         }
         return $bestPrice;
     }

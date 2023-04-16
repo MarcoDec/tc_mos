@@ -31,6 +31,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name']),
@@ -365,6 +366,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     private bool $rohs = false;
 
     #[
+        ORM\OneToMany(targetEntity: SupplierComponent::class, mappedBy: 'component')
+    ]
+    private DoctrineCollection $supplierComponents;
+
+    #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
         Assert\NotBlank(groups: ['Component-create', 'Component-logistics']),
         ORM\JoinColumn(nullable: false),
@@ -388,6 +394,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
         $this->references = new ArrayCollection();
+        $this->supplierComponents = new ArrayCollection();
         $this->weight = new Measure();
     }
 
@@ -521,6 +528,22 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->parent;
     }
 
+    #[
+        ApiProperty(description: 'Meilleur Prix composant'),
+        Serializer\Groups(['read:component'])
+    ]
+    public function getPrice(): Measure {
+        $price = (new Measure())->setValue(0)->setCode('EUR');
+        $supplierComponents = $this->getSupplierComponents()->toArray();
+        if (count($supplierComponents)>0) {
+            usort($supplierComponents, function ($a, $b) {
+                return $a->getBestPrice()->getValue() > $b->getBestPrice()->getValue();
+            });
+            $price = $supplierComponents[0]->getBestPrice();
+        }
+        return $price;
+    }
+
     final public function getPpmRate(): int {
         return $this->ppmRate;
     }
@@ -554,6 +577,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     #[Serializer\Groups(['read:component:option'])]
     final public function getText(): ?string {
         return $this->getCode();
+    }
+
+    public function getSupplierComponents()
+    {
+        return $this->supplierComponents;
     }
 
     final public function getUnit(): ?Unit {
@@ -736,5 +764,6 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
    {
       $this->attachments = $attachments;
    }
+
 
 }
