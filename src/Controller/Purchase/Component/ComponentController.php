@@ -83,10 +83,10 @@ class ComponentController
                         }
                   }
                } else {
-                  if (in_array(getType($refProps->getValue($sourceComponent)) ,["boolean", 'integer', 'double', 'string'])) {
+                  if ($refProps->getValue($sourceComponent)===null||in_array(getType($refProps->getValue($sourceComponent)) ,["boolean", 'integer', 'double', 'string'])) {
                      $refProps->setValue($sourceComponent, $value);
                   } else {
-                     $this->logger->warning('#2 Impossible de modifier '.$key.' type non encore géré');
+                     $this->logger->warning('#2 Impossible de modifier '.$key.' type non encore géré '.getType($refProps->getValue($sourceComponent)));
                   }
                }
 
