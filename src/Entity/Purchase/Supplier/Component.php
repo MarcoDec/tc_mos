@@ -15,6 +15,10 @@ use App\Filter\RelationFilter;
 use App\Repository\Purchase\Supplier\ComponentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Entity\Purchase\Supplier\Price as SupplierComponentPrice;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
+use App\Collection;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'supplier']),
@@ -131,6 +135,12 @@ class Component extends Entity {
     ]
     private ?string $packagingKind = null;
 
+    /** @var DoctrineCollection<int, SupplierComponentPrice> */
+    #[
+        ORM\OneToMany(targetEntity: SupplierComponentPrice::class, mappedBy:'component', fetch: 'EAGER')
+    ]
+    private DoctrineCollection $prices;
+
     #[
         ApiProperty(description: 'Proportion', example: '99'),
         ORM\Column(options: ['default' => 100, 'unsigned' => true]),
@@ -150,6 +160,32 @@ class Component extends Entity {
         $this->deliveryTime = new Measure();
         $this->moq = new Measure();
         $this->packaging = new Measure();
+        $this->prices = new ArrayCollection();
+    }
+
+    #[
+        ApiProperty(description: 'Meilleur prix', example: 2.356),
+        Serializer\Groups(['read:id', 'read:supplier-component'])
+    ]
+    final public function getBestPrice():float {
+        $bestPrice=0.0;
+        //On récupère tous les prix
+        $prices = $this->getPrices();
+        dump(['prices'=>$prices]);
+        if (count($prices)>0) {
+            /** @var SupplierComponentPrice $supplierComponentPrice */
+            $filteredPrices = $prices
+            ->filter(function($supplierComponentPrice){ // On retire tous les enregistrements qui ont une quantité à zéro ou un prix à zéro
+                $quantity = $supplierComponentPrice->getQuantity()->getValue();
+                $price = $supplierComponentPrice->getPrice()->getValue();
+                return $price >0;
+            })->toArray();
+            usort($filteredPrices, function( $a,  $b){
+                    return $b->getPrice()->getValue() < $a->getPrice()->getValue();
+                });
+            $bestPrice = $filteredPrices[0]->getPrice()->getValue();
+        }
+        return $bestPrice;
     }
 
     final public function getCode(): ?string {
@@ -186,6 +222,11 @@ class Component extends Entity {
 
     final public function getPackagingKind(): ?string {
         return $this->packagingKind;
+    }
+
+    public function getPrices()
+    {
+        return $this->prices;
     }
 
     final public function getProportion(): float {
@@ -254,4 +295,5 @@ class Component extends Entity {
         $this->supplier = $supplier;
         return $this;
     }
+
 }
