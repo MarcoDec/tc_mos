@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Entity\Purchase\Component\Family as ComponentFamily;
 
 class ComponentController
 {
@@ -65,9 +66,21 @@ class ComponentController
                            $unit = $this->em->getRepository(Unit::class)->findOneBy(['code' => $value]);
                         }
                         $refProps->setValue($sourceComponent, $unit);
-                        break;
+                        break;                        
                      default:
-                        $this->logger->warning('#1 Impossible de modifier '.$key.' type non encore géré');
+                        if ($key == 'family') {
+                           $test = str_contains($value, '/api/component-families/');
+                           if ($test) {
+                              $splitted = preg_split('/\//', $value);
+                              $id = intval($splitted[3]);
+                              $unit = $this->em->getRepository(ComponentFamily::class)->find($id);
+                              $refProps->setValue($sourceComponent, $unit);
+                           } else {
+                              $this->logger->warning('#1 Impossible de modifier '.$key.' valeur non IRI '.$value);
+                           }
+                        } else {
+                           $this->logger->warning('#1 Impossible de modifier '.$key.' type non encore géré '.get_class($refProps->getValue($sourceComponent)));
+                        }
                   }
                } else {
                   if (in_array(getType($refProps->getValue($sourceComponent)) ,["boolean", 'integer', 'double', 'string'])) {
