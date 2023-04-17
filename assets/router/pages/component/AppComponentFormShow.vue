@@ -15,18 +15,20 @@
     await fecthOptions.fetch()
     await fecthColors.fetch()
 
-    const optionsAtt = computed(() => fecthOptions.options.map(op => {
-        const text = op.text
-        const value = op.value
-        const optionList = {text, value}
-        return optionList
-    }))
-    const optionsColors = computed(() => fecthColors.colors.map(op => {
-        const text = op.name
-        const value = op.id
-        const optionList = {text, value}
-        return optionList
-    }))
+    const optionsAtt = computed(() =>
+        fecthOptions.options.map(op => {
+            const text = op.text
+            const value = op.value
+            const optionList = {text, value}
+            return optionList
+        }))
+    const optionsColors = computed(() =>
+        fecthColors.colors.map(op => {
+            const text = op.name
+            const value = op.id
+            const optionList = {text, value}
+            return optionList
+        }))
 
     const useFetchComponentStore = useComponentListStore()
     const useComponentStore = useComponentShowStore()
@@ -34,14 +36,19 @@
     await useComponentStore.fetch()
     fetchComponentAttachment.fetch()
     useFetchComponentStore.fetch()
-    console.log('useFetchComponentStore', useFetchComponentStore)
-    console.log('useComponentStore****', useComponentStore)
+  
     const Attributfields = [
-        {label: 'Couleur', name: 'getColor', options: {
-             label: value => optionsColors.value.find(option => option.type === value)?.text ?? null,
-             options: optionsColors.value
-         },
-         type: 'select'},
+        {
+            label: 'Couleur',
+            name: 'getColor',
+            options: {
+                label: value =>
+                    optionsColors.value.find(option => option.type === value)?.text
+                    ?? null,
+                options: optionsColors.value
+            },
+            type: 'select'
+        },
         {label: 'T° maxi (°C)', name: 'temperatureMaxi', type: 'number'},
         {label: 'Nombre des brins', name: 'NombreBrins', type: 'number'},
         {label: 'Voltage (V)', name: 'Voltage', type: 'text'},
@@ -57,10 +64,7 @@
         {label: 'Matière d\'isolant', name: 'MatièreIsolant', type: 'text'},
         {label: 'needJoint', name: 'needJoint', type: 'boolean'}
     ]
-    const Fichiersfields = [
-        {label: 'Fichier', name: 'file', type: 'file'}
-
-    ]
+    const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
     const Qualitéfields = [
         {label: 'rohs ', name: 'rohs', type: 'boolean'},
         {label: 'rohsAttachment', name: 'rohsAttachment', type: 'text'},
@@ -73,19 +77,20 @@
         {label: 'Référence du Fabricant', name: 'manufacturerCode', type: 'text'}
     ]
     const Logistiquefields = [
-        {label: 'Code douanier', name: 'code', type: 'text'},
+        {label: 'Code douanier', name: 'customsCode', type: 'text'},
         {label: 'Poids', name: 'weight', type: 'measure'},
         {
             label: 'Unité',
             name: 'unit',
             options: {
-                label: value => optionsAtt.value.find(option => option.type === value)?.text ?? null,
+                label: value =>
+                    optionsAtt.value.find(option => option.type === value)?.text ?? null,
                 options: optionsAtt.value
             },
             type: 'select'
         },
-        {label: 'Volume Prévisionnel', name: 'forecastVolume', type: 'number'},
-        {label: 'Stock Minimum', name: 'minStock', type: 'number'},
+        {label: 'Volume Prévisionnel', name: 'forecastVolume', type: 'measure'},
+        {label: 'Stock Minimum', name: 'minStock', type: 'measure'},
         {label: 'gestionStock', name: 'managedStock', type: 'boolean'}
     ]
 
@@ -95,7 +100,7 @@
         {label: 'Info Cmde', name: 'orderInfo', type: 'text'}
     ]
 
-    async function update(value){
+    async function update(value) {
         const form = document.getElementById('addAttribut')
         const formData = new FormData(form)
         const data = {
@@ -112,23 +117,22 @@
 
         await useComponentStore.fetch()
     }
-    function updateLogistique(value){
-        console.log('update logistique value==', value)
+    function updateLogistique(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addLogistique')
         const formData = new FormData(form)
         const data = {
-
+            customsCode: formData.get('customsCode'),
             family: '/api/component-families/4',
             forecastVolume: {
-                code: 'U',
-                value: formData.get('forecastVolume')
+                code: formData.get('forecastVolume-code'),
+                value: formData.get('forecastVolume-value')
             },
-            managedStock: formData.get('managedStock'),
+            managedStock: JSON.parse(formData.get('managedStock')),
 
             minStock: {
-                code: 'U',
-                value: formData.get('minStock')
+                code: formData.get('minStock-code'),
+                value: formData.get('minStock-value')
             },
             unit: formData.get('unit'),
             weight: {
@@ -136,12 +140,20 @@
                 value: formData.get('weight-value')
             }
         }
-        console.log('data==', data)
 
-        //useFetchComponentStore.update(data, componentId)
+        useFetchComponentStore.update(data, componentId)
     }
-    function updateSpecification(value){
-        console.log('updateSpecification value==', value)
+    function updateAchats(value) {
+        const componentId = Number(value['@id'].match(/\d+/)[0])
+        const form = document.getElementById('addAchat')
+        const formData = new FormData(form)
+        const data = {
+            manufacturer: formData.get('manufacturer'),
+            manufacturerCode: formData.get('manufacturerCode')
+        }
+        useFetchComponentStore.updatePurchase(data, componentId)
+    }
+    function updateSpecification(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addSpécification')
         const formData = new FormData(form)
@@ -153,23 +165,17 @@
                 value: formData.get('weight-value')
             }
         }
-        console.log('data**', data)
-
-        //useFetchComponentStore.update(data, componentId)
+        useFetchComponentStore.update(data, componentId)
     }
-    function updateFichiers(value){
-        console.log('updateFichiers value==', value)
+    function updateFichiers(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
-        console.log('formData**', formData.get('file'))
-
         const data = {
             category: 'doc',
             component: `/api/components/${componentId}`,
             file: formData.get('file')
         }
-        console.log('data Fichiers**', data)
 
         fetchComponentAttachment.ajout(data)
     }
@@ -194,14 +200,23 @@
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">
-            <AppCardShow v-for="item in useComponentStore.componentAttribute" id="addAttribut" :key="item.id" :fields="Attributfields" :component-attribute="item" @update="update(item)"/>
+            <AppCardShow
+                v-for="item in useComponentStore.componentAttribute"
+                id="addAttribut"
+                :key="item.id"
+                :fields="Attributfields"
+                :component-attribute="item"
+                @update="update(item)"/>
         </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <AppCardShow id="addFichiers" :fields="Fichiersfields" @update="updateFichiers(useFetchComponentStore.component)"/>
+            <AppCardShow
+                id="addFichiers"
+                :fields="Fichiersfields"
+                @update="updateFichiers(useFetchComponentStore.component)"/>
         </AppTab>
         <AppTab
             id="gui-start-quality"
@@ -215,21 +230,33 @@
             title="Achat"
             icon="bag-shopping"
             tabs="gui-start">
-            <AppCardShow id="addAchat" :fields="Achatfields"/>
+            <AppCardShow
+                id="addAchat"
+                :fields="Achatfields"
+                :component-attribute="useFetchComponentStore.component"
+                @update="updateAchats(useFetchComponentStore.component)"/>
         </AppTab>
         <AppTab
             id="gui-start-logistics"
             title="Logistique"
             icon="pallet"
             tabs="gui-start">
-            <AppCardShow id="addLogistique" :fields="Logistiquefields" :component-attribute="useFetchComponentStore.component" @update="updateLogistique(useFetchComponentStore.component)"/>
+            <AppCardShow
+                id="addLogistique"
+                :fields="Logistiquefields"
+                :component-attribute="useFetchComponentStore.component"
+                @update="updateLogistique(useFetchComponentStore.component)"/>
         </AppTab>
         <AppTab
             id="gui-start-spécifications"
             title="Spécification"
             icon="file-contract"
             tabs="gui-start">
-            <AppCardShow id="addSpécification" :fields="Spécificationfields" :component-attribute="useFetchComponentStore.component" @update="updateSpecification(useFetchComponentStore.component)"/>
+            <AppCardShow
+                id="addSpécification"
+                :fields="Spécificationfields"
+                :component-attribute="useFetchComponentStore.component"
+                @update="updateSpecification(useFetchComponentStore.component)"/>
         </AppTab>
     </AppTabs>
 </template>

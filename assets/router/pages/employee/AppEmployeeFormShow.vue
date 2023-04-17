@@ -158,24 +158,20 @@
             socialSecurityNumber: formData.get('socialSecurityNumber')
             //surname: "Roosevelt",
         }
-        console.log('data===', data)
         const item = generateEmployee(value)
 
         await item.update(data)
     }
     function updateFichiers(value) {
-        console.log('updateFichiers value==', value)
         const employeeId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
-        console.log('formData**', formData.get('file'))
 
         const data = {
             category: 'doc',
             employee: `/api/employees/${employeeId}`,
             file: formData.get('file')
         }
-        console.log('data Fichiers**', data)
 
         fetchEmployeeAttachementStore.ajout(data)
     }

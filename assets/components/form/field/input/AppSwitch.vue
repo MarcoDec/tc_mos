@@ -10,16 +10,12 @@
         modelValue: {type: Boolean}
     })
     const checked = ref(props.modelValue)
-    console.log('switch', checked)
     function input(e) {
-        console.log('e.target.checked', e.target.checked)
-
         emit('update:modelValue', checked.value = e.target.checked)
     }
 
     watch(() => props.modelValue, value => {
         checked.value = value
-        console.log('val', value)
     })
 </script>
 

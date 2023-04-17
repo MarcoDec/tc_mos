@@ -33,8 +33,6 @@ function getType(field) {
 }
 
 function AppInputGuesserJS(props, context) {
-    console.log('field', props.field)
-    console.log('helloo', props.modelValue)
     return h(getType(props.field), {
         disabled: props.disabled,
         field: props.field,

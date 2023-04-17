@@ -9,9 +9,14 @@ export const useComponentListStore = defineStore('component', {
             console.log('this.component', this.component)
         },
         async update(data, id) {
-            await api(`/api/components/${id}/admin`, 'PATCH', data)
+            await api(`/api/components/${id}/logistics`, 'PATCH', data)
+            this.fetch()
+        },
+        async updatePurchase(data, id) {
+            await api(`/api/components/${id}/purchase`, 'PATCH', data)
             this.fetch()
         }
+
     },
     getters: {
         getWeight: state => state.component.weight.value,

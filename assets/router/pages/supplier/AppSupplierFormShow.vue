@@ -34,7 +34,6 @@
             const optionList = {text, value}
             return optionList
         }))
-    console.log('vatMessage****', fecthSuppliersStore.vatMessage)
     const optionsVat = computed(() =>
         fecthSuppliersStore.vatMessage.map(op => {
             const text = op.name
@@ -42,8 +41,7 @@
             const optionList = {text, value}
             return optionList
         }))
-    // console.log("fecthIncotermStore===", fecthIncotermStore.incoterms);
-    // console.log("fecthSocietyStore===", fecthSocietyStore);
+  
     const societyId = Number(fecthSuppliersStore.suppliers.society.match(/\d+/))
     await fecthSocietyStore.fetchById(societyId)
     const dataSuppliers = computed(() =>
@@ -57,7 +55,7 @@
 
     const listSuppliers = computed(() =>
         Object.assign(dataSuppliers.value, list.value))
-    console.log('listSuppliers', listSuppliers)
+  
     const optionsIncoterm = computed(() =>
         fecthIncotermStore.incoterms.map(incoterm => {
             const text = incoterm.name
@@ -154,7 +152,6 @@
     ]
 
     async function update(value) {
-        console.log('value', value)
         const form = document.getElementById('addQualite')
         const formData = new FormData(form)
         const data = {
@@ -162,10 +159,8 @@
             managedQuality: formData.get('managedQuality'),
             ppmRate: formData.get('ppmRate')
         }
-        console.log('data===', data)
     }
     async function updateLogistique(value) {
-        console.log('updateLogistique', value)
         const form = document.getElementById('addAchatLogistique')
         const formData = new FormData(form)
         const data = {
@@ -180,27 +175,19 @@
                 //next: "2023-04-13T09:08:53.175Z",
                 //type: "mensuel",
             }
-            //currency: "/api/currencies/1",
-            // managedProduction: true,
-            // managedQuality: true,
-            // name: "Kaporingol",
-            // notes: "Lorem ipsum",
+          
         }
-        console.log('data===', data)
     }
     function updateFichiers(value) {
-        console.log('updateFichiers value==', value)
         const suppliersId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
-        console.log('formData**', formData.get('file'))
 
         const data = {
             category: 'doc',
             file: formData.get('file'),
             supplier: `/api/suppliers/${suppliersId}`
         }
-        console.log('data Fichiers**', data)
 
         fecthSupplierAttachmentStore.ajout(data)
     }
