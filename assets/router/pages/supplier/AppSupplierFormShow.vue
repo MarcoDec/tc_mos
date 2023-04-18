@@ -41,7 +41,7 @@
             const optionList = {text, value}
             return optionList
         }))
-  
+
     const societyId = Number(fecthSuppliersStore.suppliers.society.match(/\d+/))
     await fecthSocietyStore.fetchById(societyId)
     const dataSuppliers = computed(() =>
@@ -55,7 +55,7 @@
 
     const listSuppliers = computed(() =>
         Object.assign(dataSuppliers.value, list.value))
-  
+
     const optionsIncoterm = computed(() =>
         fecthIncotermStore.incoterms.map(incoterm => {
             const text = incoterm.name
@@ -175,7 +175,7 @@
                 //next: "2023-04-13T09:08:53.175Z",
                 //type: "mensuel",
             }
-          
+
         }
     }
     function updateFichiers(value) {

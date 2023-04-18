@@ -6,7 +6,6 @@ export const useIncotermStore = defineStore('incoterms', {
         async fetch() {
             const response = await api('/api/incoterms', 'GET')
             this.incoterms = response['hydra:member']
-            console.log('res incoterms-->', response['hydra:member'])
         }
 
     },

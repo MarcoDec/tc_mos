@@ -14,7 +14,6 @@ export const useCustomerAttachmentStore = defineStore('customerAttachment', {
             this.items = []
             const response = await api('/api/customer-attachments', 'GET')
             this.customerAttachment = await response['hydra:member']
-            console.log('atttt', this.customerAttachment);
         }
 
     },

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, ref, toRefs } from "vue";
+import { computed, h, reactive, ref, toRefs } from "vue";
 import { useCustomerStore } from "../../../stores/customers/customers";
 import { useCustomerAttachmentStore } from "../../../stores/customers/customerAttachment";
 import generateCustomer from "../../../stores/customers/customer";
@@ -7,6 +7,24 @@ import useOptions from "../../../stores/option/options";
 import { useSocietyStore } from "../../../stores/societies/societies";
 import { useIncotermStore } from "../../../stores/incoterm/incoterm";
 import generateSocieties from "../../../stores/societies/societie";
+import { useSuppliersStore } from "../../../stores/supplier/suppliers";
+import Fa from "../../../components/Fa";
+import MyTree from "../../../components/MyTree.vue";
+
+// const treeData = {
+//   children: [
+//     {
+//       id: 3,
+//       label: "Node 3",
+//       icon: "file-contract",
+//     },
+//     {
+//       id: 4,
+//       label: "Node 4",
+//       icon: "file-contract",
+//     },
+//   ],
+// };
 
 const fecthOptions = useOptions("countries");
 await fecthOptions.fetch();
@@ -15,12 +33,13 @@ const fetchCustomerStore = useCustomerStore();
 const fetchCustomerAttachmentStore = useCustomerAttachmentStore();
 const fecthSocietyStore = useSocietyStore();
 const fecthIncotermStore = useIncotermStore();
-
+const fecthSuppliersStore = useSuppliersStore();
 await fetchCustomerStore.fetch();
-fetchCustomerAttachmentStore.fetch();
+await fetchCustomerAttachmentStore.fetch();
 await fetchCustomerStore.fetchInvoiceTime();
 await fecthSocietyStore.fetch();
 await fecthIncotermStore.fetch();
+await fecthSuppliersStore.fetchVatMessage();
 
 const societyId = Number(fetchCustomerStore.customer.society.match(/\d+/));
 await fecthSocietyStore.fetchById(societyId);
@@ -28,13 +47,30 @@ const dataCustomers = computed(() =>
   Object.assign(fetchCustomerStore.customer, fecthSocietyStore.item)
 );
 
-const value = computed(() => dataCustomers.value.incoterms["@id"]);
-const incotermsValue = reactive(ref(value.value));
-
-const listCustomers = computed(() =>
-  reactive({ ...dataCustomers.value, incotermsValue })
+const customerAttachment = computed(() =>
+  fetchCustomerAttachmentStore.customerAttachment.map((attachment) => ({
+    id: attachment["@id"],
+    label: attachment.url.split("/").pop(), // get the filename from the URL
+    icon: "file-contract",
+    url: attachment.url
+  }))
 );
+console.log("customerAttachment", customerAttachment);
+const treeData = {
+  id: 1,
+  label: "Attachments",
+  icon: "folder",
+  children: customerAttachment.value,
+};
 
+console.log("treeData", treeData);
+const selectedAttachment = ref(null);
+
+const openAttachment = (node) => {
+  if (node.url) {
+    selectedAttachment.value = node.url;
+  }
+};
 const optionsIncoterm = computed(() =>
   fecthIncotermStore.incoterms.map((incoterm) => {
     const text = incoterm.name;
@@ -47,6 +83,14 @@ const optionsCountries = computed(() =>
   fecthOptions.options.map((op) => {
     const text = op.text;
     const value = op.id;
+    const optionList = { text, value };
+    return optionList;
+  })
+);
+const optionsVat = computed(() =>
+  fecthSuppliersStore.vatMessage.map((op) => {
+    const text = op.name;
+    const value = op["@id"];
     const optionList = { text, value };
     return optionList;
   })
@@ -100,11 +144,11 @@ const Comptabilitéfields = [
   },
   {
     label: "message TVA",
-    name: "messageTVA",
+    name: "vatMsg",
     options: {
       label: (value) =>
-        options.find((option) => option.type === value)?.text ?? null,
-      options,
+        optionsVat.value.find((option) => option.type === value)?.text ?? null,
+      options: optionsVat.value,
     },
     type: "select",
   },
@@ -166,17 +210,18 @@ async function updateQte(value) {
   console.log("value", value);
   const form = document.getElementById("addQualite");
   const formData = new FormData(form);
-  const data = {};
+  const data = { ppmRate: JSON.parse(formData.get("ppmRate")) };
   console.log("data===", data);
+  await fecthSocietyStore.update(data, societyId);
+
+  await fetchCustomerStore.fetch();
 }
 async function updateLogistique(value) {
   console.log("value", value);
   const customerId = Number(value["@id"].match(/\d+/)[0]);
   const form = document.getElementById("addLogistique");
   const formData = new FormData(form);
-  console.log("form", formData.get("incotermsValue"));
-  console.log("nbDeliveries", formData.get("nbDeliveries"));
-  console.log("customerId", customerId);
+
   const data = {
     accountingPortal: {
       password: "afef",
@@ -184,15 +229,22 @@ async function updateLogistique(value) {
       username: "afef",
     },
     nbDeliveries: JSON.parse(formData.get("nbDeliveries")),
-    nbInvoices: 3,
     outstandingMax: {
-      code: "EUR",
-      value: 1,
+      code: formData.get("outstandingMax-code"),
+      value: JSON.parse(formData.get("outstandingMax-value")),
+    },
+  };
+  const dataSociety = {
+    incoterms: formData.get("incotermsValue"),
+    orderMin: {
+      code: formData.get("orderMin-code"),
+      value: JSON.parse(formData.get("orderMin-value")),
     },
   };
   const item = generateCustomer(value);
 
   await item.update(data);
+  await fecthSocietyStore.update(dataSociety, societyId);
 
   await fetchCustomerStore.fetch();
   console.log("data===", data);
@@ -201,8 +253,29 @@ async function updateComp(value) {
   console.log("value", value);
   const form = document.getElementById("addComptabilite");
   const formData = new FormData(form);
-  const data = {};
-  console.log("data===", data);
+  const dataSociety = {
+    accountingAccount: formData.get("accountingAccount"),
+    forceVat: "TVA par défaut selon le pays du client",
+    invoiceMin: {
+      code: formData.get("invoiceMin-code"),
+      value: JSON.parse(formData.get("invoiceMin-value")),
+    },
+    vatMessage: formData.get("vatMsg"),
+  };
+  const dataCustomer = {
+    nbInvoices: JSON.parse(formData.get("nbInvoices")),
+    paymentTerms: formData.get("paymentTerms"),
+  };
+
+  console.log("dataSociety", dataSociety);
+  console.log("dataCustomer------>", dataCustomers);
+  const item = generateCustomer(value);
+  await item.updateAccounting(dataCustomer);
+
+  await fecthSocietyStore.update(dataSociety, societyId);
+
+  await fecthSocietyStore.fetch();
+  await fetchCustomerStore.fetch();
 }
 async function updateGeneral(value) {
   console.log("value", value);
@@ -218,37 +291,29 @@ async function updateGeneral(value) {
   await item.updateMain(data);
 
   await fetchCustomerStore.fetch();
-  console.log("data===", data);
 }
-  console.log("fecthSocietyStore===", fecthSocietyStore);
-  console.log("fetchCustomerStore===", fetchCustomerStore);
- const result = generateSocieties(fecthSocietyStore.item)
-  console.log("item iciiii===", result);
 
 async function updateAdresse(value) {
-  console.log("value", value);
-  //const customerId = Number(value["@id"].match(/\d+/));
   const societyId = Number(value["@id"].match(/\d+/));
   const form = document.getElementById("addAdresses");
   const formData = new FormData(form);
-  console.log('address', formData.get("getCity"));
-  console.log("societyId",societyId);
+
   const data = {
     address: {
       address: formData.get("getAddress"),
       address2: formData.get("getAddress2"),
-      city:  formData.get("getCity"),
-      country:  formData.get("getCountry"),
+      city: formData.get("getCity"),
+      country: formData.get("getCountry"),
       email: formData.get("getEmail"),
       phoneNumber: formData.get("getPhone"),
       zipCode: formData.get("getPostal"),
     },
   };
- 
-    await fetchCustomerStore.fetch();
-    await fecthSocietyStore.update(data, societyId);
-    await fecthSocietyStore.fetch();
- }
+
+  await fetchCustomerStore.fetch();
+  await fecthSocietyStore.update(data, societyId);
+  await fecthSocietyStore.fetch();
+}
 </script>
 
 <template>
@@ -263,8 +328,8 @@ async function updateAdresse(value) {
       <AppCardShow
         id="addGeneralites"
         :fields="Géneralitésfields"
-        :component-attribute="listCustomers"
-        @update="updateGeneral(listCustomers)"
+        :component-attribute="dataCustomers"
+        @update="updateGeneral(dataCustomers)"
       />
     </AppTab>
     <AppTab
@@ -276,9 +341,15 @@ async function updateAdresse(value) {
       <AppCardShow
         id="addFichiers"
         :fields="Fichiersfields"
-        :component-attribute="listCustomers"
-        @update="updateFichiers(listCustomers)"
+        :component-attribute="dataCustomers"
+        @update="updateFichiers(dataCustomers)"
       />
+
+      <!-- <Tree :nodes="treeData" :icons= "icons" /> -->
+      <MyTree :node="treeData" @node-click="openAttachment" />
+      <div v-if="selectedAttachment">
+        Selected Attachment: {{ selectedAttachment }}
+      </div>
     </AppTab>
     <AppTab
       id="gui-start-quality"
@@ -302,8 +373,8 @@ async function updateAdresse(value) {
       <AppCardShow
         id="addLogistique"
         :fields="Logistiquefields"
-        :component-attribute="listCustomers"
-        @update="updateLogistique(listCustomers)"
+        :component-attribute="dataCustomers"
+        @update="updateLogistique(dataCustomers)"
       />
     </AppTab>
     <AppTab
@@ -315,8 +386,8 @@ async function updateAdresse(value) {
       <AppCardShow
         id="addComptabilite"
         :fields="Comptabilitéfields"
-        :component-attribute="listCustomers"
-        @update="updateComp(listCustomers)"
+        :component-attribute="dataCustomers"
+        @update="updateComp(dataCustomers)"
       />
     </AppTab>
     <AppTab
@@ -328,8 +399,8 @@ async function updateAdresse(value) {
       <AppCardShow
         id="addAdresses"
         :fields="Adressefields"
-        :component-attribute="listCustomers"
-        @update="updateAdresse(listCustomers)"
+        :component-attribute="dataCustomers"
+        @update="updateAdresse(dataCustomers)"
       />
     </AppTab>
     <AppTab

@@ -24,7 +24,6 @@
     "universal-cookie": "^4.0.4",
     "vue": "^3.2.41",
     "vue-router": "^4.1.6",
-    "vue3-tree": "^0.11.5",
     "xstate": "^4.34.0"
   },
   "devDependencies": {

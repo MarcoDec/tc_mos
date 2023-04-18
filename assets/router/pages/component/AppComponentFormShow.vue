@@ -36,7 +36,7 @@
     await useComponentStore.fetch()
     fetchComponentAttachment.fetch()
     useFetchComponentStore.fetch()
-  
+
     const Attributfields = [
         {
             label: 'Couleur',
