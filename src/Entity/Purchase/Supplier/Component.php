@@ -171,7 +171,7 @@ class Component extends Entity {
         $bestPrice=new Measure();
         //On récupère tous les prix
         $prices = $this->getPrices();
-        dump(['prices'=>$prices]);
+        //dump(['prices'=>$prices]);
         if (count($prices)>0) {
             /** @var SupplierComponentPrice $supplierComponentPrice */
             $filteredPrices = $prices

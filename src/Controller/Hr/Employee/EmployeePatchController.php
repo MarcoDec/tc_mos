@@ -58,7 +58,7 @@ class EmployeePatchController
                         $refProps->setValue($sourceItem,$newAddress);
                         break;
                     case DateTimeImmutable::class:
-                        dump(['DateTimeImmutable','key'=>$key, 'value'=>$value]);
+                        //dump(['DateTimeImmutable','key'=>$key, 'value'=>$value]);
                         $newDate = DateTimeImmutable::createFromFormat('Y-m-d',$value);
                         $refProps->setValue($sourceItem,$newDate);
                         break;
@@ -110,7 +110,7 @@ class EmployeePatchController
                         }
                   }
                } else {
-                  dump('Je suis ici => '.$key);
+                  //dump('Je suis ici => '.$key);
                   if ($refProps->getValue($sourceItem)===null||in_array(getType($refProps->getValue($sourceItem)) ,["boolean", 'integer', 'double', 'string'])) {
                      $refProps->setValue($sourceItem, $value);
                   } else {
