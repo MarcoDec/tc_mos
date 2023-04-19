@@ -31,6 +31,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name']),
@@ -337,9 +338,37 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private int $ppmRate = 10;
 
+    #[
+        ApiProperty(description: 'Notation Qualité', required: true, example: '0'),
+        Assert\NotNull(groups: ['Component-quality']),
+        Assert\PositiveOrZero(groups: ['Component-quality']),
+        ORM\Column(type: 'smallint', options: ['default' => 0, 'unsigned' => true]),
+        Serializer\Groups(['read:component', 'write:component', 'write:component:quality'])
+    ]
+    private int $quality = 0;
+
+    #[
+        ApiProperty(description: 'Gestion reach', required: true, example: true),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:component', 'write:component', 'write:component:quality'])
+    ]
+    private bool $reach = false;
+
     /** @var DoctrineCollection<int, ComponentReference> */
     #[ORM\ManyToMany(targetEntity: ComponentReference::class, mappedBy: 'items')]
     private DoctrineCollection $references;
+
+    #[
+        ApiProperty(description: 'Gestion rohs', required: true, example: true),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:component', 'write:component', 'write:component:quality'])
+    ]
+    private bool $rohs = false;
+
+    #[
+        ORM\OneToMany(targetEntity: SupplierComponent::class, mappedBy: 'component')
+    ]
+    private DoctrineCollection $supplierComponents;
 
     #[
         ApiProperty(description: 'Unité', readableLink: false, required: false, example: '/api/units/1'),
@@ -365,6 +394,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
         $this->references = new ArrayCollection();
+        $this->supplierComponents = new ArrayCollection();
         $this->weight = new Measure();
     }
 
@@ -498,8 +528,34 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->parent;
     }
 
+    #[
+        ApiProperty(description: 'Meilleur Prix composant'),
+        Serializer\Groups(['read:component'])
+    ]
+    public function getPrice(): Measure {
+        $price = (new Measure())->setValue(0)->setCode('EUR');
+        $supplierComponents = $this->getSupplierComponents()->toArray();
+        if (count($supplierComponents)>0) {
+            usort($supplierComponents, function ($a, $b) {
+                return $a->getBestPrice()->getValue() > $b->getBestPrice()->getValue();
+            });
+            $price = $supplierComponents[0]->getBestPrice();
+        }
+        return $price;
+    }
+
     final public function getPpmRate(): int {
         return $this->ppmRate;
+    }
+   
+    public function getQuality()
+    {
+        return $this->quality;
+    }
+
+    public function getReach()
+    {
+        return $this->reach;
     }
 
     /**
@@ -509,6 +565,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->references;
     }
 
+    public function getRohs()
+    {
+        return $this->rohs;
+    }
+
     final public function getState(): string {
         return $this->embState->getState();
     }
@@ -516,6 +577,11 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     #[Serializer\Groups(['read:component:option'])]
     final public function getText(): ?string {
         return $this->getCode();
+    }
+
+    public function getSupplierComponents()
+    {
+        return $this->supplierComponents;
     }
 
     final public function getUnit(): ?Unit {
@@ -644,6 +710,27 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setPpmRate(int $ppmRate): self {
         $this->ppmRate = $ppmRate;
+        return $this;
+    }
+
+    public function setQuality($quality): self
+    {
+        $this->quality = $quality;
+
+        return $this;
+    }
+
+    public function setReach($reach):self
+    {
+        $this->reach = $reach;
+
+        return $this;
+    }
+
+    public function setRohs($rohs):self
+    {
+        $this->rohs = $rohs;
+
         return $this;
     }
 
