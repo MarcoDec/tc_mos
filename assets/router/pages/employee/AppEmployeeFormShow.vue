@@ -1,22 +1,58 @@
 <script setup>
-    //import Tree from 'vue3-tree'
-    import {computed} from 'vue'
+//import Tree from 'vue3-tree'
+    import {computed, ref} from 'vue'
     import generateEmployee from '../../../stores/employee/employee'
+    import generateEmployeeContact from '../../../stores/employee/employeeContact'
     import {useEmployeeAttachmentStore} from '../../../stores/employee/employeeAttachements'
     import {useEmployeeStore} from '../../../stores/employee/employees'
+    import {useEmployeeContactsStore} from '../../../stores/employee/employeeContacts'
     import useOptions from '../../../stores/option/options'
+    import MyTree from '../../../components/MyTree.vue'
 
     const fecthOptions = useOptions('countries')
+    const fecthCompanyOptions = useOptions('companies')
     await fecthOptions.fetch()
+    await fecthCompanyOptions.fetch()
 
-    const fetchEmployeeContactStore = useEmployeeStore()
+    const fetchEmployeeStore = useEmployeeStore()
+    const fetchEmployeeContactsStore = useEmployeeContactsStore()
     const fetchEmployeeAttachementStore = useEmployeeAttachmentStore()
-    await fetchEmployeeContactStore.fetch()
-    await fetchEmployeeContactStore.fetchTeams()
+    await fetchEmployeeStore.fetch()
+    await fetchEmployeeStore.fetchTeams()
+
     await fetchEmployeeAttachementStore.fetch()
-    console.log('fetchEmployeeContactStore', fetchEmployeeContactStore)
-    console.log('AttachementStore', fetchEmployeeAttachementStore.employeeAttachment)
-    console.log('fetchTeams', fetchEmployeeContactStore.teams)
+    console.log('fetchEmployeeStore', fetchEmployeeStore)
+    const emplId = Number(fetchEmployeeStore.employee.id)
+    await fetchEmployeeContactsStore.fetchContactsEmpl(emplId)
+
+    const employeeAttachment = computed(() =>
+        fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
+            id: attachment['@id'],
+            label: attachment.url.split('/').pop(), // get the filename from the URL
+            icon: 'file-contract',
+            url: attachment.url
+        })))
+    const treeData = {
+        id: 1,
+        label: 'Attachments' + `(${employeeAttachment.value.length})`,
+        icon: 'folder',
+        children: employeeAttachment.value
+    }
+
+    const selectedAttachment = ref(null)
+
+    const openAttachment = node => {
+        if (node.url) {
+            selectedAttachment.value = node.url
+        }
+    }
+    const optionsCompany = computed(() =>
+        fecthCompanyOptions.options.map(op => {
+            const text = op.text
+            const value = op['@id']
+            const optionList = {text, value}
+            return optionList
+        }))
     const optionsCountries = computed(() =>
         fecthOptions.options.map(op => {
             const text = op.text
@@ -24,40 +60,10 @@
             const optionList = {text, value}
             return optionList
         }))
-    // const attachement = computed(() =>
-    //   fetchEmployeeAttachementStore.employeeAttachment.map((attachemnt) => {
-    //   console.log('list',attachement)
-    //   return attachement.category
-    //  })
-    // )
-    // console.log('attachement', attachement);
-    //  const data = ref([
-    //       {
-    //         id: 1,
-    //         label: "Animal"
-    //       },
-    //       {
-    //         id: 6,
-    //         label: "People",
-    //       },
-    //     ]);
-    //     const searchText = ref("");
-    //     const onNodeExpanded = (node, state) => {
-    //       console.log("state: ", state);
-    //       console.log("node: ", node);
-    //     };
-
-    //     const onUpdate = (nodes) => {
-    //       console.log("nodes:", nodes);
-    //     };
-
-    //     const onNodeClick = (node) => {
-    //       console.log('click ici',node);
-    //     };
     const optionsTeams = computed(() =>
-        fetchEmployeeContactStore.teams.map(team => {
+        fetchEmployeeStore.teams.map(team => {
             const text = team.name
-            const value = team.id
+            const value = team['@id']
             const optionList = {text, value}
             return optionList
         }))
@@ -70,23 +76,48 @@
         {text: 'female', value: 'female'},
         {text: 'male', value: 'male'}
     ]
+    const Géneralitésfields = [{label: 'Note', name: 'notes', type: 'textarea'}]
+
     const Productionfields = [
         {
             label: 'équipe',
-            name: 'équipe',
+            name: 'team',
             options: {
                 label: value =>
-                    optionsTeams.value.find(option => option.type === value)?.text ?? null,
+                    optionsTeams.value.find(option => option.type === value)?.text
+                    ?? null,
                 options: optionsTeams.value
             },
             type: 'select'
-        }
+        },
+        {label: 'Manager', name: 'manager', type: 'text'}
+
     ]
     const Accèsfields = [
-        {label: 'identifiant', name: 'identifiant', type: 'text'},
-        {label: 'Mot de passe', name: 'MotDePasse', type: 'text'}
+        {label: 'Identifiant', name: 'username', type: 'text'},
+        {label: 'Mot de passe', name: 'password', type: 'text'},
+        {label: 'Badge', name: 'timeCard', type: 'text'},
+        {
+            label: 'Compagnie',
+            name: 'company',
+            options: {
+                label: value =>
+                    optionsCompany.value.find(option => option.type === value)?.text
+                    ?? null,
+                options: optionsCompany.value
+            },
+            type: 'select'
+        },
+        {label: 'Activation', name: 'userEnabled', type: 'boolean'}
     ]
     const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
+    const Droitsfields = [{label: 'Role', name: 'embRoles', type: 'text'}]
+
+    const Contactsfields = [
+        {label: 'Nom', name: 'name', type: 'text'},
+        {label: 'Prenom', name: 'surname', type: 'text'},
+        {label: 'Telepone', name: 'phone', type: 'text'}
+    ]
     const Informationsfields = [
         {label: 'Nom', name: 'name', type: 'text'},
         {label: 'Prenom', name: 'surname', type: 'text'},
@@ -130,7 +161,7 @@
             type: 'select'
         },
         {label: 'Étude', name: 'levelOfStudy', type: 'text'},
-        {label: 'Date arrivée', name: 'timeCard', type: 'date'}
+        {label: 'Date arrivée', name: 'getEntryDate', type: 'date'}
     ]
 
     async function update(value) {
@@ -139,28 +170,67 @@
         const data = {
             address: {
                 address: formData.get('getAddress'),
-                address2: '',
+                address2: null,
                 city: formData.get('getCity'),
                 country: formData.get('getCountry'),
-                email: formData.get('getEmail'),
+                email: formData.get('getEmail') !== '' ? formData.get('getEmail') : null,
                 phoneNumber: formData.get('getPhone'),
                 zipCode: formData.get('getPostal')
             },
             birthday: formData.get('getBrith'),
-            //entryDate: "2021-01-12",
+            entryDate: formData.get('getEntryDate'),
             gender: formData.get('gender'),
             initials: formData.get('initials'),
             levelOfStudy: formData.get('levelOfStudy'),
             //manager: "/api/employees/3",
-            //name: "Super",
+            name: formData.get('name'),
             //notes: "Lorem ipsum dolor sit am",
             situation: formData.get('situation'),
-            socialSecurityNumber: formData.get('socialSecurityNumber')
-            //surname: "Roosevelt",
+            socialSecurityNumber: formData.get('socialSecurityNumber'),
+            surname: formData.get('surname')
+        }
+        console.log('dataEmpl', data)
+        const item = generateEmployee(value)
+
+        await item.updateHr(data)
+    }
+    async function updateContact(value) {
+        const employeeContactId = Number(value['@id'].match(/\d+/)[0])
+
+        const form = document.getElementById('addContacts')
+        const formData = new FormData(form)
+        const data = {
+            employee: `/api/employees/${emplId}`,
+            name: formData.get('name'),
+            phone: formData.get('phone'),
+            surname: formData.get('surname')
+        }
+
+        const item = generateEmployeeContact(value)
+        await item.updateContactEmp(data)
+    }
+    async function updateGeneral(value) {
+        const form = document.getElementById('addGeneralites')
+        const formData = new FormData(form)
+        const data = {
+            notes: formData.get('notes')
         }
         const item = generateEmployee(value)
 
         await item.update(data)
+    }
+    async function updateAcces(value) {
+        const form = document.getElementById('addAccés')
+        const formData = new FormData(form)
+        const data = {
+            company: formData.get('company'),
+            password: formData.get('password'),
+            timeCard: formData.get('timeCard'),
+            userEnabled: JSON.parse(formData.get('userEnabled')),
+            username: formData.get('username')
+        }
+        const item = generateEmployee(value)
+        await item.updateIt(data)
     }
     function updateFichiers(value) {
         const employeeId = Number(value['@id'].match(/\d+/)[0])
@@ -175,6 +245,17 @@
 
         fetchEmployeeAttachementStore.ajout(data)
     }
+   async function updateProduction(value) {
+        const employeeId = Number(value['@id'].match(/\d+/)[0])
+        const form = document.getElementById('addFichiers')
+        const formData = new FormData(form)
+        const data = {
+            employee: `/api/employees/22`,
+            team: formData.get('team')
+        }
+        const item = generateEmployee(value)
+        await item.updateIt(data)    
+        }
 </script>
 
 <template>
@@ -185,7 +266,11 @@
             title="Généralités"
             icon="pencil"
             tabs="gui-start">
-            <AppCardShow id="addGeneralites"/>
+            <AppCardShow
+                id="addGeneralites"
+                :fields="Géneralitésfields"
+                :component-attribute="fetchEmployeeStore.employee"
+                @update="updateGeneral(fetchEmployeeStore.employee)"/>
         </AppTab>
         <AppTab
             id="gui-start-Informations"
@@ -195,29 +280,43 @@
             <AppCardShow
                 id="addInfo"
                 :fields="Informationsfields"
-                :component-attribute="fetchEmployeeContactStore.employee"
-                @update="update(fetchEmployeeContactStore.employee)"/>
+                :component-attribute="fetchEmployeeStore.employee"
+                @update="update(fetchEmployeeStore.employee)"/>
         </AppTab>
         <AppTab
             id="gui-start-contacts"
             title="Contacts"
             icon="file-contract"
             tabs="gui-start">
-            <AppCardShow id="addContacts"/>
+            <AppCardShow
+                v-for="item in fetchEmployeeContactsStore.employeeContacts"
+                id="addContacts"
+                :key="item.id"
+                :fields="Contactsfields"
+                :component-attribute="item"
+                @update="updateContact(item)"/>
         </AppTab>
         <AppTab
             id="gui-start-droits"
             title="Droits"
             icon="clipboard-check"
             tabs="gui-start">
-            <AppCardShow id="addDroits"/>
+            <AppCardShow
+                id="addDroits"
+                :fields="Droitsfields"
+                :component-attribute="fetchEmployeeStore.employee"
+                @update="update(fetchEmployeeStore.employee)"/>
         </AppTab>
         <AppTab
             id="gui-start-accés"
             title="Accés"
             icon="arrow-right-to-bracket"
             tabs="gui-start">
-            <AppCardShow id="addAccés" :fields="Accèsfields"/>
+            <AppCardShow
+                id="addAccés"
+                :fields="Accèsfields"
+                :component-attribute="fetchEmployeeStore.employee"
+                @update="updateAcces(fetchEmployeeStore.employee)"/>
         </AppTab>
         <AppTab
             id="gui-start-files"
@@ -227,25 +326,20 @@
             <AppCardShow
                 id="addFichiers"
                 :fields="Fichiersfields"
-                @update="updateFichiers(fetchEmployeeContactStore.employee)"/>
-            <!-- <Tree
-        :nodes="data"
-        :search-text="searchText"
-        :use-checkbox="false"
-        :use-icon="true"
-        use-row-delete
-        show-child-count
-        @nodeExpanded="onNodeExpanded"
-        @update:nodes="onUpdate"
-        @nodeClick="onNodeClick"
-      /> -->
+                @update="updateFichiers(fetchEmployeeStore.employee)"/>
+            <MyTree :node="treeData" @node-click="openAttachment"/>
+            <div v-if="selectedAttachment">
+                Selected Attachment: {{ selectedAttachment }}
+            </div>
         </AppTab>
         <AppTab
             id="gui-start-production"
             title="Production"
             icon="industry"
             tabs="gui-start">
-            <AppCardShow id="addProduction" :fields="Productionfields"/>
+            <AppCardShow
+                id="addProduction" :fields="Productionfields" :component-attribute="fetchEmployeeStore.employee"
+                @update="updateProduction(fetchEmployeeStore.employee)"/>
         </AppTab>
     </AppTabs>
 </template>

@@ -7,7 +7,6 @@
         title: {required: true, type: String}
     })
     const dropdownId = computed(() => `${props.id}-dropdown`)
-    console.log('icon', props.icon)
 </script>
 
 <template>

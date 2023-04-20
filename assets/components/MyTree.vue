@@ -1,38 +1,52 @@
 <script setup>
-import { defineProps, ref } from "vue";
+    import {defineProps, ref} from 'vue'
 
-const props = defineProps({
-  node: {
-    type: Object,
-    required: true,
-  },
-});
-const isOpen = ref(false);
+    const props = defineProps({
+        node: {
+            type: Object,
+            required: true
+        }
+    })
+    const isOpen = ref(false)
 
-const toggle = () => {
-  isOpen.value = !isOpen.value;
-};
-const showChildUrl = (childNode) => {
-  if (childNode.children && childNode.children.length > 0) {
-    console.log("This node has children. Click on a child node to show its URL.");
-  } else {
-    console.log(childNode.url);
-        window.open(childNode.url, "_blank");
-
-  }
-};
+    const toggle = () => {
+        isOpen.value = !isOpen.value
+    }
+    // const showChildUrl = childNode => {
+    //     if (childNode.children && childNode.children.length > 0) {
+    //         console.log('This node has children. Click on a child node to show its URL.')
+    //     } else {
+    //         console.log(childNode.url)
+    //         window.open(childNode.url, '_blank')
+    //     }
+    // }
+    const showChildUrl = childNode => {
+        if (childNode.children && childNode.children.length > 0) {
+            console.log(
+                'This node has children. Click on a child node to show its URL.'
+            )
+        } else if (childNode.url) {
+            console.log(childNode.url)
+            window.open(childNode.url, '_blank')
+        } else {
+            console.log('No URL to show for this node.')
+        }
+    }
 </script>
+
 <template>
-  <div class="tree-node">
-    <span class="icon"><Fa :icon="node.icon" /></span>
-    <span class="label" @click="toggle"  @click.once="showChildUrl(node)">{{ node.label }}</span>
-    <div class="divChil" v-if="isOpen">
-      <div v-for="child in node.children" :key="child.id">
-        <MyTree :node="child"></MyTree>
-      </div>
+    <div class="tree-node">
+        <span class="icon"><Fa :icon="node.icon"/></span>
+        <!-- <span class="label" @click="toggle"  @click.once="showChildUrl(node)">{{ node.label }} ({{ node.children ? node.children.length : 0 }})</span> -->
+        <span class="label" @click="toggle" @click.once="showChildUrl(node)">{{ node.label }}</span>
+        <div v-if="isOpen" class="divChil">
+            <div v-for="child in node.children" :key="child.id">
+                <MyTree :node="child"/>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
+
 <style>
 /* Styles for the Tree component */
 .divChil {

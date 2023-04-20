@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, onUnmounted} from 'vue'
+    import {computed, onUnmounted, ref} from 'vue'
     import AppCardShow from '../../../components/AppCardShow.vue'
     import AppTab from '../../../components/tab/AppTab.vue'
     import AppTabs from '../../../components/tab/AppTabs.vue'
@@ -9,6 +9,7 @@
     import {useComponentListStore} from '../../../stores/component/components'
     import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
     import useOptions from '../../../stores/option/options'
+    import MyTree from '../../../components/MyTree.vue'
 
     const fecthOptions = useOptions('units')
     const fecthColors = useColorsStore()
@@ -34,9 +35,33 @@
     const useComponentStore = useComponentShowStore()
     const fetchComponentAttachment = useComponentAttachmentStore()
     await useComponentStore.fetch()
-    fetchComponentAttachment.fetch()
-    useFetchComponentStore.fetch()
+    await fetchComponentAttachment.fetch()
+    await useFetchComponentStore.fetch()
 
+    const componentAttachment = computed(() =>
+        fetchComponentAttachment.componentAttachment.map(attachment => ({
+            id: attachment['@id'],
+            label: attachment.url.split('/').pop(), // get the filename from the URL
+            icon: 'file-contract',
+            url: attachment.url
+        })))
+    const treeData = computed(() => {
+        const data = {
+            id: 1,
+            label: 'Attachments ' + `(${componentAttachment.value.length})`,
+            icon: 'folder',
+            children: componentAttachment.value
+        }
+        return data
+    })
+
+    const selectedAttachment = ref(null)
+
+    const openAttachment = node => {
+        if (node.url) {
+            selectedAttachment.value = node.url
+        }
+    }
     const Attributfields = [
         {
             label: 'Couleur',
@@ -70,7 +95,7 @@
         {label: 'rohsAttachment', name: 'rohsAttachment', type: 'text'},
         {label: 'reach', name: 'reach', type: 'boolean'},
         {label: 'reachAttachment', name: 'reachAttachment', type: 'text'},
-        {label: 'Qualité', name: 'Qualité', type: 'number'}
+        {label: 'Qualité', name: 'quality', type: 'number'}
     ]
     const Achatfields = [
         {label: 'Fabricant', name: 'manufacturer', type: 'text'},
@@ -95,9 +120,14 @@
     ]
 
     const Spécificationfields = [
-        {label: 'Prix', name: 'Prix', type: 'text'},
+        {label: 'Prix', name: 'price', type: 'measure'},
         {label: 'Poids Cuivre', name: 'weight', type: 'measure'},
         {label: 'Info Cmde', name: 'orderInfo', type: 'text'}
+    ]
+    const Géneralitésfields = [
+        {label: 'Nom', name: 'name', type: 'text'},
+        {label: 'Index', name: 'index', type: 'number'},
+        {label: 'Note', name: 'notes', type: 'textarea'}
     ]
 
     async function update(value) {
@@ -138,10 +168,12 @@
             weight: {
                 code: formData.get('weight-code'),
                 value: formData.get('weight-value')
-            }
+            },
+            orderInfo: formData.get('orderInfo')
         }
 
         useFetchComponentStore.update(data, componentId)
+        useFetchComponentStore.fetch()
     }
     function updateAchats(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -152,6 +184,29 @@
             manufacturerCode: formData.get('manufacturerCode')
         }
         useFetchComponentStore.updatePurchase(data, componentId)
+        useFetchComponentStore.fetch()
+    }
+    function updateQuality(value) {
+        const componentId = Number(value['@id'].match(/\d+/)[0])
+        const form = document.getElementById('addQualite')
+        const formData = new FormData(form)
+        const data = {}
+        useFetchComponentStore.updatePrice(data, componentId)
+        useFetchComponentStore.fetch()
+    }
+    function updateGeneral(value) {
+        const componentId = Number(value['@id'].match(/\d+/)[0])
+        const form = document.getElementById('addGeneralites')
+        const formData = new FormData(form)
+        const data = {
+            index: formData.get('index'),
+            name: formData.get('name'),
+            notes: formData.get('notes')
+        }
+        console.log('data', data)
+        useFetchComponentStore.updateAdmin(data, componentId)
+        useFetchComponentStore.updateMain(data, componentId)
+        useFetchComponentStore.fetch()
     }
     function updateSpecification(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -164,8 +219,26 @@
                 code: formData.get('weight-code'),
                 value: formData.get('weight-value')
             }
+            // price: {
+            //   code: formData.get("price-code"),
+            //   value: formData.get("price-value"),
+            // },
         }
-        useFetchComponentStore.update(data, componentId)
+        useFetchComponentStore.updatePrice(data, componentId)
+        useFetchComponentStore.fetch()
+        const componentAttachment = computed(() =>
+            fetchComponentAttachment.componentAttachment.map(attachment => ({
+                id: attachment['@id'],
+                label: attachment.url.split('/').pop(), // get the filename from the URL
+                icon: 'file-contract',
+                url: attachment.url
+            })))
+        treeData.value = {
+            id: 1,
+            label: 'Attachments ' + `(${componentAttachment.value.length})`,
+            icon: 'folder',
+            children: componentAttachment.value
+        }
     }
     function updateFichiers(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -178,6 +251,7 @@
         }
 
         fetchComponentAttachment.ajout(data)
+        fetchComponentAttachment.fetch()
     }
 
     onUnmounted(() => {
@@ -193,7 +267,11 @@
             title="Généralités"
             icon="pencil"
             tabs="gui-start">
-            <AppCardShow id="addGeneralites"/>
+            <AppCardShow
+                id="addGeneralites"
+                :fields="Géneralitésfields"
+                :component-attribute="useFetchComponentStore.component"
+                @update="updateGeneral(useFetchComponentStore.component)"/>
         </AppTab>
         <AppTab
             id="gui-start-attribut"
@@ -217,13 +295,18 @@
                 id="addFichiers"
                 :fields="Fichiersfields"
                 @update="updateFichiers(useFetchComponentStore.component)"/>
+            <MyTree :node="treeData" @node-click="openAttachment"/>
         </AppTab>
         <AppTab
             id="gui-start-quality"
             title="Qualité"
             icon="certificate"
             tabs="gui-start">
-            <AppCardShow id="addQualite" :fields="Qualitéfields"/>
+            <AppCardShow
+                id="addQualite"
+                :fields="Qualitéfields"
+                :component-attribute="useFetchComponentStore.component"
+                @update="updateQuality(useFetchComponentStore.component)"/>
         </AppTab>
         <AppTab
             id="gui-start-achat"
