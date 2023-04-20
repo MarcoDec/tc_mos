@@ -15,7 +15,9 @@
     let itemId = ''
     const isPopupVisible = ref(false)
     const sortable = ref(false)
+    const filter = ref(false)
     let trierAlpha = {}
+    let filterBy ={}
     
    
     const storeSocietyList = useSocietyListStore()
@@ -148,13 +150,32 @@
         await storeSocietyList.delated(id)
     }
     async function getPage(nPage){
-        await storeSocietyList.paginationSortableItems({nPage, sortable,trierAlpha})
+        await storeSocietyList.paginationSortableOrFilterItems({nPage, sortable,trierAlpha,filter,filterBy})
     }
     async function trierAlphabet(payload) {
         await storeSocietyList.sortableItems(payload)
         sortable.value = true
         trierAlpha = computed(()=>payload) 
     }
+    async function search(inputValues) {
+        const payload = {
+            name:inputValues.name?? '',
+            address:{
+                address: inputValues.address?? '',
+                address2: inputValues.address2?? '',
+                city: inputValues.city?? '',
+                country: inputValues.country?? ''
+            }
+        }
+        // console.log('payload',payload);
+        await storeSocietyList.filterBy(payload)
+        filter.value = true
+        filterBy= computed(()=>payload) 
+    }
+    async function cancelSearch() {
+        filterBy.value=false
+    }
+        
 </script>
 
 <template>
@@ -186,6 +207,8 @@
                 @deleted="deleted"
                 @get-page="getPage"
                 @trierAlphabet="trierAlphabet"
+                @search="search"
+                @cancelSearch="cancelSearch"
             />
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">

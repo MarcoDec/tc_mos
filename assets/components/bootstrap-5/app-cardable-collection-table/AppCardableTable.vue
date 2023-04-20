@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineEmits, defineProps} from 'vue'
+    import {computed, defineEmits, defineProps, ref} from 'vue'
     import AppCardableTableBodyHeader from './body/AppCardableTableBodyHeader.vue'
     import AppCardableTableBodyItem from './body/AppCardableTableBodyItem.vue'
     import AppCardableTableHeader from './head/AppCardableTableHeader.vue'
@@ -18,7 +18,8 @@
         user: {required: true, type: String}
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
-    const emit = defineEmits(['deleted', 'getPage', 'update','trierAlphabet'])
+    let input =ref('')
+    const emit = defineEmits(['deleted', 'getPage', 'update','trierAlphabet','update:modelValue', 'search', 'cancelSearch'])
     function update(item){
         emit('update', item)
     }
@@ -31,14 +32,21 @@
     function trierAlphabet(payload) {
         emit('trierAlphabet', payload)
     }
-    
+    function search(inputValues) {
+        // console.log("AppInputGuesser:", inputValues)
+        emit('search', inputValues)
+    }
+    async function cancelSearch(inputValues) {
+        input.value = inputValues
+        emit('cancelSearch',inputValues)
+    }
 </script>
 
 <template>
     <table class="table table-bordered table-hover table-striped">
         <AppCardableTableHeader :fields="displayedFileds" @trierAlphabet="trierAlphabet"/>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :fields="displayedFileds" :user="user"/>
+            <AppCardableTableBodyHeader :form="form" :fields="displayedFileds" :user="user" @search="search" @cancelSearch="cancelSearch" :model-value="input" />
             <tr class="bg-dark">
                 <td colspan="10"/>
             </tr>

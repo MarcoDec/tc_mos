@@ -3,6 +3,10 @@ import {defineStore} from 'pinia'
 
 export const useSocietyListStore = defineStore('societyList', {
     actions: {
+        async fetch() {
+            const response = await api('/api/societies', 'GET')
+            this.societies = await this.updatePagination(response)
+        },
         async addSociety(payload){
             await api('/api/societies', 'POST', payload)
             this.itemsPagination(this.lastPage)
@@ -15,25 +19,17 @@ export const useSocietyListStore = defineStore('societyList', {
             await api(`/api/societies/${payload}`, 'DELETE')
             this.societies = this.societies.filter(society => Number(society['@id'].match(/\d+/)[0]) !== payload)
         },
-        async fetch() {
-            const response = await api('/api/societies', 'GET')
-            this.societies = await this.updatePagination(response)
-        },
         async updateSociety (payload){
             await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
             if (!payload.sortable.value) {
                 this.itemsPagination(this.currentPage)
             }else{
-                this.paginationSortableItems({nPage:this.currentPage, sortable:payload.sortable, trierAlpha:payload.trierAlpha})
+                this.paginationSortableOrFilterItems({nPage:this.currentPage, sortable:payload.sortable, trierAlpha:payload.trierAlpha})
             }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/societies?page=${nPage}`, 'GET')
             this.societies = await this.updatePagination(response)
-        },
-        async countryOption (){
-            const response = await api('/api/countries/options', 'GET')
-            this.countries = response['hydra:member']
         },
         async sortableItems(payload) {
             let response={}
@@ -44,9 +40,32 @@ export const useSocietyListStore = defineStore('societyList', {
             }
             this.societies = await this.updatePagination(response)
         },
-        async paginationSortableItems(payload) {
+        async paginationSortableOrFilterItems(payload) {
             let response={}
-            if (!payload.sortable.value) {
+            if (payload.filter.value === true){
+                let url = '/api/societies?';
+                if (payload.filterBy.value.name !== '') {
+                    url += `name=${payload.filterBy.value.name}&`;
+                }
+                if (payload.filterBy.value.address.address !== '') {
+                    url += `address.address=${payload.filterBy.value.address.address}&`;
+                }
+                if (payload.filterBy.value.address.address2 !== '') {
+                    url += `address.address2=${payload.filterBy.value.address.address2}&`;
+                }
+                if (payload.filterBy.value.address.city !== '') {
+                    url += `address.city=${payload.filterBy.value.address.city}&`;
+                }
+                if (payload.filterBy.value.address.country !== '') {
+                    url += `address.country=${payload.filterBy.value.address.country}&`;
+                }
+                url += `page=${payload.nPage}&`;
+                if (url.charAt(url.length - 1) === '&') {
+                    url = url.slice(0, -1);
+                }
+                const response = await api(url, 'GET');
+                this.societies = await this.updatePagination(response)
+            }else if (!payload.sortable.value) {
                 response = await api(`/api/societies?page=${payload.nPage}`, 'GET')
                 this.societies = await this.updatePagination(response)
             }else {
@@ -61,13 +80,35 @@ export const useSocietyListStore = defineStore('societyList', {
         async updatePagination(response) {
             const responseData = await response['hydra:member']
             const paginationView = response['hydra:view']
-            this.firstPage = paginationView['hydra:first'].match(/page=(\d+)/)[1]
+            this.firstPage = paginationView['hydra:first']? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
             this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
             this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
             this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
             this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
             return responseData
         },
+        async filterBy (payload){
+            let url = '/api/societies?';
+            if (payload.name !== '') {
+                url += `name=${payload.name}&`;
+            }
+            if (payload.address.address !== '') {
+                url += `address.address=${payload.address.address}&`;
+            }
+            if (payload.address.address2 !== '') {
+                url += `address.address2=${payload.address.address2}&`;
+            }
+            if (payload.address.city !== '') {
+                url += `address.city=${payload.address.city}&`;
+            }
+            if (payload.address.country !== '') {
+                url += `address.country=${payload.address.country}&`;
+            }
+            url += `page=1`;
+            const response = await api(url, 'GET');
+            console.log('response', response);
+            this.societies = await this.updatePagination(response)
+        }
     },
     getters: {
         countriesOption: state => state.countries.map((country)=>{
