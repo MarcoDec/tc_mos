@@ -1,7 +1,7 @@
 <script setup>
-    import {defineProps} from 'vue'
     import AppCardableTableHeaderfieleds from './AppCardableTableHeaderfieleds.vue'
-    
+    import {defineProps} from 'vue'
+
     const emit = defineEmits(['trierAlphabet'])
 
     defineProps({
@@ -19,7 +19,7 @@
             <th scope="col">
                 Actions
             </th>
-            <AppCardableTableHeaderfieleds :fields="fields" @trierAlphabet="trierAlphabet"/>
+            <AppCardableTableHeaderfieleds :fields="fields" @trier-alphabet="trierAlphabet"/>
         </tr>
     </thead>
 </template>

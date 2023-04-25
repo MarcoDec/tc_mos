@@ -102,13 +102,6 @@ export default [
         name: 'society-list',
         path: '/society-list',
         props: {
-            fields: [
-                {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
-                {label: 'Adresse', min: false, name: 'address', trie: true, type: 'text'},
-                {label: 'Complément d\'adresse', min: false, name: 'address2', trie: true, type: 'text'},
-                {label: 'Ville', min: true, name: 'city', trie: true, type: 'text'},
-                {label: 'Pays', min: true, name: 'country', trie: true, type: 'text'}
-            ],
             icon: 'city',
             title: 'Société'
         }

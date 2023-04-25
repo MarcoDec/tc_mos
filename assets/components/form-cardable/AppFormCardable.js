@@ -1,5 +1,5 @@
 import {fieldValidator, generateLabelCols} from '../props'
-import {computed, h, resolveComponent} from 'vue'
+import {h, resolveComponent} from 'vue'
 import AppFormGroup from './fieldCardable/AppFormGroup'
 
 function AppForm(props, context) {

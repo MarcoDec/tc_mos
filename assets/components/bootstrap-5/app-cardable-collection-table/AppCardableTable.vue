@@ -18,8 +18,8 @@
         user: {required: true, type: String}
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
-    let input =ref('')
-    const emit = defineEmits(['deleted', 'getPage', 'update','trierAlphabet','update:modelValue', 'search', 'cancelSearch'])
+    const input = ref('')
+    const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'search', 'cancelSearch'])
     function update(item){
         emit('update', item)
     }
@@ -33,20 +33,19 @@
         emit('trierAlphabet', payload)
     }
     function search(inputValues) {
-        // console.log("AppInputGuesser:", inputValues)
         emit('search', inputValues)
     }
     async function cancelSearch(inputValues) {
         input.value = inputValues
-        emit('cancelSearch',inputValues)
+        emit('cancelSearch', inputValues)
     }
 </script>
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCardableTableHeader :fields="displayedFileds" @trierAlphabet="trierAlphabet"/>
+        <AppCardableTableHeader :fields="displayedFileds" @trier-alphabet="trierAlphabet"/>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :fields="displayedFileds" :user="user" @search="search" @cancelSearch="cancelSearch" :model-value="input" />
+            <AppCardableTableBodyHeader :form="form" :fields="displayedFileds" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch"/>
             <tr class="bg-dark">
                 <td colspan="10"/>
             </tr>

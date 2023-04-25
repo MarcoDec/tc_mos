@@ -2,8 +2,7 @@
     import {computed, ref} from 'vue'
     import {useSocietyListStore} from '../../../stores/direction/societyList'
 
-    const props = defineProps({
-        fields: {default: () => [], type: Array},
+    defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
@@ -17,38 +16,52 @@
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
-    let filterBy ={}
-    
-   
+    let filterBy = {}
+
     const storeSocietyList = useSocietyListStore()
     await storeSocietyList.fetch()
     await storeSocietyList.countryOption()
-    const itemsTable = computed(()=>storeSocietyList.itemsSocieties.reduce((acc, curr) => acc.concat(curr), [])) 
-    const listCountry = computed(()=>storeSocietyList.countriesOption)
-    
+    const itemsTable = computed(() => storeSocietyList.itemsSocieties.reduce((acc, curr) => acc.concat(curr), []))
+    const listCountry = computed(() => storeSocietyList.countriesOption)
+
     const formData = ref({
         adresse: null, complement: null, name: null, pays: null, ville: null
     })
-    
+
     const fieldsForm = [
-                {label: 'Nom*', name: 'name', type: 'text'},
-                {label: 'Adresse*', name: 'address', type: 'text'},
-                {label: 'Complément d\'adresse*', name: 'address2', type: 'text'},
-                {label: 'Ville*', name: 'city', type: 'text'},
-                {label: 'Pays*',
-                 name: 'country',
-                 options: {
-                    label: value =>
-                    listCountry.value.find(option => option.type === value)?.text ?? null,
-                    options:listCountry.value
-                 },
-                 type: 'select'
-                },
-                {label: 'Zip Code*', name: 'zipCode', type: 'text'},
-                {label: 'Phone Number*', name: 'phoneNumber', type: 'text'},
-                {label: 'Email*', name: 'email', type: 'text'}
+        {label: 'Nom*', name: 'name', type: 'text'},
+        {label: 'Adresse*', name: 'address', type: 'text'},
+        {label: 'Complément d\'adresse*', name: 'address2', type: 'text'},
+        {label: 'Ville*', name: 'city', type: 'text'},
+        {label: 'Pays*',
+         name: 'country',
+         options: {
+             label: value =>
+                 listCountry.value.find(option => option.type === value)?.text ?? null,
+             options: listCountry.value
+         },
+         type: 'select'},
+        {label: 'Zip Code*', name: 'zipCode', type: 'text'},
+        {label: 'Phone Number*', name: 'phoneNumber', type: 'text'},
+        {label: 'Email*', name: 'email', type: 'text'}
     ]
 
+    const tabFields = [
+        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
+        {label: 'Adresse', min: false, name: 'address', trie: true, type: 'text'},
+        {label: 'Complément d\'adresse', min: false, name: 'address2', trie: true, type: 'text'},
+        {label: 'Ville', min: true, name: 'city', trie: true, type: 'text'},
+        {label: 'Pays',
+         min: true,
+         name: 'country',
+         options: {
+             label: value =>
+                 listCountry.value.find(option => option.type === value)?.text ?? null,
+             options: listCountry.value
+         },
+         trie: true,
+         type: 'select'}
+    ]
     function ajoute(){
         AddForm.value = true
         updated.value = false
@@ -57,10 +70,10 @@
             address2: null,
             city: null,
             country: null,
+            email: null,
             name: null,
-            zipCode: null,
             phoneNumber: null,
-            email: null
+            zipCode: null
         }
         formData.value = itemsNull
     }
@@ -73,9 +86,9 @@
                 address2: formData1.get('address2'),
                 city: formData1.get('city'),
                 country: formData1.get('country'),
-                zipCode: formData1.get('zipCode'),
+                email: formData1.get('email'),
                 phoneNumber: formData1.get('phoneNumber'),
-                email: formData1.get('email')
+                zipCode: formData1.get('zipCode')
             },
             name: formData1.get('name')
         }
@@ -91,10 +104,10 @@
             address2: null,
             city: null,
             country: null,
+            email: null,
             name: null,
-            zipCode: null,
             phoneNumber: null,
-            email: null
+            zipCode: null
         }
         formData.value = itemsNull
         isPopupVisible.value = false
@@ -108,10 +121,10 @@
             address2: item.address2,
             city: item.city,
             country: item.country,
+            email: item.email,
             name: item.name,
-            zipCode: item.zipCode,
             phoneNumber: item.phoneNumber,
-            email: item.email
+            zipCode: item.zipCode
         }
         formData.value = itemsData
     }
@@ -125,9 +138,9 @@
                     address2: formData2.get('address2'),
                     city: formData2.get('city'),
                     country: formData2.get('country'),
-                    zipCode: formData2.get('zipCode'),
+                    email: formData2.get('email'),
                     phoneNumber: formData2.get('phoneNumber'),
-                    email: formData2.get('email')
+                    zipCode: formData2.get('zipCode')
                 },
                 name: formData2.get('name')
             }
@@ -141,8 +154,8 @@
             AddForm.value = false
             updated.value = false
             isPopupVisible.value = false
-        }catch (error) {
-            violations =  error
+        } catch (error) {
+            violations = error
             isPopupVisible.value = true
         }
     }
@@ -150,32 +163,31 @@
         await storeSocietyList.delated(id)
     }
     async function getPage(nPage){
-        await storeSocietyList.paginationSortableOrFilterItems({nPage, sortable,trierAlpha,filter,filterBy})
+        await storeSocietyList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
     }
     async function trierAlphabet(payload) {
         await storeSocietyList.sortableItems(payload)
         sortable.value = true
-        trierAlpha = computed(()=>payload) 
+        trierAlpha = computed(() => payload)
     }
     async function search(inputValues) {
         const payload = {
-            name:inputValues.name?? '',
-            address:{
-                address: inputValues.address?? '',
-                address2: inputValues.address2?? '',
-                city: inputValues.city?? '',
-                country: inputValues.country?? ''
-            }
+            address: {
+                address: inputValues.address ?? '',
+                address2: inputValues.address2 ?? '',
+                city: inputValues.city ?? '',
+                country: inputValues.country ?? ''
+            },
+            name: inputValues.name ?? ''
         }
-        // console.log('payload',payload);
         await storeSocietyList.filterBy(payload)
         filter.value = true
-        filterBy= computed(()=>payload) 
+        filterBy = computed(() => payload)
     }
     async function cancelSearch() {
-        filterBy.value=false
+        filter.value = false
+        await storeSocietyList.fetch()
     }
-        
 </script>
 
 <template>
@@ -193,23 +205,22 @@
         <AppCol>
             <AppCardableTable
                 :current-page="storeSocietyList.currentPage"
-                :fields="fields"
+                :fields="tabFields"
                 :first-page="storeSocietyList.firstPage"
                 :items="itemsTable"
                 :last-page="storeSocietyList.lastPage"
                 :min="AddForm"
                 :next-page="storeSocietyList.nextPage"
-                :pag="true"
+                :pag="storeSocietyList.pagination"
                 :previous-page="storeSocietyList.previousPage"
                 :user="roleuser"
                 form="formSocietyCardableTable"
                 @update="update"
                 @deleted="deleted"
                 @get-page="getPage"
-                @trierAlphabet="trierAlphabet"
+                @trier-alphabet="trierAlphabet"
                 @search="search"
-                @cancelSearch="cancelSearch"
-            />
+                @cancel-search="cancelSearch"/>
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
@@ -242,10 +253,10 @@
                 </AppRow>
                 <br/>
                 <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData" :violations="violations"/>
-                <div v-if="isPopupVisible"  class="alert alert-danger" role="alert">
-                   <div v-for="violation in violations">
-                    <li>{{ violation.message}}</li>
-                   </div> 
+                <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                    <div v-for="violation in violations" :key="violation">
+                        <li>{{ violation.message }}</li>
+                    </div>
                 </div>
                 <AppCol class="btnright">
                     <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">

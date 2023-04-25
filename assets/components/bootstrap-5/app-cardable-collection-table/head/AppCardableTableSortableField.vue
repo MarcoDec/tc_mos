@@ -8,13 +8,13 @@
     function trierAlphabet(name) {
         if (trier.value === 'both'){
             trier.value = 'asc'
-            emit('trierAlphabet', {name,trier})
+            emit('trierAlphabet', {name, trier})
         } else if (trier.value === 'asc'){
             trier.value = 'desc'
-            emit('trierAlphabet', {name,trier})
+            emit('trierAlphabet', {name, trier})
         } else {
             trier.value = 'both'
-            emit('trierAlphabet', {name,trier})
+            emit('trierAlphabet', {name, trier})
         }
     }
 </script>

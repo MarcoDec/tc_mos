@@ -2,13 +2,13 @@
     import {computed, defineProps} from 'vue'
     import clone from 'clone'
 
-    const emit = defineEmits(['cancelSearch','search'])
+    const emit = defineEmits(['cancelSearch', 'search'])
     const props = defineProps({
         fields: {required: true, type: Array},
         form: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
-    let inputValues = {} 
+    let inputValues = {}
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
 
@@ -21,9 +21,8 @@
         emit('search', inputValues)
     }
     async function cancelSearch() {
-        inputValues={}
-        console.log('inputValues',inputValues);
-        emit('cancelSearch')
+        inputValues = {}
+        emit('cancelSearch', inputValues)
     }
 </script>
 
@@ -42,7 +41,7 @@
         </td>
 
         <td v-for="field in tabFields" :key="field.name">
-            <AppInputGuesser :id="field.name" :form="form" :field="field" v-model="inputValues[field.name]"  :update:model-value="modelValue" />
+            <AppInputGuesser :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" :update:model-value="modelValue"/>
         </td>
     </tr>
 </template>

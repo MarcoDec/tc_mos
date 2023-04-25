@@ -1,29 +1,28 @@
 <script setup>
-    import {computed, ref} from 'vue'
-  
-    const props = defineProps({
-        violations: {default: () => [], type: Array},
-        // icon: {required: true, type: String},
-        // title: {required: true, type: String}
+    defineProps({
+        violations: {default: () => [], type: Array}
     })
     const emit = defineEmits(['close'])
     function close(){
         emit('close')
     }
-
 </script>
+
 <template>
     <div>
-        <div class="popup-wrapper" >
-             <div class="popup">
-                 <div v-for="violation in violations">
-                    {{ violation.message}}
-                 </div>
-                 <button @click="close">Close</button>
-             </div>
-         </div>
+        <div class="popup-wrapper">
+            <div class="popup">
+                <div v-for="violation in violations" :key="violation">
+                    {{ violation.message }}
+                </div>
+                <button @click="close">
+                    Close
+                </button>
+            </div>
+        </div>
     </div>
 </template>
+
 <style scoped>
 .popup-wrapper {
   position: fixed;

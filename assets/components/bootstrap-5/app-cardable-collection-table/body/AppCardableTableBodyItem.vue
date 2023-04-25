@@ -19,7 +19,7 @@
 <template>
     <tr v-for="(item, index) in items" :key="index">
         <th scope="row" :title="currentPage">
-            {{ index + 1 + 15 * (currentPage - 1) }} 
+            {{ index + 1 + 15 * (currentPage - 1) }}
         </th>
         <AppCardableTableBody :item="item" :fields="fields" @update="update" @deleted="deleted"/>
     </tr>

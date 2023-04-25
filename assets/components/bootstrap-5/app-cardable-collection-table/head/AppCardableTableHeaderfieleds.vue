@@ -1,6 +1,6 @@
 <script setup>
     import {defineEmits, defineProps} from 'vue'
-    import AppCardableTableSortableField from './AppCardableTableSortableField.vue';
+    import AppCardableTableSortableField from './AppCardableTableSortableField.vue'
     const emit = defineEmits(['trierAlphabet'])
     defineProps({
         fields: {required: true, type: Array}
@@ -13,7 +13,7 @@
 </script>
 
 <template>
-        <template v-for="field in fields">
-            <AppCardableTableSortableField :field="field" @trierAlphabet="trierAlphabet"/>
-        </template>
+    <template v-for="field in fields" :key="field.name">
+        <AppCardableTableSortableField :field="field" @trier-alphabet="trierAlphabet"/>
+    </template>
 </template>
