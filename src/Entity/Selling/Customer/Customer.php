@@ -161,7 +161,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private Measure $conveyanceDuration;
 
@@ -256,7 +256,7 @@ class Customer extends Entity {
     private Measure $outstandingMax;
 
     #[
-        ApiProperty(description: 'Date de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/1'),
+        ApiProperty(description: 'Condition calendaire de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
