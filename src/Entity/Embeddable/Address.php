@@ -90,7 +90,7 @@ class Address {
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/telephone'], 'format' => 'telephone']
         ),
         AppAssert\PhoneNumber,
-        Assert\Length(min: 10, max: 18),
+        Assert\Length(max: 18),
         ORM\Column(length: 18, nullable: true),
         Serializer\Groups(['read:address', 'write:address', 'read:society:collection'])
     ]

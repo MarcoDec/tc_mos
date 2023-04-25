@@ -35,6 +35,7 @@ final class ComponentRepository extends ServiceEntityRepository {
         $query = $this->createQueryBuilder('c')
             ->addSelect('u')
             ->leftJoin('c.unit', 'u', Join::WITH, 'u.deleted = FALSE')
+            ->leftJoin( 'c.family', 'f', Join::WITH, 'f.deleted = FALSE')
             ->where('c.deleted = FALSE')
             ->andWhere('c.id = :id')
             ->setParameter('id', $id)
