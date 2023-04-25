@@ -66,7 +66,7 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
     private ?Attribute $attribute = null;
 
     #[
-        ApiProperty(description: 'Couleur', readableLink: false, example: '/api/colors/1'),
+        ApiProperty(description: 'Couleur'),
         ORM\ManyToOne,
         Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
     ]

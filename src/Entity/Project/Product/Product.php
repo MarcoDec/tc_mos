@@ -366,7 +366,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     private ?string $packagingKind = null;
 
     #[
-        ApiProperty(description: 'Unité parente', readableLink: false, example: '/api/products/3'),
+        ApiProperty(description: 'Produit parent', readableLink: false, example: '/api/products/3'),
         ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children'),
         Serializer\Groups(['read:product'])
     ]
