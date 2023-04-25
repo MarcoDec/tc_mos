@@ -79,6 +79,21 @@ export default [
     },
     {
         component: AppTablePageSuspense,
+        meta: {title: 'Supp — T-Concept GPAO'},
+        name: 'supplier-contacts',
+        path: '/supplier-contacts',
+        props: {
+            fields: [
+                {label: 'Nom', name: 'name'}
+              
+            ],
+            icon: 'ruler-horizontal',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Supp'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
         meta: {title: 'Messages TVA — T-Concept GPAO'},
         name: 'vat-messages',
         path: '/vat-messages',

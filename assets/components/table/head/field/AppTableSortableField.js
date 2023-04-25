@@ -8,8 +8,9 @@ export default {
         store: {required: true, type: Object}
     },
     setup(props) {
-        const ariaSort = computed(() => props.store.ariaSort(props.field))
-        const sorted = computed(() => props.store.isSorter(props.field))
+        console.log('props.store',props.store);
+        const ariaSort = computed(() => props.store.ariaSort ? props.store.ariaSort(props.field) : null)
+        const sorted = computed(() =>  props.store.isSorter ? props.store.isSorter(props.field): null)
         const down = computed(() => ({'text-secondary': !sorted.value || props.store.asc}))
         const up = computed(() => ({'text-secondary': !sorted.value || !props.store.asc}))
 

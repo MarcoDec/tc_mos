@@ -32,12 +32,15 @@
             icon: 'file-contract',
             url: attachment.url
         })))
-    const treeData = {
-        id: 1,
-        label: 'Attachments' + `(${employeeAttachment.value.length})`,
-        icon: 'folder',
-        children: employeeAttachment.value
-    }
+    const treeData = computed(() => {
+        const data = {
+            id: 1,
+            label: 'Attachments' + `(${employeeAttachment.value.length})`,
+            icon: 'folder',
+            children: employeeAttachment.value
+        }
+        return data
+    })
 
     const selectedAttachment = ref(null)
 
@@ -244,18 +247,32 @@
         }
 
         fetchEmployeeAttachementStore.ajout(data)
+        const employeeAttachment = computed(() =>
+            fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
+                id: attachment['@id'],
+                label: attachment.url.split('/').pop(), // get the filename from the URL
+                icon: 'file-contract',
+                url: attachment.url
+            })))
+        treeData.value
+            = {
+                id: 1,
+                label: 'Attachments' + `(${employeeAttachment.value.length})`,
+                icon: 'folder',
+                children: employeeAttachment.value
+            }
     }
-   async function updateProduction(value) {
+    async function updateProduction(value) {
         const employeeId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
         const data = {
-            employee: `/api/employees/22`,
+            employee: '/api/employees/22',
             team: formData.get('team')
         }
         const item = generateEmployee(value)
-        await item.updateIt(data)    
-        }
+        await item.updateIt(data)
+    }
 </script>
 
 <template>

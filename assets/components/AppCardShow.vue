@@ -26,6 +26,9 @@
         updated.value = false
         disable.value = true
     }
+    function input(value) {
+        emit('update:modelValue', value)
+    }
 </script>
 
 <template>
@@ -43,7 +46,7 @@
             <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
         </ul>
         <ul v-else class="card-body">
-            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute"/>
+            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" @update:modelValue="input"/>
         </ul>
     </div>
 </template>

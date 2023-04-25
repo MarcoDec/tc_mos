@@ -219,10 +219,6 @@
                 code: formData.get('weight-code'),
                 value: formData.get('weight-value')
             }
-            // price: {
-            //   code: formData.get("price-code"),
-            //   value: formData.get("price-value"),
-            // },
         }
         useFetchComponentStore.updatePrice(data, componentId)
         useFetchComponentStore.fetch()

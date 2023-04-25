@@ -4,11 +4,12 @@
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         id: {required: true, type: String},
+        form: {required: true, type: String},
         modelValue: {type: Boolean}
     })
 
     const ratingValue = ref(props.modelValue)
-
+    console.log('fff', props.form)
     function input(value) {
         if (ratingValue.value === value) {
             ratingValue.value = 0
@@ -21,7 +22,7 @@
 </script>
 
 <template>
-    <div :id="id" class="container">
+    <div :id="id" :form="form" class="container">
         <div class="rating">
             <label for="star5" class="star" @click="input(5)"><Fa :class="ratingValue >= 5 ? 'checked' : ''" icon="star"/>
             </label>

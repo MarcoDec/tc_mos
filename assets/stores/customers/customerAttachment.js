@@ -9,6 +9,7 @@ export const useCustomerAttachmentStore = defineStore('customerAttachment', {
             form.append('category', data.category)
             form.append('customer', data.customer)
             await api('/api/customer-attachments', 'POST', form)
+            this.fetch()
         },
         async fetch() {
             this.items = []

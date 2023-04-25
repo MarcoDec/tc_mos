@@ -23,8 +23,8 @@
     console.log('machine', machine)
 
     const store = useTable(route.name)
-    store.sorted = props.sort.name
-    store.sortName = props.sort.sortName ?? props.sort.name
+    store.sorted = props.sort ? props.sort.name : null
+    store.sortName = props.sort ? props.sort.name : null
     await store.fetch()
     console.log('store table', store)
     const storedFields = useFields(route.name, props.fields)

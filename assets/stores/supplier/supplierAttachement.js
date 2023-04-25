@@ -8,7 +8,8 @@ export const useSupplierAttachmentStore = defineStore('supplierAttachment', {
             form.append('file', data.file)
             form.append('category', data.category)
             form.append('supplier', data.supplier)
-            const res = await api('/api/supplier-attachments', 'POST', form)
+            await api('/api/supplier-attachments', 'POST', form)
+            this.fetch()
         },
         async fetch() {
             const response = await api('/api/supplier-attachments', 'GET')

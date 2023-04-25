@@ -22,7 +22,7 @@ export default function generateEmployee(employee) {
                 const response = await api(`/api/employees/${employee.id}/it`, 'PATCH', data)
                 this.$state = {...response}
                 console.log('update', response)
-            }, 
+            },
             async updateProd(data) {
                 const response = await api(`/api/employees/${employee.id}/production`, 'PATCH', data)
                 this.$state = {...response}

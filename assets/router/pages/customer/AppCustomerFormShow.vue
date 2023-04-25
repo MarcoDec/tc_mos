@@ -38,12 +38,15 @@
             icon: 'file-contract',
             url: attachment.url
         })))
-    const treeData = {
-        id: 1,
-        label: 'Attachments',
-        icon: 'folder',
-        children: customerAttachment.value
-    }
+    const treeData = computed(() => {
+        const data = {
+            id: 1,
+            label: 'Attachments' + `(${customerAttachment.value.length})`,
+            icon: 'folder',
+            children: customerAttachment.value
+        }
+        return data
+    })
 
     const selectedAttachment = ref(null)
 
@@ -182,6 +185,19 @@
         console.log('data Fichiers**', data)
 
         fetchCustomerAttachmentStore.ajout(data)
+        const customerAttachment = computed(() =>
+            fetchCustomerAttachmentStore.customerAttachment.map(attachment => ({
+                id: attachment['@id'],
+                label: attachment.url.split('/').pop(), // get the filename from the URL
+                icon: 'file-contract',
+                url: attachment.url
+            })))
+        treeData.value = {
+            id: 1,
+            label: 'Attachments' + `(${customerAttachment.value.length})`,
+            icon: 'folder',
+            children: customerAttachment.value
+        }
     }
     async function updateQte(value) {
         console.log('value', value)
