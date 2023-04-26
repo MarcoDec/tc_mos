@@ -160,7 +160,7 @@ class Society extends Entity {
 
     #[
         ApiProperty(description: 'Site internet', required: false, example: 'https://www.societe.fr'),
-        Assert\Url(groups: ['Default', 'Society-create']),
+        // Assert\Url(groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]
