@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\Management\Company\CompanyPatchController;
 
 #[
     ApiResource(
@@ -72,6 +73,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
+                'controller' => CompanyPatchController::class,
+                'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifie une compagnie',
                     'parameters' => [[
@@ -86,6 +89,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une compagnie'
                 ],
                 'path' => '/companies/{id}/{process}',
+                'read' => false,
+                'write' => true,
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')',
                 'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ]
