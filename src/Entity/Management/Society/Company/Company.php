@@ -109,7 +109,7 @@ class Company extends Entity {
     #[
         ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/2'),
         Assert\NotBlank,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
     ]
     private ?Currency $currency;
 
@@ -160,7 +160,7 @@ class Company extends Entity {
         ApiProperty(description: 'IPv4', example: '255.255.255.254'),
         ORM\Column(length: 15, nullable: true),
         Assert\Ip(version: Assert\Ip::V4),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:admin'])
     ]
     private ?string $ip;
 
@@ -183,7 +183,7 @@ class Company extends Entity {
     #[
         ApiProperty(description: 'Notes', example: 'Texte libre'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company' , 'write:company:main'])
     ]
     private ?string $notes;
 
@@ -191,7 +191,7 @@ class Company extends Entity {
         ApiProperty(description: 'Nombre de travailleurs dans l\'équipe par jour', example: 4),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:main'])
     ]
     private int $numberOfTeamPerDay = 0;
 
@@ -206,7 +206,7 @@ class Company extends Entity {
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/2'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:admin'])
     ]
     private ?Society $society = null;
 
@@ -217,7 +217,7 @@ class Company extends Entity {
     #[
         ApiProperty(description: 'Calendrier de travail', example: '2 jours'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:main'])
     ]
     private ?string $workTimetable;
 
