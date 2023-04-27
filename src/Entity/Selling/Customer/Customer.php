@@ -141,7 +141,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:main'])
     ]
     private Address $address;
 
@@ -149,7 +149,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'customers'),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private Collection $administeredBy;
 
@@ -168,7 +168,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Cuivre'),
         ORM\Embedded,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:accounting'])
     ]
     private Copper $copper;
 
@@ -195,21 +195,21 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Acceptation des équivalents', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private bool $equivalentEnabled = false;
 
     #[
         ApiProperty(description: 'Factures par email', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private bool $invoiceByEmail = false;
 
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private ?string $language = null;
 
@@ -267,7 +267,7 @@ class Customer extends Entity {
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
     ]
     private ?Society $society = null;
 
