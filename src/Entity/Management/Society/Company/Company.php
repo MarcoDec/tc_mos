@@ -113,7 +113,7 @@ use App\Controller\Management\Company\CompanyPatchController;
 class Company extends Entity {
     #[
         ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/2'),
-        Assert\NotBlank,
+        ORM\ManyToOne(targetEntity: Currency::class, fetch: "EAGER"),
         Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
     ]
     private ?Currency $currency;
