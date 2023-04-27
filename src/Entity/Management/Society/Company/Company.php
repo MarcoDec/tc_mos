@@ -99,11 +99,11 @@ use App\Controller\Management\Company\CompanyPatchController;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:company'],
+            'groups' => ['write:address', 'write:company'],
             'openapi_definition_name' => 'Company-write'
         ],
         normalizationContext: [
-            'groups' => ['read:company', 'read:id'],
+            'groups' => ['read:address', 'read:company', 'read:id'],
             'openapi_definition_name' => 'Company-read',
             'skip_null_values' => false
         ]
@@ -209,9 +209,9 @@ class Company extends Entity {
     private DoctrineCollection $references;
 
     #[
-        ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/2'),
+        ApiProperty(description: 'Société'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:admin'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:admin', 'write:company:main'])
     ]
     private ?Society $society = null;
 
