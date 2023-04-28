@@ -166,7 +166,7 @@
         await storeSocietyList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
     }
     async function trierAlphabet(payload) {
-        await storeSocietyList.sortableItems(payload)
+        await storeSocietyList.sortableItems(payload, filterBy, filter)
         sortable.value = true
         trierAlpha = computed(() => payload)
     }

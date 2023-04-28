@@ -46,7 +46,49 @@ export const useSocietyListStore = defineStore('societyList', {
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
-            if (payload.filter.value === true){
+            if (payload.filter.value === true && payload.sortable.value === true){
+                if (payload.trierAlpha.value.name === 'name') {
+                    let url = `/api/societies?order%5B${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&`
+                    if (payload.filterBy.value.name !== '') {
+                        url += `name=${payload.filterBy.value.name}&`
+                    }
+                    if (payload.filterBy.value.address.address !== '') {
+                        url += `address.address=${payload.filterBy.value.address.address}&`
+                    }
+                    if (payload.filterBy.value.address.address2 !== '') {
+                        url += `address.address2=${payload.filterBy.value.address.address2}&`
+                    }
+                    if (payload.filterBy.value.address.city !== '') {
+                        url += `address.city=${payload.filterBy.value.address.city}&`
+                    }
+                    if (payload.filterBy.value.address.country !== '') {
+                        url += `address.country=${payload.filterBy.value.address.country}&`
+                    }
+                    url += `page=${payload.nPage}`
+                    response = await api(url, 'GET')
+                    this.societies = await this.updatePagination(response)
+                } else {
+                    let url = `/api/societies?order%5Baddress.${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&`
+                    if (payload.filterBy.value.name !== '') {
+                        url += `name=${payload.filterBy.value.name}&`
+                    }
+                    if (payload.filterBy.value.address.address !== '') {
+                        url += `address.address=${payload.filterBy.value.address.address}&`
+                    }
+                    if (payload.filterBy.value.address.address2 !== '') {
+                        url += `address.address2=${payload.filterBy.value.address.address2}&`
+                    }
+                    if (payload.filterBy.value.address.city !== '') {
+                        url += `address.city=${payload.filterBy.value.address.city}&`
+                    }
+                    if (payload.filterBy.value.address.country !== '') {
+                        url += `address.country=${payload.filterBy.value.address.country}&`
+                    }
+                    url += `page=${payload.nPage}`
+                    response = await api(url, 'GET')
+                    this.societies = await this.updatePagination(response)
+                }
+            } else if (payload.filter.value === true){
                 let url = '/api/societies?'
                 if (payload.filterBy.value.name !== '') {
                     url += `name=${payload.filterBy.value.name}&`
@@ -63,10 +105,7 @@ export const useSocietyListStore = defineStore('societyList', {
                 if (payload.filterBy.value.address.country !== '') {
                     url += `address.country=${payload.filterBy.value.address.country}&`
                 }
-                url += `page=${payload.nPage}&`
-                if (url.charAt(url.length - 1) === '&') {
-                    url = url.slice(0, -1)
-                }
+                url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
                 this.societies = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
@@ -81,14 +120,57 @@ export const useSocietyListStore = defineStore('societyList', {
                 this.societies = await this.updatePagination(response)
             }
         },
-        async sortableItems(payload) {
+        async sortableItems(payload, filterBy, filter) {
             let response = {}
-            if (payload.name === 'name') {
-                response = await api(`/api/societies?order%5B${payload.name}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+            if (filter.value === true){
+                if (payload.name === 'name') {
+                    let url = `/api/societies?order%5B${payload.name}%5D=${payload.trier.value}&`
+                    if (filterBy.value.name !== '') {
+                        url += `name=${filterBy.value.name}&`
+                    }
+                    if (filterBy.value.address.address !== '') {
+                        url += `address.address=${filterBy.value.address.address}&`
+                    }
+                    if (filterBy.value.address.address2 !== '') {
+                        url += `address.address2=${filterBy.value.address.address2}&`
+                    }
+                    if (filterBy.value.address.city !== '') {
+                        url += `address.city=${filterBy.value.address.city}&`
+                    }
+                    if (filterBy.value.address.country !== '') {
+                        url += `address.country=${filterBy.value.address.country}&`
+                    }
+                    url += `page=${this.currentPage}`
+                    response = await api(url, 'GET')
+                } else {
+                    let url = `/api/societies?order%5Baddress.${payload.name}%5D=${payload.trier.value}&`
+                    if (filterBy.value.name !== '') {
+                        url += `name=${filterBy.value.name}&`
+                    }
+                    if (filterBy.value.address.address !== '') {
+                        url += `address.address=${filterBy.value.address.address}&`
+                    }
+                    if (filterBy.value.address.address2 !== '') {
+                        url += `address.address2=${filterBy.value.address.address2}&`
+                    }
+                    if (filterBy.value.address.city !== '') {
+                        url += `address.city=${filterBy.value.address.city}&`
+                    }
+                    if (filterBy.value.address.country !== '') {
+                        url += `address.country=${filterBy.value.address.country}&`
+                    }
+                    url += `page=${this.currentPage}`
+                    response = await api(url, 'GET')
+                }
+                this.societies = await this.updatePagination(response)
             } else {
-                response = await api(`/api/societies?order%5Baddress.${payload.name}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                if (payload.name === 'name') {
+                    response = await api(`/api/societies?order%5B${payload.name}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                } else {
+                    response = await api(`/api/societies?order%5Baddress.${payload.name}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                }
+                this.societies = await this.updatePagination(response)
             }
-            this.societies = await this.updatePagination(response)
         },
         async updatePagination(response) {
             const responseData = await response['hydra:member']
