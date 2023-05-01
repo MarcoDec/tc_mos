@@ -17,7 +17,7 @@ export default function useOptions(base, valueProp = '@id') {
                 this.$dispose()
             },
             async fetch() {
-                if (this.fetchable)
+                if (!this.fetchable)
                     return
                 const response = await api(this.url)
                 for (const option of response['hydra:member'])
