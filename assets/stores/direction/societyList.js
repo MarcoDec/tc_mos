@@ -189,10 +189,10 @@ export const useSocietyListStore = defineStore('societyList', {
         },
         async updateSociety(payload){
             await api(`/api/societies/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-            if (payload.sortable.value === false) {
-                this.itemsPagination(this.currentPage)
+            if (payload.sortable.value === true || payload.filter.value === true) {
+                this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
             } else {
-                this.paginationSortableOrFilterItems({nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
+                this.itemsPagination(this.currentPage)
             }
         }
 

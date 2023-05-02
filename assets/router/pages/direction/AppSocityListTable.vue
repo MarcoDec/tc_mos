@@ -145,6 +145,8 @@
                 name: formData2.get('name')
             }
             const payload = {
+                filter,
+                filterBy,
                 id: itemId,
                 itemsUpdateData,
                 sortable,
