@@ -7,6 +7,7 @@ import AppBtnJS from './components/AppBtnJS'
 import AppCard from './components/AppCard.vue'
 import AppCardJS from './components/AppCardJS'
 import AppCardShow from './components/AppCardShow.vue'
+import AppCollectionTable from './components/bootstrap-5/app-collection-table/AppCollectionTable.vue'
 import AppCol from './components/AppCol'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
@@ -71,6 +72,7 @@ import useUser from './stores/security'
 const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppBtnJS', AppBtnJS)
+    .component('AppCollectionTable', AppCollectionTable)
     .component('AppCard', AppCard)
     .component('AppCardJS', AppCardJS)
     .component('AppCardShow', AppCardShow)

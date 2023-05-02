@@ -12,7 +12,7 @@
     import MyTree from '../../../components/MyTree.vue'
 
     const fecthOptions = useOptions('countries')
-    await fecthOptions.fetch()
+    await fecthOptions.fetchOp()
 
     const fetchCustomerStore = useCustomerStore()
     const fetchCustomerAttachmentStore = useCustomerAttachmentStore()
@@ -261,8 +261,7 @@
             paymentTerms: formData.get('paymentTerms')
         }
 
-        console.log('dataSociety', dataSociety)
-        console.log('dataCustomer------>', dataCustomers)
+       
         const item = generateCustomer(value)
         await item.updateAccounting(dataCustomer)
 

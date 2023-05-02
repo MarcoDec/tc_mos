@@ -20,6 +20,7 @@
 
     function update(v) {
         emit('update:modelValue', v)
+        console.log('fff',v);
     }
 
     function input(e) {
@@ -45,7 +46,9 @@
         :name="field.name"
         :value="modelValue"
         class="form-select form-select-sm"
-        @input="input">
+        @input="input"
+        @update:model-value="update"
+        >
         <AppOptionGroups v-if="field.hasGroups" :groups="field.groups"/>
         <AppOptions v-else :options="getOptions()"/>
     </select>

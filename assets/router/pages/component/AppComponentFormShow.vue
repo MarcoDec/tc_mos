@@ -13,7 +13,7 @@
 
     const fecthOptions = useOptions('units')
     const fecthColors = useColorsStore()
-    await fecthOptions.fetch()
+    await fecthOptions.fetchOp()
     await fecthColors.fetch()
 
     const optionsAtt = computed(() =>

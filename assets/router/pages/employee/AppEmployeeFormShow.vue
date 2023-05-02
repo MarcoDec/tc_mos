@@ -11,8 +11,8 @@
 
     const fecthOptions = useOptions('countries')
     const fecthCompanyOptions = useOptions('companies')
-    await fecthOptions.fetch()
-    await fecthCompanyOptions.fetch()
+    await fecthOptions.fetchOp()
+    await fecthCompanyOptions.fetchOp()
 
     const fetchEmployeeStore = useEmployeeStore()
     const fetchEmployeeContactsStore = useEmployeeContactsStore()

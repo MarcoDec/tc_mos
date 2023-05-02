@@ -21,7 +21,7 @@
     function update() {
         props.send('update', {updated: props.item['@id']})
     }
-</script>
+</script> 
 
 <template>
     <tr :id="id">

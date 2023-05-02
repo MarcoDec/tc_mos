@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import generateSupplier from "../../../stores/supplier/supplier";
+import generateSupplierContact from "../../../stores/supplier/supplierContact";
 import { useIncotermStore } from "../../../stores/incoterm/incoterm";
 import useOptions from "../../../stores/option/options";
 import { useSocietyStore } from "../../../stores/societies/societies";
@@ -9,9 +10,12 @@ import { useSupplierContactsStore } from "../../../stores/supplier/supplierConta
 import { useSuppliersStore } from "../../../stores/supplier/suppliers";
 import MyTree from "../../../components/MyTree.vue";
 import { useTableMachine } from "../../../composable/xstate";
+import { log } from "xstate/lib/actions";
 
 const emit = defineEmits(["update", "update:modelValue", "rating"]);
-
+const isError = ref(false);
+const isShow = ref(false);
+const violations = ref([]);
 const fecthCurrencyOptions = useOptions("currencies");
 const fecthCompanyOptions = useOptions("companies");
 const fecthOptions = useOptions("countries");
@@ -24,10 +28,10 @@ await fetchSuppliersStore.fetch();
 await fetchSuppliersStore.fetchVatMessage();
 await fecthIncotermStore.fetch();
 await fetchSocietyStore.fetch();
-await fecthCurrencyOptions.fetch();
+await fecthCurrencyOptions.fetchOp();
 await fecthSupplierAttachmentStore.fetch();
-await fecthOptions.fetch();
-await fecthCompanyOptions.fetch();
+await fecthOptions.fetchOp();
+await fecthCompanyOptions.fetchOp();
 console.log("fetchSuppliersStore", fetchSuppliersStore.suppliers);
 const supplierAttachment = computed(() =>
   fecthSupplierAttachmentStore.supplierAttachment.map((attachment) => ({
@@ -80,9 +84,18 @@ const optionsVat = computed(() =>
 );
 
 const societyId = Number(fetchSuppliersStore.suppliers.society.match(/\d+/));
+const supplierId = Number(fetchSuppliersStore.suppliers.id);
 await fetchSocietyStore.fetchById(societyId);
 await fecthSupplierContactsStore.fetchBySociety(societyId);
 console.log("fecthSupplierContactsStore", fecthSupplierContactsStore);
+console.log("societyId==", societyId);
+const itemsTable = computed(() =>
+  fecthSupplierContactsStore.itemsSocieties.reduce(
+    (acc, curr) => acc.concat(curr),
+    []
+  )
+);
+console.log("itemsTable==", itemsTable);
 
 const dataSuppliers = computed(() =>
   Object.assign(fetchSuppliersStore.suppliers, fetchSocietyStore.item)
@@ -110,76 +123,58 @@ const optionsIncoterm = computed(() =>
 
 const fieldsSupp = [
   {
-    create: true,
-    filter: true,
     label: "Nom ",
     name: "name",
-    sort: true,
     type: "text",
-    update: true,
   },
   {
-    create: true,
-    filter: true,
     label: "Prenom ",
     name: "surname",
-    sort: true,
+
     type: "text",
-    update: true,
   },
   {
-    create: true,
-    filter: true,
     label: "Mobile ",
     name: "mobile",
-    sort: true,
+
     type: "text",
-    update: true,
   },
   {
-    create: true,
-    filter: true,
     label: "Email ",
-    name: "address.email",
-    sort: true,
+    name: "email",
+
     type: "text",
-    update: true,
   },
   {
-    create: true,
-    filter: true,
     label: "Adresse",
-    name: "address.address",
-    sort: true,
+    name: "address",
     type: "text",
-    update: true,
   },
   {
-    create: true,
-    filter: true,
     label: "Complément d'adresse ",
-    name: "address.address2",
-    sort: true,
+    name: "address2",
     type: "text",
-    update: true,
   },
   {
-    create: true,
-    filter: true,
+    label: "Pays",
+    name: "country",
+    options: {
+      label: (value) =>
+        optionsCountries.value.find((option) => option.type === value)?.text ??
+        null,
+      options: optionsCountries.value,
+    },
+    type: "select",
+  },
+  {
     label: "Ville ",
-    name: "address.city",
-    sort: true,
+    name: "city",
     type: "text",
-    update: true,
   },
   {
-    create: true,
-    filter: true,
     label: "Code Postal ",
-    name: "address.zipCode",
-    sort: true,
+    name: "zipCode",
     type: "text",
-    update: true,
   },
 ];
 
@@ -353,13 +348,13 @@ async function updateAddress(value) {
 
   const data = {
     address: {
-      address: formData.get("getAddress"),
-      address2: formData.get("getAddress2"),
-      city: formData.get("getCity"),
-      country: formData.get("getCountry"),
-      email: formData.get("getEmail"),
-      phoneNumber: formData.get("getPhone"),
-      zipCode: formData.get("getPostal"),
+      address: formData.get("address"),
+      address2: formData.get("address2"),
+      city: formData.get("city"),
+      country: formData.get("country"),
+      email: formData.get("email"),
+      phoneNumber: formData.get("phoneNumber"),
+      zipCode: formData.get("zipCode"),
     },
   };
 
@@ -416,8 +411,81 @@ function updateFichiers(value) {
     children: supplierAttachment.value,
   };
 }
-const machine = useTableMachine("supplier-contacts");
-console.log('machine-->', machine);
+async function ajout(inputValues) {
+  const data = {
+    address: {
+      address: inputValues.address ?? "",
+      address2: inputValues.address2 ?? "",
+      city: inputValues.city ?? "",
+      email: inputValues.email ?? "",
+      country: inputValues.country ?? "",
+      // phoneNumber: inputValues.getPhone ?? "",
+      zipCode: inputValues.zipCode ?? "",
+    },
+    // default: true,
+    // kind: "comptabilité",
+    mobile: inputValues.mobile ?? "",
+    name: inputValues.name ?? "",
+    society: "/api/suppliers/1",
+    surname: inputValues.surname ?? "",
+  };
+  try {
+    await fecthSupplierContactsStore.ajout(data, societyId);
+     isError.value = false;
+  } catch (error) {
+    console.log('erreuuur==', error);
+     if (error === "Internal Server Error") {
+      const err = { message: "Internal Server Error" };
+      violations.value.push(err);
+    } else {
+      violations.value = error;
+      isError.value = true;
+    }
+  }
+}
+async function deleted(id) {
+  await fecthSupplierContactsStore.deleted(id);
+}
+async function updateSuppliers(inputValues) {
+  console.log("inpiuutttt", inputValues);
+  const id = Number(inputValues["@id"].match(/\d+/));
+  console.log("id", id);
+  const dataUpdate = {
+    address: {
+      address: inputValues.address ?? "",
+      address2: inputValues.address2 ?? "",
+      city: inputValues.city ?? "",
+      email: inputValues.email ?? "",
+      country: inputValues.country ?? "",
+      // phoneNumber: inputValues.getPhone ?? "",
+      zipCode: inputValues.zipCode ?? "",
+    },
+    // default: true,
+    // kind: "comptabilité",
+    mobile: inputValues.mobile ?? "",
+    name: inputValues.name ?? "",
+    society: "/api/suppliers/" + supplierId,
+    surname: inputValues.surname ?? "",
+  };
+  try {
+    const item = generateSupplierContact(inputValues);
+    await item.update(dataUpdate);
+    isError.value = false;
+  } catch (error) {
+    await fecthSupplierContactsStore.fetchBySociety(societyId);
+    itemsTable.value = fecthSupplierContactsStore.itemsSocieties.reduce(
+      (acc, curr) => acc.concat(curr),
+      []
+    );
+    if (error === "Internal Server Error") {
+      const err = { message: "Internal Server Error" };
+      violations.value.push(err);
+    } else {
+      violations.value = error;
+      isError.value = true;
+    }
+  }
+}
 </script>
 
 <template>
@@ -512,14 +580,21 @@ console.log('machine-->', machine);
       icon="file-contract"
       tabs="gui-start"
     >
-    
-      <AppTableJS
-        id="supplier-contacts"
+      <AppCollectionTable
+        v-if="!isShow"
+        id="addContacts"
         :fields="fieldsSupp"
-        :store="fecthSupplierContactsStore"
-        :machine="machine"
+        :items="itemsTable"
+        @ajout="ajout"
+        @deleted="deleted"
+        @update="updateSuppliers"
       />
-      
+
+      <div v-if="isError" class="alert alert-danger" role="alert">
+        <div v-for="violation in violations" :key="violation">
+          <li>{{ violation.message }}</li>
+        </div>
+      </div>
     </AppTab>
   </AppTabs>
 </template>

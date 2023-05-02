@@ -28,7 +28,7 @@
             props.machine.send('fail', {violations})
         }
     }
-</script>
+</script> 
 
 <template>
     <tr :id="id" class="table-success">
