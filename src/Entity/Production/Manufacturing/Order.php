@@ -188,7 +188,7 @@ class Order extends Entity implements BarCodeInterface {
     private Measure $quantityRequested;
 
     #[
-        ApiProperty(description: 'Référence', example: 'EJZ65'),
+        ApiProperty(description: 'Référence', example: '20230320'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation'])
     ]

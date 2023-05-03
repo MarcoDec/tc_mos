@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\Management\Company\CompanyPatchController;
 
 #[
     ApiResource(
@@ -72,6 +73,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
+                'controller' => CompanyPatchController::class,
+                'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifie une compagnie',
                     'parameters' => [[
@@ -86,6 +89,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une compagnie'
                 ],
                 'path' => '/companies/{id}/{process}',
+                'read' => false,
+                'write' => true,
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')',
                 'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ]
@@ -94,11 +99,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:company'],
+            'groups' => ['write:address', 'write:company'],
             'openapi_definition_name' => 'Company-write'
         ],
         normalizationContext: [
-            'groups' => ['read:company', 'read:id'],
+            'groups' => ['read:address', 'read:company', 'read:id'],
             'openapi_definition_name' => 'Company-read',
             'skip_null_values' => false
         ]
@@ -108,8 +113,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Company extends Entity {
     #[
         ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/2'),
-        Assert\NotBlank,
-        Serializer\Groups(['read:company', 'write:company'])
+        ORM\ManyToOne(targetEntity: Currency::class, fetch: "EAGER"),
+        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
     ]
     private ?Currency $currency;
 
@@ -160,7 +165,7 @@ class Company extends Entity {
         ApiProperty(description: 'IPv4', example: '255.255.255.254'),
         ORM\Column(length: 15, nullable: true),
         Assert\Ip(version: Assert\Ip::V4),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:admin'])
     ]
     private ?string $ip;
 
@@ -183,7 +188,7 @@ class Company extends Entity {
     #[
         ApiProperty(description: 'Notes', example: 'Texte libre'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company' , 'write:company:main'])
     ]
     private ?string $notes;
 
@@ -191,7 +196,7 @@ class Company extends Entity {
         ApiProperty(description: 'Nombre de travailleurs dans l\'équipe par jour', example: 4),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:main'])
     ]
     private int $numberOfTeamPerDay = 0;
 
@@ -204,9 +209,9 @@ class Company extends Entity {
     private DoctrineCollection $references;
 
     #[
-        ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/2'),
+        ApiProperty(description: 'Société'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:admin', 'write:company:main'])
     ]
     private ?Society $society = null;
 
@@ -217,7 +222,7 @@ class Company extends Entity {
     #[
         ApiProperty(description: 'Calendrier de travail', example: '2 jours'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:main'])
     ]
     private ?string $workTimetable;
 

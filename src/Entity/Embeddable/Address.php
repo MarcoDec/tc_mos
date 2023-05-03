@@ -33,7 +33,7 @@ class Address {
         ),
         Assert\Length(min: 10, max: 160),
         ORM\Column(length: 160, nullable: true),
-        Serializer\Groups(['read:address', 'write:address', 'read:society:collection'])
+        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
     private ?string $address = null;
 
@@ -45,7 +45,7 @@ class Address {
         ),
         Assert\Length(min: 2, max: 110),
         ORM\Column(length: 110, nullable: true),
-        Serializer\Groups(['read:address', 'write:address', 'read:society:collection'])
+        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
     private ?string $address2 = null;
 
@@ -57,7 +57,7 @@ class Address {
         ),
         Assert\Length(min: 3, max: 50),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:address', 'write:address', 'read:society:collection'])
+        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
     private ?string $city = null;
 
@@ -70,7 +70,7 @@ class Address {
         Assert\Country,
         Assert\Length(exactly: 2),
         ORM\Column(type: 'char', length: 2, nullable: true),
-        Serializer\Groups(['read:address', 'write:address', 'read:society:collection'])
+        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
     private ?string $country = null;
 
@@ -79,7 +79,7 @@ class Address {
         Assert\Email,
         Assert\Length(min: 5, max: 80),
         ORM\Column(length: 80, nullable: true),
-        Serializer\Groups(['read:address', 'write:address', 'read:society:collection'])
+        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
     private ?string $email = null;
 
@@ -90,9 +90,9 @@ class Address {
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/telephone'], 'format' => 'telephone']
         ),
         AppAssert\PhoneNumber,
-        Assert\Length(min: 10, max: 18),
+        Assert\Length(max: 18),
         ORM\Column(length: 18, nullable: true),
-        Serializer\Groups(['read:address', 'write:address', 'read:society:collection'])
+        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
     private ?string $phoneNumber = null;
 
@@ -105,7 +105,7 @@ class Address {
         AppAssert\ZipCode,
         Assert\Length(min: 2, max: 10),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:address', 'write:address', 'read:society:collection'])
+        Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
     private ?string $zipCode = null;
 
