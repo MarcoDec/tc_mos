@@ -4,9 +4,12 @@ import 'bootstrap'
 import App from './components/App.vue'
 import AppBtn from './components/AppBtn.vue'
 import AppCard from './components/AppCard.vue'
+import AppCardableTable from './components/bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
+import AppCol from './components/layout/AppCol'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppForm from './components/form/AppForm.vue'
+import AppFormCardable from './components/form-cardable/AppFormCardable'
 import AppFormGenerator from './components/form/AppFormGenerator.vue'
 import AppInput from './components/form/field/input/AppInput.vue'
 import AppInputGuesser from './components/form/field/input/AppInputGuesser.vue'
@@ -14,6 +17,7 @@ import AppMultiselect from './components/form/field/input/select/AppMultiselect.
 import AppOptions from './components/form/field/input/select/AppOptions.vue'
 import AppOverlay from './components/AppOverlay'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
+import AppRow from './components/layout/AppRow'
 import AppSuspense from './components/AppSuspense.vue'
 import AppTableFormField from './components/table/AppTableFormField.vue'
 import AppTableHeaderForm from './components/table/head/AppTableHeaderForm.vue'
@@ -32,8 +36,11 @@ const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppCard', AppCard)
     .component('AppContainer', AppContainer)
+    .component('AppCol', AppCol)
+    .component('AppCardableTable', AppCardableTable)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppForm', AppForm)
+    .component('AppFormCardable', AppFormCardable)
     .component('AppFormGenerator', AppFormGenerator)
     .component('AppInput', AppInput)
     .component('AppInputGuesser', AppInputGuesser)
@@ -41,6 +48,7 @@ const app = createApp(App)
     .component('AppOverlay', AppOverlay)
     .component('AppOptions', AppOptions)
     .component('AppRouterLink', AppRouterLink)
+    .component('AppRow', AppRow)
     .component('AppSuspense', AppSuspense)
     .component('AppTableFormField', AppTableFormField)
     .component('AppTableHeaderForm', AppTableHeaderForm)

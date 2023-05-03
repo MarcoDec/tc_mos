@@ -1,13 +1,21 @@
 <script setup>
     import AppOptionGroups from './AppOptionGroups.vue'
 
-    defineProps({
+    const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
         id: {required: true, type: String},
         modelValue: {default: null, type: String}
     })
+
+    function getOptions() {
+        if (typeof props.field.optionsList === 'undefined') {
+            return props.field.options.options
+        }
+        return props.field.optionsList
+    }
+
     const emit = defineEmits(['update:modelValue'])
 
     function update(v) {
@@ -39,6 +47,6 @@
         class="form-select form-select-sm"
         @input="input">
         <AppOptionGroups v-if="field.hasGroups" :groups="field.groups"/>
-        <AppOptions v-else :options="field.optionsList"/>
+        <AppOptions v-else :options="getOptions()"/>
     </select>
 </template>
