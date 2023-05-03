@@ -3,7 +3,8 @@
     import AppBtnJS from './AppBtnJS'
     import AppFormJS from './form/AppFormJS'
 
-    defineProps({
+    const props = defineProps({
+        disabled: {type: Boolean},
         componentAttribute: {default: () => [], type: Array},
         fields: {default: () => [], type: Array},
         id: {required: true, type: String}
@@ -12,7 +13,7 @@
     const emit = defineEmits(['update', 'update:modelValue'])
     const updated = ref(false)
     const disable = ref(true)
-
+    console.log('disabled***', props.disabled);
     function update() {
         updated.value = true
         disable.value = false

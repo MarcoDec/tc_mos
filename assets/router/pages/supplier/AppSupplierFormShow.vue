@@ -219,7 +219,7 @@ const Achatfields = [
   },
   { label: "Gestion du cuivre", name: "managedCopper", type: "boolean" },
   { label: "Niveau de confiance", name: "confidenceCriteria", type: "rating" },
-  { label: "Commande ouverte", name: "CommandeOuverte", type: "boolean" },
+  { label: "Commande ouverte", name: "openOrdersEnabled", type: "boolean" },
   { label: "Accusé de réception", name: "ar", type: "boolean" },
 ];
 const Comptabilitéfields = [
