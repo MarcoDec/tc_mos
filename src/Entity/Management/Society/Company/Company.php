@@ -12,7 +12,6 @@ use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Society;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
-use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Management\CompanyReference;
 use App\Entity\Selling\Customer\Customer;
@@ -215,10 +214,6 @@ class Company extends Entity {
     ]
     private ?Society $society = null;
 
-    /** @var DoctrineCollection<int, Supplier> */
-    #[ORM\ManyToMany(targetEntity: Supplier::class, mappedBy: 'administeredBy')]
-    private DoctrineCollection $suppliers;
-
     #[
         ApiProperty(description: 'Calendrier de travail', example: '2 jours'),
         ORM\Column(nullable: true),
@@ -230,7 +225,6 @@ class Company extends Entity {
         $this->customers = new ArrayCollection();
         $this->products = new ArrayCollection();
         $this->references = new ArrayCollection();
-        $this->suppliers = new ArrayCollection();
     }
 
     final public function addCustomer(Customer $customer): self {
@@ -253,14 +247,6 @@ class Company extends Entity {
         if (!$this->references->contains($reference)) {
             $this->references->add($reference);
             $reference->addItem($this);
-        }
-        return $this;
-    }
-
-    final public function addSupplier(Supplier $supplier): self {
-        if (!$this->suppliers->contains($supplier)) {
-            $this->suppliers->add($supplier);
-            $supplier->addAdministeredBy($this);
         }
         return $this;
     }
@@ -342,13 +328,6 @@ class Company extends Entity {
         return $this->society;
     }
 
-    /**
-     * @return DoctrineCollection<int, Supplier>
-     */
-    final public function getSuppliers(): DoctrineCollection {
-        return $this->suppliers;
-    }
-
     #[Serializer\Groups(['read:company:option'])]
     final public function getText(): ?string {
         return $this->getName();
@@ -382,14 +361,6 @@ class Company extends Entity {
         if ($this->references->contains($reference)) {
             $this->references->removeElement($reference);
             $reference->removeItem($this);
-        }
-        return $this;
-    }
-
-    final public function removeSupplier(Supplier $supplier): self {
-        if ($this->suppliers->contains($supplier)) {
-            $this->suppliers->removeElement($supplier);
-            $supplier->removeAdministeredBy($this);
         }
         return $this;
     }

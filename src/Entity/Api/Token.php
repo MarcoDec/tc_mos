@@ -28,7 +28,7 @@ class Token {
         ORM\ManyToOne(inversedBy: 'apiTokens')]
         private Employee $employee
     ) {
-        $this->expireAt = new DateTimeImmutable('+1 hour');
+        $this->expireAt = new DateTimeImmutable('+4 hour');
         $this->token = bin2hex(random_bytes(60));
     }
 
