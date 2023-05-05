@@ -19,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, id: 'address', properties: ['address.address'=>'partial', 'address.address2'=>'partial','address.city' => 'partial','address.country' => 'partial']),
+    ApiFilter(filterClass: OrderFilter::class, id: 'address-sorter', properties: ['address.address', 'address.address2', 'address.city', 'address.country']),
     ApiFilter(OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Société',
@@ -108,7 +110,7 @@ class Society extends Entity {
         ApiProperty(description: 'Adresse'),
         Assert\Valid(groups: ['Default', 'Society-create']),
         ORM\Embedded,
-        Serializer\Groups(['create:society', 'read:society', 'write:society'])
+        Serializer\Groups(['create:society', 'read:society', 'write:society','read:address', 'read:society:collection'])
     ]
     private Address $address;
 
@@ -158,7 +160,7 @@ class Society extends Entity {
 
     #[
         ApiProperty(description: 'Site internet', required: false, example: 'https://www.societe.fr'),
-        Assert\Url(groups: ['Default', 'Society-create']),
+        // Assert\Url(groups: ['Default', 'Society-create']),
         ORM\Column(nullable: true),
         Serializer\Groups(['create:society', 'read:society', 'write:society'])
     ]

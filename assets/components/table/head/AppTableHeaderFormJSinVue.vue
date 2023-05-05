@@ -5,22 +5,25 @@
     import AppTableFormField from '../../table/AppTableFormField.vue'
     import Fa from '../../Fa'
 
-    const props = defineProps({
-        fields: generateTableFields(),
-        icon: {required: true, type: String},
-        id: {required: true, type: String},
-        label: {required: true, type: String},
-        machine: {required: true, type: Object},
-        modelValue: {default: () => ({}), type: Object},
-        reverseIcon: {required: true, type: String},
-        reverseLabel: {required: true, type: String},
-        reverseMode: {required: true, type: String},
-        store: {required: true, type: Object},
-        submit: {required: true, type: Function},
-        submitVariant: generateVariant('secondary'),
-        type: {required: true, type: String},
-        variant: generateVariant('dark'),
-        violations: {default: () => [], type: Array}})
+    const props = defineProps(
+        {
+            fields: generateTableFields(),
+            icon: {required: true, type: String},
+            id: {required: true, type: String},
+            label: {required: true, type: String},
+            machine: {required: true, type: Object},
+            modelValue: {default: () => ({}), type: Object},
+            reverseIcon: {required: true, type: String},
+            reverseLabel: {required: true, type: String},
+            reverseMode: {required: true, type: String},
+            store: {required: true, type: Object},
+            submit: {required: true, type: Function},
+            submitVariant: generateVariant('secondary'),
+            //type: {required: true, type: String},
+            variant: generateVariant('dark'),
+            violations: {default: () => [], type: Array}
+        }
+    )
 
     const emit = defineEmits(['inputValue'])
 

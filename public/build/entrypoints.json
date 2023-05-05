@@ -4,18 +4,18 @@
   "entryPoints": {
     "index": {
       "js": [
-        "/build/index.3cb13130.js"
+        "/build/index.ece3e9c5.js"
       ],
       "css": [
-        "/build/index.bc87ed3d.css"
+        "/build/index.dbc54515.css"
       ],
       "preload": [
-        "/build/fontawesome.f580ffe2.js"
+        "/build/fontawesome.6f4572d6.js"
       ]
     }
   },
   "assets": {
-    "assets/router/pages/logistic/AppWarehouseList.css": "/build/AppWarehouseList.08ef8037.css",
-    "assets/index.css": "/build/index.bc87ed3d.css"
+    "assets/router/pages/logistic/AppWarehouseList.css": "/build/AppWarehouseList.4c08155f.css",
+    "assets/index.css": "/build/index.dbc54515.css"
   }
 }

@@ -20,18 +20,18 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'product']),
     ApiResource(
-        description: 'Produit',
+        description: 'Produit Client',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les produits',
-                    'summary' => 'Récupère les produits',
+                    'description' => 'Récupère les produits associés aux clients',
+                    'summary' => 'Récupère les produits associés aux clients',
                 ],
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un produit',
-                    'summary' => 'Créer un produit',
+                    'description' => 'Associe un produit à un client',
+                    'summary' => 'Associe un produit à un client',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
@@ -39,8 +39,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un produit',
-                    'summary' => 'Supprime un produit',
+                    'description' => 'Supprime une association d\'un produit à un client',
+                    'summary' => 'Supprime une association d\'un produit à un client',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],

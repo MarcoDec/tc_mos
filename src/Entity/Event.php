@@ -34,7 +34,6 @@ abstract class Event extends Entity {
 
     #[
         ApiProperty(description: 'Nom', example: 'Evènement annuel'),
-        Assert\NotBlank,
         ORM\Column(nullable: true),
         Serializer\Groups(['read:event', 'write:event'])
     ]

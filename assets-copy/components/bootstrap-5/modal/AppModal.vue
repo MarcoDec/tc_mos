@@ -1,50 +1,54 @@
 <script lang="ts" setup>
-    import {defineProps, onMounted, onUnmounted, ref} from 'vue'
+    import {computed, defineEmits, defineProps, onMounted, onUnmounted, ref, watch} from 'vue'
     import {Modal} from 'bootstrap'
 
-    const props = defineProps({
-        noInstantiate: {required: false, type: Boolean},
-        title: {required: true, type: String}
-    })
+    const emit = defineEmits<(e: 'hide') => void>()
+    const props = defineProps<{show: boolean, title: string, variant?: string | null}>()
+
+    const classVariant = computed<string | null>(() => (typeof props.variant !== 'undefined' && props.variant !== null && props.variant.length > 0
+        ? `bg-${props.variant}`
+        : null))
     const el = ref<HTMLDivElement>()
     const modal = ref<Modal | null>(null)
 
-    function dispose(): void {
-        if (modal.value !== null) {
-            modal.value.dispose()
-            modal.value = null
-        }
+    function hide(): void {
+        modal.value?.hide()
     }
 
-    function instantiate(): void {
-        if (!props.noInstantiate && el.value) {
-            dispose()
+    function onHide(): void {
+        emit('hide')
+    }
+
+    watch(() => props.show, (show: boolean) => {
+        if (show)
+            modal.value?.show()
+    })
+
+    onMounted(() => {
+        if (el.value instanceof HTMLDivElement) {
             modal.value = new Modal(el.value)
+            el.value.addEventListener('hidden.bs.modal', onHide)
         }
-    }
+    })
 
-    onMounted(instantiate)
-
-    onUnmounted(dispose)
+    onUnmounted(() => {
+        if (el.value instanceof HTMLDivElement)
+            el.value.removeEventListener('hidden.bs.modal', onHide)
+    })
 </script>
 
 <template>
-    <div ref="el" class="modal" tabindex="-1">
+    <div ref="el" class="fade modal" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div :class="classVariant" class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">
+                    <h1 class="modal-title">
                         {{ title }}
-                    </h5>
+                    </h1>
+                    <button aria-label="Fermer" class="btn-close" type="button" @click="hide"/>
                 </div>
                 <div class="modal-body">
                     <slot/>
-                </div>
-                <div class="modal-footer">
-                    <AppBtn data-bs-dismiss="modal" variant="danger">
-                        Fermer
-                    </AppBtn>
-                    <slot name="buttons"/>
                 </div>
             </div>
         </div>

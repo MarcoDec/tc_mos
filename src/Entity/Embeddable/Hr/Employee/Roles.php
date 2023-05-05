@@ -123,6 +123,11 @@ class Roles {
     #[ORM\Column(type: 'simple_array')]
     private array $roles = [self::ROLE_USER];
 
+    final public function setRoles(array $roles): self {
+        $this->roles = $roles;
+        return $this;
+    }
+
     final public function addRole(string $role): self {
         if (!in_array($role, $this->roles)) {
             $this->roles[] = $role;
