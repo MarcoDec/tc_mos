@@ -405,6 +405,14 @@ class Supplier extends Entity {
         return $this->managedQuality;
     }
 
+   /**
+    * @return bool
+    */
+   public function isOpenOrdersEnabled(): bool
+   {
+      return $this->openOrdersEnabled;
+   }
+
     final public function removeAdministeredBy(Company $administeredBy): self {
         if ($this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->removeElement($administeredBy);
@@ -489,6 +497,14 @@ class Supplier extends Entity {
         $this->notes = $notes;
         return $this;
     }
+
+   /**
+    * @param bool $openOrdersEnabled
+    */
+   public function setOpenOrdersEnabled(bool $openOrdersEnabled): void
+   {
+      $this->openOrdersEnabled = $openOrdersEnabled;
+   }
 
     final public function setSociety(?Society $society): self {
         $this->society = $society;
