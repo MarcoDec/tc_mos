@@ -30,6 +30,11 @@ export default function generateSupplier(suppliers) {
                 this.$state = {...response}
                 console.log('updateQuality', response)
             },
+            async updateLog(data) {
+                const response = await api(`/api/suppliers/${suppliers.id}/purchase-logistics`, 'PATCH', data)
+                this.$state = {...response}
+                console.log('updatepurchase-logistics', response)
+            },
 
         },
         getters: {

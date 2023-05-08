@@ -33,8 +33,8 @@ export default function generateCustomer(customers) {
             getUsername: state => state.accountingPortal.username,
             getPassword: state => state.accountingPortal.password,
             getUrl: state => state.accountingPortal.url,
-            vatMsg: state => (state.vatMessage ? state.vatMessage['@id'] : null),
-            incotermsValue: state => (state.incoterms ? state.incoterms['@id'] : null)
+            // vatMsg: state => (state.vatMessage ? state.vatMessage['@id'] : null),
+            // incotermsValue: state => (state.incoterms ? state.incoterms['@id'] : null)
         },
         state: () => ({...customers})
     })()

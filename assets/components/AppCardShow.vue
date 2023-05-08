@@ -13,7 +13,6 @@
     const emit = defineEmits(['update', 'update:modelValue'])
     const updated = ref(false)
     const disable = ref(true)
-    console.log('disabled***', props.disabled);
     function update() {
         updated.value = true
         disable.value = false

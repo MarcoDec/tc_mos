@@ -51,11 +51,14 @@ const treeData = computed(() => {
   };
   return data;
 });
- const optionsVatMessageForce = [
-        {text: 'TVA par défaut selon le pays du client', value: 'TVA par défaut selon le pays du client'},
-        {text: 'Force AVEC TVA', value: 'Force AVEC TVA'},
-        {text: 'Force SANS TVA', value: 'Force SANS TVA'}
-    ]
+const optionsVatMessageForce = [
+  {
+    text: "TVA par défaut selon le pays du client",
+    value: "TVA par défaut selon le pays du client",
+  },
+  { text: "Force AVEC TVA", value: "Force AVEC TVA" },
+  { text: "Force SANS TVA", value: "Force SANS TVA" },
+];
 const optionsCompany = computed(() =>
   fecthCompanyOptions.options.map((op) => {
     const text = op.text;
@@ -115,9 +118,9 @@ const list = computed(() =>
 );
 
 const listSuppliers = computed(() =>
-  Object.assign({},fetchSuppliersStore.suppliers, list.value)
+  Object.assign({}, fetchSuppliersStore.suppliers, list.value)
 );
-console.log('helooo', listSuppliers);
+console.log("helooo", listSuppliers);
 const optionsIncoterm = computed(() =>
   fecthIncotermStore.incoterms.map((incoterm) => {
     const text = incoterm.name;
@@ -247,7 +250,8 @@ const Comptabilitéfields = [
     name: "forceVat",
     options: {
       label: (value) =>
-        optionsVatMessageForce.find((option) => option.type === value)?.text ?? null,
+        optionsVatMessageForce.find((option) => option.type === value)?.text ??
+        null,
       options: optionsVatMessageForce,
     },
     type: "select",
@@ -315,11 +319,13 @@ async function updateGeneral(value) {
   const formData = new FormData(form);
   const data = {
     //managedProduction: JSON.parse(formData.get("managedProduction")),
-    //administeredBy: formData.get("administeredBy"),
+    //administeredBy:  formData.get("administeredBy"),
+    //administeredBy: ["/api/companies/1"],
     language: formData.get("language"),
     notes: formData.get("notes")
   };
   const dataAdmin = {
+    administeredBy: [formData.get("administeredBy")],
     name: formData.get("name"),
   };
   console.log("ddd", data);
@@ -343,9 +349,13 @@ async function updateLogistique(value) {
     },
     incoterms: formData.get("incotermsValue"),
   };
- const itemSoc = generateSocieties(value);
+  const data = {
+    openOrdersEnabled: JSON.parse(formData.get("openOrdersEnabled")),
+  };
+  const itemSoc = generateSocieties(value);
   await itemSoc.update(dataSociety);
-  //await fetchSocietyStore.update(dataSociety, societyId);
+  const item = generateSupplier(value);
+  await item.updateLog(data);  
   await fetchSocietyStore.fetch();
 }
 
@@ -388,7 +398,7 @@ async function updateComptabilite(value) {
   };
   const item = generateSupplier(value);
   await item.updateAccounting(data);
-   const itemSoc = generateSocieties(value);
+  const itemSoc = generateSocieties(value);
   await itemSoc.update(dataSociety);
   // await fetchSocietyStore.update(dataSociety, societyId);
   await fetchSocietyStore.fetch();
@@ -440,10 +450,10 @@ async function ajout(inputValues) {
   };
   try {
     await fecthSupplierContactsStore.ajout(data, societyId);
-     isError.value = false;
+    isError.value = false;
   } catch (error) {
-    console.log('erreuuur==', error);
-     if (error === "Internal Server Error") {
+    console.log("erreuuur==", error);
+    if (error === "Internal Server Error") {
       const err = { message: "Internal Server Error" };
       violations.value.push(err);
     } else {
