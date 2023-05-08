@@ -40,8 +40,8 @@ export default function generateSupplier(suppliers) {
             getEmail: state => state.address.email,
             getPhone: state => state.address.phoneNumber,
             getPostal: state => state.address.zipCode,
-            incotermsValue: state => (state.incoterms ? state.incoterms['@id'] : null),
-            vatMessageValue: state => (state.vatMessage ? state.vatMessage['@id'] : null)
+            // incotermsValue: state => (state.incoterms ? state.incoterms['@id'] : null),
+            // vatMessageValue: state => (state.vatMessage ? state.vatMessage['@id'] : null)
 
         },
         state: () => ({...suppliers})

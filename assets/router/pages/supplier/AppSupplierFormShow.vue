@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import generateSupplier from "../../../stores/supplier/supplier";
+import generateSocieties from "../../../stores/societies/societie";
 import generateSupplierContact from "../../../stores/supplier/supplierContact";
 import { useIncotermStore } from "../../../stores/incoterm/incoterm";
 import useOptions from "../../../stores/option/options";
@@ -50,6 +51,11 @@ const treeData = computed(() => {
   };
   return data;
 });
+ const optionsVatMessageForce = [
+        {text: 'TVA par défaut selon le pays du client', value: 'TVA par défaut selon le pays du client'},
+        {text: 'Force AVEC TVA', value: 'Force AVEC TVA'},
+        {text: 'Force SANS TVA', value: 'Force SANS TVA'}
+    ]
 const optionsCompany = computed(() =>
   fecthCompanyOptions.options.map((op) => {
     const text = op.text;
@@ -101,7 +107,7 @@ const dataSuppliers = computed(() =>
   Object.assign(fetchSuppliersStore.suppliers, fetchSocietyStore.item)
 );
 const managed = computed(() => {
-  const data = { managedCopper: dataSuppliers.value.copper.managed };
+  const data = { managedCopper: fetchSocietyStore.item.copper.managed };
   return data;
 });
 const list = computed(() =>
@@ -109,9 +115,9 @@ const list = computed(() =>
 );
 
 const listSuppliers = computed(() =>
-  Object.assign(dataSuppliers.value, list.value)
+  Object.assign({},fetchSuppliersStore.suppliers, list.value)
 );
-
+console.log('helooo', listSuppliers);
 const optionsIncoterm = computed(() =>
   fecthIncotermStore.incoterms.map((incoterm) => {
     const text = incoterm.name;
@@ -179,11 +185,6 @@ const fieldsSupp = [
 ];
 
 const Géneralitésfields = [
-  {
-    label: "Gestion en production",
-    name: "managedProduction",
-    type: "boolean",
-  },
   { label: "Nom", name: "name", type: "text" },
   {
     label: "Compagnies",
@@ -244,7 +245,12 @@ const Comptabilitéfields = [
   {
     label: "Forcer la TVA",
     name: "forceVat",
-    type: "text",
+    options: {
+      label: (value) =>
+        optionsVatMessageForce.find((option) => option.type === value)?.text ?? null,
+      options: optionsVatMessageForce,
+    },
+    type: "select",
   },
   {
     label: "Message TVA",
@@ -311,7 +317,7 @@ async function updateGeneral(value) {
     //managedProduction: JSON.parse(formData.get("managedProduction")),
     //administeredBy: formData.get("administeredBy"),
     language: formData.get("language"),
-    notes: formData.get("notes"),
+    notes: formData.get("notes")
   };
   const dataAdmin = {
     name: formData.get("name"),
@@ -337,8 +343,9 @@ async function updateLogistique(value) {
     },
     incoterms: formData.get("incotermsValue"),
   };
-
-  await fetchSocietyStore.update(dataSociety, societyId);
+ const itemSoc = generateSocieties(value);
+  await itemSoc.update(dataSociety);
+  //await fetchSocietyStore.update(dataSociety, societyId);
   await fetchSocietyStore.fetch();
 }
 
@@ -348,13 +355,13 @@ async function updateAddress(value) {
 
   const data = {
     address: {
-      address: formData.get("address"),
-      address2: formData.get("address2"),
-      city: formData.get("city"),
-      country: formData.get("country"),
-      email: formData.get("email"),
-      phoneNumber: formData.get("phoneNumber"),
-      zipCode: formData.get("zipCode"),
+      address: formData.get("getAddress"),
+      address2: formData.get("getAddress2"),
+      city: formData.get("getCity"),
+      country: formData.get("getCountry"),
+      email: formData.get("getEmail"),
+      phoneNumber: formData.get("getPhone"),
+      zipCode: formData.get("getPostal"),
     },
   };
 
@@ -381,7 +388,9 @@ async function updateComptabilite(value) {
   };
   const item = generateSupplier(value);
   await item.updateAccounting(data);
-  await fetchSocietyStore.update(dataSociety, societyId);
+   const itemSoc = generateSocieties(value);
+  await itemSoc.update(dataSociety);
+  // await fetchSocietyStore.update(dataSociety, societyId);
   await fetchSocietyStore.fetch();
 }
 function updateFichiers(value) {
