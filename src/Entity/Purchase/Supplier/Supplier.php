@@ -28,6 +28,9 @@ use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Purchase\Supplier\SupplierPatchController;
@@ -168,7 +171,10 @@ class Supplier extends Entity {
     /** @var DoctrineCollection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
-        ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'suppliers'),
+        JoinTable(name: 'supplier_administered_by'),
+        JoinColumn(name: 'supplier_id', referencedColumnName: 'id'),
+        InverseJoinColumn(name: 'company_id', referencedColumnName: 'id'),
+        ORM\ManyToMany(targetEntity: Company::class, cascade: ["all"]),
         Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
     ]
     private DoctrineCollection $administeredBy;
@@ -290,7 +296,6 @@ class Supplier extends Entity {
     final public function addAdministeredBy(Company $administeredBy): self {
         if (!$this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->add($administeredBy);
-            $administeredBy->addSupplier($this);
         }
         return $this;
     }
@@ -400,10 +405,17 @@ class Supplier extends Entity {
         return $this->managedQuality;
     }
 
+   /**
+    * @return bool
+    */
+   public function isOpenOrdersEnabled(): bool
+   {
+      return $this->openOrdersEnabled;
+   }
+
     final public function removeAdministeredBy(Company $administeredBy): self {
         if ($this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->removeElement($administeredBy);
-            $administeredBy->removeSupplier($this);
         }
         return $this;
     }
@@ -485,6 +497,14 @@ class Supplier extends Entity {
         $this->notes = $notes;
         return $this;
     }
+
+   /**
+    * @param bool $openOrdersEnabled
+    */
+   public function setOpenOrdersEnabled(bool $openOrdersEnabled): void
+   {
+      $this->openOrdersEnabled = $openOrdersEnabled;
+   }
 
     final public function setSociety(?Society $society): self {
         $this->society = $society;

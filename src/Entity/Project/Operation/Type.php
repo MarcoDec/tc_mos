@@ -91,7 +91,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity(repositoryClass: TypeRepository::class),
     ORM\Table(name: 'operation_type'),
-    UniqueEntity(['name'])
+    //UniqueEntity(['name'])
 ]
 class Type extends Entity {
     #[

@@ -24,6 +24,7 @@ import {
     faEye,
     faFileContract,
     faFileInvoiceDollar,
+    faFilter,
     faFolder,
     faHourglassHalf,
     faIcons,
@@ -41,6 +42,7 @@ import {
     faPencil,
     faPencilAlt,
     faPlus,
+    faPlusCircle,
     faPrint,
     faProjectDiagram,
     faPuzzlePiece,
@@ -68,6 +70,7 @@ import {library} from '@fortawesome/fontawesome-svg-core'
 
 library.add(faAddressCard)
 library.add(faAtom)
+library.add(faAngleDoubleLeft)
 library.add(faBars)
 library.add(faBell)
 library.add(faBoxes)
@@ -78,6 +81,7 @@ library.add(faCheck)
 library.add(faCheckCircle)
 library.add(faChevronDown)
 library.add(faChevronUp)
+library.add(faCity)
 library.add(faClock)
 library.add(faCommentsDollar)
 library.add(faDatabase)
@@ -85,6 +89,7 @@ library.add(faElementor)
 library.add(faEye)
 library.add(faFileContract)
 library.add(faFileInvoiceDollar)
+library.add(faFilter)
 library.add(faFolder)
 library.add(faHourglassHalf)
 library.add(faIcons)
@@ -100,6 +105,7 @@ library.add(faPalette)
 library.add(faPencilAlt)
 library.add(faPencil)
 library.add(faPlus)
+library.add(faPlusCircle)
 library.add(faPrint)
 library.add(faProjectDiagram)
 library.add(faPuzzlePiece)

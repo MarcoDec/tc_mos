@@ -53,6 +53,15 @@
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <AppNavbarLink icon="city" to="society-list" variant="success">
+                    Sociétés
+                </AppNavbarLink>
+                <AppNavbarLink icon="calendar" to="agenda" variant="success">
+                    Agenda
+                </AppNavbarLink>
                 <template v-if="user.isManagementAdmin">
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
@@ -73,9 +82,6 @@
                         Unités
                     </AppNavbarLink>
                 </template>
-                <AppNavbarLink icon="calendar" to="agenda" variant="success">
-                    Agenda
-                </AppNavbarLink>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
                 <AppDropdownItem disabled variant="warning">
