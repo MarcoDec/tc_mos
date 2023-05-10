@@ -306,17 +306,21 @@ async function update(value) {
     managedQuality: JSON.parse(formData.get("managedQuality")),
   };
   const dataSociety = {
-    ppmRate: JSON.parse(formData.get("ppmRate")),
+    ppmRate: JSON.parse(formData.get("ppmRate"))
+   
   };
 
   const item = generateSupplier(value);
-  await fetchSocietyStore.update(dataSociety, societyId);
+  const itemSoc = generateSocieties(value);
+  await itemSoc.update(dataSociety);
   await item.updateQuality(data);
   await fetchSocietyStore.fetch();
 }
 async function updateGeneral(value) {
   const form = document.getElementById("addGeneralites");
   const formData = new FormData(form);
+    console.log("form", formData.get("notes"));
+
   const data = {
     //managedProduction: JSON.parse(formData.get("managedProduction")),
     //administeredBy:  formData.get("administeredBy"),
@@ -445,7 +449,7 @@ async function ajout(inputValues) {
     // kind: "comptabilité",
     mobile: inputValues.mobile ?? "",
     name: inputValues.name ?? "",
-    society: "/api/suppliers/1",
+    society: "/api/suppliers/"+supplierId,
     surname: inputValues.surname ?? "",
   };
   try {
