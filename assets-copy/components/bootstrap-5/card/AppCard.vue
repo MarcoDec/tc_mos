@@ -1,14 +1,11 @@
 <script lang="ts" setup>
-    import {defineProps, withDefaults} from 'vue'
+    import {defineProps} from 'vue'
 
-    withDefaults(defineProps<{titleTag?: string, title: string}>(), {titleTag: 'h2'})
+    defineProps<{cssClass?: string}>()
 </script>
 
 <template>
-    <div class="card">
-        <component :is="titleTag" class="card-title">
-            {{ title }}
-        </component>
+    <div :class="cssClass" class="card">
         <div class="card-body">
             <slot/>
         </div>

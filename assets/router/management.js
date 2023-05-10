@@ -1,3 +1,4 @@
+import AppSocity from './pages/direction/AppSocity.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import MonthCalendar from '../router/pages/company/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
@@ -94,5 +95,15 @@ export default [
         meta: {container: false, title: 'Agenda — T-Concept GPAO'},
         name: 'agenda',
         path: '/agenda'
+    },
+    {
+        component: AppSocity,
+        meta: {title: 'Listes des sociétés  — T-Concept GPAO'},
+        name: 'society-list',
+        path: '/society-list',
+        props: {
+            icon: 'city',
+            title: 'Société'
+        }
     }
 ]

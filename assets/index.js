@@ -4,12 +4,12 @@ import 'bootstrap'
 import App from './components/App.vue'
 import AppBtn from './components/AppBtn.vue'
 import AppCard from './components/AppCard.vue'
-import AppCol from './components/AppCol'
+import AppCardableTable from './components/bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
+import AppCol from './components/layout/AppCol'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppForm from './components/form/AppForm.vue'
-import AppFormField from './components/form/field/AppFormField.vue'
-import AppFormFieldset from './components/form/field/AppFormFieldset.vue'
+import AppFormCardable from './components/form-cardable/AppFormCardable'
 import AppFormGenerator from './components/form/AppFormGenerator.vue'
 import AppFormGroup from './components/form/field/AppFormGroup'
 import AppFormTabs from './components/form/field/AppFormTabs.vue'
@@ -24,8 +24,7 @@ import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRadio from './components/form/field/input/AppRadio'
 import AppRadioGroup from './components/form/field/input/AppRadioGroup.vue'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
-import AppRow from './components/AppRow'
-import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
+import AppRow from './components/layout/AppRow'
 import AppSuspense from './components/AppSuspense.vue'
 import AppTab from './components/tab/AppTab.vue'
 import AppTableFormField from './components/table/AppTableFormField.vue'
@@ -49,10 +48,10 @@ const app = createApp(App)
     .component('AppCard', AppCard)
     .component('AppCol', AppCol)
     .component('AppContainer', AppContainer)
+    .component('AppCardableTable', AppCardableTable)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppForm', AppForm)
-    .component('AppFormFieldset', AppFormFieldset)
-    .component('AppFormField', AppFormField)
+    .component('AppFormCardable', AppFormCardable)
     .component('AppFormGenerator', AppFormGenerator)
     .component('AppFormTabs', AppFormTabs)
     .component('AppFormGroup', AppFormGroup)
@@ -68,7 +67,6 @@ const app = createApp(App)
     .component('AppRadio', AppRadio)
     .component('AppRouterLink', AppRouterLink)
     .component('AppRow', AppRow)
-    .component('AppShowGuiCard', AppShowGuiCard)
     .component('AppSuspense', AppSuspense)
     .component('AppTab', AppTab)
     .component('AppTableFormField', AppTableFormField)

@@ -34,6 +34,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\Hr\Employee\EmployeePatchController;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['userEnabled']),
@@ -84,6 +85,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
+                'controller' => EmployeePatchController::class,
+                'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifier un employé',
                     'parameters' => [[
@@ -98,6 +101,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifier un employé'
                 ],
                 'path' => '/employees/{id}/{process}',
+                'read' => false,
+                'write' => true,
                 'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')',
             ],
             'promote' => [
@@ -161,7 +166,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         Assert\Valid,
         ORM\Embedded(Address::class),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private Address $address;
 
@@ -178,7 +183,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Ville de naissance', example: 'Nancy'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
     ]
     private ?string $birthCity = null;
 
@@ -197,7 +202,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+        Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
     private ?Company $company = null;
 
@@ -207,7 +212,10 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     ]
     private Blocker $embBlocker;
 
-    #[ORM\Embedded]
+    #[  
+        ORM\Embedded,
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:it'])
+    ]
     private Roles $embRoles;
 
     #[
@@ -268,7 +276,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ORM\Column(type: 'char', length: 60, nullable: true),
-        Serializer\Groups(['create:employee'])
+        Serializer\Groups(['create:employee', 'write:employee', 'write:employee:it'])
     ]
     private ?string $password = null;
 
@@ -304,28 +312,28 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
        ApiProperty(description: 'Equipe', example: 'Equipe du matin'),
        ORM\ManyToOne(inversedBy: 'employees'),
-       Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection'])
+       Serializer\Groups(['read:employee', 'read:user', 'read:employee:collection', 'write:employee', 'write:employee:production'])
     ]
     private ?Team $team = null;
 
     #[
         ApiProperty(description: 'Carte de pointage', example: '65465224'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'read:employee:collection'])
+        Serializer\Groups(['read:employee', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
     private ?string $timeCard = null;
 
     #[
         ApiProperty(description: 'Compte validé', required: true, example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'write:employee', 'write:employee:it'])
     ]
     private bool $userEnabled = false;
 
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'read:manufacturing-operation'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'read:manufacturing-operation', 'write:employee', 'write:employee:it'])
     ]
     private ?string $username = null;
 
@@ -333,8 +341,9 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
         $this->apiTokens = new ArrayCollection();
         $this->embBlocker = new Blocker();
         $this->embRoles = new Roles();
-       $this->attachments = new ArrayCollection();
+        $this->attachments = new ArrayCollection();
         $this->embState = new EmployeeEngineState();
+        $this->address = new Address();
     }
 
     public static function getBarCodeTableNumber(): string {

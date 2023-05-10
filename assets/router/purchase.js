@@ -1,4 +1,3 @@
-import AppComponentPage from './pages/component/AppComponentPage.vue'
 import AppShowGui from '../components/pages/AppShowGui.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
@@ -62,7 +61,7 @@ export default [
         path: '/supplier'
     },
     {
-        component: () => AppComponentPage, //import('../pages/component/AppComponentPage.vue'),
+        component: () => import('./pages/component/AppComponentPage.vue'),
         meta: {requiresAuth: true},
         name: 'component-list',
         path: '/component-list'

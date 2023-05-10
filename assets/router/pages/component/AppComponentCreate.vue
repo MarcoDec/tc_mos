@@ -75,6 +75,7 @@
             name: 'attributs'
         }
     ])
+    console.log('fields', computed(() => fields))
 </script>
 
 <template>

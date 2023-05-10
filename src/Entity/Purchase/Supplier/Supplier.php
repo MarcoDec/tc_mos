@@ -28,8 +28,12 @@ use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\Purchase\Supplier\SupplierPatchController;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
@@ -92,6 +96,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
+                'controller' => SupplierPatchController::class,
+                'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifie un fournisseur',
                     'parameters' => [[
@@ -106,6 +112,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie un fournisseur'
                 ],
                 'path' => '/suppliers/{id}/{process}',
+                'read' => false,
+                'write' => true,
                 'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
                 'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ],
@@ -156,15 +164,18 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
-        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:main'])
     ]
     private Address $address;
 
     /** @var DoctrineCollection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
-        ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'suppliers'),
-        Serializer\Groups(['read:supplier'])
+        JoinTable(name: 'supplier_administered_by'),
+        JoinColumn(name: 'supplier_id', referencedColumnName: 'id'),
+        InverseJoinColumn(name: 'company_id', referencedColumnName: 'id'),
+        ORM\ManyToMany(targetEntity: Company::class, cascade: ["all"]),
+        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
     ]
     private DoctrineCollection $administeredBy;
 
@@ -172,7 +183,7 @@ class Supplier extends Entity {
    #[
       ApiProperty(description: 'Documents associés', readableLink: false, example: ['/api/supplier-attachments/1']),
       ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierAttachment::class),
-      Serializer\Groups(['read:supplier'])
+      Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
    ]
     private DoctrineCollection $attachments;
 
@@ -180,7 +191,7 @@ class Supplier extends Entity {
         ApiProperty(description: 'Critère de confiance', example: 0),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:main'])
+        Serializer\Groups(['read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:quality', 'write:supplier:purchase-logistics'])
     ]
     private int $confidenceCriteria = 0;
 
@@ -214,9 +225,16 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:supplier'])
+        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
     ]
     private ?string $language = null;
+
+    #[
+        ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
+        ORM\Column,
+        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'read:supplier:receipt', 'write:supplier', 'write:supplier:admin'])
+    ]
+    private ?string $name = null;
 
     #[
         ApiProperty(description: 'Gestion de la production', example: false),
@@ -233,18 +251,18 @@ class Supplier extends Entity {
     private bool $managedQuality = false;
 
     #[
-        ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
-        ORM\Column,
-        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'read:supplier:receipt', 'write:supplier', 'write:supplier:admin'])
-    ]
-    private ?string $name = null;
-
-    #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(type: 'text', nullable: true),
         Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
     ]
     private ?string $notes = null;
+
+    #[
+        ApiProperty(description: 'Activation Commandes Ouvertes', example: false),
+        ORM\Column(options: ['default' => false]),
+        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:purchase-logistics']) 
+    ]
+    private bool $openOrdersEnabled = false;
 
     /** @var DoctrineCollection<int, Order> */
     #[
@@ -261,7 +279,7 @@ class Supplier extends Entity {
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:quality', 'write:supplier:accounting'])
     ]
     private ?Society $society = null;
 
@@ -278,7 +296,6 @@ class Supplier extends Entity {
     final public function addAdministeredBy(Company $administeredBy): self {
         if (!$this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->add($administeredBy);
-            $administeredBy->addSupplier($this);
         }
         return $this;
     }
@@ -388,10 +405,17 @@ class Supplier extends Entity {
         return $this->managedQuality;
     }
 
+   /**
+    * @return bool
+    */
+   public function isOpenOrdersEnabled(): bool
+   {
+      return $this->openOrdersEnabled;
+   }
+
     final public function removeAdministeredBy(Company $administeredBy): self {
         if ($this->administeredBy->contains($administeredBy)) {
             $this->administeredBy->removeElement($administeredBy);
-            $administeredBy->removeSupplier($this);
         }
         return $this;
     }
@@ -473,6 +497,14 @@ class Supplier extends Entity {
         $this->notes = $notes;
         return $this;
     }
+
+   /**
+    * @param bool $openOrdersEnabled
+    */
+   public function setOpenOrdersEnabled(bool $openOrdersEnabled): void
+   {
+      $this->openOrdersEnabled = $openOrdersEnabled;
+   }
 
     final public function setSociety(?Society $society): self {
         $this->society = $society;

@@ -23,6 +23,7 @@ final class ComponentDataProvider implements ItemDataProviderInterface, Restrict
      * @param mixed[] $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Component::class && $operationName === 'get';
+        //dump (['$resourceClass'=>$resourceClass, 'operationName' => $operationName, '$context'=> $context, 'test' =>$resourceClass === Component::class && in_array($operationName, ['get', 'patch'])]);
+        return $resourceClass === Component::class && in_array($operationName, ['get', 'patch']);
     }
 }

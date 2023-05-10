@@ -17,6 +17,7 @@ use App\Entity\Maintenance\Engine\Event\Maintenance;
 use App\Entity\Maintenance\Engine\Event\Request;
 use App\Entity\Production\Engine\Engine;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use App\Filter\DiscriminatorFilter;
 
@@ -121,7 +122,8 @@ abstract class Event extends AbstractEvent {
     ]
     protected ?Engine $engine;
 
-    public function __construct() {
+    #[Pure] public function __construct() {
+        $this->name = "Evènement Machine";
         $this->embState = new EventState();
     }
 
