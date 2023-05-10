@@ -434,6 +434,8 @@ async function updateGeneral(value) {
     language: formData.get("language"),
     notes: formData.get('notes') !== '' ? formData.get('notes') : null,
     administeredBy: [formData.get("administeredBy")],
+    equivalentEnabled: JSON.parse(formData.get("equivalentEnabled"))
+
   };
   const dataSociety = {
     ar: JSON.parse(formData.get("ar")),
