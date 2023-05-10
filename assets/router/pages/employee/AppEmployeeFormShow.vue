@@ -98,7 +98,7 @@
     ]
     const Accèsfields = [
         {label: 'Identifiant', name: 'username', type: 'text'},
-        {label: 'Mot de passe', name: 'password', type: 'text'},
+        {label: 'Mot de passe', name: 'plainPassword', type: 'text'},
         {label: 'Badge', name: 'timeCard', type: 'text'},
         {
             label: 'Compagnie',
@@ -227,7 +227,7 @@
         const formData = new FormData(form)
         const data = {
             company: formData.get('company'),
-            password: formData.get('password'),
+            plainPassword: formData.get('plainPassword'),
             timeCard: formData.get('timeCard'),
             userEnabled: JSON.parse(formData.get('userEnabled')),
             username: formData.get('username')

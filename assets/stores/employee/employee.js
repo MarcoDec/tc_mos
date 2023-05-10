@@ -40,7 +40,7 @@ export default function generateEmployee(employee) {
             getBrith: state =>
                 `${state.date.getFullYear()}-${state.getMonth}-${state.getDate}`,
             getEntryDate: state =>
-                `${state.date.getFullYear()}-${state.getMonthEntry}-${state.getDateEntry}`,
+                `${state.dateEntry.getFullYear()}-${state.getMonthEntry}-${state.getDateEntry}`,
             getCity: state => state.address.city,
             getCountry: state => state.address.country,
             getDate: state =>

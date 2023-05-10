@@ -10,8 +10,6 @@ import { useSupplierAttachmentStore } from "../../../stores/supplier/supplierAtt
 import { useSupplierContactsStore } from "../../../stores/supplier/supplierContacts";
 import { useSuppliersStore } from "../../../stores/supplier/suppliers";
 import MyTree from "../../../components/MyTree.vue";
-import { useTableMachine } from "../../../composable/xstate";
-import { log } from "xstate/lib/actions";
 
 const emit = defineEmits(["update", "update:modelValue", "rating"]);
 const isError = ref(false);

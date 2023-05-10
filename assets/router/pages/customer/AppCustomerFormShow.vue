@@ -432,7 +432,7 @@ async function updateGeneral(value) {
 
   const data = {
     language: formData.get("language"),
-    notes: formData.get("notes"),
+    notes: formData.get('notes') !== '' ? formData.get('notes') : null,
     administeredBy: [formData.get("administeredBy")],
   };
   const dataSociety = {
