@@ -132,7 +132,7 @@ class Society extends Entity {
     #[
         ApiProperty(description: 'Forme juridique', required: false, example: 'SARL'),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:society'])
+        Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?string $legalForm = null;
 
@@ -147,14 +147,14 @@ class Society extends Entity {
     #[
         ApiProperty(description: 'Notes', required: false, example: 'Notes libres sur la société'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:society'])
+        Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?string $notes = null;
 
     #[
         ApiProperty(description: 'SIREN', required: false, example: '123 456 789'),
         ORM\Column(length: 50, nullable: true),
-        Serializer\Groups(['read:society'])
+        Serializer\Groups(['read:society', 'write:society'])
     ]
     private ?string $siren = null;
 
