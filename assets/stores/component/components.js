@@ -8,16 +8,16 @@ export const useComponentListStore = defineStore('component', {
             this.component = await response
             console.log('this.component', this.component)
         },
+        async update(data, id) {
+            await api(`/api/components/${id}/logistics`, 'PATCH', data)
+            this.fetch()
+        },
         async updateAdmin(data, id) {
             await api(`/api/components/${id}/admin`, 'PATCH', data)
             this.fetch()
         },
         async updateMain(data, id) {
             await api(`/api/components/${id}/main`, 'PATCH', data)
-            this.fetch()
-        },
-        async update(data, id) {
-            await api(`/api/components/${id}/logistics`, 'PATCH', data)
             this.fetch()
         },
         async updatePrice(data, id) {

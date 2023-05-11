@@ -8,33 +8,28 @@ export default function generateSupplier(suppliers) {
                 this.$reset()
                 this.$dispose()
             },
-            
+
             async updateAccounting(data) {
                 const response = await api(`/api/suppliers/${suppliers.id}/accounting`, 'PATCH', data)
                 this.$state = {...response}
-                console.log('updateQuality', response)
-            }, 
-            
+            },
+
             async updateAdmin(data) {
                 const response = await api(`/api/suppliers/${suppliers.id}/admin`, 'PATCH', data)
                 this.$state = {...response}
-                console.log('update=', response)
-            },
-            async updateMain(data) {
-                const response = await api(`/api/suppliers/${suppliers.id}/main`, 'PATCH', data)
-                this.$state = {...response}
-                console.log('update=', response)
-            },
-            async updateQuality(data) {
-                const response = await api(`/api/suppliers/${suppliers.id}/quality`, 'PATCH', data)
-                this.$state = {...response}
-                console.log('updateQuality', response)
             },
             async updateLog(data) {
                 const response = await api(`/api/suppliers/${suppliers.id}/purchase-logistics`, 'PATCH', data)
                 this.$state = {...response}
-                console.log('updatepurchase-logistics', response)
             },
+            async updateMain(data) {
+                const response = await api(`/api/suppliers/${suppliers.id}/main`, 'PATCH', data)
+                this.$state = {...response}
+            },
+            async updateQuality(data) {
+                const response = await api(`/api/suppliers/${suppliers.id}/quality`, 'PATCH', data)
+                this.$state = {...response}
+            }
 
         },
         getters: {
@@ -44,7 +39,7 @@ export default function generateSupplier(suppliers) {
             getCountry: state => state.address.country,
             getEmail: state => state.address.email,
             getPhone: state => state.address.phoneNumber,
-            getPostal: state => state.address.zipCode,
+            getPostal: state => state.address.zipCode
             // incotermsValue: state => (state.incoterms ? state.incoterms['@id'] : null),
             // vatMessageValue: state => (state.vatMessage ? state.vatMessage['@id'] : null)
 

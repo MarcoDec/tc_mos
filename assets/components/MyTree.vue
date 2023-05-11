@@ -1,10 +1,10 @@
 <script setup>
     import {defineProps, ref} from 'vue'
 
-    const props = defineProps({
+    defineProps({
         node: {
-            type: Object,
-            required: true
+            required: true,
+            type: Object
         }
     })
     const isOpen = ref(false)

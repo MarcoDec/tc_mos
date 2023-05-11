@@ -1,15 +1,12 @@
 <script setup>
-    import {computed, onUnmounted, ref} from 'vue'
-    import AppCardShow from '../../../components/AppCardShow.vue'
-    import AppTab from '../../../components/tab/AppTab.vue'
-    import AppTabs from '../../../components/tab/AppTabs.vue'
+    import MyTree from '../../../components/MyTree.vue'
+    import {computed} from 'vue'
     import generateComponentAttribute from '../../../stores/component/componentAttribute'
     import {useColorsStore} from '../../../stores/colors/colors'
     import {useComponentAttachmentStore} from '../../../stores/component/componentAttachment'
     import {useComponentListStore} from '../../../stores/component/components'
     import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
     import useOptions from '../../../stores/option/options'
-    import MyTree from '../../../components/MyTree.vue'
 
     const fecthOptions = useOptions('units')
     const fecthColors = useColorsStore()
@@ -40,28 +37,21 @@
 
     const componentAttachment = computed(() =>
         fetchComponentAttachment.componentAttachment.map(attachment => ({
+            icon: 'file-contract',
             id: attachment['@id'],
             label: attachment.url.split('/').pop(), // get the filename from the URL
-            icon: 'file-contract',
             url: attachment.url
         })))
     const treeData = computed(() => {
         const data = {
-            id: 1,
-            label: 'Attachments ' + `(${componentAttachment.value.length})`,
+            children: componentAttachment.value,
             icon: 'folder',
-            children: componentAttachment.value
+            id: 1,
+            label: `Attachments (${componentAttachment.value.length})`
         }
         return data
     })
 
-    const selectedAttachment = ref(null)
-
-    const openAttachment = node => {
-        if (node.url) {
-            selectedAttachment.value = node.url
-        }
-    }
     const Attributfields = [
         {
             label: 'Couleur',
@@ -164,12 +154,13 @@
                 code: formData.get('minStock-code'),
                 value: formData.get('minStock-value')
             },
+            orderInfo: formData.get('orderInfo'),
             unit: formData.get('unit'),
             weight: {
                 code: formData.get('weight-code'),
                 value: formData.get('weight-value')
-            },
-            orderInfo: formData.get('orderInfo')
+            }
+
         }
 
         useFetchComponentStore.update(data, componentId)
@@ -188,8 +179,7 @@
     }
     function updateQuality(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
-        const form = document.getElementById('addQualite')
-        const formData = new FormData(form)
+        // const form = document.getElementById('addQualite')
         const data = {}
         useFetchComponentStore.updatePrice(data, componentId)
         useFetchComponentStore.fetch()
@@ -222,18 +212,19 @@
         }
         useFetchComponentStore.updatePrice(data, componentId)
         useFetchComponentStore.fetch()
-        const componentAttachment = computed(() =>
+        componentAttachment.value = computed(() =>
             fetchComponentAttachment.componentAttachment.map(attachment => ({
+                icon: 'file-contract',
                 id: attachment['@id'],
                 label: attachment.url.split('/').pop(), // get the filename from the URL
-                icon: 'file-contract',
                 url: attachment.url
             })))
         treeData.value = {
-            id: 1,
-            label: 'Attachments ' + `(${componentAttachment.value.length})`,
+            children: componentAttachment.value,
             icon: 'folder',
-            children: componentAttachment.value
+            id: 1,
+            label: `Attachments (${componentAttachment.value.length})`
+
         }
     }
     function updateFichiers(value) {
@@ -249,10 +240,6 @@
         fetchComponentAttachment.ajout(data)
         fetchComponentAttachment.fetch()
     }
-
-    onUnmounted(() => {
-        fecthOptions.dispose()
-    })
 </script>
 
 <template>
@@ -291,7 +278,7 @@
                 id="addFichiers"
                 :fields="Fichiersfields"
                 @update="updateFichiers(useFetchComponentStore.component)"/>
-            <MyTree :node="treeData" @node-click="openAttachment"/>
+            <MyTree :node="treeData"/>
         </AppTab>
         <AppTab
             id="gui-start-quality"

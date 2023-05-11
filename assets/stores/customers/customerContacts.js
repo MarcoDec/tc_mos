@@ -4,27 +4,26 @@ import generateCustomerContact from './customerContact'
 
 export const useCustomerContactsStore = defineStore('items', {
     actions: {
-        async fetchBySociety(id) {
-            this.items =[]
-            const response = await api(`/api/customer-contacts?society=${id}`, 'GET')
-            for (const society of response['hydra:member']) {
-                const item = generateCustomerContact(society, this)
-                this.items.push(item)
-            }
-            console.log('iiii', this.items);
-        },
-        async ajout(data,id) {
-           const response = await api('/api/customer-contacts', 'POST', data)
-           console.log('post', response);
-           this.$reset()
-           this.fetchBySociety(id)  
+        async ajout(data, id) {
+            const response = await api('/api/customer-contacts', 'POST', data)
+            console.log('post', response)
+            this.$reset()
+            this.fetchBySociety(id)
         },
         async deleted(payload){
             await api(`/api/customer-contacts/${payload}`, 'DELETE')
             this.items = this.items.filter(items => Number(items['@id'].match(/\d+/)[0]) !== payload)
         },
-        async update(data,id) {
-            const response = await api(`/api/customer-contacts/${id}`, 'PATCH', data)  
+        async fetchBySociety(id) {
+            this.items = []
+            const response = await api(`/api/customer-contacts?society=${id}`, 'GET')
+            for (const society of response['hydra:member']) {
+                const item = generateCustomerContact(society, this)
+                this.items.push(item)
+            }
+        },
+        async update(data, id) {
+            await api(`/api/customer-contacts/${id}`, 'PATCH', data)
             this.$reset()
         }
 
@@ -52,6 +51,6 @@ export const useCustomerContactsStore = defineStore('items', {
         })
     },
     state: () => ({
-        items: [],
+        items: []
     })
 })

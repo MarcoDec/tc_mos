@@ -1,9 +1,9 @@
 <script setup>
     import {computed, defineEmits, defineProps, ref} from 'vue'
+    import AppCollectionTableAddRow from './AppCollectionTableAddRow.vue'
     import AppCollectionTableBodyHeader from './body/AppCollectionTableBodyHeader.vue'
     import AppCollectionTableBodyItem from './body/AppCollectionTableBodyItem.vue'
     import AppCollectionTableHeader from './head/AppCollectionTableHeader.vue'
-    import AppCollectionTableAddRow from './AppCollectionTableAddRow.vue'
 
     const props = defineProps({
         currentPage: {required: true, type: String},
@@ -20,10 +20,9 @@
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref('')
-    const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'search', 'cancelSearch','ajout'])
+    const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'search', 'cancelSearch', 'ajout'])
     function update(item){
         emit('update', item)
-        
     }
     function deleted(id){
         emit('deleted', id)
@@ -41,9 +40,9 @@
         input.value = inputValues
         emit('cancelSearch', inputValues)
     }
-     const opened = ref(false)
+    const opened = ref(false)
 
-    function ajout(inputValues) {
+    function ajout() {
         opened.value = true
     }
     function ajouter(inputValues) {

@@ -4,8 +4,8 @@
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         disabled: {type: Boolean},
-        id: {required: true, type: String},
         form: {required: true, type: String},
+        id: {required: true, type: String},
         modelValue: {type: Boolean}
     })
 
@@ -21,9 +21,8 @@
 </script>
 
 <template>
-      <fieldset :id="id" :form="form" class="container" :style="{ pointerEvents: disabled ? 'none' : 'auto' }">
-
-        <div class="rating" >
+    <fieldset :id="id" :form="form" class="container" :style="{pointerEvents: disabled ? 'none' : 'auto'}">
+        <div class="rating">
             <label for="star5" class="star" @click="input(5)"><Fa :class="ratingValue >= 5 ? 'checked' : ''" icon="star"/>
             </label>
             <label for="star4" class="star" @click="input(4)"><Fa :class="ratingValue >= 4 ? 'checked' : ''" icon="star"/></label>
@@ -31,7 +30,7 @@
             <label for="star2" class="star" @click="input(2)"><Fa :class="ratingValue >= 2 ? 'checked' : ''" icon="star"/></label>
             <label for="star1" class="star" @click="input(1)"><Fa :class="ratingValue >= 1 ? 'checked' : ''" icon="star"/></label>
         </div>
-      </fieldset>
+    </fieldset>
 </template>
 
 <style scoped>

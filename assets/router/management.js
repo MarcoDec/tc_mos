@@ -86,7 +86,7 @@ export default [
         props: {
             fields: [
                 {label: 'Nom', name: 'name'}
-              
+
             ],
             icon: 'ruler-horizontal',
             sort: readonly({label: 'Nom', name: 'name'}),

@@ -1,39 +1,40 @@
 <script setup>
-import { defineEmits, defineProps } from "vue";
+    import {defineEmits, defineProps} from 'vue'
 
-const props = defineProps({
-  fields: { required: true, type: Array },
-});
-const inputValues = {};
-const emit = defineEmits(["close", "ajout"]);
+    defineProps({
+        fields: {required: true, type: Array},
+        form: {required: true, type: String},
+        modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
+    })
+    const inputValues = {}
+    const emit = defineEmits(['close', 'ajout'])
 
-function bascule() {
-  emit("close");
-}
-function ajout() {
-  emit("ajout", inputValues);
-}
+    function bascule() {
+        emit('close')
+    }
+    function ajout() {
+        emit('ajout', inputValues)
+    }
 </script>
 
 <template>
-  <tr class="addrow">
-    <th scope="row">
-      <Fa icon="plus" />
-    </th>
-    <td>
-      <AppBtn icon="search" label="Ajouter" @click="bascule" />
-      <AppBtn icon="plus" label="Modifier" @click="ajout" />
-    </td>
-    <td v-for="field in fields" :key="field.name">
-      <AppInputGuesserJS
-        :id="field.name"
-        v-model="inputValues[field.name]"
-        :form="form"
-        :field="field"
-        :update:model-value="modelValue"
-      />
-    </td>
-  </tr>
+    <tr class="addrow">
+        <th scope="row">
+            <Fa icon="plus"/>
+        </th>
+        <td>
+            <AppBtn icon="search" label="Ajouter" @click="bascule"/>
+            <AppBtn icon="plus" label="Modifier" @click="ajout"/>
+        </td>
+        <td v-for="field in fields" :key="field.name">
+            <AppInputGuesserJS
+                :id="field.name"
+                v-model="inputValues[field.name]"
+                :form="form"
+                :field="field"
+                :update:model-value="modelValue"/>
+        </td>
+    </tr>
 </template>
 
 <style scoped>

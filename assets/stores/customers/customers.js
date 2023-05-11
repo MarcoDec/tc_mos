@@ -14,7 +14,7 @@ export const useCustomerStore = defineStore('customers', {
             this.invoicesData = response['hydra:member']
         },
         async update(data, id) {
-            const response = await api(`/api/customers/${id}/logistics`, 'PATCH', data)
+            await api(`/api/customers/${id}/logistics`, 'PATCH', data)
             this.fetch()
         }
     },

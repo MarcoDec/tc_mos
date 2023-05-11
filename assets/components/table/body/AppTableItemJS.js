@@ -2,7 +2,7 @@ import {h, resolveComponent} from 'vue'
 import {generateTableFields} from '../../props'
 
 function AppTableItemJS(props, context) {
-    console.log(' props.fields',  props.fields);
+    console.log(' props.fields', props.fields)
     return h('tr', {id: props.id}, [
         h('td', {class: 'text-center'}, props.index + 1),
         h('td', {class: 'text-center'}, [

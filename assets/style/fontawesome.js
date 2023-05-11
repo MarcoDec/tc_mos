@@ -1,7 +1,7 @@
 import {
     faAddressCard,
-    faArrowRightToBracket,
     faAngleDoubleLeft,
+    faArrowRightToBracket,
     faAtom,
     faBars,
     faBell,
@@ -17,8 +17,8 @@ import {
     faChevronUp,
     faCircleDollarToSlot,
     faCircleInfo,
-    faClipboardCheck,
     faCity,
+    faClipboardCheck,
     faClock,
     faCommentsDollar,
     faCubesStacked,

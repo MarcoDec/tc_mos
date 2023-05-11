@@ -20,7 +20,7 @@
     <tr v-for="(item, index) in items" :key="index">
         <th scope="row" :title="currentPage">
             <!-- {{ index + 1 + 15 * (currentPage - 1) }} -->
-            {{index + 1}}
+            {{ index + 1 }}
         </th>
         <AppCollectionTableBody :item="item" :fields="fields" @update="update" @deleted="deleted"/>
     </tr>

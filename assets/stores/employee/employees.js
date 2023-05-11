@@ -9,20 +9,22 @@ export const useEmployeeStore = defineStore('employee', {
             const item = generateEmployee(response, this)
             this.employee = item
         },
-        async fetchTeams() {
-            const response = await api('/api/teams', 'GET')
-            this.teams = response['hydra:member']
-            console.log('res Teams', response['hydra:member'])
-        },
         async fetchContactsEmpl(id) {
             const response = await api(`/api/employee-contacts?employee=${id}`, 'GET')
             for (const employee of response['hydra:member']) {
                 const item = generateEmployee(employee, this)
                 this.employeeContacts.push(item)
             }
-
-            console.log('res fetchContactsEmpl', response['hydra:member'])
+        },
+        async fetchTeams() {
+            const response = await api('/api/teams', 'GET')
+            this.teams = response['hydra:member']
         }
+        // async update(data,id) {
+        //     console.log('data-->', JSON.stringify(data))
+        //     const response = await api(`/api/employees/${id}/main`, 'PATCH', data)
+        //     this.fetch()
+        // },
 
     },
     getters: {

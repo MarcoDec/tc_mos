@@ -5,10 +5,10 @@
 
     defineProps({
         fields: {required: true, type: Array},
-        item: {required: true, type: Object},
+        item: {required: true, type: Object}
     })
     const ajout = ref(false)
-    const emit = defineEmits(['deleted', 'update','ajoute'])
+    const emit = defineEmits(['deleted', 'update', 'ajoute'])
     function update(item){
         emit('update', item)
     }
@@ -23,8 +23,8 @@
         ajout.value = false
     }
 </script>
- 
+
 <template>
     <AppCollectionTableItem v-if="!ajout" :fields="fields" :item="item" @ajoute="ajoute" @deleted="deleted"/>
-    <AppCollectionTableUpdateItem v-else :fields="fields" :item="item" @update="update" :model-value="item" @annule-ajout="AnnuleAjout"/>
+    <AppCollectionTableUpdateItem v-else :fields="fields" :item="item" :model-value="item" @update="update" @annule-ajout="AnnuleAjout"/>
 </template>

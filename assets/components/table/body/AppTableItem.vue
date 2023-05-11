@@ -16,7 +16,7 @@
     const update = computed(() => props.machine.state.value.matches('update')
         && props.machine.state.value.context.updated === props.item['@id'])
 </script>
- 
+
 <template>
     <AppTableItemUpdate v-if="update" :id="id" :fields="fields" :index="index" :item="item" :machine="machine"/>
     <AppTableItemRead

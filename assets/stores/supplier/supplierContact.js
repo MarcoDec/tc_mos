@@ -12,7 +12,7 @@ export default function generateSupplierContact(items) {
                 const response = await api(`/api/supplier-contacts/${items.id}`, 'PATCH', data)
                 this.$state = {...response}
                 console.log('update-contacts', response)
-            }, 
+            }
         },
         getters: {
             getAddress: state => state.address.address,
@@ -22,7 +22,7 @@ export default function generateSupplierContact(items) {
             getEmail: state => state.address.email,
             getPhone: state => state.address.phoneNumber,
             getPostal: state => state.address.zipCode
-           
+
         },
         state: () => ({...items})
     })()

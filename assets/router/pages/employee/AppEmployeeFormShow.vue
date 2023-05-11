@@ -1,13 +1,12 @@
 <script setup>
-//import Tree from 'vue3-tree'
-    import {computed, ref} from 'vue'
+    import MyTree from '../../../components/MyTree.vue'
+    import {computed} from 'vue'
     import generateEmployee from '../../../stores/employee/employee'
     import generateEmployeeContact from '../../../stores/employee/employeeContact'
     import {useEmployeeAttachmentStore} from '../../../stores/employee/employeeAttachements'
-    import {useEmployeeStore} from '../../../stores/employee/employees'
     import {useEmployeeContactsStore} from '../../../stores/employee/employeeContacts'
+    import {useEmployeeStore} from '../../../stores/employee/employees'
     import useOptions from '../../../stores/option/options'
-    import MyTree from '../../../components/MyTree.vue'
 
     const fecthOptions = useOptions('countries')
     const fecthCompanyOptions = useOptions('companies')
@@ -27,28 +26,21 @@
 
     const employeeAttachment = computed(() =>
         fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
+            icon: 'file-contract',
             id: attachment['@id'],
             label: attachment.url.split('/').pop(), // get the filename from the URL
-            icon: 'file-contract',
             url: attachment.url
         })))
     const treeData = computed(() => {
         const data = {
-            id: 1,
-            label: 'Attachments' + `(${employeeAttachment.value.length})`,
+            children: employeeAttachment.value,
             icon: 'folder',
-            children: employeeAttachment.value
+            id: 1,
+            label: `Attachments (${employeeAttachment.value.length})`
         }
         return data
     })
 
-    const selectedAttachment = ref(null)
-
-    const openAttachment = node => {
-        if (node.url) {
-            selectedAttachment.value = node.url
-        }
-    }
     const optionsCompany = computed(() =>
         fecthCompanyOptions.options.map(op => {
             const text = op.text
@@ -79,12 +71,12 @@
         {text: 'female', value: 'female'},
         {text: 'male', value: 'male'}
     ]
-    const Géneralitésfields = [{label: 'Note', name: 'notes', type: 'textarea'}]
+    const Géneralitésfields = [{label: 'Note', name: 'notes', type: 'text'}]
 
     const Productionfields = [
         {
             label: 'équipe',
-            name: 'team',
+            name: 'teamValue',
             options: {
                 label: value =>
                     optionsTeams.value.find(option => option.type === value)?.text
@@ -176,7 +168,7 @@
                 address2: null,
                 city: formData.get('getCity'),
                 country: formData.get('getCountry'),
-                email: formData.get('getEmail') !== '' ? formData.get('getEmail') : null,
+                email: formData.get('getEmail') ? formData.get('getEmail') : null,
                 phoneNumber: formData.get('getPhone'),
                 zipCode: formData.get('getPostal')
             },
@@ -198,8 +190,6 @@
         await item.updateHr(data)
     }
     async function updateContact(value) {
-        const employeeContactId = Number(value['@id'].match(/\d+/)[0])
-
         const form = document.getElementById('addContacts')
         const formData = new FormData(form)
         const data = {
@@ -213,14 +203,18 @@
         await item.updateContactEmp(data)
     }
     async function updateGeneral(value) {
+        // const employeeId = Number(value['@id'].match(/\d+/)[0])
+
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)
         const data = {
-            notes: formData.get('notes')
+            notes: formData.get('notes') ? formData.get('notes') : null
         }
+        console.log('hello', data)
         const item = generateEmployee(value)
 
         await item.update(data)
+        //await fetchEmployeeStore.update(data, employeeId)
     }
     async function updateAcces(value) {
         const form = document.getElementById('addAccés')
@@ -247,31 +241,32 @@
         }
 
         fetchEmployeeAttachementStore.ajout(data)
-        const employeeAttachment = computed(() =>
+        employeeAttachment.value = computed(() =>
             fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
+                icon: 'file-contract',
                 id: attachment['@id'],
                 label: attachment.url.split('/').pop(), // get the filename from the URL
-                icon: 'file-contract',
                 url: attachment.url
             })))
         treeData.value
             = {
-                id: 1,
-                label: 'Attachments' + `(${employeeAttachment.value.length})`,
+                children: employeeAttachment.value,
                 icon: 'folder',
-                children: employeeAttachment.value
+                id: 1,
+                label: `Attachments (${employeeAttachment.value.length})`
             }
     }
     async function updateProduction(value) {
-        const employeeId = Number(value['@id'].match(/\d+/)[0])
+        // const employeeId = Number(value['@id'].match(/\d+/)[0])
+        // console.log('employeeId', employeeId)
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
         const data = {
-            employee: '/api/employees/22',
-            team: formData.get('team')
+            manager: '/api/employees/56',
+            team: formData.get('teamValue')
         }
         const item = generateEmployee(value)
-        await item.updateIt(data)
+        await item.updateProd(data)
     }
 </script>
 
@@ -344,10 +339,7 @@
                 id="addFichiers"
                 :fields="Fichiersfields"
                 @update="updateFichiers(fetchEmployeeStore.employee)"/>
-            <MyTree :node="treeData" @node-click="openAttachment"/>
-            <div v-if="selectedAttachment">
-                Selected Attachment: {{ selectedAttachment }}
-            </div>
+            <MyTree :node="treeData"/>
         </AppTab>
         <AppTab
             id="gui-start-production"

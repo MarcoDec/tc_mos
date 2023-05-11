@@ -4,27 +4,25 @@ import generateSupplierContact from './supplierContact'
 
 export const useSupplierContactsStore = defineStore('items', {
     actions: {
-        async fetchBySociety(id) {
-            this.items =[]
-            const response = await api(`/api/supplier-contacts?society=${id}`, 'GET')
-            for (const society of response['hydra:member']) {
-                const item = generateSupplierContact(society, this)
-                this.items.push(item)
-            }
-            console.log('iiii', this.items);
-        },
-        async ajout(data,id) {
-           const response = await api('/api/supplier-contacts', 'POST', data)
-           console.log('post', response);
-           this.$reset()
-           this.fetchBySociety(id)  
+        async ajout(data, id) {
+            await api('/api/supplier-contacts', 'POST', data)
+            this.$reset()
+            this.fetchBySociety(id)
         },
         async deleted(payload){
             await api(`/api/supplier-contacts/${payload}`, 'DELETE')
             this.items = this.items.filter(items => Number(items['@id'].match(/\d+/)[0]) !== payload)
         },
-        async update(data,id) {
-            const response = await api(`/api/supplier-contacts/${id}`, 'PATCH', data)  
+        async fetchBySociety(id) {
+            this.items = []
+            const response = await api(`/api/supplier-contacts?society=${id}`, 'GET')
+            for (const society of response['hydra:member']) {
+                const item = generateSupplierContact(society, this)
+                this.items.push(item)
+            }
+        },
+        async update(data, id) {
+            await api(`/api/supplier-contacts/${id}`, 'PATCH', data)
             this.$reset()
         }
 
@@ -52,6 +50,6 @@ export const useSupplierContactsStore = defineStore('items', {
         })
     },
     state: () => ({
-        items: [],
+        items: []
     })
 })

@@ -3,9 +3,9 @@
     import AppBtnJS from './AppBtnJS'
     import AppFormJS from './form/AppFormJS'
 
-    const props = defineProps({
-        disabled: {type: Boolean},
+    defineProps({
         componentAttribute: {default: () => [], type: Array},
+        // disabled: {type: Boolean},
         fields: {default: () => [], type: Array},
         id: {required: true, type: String}
 
@@ -46,7 +46,7 @@
             <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
         </ul>
         <ul v-else class="card-body">
-            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" @update:modelValue="input"/>
+            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" @update:model-value="input"/>
         </ul>
     </div>
 </template>
