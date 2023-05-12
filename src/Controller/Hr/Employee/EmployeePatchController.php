@@ -15,6 +15,8 @@ use App\entity\Hr\Employee\Employee;
 use DateTimeImmutable;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Hr\Employee\Team;
+use App\Entity\Hr\Employee\TEmployee;
 
 class EmployeePatchController
 {
@@ -86,7 +88,7 @@ class EmployeePatchController
                            $unit = $this->em->getRepository(Unit::class)->findOneBy(['code' => $value]);
                         }
                         $refProps->setValue($sourceItem, $unit);
-                        break;                        
+                        break;                       
                      default:
                         //dump([$value,$refProps]);
                         if ($key == 'company') {
@@ -98,20 +100,28 @@ class EmployeePatchController
                               $company = $this->em->getRepository(Company::class)->find($id);
                               $refProps->setValue($sourceItem, $company);
                            } else {
-                               $this->logger->warning('#1 Impossible de modifier '.$key.' IRI attendue et non recue '.$value);
+                               $this->logger->warning('#1.company Impossible de modifier '.$key.' IRI attendue et non recue '.$value);
                            }
                         } elseif ($key == 'embRoles') {
-                           dump(['embRoles',$value->roles,$refProps]);
+                           //dump(['embRoles',$value->roles,$refProps]);
                            $newRoles = new Roles();
                            $newRoles->setRoles($value->roles);
                            $refProps->setValue($sourceItem, $newRoles);
+                        } elseif ($key == 'team') {
+                           $this->setTeam($value, $refProps, $sourceItem);
+                        } elseif ($key == 'manager') {
+                           $this->setManager($value, $refProps, $sourceItem);
                         } else {
                            $this->logger->warning('#1 Impossible de modifier '.$key.' type non encore géré '.get_class($refProps->getValue($sourceItem)));
                         }
                   }
                } else {
                   //dump('Je suis ici => '.$key);
-                  if ($refProps->getValue($sourceItem)===null||in_array(getType($refProps->getValue($sourceItem)) ,["boolean", 'integer', 'double', 'string'])) {
+                  if ($key == 'manager') {
+                     $this->setManager($value, $refProps, $sourceItem);
+                  } elseif ($key == 'team') {
+                     $this->setTeam($value, $refProps, $sourceItem);
+                  } elseif ($refProps->getValue($sourceItem)===null||in_array(getType($refProps->getValue($sourceItem)) ,["boolean", 'integer', 'double', 'string'])) {
                      $refProps->setValue($sourceItem, $value);
                   } else {
                      $this->logger->warning('#2 Impossible de modifier '.$key.' type non encore géré '.getType($refProps->getValue($sourceItem)));
@@ -125,5 +135,30 @@ class EmployeePatchController
          }
       }
       return $sourceItem;
+   }
+   private function setManager($value, $refProps, $sourceItem) {    
+         $test = str_contains($value, '/api/employees/');
+         //si c'est une IRI on récupère l'id
+         if ($test) {
+            $splitted = preg_split('/\//', $value);
+            $id = intval($splitted[3]);
+            $team = $this->em->getRepository(Employee::class)->find($id);
+            $refProps->setValue($sourceItem, $team);
+         } else {
+            $this->logger->warning('#1.manager Impossible de modifier '.$key.' IRI attendue et non recue '.$value);
+         } 
+   }
+   
+   private function setTeam($value, $refProps, $sourceItem) {    
+      $test = str_contains($value, '/api/teams/');
+      //si c'est une IRI on récupère l'id
+      if ($test) {
+         $splitted = preg_split('/\//', $value);
+         $id = intval($splitted[3]);
+         $team = $this->em->getRepository(Team::class)->find($id);
+         $refProps->setValue($sourceItem, $team);
+      } else {
+         $this->logger->warning('#1.team Impossible de modifier '.$key.' IRI attendue et non recue '.$value);
+      } 
    }
 }
