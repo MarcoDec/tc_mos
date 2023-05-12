@@ -62,7 +62,8 @@ use App\Entity\Selling\Parameter;
             ]
          ]
       ],
-      paginationItemsPerPage: 2
+      paginationItemsPerPage: 2,
+      paginationClientEnabled: true
    ),
    ApiFilter(SearchFilter::class, properties: ['customer' => 'exact', 'category' => 'partial'])
 ]

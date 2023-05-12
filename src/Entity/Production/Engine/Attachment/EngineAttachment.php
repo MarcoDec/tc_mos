@@ -62,7 +62,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ]
          ]
       ],
-      paginationItemsPerPage: 2
+      paginationItemsPerPage: 2,
+      paginationClientEnabled: true
    ),
    ApiFilter(SearchFilter::class, properties: ['engine' => 'exact', 'category' => 'partial'])
 ]
