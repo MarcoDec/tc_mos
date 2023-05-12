@@ -13,7 +13,7 @@ export const useCustomerAttachmentStore = defineStore('customerAttachment', {
         },
         async fetch() {
             this.items = []
-            const response = await api('/api/customer-attachments', 'GET')
+            const response = await api('/api/customer-attachments?pagination=false', 'GET')
             this.customerAttachment = await response['hydra:member']
         }
 

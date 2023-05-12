@@ -4,10 +4,16 @@ import generateEmployee from './employee'
 
 export const useEmployeeStore = defineStore('employee', {
     actions: {
+
         async fetch() {
             const response = await api('/api/employees/24', 'GET')
             const item = generateEmployee(response, this)
             this.employee = item
+        },
+        async fetchAll() {
+            const response = await api('/api/employees?pagination=false', 'GET')
+            // const item = generateEmployee(response, this)
+            this.items = response['hydra:member']
         },
         async fetchContactsEmpl(id) {
             const response = await api(`/api/employee-contacts?employee=${id}`, 'GET')
@@ -27,6 +33,7 @@ export const useEmployeeStore = defineStore('employee', {
     state: () => ({
         employee: {},
         employeeContacts: [],
+        items: [],
         teams: {}
     })
 })

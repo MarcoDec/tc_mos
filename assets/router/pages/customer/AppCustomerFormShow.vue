@@ -275,13 +275,13 @@
     ]
     const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
     function updateFichiers(value) {
-        //const customerId = Number(value['@id'].match(/\d+/)[0])
+        const custId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
 
         const data = {
             category: 'doc',
-            customer: `/api/customers/${customerId}`,
+            customer: `/api/customers/${custId}`,
             file: formData.get('file')
         }
 
@@ -395,7 +395,7 @@
         await fetchSocietyStore.fetch()
         await fetchCustomerStore.fetch()
     }
-     const val = ref(Number(fetchCustomerStore.customer.administeredBy))
+    const val = ref(Number(fetchCustomerStore.customer.administeredBy))
     async function input(value) {
         val.value = value.administeredBy
         emit('update:modelValue', val.value)
@@ -539,8 +539,7 @@
                 :fields="Géneralitésfields"
                 :component-attribute="dataCustomers"
                 @update="updateGeneral(dataCustomers)"
-                @update:model-value="input"
-                />
+                @update:model-value="input"/>
         </AppTab>
         <AppTab
             id="gui-start-files"

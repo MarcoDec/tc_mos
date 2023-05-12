@@ -1,6 +1,6 @@
 <script setup>
+    import {computed, ref} from 'vue'
     import MyTree from '../../../components/MyTree.vue'
-    import {computed} from 'vue'
     import generateEmployee from '../../../stores/employee/employee'
     import generateEmployeeContact from '../../../stores/employee/employeeContact'
     import {useEmployeeAttachmentStore} from '../../../stores/employee/employeeAttachements'
@@ -8,6 +8,9 @@
     import {useEmployeeStore} from '../../../stores/employee/employees'
     import useOptions from '../../../stores/option/options'
 
+    const emit = defineEmits(['update', 'update:modelValue'])
+    const isError = ref(false)
+    const violations = ref([])
     const fecthOptions = useOptions('countries')
     const fecthCompanyOptions = useOptions('companies')
     await fecthOptions.fetchOp()
@@ -17,6 +20,7 @@
     const fetchEmployeeContactsStore = useEmployeeContactsStore()
     const fetchEmployeeAttachementStore = useEmployeeAttachmentStore()
     await fetchEmployeeStore.fetch()
+    await fetchEmployeeStore.fetchAll()
     await fetchEmployeeStore.fetchTeams()
 
     await fetchEmployeeAttachementStore.fetch()
@@ -39,7 +43,14 @@
         }
         return data
     })
-
+    console.log('itemss==', fetchEmployeeStore)
+    const optionsEmployee = computed(() =>
+        fetchEmployeeStore.items.map(op => {
+            const text = op.name
+            const value = op['@id']
+            const optionList = {text, value}
+            return optionList
+        }))
     const optionsCompany = computed(() =>
         fecthCompanyOptions.options.map(op => {
             const text = op.text
@@ -61,6 +72,7 @@
             const optionList = {text, value}
             return optionList
         }))
+    console.log('optionsTeams', optionsTeams)
     const options = [
         {text: 'married', value: 'married'},
         {text: 'single', value: 'single'},
@@ -74,8 +86,8 @@
 
     const Productionfields = [
         {
-            label: 'équipe',
-            name: 'teamValue',
+            label: 'Equipe',
+            name: 'team',
             options: {
                 label: value =>
                     optionsTeams.value.find(option => option.type === value)?.text
@@ -84,8 +96,18 @@
             },
             type: 'select'
         },
-        {label: 'Manager', name: 'manager', type: 'text'}
-
+        {
+            big: true,
+            label: 'Manager *',
+            name: 'manager',
+            options: {
+                label: value =>
+                    optionsEmployee.value.find(option => option.type === value)?.text
+                    ?? null,
+                options: optionsEmployee.value
+            },
+            type: 'select'
+        }
     ]
     const Accèsfields = [
         {label: 'Identifiant', name: 'username', type: 'text'},
@@ -246,25 +268,36 @@
                 label: attachment.url.split('/').pop(), // get the filename from the URL
                 url: attachment.url
             })))
-        treeData.value
-            = {
-                children: employeeAttachment.value,
-                icon: 'folder',
-                id: 1,
-                label: `Attachments (${employeeAttachment.value.length})`
-            }
+        treeData.value = {
+            children: employeeAttachment.value,
+            icon: 'folder',
+            id: 1,
+            label: `Attachments (${employeeAttachment.value.length})`
+        }
+    }
+    const val = ref(Number(fetchEmployeeStore.employee.manager))
+    async function input(value) {
+        val.value = value.manager
+        emit('update:modelValue', val.value)
     }
     async function updateProduction(value) {
-        // const employeeId = Number(value['@id'].match(/\d+/)[0])
-        // console.log('employeeId', employeeId)
-        const form = document.getElementById('addFichiers')
+        const form = document.getElementById('addProduction')
         const formData = new FormData(form)
         const data = {
-            manager: '/api/employees/56',
-            team: formData.get('teamValue')
+            manager: val.value,
+            team: formData.get('team')
         }
-        const item = generateEmployee(value)
-        await item.updateProd(data)
+        try {
+            const item = generateEmployee(value)
+            await item.updateProd(data)
+            isError.value = false
+        } catch (error) {
+            if (error === 'Internal Server Error') {
+                const err = {message: 'Internal Server Error'}
+                violations.value.push(err)
+                isError.value = true
+            }
+        }
     }
 </script>
 
@@ -345,8 +378,16 @@
             icon="industry"
             tabs="gui-start">
             <AppCardShow
-                id="addProduction" :fields="Productionfields" :component-attribute="fetchEmployeeStore.employee"
-                @update="updateProduction(fetchEmployeeStore.employee)"/>
+                id="addProduction"
+                :fields="Productionfields"
+                :component-attribute="fetchEmployeeStore.employee"
+                @update="updateProduction(fetchEmployeeStore.employee)"
+                @update:model-value="input"/>
+            <div v-if="isError" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations" :key="violation">
+                    <li>{{ violation.message }}</li>
+                </div>
+            </div>
         </AppTab>
     </AppTabs>
 </template>

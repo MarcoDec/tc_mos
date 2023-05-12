@@ -58,9 +58,8 @@ export default function generateEmployee(employee) {
                     ? `0${state.dateEntry.getMonth() + 1}`
                     : state.dateEntry.getMonth() + 1),
             getPhone: state => state.address.phoneNumber,
-            getPostal: state => state.address.zipCode,
-            getTeam: state => (state.team ? state.team.name : ''),
-            teamValue: state => (state.team ? state.team['@id'] : null)
+            getPostal: state => state.address.zipCode
+
         },
         state: () => ({...employee})
     })()

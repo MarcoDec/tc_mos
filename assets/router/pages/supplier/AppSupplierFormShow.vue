@@ -452,7 +452,6 @@
         await fecthSupplierContactsStore.deleted(id)
     }
     async function updateSuppliers(inputValues) {
-        const id = Number(inputValues['@id'].match(/\d+/))
         const dataUpdate = {
             address: {
                 address: inputValues.address ?? '',

@@ -12,7 +12,7 @@ export const useEmployeeAttachmentStore = defineStore('employeeAttachment', {
             this.fetch()
         },
         async fetch() {
-            const response = await api('/api/employee-attachments', 'GET')
+            const response = await api('/api/employee-attachments?pagination=false', 'GET')
             this.employeeAttachment = await response['hydra:member']
         }
 

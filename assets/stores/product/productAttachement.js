@@ -12,10 +12,9 @@ export const useProductAttachmentStore = defineStore('productAttachment', {
             this.fetch()
         },
         async fetch() {
-            const response = await api('/api/product-attachments', 'GET')
+            const response = await api('/api/product-attachments?pagination=false', 'GET')
             this.productAttachment = await response['hydra:member']
         }
-
     },
     getters: {
     },

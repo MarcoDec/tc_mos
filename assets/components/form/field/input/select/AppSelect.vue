@@ -20,7 +20,6 @@
 
     function update(v) {
         emit('update:modelValue', v)
-        console.log('fff', v)
     }
 
     function input(e) {
@@ -35,6 +34,8 @@
         :disabled="disabled"
         :field="field"
         :form="form"
+        :options="field.options && field.options.options "
+        :value-prop="field.options && field.options.valueProp "
         :model-value="modelValue"
         mode="single"
         @update:model-value="update"/>

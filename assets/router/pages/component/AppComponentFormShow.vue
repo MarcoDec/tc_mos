@@ -183,8 +183,8 @@
         const formData = new FormData(form)
         const data = {
             quality: JSON.parse(formData.get('quality')),
-            rohs: JSON.parse(formData.get('rohs')),
-            reach: JSON.parse(formData.get('reach'))
+            reach: JSON.parse(formData.get('reach')),
+            rohs: JSON.parse(formData.get('rohs'))
         }
         useFetchComponentStore.updateQuality(data, componentId)
         useFetchComponentStore.fetch()

@@ -13,7 +13,7 @@ export const useComponentAttachmentStore = defineStore('componentAttachment', {
         },
         async fetch() {
             this.items = []
-            const response = await api('/api/component-attachments', 'GET')
+            const response = await api('/api/component-attachments?pagination=false', 'GET')
             this.componentAttachment = await response['hydra:member']
         }
 
