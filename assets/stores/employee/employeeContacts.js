@@ -10,8 +10,6 @@ export const useEmployeeContactsStore = defineStore('employeeContacts', {
                 const item = generateEmployeeContact(employee, this)
                 this.employeeContacts.push(item)
             }
-
-            console.log('res fetchContactsEmpl', response['hydra:member'])
         }
 
     },

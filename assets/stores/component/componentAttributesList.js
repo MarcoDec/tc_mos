@@ -11,7 +11,6 @@ export const useComponentShowStore = defineStore('componentAttributes', {
                 const item = generateComponentAttribute(attribute, this)
                 this.componentAttribute.push(item)
             }
-            console.log('componentAttribute', response['hydra:member'])
         }
 
     },

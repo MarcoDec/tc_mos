@@ -6,7 +6,6 @@ export const useComponentListStore = defineStore('component', {
         async fetch() {
             const response = await api('/api/components/1', 'GET')
             this.component = await response
-            console.log('this.component', this.component)
         },
         async update(data, id) {
             await api(`/api/components/${id}/logistics`, 'PATCH', data)
@@ -26,6 +25,10 @@ export const useComponentListStore = defineStore('component', {
         },
         async updatePurchase(data, id) {
             await api(`/api/components/${id}/purchase`, 'PATCH', data)
+            this.fetch()
+        },
+        async updateQuality(data, id) {
+            await api(`/api/components/${id}/quality`, 'PATCH', data)
             this.fetch()
         }
 

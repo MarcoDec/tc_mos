@@ -11,7 +11,6 @@ export default function generateCustomerContact(items) {
             async update(data) {
                 const response = await api(`/api/customer-contacts/${items.id}`, 'PATCH', data)
                 this.$state = {...response}
-                console.log('update-contacts', response)
             }
         },
         getters: {

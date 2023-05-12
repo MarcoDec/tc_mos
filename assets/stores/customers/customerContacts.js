@@ -5,8 +5,7 @@ import generateCustomerContact from './customerContact'
 export const useCustomerContactsStore = defineStore('items', {
     actions: {
         async ajout(data, id) {
-            const response = await api('/api/customer-contacts', 'POST', data)
-            console.log('post', response)
+            await api('/api/customer-contacts', 'POST', data)
             this.$reset()
             this.fetchBySociety(id)
         },

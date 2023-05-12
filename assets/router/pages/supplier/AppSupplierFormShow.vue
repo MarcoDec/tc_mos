@@ -31,7 +31,6 @@
     await fecthSupplierAttachmentStore.fetch()
     await fecthOptions.fetchOp()
     await fecthCompanyOptions.fetchOp()
-    console.log('fetchSuppliersStore', fetchSuppliersStore.suppliers)
     const supplierAttachment = computed(() =>
         fecthSupplierAttachmentStore.supplierAttachment.map(attachment => ({
             icon: 'file-contract',
@@ -305,7 +304,6 @@
     async function updateGeneral(value) {
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)
-        console.log('form', formData.get('notes'))
 
         const data = {
             //managedProduction: JSON.parse(formData.get("managedProduction")),
@@ -318,7 +316,6 @@
             administeredBy: [formData.get('administeredBy')],
             name: formData.get('name')
         }
-        console.log('ddd', data)
         const item = generateSupplier(value)
         await item.updateMain(data)
         await item.updateAdmin(dataAdmin)
@@ -442,7 +439,6 @@
             await fecthSupplierContactsStore.ajout(data, societyId)
             isError.value = false
         } catch (error) {
-            console.log('erreuuur==', error)
             if (error === 'Internal Server Error') {
                 const err = {message: 'Internal Server Error'}
                 violations.value.push(err)
@@ -456,9 +452,7 @@
         await fecthSupplierContactsStore.deleted(id)
     }
     async function updateSuppliers(inputValues) {
-        console.log('inpiuutttt', inputValues)
         const id = Number(inputValues['@id'].match(/\d+/))
-        console.log('id', id)
         const dataUpdate = {
             address: {
                 address: inputValues.address ?? '',

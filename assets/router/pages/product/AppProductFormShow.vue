@@ -132,7 +132,6 @@
     async function updateGeneral(value) {
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)
-        console.log('value', value)
 
         const data = {
             family: formData.get('family'),
@@ -146,8 +145,6 @@
     async function updateAdmin(value) {
         const form = document.getElementById('addAdmin')
         const formData = new FormData(form)
-        console.log('value', value)
-
         const data = {
 
             code: formData.get('code'),
@@ -165,7 +162,6 @@
     async function updateProject(value) {
         const form = document.getElementById('addProject')
         const formData = new FormData(form)
-        console.log('value', value)
 
         const data = {
             endOfLife: formData.get('getEndOfLife'),
@@ -182,7 +178,6 @@
     async function updateProduction(value) {
         const form = document.getElementById('addProduction')
         const formData = new FormData(form)
-        console.log('value', value)
 
         const data = {
 
@@ -220,7 +215,6 @@
     async function updateLogistique(value) {
         const form = document.getElementById('addLogistique')
         const formData = new FormData(form)
-        console.log('value', value)
 
         const data = {
             customsCode: formData.get('customsCode'),

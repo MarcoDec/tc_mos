@@ -11,7 +11,6 @@ export default function generateSupplierContact(items) {
             async update(data) {
                 const response = await api(`/api/supplier-contacts/${items.id}`, 'PATCH', data)
                 this.$state = {...response}
-                console.log('update-contacts', response)
             }
         },
         getters: {

@@ -20,7 +20,6 @@
     await fetchEmployeeStore.fetchTeams()
 
     await fetchEmployeeAttachementStore.fetch()
-    console.log('fetchEmployeeStore', fetchEmployeeStore)
     const emplId = Number(fetchEmployeeStore.employee.id)
     await fetchEmployeeContactsStore.fetchContactsEmpl(emplId)
 
@@ -210,7 +209,6 @@
         const data = {
             notes: formData.get('notes') ? formData.get('notes') : null
         }
-        console.log('hello', data)
         const item = generateEmployee(value)
 
         await item.update(data)

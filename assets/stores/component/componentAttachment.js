@@ -15,7 +15,6 @@ export const useComponentAttachmentStore = defineStore('componentAttachment', {
             this.items = []
             const response = await api('/api/component-attachments', 'GET')
             this.componentAttachment = await response['hydra:member']
-            console.log('componentAttachment', this.componentAttachment)
         }
 
     },

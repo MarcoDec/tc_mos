@@ -11,7 +11,6 @@ export default function generateSocieties(societies) {
             async update(data) {
                 const response = await api(`/api/societies/${societies.id}`, 'PATCH', data)
                 this.$state = {...response}
-                console.log('update Soc', response)
             }
         },
         getters: {

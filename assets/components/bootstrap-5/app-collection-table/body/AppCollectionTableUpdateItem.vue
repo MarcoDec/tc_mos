@@ -24,7 +24,6 @@
     async function update() {
         emit('annuleAjout')
         emit('update', props.item)
-        console.log('props.item', props.item)
     }
     // function input(v) {
     //     emit('update:modelValue', v)

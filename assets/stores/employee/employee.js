@@ -11,17 +11,6 @@ export default function generateEmployee(employee) {
             async update(data) {
                 const response = await api(`/api/employees/${employee.id}/main`, 'PATCH', data)
                 this.$state = {...response}
-                // const response = await fetch(`http://localhost:8000/api/employees/${employee.id}/main`, {
-                //     method: "PATCH",
-
-                //     headers: {
-                //       "Content-Type": "application/merge-patch+json",
-                //       "Authorization": "Bearer " + "2f3355cc75a253a4c917f1591fcd4e58328eb4e7611068c8bfa23452b4684ecf085b6c4bfdfcd1bec3857ca9771c309a180b761595e5db1e2f62137c",
-                //     },
-
-                //     body: JSON.stringify(data),
-                //   });
-                //   this.$state = {...response}
             },
             async updateContactEmp(data, id) {
                 const response = await api(`/api/employee-contacts/${id}`, 'PATCH', data)

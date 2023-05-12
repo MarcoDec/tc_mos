@@ -12,21 +12,13 @@
     const toggle = () => {
         isOpen.value = !isOpen.value
     }
-    // const showChildUrl = childNode => {
-    //     if (childNode.children && childNode.children.length > 0) {
-    //         console.log('This node has children. Click on a child node to show its URL.')
-    //     } else {
-    //         console.log(childNode.url)
-    //         window.open(childNode.url, '_blank')
-    //     }
-    // }
+
     const showChildUrl = childNode => {
         if (childNode.children && childNode.children.length > 0) {
             console.log(
                 'This node has children. Click on a child node to show its URL.'
             )
         } else if (childNode.url) {
-            console.log(childNode.url)
             window.open(childNode.url, '_blank')
         } else {
             console.log('No URL to show for this node.')

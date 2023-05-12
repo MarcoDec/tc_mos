@@ -20,11 +20,6 @@ export const useEmployeeStore = defineStore('employee', {
             const response = await api('/api/teams', 'GET')
             this.teams = response['hydra:member']
         }
-        // async update(data,id) {
-        //     console.log('data-->', JSON.stringify(data))
-        //     const response = await api(`/api/employees/${id}/main`, 'PATCH', data)
-        //     this.fetch()
-        // },
 
     },
     getters: {

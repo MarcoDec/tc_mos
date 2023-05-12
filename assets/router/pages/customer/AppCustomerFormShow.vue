@@ -12,6 +12,8 @@
     import {useSocietyStore} from '../../../stores/societies/societies'
     import {useSuppliersStore} from '../../../stores/supplier/suppliers'
 
+    const emit = defineEmits(['update', 'update:modelValue'])
+
     const isError = ref(false)
     const isShow = ref(false)
     const violations = ref([])
@@ -43,9 +45,7 @@
         ))
     const dataCustomers = computed(() =>
         ({...fetchCustomerStore.customer, ...fetchSocietyStore.item}))
-    console.log('dataCustomers', dataCustomers)
-    console.log('fetchCustomerStore', fetchCustomerStore)
-    console.log('fecthCustomerContactsStore', fecthCustomerContactsStore)
+
     const customerAttachment = computed(() =>
         fetchCustomerAttachmentStore.customerAttachment.map(attachment => ({
             icon: 'file-contract',
@@ -260,13 +260,13 @@
         {
             label: 'Compagnies',
             name: 'administeredBy',
-            options: {
+            optionsList: {
                 label: value =>
                     optionsCompany.value.find(option => option.type === value)?.text
                     ?? null,
                 options: optionsCompany.value
             },
-            type: 'select'
+            type: 'multiselect'
         },
         {label: 'Web', name: 'web', type: 'text'},
         {label: 'Note', name: 'notes', type: 'textarea'},
@@ -275,18 +275,15 @@
     ]
     const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
     function updateFichiers(value) {
-        console.log('updateFichiers value==', value)
         //const customerId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
-        console.log('formData**', formData.get('file'))
 
         const data = {
             category: 'doc',
             customer: `/api/customers/${customerId}`,
             file: formData.get('file')
         }
-        console.log('data Fichiers**', data)
 
         fetchCustomerAttachmentStore.ajout(data)
         customerAttachment.value = computed(() =>
@@ -365,8 +362,6 @@
         const itemSoc = generateSocieties(value)
         await itemSoc.update(dataSociety)
         await fetchCustomerStore.fetch()
-        console.log('data===', data)
-        console.log('dataSociety===', dataSociety)
     }
     async function updateComp(value) {
         const form = document.getElementById('addComptabilite')
@@ -400,15 +395,22 @@
         await fetchSocietyStore.fetch()
         await fetchCustomerStore.fetch()
     }
+     const val = ref(Number(fetchCustomerStore.customer.administeredBy))
+    async function input(value) {
+        val.value = value.administeredBy
+        emit('update:modelValue', val.value)
+        const data = {
+            administeredBy: val.value
+        }
+        const item = generateCustomer(value)
+        await item.updateMain(data)
+        await fetchCustomerStore.fetch()
+    }
     async function updateGeneral(value) {
-        console.log('value', value)
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)
-        console.log('form', formData.get('notes').length)
 
         const data = {
-
-            administeredBy: [formData.get('administeredBy')],
             equivalentEnabled: JSON.parse(formData.get('equivalentEnabled')),
             language: formData.get('language'),
             notes: formData.get('notes') ? formData.get('notes') : null
@@ -467,8 +469,7 @@
             society: `/api/customers/${customerId}`,
             surname: inputValues.surname ?? ''
         }
-        console.log('ddddd', data)
-        console.log('inputValues.society', inputValues)
+
         try {
             await fecthCustomerContactsStore.ajout(data, societyId)
             isError.value = false
@@ -486,8 +487,6 @@
         await fecthCustomerContactsStore.deleted(id)
     }
     async function updateSuppliers(inputValues) {
-        console.log('inpiuutttt', inputValues)
-        console.log('id', inputValues.society)
         const dataUpdate = {
             address: {
                 address: inputValues.address ?? '',
@@ -539,7 +538,9 @@
                 id="addGeneralites"
                 :fields="Géneralitésfields"
                 :component-attribute="dataCustomers"
-                @update="updateGeneral(dataCustomers)"/>
+                @update="updateGeneral(dataCustomers)"
+                @update:model-value="input"
+                />
         </AppTab>
         <AppTab
             id="gui-start-files"

@@ -30,7 +30,6 @@
     const machine = useTableMachine(route.name)
     const storeWarehouseListItems = useWarehouseListItemsStore()
     storeWarehouseListItems.fetch()
-    console.log('storeWarehouseListItems', storeWarehouseListItems)
 </script>
 
 <template>

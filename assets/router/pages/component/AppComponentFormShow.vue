@@ -179,9 +179,14 @@
     }
     function updateQuality(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
-        // const form = document.getElementById('addQualite')
-        const data = {}
-        useFetchComponentStore.updatePrice(data, componentId)
+        const form = document.getElementById('addQualite')
+        const formData = new FormData(form)
+        const data = {
+            quality: JSON.parse(formData.get('quality')),
+            rohs: JSON.parse(formData.get('rohs')),
+            reach: JSON.parse(formData.get('reach'))
+        }
+        useFetchComponentStore.updateQuality(data, componentId)
         useFetchComponentStore.fetch()
     }
     function updateGeneral(value) {
@@ -193,7 +198,6 @@
             name: formData.get('name'),
             notes: formData.get('notes')
         }
-        console.log('data', data)
         useFetchComponentStore.updateAdmin(data, componentId)
         useFetchComponentStore.updateMain(data, componentId)
         useFetchComponentStore.fetch()
