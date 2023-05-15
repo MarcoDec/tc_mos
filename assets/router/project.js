@@ -55,7 +55,6 @@ export default [
                     options: {base: 'component-families'},
                     search: false,
                     sort: false,
-                    //sortName: 'families.name',
                     type: 'multiselect'
                 }
             ],

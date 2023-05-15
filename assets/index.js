@@ -7,12 +7,14 @@ import AppBtnJS from './components/AppBtnJS'
 import AppCard from './components/AppCard.vue'
 import AppCardJS from './components/AppCardJS'
 import AppCardShow from './components/AppCardShow.vue'
-import AppCol from './components/AppCol'
+import AppCol from './components/layout/AppCol'
 import AppCollectionTable from './components/bootstrap-5/app-collection-table/AppCollectionTable.vue'
+import AppCardableTable from './components/bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppDropdownItemJS from './components/nav/dropdown/AppDropdownItemJS'
 import AppForm from './components/form/AppForm.vue'
+import AppFormCardable from './components/form-cardable/AppFormCardable'
 import AppFormGenerator from './components/form/AppFormGenerator.vue'
 import AppFormGroup from './components/form/field/AppFormGroup.vue'
 import AppFormGroupJS from './components/form/field/AppFormGroupJS'
@@ -73,6 +75,7 @@ const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppBtnJS', AppBtnJS)
     .component('AppCollectionTable', AppCollectionTable)
+    .component('AppCardableTable', AppCardableTable)
     .component('AppCard', AppCard)
     .component('AppCardJS', AppCardJS)
     .component('AppCardShow', AppCardShow)
@@ -83,6 +86,7 @@ const app = createApp(App)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppDropdownItemJS', AppDropdownItemJS)
     .component('AppForm', AppForm)
+    .component('AppFormCardable', AppFormCardable)
     .component('AppFormJS', AppFormJS)
     .component('AppFormGenerator', AppFormGenerator)
     .component('AppFormGroup', AppFormGroup)
