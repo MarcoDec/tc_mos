@@ -4,6 +4,7 @@ namespace App\Entity\Production\Manufacturing;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\ComponentManufacturingOperationState;
@@ -20,9 +21,11 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Filter\SetFilter;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
-#[
+#[    
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Opération de production',
         collectionOperations: [
