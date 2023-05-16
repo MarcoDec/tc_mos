@@ -202,7 +202,7 @@ module.exports = {
         'require-atomic-updates': 'error',
         'rest-spread-spacing': 'error',
         semi: ['error', 'never'],
-        'sort-imports': 'error',
+        //'sort-imports': 'error',
         'sort-keys': 'error',
         'sort-vars': 'error',
         'space-before-function-paren': ['error', {
