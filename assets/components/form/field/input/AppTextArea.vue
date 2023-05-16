@@ -1,4 +1,5 @@
 <script setup>
+    //      import {textarea} from '@fortawesome/fontawesome-svg-core'
     import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
@@ -9,14 +10,14 @@
         id: {required: true, type: String},
         modelValue: {default: '', type: [Number, String]}
     })
-    const type = computed(() => props.field.type ?? 'text')
-    function input(e) {
+    const type = computed(() => props.field.type ?? 'textarea')
+    function textarea(e) {
         emit('update:modelValue', e.target.value)
     }
 </script>
 
 <template>
-    <input
+    <textarea
         :id="id"
         :disabled="disabled"
         :form="form"
@@ -26,5 +27,5 @@
         :value="modelValue"
         autocomplete="off"
         class="form-control form-control-sm"
-        @input="input"/>
+        @input="textarea"/>
 </template>

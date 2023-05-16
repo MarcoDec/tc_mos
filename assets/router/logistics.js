@@ -1,3 +1,5 @@
+import AppShowGuiWarehouse from '../components/pages/AppShowGuiWarehouse.vue'
+
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 
@@ -67,8 +69,8 @@ export default [
         }
     },
     {
-        component: async () => import('./pages/logistic/AppWarehouseShow.vue'),
-        meta: {requiresAuth: true},
+        component: AppShowGuiWarehouse,
+        meta: {container: false, title: 'Entrepot — T-Concept GPAO'},
         name: 'warehouse-show',
         path: '/warehouse-show',
         props: {

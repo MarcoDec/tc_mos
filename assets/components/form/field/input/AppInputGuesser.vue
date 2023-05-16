@@ -5,6 +5,7 @@
     import AppSelect from './select/AppSelect.vue'
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
+    import AppTextArea from './AppTextArea.vue'
 
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
@@ -26,6 +27,8 @@
                 return 'AppMultiselect'
             case 'select':
                 return AppSelect
+            case 'textarea':
+                return AppTextArea
             default:
                 return 'AppInput'
         }

@@ -1,4 +1,5 @@
 <script setup>
+    import {computed, ref} from 'vue'
     import AppBtnJS from '../../../components/AppBtnJS'
     import AppCardShow from '../../../components/AppCardShow.vue'
     import AppCol from '../../../components/layout/AppCol'
@@ -10,7 +11,6 @@
     import {useRoute} from 'vue-router'
     import {useTableMachine} from '../../../machine'
     import {useWarehouseStocksItemsStore} from '../../../stores/production/warehouseStocksItems'
-
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
@@ -135,6 +135,29 @@
     const machine = useTableMachine(route.name)
     const storeWarehouseStocksItems = useWarehouseStocksItemsStore()
     storeWarehouseStocksItems.fetchItems()
+
+    const guiRatio = ref(0.5)
+    const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
+
+    function resize(e) {
+        const gui = e.target.parentElement.parentElement
+        const height = gui.offsetHeight
+        const top = gui.offsetTop
+
+        function drag(position) {
+            const ratio = (position.y - top) / height
+            if (ratio >= 0.1 && ratio <= 0.9)
+                guiRatio.value = ratio
+        }
+
+        function stopDrag() {
+            gui.removeEventListener('mousemove', drag)
+            gui.removeEventListener('mouseup', stopDrag)
+        }
+
+        gui.addEventListener('mousemove', drag)
+        gui.addEventListener('mouseup', stopDrag)
+    }
 </script>
 
 <template>
@@ -142,44 +165,61 @@
         <Fa :icon="icon"/>
         {{ title }}
     </h1>
-    <AppBtnJS icon="trash" variant="danger"/>
-    <AppBtnJS variant="primary">
-        transfer
-    </AppBtnJS>
-    <AppRow>
-        <AppCol class="col-5">
-            <AppCardShow id="addEntrepot" :fields="warehouseformfields"/>
-        </AppCol>
-        <AppCol>
-            <AppTabs id="gui-start" class="gui-start-content" vertical>
-                <AppTab id="gui-start-main" active title="Stock" icon="cubes-stacked" tabs="gui-start">
-                    <h1>Stocks</h1>
-                    <div class="container-fluid">
-                        <AppRow>
-                            <AppCol class="col-1">
-                                <AppBtnJS variant="primary">
-                                    CSV
-                                </AppBtnJS>
-                            </AppCol>
-                            <AppCol>
-                                <div class="input-group mb-3">
-                                    <input id="inputGroupFile02" type="file" class="form-control"/>
-                                    <label class="input-group-text" for="inputGroupFile02">Rechercher</label>
-                                    <AppBtnJS variant="success">
-                                        Upload
+    <div class="gui">
+        <div class="gui-left">
+            <div class="gui-card">
+                <AppTabs id="gui-left">
+                    <AppBtnJS icon="trash" variant="danger"/>
+                    <AppBtnJS variant="primary">
+                        transfer
+                    </AppBtnJS>
+                    <AppCardShow id="addEntrepot" :fields="warehouseformfields"/>
+                </AppTabs>
+            </div>
+        </div>
+        <div class="gui-right">
+            <div class="gui-card"/>
+        </div>
+        <div class="gui-bottom">
+            <div class="gui-card">
+                <AppTabs id="gui-bottom">
+                    <AppTab id="gui-start-main" active title="Stock" icon="cubes-stacked" tabs="gui-start">
+                        <h1>Stocks</h1>
+                        <div class="container-fluid">
+                            <AppRow>
+                                <AppCardShow id="addEntrepot" :fields="warehouseformfields"/>
+                                <AppCol class="col-1">
+                                    <AppBtnJS variant="primary">
+                                        CSV
                                     </AppBtnJS>
-                                </div>
-                                <p> Format supporté : .csv ( séparé par des points virgules ) </p>
-                            </AppCol>
-                        </AppRow>
-                    </div>
-                    <AppTableJS :id="route.name" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
-                </AppTab>
-                <AppTab id="gui-start-files" title="Volume" icon="ruler-vertical" tabs="gui-start">
-                    <h1>Volume stock</h1>
-                    <AppTableJS :id="route.name" :fields="Volumefields" :store="storeWarehouseStocksItems" items="Volumeitems" :machine="machine"/>
-                </AppTab>
-            </AppTabs>
-        </AppCol>
-    </AppRow>
+                                </AppCol>
+                                <AppCol>
+                                    <div class="input-group mb-3">
+                                        <input id="inputGroupFile02" type="file" class="form-control"/>
+                                        <label class="input-group-text" for="inputGroupFile02">Rechercher</label>
+                                        <AppBtnJS variant="success">
+                                            Upload
+                                        </AppBtnJS>
+                                    </div>
+                                    <p> Format supporté : .csv ( séparé par des points virgules ) </p>
+                                </AppCol>
+                            </AppRow>
+                        </div>
+                        <AppTableJS :id="route.name" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
+                    </AppTab>
+                    <AppTab id="gui-start-files" title="Volume" icon="ruler-vertical" tabs="gui-start">
+                        <h1>Volume stock</h1>
+                        <AppTableJS :id="route.name" :fields="Volumefields" :store="storeWarehouseStocksItems" items="Volumeitems" :machine="machine"/>
+                    </AppTab>
+                </AppTabs>
+            </div>
+            <hr class="gui-resizer" @mousedown="resize"/>
+        </div>
+    </div>
 </template>
+
+<style scoped>
+    .gui {
+        --gui-ratio: v-bind(guiRatioPercent);
+    }
+</style>

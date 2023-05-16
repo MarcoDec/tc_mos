@@ -26,7 +26,7 @@
     })
 
     onUnmounted(() => {
-        document.removeEventListener('deletion')
+        document.removeEventListener('deletion', refreshStore)
     })
 
     const route = useRoute()
@@ -154,6 +154,7 @@
     </AppModal>
     <AppTableJSinVue
         :id="route.name"
+        :btnbasculesearch="true"
         :fields="fields"
         :store="storeWarehouseListItems"
         :machine="machine"
