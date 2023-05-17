@@ -10,7 +10,9 @@
 
     const emit = defineEmits(['update', 'update:modelValue'])
     const isError = ref(false)
+    const isError2 = ref(false)
     const violations = ref([])
+    const violations2 = ref([])
     const fecthOptions = useOptions('countries')
     const fecthCompanyOptions = useOptions('companies')
     await fecthOptions.fetchOp()
@@ -126,7 +128,10 @@
         },
         {label: 'Activation', name: 'userEnabled', type: 'boolean'}
     ]
-    const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
+    const Fichiersfields = [
+        {label: 'Categorie', name: 'category', type: 'text'},
+        {label: 'Fichier', name: 'file', type: 'file'}
+    ]
     const Droitsfields = [{label: 'Role', name: 'embRoles', type: 'text'}]
 
     const Contactsfields = [
@@ -249,30 +254,38 @@
         const item = generateEmployee(value)
         await item.updateIt(data)
     }
-    function updateFichiers(value) {
+    async function updateFichiers(value) {
         const employeeId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
 
         const data = {
-            category: 'doc',
+            category: formData.get('category'),
             employee: `/api/employees/${employeeId}`,
             file: formData.get('file')
         }
-
-        fetchEmployeeAttachementStore.ajout(data)
-        employeeAttachment.value = computed(() =>
-            fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
-                icon: 'file-contract',
-                id: attachment['@id'],
-                label: attachment.url.split('/').pop(), // get the filename from the URL
-                url: attachment.url
-            })))
-        treeData.value = {
-            children: employeeAttachment.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments (${employeeAttachment.value.length})`
+        try {
+            await fetchEmployeeAttachementStore.ajout(data)
+            employeeAttachment.value = computed(() =>
+                fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
+                    icon: 'file-contract',
+                    id: attachment['@id'],
+                    label: attachment.url.split('/').pop(), // get the filename from the URL
+                    url: attachment.url
+                })))
+            treeData.value = {
+                children: employeeAttachment.value,
+                icon: 'folder',
+                id: 1,
+                label: `Attachments (${employeeAttachment.value.length})`
+            }
+            isError.value = false
+        } catch (error) {
+            const err = {
+                message: error
+            }
+            violations.value.push(err)
+            isError.value = true
         }
     }
     const val = ref(Number(fetchEmployeeStore.employee.manager))
@@ -287,16 +300,18 @@
             manager: val.value,
             team: formData.get('team')
         }
+        isError2.value = false
+        violations2.value = []
         try {
             const item = generateEmployee(value)
             await item.updateProd(data)
-            isError.value = false
+            isError2.value = false
         } catch (error) {
-            if (error === 'Internal Server Error') {
-                const err = {message: 'Internal Server Error'}
-                violations.value.push(err)
-                isError.value = true
+            const err = {
+                message: error
             }
+            violations2.value.push(err)
+            isError2.value = true
         }
     }
 </script>
@@ -370,6 +385,11 @@
                 id="addFichiers"
                 :fields="Fichiersfields"
                 @update="updateFichiers(fetchEmployeeStore.employee)"/>
+            <div v-if="isError" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations" :key="violation">
+                    <li>{{ violation.message }}</li>
+                </div>
+            </div>
             <MyTree :node="treeData"/>
         </AppTab>
         <AppTab
@@ -383,8 +403,8 @@
                 :component-attribute="fetchEmployeeStore.employee"
                 @update="updateProduction(fetchEmployeeStore.employee)"
                 @update:model-value="input"/>
-            <div v-if="isError" class="alert alert-danger" role="alert">
-                <div v-for="violation in violations" :key="violation">
+            <div v-if="isError2" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations2" :key="violation">
                     <li>{{ violation.message }}</li>
                 </div>
             </div>

@@ -13,8 +13,7 @@
     const emit = defineEmits(['update:modelValue'])
     const css = readonly({search: 'form-control form-control-sm'})
 
-    function update(value) {
-        //const values = Array.isArray(value) ? value : [value]; // Assurez-vous que `value` est un tableau
+    function input(value) {
         emit('update:modelValue', value)
     }
 </script>
@@ -28,12 +27,12 @@
         :form="form"
         :mode="mode"
         :model-value="modelValue"
-        :options="field.optionsList && field.optionsList.options "
-        :value-prop="field.optionsList && field.optionsList.valueProp "
+        :options="field.options && field.options.options "
+        :value-prop="field.options && field.options.valueProp "
         class="text-dark"
         label="text"
         searchable
-        @update:model-value="update">
+        @update:model-value="input">
         <template #afterlist>
             <input :name="field.name" :value="modelValue" type="hidden"/>
         </template>

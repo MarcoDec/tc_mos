@@ -15,8 +15,10 @@
     const emit = defineEmits(['update', 'update:modelValue'])
 
     const isError = ref(false)
+    const isError2 = ref(false)
     const isShow = ref(false)
     const violations = ref([])
+    const violations2 = ref([])
     const fecthOptions = useOptions('countries')
     const fecthCompanyOptions = useOptions('companies')
     await fecthOptions.fetchOp()
@@ -43,8 +45,10 @@
             (acc, curr) => acc.concat(curr),
             []
         ))
-    const dataCustomers = computed(() =>
-        ({...fetchCustomerStore.customer, ...fetchSocietyStore.item}))
+    const dataCustomers = computed(() => ({
+        ...fetchCustomerStore.customer,
+        ...fetchSocietyStore.item
+    }))
 
     const customerAttachment = computed(() =>
         fetchCustomerAttachmentStore.customerAttachment.map(attachment => ({
@@ -260,7 +264,7 @@
         {
             label: 'Compagnies',
             name: 'administeredBy',
-            optionsList: {
+            options: {
                 label: value =>
                     optionsCompany.value.find(option => option.type === value)?.text
                     ?? null,
@@ -273,32 +277,43 @@
         {label: 'Accusé de réception', name: 'ar', type: 'boolean'},
         {label: 'Equivalence', name: 'equivalentEnabled', type: 'boolean'}
     ]
-    const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
-    function updateFichiers(value) {
+    const Fichiersfields = [
+        {label: 'Categorie', name: 'category', type: 'text'},
+        {label: 'Fichier', name: 'file', type: 'file'}
+    ]
+    async function updateFichiers(value) {
         const custId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
 
         const data = {
-            category: 'doc',
+            category: formData.get('category'),
             customer: `/api/customers/${custId}`,
             file: formData.get('file')
         }
-
-        fetchCustomerAttachmentStore.ajout(data)
-        customerAttachment.value = computed(() =>
-            fetchCustomerAttachmentStore.customerAttachment.map(attachment => ({
-                icon: 'file-contract',
-                id: attachment['@id'],
-                label: attachment.url.split('/').pop(), // get the filename from the URL
-                url: attachment.url
-            })))
-        treeData.value = {
-            children: customerAttachment.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments (${customerAttachment.value.length})`
-
+        try {
+            await fetchCustomerAttachmentStore.ajout(data)
+            customerAttachment.value = computed(() =>
+                fetchCustomerAttachmentStore.customerAttachment.map(attachment => ({
+                    icon: 'file-contract',
+                    id: attachment['@id'],
+                    label: attachment.url.split('/').pop(), // get the filename from the URL
+                    url: attachment.url
+                })))
+            treeData.value = {
+                children: customerAttachment.value,
+                icon: 'folder',
+                id: 1,
+                label: `Attachments (${customerAttachment.value.length})`
+            }
+            isError.value = false
+        } catch (error) {
+            const err = {
+                message:
+                    error
+            }
+            violations.value.push(err)
+            isError.value = true
         }
     }
     async function updateQte(value) {
@@ -414,7 +429,6 @@
             equivalentEnabled: JSON.parse(formData.get('equivalentEnabled')),
             language: formData.get('language'),
             notes: formData.get('notes') ? formData.get('notes') : null
-
         }
         const dataSociety = {
             ar: JSON.parse(formData.get('ar')),
@@ -472,14 +486,18 @@
 
         try {
             await fecthCustomerContactsStore.ajout(data, societyId)
-            isError.value = false
+            isError2.value = false
         } catch (error) {
-            if (error === 'Internal Server Error') {
-                const err = {message: 'Internal Server Error'}
-                violations.value.push(err)
+            if (Array.isArray(error)) {
+                violations2.value = error
+                isError2.value = true
             } else {
-                violations.value = error
-                isError.value = true
+                const err = {
+                    message:
+                        error
+                }
+                violations2.value.push(err)
+                isError2.value = true
             }
         }
     }
@@ -508,19 +526,23 @@
         try {
             const item = generateCustomerContact(inputValues)
             await item.update(dataUpdate)
-            isError.value = false
+            isError2.value = false
         } catch (error) {
             await fecthCustomerContactsStore.fetchBySociety(societyId)
             itemsTable.value = fecthCustomerContactsStore.itemsSocieties.reduce(
                 (acc, curr) => acc.concat(curr),
                 []
             )
-            if (error === 'Internal Server Error') {
-                const err = {message: 'Internal Server Error'}
-                violations.value.push(err)
+            if (Array.isArray(error)) {
+                violations2.value = error
+                isError2.value = true
             } else {
-                violations.value = error
-                isError.value = true
+                const err = {
+                    message:
+                        error
+                }
+                violations2.value.push(err)
+                isError2.value = true
             }
         }
     }
@@ -551,7 +573,11 @@
                 :fields="Fichiersfields"
                 :component-attribute="dataCustomers"
                 @update="updateFichiers(dataCustomers)"/>
-
+            <div v-if="isError" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations" :key="violation">
+                    <li>{{ violation.message }}</li>
+                </div>
+            </div>
             <MyTree :node="treeData"/>
         </AppTab>
         <AppTab
@@ -612,9 +638,9 @@
                 @deleted="deleted"
                 @update="updateSuppliers"/>
 
-            <div v-if="isError" class="alert alert-danger" role="alert">
-                <div v-for="violation in violations" :key="violation">
-                    <li>{{ violation.message }}</li>
+            <div v-if="isError2" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations2" :key="violation">
+                    <li>{{ violation.propertyPath }} {{ violation.message }}</li>
                 </div>
             </div>
         </AppTab>

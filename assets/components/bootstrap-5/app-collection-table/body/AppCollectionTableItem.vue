@@ -19,7 +19,7 @@
 <template>
     <td>
         <AppBtn icon="pencil-alt" label="Modifier" @click="ajoute"/>
-        <AppBtn icon="trash" llabel="Supprimer" variant="danger" @click="deleted"/>
+        <AppBtn icon="trash" label="Supprimer" variant="danger" @click="deleted"/>
     </td>
     <td v-for="field in fields" :key="field.name">
         {{ item[field.name] }}

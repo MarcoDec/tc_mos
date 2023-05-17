@@ -25,9 +25,6 @@
         emit('annuleAjout')
         emit('update', props.item)
     }
-    // function input(v) {
-    //     emit('update:modelValue', v)
-    // }
 </script>
 
 <template>

@@ -2,13 +2,14 @@
     import {computed, defineProps} from 'vue'
     import clone from 'clone'
 
-    const emit = defineEmits(['cancelSearch', 'search', 'open'])
+    const emit = defineEmits(['cancelSearch', 'search', 'open', 'ajout'])
     const props = defineProps({
         fields: {required: true, type: Array},
         form: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
-    const inputValues = {}
+
+    let inputValues = {}
     const tabFields = computed(() =>
         props.fields.map(element => {
             const cloned = clone(element)
@@ -21,13 +22,12 @@
     function search() {
         emit('search', inputValues)
     }
-    // async function cancelSearch() {
-    //     inputValues = {}
-    //     emit('cancelSearch', inputValues)
-    // }
-
+    async function cancelSearch() {
+        inputValues = {}
+        emit('cancelSearch', inputValues)
+    }
     function ajout() {
-        emit('open')
+        emit('ajout', inputValues)
     }
 </script>
 
@@ -36,9 +36,10 @@
         <th scope="row" class="">
             <Fa icon="search"/>
         </th>
-        <td>
-            <AppBtn icon="plus" label="Ajouter" @click="ajout"/>
+        <td class="tdHeader">
+            <AppBtn icon="times" label="Annuler" variant="danger" @click="cancelSearch"/>
             <AppBtn icon="search" label="Modifier" @click="search"/>
+            <AppBtn icon="plus" label="Ajouter" variant="success" @click="ajout"/>
         </td>
 
         <td v-for="field in tabFields" :key="field.name">
@@ -55,6 +56,10 @@
 <style scoped>
 .header {
   background-color: #c5c5c5;
+}
+.tdHeader {
+  display: flex;
+  flex-direction: row;
 }
 .btngris {
   width: 24px;

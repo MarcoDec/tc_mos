@@ -28,7 +28,6 @@
     }
     function input(value) {
         emit('update:modelValue', value)
-        console.log('fffff', value)
     }
 </script>
 

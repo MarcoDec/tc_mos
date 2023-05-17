@@ -11,10 +11,17 @@
     import {useSupplierContactsStore} from '../../../stores/supplier/supplierContacts'
     import {useSuppliersStore} from '../../../stores/supplier/suppliers'
 
-    const emit = defineEmits(['update', 'update:modelValue', 'rating'])
+    const emit = defineEmits([
+        'update',
+        'update:modelValue',
+        'rating',
+        'cancelSearch'
+    ])
     const isError = ref(false)
+    const isError2 = ref(false)
     const isShow = ref(false)
     const violations = ref([])
+    const violations2 = ref([])
     const fecthCurrencyOptions = useOptions('currencies')
     const fecthCompanyOptions = useOptions('companies')
     const fecthOptions = useOptions('countries')
@@ -101,12 +108,23 @@
         const data = {managedCopper: fetchSocietyStore.item.copper.managed}
         return data
     })
-    const list = computed(() =>
-        Object.assign(fetchSocietyStore.item, managed.value))
+    fetchSocietyStore.item.orderMin.code = '€'
+    fetchSocietyStore.item.invoiceMin.code = '€'
+    // const order = computed(() => {
+    //     fetchSocietyStore.item.orderMin.code = '€'
+    //     fetchSocietyStore.item.invoiceMin.code = '€'
 
-    const listSuppliers = computed(() =>
-        ({...fetchSuppliersStore.suppliers, ...list.value}))
+    //     return fetchSocietyStore.item
+    // })
+    const list = computed(() => ({...fetchSocietyStore.item, ...managed.value}))
 
+    const listSuppliers = computed(() => ({
+        ...fetchSuppliersStore.suppliers,
+        ...list.value,
+        ...fetchSocietyStore.vatMessageValue,
+        ...fetchSocietyStore.incotermsValue
+    }))
+    console.log('listSuppliers', listSuppliers)
     const optionsIncoterm = computed(() =>
         fecthIncotermStore.incoterms.map(incoterm => {
             const text = incoterm.name
@@ -252,7 +270,10 @@
             type: 'select'
         }
     ]
-    const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
+    const Fichiersfields = [
+        {label: 'Categorie', name: 'category', type: 'text'},
+        {label: 'Fichier', name: 'file', type: 'file'}
+    ]
     const Adressefields = [
         {label: 'Email', name: 'getEmail', type: 'text'},
         {label: 'Adresse', name: 'getAddress', type: 'text'},
@@ -292,7 +313,6 @@
         }
         const dataSociety = {
             ppmRate: JSON.parse(formData.get('ppmRate'))
-
         }
 
         const item = generateSupplier(value)
@@ -332,18 +352,36 @@
             },
             incoterms: formData.get('incotermsValue'),
             orderMin: {
-                code: formData.get('orderMin-code'),
+                code: '€',
                 value: JSON.parse(formData.get('orderMin-value'))
             }
         }
         const data = {
             openOrdersEnabled: JSON.parse(formData.get('openOrdersEnabled'))
         }
-        const itemSoc = generateSocieties(value)
-        await itemSoc.update(dataSociety)
+        // const itemSoc = generateSocieties(value);
+        // await itemSoc.update(dataSociety);
+        await fetchSocietyStore.update(dataSociety, societyId)
+        await fetchSocietyStore.fetchById(societyId)
         const item = generateSupplier(value)
         await item.updateLog(data)
         await fetchSocietyStore.fetch()
+        // order.value = computed(() => {
+        //     fetchSocietyStore.item.orderMin.code = '€'
+        //     fetchSocietyStore.item.invoiceMin.code = '€'
+
+        //     return fetchSocietyStore.item
+        // })
+        list.value = computed(() => ({
+            ...fetchSocietyStore.item,
+            ...managed.value
+        }))
+
+        listSuppliers.value = computed(() => ({
+            ...fetchSuppliersStore.suppliers,
+            ...list.value,
+            ...fetchSocietyStore.incotermsValue
+        }))
     }
 
     async function updateAddress(value) {
@@ -373,7 +411,7 @@
             accountingAccount: formData.get('accountingAccount'),
             forceVat: formData.get('forceVat'),
             invoiceMin: {
-                code: formData.get('invoiceMin-code'),
+                code: '€',
                 value: JSON.parse(formData.get('invoiceMin-value'))
             },
             vat: formData.get('vat'),
@@ -384,36 +422,65 @@
         }
         const item = generateSupplier(value)
         await item.updateAccounting(data)
-        const itemSoc = generateSocieties(value)
-        await itemSoc.update(dataSociety)
-        // await fetchSocietyStore.update(dataSociety, societyId);
-        await fetchSocietyStore.fetch()
+        // const itemSoc = generateSocieties(value);
+        // await itemSoc.update(dataSociety);
+        await fetchSocietyStore.update(dataSociety, societyId)
+        await fetchSocietyStore.fetchById(societyId)
+        //await fetchSocietyStore.fetch();
+        managed.value = computed(() => {
+            const dataM = {managedCopper: fetchSocietyStore.item.copper.managed}
+            return dataM
+        })
+
+        // order.value = computed(() => {
+        //     fetchSocietyStore.item.orderMin.code = '€'
+        //     fetchSocietyStore.item.invoiceMin.code = '€'
+
+        //     return fetchSocietyStore.item
+        // })
+        list.value = computed(() => ({
+            ...fetchSocietyStore.item,
+            ...managed.value
+        }))
+
+        listSuppliers.value = computed(() => ({
+            ...fetchSuppliersStore.suppliers,
+            ...list.value,
+            ...fetchSocietyStore.vatMessageValue
+        }))
     }
-    function updateFichiers(value) {
+    async function updateFichiers(value) {
         const suppliersId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
 
         const data = {
-            category: 'doc',
+            category: formData.get('category'),
             file: formData.get('file'),
             supplier: `/api/suppliers/${suppliersId}`
         }
-
-        fecthSupplierAttachmentStore.ajout(data)
-        supplierAttachment.value = computed(() =>
-            fecthSupplierAttachmentStore.supplierAttachment.map(attachment => ({
-                icon: 'file-contract',
-                id: attachment['@id'],
-                label: attachment.url.split('/').pop(), // get the filename from the URL
-                url: attachment.url
-            })))
-        treeData.value = {
-            children: supplierAttachment.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments (${supplierAttachment.value.length})`
-
+        try {
+            await fecthSupplierAttachmentStore.ajout(data)
+            supplierAttachment.value = computed(() =>
+                fecthSupplierAttachmentStore.supplierAttachment.map(attachment => ({
+                    icon: 'file-contract',
+                    id: attachment['@id'],
+                    label: attachment.url.split('/').pop(), // get the filename from the URL
+                    url: attachment.url
+                })))
+            treeData.value = {
+                children: supplierAttachment.value,
+                icon: 'folder',
+                id: 1,
+                label: `Attachments (${supplierAttachment.value.length})`
+            }
+            isError.value = false
+        } catch (error) {
+            const err = {
+                message: error
+            }
+            violations.value.push(err)
+            isError.value = true
         }
     }
     async function ajout(inputValues) {
@@ -437,14 +504,18 @@
         }
         try {
             await fecthSupplierContactsStore.ajout(data, societyId)
-            isError.value = false
+
+            isError2.value = false
         } catch (error) {
-            if (error === 'Internal Server Error') {
-                const err = {message: 'Internal Server Error'}
-                violations.value.push(err)
+            if (Array.isArray(error)) {
+                violations2.value = error
+                isError2.value = true
             } else {
-                violations.value = error
-                isError.value = true
+                const err = {
+                    message: error
+                }
+                violations2.value.push(err)
+                isError2.value = true
             }
         }
     }
@@ -472,19 +543,22 @@
         try {
             const item = generateSupplierContact(inputValues)
             await item.update(dataUpdate)
-            isError.value = false
+            isError2.value = false
         } catch (error) {
             await fecthSupplierContactsStore.fetchBySociety(societyId)
             itemsTable.value = fecthSupplierContactsStore.itemsSocieties.reduce(
                 (acc, curr) => acc.concat(curr),
                 []
             )
-            if (error === 'Internal Server Error') {
-                const err = {message: 'Internal Server Error'}
-                violations.value.push(err)
+            if (Array.isArray(error)) {
+                violations2.value = error
+                isError2.value = true
             } else {
-                violations.value = error
-                isError.value = true
+                const err = {
+                    message: error
+                }
+                violations2.value.push(err)
+                isError2.value = true
             }
         }
     }
@@ -513,6 +587,11 @@
                 id="addFichiers"
                 :fields="Fichiersfields"
                 @update="updateFichiers(fetchSuppliersStore.suppliers)"/>
+            <div v-if="isError" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations" :key="violation">
+                    <li>{{ violation.message }}</li>
+                </div>
+            </div>
             <MyTree :node="treeData"/>
         </AppTab>
         <AppTab
@@ -575,9 +654,9 @@
                 @deleted="deleted"
                 @update="updateSuppliers"/>
 
-            <div v-if="isError" class="alert alert-danger" role="alert">
-                <div v-for="violation in violations" :key="violation">
-                    <li>{{ violation.message }}</li>
+            <div v-if="isError2" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations2" :key="violation">
+                    <li>{{ violation.propertyPath }} {{ violation.message }}</li>
                 </div>
             </div>
         </AppTab>

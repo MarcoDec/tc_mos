@@ -1,6 +1,6 @@
 <script setup>
+    import {computed, ref} from 'vue'
     import MyTree from '../../../components/MyTree.vue'
-    import {computed} from 'vue'
     import generateComponentAttribute from '../../../stores/component/componentAttribute'
     import {useColorsStore} from '../../../stores/colors/colors'
     import {useComponentAttachmentStore} from '../../../stores/component/componentAttachment'
@@ -8,6 +8,8 @@
     import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
     import useOptions from '../../../stores/option/options'
 
+    const isError = ref(false)
+    const violations = ref([])
     const fecthOptions = useOptions('units')
     const fecthColors = useColorsStore()
     await fecthOptions.fetchOp()
@@ -79,7 +81,10 @@
         {label: 'Matière d\'isolant', name: 'MatièreIsolant', type: 'text'},
         {label: 'needJoint', name: 'needJoint', type: 'boolean'}
     ]
-    const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
+    const Fichiersfields = [
+        {label: 'Categorie', name: 'category', type: 'text'},
+        {label: 'Fichier', name: 'file', type: 'file'}
+    ]
     const Qualitéfields = [
         {label: 'rohs ', name: 'rohs', type: 'boolean'},
         {label: 'rohsAttachment', name: 'rohsAttachment', type: 'text'},
@@ -160,7 +165,6 @@
                 code: formData.get('weight-code'),
                 value: formData.get('weight-value')
             }
-
         }
 
         useFetchComponentStore.update(data, componentId)
@@ -216,33 +220,43 @@
         }
         useFetchComponentStore.updatePrice(data, componentId)
         useFetchComponentStore.fetch()
-        componentAttachment.value = computed(() =>
-            fetchComponentAttachment.componentAttachment.map(attachment => ({
-                icon: 'file-contract',
-                id: attachment['@id'],
-                label: attachment.url.split('/').pop(), // get the filename from the URL
-                url: attachment.url
-            })))
-        treeData.value = {
-            children: componentAttachment.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments (${componentAttachment.value.length})`
-
-        }
     }
-    function updateFichiers(value) {
+    async function updateFichiers(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
         const data = {
-            category: 'doc',
+            category: formData.get('category'),
             component: `/api/components/${componentId}`,
             file: formData.get('file')
         }
 
-        fetchComponentAttachment.ajout(data)
-        fetchComponentAttachment.fetch()
+        try {
+            await fetchComponentAttachment.ajout(data)
+            await fetchComponentAttachment.fetch()
+            componentAttachment.value = computed(() =>
+                fetchComponentAttachment.componentAttachment.map(attachment => ({
+                    icon: 'file-contract',
+                    id: attachment['@id'],
+                    label: attachment.url.split('/').pop(), // get the filename from the URL
+                    url: attachment.url
+                })))
+            treeData.value = {
+                children: componentAttachment.value,
+                icon: 'folder',
+                id: 1,
+                label: `Attachments (${componentAttachment.value.length})`
+            }
+
+            isError.value = false
+        } catch (error) {
+            const err = {
+                message:
+                    error
+            }
+            violations.value.push(err)
+            isError.value = true
+        }
     }
 </script>
 
@@ -282,6 +296,11 @@
                 id="addFichiers"
                 :fields="Fichiersfields"
                 @update="updateFichiers(useFetchComponentStore.component)"/>
+            <div v-if="isError" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations" :key="violation">
+                    <li>{{ violation.message }}</li>
+                </div>
+            </div>
             <MyTree :node="treeData"/>
         </AppTab>
         <AppTab

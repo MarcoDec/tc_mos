@@ -93,6 +93,11 @@ export default async function api(url, method = 'GET', body = null) {
         const content = await response.json()
         throw content.violations
     }
+    case 500: {
+        const content = await response.json()
+        throw content['hydra:description']
+        //throw await response.json()
+    }
     default:
         throw response.statusText
     }

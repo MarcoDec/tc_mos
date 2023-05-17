@@ -14,8 +14,8 @@ export const useSocietyStore = defineStore('societies', {
         },
         async fetchById(id) {
             const response = await api(`/api/societies/${id}`, 'GET')
-            const item = generateSocieties(response, this)
-            this.item = item
+            console.log('response', response)
+            this.item = response
         },
         async update(data, id) {
             await api(`/api/societies/${id}`, 'PATCH', data)
@@ -24,13 +24,19 @@ export const useSocietyStore = defineStore('societies', {
 
     },
     getters: {
-        // getAddress: state => state.address.address,
-        // getAddress2: state => state.address.address2,
-        // getCity: state => state.address.city,
-        // getCountry: state => state.address.country,
-        // getEmail: state => state.address.email,
-        // getPhone: state => state.address.phoneNumber,
-        // getPostal: state => state.address.zipCode
+
+        incotermsValue: state => {
+            const newObject = {
+                incotermsValue: state.item.incoterms ? state.item.incoterms['@id'] : null
+            }
+            return newObject
+        },
+        vatMessageValue: state => {
+            const newObject = {
+                vatMessageValue: state.item.vatMessage ? state.item.vatMessage['@id'] : null
+            }
+            return newObject
+        }
     },
     state: () => ({
         item: {},

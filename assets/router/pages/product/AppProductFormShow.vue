@@ -1,12 +1,14 @@
 <script setup>
+    import {computed, ref} from 'vue'
     import MyTree from '../../../components/MyTree.vue'
-    import {computed} from 'vue'
     import generateProduct from '../../../stores/product/product'
     import {useIncotermStore} from '../../../stores/incoterm/incoterm'
     import useOptions from '../../../stores/option/options'
     import {useProductAttachmentStore} from '../../../stores/product/productAttachement'
     import {useProductStore} from '../../../stores/product/products'
 
+    const isError = ref(false)
+    const violations = ref([])
     const fecthOptions = useOptions('units')
     const fetchProductStore = useProductStore()
     const fetchProductAttachmentStore = useProductAttachmentStore()
@@ -31,7 +33,6 @@
             icon: 'folder',
             id: 1,
             label: `Attachments (${productAttachment.value.length})`
-
         }
         return data
     })
@@ -118,7 +119,6 @@
         {label: 'Stock Min', name: 'minStock', type: 'measure'},
         {label: 'Delivery Min', name: 'minDelivery', type: 'measure'},
         {label: 'weight', name: 'weight', type: 'measure'}
-
     ]
     const Adminfields = [
         {label: 'Nom', name: 'name', type: 'text'},
@@ -127,7 +127,10 @@
         {label: 'Index interne', name: 'internalIndex', type: 'text'},
         {label: 'Kind', name: 'kind', type: 'text'}
     ]
-    const Fichiersfields = [{label: 'Fichier', name: 'file', type: 'file'}]
+    const Fichiersfields = [
+        {label: 'Categorie', name: 'category', type: 'text'},
+        {label: 'Fichier', name: 'file', type: 'file'}
+    ]
 
     async function updateGeneral(value) {
         const form = document.getElementById('addGeneralites')
@@ -146,13 +149,11 @@
         const form = document.getElementById('addAdmin')
         const formData = new FormData(form)
         const data = {
-
             code: formData.get('code'),
             index: formData.get('index'),
             internalIndex: formData.get('internalIndex'),
             kind: formData.get('kind'),
             name: formData.get('name')
-
         }
 
         const item = generateProduct(value)
@@ -180,7 +181,6 @@
         const formData = new FormData(form)
 
         const data = {
-
             autoDuration: {
                 code: formData.get('autoDuration-code'),
                 value: JSON.parse(formData.get('autoDuration-value'))
@@ -232,36 +232,45 @@
                 code: formData.get('weight-code'),
                 value: JSON.parse(formData.get('weight-value'))
             }
-
         }
         const item = generateProduct(value)
         await item.updateLogistique(data)
         await fetchProductStore.fetch()
     }
-    function updateFichiers(value) {
+    async function updateFichiers(value) {
         const productsId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
 
         const data = {
-            category: 'doc',
+            category: formData.get('category'),
             file: formData.get('file'),
             product: `/api/products/${productsId}`
         }
-
-        fetchProductAttachmentStore.ajout(data)
-        productAttachment.value = computed(() =>
-            fetchProductAttachmentStore.productAttachment.map(attachment => ({
-                icon: 'file-contract',
-                id: attachment['@id'],
-                label: attachment.url.split('/').pop(),
-                url: attachment.url
-            })))
-        treeData.value = {
-            children: productAttachment.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments (${productAttachment.value.length})`
+        try {
+            await fetchProductAttachmentStore.ajout(data)
+            productAttachment.value = computed(() =>
+                fetchProductAttachmentStore.productAttachment.map(attachment => ({
+                    icon: 'file-contract',
+                    id: attachment['@id'],
+                    label: attachment.url.split('/').pop(),
+                    url: attachment.url
+                })))
+            treeData.value = {
+                children: productAttachment.value,
+                icon: 'folder',
+                id: 1,
+                label: `Attachments (${productAttachment.value.length})`
+            }
+            isError.value = false
+        } catch (error) {
+            console.log('error', error)
+            const err = {
+                message:
+                    error
+            }
+            violations.value.push(err)
+            isError.value = true
         }
     }
 </script>
@@ -340,6 +349,11 @@
                 id="addFichiers"
                 :fields="Fichiersfields"
                 @update="updateFichiers(fetchProductStore.products)"/>
+            <div v-if="isError" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations" :key="violation">
+                    <li>{{ violation.message }}</li>
+                </div>
+            </div>
             <MyTree :node="treeData"/>
         </AppTab>
         <AppTab
