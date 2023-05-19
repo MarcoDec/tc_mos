@@ -1,22 +1,17 @@
 <script lang="ts" setup>
     import type {BootstrapSize, FormField, FormValue} from '../../../types/bootstrap-5'
-    import {computed, defineEmits, defineProps, withDefaults} from 'vue'
-
-    const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
+    import {computed, defineProps, withDefaults} from 'vue'
 
     const props = withDefaults(
-        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize}>(),
+        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize, disabled: boolean}>(),
         {modelValue: null, size: 'sm'}
     )
     const options = computed(() => props.field.options ?? [])
     const sizeClass = computed(() => `form-select-${props.size}`)
-    function input(e: Readonly<Event>): void {
-        emit('update:modelValue', (e.target as HTMLInputElement).value)
-    }
 </script>
 
 <template>
-    <select :id="field.id" :class="sizeClass" :name="field.name" :value="modelValue" class="form-select" @input="input">
-        <AppSelectOption v-for="option in options" :key="option.value" :option="option"/>
+    <select :id="field.id" :class="sizeClass" :name="field.name" :value="modelValue" class="form-select">
+        <AppSelectOption v-for="option in options" :key="option.value" :option="option" :disabled="disabled"/>
     </select>
 </template>

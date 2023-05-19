@@ -18,7 +18,6 @@ export default {
         const route = useRoute()
         const machines = props.machine ?? useTableMachine(route.name)
         const stores = props.store ?? generateItems(route.name)
-        console.log('stores', stores);
         const variant = computed(() => `text-${stores.length > 0 ? 'dark' : 'white'}`)
 
         machines.send('submit')

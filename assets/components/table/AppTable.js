@@ -1,5 +1,5 @@
-import AppTableHeaders from './head/AppTableHeaders.vue'
-import AppTableItems from './body/AppTableItems.vue'
+import AppTableHeadersJS from './head/AppTableHeadersJS'
+import AppTableItemsJS from './body/AppTableItemsJS'
 import {generateTableFields} from '../props'
 import {h} from 'vue'
 
@@ -29,12 +29,12 @@ function AppTable(props, context) {
             {class: 'row'},
             h('table', {class: 'col table table-bordered table-hover table-responsive table-sm table-striped'}, [
                 h(
-                    AppTableHeaders,
+                    AppTableHeadersJS,
                     {fields: props.fields, id: `${props.id}-headers`, machine: props.machine, store: props.store},
                     searchSlots
                 ),
                 h(
-                    AppTableItems,
+                    AppTableItemsJS,
                     {fields: props.fields, id: `${props.id}-items`, items: props.store.items, machine: props.machine},
                     cellSlots
                 )

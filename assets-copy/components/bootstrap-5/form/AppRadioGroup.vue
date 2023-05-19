@@ -4,7 +4,7 @@
 
     const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
     const props = withDefaults(
-        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize}>(),
+        defineProps<{field: FormField, modelValue?: FormValue, size?: BootstrapSize, disabled: boolean}>(),
         {modelValue: null, size: 'sm'}
     )
     const sizeClass = computed(() => `btn-group-${props.size}`)
@@ -26,6 +26,7 @@
             :model-value="modelValue"
             :option="option"
             :size="size"
+            :disabled="disabled"
             @update:model-value="input"/>
     </div>
 </template>

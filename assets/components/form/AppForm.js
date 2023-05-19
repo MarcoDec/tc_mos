@@ -1,7 +1,7 @@
 import {computed, h, resolveComponent} from 'vue'
 import {fieldValidator, generateLabelCols} from '../props'
 import AppFormField from './field/AppFormField.vue'
-import AppTabs from '../tabs/AppTabs.vue'
+import AppTabs from '../tab/AppTabs.vue'
 
 export default {
     props: {

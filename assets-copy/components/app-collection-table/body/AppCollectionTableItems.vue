@@ -1,17 +1,16 @@
 <script lang="ts" setup>
-    import type {TableField, TableItem} from '../../../types/app-collection-table'
-    import {defineProps, inject} from 'vue'
+    import {defineEmits, defineProps} from 'vue'
+    import type {TableItem} from '../../../types/app-collection-table'
 
+    const emit = defineEmits<(e: 'update', item: TableItem) => void>()
     defineProps<{items: TableItem[]}>()
-    const fields = inject<TableField[]>('fields', [])
+    function update(item: TableItem): void {
+        emit('update', item)
+    }
 </script>
 
 <template>
     <tbody>
-        <AppCollectionTableItem v-for="(item, index) in items" :key="item.id" :index="index" :item="item">
-            <template v-for="field in fields" #[field.name]="params">
-                <slot :name="field.name" v-bind="params"/>
-            </template>
-        </AppCollectionTableItem>
+        <AppCollectionTableItem v-for="(item, index) in items" :key="item.id" :index="index" :item="item" @update="update"/>
     </tbody>
 </template>

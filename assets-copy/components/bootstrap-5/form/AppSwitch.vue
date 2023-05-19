@@ -5,6 +5,7 @@
 
     const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
     const props = defineProps({
+        disabled: {type: Boolean},
         field: {required: true, type: Object as PropType<FormField>},
         modelValue: {default: null, type: [Boolean, Number, String] as PropType<FormValue>},
         noLabel: {required: false, type: Boolean}
@@ -24,7 +25,8 @@
             :value="modelValue"
             class="form-check-input"
             type="checkbox"
+            :disabled="disabled"
             @input="input"/>
-        <label v-if="!noLabel" :for="field.id" class="form-check-label">{{ field.label }}</label>
+        <label v-if="!noLabel" :for="field.id" class="form-check-label"/>
     </div>
 </template>

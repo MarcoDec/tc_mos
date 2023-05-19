@@ -1,4 +1,5 @@
 <script setup>
+    // import AppFormJS from '../../../components/form/AppFormJS.js'
     import {computed} from 'vue-demi'
 
     const fields = computed(() => [
@@ -15,7 +16,7 @@
                         {label: 'Unité', name: 'unite'},
                         {label: 'poids (g) ', name: 'code'}
                     ],
-                    label: 'General',
+                    label: 'Genreal',
                     mode: 'fieldset',
                     name: 'General'
                 },
@@ -75,9 +76,8 @@
             name: 'attributs'
         }
     ])
-    console.log('fields', computed(() => fields))
 </script>
 
 <template>
-    <AppForm id="comp" :fields="fields"/>
+    <AppFormJS id="comp" :fields="fields"/>
 </template>

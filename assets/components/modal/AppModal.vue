@@ -1,5 +1,6 @@
 <script setup>
     import {defineProps, onMounted, onUnmounted, ref} from 'vue'
+    import AppBtnJS from '../AppBtnJS'
     import {Modal} from 'bootstrap'
 
     const props = defineProps({
@@ -41,20 +42,12 @@
                     <slot/>
                 </div>
                 <div class="modal-footer">
-                    <AppBtn data-bs-dismiss="modal" label="creer" variant="success">
-                        Créer
-                    </AppBtn>
-                    <AppBtn data-bs-dismiss="modal" label="fermer" variant="danger">
+                    <AppBtnJS data-bs-dismiss="modal" label="créer" variant="danger">
                         Fermer
-                    </AppBtn>
+                    </AppBtnJS>
+                    <slot name="buttons"/>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
-<style scoped>
-.modal-content{
-    width: 160%;
-}
-</style>

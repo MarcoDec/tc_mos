@@ -6,14 +6,15 @@
         form: {required: true, type: String},
         modelValue: {default: null, type: Object}
     })
+
     const td = computed(() => {
         switch (props.field.mode) {
             case 'tab':
                 return 'AppFormTabs'
             case 'fieldset':
-                return 'AppFormFieldset'
+                return 'AppFormFieldSet'
             default:
-                return 'AppFormGroup'
+                return 'AppFormGroupJS'
         }
     })
     function input(value) {

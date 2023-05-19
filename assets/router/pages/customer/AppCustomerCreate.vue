@@ -54,7 +54,7 @@
 </script>
 
 <template>
-    <AppForm id="customer" :fields="fields" country-field="pays" @input="input"/>
+    <AppFormJS id="customer" :fields="fields" country-field="pays" @input="input"/>
 </template>
 
 <style>

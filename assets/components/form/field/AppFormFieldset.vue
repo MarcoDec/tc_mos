@@ -8,7 +8,6 @@
         form: {required: true, type: String},
         modelValue: {default: null}
     })
-
     function input(value) {
         emit('update:modelValue', value)
     }

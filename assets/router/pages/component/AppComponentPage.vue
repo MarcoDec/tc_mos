@@ -6,11 +6,9 @@
     import {useTableMachine} from '../../../machine'
     const title = 'Créer un Composant'
     const modalId = computed(() => 'target')
-    console.log('modalId', modalId)
     const target = computed(() => `#${modalId.value}`)
     const machineComponet = useTableMachine('machine-component')
     const component = useComponent()
-    component.fetch()
     console.log('component', component)
 
     const fields = [
@@ -84,6 +82,15 @@
     <div class="row">
         <AppModal :id="modalId" class="four" :title="title">
             <AppComponentCreate/>
+            <template #buttons>
+                <AppBtn
+                    variant="success"
+                    label="Créer"
+                    data-bs-toggle="modal"
+                    :data-bs-target="target">
+                    Créer
+                </AppBtn>
+            </template>
         </AppModal>
         <div class="col">
             <AppTablePage
@@ -98,6 +105,7 @@
                 <template #btn>
                     <AppBtn
                         variant="success"
+                        label="créer"
                         data-bs-toggle="modal"
                         :data-bs-target="target">
                         Créer

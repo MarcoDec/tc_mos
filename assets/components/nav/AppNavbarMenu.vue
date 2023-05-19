@@ -95,6 +95,9 @@
                     <AppNavbarLink icon="file-contract" to="incoterms" variant="warning">
                         Incoterms
                     </AppNavbarLink>
+                    <AppNavbarLink icon="warehouse" to="warehouse-list" variant="warning">
+                        Entrepots
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">

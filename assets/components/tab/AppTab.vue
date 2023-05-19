@@ -9,6 +9,7 @@
         title: {required: true, type: String}
     })
     const tab = useTabs(props.tabs).push({active: props.active, icon: props.icon, id: props.id, title: props.title})
+    console.log('tab', tab)
 </script>
 
 <template>

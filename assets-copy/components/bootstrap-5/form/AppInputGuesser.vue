@@ -5,6 +5,7 @@
 
     const emit = defineEmits<(e: 'update:modelValue', value: FormValue) => void>()
     const props = defineProps({
+        disabled: {type: Boolean},
         field: {required: true, type: Object as PropType<FormField>},
         modelValue: {default: null, type: [Boolean, Number, String] as PropType<FormValue>},
         noLabel: {required: false, type: Boolean},
@@ -22,13 +23,12 @@
                 return 'AppSearchBool'
             case 'select':
                 return 'AppSelect'
-            case 'phone':
-                return 'AppPhoneFlag'
+            case 'rating':
+                return 'AppRating'
             default:
                 return 'AppInput'
         }
     })
-
     function input(value: FormValue): void {
         emit('update:modelValue', value)
     }
@@ -41,5 +41,6 @@
         :model-value="modelValue"
         :no-label="noLabel"
         :size="size"
+        :disabled="disabled"
         @update:model-value="input"/>
 </template>
