@@ -1,6 +1,7 @@
 import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
 import AppInputMeasure from './AppInputMeasure.vue'
+import AppInputMeasureSelect from './AppInputMeasureSelect.vue'
 import AppInputNumber from './AppInputNumber.vue'
 import AppMultiselect from './select/AppMultiselect.vue'
 import AppRating from './AppRating.vue'
@@ -23,6 +24,8 @@ function getType(field) {
         return AppMultiselect
     case 'measure':
         return AppInputMeasure
+    case 'measureselect':
+        return AppInputMeasureSelect
     case 'rating':
         return AppRating
     case 'textarea':

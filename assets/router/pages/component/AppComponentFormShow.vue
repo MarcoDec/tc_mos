@@ -8,8 +8,12 @@
     import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
     import useOptions from '../../../stores/option/options'
 
+    const emit = defineEmits(['update', 'update:modelValue'])
+
     const isError = ref(false)
+    const isError2 = ref(false)
     const violations = ref([])
+    const violations2 = ref([])
     const fecthOptions = useOptions('units')
     const fecthColors = useColorsStore()
     await fecthOptions.fetchOp()
@@ -19,6 +23,13 @@
         fecthOptions.options.map(op => {
             const text = op.text
             const value = op.value
+            const optionList = {text, value}
+            return optionList
+        }))
+    const optionsUnit = computed(() =>
+        fecthOptions.options.map(op => {
+            const text = op.text
+            const value = op.text
             const optionList = {text, value}
             return optionList
         }))
@@ -36,6 +47,9 @@
     await useComponentStore.fetch()
     await fetchComponentAttachment.fetch()
     await useFetchComponentStore.fetch()
+    const rohsValue = ref(useFetchComponentStore.component.rohs)
+    const reachValue = ref(useFetchComponentStore.component.reach)
+    useFetchComponentStore.component.price.code = 'EUR'
 
     const componentAttachment = computed(() =>
         fetchComponentAttachment.componentAttachment.map(attachment => ({
@@ -54,6 +68,45 @@
         return data
     })
 
+    const attachmentByCategory = computed(() =>
+        fetchComponentAttachment.componentAttachment.filter(attachment => attachment.category === 'rohs'))
+    const componentAttachmentByCategory = computed(() =>
+        attachmentByCategory.value.map(attachment => ({
+            icon: 'file-contract',
+            id: attachment['@id'],
+            label: attachment.url.split('/').pop(), // get the filename from the URL
+            url: attachment.url
+        })))
+
+    const treeDataByRohs = computed(() => {
+        const data = {
+            children: componentAttachmentByCategory.value,
+            icon: 'folder',
+            id: 1,
+            label: `Attachments Rohs (${componentAttachmentByCategory.value.length})`
+        }
+        return data
+    })
+    const attachmentByCategoryReach = computed(() =>
+        fetchComponentAttachment.componentAttachment.filter(attachment => attachment.category === 'reach'))
+    const componentAttachmentByCategoryReach = computed(() =>
+        attachmentByCategoryReach.value.map(attachment => ({
+            icon: 'file-contract',
+            id: attachment['@id'],
+            label: attachment.url.split('/').pop(), // get the filename from the URL
+            url: attachment.url
+        })))
+
+    const treeDataByReach = computed(() => {
+        const data = {
+            children: componentAttachmentByCategoryReach.value,
+            icon: 'folder',
+            id: 1,
+            label: `Attachments Reach (${componentAttachmentByCategoryReach.value.length})`
+        }
+        return data
+    })
+
     const Attributfields = [
         {
             label: 'Couleur',
@@ -66,20 +119,20 @@
             },
             type: 'select'
         },
-        {label: 'T° maxi (°C)', name: 'temperatureMaxi', type: 'number'},
-        {label: 'Nombre des brins', name: 'NombreBrins', type: 'number'},
-        {label: 'Voltage (V)', name: 'Voltage', type: 'text'},
-        {label: 'Dia ext maxi (mm)', name: 'DiaMaxi', type: 'number'},
-        {label: 'Norme d\'appellation', name: 'Norme', type: 'text'},
-        {
-            label: 'Nombre des conducteurs',
-            name: 'NombreConducteurs',
-            type: 'number'
-        },
-        {label: 'Section (mm²)', name: 'MatièreBrins', type: 'text'},
-        {label: 'T° mini (°C)', name: 'temperatureMini', type: 'number'},
-        {label: 'Matière d\'isolant', name: 'MatièreIsolant', type: 'text'},
-        {label: 'needJoint', name: 'needJoint', type: 'boolean'}
+        {label: 'Attribute', name: 'attribute', type: 'text'},
+        {label: 'Valeur', name: 'value', type: 'number'}
+        // {label: 'Voltage (V)', name: 'Voltage', type: 'text'},
+        // {label: 'Dia ext maxi (mm)', name: 'DiaMaxi', type: 'number'},
+        // {label: 'Norme d\'appellation', name: 'Norme', type: 'text'},
+        // {
+        //     label: 'Nombre des conducteurs',
+        //     name: 'NombreConducteurs',
+        //     type: 'number'
+        // },
+        // {label: 'Section (mm²)', name: 'MatièreBrins', type: 'text'},
+        // {label: 'T° mini (°C)', name: 'temperatureMini', type: 'number'},
+        // {label: 'Matière d\'isolant', name: 'MatièreIsolant', type: 'text'},
+        // {label: 'needJoint', name: 'needJoint', type: 'boolean'}
     ]
     const Fichiersfields = [
         {label: 'Categorie', name: 'category', type: 'text'},
@@ -87,10 +140,10 @@
     ]
     const Qualitéfields = [
         {label: 'rohs ', name: 'rohs', type: 'boolean'},
-        {label: 'rohsAttachment', name: 'rohsAttachment', type: 'text'},
+        {label: 'rohsAttachment', name: 'rohsAttachment', type: 'file'},
         {label: 'reach', name: 'reach', type: 'boolean'},
-        {label: 'reachAttachment', name: 'reachAttachment', type: 'text'},
-        {label: 'Qualité', name: 'quality', type: 'number'}
+        {label: 'reachAttachment', name: 'reachAttachment', type: 'file'},
+        {label: 'Notation qualité *', name: 'quality', type: 'rating'}
     ]
     const Achatfields = [
         {label: 'Fabricant', name: 'manufacturer', type: 'text'},
@@ -98,7 +151,16 @@
     ]
     const Logistiquefields = [
         {label: 'Code douanier', name: 'customsCode', type: 'text'},
-        {label: 'Poids', name: 'weight', type: 'measure'},
+        {
+            label: 'Poids',
+            name: 'weight',
+            options: {
+                label: value =>
+                    optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnit.value
+            },
+            type: 'measureselect'
+        },
         {
             label: 'Unité',
             name: 'unit',
@@ -109,14 +171,41 @@
             },
             type: 'select'
         },
-        {label: 'Volume Prévisionnel', name: 'forecastVolume', type: 'measure'},
-        {label: 'Stock Minimum', name: 'minStock', type: 'measure'},
+        {
+            label: 'Volume Prévisionnel',
+            name: 'forecastVolume',
+            options: {
+                label: value =>
+                    optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnit.value
+            },
+            type: 'measureselect'
+        },
+        {
+            label: 'Stock Minimum',
+            name: 'minStock',
+            options: {
+                label: value =>
+                    optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnit.value
+            },
+            type: 'measureselect'
+        },
         {label: 'gestionStock', name: 'managedStock', type: 'boolean'}
     ]
 
     const Spécificationfields = [
         {label: 'Prix', name: 'price', type: 'measure'},
-        {label: 'Poids Cuivre', name: 'weight', type: 'measure'},
+        {
+            label: 'Poids Cuivre',
+            name: 'copperWeight',
+            options: {
+                label: value =>
+                    optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                options: optionsUnit.value
+            },
+            type: 'measureselect'
+        },
         {label: 'Info Cmde', name: 'orderInfo', type: 'text'}
     ]
     const Géneralitésfields = [
@@ -181,19 +270,72 @@
         useFetchComponentStore.updatePurchase(data, componentId)
         useFetchComponentStore.fetch()
     }
-    function updateQuality(value) {
+    const val = ref(Number(useFetchComponentStore.component.quality))
+    async function input(value) {
+        const componentId = Number(value['@id'].match(/\d+/)[0])
+
+        val.value = value.quality
+        emit('update:modelValue', val.value)
+        const data = {
+            quality: val.value
+        }
+        await useFetchComponentStore.updateQuality(data, componentId)
+        await useFetchComponentStore.fetch()
+    }
+    async function updateQuality(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addQualite')
         const formData = new FormData(form)
         const data = {
-            quality: JSON.parse(formData.get('quality')),
+            //quality: JSON.parse(formData.get("quality")),
             reach: JSON.parse(formData.get('reach')),
             rohs: JSON.parse(formData.get('rohs'))
         }
-        useFetchComponentStore.updateQuality(data, componentId)
-        useFetchComponentStore.fetch()
+
+        if (rohsValue.value === true) {
+            const dataFichierRohs = {
+                category: 'rohs',
+                component: `/api/components/${componentId}`,
+                file: formData.get('rohsAttachment')
+            }
+            try {
+                await fetchComponentAttachment.ajout(dataFichierRohs)
+                await fetchComponentAttachment.fetch()
+
+                isError2.value = false
+            } catch (error) {
+                const err = {
+                    message: error
+                }
+                violations2.value.push(err)
+                isError2.value = true
+            }
+        }
+        if (reachValue.value === true) {
+            const dataFichierReach = {
+                category: 'reach',
+                component: `/api/components/${componentId}`,
+                file: formData.get('reachAttachment')
+            }
+            try {
+                await fetchComponentAttachment.ajout(dataFichierReach)
+                await fetchComponentAttachment.fetch()
+
+                isError2.value = false
+            } catch (error) {
+                const err = {
+                    message: error
+                }
+                violations2.value.push(err)
+                isError2.value = true
+            }
+        }
+        await useFetchComponentStore.updateQuality(data, componentId)
+        await useFetchComponentStore.fetch()
+        rohsValue.value = useFetchComponentStore.component.rohs
+        reachValue.value = useFetchComponentStore.component.reach
     }
-    function updateGeneral(value) {
+    async function updateGeneral(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)
@@ -202,24 +344,33 @@
             name: formData.get('name'),
             notes: formData.get('notes')
         }
-        useFetchComponentStore.updateAdmin(data, componentId)
-        useFetchComponentStore.updateMain(data, componentId)
-        useFetchComponentStore.fetch()
+        await useFetchComponentStore.updateAdmin(data, componentId)
+        await useFetchComponentStore.updateMain(data, componentId)
+        await useFetchComponentStore.fetch()
     }
-    function updateSpecification(value) {
+    async function updateSpecification(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addSpécification')
         const formData = new FormData(form)
 
         const data = {
             orderInfo: formData.get('orderInfo'),
-            weight: {
-                code: formData.get('weight-code'),
-                value: formData.get('weight-value')
+            copperWeight: {
+                code: formData.get('copperWeight-code'),
+                value: formData.get('copperWeight-value')
             }
         }
-        useFetchComponentStore.updatePrice(data, componentId)
-        useFetchComponentStore.fetch()
+        // const dataWeight = {
+        //   copperWeight: {
+        //     code: formData.get("copperWeight-code"),
+        //     value: formData.get("copperWeight-value"),
+        //   },
+        // };
+
+        await useFetchComponentStore.updatePrice(data, componentId)
+        // await useFetchComponentStore.update(dataWeight, componentId);
+        await useFetchComponentStore.fetch()
+        useFetchComponentStore.component.price.code = 'EUR'
     }
     async function updateFichiers(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -234,25 +385,11 @@
         try {
             await fetchComponentAttachment.ajout(data)
             await fetchComponentAttachment.fetch()
-            componentAttachment.value = computed(() =>
-                fetchComponentAttachment.componentAttachment.map(attachment => ({
-                    icon: 'file-contract',
-                    id: attachment['@id'],
-                    label: attachment.url.split('/').pop(), // get the filename from the URL
-                    url: attachment.url
-                })))
-            treeData.value = {
-                children: componentAttachment.value,
-                icon: 'folder',
-                id: 1,
-                label: `Attachments (${componentAttachment.value.length})`
-            }
 
             isError.value = false
         } catch (error) {
             const err = {
-                message:
-                    error
+                message: error
             }
             violations.value.push(err)
             isError.value = true
@@ -312,7 +449,15 @@
                 id="addQualite"
                 :fields="Qualitéfields"
                 :component-attribute="useFetchComponentStore.component"
-                @update="updateQuality(useFetchComponentStore.component)"/>
+                @update="updateQuality(useFetchComponentStore.component)"
+                @update:model-value="input"/>
+            <div v-if="isError2" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations2" :key="violation">
+                    <li>{{ violation.message }}</li>
+                </div>
+            </div>
+            <MyTree v-show="rohsValue" :node="treeDataByRohs"/>
+            <MyTree v-show="reachValue" :node="treeDataByReach"/>
         </AppTab>
         <AppTab
             id="gui-start-achat"

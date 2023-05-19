@@ -84,7 +84,7 @@
         {text: 'female', value: 'female'},
         {text: 'male', value: 'male'}
     ]
-    const Géneralitésfields = [{label: 'Note', name: 'notes', type: 'text'}]
+    const Géneralitésfields = [{label: 'Note', name: 'notes', type: 'textarea'}]
 
     const Productionfields = [
         {
@@ -241,6 +241,18 @@
         await item.update(data)
         //await fetchEmployeeStore.update(data, employeeId)
     }
+    async function updateDroits(value) {
+        // const employeeId = Number(value['@id'].match(/\d+/)[0])
+
+        const form = document.getElementById('addDroits')
+        const formData = new FormData(form)
+        const data = {
+            embRoles: [formData.get('embRoles')]
+        }
+        const item = generateEmployee(value)
+
+        await item.updateIt(data)
+    }
     async function updateAcces(value) {
         const form = document.getElementById('addAccés')
         const formData = new FormData(form)
@@ -266,19 +278,6 @@
         }
         try {
             await fetchEmployeeAttachementStore.ajout(data)
-            employeeAttachment.value = computed(() =>
-                fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
-                    icon: 'file-contract',
-                    id: attachment['@id'],
-                    label: attachment.url.split('/').pop(), // get the filename from the URL
-                    url: attachment.url
-                })))
-            treeData.value = {
-                children: employeeAttachment.value,
-                icon: 'folder',
-                id: 1,
-                label: `Attachments (${employeeAttachment.value.length})`
-            }
             isError.value = false
         } catch (error) {
             const err = {
@@ -363,7 +362,7 @@
                 id="addDroits"
                 :fields="Droitsfields"
                 :component-attribute="fetchEmployeeStore.employee"
-                @update="update(fetchEmployeeStore.employee)"/>
+                @update="updateDroits(fetchEmployeeStore.employee)"/>
         </AppTab>
         <AppTab
             id="gui-start-accés"

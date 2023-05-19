@@ -108,14 +108,9 @@
         const data = {managedCopper: fetchSocietyStore.item.copper.managed}
         return data
     })
-    fetchSocietyStore.item.orderMin.code = '€'
-    fetchSocietyStore.item.invoiceMin.code = '€'
-    // const order = computed(() => {
-    //     fetchSocietyStore.item.orderMin.code = '€'
-    //     fetchSocietyStore.item.invoiceMin.code = '€'
+    fetchSocietyStore.item.orderMin.code = 'EUR'
+    fetchSocietyStore.item.invoiceMin.code = 'EUR'
 
-    //     return fetchSocietyStore.item
-    // })
     const list = computed(() => ({...fetchSocietyStore.item, ...managed.value}))
 
     const listSuppliers = computed(() => ({
@@ -352,7 +347,7 @@
             },
             incoterms: formData.get('incotermsValue'),
             orderMin: {
-                code: '€',
+                code: 'EUR',
                 value: JSON.parse(formData.get('orderMin-value'))
             }
         }
@@ -366,12 +361,7 @@
         const item = generateSupplier(value)
         await item.updateLog(data)
         await fetchSocietyStore.fetch()
-        // order.value = computed(() => {
-        //     fetchSocietyStore.item.orderMin.code = '€'
-        //     fetchSocietyStore.item.invoiceMin.code = '€'
 
-        //     return fetchSocietyStore.item
-        // })
         list.value = computed(() => ({
             ...fetchSocietyStore.item,
             ...managed.value
@@ -411,7 +401,7 @@
             accountingAccount: formData.get('accountingAccount'),
             forceVat: formData.get('forceVat'),
             invoiceMin: {
-                code: '€',
+                code: 'EUR',
                 value: JSON.parse(formData.get('invoiceMin-value'))
             },
             vat: formData.get('vat'),
@@ -432,12 +422,6 @@
             return dataM
         })
 
-        // order.value = computed(() => {
-        //     fetchSocietyStore.item.orderMin.code = '€'
-        //     fetchSocietyStore.item.invoiceMin.code = '€'
-
-        //     return fetchSocietyStore.item
-        // })
         list.value = computed(() => ({
             ...fetchSocietyStore.item,
             ...managed.value
@@ -461,19 +445,7 @@
         }
         try {
             await fecthSupplierAttachmentStore.ajout(data)
-            supplierAttachment.value = computed(() =>
-                fecthSupplierAttachmentStore.supplierAttachment.map(attachment => ({
-                    icon: 'file-contract',
-                    id: attachment['@id'],
-                    label: attachment.url.split('/').pop(), // get the filename from the URL
-                    url: attachment.url
-                })))
-            treeData.value = {
-                children: supplierAttachment.value,
-                icon: 'folder',
-                id: 1,
-                label: `Attachments (${supplierAttachment.value.length})`
-            }
+
             isError.value = false
         } catch (error) {
             const err = {

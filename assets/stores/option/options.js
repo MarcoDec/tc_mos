@@ -27,14 +27,10 @@ export default function useOptions(base, valueProp = '@id') {
                 this.fetchable = false
             },
             async fetchOp() {
-                if (this.fetchable)
-                    return
                 const response = await api(this.url)
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
                 this.options.sort(sort)
-                //console.log('this.options', this.options.sort(sort))
-                this.fetchable = false
             },
             resetItems() {
                 const options = [...this.options]

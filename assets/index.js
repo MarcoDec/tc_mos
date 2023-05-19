@@ -19,6 +19,7 @@ import AppFormGenerator from './components/form/AppFormGenerator.vue'
 import AppFormGroup from './components/form/field/AppFormGroup.vue'
 import AppFormGroupJS from './components/form/field/AppFormGroupJS'
 import AppFormJS from './components/form/AppFormJS'
+import AppFormFieldset from "./components/form/field/AppFormFieldset.vue"
 import AppInput from './components/form/field/input/AppInput.vue'
 import AppInputGuesser from './components/form/field/input/AppInputGuesser.vue'
 import AppInputGuesserJS from './components/form/field/input/AppInputGuesserJS'
@@ -87,6 +88,7 @@ const app = createApp(App)
     .component('AppDropdownItemJS', AppDropdownItemJS)
     .component('AppForm', AppForm)
     .component('AppFormCardable', AppFormCardable)
+    .component('AppFormFieldset', AppFormFieldset)
     .component('AppFormJS', AppFormJS)
     .component('AppFormGenerator', AppFormGenerator)
     .component('AppFormGroup', AppFormGroup)

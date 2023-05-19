@@ -3,7 +3,7 @@
     import AppBtnJS from './AppBtnJS'
     import AppFormJS from './form/AppFormJS'
 
-    defineProps({
+   const props= defineProps({
         componentAttribute: {default: () => [], type: Array},
         // disabled: {type: Boolean},
         fields: {default: () => [], type: Array},
