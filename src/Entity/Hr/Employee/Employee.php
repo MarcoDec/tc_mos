@@ -282,8 +282,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Mot de passe', example: 'L0r3m@Ipsum'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:it'])
+        ORM\Column(nullable: true)
     ]
     private ?string $plainPassword = null;
 
@@ -473,7 +472,17 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     final public function getPlainPassword(): ?string {
         return $this->plainPassword;
     }
-
+    
+    /**
+     * @return string[]
+     *
+     * @see UserInterface
+     */
+    #[
+        ApiProperty(description: 'Rôles', example: [Roles::ROLE_USER]),
+        Pure,
+        Serializer\Groups(['read:employee', 'read:user'])
+    ]
     final public function getRoles(): array {
         return $this->embRoles->getRoles();
     }

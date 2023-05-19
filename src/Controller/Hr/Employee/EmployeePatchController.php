@@ -17,10 +17,12 @@ use App\Entity\Management\Society\Company\Company;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Hr\Employee\Team;
 use App\Entity\Hr\Employee\TEmployee;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 
 class EmployeePatchController
 {
-   public function __construct(private readonly EntityManagerInterface $em, private EmployeeRepository $repository, private LoggerInterface $logger) {
+   public function __construct(private readonly EntityManagerInterface $em, private EmployeeRepository $repository, private LoggerInterface $logger, private UserPasswordHasherInterface $passwordHasher) {
    }
 
    /**
@@ -103,12 +105,9 @@ class EmployeePatchController
                                $this->logger->warning('#1.company Impossible de modifier '.$key.' IRI attendue et non recue '.$value);
                            }
                         } elseif ($key == 'embRoles') {
-                           //dump(['embRoles',$value->roles,$refProps]);
                            $newRoles = new Roles();
-                           dump([
-                              '$value->roles'=>$value
-                           ]);
-                           $newRoles->setRoles($value);
+                           $value2 = json_decode(json_encode($value), true);
+                           $newRoles->setRoles($value2["roles"]);
                            $refProps->setValue($sourceItem, $newRoles);
                         } elseif ($key == 'team') {
                            $this->setTeam($value, $refProps, $sourceItem);
@@ -122,6 +121,16 @@ class EmployeePatchController
                   //dump('Je suis ici => '.$key);
                   if ($key == 'manager') {
                      $this->setManager($value, $refProps, $sourceItem);
+                  } elseif ($key == 'password') {
+                     //Sauvegarde du mot de passe en clair
+                     $refPlainPassword = $refClass->getProperty('plainPassword');
+                     $refPlainPassword->setValue($sourceItem, $value);
+                     //cryptage du mot de passe
+                     $hashedPassword = $this->passwordHasher->hashPassword(
+                        $sourceItem,
+                        $value
+                    );
+                    $refProps->setValue($sourceItem, $hashedPassword);
                   } elseif ($key == 'team') {
                      $this->setTeam($value, $refProps, $sourceItem);
                   } elseif ($refProps->getValue($sourceItem)===null||in_array(getType($refProps->getValue($sourceItem)) ,["boolean", 'integer', 'double', 'string'])) {

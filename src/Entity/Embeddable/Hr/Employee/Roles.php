@@ -123,7 +123,7 @@ class Roles {
     /** @var string[] */
     #[
         ORM\Column(type: 'simple_array'),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:it'])
+        Serializer\Groups(['read:user', 'read:employee', 'write:employee', 'write:employee:it'])
         ]
     private array $roles = [self::ROLE_USER];
 
