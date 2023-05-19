@@ -169,6 +169,8 @@ class EmployeePatchController
          $id = intval($splitted[3]);
          $team = $this->em->getRepository(Team::class)->find($id);
          $refProps->setValue($sourceItem, $team);
+      } elseif (is_null($value)) {
+         $refProps->setValue($sourceItem, null);
       } else {
          $this->logger->warning('#1.team Impossible de modifier '.$key.' IRI attendue et non recue '.$value);
       } 
