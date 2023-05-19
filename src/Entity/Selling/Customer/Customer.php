@@ -215,7 +215,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Portail logistique'),
         ORM\Embedded,
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistic'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private WebPortal $logisticPortal;
 
