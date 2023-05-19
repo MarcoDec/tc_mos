@@ -105,7 +105,10 @@ class EmployeePatchController
                         } elseif ($key == 'embRoles') {
                            //dump(['embRoles',$value->roles,$refProps]);
                            $newRoles = new Roles();
-                           $newRoles->setRoles($value->roles);
+                           dump([
+                              '$value->roles'=>$value
+                           ]);
+                           $newRoles->setRoles($value);
                            $refProps->setValue($sourceItem, $newRoles);
                         } elseif ($key == 'team') {
                            $this->setTeam($value, $refProps, $sourceItem);
