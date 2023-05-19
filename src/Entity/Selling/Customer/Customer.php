@@ -497,11 +497,19 @@ class Customer extends Entity {
     {
         return $this->logisticPortal;
     }
+<<<<<<< HEAD
 
     public function setLogisticPortal(WebPortal $logisticPortal): self
     {
         $this->logisticPortal = $logisticPortal;
 
+=======
+
+    public function setLogisticPortal(WebPortal $logisticPortal): self
+    {
+        $this->logisticPortal = $logisticPortal;
+
+>>>>>>> 401097afedfdcad973b710ebb3d33e0963308438
         return $this;
     }
 }
