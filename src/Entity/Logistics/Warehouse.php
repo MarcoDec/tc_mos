@@ -92,13 +92,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Warehouse extends Entity implements CompanyInterface {
     #[
-        ApiProperty(description: 'Compagnie', example: '/api/companies/1'),
+        ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['write:warehouse'])
+        Serializer\Groups(['write:warehouse', 'read:warehouse'])
     ]
     private ?Company $company = null;
 
-    #[ORM\ManyToOne]
+    #[ApiProperty(description: 'Destination', readableLink: false, example: '/api/destination/1'),
+    ORM\ManyToOne,
+    Serializer\Groups(['write:warehouse', 'read:warehouse'])
+    ]
     private ?Company $destination = null;
 
     /** @var string[] */
