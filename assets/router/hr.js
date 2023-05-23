@@ -65,5 +65,24 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Plages horaires'
         }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Paramètres RH — T-Concept GPAO'},
+        name: 'parameters',
+        path: '/hr-parameters',
+        props: {
+            disableAdd: true,
+            disableRemove: true,
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {label: 'Description', name: 'description', type: 'textarea'},
+                {label: 'Type', name: 'kind', type: 'text'},
+                {label: 'Valeur', name: 'value', type: 'text'}
+            ],
+            icon: 'clock',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Paramètres'
+        }
     }
 ]

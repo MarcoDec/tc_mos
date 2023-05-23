@@ -177,6 +177,9 @@
                     <AppNavbarLink icon="clock" to="time-slots" variant="warning">
                         Plages horaires
                     </AppNavbarLink>
+                    <AppNavbarLink icon="clock" to="hr-parameters" variant="warning">
+                        Paramètres
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
         </ul>
