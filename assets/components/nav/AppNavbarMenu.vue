@@ -54,6 +54,9 @@
                     <AppNavbarLink icon="palette" to="colors" variant="warning">
                         Couleurs
                     </AppNavbarLink>
+                    <AppNavbarLink icon="euro-sign" to="currencies" variant="warning">
+                        Devises
+                    </AppNavbarLink>
                     <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
                         Délais de paiement des factures
                     </AppNavbarLink>
@@ -111,6 +114,9 @@
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
                     </AppDropdownItem>
+                    <AppNavbarLink disabled icon="calendar-day" to="engine-events" variant="danger">
+                        Catégories d'événements des équipements
+                    </AppNavbarLink>
                     <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
                         Groupes d'équipements
                     </AppNavbarLink>
