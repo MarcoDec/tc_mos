@@ -18,11 +18,13 @@ import {
     faClock,
     faCommentsDollar,
     faDatabase,
+    faEuroSign,
     faEye,
     faFileContract,
     faFileInvoiceDollar,
     faFilter,
     faFolder,
+    faGear,
     faHourglassHalf,
     faIcons,
     faIndustry,
@@ -76,11 +78,13 @@ library.add(faClock)
 library.add(faCommentsDollar)
 library.add(faDatabase)
 library.add(faElementor)
+library.add(faEuroSign)
 library.add(faEye)
 library.add(faFileContract)
 library.add(faFileInvoiceDollar)
 library.add(faFilter)
 library.add(faFolder)
+library.add(faGear)
 library.add(faHourglassHalf)
 library.add(faIcons)
 library.add(faIndustry)
