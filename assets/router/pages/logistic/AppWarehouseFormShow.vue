@@ -1,37 +1,179 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import {useWarehouseShowStore as warehouseStore} from '../../../stores/logistic/warehouses/warehouseShow.js'
+    import generateWarehouse from '../../../stores/logistic/warehouses/warehouse.js'
+    import {useSocietyListStore} from '../../../stores/direction/societyList.js'
+    import {useRouter} from 'vue-router'
     //import {useComponentListStore} from '../../../stores/component/components'
     //import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
-    // import useOptions from '../../../stores/option/options'
+    import useOptions from '../../../stores/option/options'
 
-    //const fecthOptions = useOptions('units')
-    //await fecthOptions.fetchOp()
-    //const useFetchComponentStore = useComponentListStore()
+    const guiRatio = ref(0.5)
+    const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
+
+    const fecthCompanyOptions = useOptions('companies')
+    if (fecthCompanyOptions.hasOptions === false){
+        await fecthCompanyOptions.fetchOp()
+    }
+
     /*const useComponentStore = useComponentShowStore()
     const fetchComponentAttachment = useComponentAttachmentStore()
     await useComponentStore.fetch()
     await fetchComponentAttachment.fetch()
     await useFetchComponentStore.fetch()*/
-    const guiRatio = ref(0.5)
-    const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
-    const Generalitesfields = [
-        {label: 'Nom', name: 'name', type: 'text'},
-        {label: 'Index', name: 'index', type: 'number'},
-        {label: 'Note', name: 'notes', type: 'textarea'}
-    ]
-        // function updateGeneral() {
-        //     const componentId = Number()
-        //     const form = document.getElementById('addGeneralites')
-        //     const formData = new FormData(form)
-        //     const data = {
-        //         index: formData.get('index'),
-        //         name: formData.get('name'),
-        //      notes: formData.get('notes')
-        //     }
-        //     useFetchComponentStore.updateAdmin(data, componentId)
-        //     useFetchComponentStore.updateMain(data, componentId)
-        //     useFetchComponentStore.fetch()
-        // }
+
+    const router = useRouter()
+    const store = warehouseStore()
+    const storeCompanyAll = useSocietyListStore()
+    storeCompanyAll.fetch()
+
+    const optionsCompany = computed(() =>
+        fecthCompanyOptions.options.map(op => {
+            const text = op.text
+            const value = op['@id']
+            const optionList = {text, value}
+            return optionList
+        }))
+
+    function hasCamion(){
+        const generalFamlies = store.getFamilies
+        for (const el of generalFamlies){
+            if (el === 'camion'){
+                return true
+            }
+        }
+        return false
+    }
+
+    let Generalitesfields = []
+    //const storedId = sessionStorage.getItem('warehouseID')
+    if (store.getCurrentId === null){
+        router.push('warehouse-list') //{props.item.id}\`
+    } else {
+        await store.fetch()
+        Generalitesfields = [
+            {label: 'Name', name: 'name', type: 'text'},
+            {
+                label: 'Company',
+                name: 'company',
+                options: {
+                    label: value =>
+                        optionsCompany.value.find(option => option.type === value)?.text
+                        ?? null,
+                    options: optionsCompany.value
+                },
+                type: 'select'
+            }
+        ]
+
+        if (hasCamion() === true){
+            const fecthDestinationOptions = fecthCompanyOptions
+            const opEmpty = {
+                text: ' ',
+                '@id': null
+            }
+            fecthDestinationOptions.options.push(opEmpty)
+            const optionsDestination = computed(() =>
+                fecthDestinationOptions.options.map(op => {
+                    const text = op.text
+                    const value = op['@id']
+                    const optionList = {text, value}
+                    return optionList
+                }))
+
+            Generalitesfields.push(
+                {
+                    label: 'Destination',
+                    name: 'destination',
+                    options: {
+                        label: value =>
+                            optionsDestination.value.find(option => option.type === value)?.text
+                            ?? null,
+                        options: optionsDestination.value
+                    },
+                    type: 'select'
+                }
+            )
+        }
+
+        Generalitesfields.push(
+            {
+                label: 'Famille ',
+                name: 'families',
+                options: [
+                    {
+                        disabled: false,
+                        label: 'Prison',
+                        value: 'prison'
+                    },
+                    {
+                        disabled: false,
+                        label: 'Production',
+                        value: 'production'
+                    },
+                    {
+                        disabled: false,
+                        label: 'Réception',
+                        value: 'réception'
+                    },
+                    {
+                        disabled: false,
+                        label: 'Magasin pièces finies',
+                        value: 'magasin pièces finies'
+                    },
+                    {
+                        disabled: false,
+                        label: 'Expédition',
+                        value: 'expédition'
+                    },
+                    {
+                        disabled: false,
+                        label: 'Magasin matières premières',
+                        value: 'magasin matières premières'
+                    },
+                    {
+                        disabled: false,
+                        label: 'Camion',
+                        value: 'camion'
+                    }
+                ],
+                optionsList: {
+                    camion: 'camion',
+                    expédition: 'expédition',
+                    'magasin matières premières': 'magasin matières premières',
+                    'magasin pièces finies': 'magasin pièces finies',
+                    prison: 'prison',
+                    production: 'production',
+                    réception: 'réception'
+                },
+                type: 'multiselect'
+            }
+        )
+    }
+
+    async function updateGeneral(value) {
+        const form = document.getElementById('addGeneralites')
+        const formData = new FormData(form)
+        const data = {
+            name: formData.get('name'),
+            company: formData.get('company'),
+            destination: formData.get('destination'),
+            families: formData.get('families')
+        }
+        data.families = data.families.split(',')
+        // console.log(store.items)
+        // console.log('data', data)
+        value.families = data.families
+        const item = generateWarehouse(value)
+
+        await item.update(data)
+        await store.fetch()
+    }
+
+    const emit = defineEmits(['update', 'update:modelValue'])
+    function input(value) {
+        emit('update:modelValue', value)
+    }
 </script>
 
 <template>
@@ -44,8 +186,31 @@
             tabs="gui-start">
             <AppCardShow
                 id="addGeneralites"
-                :fields="Generalitesfields"/>
-                <!--mettre dans AppCardShow @update="updateGeneral()"-->
+                :fields="Generalitesfields"
+                :component-attribute="store.items"
+                @update:model-value="input"
+                @update="updateGeneral(store.items)"/>
+        </AppTab>
+        <AppTab id="gui-start-files" title="Fichier" icon="folder" tabs="gui-start">
+            <div class="container-fluid">
+                <AppRow>
+                    <AppCol class="col-1">
+                        <AppBtnJS variant="primary">
+                            CSV
+                        </AppBtnJS>
+                    </AppCol>
+                    <AppCol>
+                        <div class="input-group mb-3">
+                            <input id="inputGroupFile02" type="file" class="form-control"/>
+                            <label class="input-group-text" for="inputGroupFile02">Rechercher</label>
+                            <AppBtnJS variant="success">
+                                Upload
+                            </AppBtnJS>
+                        </div>
+                        <p> Format supporté : .csv ( séparé par des points virgules ) </p>
+                    </AppCol>
+                </AppRow>
+            </div>
         </AppTab>
     </AppTabs>
 </template>

@@ -8,8 +8,8 @@
         // disabled: {type: Boolean},
         fields: {default: () => [], type: Array},
         id: {required: true, type: String}
-
     })
+
     const emit = defineEmits(['update', 'update:modelValue'])
     const updated = ref(false)
     const disable = ref(true)
@@ -27,8 +27,8 @@
         disable.value = true
     }
     function input(value) {
+        // console.log('fffff', value)
         emit('update:modelValue', value)
-        console.log('fffff', value)
     }
 </script>
 

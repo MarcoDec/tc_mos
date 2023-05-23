@@ -14,6 +14,7 @@
     const css = readonly({search: 'form-control form-control-sm'})
 
     function input(value) {
+        //console.log('multi', value)
         emit('update:modelValue', value)
     }
 </script>

@@ -35,6 +35,7 @@
     })
 
     function input(v) {
+        //console.log('input guesser', v)
         emit('update:modelValue', v)
     }
 </script>

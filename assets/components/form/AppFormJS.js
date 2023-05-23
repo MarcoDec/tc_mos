@@ -31,6 +31,7 @@ function AppFormJS(props, context) {
                 }),
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
+        // console.log('appformjs', props.fields)
         if (props.submitLabel !== null){
             groups.push(h(
                 'div',
@@ -76,6 +77,7 @@ function AppFormJS(props, context) {
 }
 
 AppFormJS.emits = ['submit', 'update:modelValue']
+
 AppFormJS.props = {
     disabled: {type: Boolean},
     fields: {

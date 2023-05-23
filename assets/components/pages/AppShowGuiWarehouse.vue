@@ -2,12 +2,13 @@
     import {computed, ref} from 'vue'
     import AppWarehouseFormShow from '../../router/pages/logistic/AppWarehouseFormShow.vue'
     import AppWarehouseListShow from '../../router/pages/logistic/AppWarehouseListShow.vue'
-    import {useRoute} from 'vue-router'
+    import {useRouter, useRoute} from 'vue-router'
 
     const guiRatio = ref(0.5)
     const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
-
     const route = useRoute()
+    const router = useRouter()
+
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
@@ -32,13 +33,19 @@
         gui.addEventListener('mousemove', drag)
         gui.addEventListener('mouseup', stopDrag)
     }
+
+    function goBack() {
+        router.push('warehouse-list')
+    }
 </script>
 
 <template>
     <div class="titreEntrepot">
         <h1>
-            <Fa :icon="icon"/>
-            {{ title }}
+            <button class="btnEntrepotShow" @click="goBack">
+                <Fa :icon="icon"/>
+                {{ title }}
+            </button>
         </h1>
     </div>
     <div class="gui">
@@ -63,5 +70,9 @@
     .gui {
         --gui-ratio: v-bind(guiRatioPercent);
         margin-top: 62px;
+    }
+    .btnEntrepotShow{
+        border-color: transparent;
+        background-color: transparent;
     }
 </style>

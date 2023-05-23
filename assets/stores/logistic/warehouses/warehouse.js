@@ -10,6 +10,10 @@ export default function generateWarehouse(warehouse) {
             },
             async remove() {
                 await api(`/api/warehouses/${this.id}`, 'DELETE')
+            },
+            async update(data) {
+                const response = await api(`/api/warehouses/${warehouse.id}`, 'PATCH', data)
+                this.$state = {...response}
             }
         },
         getters: {

@@ -17,6 +17,7 @@ function getType(field) {
     case 'select':
         return AppSelectJS
     case 'multiselect':
+        //console.log('emitguess', field)
         return AppMultiselect
     default:
         return resolveComponent('AppInputJS')

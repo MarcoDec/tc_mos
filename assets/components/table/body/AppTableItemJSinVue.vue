@@ -4,9 +4,12 @@
     import {defineProps} from 'vue'
     import {generateTableFields} from '../../props'
     import {useRouter} from 'vue-router'
+    import {useWarehouseShowStore} from '../../../stores/logistic/warehouses/warehouseShow.js'
 
     const emit = defineEmits(['itemShow'])
+    const store = useWarehouseShowStore()
     const router = useRouter()
+
     const props = defineProps({
         fields: generateTableFields(),
         id: {required: true, type: String},
@@ -24,6 +27,7 @@
     }
     function showItem() {
         console.debug(`AppTableItemJSinVue showItem ${props.id}`, props.item.id)
+        store.setCurrentId(props.item.id)
         emit('itemShow', props.item)
         router.push('warehouse-show') //{props.item.id}\`
     }

@@ -75,7 +75,30 @@ export default [
         path: '/warehouse-show',
         props: {
             icon: 'warehouse',
-            title: 'Entrepot'
+            title: 'Entrepot',
+            brands: true,
+            fields: [
+                {label: 'Name', name: 'name'},
+                {
+                    label: 'Company',
+                    name: 'company',
+                    options: {base: 'company'},
+                    search: false,
+                    sort: false,
+                    type: 'select'
+                },
+                {
+                    label: 'Destination',
+                    name: 'destination'
+                },
+                {
+                    label: 'Familles',
+                    name: 'families',
+                    options: {base: 'warehouses'},
+                    type: 'multiselect'
+
+                }
+            ]
         }
     }
 ]

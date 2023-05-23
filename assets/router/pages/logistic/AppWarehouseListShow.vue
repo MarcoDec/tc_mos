@@ -10,12 +10,7 @@
 
     const storeWarehouseStocksItems = useWarehouseStocksItemsStore()
     storeWarehouseStocksItems.fetchItems()
-    const options = [
-        {text: 'MG2C', value: 'MG2C'},
-        {text: 'TCONCEPT', value: 'TCONCEPT'},
-        {text: 'TUNISIE CONCEPT', value: 'TUNISIE CONCEPT'},
-        {text: 'WHETEC', value: 'WHETEC'}
-    ]
+
     const optionComposant = [
         {text: 'CAB-1000', value: 100},
         {text: 'CAB-100', value: 10}
@@ -90,10 +85,6 @@
             update: true
         }
     ]
-    const warehouseformfields = [
-        {label: 'Company ', name: 'company', options: {label: value => options.find(option => option.type === value)?.text ?? null, options}, type: 'select'},
-        {label: 'Nom', name: 'name', type: 'text'}
-    ]
     const Volumefields = [
         {
             create: true,
@@ -129,29 +120,9 @@
 <template>
     <AppTabs id="gui-start-bottom" class="gui-start-content-bottom">
         <AppTab id="gui-start-stock" active title="Stock" icon="cubes-stacked" tabs="gui-start-bottom">
-            <div class="container-fluid">
-                <AppRow>
-                    <AppCardShow id="addEntrepot" :fields="warehouseformfields"/>
-                    <AppCol class="col-1">
-                        <AppBtnJS variant="primary">
-                            CSV
-                        </AppBtnJS>
-                    </AppCol>
-                    <AppCol>
-                        <div class="input-group mb-3">
-                            <input id="inputGroupFile02" type="file" class="form-control"/>
-                            <label class="input-group-text" for="inputGroupFile02">Rechercher</label>
-                            <AppBtnJS variant="success">
-                                Upload
-                            </AppBtnJS>
-                        </div>
-                        <p> Format supporté : .csv ( séparé par des points virgules ) </p>
-                    </AppCol>
-                </AppRow>
-            </div>
             <AppTableJS id="warehouse:stock" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
         </AppTab>
-        <AppTab id="gui-start-files" title="Volume" icon="ruler-vertical" tabs="gui-start-bottom">
+        <AppTab id="gui-start-volume" title="Volume" icon="ruler-vertical" tabs="gui-start-bottom">
             <AppTableJS :id="route.name" :fields="Volumefields" :store="storeWarehouseStocksItems" items="Volumeitems" :machine="machine"/>
         </AppTab>
     </AppTabs>

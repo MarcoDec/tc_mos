@@ -23,7 +23,14 @@ export default function useOptions(base, valueProp = '@id') {
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
                 this.options.sort(sort)
+                //console.log('this.options', this.options.sort(sort))
                 this.fetchable = false
+            },
+            async fetchOp() {
+                const response = await api(this.url)
+                for (const option of response['hydra:member'])
+                    this.options.push(useOption(option, this))
+                this.options.sort(sort)
             },
             resetItems() {
                 const options = [...this.options]
@@ -44,8 +51,10 @@ export default function useOptions(base, valueProp = '@id') {
                 for (const option of state.options) {
                     if (typeof groups[option.group] === 'undefined')
                         groups[option.group] = []
+                    console.log('groups', groups)
                     groups[option.group].push(option)
                 }
+                console.log('groups--->', groups)
                 return Object.entries(groups).map(([group, options]) => ({label: group, options})).reverse()
             },
             hasGroups() {
@@ -54,7 +63,10 @@ export default function useOptions(base, valueProp = '@id') {
             label() {
                 return value => this.find(value)?.text ?? null
             },
-            url: state => `/api/${state.base}/options`
+            url: state => `/api/${state.base}/options`,
+            hasOptions(state){
+                return state.options.length > 0
+            }
         },
         state: () => ({base, fetchable: false, id, options: [], valueProp})
     })()

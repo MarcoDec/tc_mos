@@ -119,7 +119,9 @@
     }
 
     async function update(item) {
+        storeWarehouseListItems.fetch()
         emit('update', item)
+
         await router.push({name: 'warehouse-show'})
     }
 
