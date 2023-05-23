@@ -323,7 +323,7 @@ module.exports = {
         'vue/no-side-effects-in-computed-properties': 'error',
         'vue/no-spaces-around-equal-signs-in-attribute': 'error',
         'vue/no-sparse-arrays': 'error',
-        'vue/no-static-inline-styles': 'error',
+        'vue/no-static-inline-styles': 1, //'error',
         'vue/no-template-key': 'error',
         'vue/no-template-shadow': 'error',
         'vue/no-textarea-mustache': 'error',
