@@ -80,7 +80,7 @@ export default [
                 {label: 'Type', name: 'kind', type: 'text', update: false},
                 {label: 'Valeur', name: 'value', type: 'text'}
             ],
-            icon: 'clock',
+            icon: 'gear',
             readFilter: '?page=1&pagination=false&type=hr',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
