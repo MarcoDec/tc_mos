@@ -11,6 +11,7 @@ use App\Entity\Project\Parameter as ProjectParam;
 use App\Entity\Selling\Parameter as SellingParam;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use App\Filter\DiscriminatorFilter;
@@ -52,11 +53,14 @@ use App\Filter\DiscriminatorFilter;
 class Parameter extends Entity {
 
    #[
+      ApiProperty(description: 'Description du paramètre', example: 'Ce paramètre liste tous les id des familles de composant qui ...'),
       ORM\Column(nullable: true)
    ]
    private string|null $description;
 
-   #[ ORM\Column(type: "string")
+   #[ 
+        ApiProperty(description: 'Nom du paramètre à utiliser dans le code', example: 'PRODUCT_IDS_TERMINAUX'),
+        ORM\Column(type: "string")
       ]
    private string $name;
 
@@ -81,6 +85,7 @@ class Parameter extends Entity {
     private string|null $target;
 
     #[
+       ApiProperty(description: 'Type de paramètre (ARRAY / INTEGER / SELECT_MULTIPLE_LINK)', example: 'ARRAY'),
        ORM\Column(type: 'type')
        ]
     private string|null $kind;
@@ -90,6 +95,7 @@ class Parameter extends Entity {
      * AppAssert\ExpirationDir(parameters={PurchaseParam::SUPPLIER_EXPIRATION_DIRECTORIES}).
      */
     #[
+       ApiProperty(description: 'Valeur du paramètre (ARRAY / INTEGER / SELECT_MULTIPLE_LINK)', example: '22,23,24'),
        Assert\NotBlank,
        ORM\Column
        ]
