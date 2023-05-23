@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\DiscriminatorFilter;
 
@@ -23,6 +24,7 @@ use App\Filter\DiscriminatorFilter;
        filterClass: SearchFilter::class,
        properties: ['name' => 'partial', 'description' => 'partial', 'kind' => 'partial', 'value' => 'partial']
    ),
+   ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'description', 'kind', 'value']),
    ApiResource(
     description: 'Paramètre de processus Metier',
     collectionOperations: [
