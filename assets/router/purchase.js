@@ -60,5 +60,26 @@ export default [
         meta: {container: false, title: 'Fournisseur — T-Concept GPAO'},
         name: 'supplier',
         path: '/supplier'
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Paramètres production— T-Concept GPAO'},
+        name: 'purchase parameters',
+        path: '/purchase-parameters',
+        props: {
+            apiBaseRoute: 'parameters',
+            disableAdd: true,
+            disableRemove: true,
+            fields: [
+                {label: 'Nom', name: 'name', update: false},
+                {label: 'Description', name: 'description', type: 'textarea'},
+                {label: 'Type', name: 'kind', type: 'text', update: false},
+                {label: 'Valeur', name: 'value', type: 'text'}
+            ],
+            icon: 'gear',
+            readFilter: '?page=1&pagination=false&type=purchase',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Paramètres'
+        }
     }
 ]

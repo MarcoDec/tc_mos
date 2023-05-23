@@ -35,6 +35,9 @@
                     <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
                         Familles de composants
                     </AppNavbarLink>
+                    <AppNavbarLink icon="gear" to="purchase-parameters" variant="warning">
+                        Paramètres
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
@@ -142,6 +145,9 @@
                     <AppNavbarLink brands icon="elementor" to="operation-types" variant="warning">
                         Types d'opérations
                     </AppNavbarLink>
+                    <AppNavbarLink icon="gear" to="project-parameters" variant="warning">
+                        Paramètres
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isQualityReader" id="quality" icon="certificate" title="Qualité">
@@ -181,6 +187,22 @@
                         Plages horaires
                     </AppNavbarLink>
                     <AppNavbarLink icon="gear" to="hr-parameters" variant="warning">
+                        Paramètres
+                    </AppNavbarLink>
+                </template>
+            </AppNavbarItem>
+            <AppNavbarItem v-if="user.isSellingReader" id="selling" icon="euro-sign" title="Ventes">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <!-- <AppNavbarLink icon="user-graduate" to="out-trainers" variant="success">
+                    Formateurs extérieurs
+                </AppNavbarLink> -->
+                <template v-if="user.isSellingAdmin">
+                    <AppDropdownItem disabled variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="gear" to="selling-parameters" variant="warning">
                         Paramètres
                     </AppNavbarLink>
                 </template>

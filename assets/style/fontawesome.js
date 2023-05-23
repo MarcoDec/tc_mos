@@ -18,6 +18,7 @@ import {
     faClock,
     faCommentsDollar,
     faDatabase,
+    faEuroSign,
     faEye,
     faFileContract,
     faFileInvoiceDollar,
@@ -77,6 +78,7 @@ library.add(faClock)
 library.add(faCommentsDollar)
 library.add(faDatabase)
 library.add(faElementor)
+library.add(faEuroSign)
 library.add(faEye)
 library.add(faFileContract)
 library.add(faFileInvoiceDollar)
