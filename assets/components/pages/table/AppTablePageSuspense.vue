@@ -3,6 +3,7 @@
     import {useSlots} from '../../../composable/table'
 
     const props = defineProps({
+        apiBaseRoute: {default: '', required: true, type: String},
         brands: {type: Boolean},
         disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
@@ -18,6 +19,7 @@
 <template>
     <AppSuspense>
         <AppTablePage
+            :api-base-route="apiBaseRoute"
             :brands="brands"
             :disable-add="disableAdd"
             :disable-remove="disableRemove"

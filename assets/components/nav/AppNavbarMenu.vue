@@ -120,6 +120,9 @@
                     <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
                         Groupes d'équipements
                     </AppNavbarLink>
+                    <AppNavbarLink icon="gear" to="production-parameters" variant="warning">
+                        Paramètres
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isProjectReader" id="project" icon="project-diagram" title="Projet">

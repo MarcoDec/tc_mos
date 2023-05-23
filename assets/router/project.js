@@ -24,6 +24,7 @@ export default [
         name: 'project-operations',
         path: '/project-operations',
         props: {
+            apiBaseRoute: 'project-operations',
             fields: [
                 {label: 'Code', name: 'code'},
                 {label: 'Nom', name: 'name'},
@@ -45,6 +46,7 @@ export default [
         name: 'operation-types',
         path: '/operation-types',
         props: {
+            apiBaseRoute: 'operation-types',
             brands: true,
             fields: [
                 {label: 'Nom', name: 'name'},

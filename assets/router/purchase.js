@@ -11,6 +11,7 @@ export default [
         name: 'attributes',
         path: '/attributes',
         props: {
+            apiBaseRoute: 'attributes',
             fields: [
                 {label: 'Nom', name: 'name'},
                 {label: 'Description', name: 'description'},

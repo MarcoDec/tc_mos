@@ -9,6 +9,7 @@
     import useTable from '../../../stores/table/table'
 
     const props = defineProps({
+        apiBaseRoute: {default: '', type: String},
         brands: {type: Boolean},
         disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
@@ -25,6 +26,7 @@
     store.sorted = props.sort.name
     store.sortName = props.sort.sortName ?? props.sort.name
     store.readFilter = props.readFilter
+    store.apiBaseRoute = props.apiBaseRoute
     await store.fetch()
 
     const storedFields = useFields(route.name, props.fields)

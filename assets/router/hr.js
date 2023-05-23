@@ -8,6 +8,7 @@ export default [
         name: 'event-types',
         path: '/event-types',
         props: {
+            apiBaseRoute: 'event-types',
             brands: true,
             fields: [
                 {label: 'Nom', name: 'name'},
@@ -32,6 +33,7 @@ export default [
         name: 'out-trainers',
         path: '/out-trainers',
         props: {
+            apiBaseRoute: 'out-trainers',
             fields: [
                 {label: 'Nom', name: 'name'},
                 {label: 'Prénom', name: 'surname'},
@@ -54,6 +56,7 @@ export default [
         name: 'time-slots',
         path: '/time-slots',
         props: {
+            apiBaseRoute: 'time-slots',
             fields: [
                 {label: 'Nom', name: 'name'},
                 {label: 'Début', name: 'start', type: 'time'},
@@ -69,9 +72,10 @@ export default [
     {
         component: AppTablePageSuspense,
         meta: {title: 'Paramètres RH — T-Concept GPAO'},
-        name: 'parameters',
+        name: 'hr parameters',
         path: '/hr-parameters',
         props: {
+            apiBaseRoute: 'parameters',
             disableAdd: true,
             disableRemove: true,
             fields: [

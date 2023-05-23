@@ -8,6 +8,7 @@ export default [
         name: 'component-reference-values',
         path: '/component-reference-values',
         props: {
+            apiBaseRoute: 'component-reference-values',
             fields: [
                 {
                     label: 'Composant',
@@ -35,6 +36,7 @@ export default [
         name: 'reject-types',
         path: '/reject-types',
         props: {
+            apiBaseRoute: 'reject-types',
             brands: true,
             fields: [{label: 'Nom', name: 'name'}],
             icon: 'elementor',
@@ -48,6 +50,7 @@ export default [
         name: 'quality-types',
         path: '/quality-types',
         props: {
+            apiBaseRoute: 'quality-types',
             brands: true,
             fields: [{label: 'Nom', name: 'name'}],
             icon: 'elementor',

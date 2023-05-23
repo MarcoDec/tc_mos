@@ -52,7 +52,7 @@ export default function useTable(id) {
                 return field => (this.isSorter(field) ? this.order : 'none')
             },
             baseUrl() {
-                return `/api/${this.$id}`
+                return `/api/${this.$apiBaseRoute}`
             },
             fetchBody() {
                 return {...this.orderBody, ...this.flatSearch}
@@ -66,9 +66,10 @@ export default function useTable(id) {
                 return state.sortName === null ? {} : {[`order[${state.sortName}]`]: this.orderParam}
             },
             orderParam: state => (state.asc ? 'asc' : 'desc'),
-            url: state => `/api/${state.id}`
+            url: state => `/api/${state.apiBaseRoute}`
         },
         state: () => ({
+            apiBaseRoute: '',
             asc: true,
             createBody: {},
             id,
