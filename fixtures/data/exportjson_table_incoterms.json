@@ -1,0 +1,74 @@
+[
+  {
+    "id": "1",
+    "code": "EXW",
+    "label": "Ex Works",
+    "statut": "0"
+  },
+  {
+    "id": "2",
+    "code": "FCA",
+    "label": "Free Carrier",
+    "statut": "0"
+  },
+  {
+    "id": "3",
+    "code": "CPT",
+    "label": "Carriage Paid To",
+    "statut": "0"
+  },
+  {
+    "id": "4",
+    "code": "CIP",
+    "label": "Carriage and Insurance Paid To",
+    "statut": "0"
+  },
+  {
+    "id": "5",
+    "code": "DAT",
+    "label": "Delivered at Terminal",
+    "statut": "0"
+  },
+  {
+    "id": "6",
+    "code": "DAP",
+    "label": "Delivered at Place",
+    "statut": "0"
+  },
+  {
+    "id": "7",
+    "code": "DDP",
+    "label": "Delivered Duty Paid",
+    "statut": "0"
+  },
+  {
+    "id": "8",
+    "code": "FAS",
+    "label": "Free Alongside Ship",
+    "statut": "0"
+  },
+  {
+    "id": "9",
+    "code": "FOB",
+    "label": "Free on Board",
+    "statut": "0"
+  },
+  {
+    "id": "10",
+    "code": "CFR",
+    "label": "Cost and Freight",
+    "statut": "0"
+  },
+  {
+    "id": "11",
+    "code": "CIF",
+    "label": "Cost, Insurance and Freight",
+    "statut": "0"
+  },
+  {
+    "id": "12",
+    "code": "Port avancé",
+    "label": "Port avancé",
+    "statut": "0"
+  }
+]

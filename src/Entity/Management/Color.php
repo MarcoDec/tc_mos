@@ -74,7 +74,7 @@ class Color extends Entity {
         Assert\Length(min: 3, max: 20),
         Assert\NotBlank,
         ORM\Column(length: 20),
-        Serializer\Groups(['read:color', 'write:color'])
+        Serializer\Groups(['read:color', 'write:color', 'read:component-attribute'])
     ]
     private ?string $name = null;
 
@@ -83,7 +83,7 @@ class Color extends Entity {
         Assert\CssColor(formats: Assert\CssColor::HEX_LONG),
         Assert\NotBlank,
         ORM\Column(type: 'char', length: 7),
-        Serializer\Groups(['read:color', 'write:color'])
+        Serializer\Groups(['read:color', 'write:color', 'read:component-attribute'])
     ]
     private ?string $rgb = null;
 

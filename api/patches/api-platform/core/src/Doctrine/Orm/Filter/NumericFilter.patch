@@ -1,0 +1,11 @@
+--- a/vendor/api-platform/core/src/Doctrine/Orm/Filter/NumericFilter.php	2022-11-15 15:46:46.000000000 +0100
++++ b/vendor/api-platform/core/src/Doctrine/Orm/Filter/NumericFilter.php	2022-11-21 14:59:39.525868526 +0100
+@@ -31,7 +31,7 @@
+  * @author Amrouche Hamza <hamza.simperfit@gmail.com>
+  * @author Teoh Han Hui <teohhanhui@gmail.com>
+  */
+-final class NumericFilter extends AbstractFilter
++class NumericFilter extends AbstractFilter
+ {
+     use NumericFilterTrait;
+ 
