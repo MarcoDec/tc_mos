@@ -81,6 +81,7 @@ export default [
                 {label: 'Valeur', name: 'value', type: 'text'}
             ],
             icon: 'clock',
+            readFilter: '?page=1&pagination=false&type=hr',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }

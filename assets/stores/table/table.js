@@ -22,7 +22,7 @@ export default function useTable(id) {
                 this.$dispose()
             },
             async fetch() {
-                const response = await api(this.url, 'GET', this.fetchBody)
+                const response = await api(this.url + this.readFilter, 'GET', this.fetchBody)
                 this.resetItems()
                 for (const row of response['hydra:member'])
                     this.rows.push(useRow(row, this))
@@ -72,6 +72,7 @@ export default function useTable(id) {
             asc: true,
             createBody: {},
             id,
+            readFilter: '',
             rows: [],
             search: {},
             sortName: null,

@@ -14,17 +14,17 @@
         disableRemove: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
+        readFilter: {default: '', required: false, type: String},
         sort: {required: true, type: Object},
         title: {required: true, type: String}
     })
-    console.log(props)
     const route = useRoute()
     const machine = useTableMachine(route.name)
     const {slots} = useSlots(props.fields)
-
     const store = useTable(route.name)
     store.sorted = props.sort.name
     store.sortName = props.sort.sortName ?? props.sort.name
+    store.readFilter = props.readFilter
     await store.fetch()
 
     const storedFields = useFields(route.name, props.fields)
