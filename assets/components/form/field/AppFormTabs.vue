@@ -1,10 +1,10 @@
 <script setup>
     import {defineEmits, defineProps} from 'vue'
     import AppFormField from './AppFormField.vue'
+    // import AppTab from '../../tab/AppTab.vue'
+    // import AppTabs from '../../tab/AppTabs.vue'
     import AppTab from '../../tabs/AppTab.vue'
-// import AppTabs from '../../tab/AppTabs.vue';
-// import AppTab from '../../tab/AppTab.vue';
-
+    import AppTabs from '../../tabs/AppTabs.vue'
 
     const emit = defineEmits(['update:modelValue'])
 
@@ -20,13 +20,13 @@
 </script>
 
 <template>
-    <!-- <AppTabs id="gui-start" class="gui-start-content"> -->
+    <AppTabs v-if="field.mode === 'tab'" id="gui-start" class="gui-start-content">
         <AppTab
             :id="field.name"
             :icon="field.icon"
             :title="field.label"
             :active="field.active"
-            tabs="gui-start">
+            :tabs="`gui-start-${field.name}`">
             <slot>
                 <AppFormField
                     v-for="child in field.children"
@@ -37,5 +37,5 @@
                     @update:model-value="input"/>
             </slot>
         </AppTab>
-    <!-- </AppTabs> -->
+    </AppTabs>
 </template>

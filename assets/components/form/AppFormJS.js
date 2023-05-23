@@ -1,7 +1,10 @@
 import {fieldValidator, generateLabelCols} from '../props'
 import {h, resolveComponent} from 'vue'
 // import AppFormGroupJS from './field/AppFormGroupJS'
+
 import AppFormField from './field/AppFormField.vue'
+// import AppFormFieldVue from './field/AppFormFieldVue.vue'
+
 
 function AppFormJS(props, context) {
     function generateSlot() {
@@ -19,6 +22,7 @@ function AppFormJS(props, context) {
             groups.push(generateSlot())
     } else {
         for (const field of props.fields)
+        // groups.push(h(AppFormFieldVue, {
             groups.push(h(AppFormField, {
                 disabled: props.disabled,
                 field,

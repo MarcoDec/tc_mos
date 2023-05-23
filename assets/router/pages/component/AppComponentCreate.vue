@@ -1,6 +1,7 @@
 <script setup>
-    // import AppFormJS from '../../../components/form/AppFormJS.js'
+    import AppFormJS from '../../../components/form/AppFormJS.js'
     import {computed} from 'vue-demi'
+import AppFormVue from '../../../components/form/AppFormVue.vue';
 
     const fields = computed(() => [
         {
@@ -80,4 +81,5 @@
 
 <template>
     <AppFormJS id="comp" :fields="fields"/>
+    <!-- <AppFormVue id="comp" :fields="fields"/> -->
 </template>

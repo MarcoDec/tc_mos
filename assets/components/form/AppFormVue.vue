@@ -1,62 +1,88 @@
 <script setup>
-    import {computed, defineEmits, defineProps} from 'vue'
-    import AppFormField from './field/AppFormField.vue'
-    const emit = defineEmits(['update:modelValue', 'submit'])
-    const props = defineProps({
-        fields: {required: true, type: Object},
-        id: {required: true, type: String}
-        // modelValue: {default: null, type: Object}
-    })
-    console.log('props', props)
-    const tabs = computed(() => {
-        for (const field of props.fields) if (field.mode === 'tab') return true
-        return false
-    })
-    console.log('tabs', tabs)
-    function input(value) {
-        emit('update:modelValue', value)
+  import { fieldValidator, generateLabelCols } from '../props';
+import AppTabs from '../tab/AppTabs.vue';
+import AppFormField from './field/AppFormField.vue';
+  
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    for (const [key, value] of Object.entries(Object.fromEntries(data))) {
+      if (typeof value === 'undefined' || value === null)
+        data.delete(key);
+      if (typeof value === 'string') {
+        data.set(key, value.trim());
+        if (!props.noIgnoreNull && data.get(key).length === 0)
+          data.delete(key);
+      }
     }
+    emit('submit', data);
+  };
+  
+  const props = defineProps({
+    disabled: { type: Boolean },
+    fields: {
+      required: true,
+      type: Array,
+      validator(value) {
+        if (value.length === 0)
+          return false;
+        for (const field of value) {
+          if (!fieldValidator(field))
+            return false;
+        }
+        return true;
+      }
+    },
+    id: { required: true, type: String },
+    inline: { type: Boolean },
+    labelCols: generateLabelCols(),
+    modelValue: { default: () => ({}), type: Object },
+    noContent: { type: Boolean },
+    noIgnoreNull: { type: Boolean },
+    submitLabel: { default: null, type: String },
+    violations: { default: () => [], type: Array }
+  });
+  
+  const attrs = {
+    autocomplete: 'off',
+    enctype: 'multipart/form-data',
+    id: props.id,
+    method: 'POST',
+    novalidate: true
+  };
+  
+  if (props.inline)
+    attrs.class = 'd-inline m-0 p-0';
 </script>
 
 <template>
-    <form :id="id" autocomplete="off" novalidate>
-        <AppTabs v-if="tabs" id="gui-start" class="gui-start-content">
-            <AppFormField
-                v-for="field in fields"
-                :key="field.name"
-                :field="field"
-                :form="id"
-                @input="input">
-                <slot :name="field.name"/>
-            </AppFormField>
-        </AppTabs>
-
-        <template v-else>
-            <AppFormField
-                v-for="field in fields"
-                :key="field.name"
-                :field="field"
-                :form="id"
-                @input="input"/>
+    <form v-bind="attrs" @submit="onSubmit">
+      <template v-if="props.noContent">
+        <slot v-if="typeof $slots.default === 'function'" :disabled="props.disabled" :form="props.id" :submitLabel="props.submitLabel" type="submit"></slot>
+      </template>
+      <template v-else v-for="field in props.fields" :key="field.name">
+        <!-- <AppTabs  id="gui-start" class="gui-start-content"> -->
+        <AppFormField  v-bind="{
+          disabled: props.disabled,
+          field,
+          form: props.id,
+          labelCols: props.labelCols,
+          modelValue: props.modelValue[field.name],
+          'onUpdate:modelValue': value => $emit('update:modelValue', { ...props.modelValue, [field.name]: value }),
+          violation: props.violations.find(violation => violation.propertyPath === field.name)}">
+        </AppFormField>
+    <!-- </AppTabs> -->
+        <template v-if="props.submitLabel !== null">
+          <div class="row">
+            <div class="col d-inline-flex justify-content-end">
+              <slot v-if="typeof $slots.default === 'function'" :disabled="props.disabled" :form="props.id" type="submit"></slot>
+              <template v-else>
+                <AppBtnJS :disabled="props.disabled" :form="props.id" type="submit">{{ props.submitLabel }}</AppBtnJS>
+              </template>
+            </div>
+          </div>
         </template>
+      </template>
     </form>
-</template>
-
-<style scoped>
-fieldset.scheduler-border {
-  border: 1px groove #ddd !important;
-  padding: 0 1.4em 1.4em 1.4em !important;
-  margin: 0 0 1.5em 0 !important;
-  -webkit-box-shadow: 0px 0px 0px 0px #000;
-  box-shadow: 0px 0px 0px 0px #000;
-}
-
-legend.scheduler-border {
-  font-size: 1.2em !important;
-  font-weight: bold !important;
-  text-align: left !important;
-  width: auto;
-  padding: 0 10px;
-  border-bottom: none;
-}
-</style>
+  </template>
+  
