@@ -11,10 +11,40 @@ use App\Entity\Project\Parameter as ProjectParam;
 use App\Entity\Selling\Parameter as SellingParam;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\DiscriminatorFilter;
 
 #[
+   ApiFilter(DiscriminatorFilter::class),
+   ApiResource(
+    description: 'Paramètre de processus Metier',
+    collectionOperations: [
+        'get' => [
+            'openapi_context' => [
+                'description' => 'Récupère les paramètres de processus Metier',
+                'summary' => 'Récupère les paramètres de processus Metier',
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'type',
+                        'required' => false,
+                        'schema' => ['enum' => ['hr', 'purchase', 'production', 'project', 'selling'], 'type' => 'string']
+                    ]
+                ],
+            ]
+        ]
+    ],
+    itemOperations: [
+        'get',
+        'patch'
+    ],
+    shortName: 'Parameter',
+    paginationItemsPerPage: 15,
+    paginationClientEnabled: true
+    ),
    ORM\MappedSuperclass,
-   ORM\DiscriminatorColumn('process', 'string'),
+   ORM\DiscriminatorColumn('type', 'string'),
    ORM\DiscriminatorMap(Parameter::PROCESSES),
    ORM\Entity,
    ORM\InheritanceType('SINGLE_TABLE')
@@ -53,7 +83,7 @@ class Parameter extends Entity {
     #[
        ORM\Column(type: 'type')
        ]
-    private string|null $type;
+    private string|null $kind;
 
     /**
      * AppAssert\Directories(parameters={PurchaseParam::SUPPLIER_DIRECTORIES})
@@ -73,15 +103,15 @@ class Parameter extends Entity {
         return $this->target;
     }
 
-    final public function getType(): ?string {
-        return $this->type;
+    final public function getKind(): ?string {
+        return $this->kind;
     }
 
    /**
     * @return array<mixed>
     */
     final public function getTypedValue():array {
-        switch ($this->type) {
+        switch ($this->kind) {
             case Type::TYPE_SELECT_MULTIPLE_LINK:
             case Type::TYPE_ARRAY:
                 return !empty($this->value) ? explode(',', $this->value) : [];
@@ -114,8 +144,8 @@ class Parameter extends Entity {
         return $this;
     }
 
-    final public function setType(?string $type): self {
-        $this->type = $type;
+    final public function setKind(?string $type): self {
+        $this->kind = $type;
 
         return $this;
     }

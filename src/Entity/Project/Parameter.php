@@ -7,8 +7,7 @@ use App\Entity\Management\Parameter as BaseParameter;
 use Doctrine\ORM\Mapping as ORM;
 
 #[
-   ORM\Entity,
-   ApiResource
+   ORM\Entity
 ]
 class Parameter extends BaseParameter {
     public const PRODUCT_ATTACHMENT_CATEGORIES = 'PRODUCT_ATTACHMENT_CATEGORIES';
