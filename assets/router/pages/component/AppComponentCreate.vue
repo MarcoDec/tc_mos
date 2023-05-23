@@ -1,7 +1,8 @@
 <script setup>
     import AppFormJS from '../../../components/form/AppFormJS.js'
+    import AppTab from '../../../components/tab/AppTab.vue'
+    import AppTabs from '../../../components/tab/AppTabs.vue'
     import {computed} from 'vue-demi'
-    //import AppFormVue from '../../../components/form/AppFormVue.vue'
 
     const fields = computed(() => [
         {
@@ -17,7 +18,7 @@
                         {label: 'Unité', name: 'unite'},
                         {label: 'poids (g) ', name: 'code'}
                     ],
-                    label: 'Genreal',
+                    label: 'General',
                     mode: 'fieldset',
                     name: 'General'
                 },
@@ -80,6 +81,14 @@
 </script>
 
 <template>
-    <AppFormJS id="comp" :fields="fields"/>
-    <!-- <AppFormVue id="comp" :fields="fields"/> -->
+    <div class="gui-card">
+        <AppTabs id="gui-form-create" style="display: block !important;">
+            <AppTab v-for="field in fields" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
+                <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children"/>
+                <p v-else>
+                    {{ field.label }} à définir
+                </p>
+            </AppTab>
+        </AppTabs>
+    </div>
 </template>

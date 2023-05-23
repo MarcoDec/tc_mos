@@ -80,7 +80,7 @@
 
 <template>
     <div class="row">
-        <AppModal :id="modalId" class="four" :title="title">
+        <AppModal :id="modalId" class="four" :title="title" size="xl">
             <AppComponentCreate/>
             <template #buttons>
                 <!-- <AppBtn
