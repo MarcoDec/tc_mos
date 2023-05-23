@@ -4,6 +4,7 @@
 
     const props = defineProps({
         brands: {type: Boolean},
+        disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
@@ -17,6 +18,7 @@
     <AppSuspense>
         <AppTablePage
             :brands="brands"
+            :disable-add="disableAdd"
             :disable-remove="disableRemove"
             :fields="fields"
             :icon="icon"

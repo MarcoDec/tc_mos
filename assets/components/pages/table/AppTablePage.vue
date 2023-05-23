@@ -10,12 +10,14 @@
 
     const props = defineProps({
         brands: {type: Boolean},
+        disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
         sort: {required: true, type: Object},
         title: {required: true, type: String}
     })
+    console.log(props)
     const route = useRoute()
     const machine = useTableMachine(route.name)
     const {slots} = useSlots(props.fields)
@@ -44,6 +46,7 @@
         </div>
         <AppTable
             :id="route.name"
+            :disable-add="disableAdd"
             :disable-remove="disableRemove"
             :fields="storedFields"
             :machine="machine"
