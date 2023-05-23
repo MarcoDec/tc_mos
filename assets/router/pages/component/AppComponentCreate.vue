@@ -1,7 +1,7 @@
 <script setup>
     import AppFormJS from '../../../components/form/AppFormJS.js'
     import {computed} from 'vue-demi'
-import AppFormVue from '../../../components/form/AppFormVue.vue';
+    //import AppFormVue from '../../../components/form/AppFormVue.vue'
 
     const fields = computed(() => [
         {

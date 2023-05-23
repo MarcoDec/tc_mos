@@ -1,13 +1,13 @@
 <script setup>
     import {defineEmits, defineProps} from 'vue'
-    import AppFormField from './AppFormField.vue';
+    import AppFormField from './AppFormField.vue'
     const emit = defineEmits(['update:modelValue', 'input'])
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
         modelValue: {default: null, type: Object}
     })
-
+    console.log(props)
     function input(value) {
         emit('update:modelValue', value)
     }
@@ -15,7 +15,7 @@
 
 <template>
     <template v-if="field.mode === 'tab'">
-        <AppTabs  id="gui-start" class="gui-start-content">
+        <AppTabs id="gui-start" class="gui-start-content">
             <AppTab
                 :id="field.name"
                 :icon="field.icon"
@@ -34,7 +34,7 @@
             </AppTab>
         </AppTabs>
     </template>
-    <template v-else-if="field.mode === 'fieldset'" >
+    <template v-else-if="field.mode === 'fieldset'">
         <fieldset class="scheduler-border">
             <legend class="scheduler-border">
                 {{ field.label }}
@@ -51,12 +51,12 @@
     </template>
     <template v-else>
         <AppFormGroupJS
-        :field="field"
-        :form="form"
-        :model-value="modelValue"
-        :values="modelValue"
-        @update:model-value="input">
-        <slot/>
+            :field="field"
+            :form="form"
+            :model-value="modelValue"
+            :values="modelValue"
+            @update:model-value="input">
+            <slot/>
         </AppFormGroupJS>
     </template>
 </template>

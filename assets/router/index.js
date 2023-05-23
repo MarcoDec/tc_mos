@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import AppAnalogClock from './pages/AppAnalogClock.vue'
+//import AppAnalogClock from './pages/AppAnalogClock.vue'
 import AppHome from '../components/pages/AppHome'
 import AppLogin from '../components/pages/AppLogin.vue'
 import hr from './hr'
@@ -21,16 +21,7 @@ const router = createRouter({
         ...project,
         ...purchase,
         ...quality,
-<<<<<<< HEAD
-        {
-            component: AppAnalogClock,
-            meta: {requiresAuth: true},
-            name: 'AppAnalogClock',
-            path: '/appanalogclock'
-        },
-=======
         ...selling,
->>>>>>> develop
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}

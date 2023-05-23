@@ -5,7 +5,6 @@ import {h, resolveComponent} from 'vue'
 import AppFormField from './field/AppFormField.vue'
 // import AppFormFieldVue from './field/AppFormFieldVue.vue'
 
-
 function AppFormJS(props, context) {
     function generateSlot() {
         return context.slots['default']({
