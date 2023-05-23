@@ -14,10 +14,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\DiscriminatorFilter;
 
 #[
    ApiFilter(DiscriminatorFilter::class),
+   ApiFilter(
+       filterClass: SearchFilter::class,
+       properties: ['name' => 'partial', 'description' => 'partial', 'kind' => 'partial', 'value' => 'partial']
+   ),
    ApiResource(
     description: 'Paramètre de processus Metier',
     collectionOperations: [
