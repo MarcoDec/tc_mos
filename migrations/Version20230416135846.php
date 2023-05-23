@@ -21,13 +21,11 @@ final class Version20230416135846 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE component ADD quality SMALLINT UNSIGNED DEFAULT 0 NOT NULL, ADD reach TINYINT(1) DEFAULT 0 NOT NULL, ADD rohs TINYINT(1) DEFAULT 0 NOT NULL');
-        $this->addSql('ALTER TABLE parameter CHANGE type type ENUM(\'ARRAY\', \'SELECT_MULTIPLE_LINK\', \'INTEGER\') NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE component DROP quality, DROP reach, DROP rohs');
-        $this->addSql('ALTER TABLE parameter CHANGE type type VARCHAR(255) NOT NULL');
     }
 }

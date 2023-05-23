@@ -51,7 +51,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'ComponentAttribute-read',
             'skip_null_values' => false
         ],
-        paginationEnabled: false
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ComponentAttributeRepository::class),
     ORM\UniqueConstraint(columns: ['attribute_id', 'component_id'])

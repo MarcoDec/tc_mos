@@ -28,6 +28,7 @@ import {
     faFileInvoiceDollar,
     faFilter,
     faFolder,
+    faGear,
     faHourglass,
     faHourglassHalf,
     faIcons,
@@ -93,6 +94,7 @@ library.add(faFileContract)
 library.add(faFileInvoiceDollar)
 library.add(faFilter)
 library.add(faFolder)
+library.add(faGear)
 library.add(faHourglass)
 library.add(faHourglassHalf)
 library.add(faIcons)

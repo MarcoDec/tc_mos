@@ -9,6 +9,7 @@ import production from './production'
 import project from './project'
 import purchase from './purchase'
 import quality from './quality'
+import selling from './selling'
 import useUser from '../stores/security'
 
 const router = createRouter({
@@ -20,12 +21,16 @@ const router = createRouter({
         ...project,
         ...purchase,
         ...quality,
+<<<<<<< HEAD
         {
             component: AppAnalogClock,
             meta: {requiresAuth: true},
             name: 'AppAnalogClock',
             path: '/appanalogclock'
         },
+=======
+        ...selling,
+>>>>>>> develop
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
