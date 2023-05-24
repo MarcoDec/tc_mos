@@ -37,6 +37,7 @@ import {
     faOilWell,
     faPalette,
     faPencilAlt,
+    faPeopleGroup,
     faPlus,
     faPlusCircle,
     faPrint,
@@ -45,6 +46,7 @@ import {
     faReceipt,
     faRulerHorizontal,
     faSearch,
+    faSignal,
     faShoppingBag,
     faShoppingCart,
     faShuttleVan,
@@ -97,6 +99,7 @@ library.add(faMapMarkedAlt)
 library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencilAlt)
+library.add(faPeopleGroup)
 library.add(faPlus)
 library.add(faPlusCircle)
 library.add(faPrint)
@@ -105,6 +108,7 @@ library.add(faPuzzlePiece)
 library.add(faReceipt)
 library.add(faRulerHorizontal)
 library.add(faSearch)
+library.add(faSignal)
 library.add(faShoppingBag)
 library.add(faShoppingCart)
 library.add(faShuttleVan)

@@ -100,7 +100,7 @@ export default [
             fields: [
                 {label: 'Nom', name: 'name'}
             ],
-            icon: 'hourglass-half',
+            icon: 'signal',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Définition des Types de compétence'
         }

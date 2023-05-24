@@ -123,7 +123,7 @@ export default [
                 {label: 'Compagnie', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
                 {label: 'Créneaux horaires', name: 'timeSlot', options: {base: 'time-slots'}, sort: false, /* sortName: 'timeSlot.name', */ type: 'select'}
             ],
-            icon: 'hourglass-half',
+            icon: 'people-group',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Définition des équipes'
         }
