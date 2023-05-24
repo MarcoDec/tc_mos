@@ -52,7 +52,7 @@ export default function useTable(id) {
                 return field => (this.isSorter(field) ? this.order : 'none')
             },
             baseUrl() {
-                return `/api/${this.$apiBaseRoute}`
+                return this.url
             },
             fetchBody() {
                 return {...this.orderBody, ...this.flatSearch}
