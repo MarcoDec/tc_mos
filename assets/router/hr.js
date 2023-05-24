@@ -89,5 +89,20 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Définition des Types de compétence — T-Concept GPAO'},
+        name: 'skill-types',
+        path: '/skill-types',
+        props: {
+            apiBaseRoute: 'skill-types',
+            fields: [
+                {label: 'Nom', name: 'name'}
+            ],
+            icon: 'signal',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Définition des Types de compétence'
+        }
     }
 ]

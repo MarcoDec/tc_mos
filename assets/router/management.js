@@ -110,5 +110,22 @@ export default [
             icon: 'city',
             title: 'Société'
         }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Définition des Equipes — T-Concept GPAO'},
+        name: 'teams',
+        path: '/teams',
+        props: {
+            apiBaseRoute: 'teams',
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {label: 'Compagnie', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
+                {label: 'Créneaux horaires', name: 'timeSlot', options: {base: 'time-slots'}, sort: false, /* sortName: 'timeSlot.name', */ type: 'select'}
+            ],
+            icon: 'people-group',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Définition des équipes'
+        }
     }
 ]

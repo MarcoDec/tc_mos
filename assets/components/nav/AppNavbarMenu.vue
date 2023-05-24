@@ -72,6 +72,9 @@
                     <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">
                         Unités
                     </AppNavbarLink>
+                    <AppNavbarLink icon="people-group" to="teams" variant="warning">
+                        Equipes
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isItAdmin" id="it" icon="laptop" title="Informatique">
@@ -188,6 +191,9 @@
                     </AppNavbarLink>
                     <AppNavbarLink icon="gear" to="hr-parameters" variant="warning">
                         Paramètres
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="signal" to="skill-types" variant="warning">
+                        Types de Compétences
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
