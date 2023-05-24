@@ -5020,6 +5020,12 @@ CREATE TABLE `team` (
     CONSTRAINT `IDX_C4E0A61FD62B0FA` FOREIGN KEY (`time_slot_id`) REFERENCES `time_slot` (`id`)
 )
 SQL);
+        $this->addQuery(<<<'SQL'
+        INSERT INTO `team` (`company_id`, `name`, `time_slot_id`) VALUES
+        (3 , 'matin', 1),
+        (3, 'journée', 2),
+        (3, 'soir', 3)
+        SQL);
     }
 
     private function upTimeSlots(): void {
@@ -5035,11 +5041,11 @@ CREATE TABLE `time_slot` (
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `time_slot` (`end`, `end_break`, `name`, `start`, `start_break`) VALUES
-('13:30:00', NULL, 'Matin', '05:30:00', NULL),
-('17:30:00', '13:30:00', 'Journée', '07:30:00', '12:30:00'),
-('21:30:00',  NULL, 'Après-midi', '13:30:00', NULL),
-('08:00:00',  NULL, 'Samedi', '13:00:00', NULL)
+INSERT INTO `time_slot` (`id`,`end`, `end_break`, `name`, `start`, `start_break`) VALUES
+(1, '13:30:00', NULL, 'Matin', '05:30:00', NULL),
+(2, '17:30:00', '13:30:00', 'Journée', '07:30:00', '12:30:00'),
+(3, '21:30:00',  NULL, 'Après-midi', '13:30:00', NULL),
+(4, '08:00:00',  NULL, 'Samedi', '13:00:00', NULL)
 SQL);
     }
 
