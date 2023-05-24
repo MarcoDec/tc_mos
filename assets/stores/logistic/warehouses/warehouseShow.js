@@ -18,9 +18,35 @@ export const useWarehouseShowStore = defineStore('warehouseShow', {
             sessionStorage.setItem('warehouseId', id)
             this.index = id
         },
-
+        setName(name){
+            this.items.name = name
+        },
+        setCompany(comp){
+            this.items.company = comp
+        },
+        setDestination(dest){
+            this.items.destination = dest
+        },
         setFamilies(tabFam){
             this.items.families = tabFam
+        },
+        dispose() {
+            this.$reset()
+            this.$dispose()
+        },
+        async remove() {
+            await api(`/api/warehouses/${this.id}`, 'DELETE')
+        },
+        async update() {
+            const data = {
+                name: this.items.name,
+                company: this.items.company,
+                destination: this.items.destination,
+                families: this.items.families
+            }
+
+            const response = await api(`/api/warehouses/${this.index}`, 'PATCH', data)
+            this.$state = {...response}
         }
     },
     getters: {

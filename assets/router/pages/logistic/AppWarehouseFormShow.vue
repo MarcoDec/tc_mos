@@ -1,7 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useWarehouseShowStore as warehouseStore} from '../../../stores/logistic/warehouses/warehouseShow.js'
-    import generateWarehouse from '../../../stores/logistic/warehouses/warehouse.js'
     import {useSocietyListStore} from '../../../stores/direction/societyList.js'
     import {useRouter} from 'vue-router'
     //import {useComponentListStore} from '../../../stores/component/components'
@@ -151,28 +150,15 @@
         )
     }
 
-    async function updateGeneral(value) {
+    async function updateGeneral() {
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)
-        const data = {
-            name: formData.get('name'),
-            company: formData.get('company'),
-            destination: formData.get('destination'),
-            families: formData.get('families')
-        }
-        data.families = data.families.split(',')
-        // console.log(store.items)
-        // console.log('data', data)
-        value.families = data.families
-        const item = generateWarehouse(value)
+        store.setName(formData.get('name'))
+        store.setCompany(formData.get('company'))
+        store.setDestination(formData.get('destination'))
 
-        await item.update(data)
+        await store.update()
         await store.fetch()
-    }
-
-    const emit = defineEmits(['update', 'update:modelValue'])
-    function input(value) {
-        emit('update:modelValue', value)
     }
 </script>
 
@@ -188,8 +174,7 @@
                 id="addGeneralites"
                 :fields="Generalitesfields"
                 :component-attribute="store.items"
-                @update:model-value="input"
-                @update="updateGeneral(store.items)"/>
+                @update="updateGeneral"/>
         </AppTab>
         <AppTab id="gui-start-files" title="Fichier" icon="folder" tabs="gui-start">
             <div class="container-fluid">

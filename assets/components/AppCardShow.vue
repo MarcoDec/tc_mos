@@ -1,7 +1,8 @@
 <script setup>
-    import {defineProps, ref} from 'vue'
+    import {defineEmits, defineProps, ref} from 'vue'
     import AppBtnJS from './AppBtnJS'
     import AppFormJS from './form/AppFormJS'
+    import {useWarehouseShowStore as warehouseStore} from '../stores/logistic/warehouses/warehouseShow.js'
 
     defineProps({
         componentAttribute: {default: () => [], type: Array},
@@ -9,6 +10,10 @@
         fields: {default: () => [], type: Array},
         id: {required: true, type: String}
     })
+
+    const storeWarehouse = warehouseStore()
+    storeWarehouse.fetch()
+    let currentValue = {}
 
     const emit = defineEmits(['update', 'update:modelValue'])
     const updated = ref(false)
@@ -18,7 +23,8 @@
         disable.value = false
     }
     function success() {
-        emit('update')
+        storeWarehouse.setFamilies(currentValue.families)
+        emit('update', currentValue)
         updated.value = false
         disable.value = true
     }
@@ -27,8 +33,8 @@
         disable.value = true
     }
     function input(value) {
-        // console.log('fffff', value)
-        emit('update:modelValue', value)
+        currentValue = value
+        emit('update:modelValue', currentValue)
     }
 </script>
 
