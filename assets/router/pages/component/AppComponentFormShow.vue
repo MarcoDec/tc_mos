@@ -33,13 +33,13 @@
             const optionList = {text, value}
             return optionList
         }))
-    const optionsColors = computed(() =>
-        fecthColors.colors.map(op => {
-            const text = op.name
-            const value = op.id
-            const optionList = {text, value}
-            return optionList
-        }))
+    // const optionsColors = computed(() =>
+    //     fecthColors.colors.map(op => {
+    //         const text = op.name
+    //         const value = op.id
+    //         const optionList = {text, value}
+    //         return optionList
+    //     }))
 
     const useFetchComponentStore = useComponentListStore()
     const useComponentStore = useComponentShowStore()
@@ -47,8 +47,8 @@
     await useComponentStore.fetch()
     await fetchComponentAttachment.fetch()
     await useFetchComponentStore.fetch()
-    const rohsValue = ref(useFetchComponentStore.component.rohs)
-    const reachValue = ref(useFetchComponentStore.component.reach)
+    const rohsValue = computed(() => useFetchComponentStore.component.rohs)
+    const reachValue = computed(() => useFetchComponentStore.component.reach)
     useFetchComponentStore.component.price.code = 'EUR'
 
     const componentAttachment = computed(() =>
@@ -69,7 +69,9 @@
     })
 
     const attachmentByCategory = computed(() =>
-        fetchComponentAttachment.componentAttachment.filter(attachment => attachment.category === 'rohs'))
+        fetchComponentAttachment.componentAttachment.filter(
+            attachment => attachment.category === 'rohs'
+        ))
     const componentAttachmentByCategory = computed(() =>
         attachmentByCategory.value.map(attachment => ({
             icon: 'file-contract',
@@ -88,7 +90,9 @@
         return data
     })
     const attachmentByCategoryReach = computed(() =>
-        fetchComponentAttachment.componentAttachment.filter(attachment => attachment.category === 'reach'))
+        fetchComponentAttachment.componentAttachment.filter(
+            attachment => attachment.category === 'reach'
+        ))
     const componentAttachmentByCategoryReach = computed(() =>
         attachmentByCategoryReach.value.map(attachment => ({
             icon: 'file-contract',
@@ -108,31 +112,31 @@
     })
 
     const Attributfields = [
-        {
-            label: 'Couleur',
-            name: 'getColor',
-            options: {
-                label: value =>
-                    optionsColors.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsColors.value
-            },
-            type: 'select'
-        },
-        {label: 'Attribute', name: 'attribute', type: 'text'},
-        {label: 'Valeur', name: 'value', type: 'number'}
-        // {label: 'Voltage (V)', name: 'Voltage', type: 'text'},
-        // {label: 'Dia ext maxi (mm)', name: 'DiaMaxi', type: 'number'},
-        // {label: 'Norme d\'appellation', name: 'Norme', type: 'text'},
         // {
-        //     label: 'Nombre des conducteurs',
-        //     name: 'NombreConducteurs',
-        //     type: 'number'
+        //     label: 'Couleur',
+        //     name: 'getColor',
+        //     options: {
+        //         label: value =>
+        //             optionsColors.value.find(option => option.type === value)?.text
+        //             ?? null,
+        //         options: optionsColors.value
+        //     },
+        //     type: 'select'
         // },
-        // {label: 'Section (mm²)', name: 'MatièreBrins', type: 'text'},
-        // {label: 'T° mini (°C)', name: 'temperatureMini', type: 'number'},
-        // {label: 'Matière d\'isolant', name: 'MatièreIsolant', type: 'text'},
-        // {label: 'needJoint', name: 'needJoint', type: 'boolean'}
+        {label: 'Attribute', name: 'attribute', type: 'text'},
+        {label: 'Valeur', name: 'value', type: 'text'}
+    // {label: 'Voltage (V)', name: 'Voltage', type: 'text'},
+    // {label: 'Dia ext maxi (mm)', name: 'DiaMaxi', type: 'number'},
+    // {label: 'Norme d\'appellation', name: 'Norme', type: 'text'},
+    // {
+    //     label: 'Nombre des conducteurs',
+    //     name: 'NombreConducteurs',
+    //     type: 'number'
+    // },
+    // {label: 'Section (mm²)', name: 'MatièreBrins', type: 'text'},
+    // {label: 'T° mini (°C)', name: 'temperatureMini', type: 'number'},
+    // {label: 'Matière d\'isolant', name: 'MatièreIsolant', type: 'text'},
+    // {label: 'needJoint', name: 'needJoint', type: 'boolean'}
     ]
     const Fichiersfields = [
         {label: 'Categorie', name: 'category', type: 'text'},
@@ -292,7 +296,7 @@
             rohs: JSON.parse(formData.get('rohs'))
         }
 
-        if (rohsValue.value === true) {
+        if (rohsValue.value) {
             const dataFichierRohs = {
                 category: 'rohs',
                 component: `/api/components/${componentId}`,
@@ -311,7 +315,7 @@
                 isError2.value = true
             }
         }
-        if (reachValue.value === true) {
+        if (reachValue.value) {
             const dataFichierReach = {
                 category: 'reach',
                 component: `/api/components/${componentId}`,
@@ -332,8 +336,8 @@
         }
         await useFetchComponentStore.updateQuality(data, componentId)
         await useFetchComponentStore.fetch()
-        rohsValue.value = useFetchComponentStore.component.rohs
-        reachValue.value = useFetchComponentStore.component.reach
+        rohsValue.value = computed(() => useFetchComponentStore.component.rohs)
+        reachValue.value = computed(() => useFetchComponentStore.component.reach)
     }
     async function updateGeneral(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -354,11 +358,11 @@
         const formData = new FormData(form)
 
         const data = {
-            orderInfo: formData.get('orderInfo'),
             copperWeight: {
                 code: formData.get('copperWeight-code'),
                 value: formData.get('copperWeight-value')
-            }
+            },
+            orderInfo: formData.get('orderInfo')
         }
         // const dataWeight = {
         //   copperWeight: {

@@ -11,8 +11,10 @@
     const emit = defineEmits(['update', 'update:modelValue'])
     const isError = ref(false)
     const isError2 = ref(false)
+    const isError3 = ref(false)
     const violations = ref([])
     const violations2 = ref([])
+    const violations3 = ref([])
     const fecthOptions = useOptions('countries')
     const fecthCompanyOptions = useOptions('companies')
     await fecthOptions.fetchOp()
@@ -28,7 +30,7 @@
     await fetchEmployeeAttachementStore.fetch()
     const emplId = Number(fetchEmployeeStore.employee.id)
     await fetchEmployeeContactsStore.fetchContactsEmpl(emplId)
-
+    console.log('fetchEmployeeStore', fetchEmployeeStore)
     const employeeAttachment = computed(() =>
         fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
             icon: 'file-contract',
@@ -45,7 +47,6 @@
         }
         return data
     })
-    console.log('itemss==', fetchEmployeeStore)
     const optionsEmployee = computed(() =>
         fetchEmployeeStore.items.map(op => {
             const text = op.name
@@ -74,7 +75,6 @@
             const optionList = {text, value}
             return optionList
         }))
-    console.log('optionsTeams', optionsTeams)
     const options = [
         {text: 'married', value: 'married'},
         {text: 'single', value: 'single'},
@@ -83,6 +83,10 @@
     const optionsGenre = [
         {text: 'female', value: 'female'},
         {text: 'male', value: 'male'}
+    ]
+    const optionsRoles = [
+        {text: 'ROLE_USER', value: 'ROLE_USER'},
+        {text: 'ROLE_PRODUCTION_WRITER', value: 'ROLE_PRODUCTION_WRITER'}
     ]
     const Géneralitésfields = [{label: 'Note', name: 'notes', type: 'textarea'}]
 
@@ -132,7 +136,18 @@
         {label: 'Categorie', name: 'category', type: 'text'},
         {label: 'Fichier', name: 'file', type: 'file'}
     ]
-    const Droitsfields = [{label: 'Role', name: 'embRoles', type: 'text'}]
+    const Droitsfields = [
+        {
+            label: 'Role',
+            name: 'getEmbRoles',
+            options: {
+                label: value =>
+                    optionsRoles.find(option => option.type === value)?.text ?? null,
+                options: optionsRoles
+            },
+            type: 'multiselect'
+        }
+    ]
 
     const Contactsfields = [
         {label: 'Nom', name: 'name', type: 'text'},
@@ -210,10 +225,22 @@
             socialSecurityNumber: formData.get('socialSecurityNumber'),
             surname: formData.get('surname')
         }
-        console.log('dataEmpl', data)
-        const item = generateEmployee(value)
+        try {
+            const item = generateEmployee(value)
 
-        await item.updateHr(data)
+            await item.updateHr(data)
+        } catch (error) {
+            if (Array.isArray(error)) {
+                violations3.value = error
+                isError3.value = true
+            } else {
+                const err = {
+                    message: error
+                }
+                violations3.value.push(err)
+                isError3.value = true
+            }
+        }
     }
     async function updateContact(value) {
         const form = document.getElementById('addContacts')
@@ -241,18 +268,34 @@
         await item.update(data)
         //await fetchEmployeeStore.update(data, employeeId)
     }
-    async function updateDroits(value) {
-        // const employeeId = Number(value['@id'].match(/\d+/)[0])
+    const valRole = ref(fetchEmployeeStore.employee.embRoles.roles)
+    async function inputRole(value) {
+        valRole.value = value.getEmbRoles
+        emit('update:modelValue', valRole.value)
 
-        const form = document.getElementById('addDroits')
-        const formData = new FormData(form)
         const data = {
-            embRoles: [formData.get('embRoles')]
+            embRoles: {
+                roles: valRole.value
+            }
         }
+
         const item = generateEmployee(value)
 
         await item.updateIt(data)
     }
+    // async function updateDroits(value) {
+    //   // const employeeId = Number(value['@id'].match(/\d+/)[0])
+
+    //   const form = document.getElementById("addDroits");
+    //   const formData = new FormData(form);
+    //   //   const data = {
+    //   //     embRoles: [formData.get("getEmbRoles")],
+    //   //   };
+    //   //   console.log("data", data);
+    //   //     const item = generateEmployee(value);
+
+    //   //     await item.updateIt(data);
+    // }
     async function updateAcces(value) {
         const form = document.getElementById('addAccés')
         const formData = new FormData(form)
@@ -339,6 +382,11 @@
                 :fields="Informationsfields"
                 :component-attribute="fetchEmployeeStore.employee"
                 @update="update(fetchEmployeeStore.employee)"/>
+            <div v-if="isError3" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations3" :key="violation">
+                    <li>{{ violation.propertyPath }}: {{ violation.message }}</li>
+                </div>
+            </div>
         </AppTab>
         <AppTab
             id="gui-start-contacts"
@@ -362,7 +410,7 @@
                 id="addDroits"
                 :fields="Droitsfields"
                 :component-attribute="fetchEmployeeStore.employee"
-                @update="updateDroits(fetchEmployeeStore.employee)"/>
+                @update:model-value="inputRole"/>
         </AppTab>
         <AppTab
             id="gui-start-accés"

@@ -47,6 +47,7 @@ export default function generateEmployee(employee) {
                     ? `0${state.dateEntry.getDate()}`
                     : state.dateEntry.getDate()),
             getEmail: state => state.address.email,
+            getEmbRoles: state => state.embRoles.roles,
             getEntryDate: state =>
                 `${state.dateEntry.getFullYear()}-${state.getMonthEntry}-${state.getDateEntry}`,
             getMonth: state =>
