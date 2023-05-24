@@ -61,7 +61,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:id', 'read:type'],
             'openapi_definition_name' => 'SkillType-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationEnabled: false
     ),
     ORM\Entity,
     ORM\Table(name: 'skill_type'),
@@ -73,7 +74,7 @@ class Type extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:type', 'write:type'])
+        Serializer\Groups(['read:type', 'write:name'])
     ]
     private ?string $name = null;
 
