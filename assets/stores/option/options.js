@@ -22,6 +22,7 @@ export default function useOptions(base, valueProp = '@id') {
                 const response = await api(this.url)
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
+                console.log(this.options)
                 this.options.sort(sort)
                 this.fetchable = false
             },
