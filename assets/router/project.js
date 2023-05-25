@@ -1,3 +1,4 @@
+import AppShowGuiProduct from '../components/pages/project/AppShowGuiProduct.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
 import {readonly} from 'vue'
@@ -62,5 +63,11 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Types d\'opérations'
         }
+    },
+    {
+        component: AppShowGuiProduct,
+        meta: {container: false, title: 'Produit — T-Concept GPAO'},
+        name: 'product',
+        path: '/product/:id_product'
     }
 ]

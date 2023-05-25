@@ -4,7 +4,6 @@
     import AppCustomerFormShow from '../../router/pages/customer/AppCustomerFormShow.vue'
     import AppEmployeeFormShow from '../../router/pages/employee/AppEmployeeFormShow.vue'
     import AppProductFormShow from '../../router/pages/product/AppProductFormShow.vue'
-    import AppSupplierFormShow from '../../router/pages/supplier/AppSupplierFormShow.vue'
     import AppTab from '../tab/AppTab.vue'
     import AppTabs from '../tab/AppTabs.vue'
     import AppToolFormShow from '../../router/pages/equipment/AppToolFormShow.vue'
@@ -44,7 +43,6 @@
                 <AppSuspense> <AppEmployeeFormShow v-if="route.name === 'employee'"/></AppSuspense>
                 <AppSuspense><AppToolFormShow v-if="route.name === 'equipment'"/></AppSuspense>
                 <AppSuspense> <AppProductFormShow v-if="route.name === 'product'"/></AppSuspense>
-                <AppSuspense> <AppSupplierFormShow v-if="route.name === 'supplier'"/></AppSuspense>
                 <!-- <AppTabs id="gui-left">
                     <AppTab id="gui-left-main" active icon="bars" tabs="gui-left" title="Généralités"/>
                     <AppTab id="gui-left-files" icon="folder" tabs="gui-left" title="Fichiers"/>

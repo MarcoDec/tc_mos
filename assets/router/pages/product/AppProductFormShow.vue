@@ -6,6 +6,10 @@
     import useOptions from '../../../stores/option/options'
     import {useProductAttachmentStore} from '../../../stores/product/productAttachement'
     import {useProductStore} from '../../../stores/product/products'
+    import {useRoute} from 'vue-router'
+
+    const route = useRoute()
+    const id_product = route.params.id_product
 
     const isError = ref(false)
     const isError2 = ref(false)
@@ -16,13 +20,13 @@
     const fetchProductAttachmentStore = useProductAttachmentStore()
     const fetchIncotermStore = useIncotermStore()
 
-    await fetchProductStore.fetchOne()
+    await fetchProductStore.fetchOne(id_product)
     await fetchProductStore.fetchProductFamily()
     await fecthOptions.fetchOp()
     await fetchProductAttachmentStore.fetchOne()
     await fetchIncotermStore.fetchOne()
 
-    const managedCopperValue = ref(fetchProductStore.products.managedCopper)
+    const managedCopperValue = ref(fetchProductStore.product.managedCopper)
     console.log('managedCopperValue', managedCopperValue)
     const productAttachment = computed(() =>
         fetchProductAttachmentStore.productAttachment.map(attachment => ({
@@ -361,8 +365,8 @@
             <AppCardShow
                 id="addGeneralites"
                 :fields="Géneralitésfields"
-                :component-attribute="fetchProductStore.products"
-                @update="updateGeneral(fetchProductStore.products)"/>
+                :component-attribute="fetchProductStore.product"
+                @update="updateGeneral(fetchProductStore.product)"/>
         </AppTab>
         <AppTab
             id="gui-start-project"
@@ -372,13 +376,13 @@
             <AppCardShow
                 id="addProject"
                 :fields="Projectfields"
-                :component-attribute="fetchProductStore.products"
-                @update="updateProject(fetchProductStore.products)"/>
+                :component-attribute="fetchProductStore.product"
+                @update="updateProject(fetchProductStore.product)"/>
             <AppFormJS
                 v-if="managedCopperValue"
                 id="manager"
                 :fields="ProjectfieldsPrix"
-                :model-value="fetchProductStore.products"
+                :model-value="fetchProductStore.product"
                 disabled/>
         </AppTab>
         <AppTab
@@ -389,8 +393,8 @@
             <AppCardShow
                 id="addProduction"
                 :fields="Productionfields"
-                :component-attribute="fetchProductStore.products"
-                @update="updateProduction(fetchProductStore.products)"/>
+                :component-attribute="fetchProductStore.product"
+                @update="updateProduction(fetchProductStore.product)"/>
         </AppTab>
         <!-- <AppTab
       id="gui-start-quality"
@@ -408,8 +412,8 @@
             <AppCardShow
                 id="addLogistique"
                 :fields="Logistiquefields"
-                :component-attribute="fetchProductStore.products"
-                @update="updateLogistique(fetchProductStore.products)"/>
+                :component-attribute="fetchProductStore.product"
+                @update="updateLogistique(fetchProductStore.product)"/>
             <div v-if="isError2" class="alert alert-danger" role="alert">
                 <div v-for="violation in violations2" :key="violation">
                     <li>{{ violation.propertyPath }} {{ violation.message }}</li>
@@ -424,8 +428,8 @@
             <AppCardShow
                 id="addAdmin"
                 :fields="Adminfields"
-                :component-attribute="fetchProductStore.products"
-                @update="updateAdmin(fetchProductStore.products)"/>
+                :component-attribute="fetchProductStore.product"
+                @update="updateAdmin(fetchProductStore.product)"/>
         </AppTab>
         <AppTab
             id="gui-start-files"
@@ -435,7 +439,7 @@
             <AppCardShow
                 id="addFichiers"
                 :fields="Fichiersfields"
-                @update="updateFichiers(fetchProductStore.products)"/>
+                @update="updateFichiers(fetchProductStore.product)"/>
             <div v-if="isError" class="alert alert-danger" role="alert">
                 <div v-for="violation in violations" :key="violation">
                     <li>{{ violation.message }}</li>
