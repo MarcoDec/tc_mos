@@ -203,7 +203,7 @@
     ]
 
     const Spécificationfields = [
-        {label: 'Prix', name: 'price', type: 'measure', measure: {code: 'Devise', value: 'valeur'}},
+        {label: 'Prix', measure: {code: 'Devise', value: 'valeur'}, name: 'price', type: 'measure'},
         {
             label: 'Poids Cuivre',
             name: 'copperWeight',

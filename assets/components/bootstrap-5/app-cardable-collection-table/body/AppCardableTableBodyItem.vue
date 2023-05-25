@@ -1,6 +1,6 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
     import AppCardableTableBody from './AppCardableTableBody.vue'
+    import {defineProps} from 'vue'
 
     defineProps({
         currentPage: {required: true, type: String},

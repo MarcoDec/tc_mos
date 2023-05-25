@@ -1,6 +1,6 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
     import AppCollectionTableBody from './AppCollectionTableBody.vue'
+    import {defineProps} from 'vue'
 
     defineProps({
         currentPage: {required: true, type: String},

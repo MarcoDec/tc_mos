@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineEmits, defineProps} from 'vue'
+    import {computed, defineProps} from 'vue'
     import clone from 'clone'
 
     const props = defineProps({

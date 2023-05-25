@@ -1,6 +1,6 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
     import AppFormField from './AppFormField.vue'
+    import {defineProps} from 'vue'
 
     const emit = defineEmits(['update:modelValue', 'click'])
     defineProps({

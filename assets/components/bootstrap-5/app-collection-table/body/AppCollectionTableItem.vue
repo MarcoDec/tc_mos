@@ -1,5 +1,5 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
+    import {defineProps} from 'vue'
 
     const props = defineProps({
         fields: {required: true, type: Array},

@@ -1,11 +1,11 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
     import {useRoute, useRouter} from 'vue-router'
     import AppBtnJS from '../../../components/AppBtnJS'
     import AppFormJS from '../../../components/form/AppFormJS'
     import AppModal from '../../../components/modal/AppModal.vue'
     import AppTableJS from '../../../components/table/AppTableJS'
     import Fa from '../../../components/Fa'
+    import {defineProps} from 'vue'
     import {useTableMachine} from '../../../machine'
     import {useWarehouseListItemsStore} from '../../../stores/logistic/warehouses/warehouseListItems'
 

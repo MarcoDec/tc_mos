@@ -99,38 +99,42 @@
     ]
     const Projectfields = [
         {label: 'Date Fin', name: 'getEndOfLife', type: 'date'},
-        {label: 'maxProto', name: 'maxProto', type: 'measure', measure: {code: 'U', value: 'valeur'}},
-        {label: 'Prix (champ calculé)', name: 'price', type: 'measure', measure: {code: 'Devise', value: 'valeur'}},
+        {label: 'maxProto', measure: {code: 'U', value: 'valeur'}, name: 'maxProto', type: 'measure'},
+        {label: 'Prix (champ calculé)', measure: {code: 'Devise', value: 'valeur'}, name: 'price', type: 'measure'},
         //   { label: "Prix Cuivre", name: "priceWithoutCopper", type: "measure" },
         {
             label: 'Prix Transfer Fournisseur (champ calculé)',
+            measure: {code: 'Devise', value: 'valeur'},
             name: 'transfertPriceSupplies',
-            type: 'measure', measure: {code: 'Devise', value: 'valeur'}
+            type: 'measure'
         },
         {
             label: 'Prix Transfer Work (champ calculé)',
+            measure: {code: 'Devise', value: 'valeur'},
             name: 'transfertPriceWork',
-            type: 'measure', measure: {code: 'Devise', value: 'valeur'}
+            type: 'measure'
         }
     ]
     const ProjectfieldsPrix = [
         {
             label: 'Prix Cuivre (champ calculé)',
+            measure: {code: 'Devise', value: 'valeur'},
             name: 'priceWithoutCopper',
-            type: 'measure', measure: {code: 'Devise', value: 'valeur'}
+            type: 'measure'
         }
     ]
     const Productionfields = [
-        {label: 'Duration Auto', name: 'autoDuration', type: 'measure', measure: {code: 'h', value: 'valeur'}},
-        {label: 'Duration Manual', name: 'manualDuration', type: 'measure', measure: {code: 'h', value: 'valeur'}},
-        {label: 'Production Min', name: 'minProd', type: 'measure', measure: {code: 'U', value: 'valeur'}},
-        {label: 'Production Delay', name: 'productionDelay', type: 'measure', measure: {code: 'jr', value: 'valeur'}},
+        {label: 'Duration Auto', measure: {code: 'h', value: 'valeur'}, name: 'autoDuration', type: 'measure'},
+        {label: 'Duration Manual', measure: {code: 'h', value: 'valeur'}, name: 'manualDuration', type: 'measure'},
+        {label: 'Production Min', measure: {code: 'U', value: 'valeur'}, name: 'minProd', type: 'measure'},
+        {label: 'Production Delay', measure: {code: 'jr', value: 'valeur'}, name: 'productionDelay', type: 'measure'},
         {
             label: 'Volume prévisionnel (champ calculé)',
+            measure: {code: 'U', value: 'valeur'},
             name: 'forecastVolume',
-            type: 'measure', measure: {code: 'U', value: 'valeur'}
+            type: 'measure'
         },
-        {label: 'Packaging', name: 'packaging', type: 'measure', measure: {code: 'Devise', value: 'valeur'}},
+        {label: 'Packaging', measure: {code: 'Devise', value: 'valeur'}, name: 'packaging', type: 'measure'},
         {label: 'Packaging Kind', name: 'packagingKind', type: 'text'}
     ]
     const Logistiquefields = [

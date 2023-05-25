@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineEmits, defineProps, ref} from 'vue'
+    import {computed, defineProps, ref} from 'vue'
     import AppCardableTableBodyHeader from './body/AppCardableTableBodyHeader.vue'
     import AppCardableTableBodyItem from './body/AppCardableTableBodyItem.vue'
     import AppCardableTableHeader from './head/AppCardableTableHeader.vue'

@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineEmits, defineProps, ref} from 'vue'
+    import {computed, defineProps, ref} from 'vue'
     import AppCollectionTableBodyHeader from './body/AppCollectionTableBodyHeader.vue'
     import AppCollectionTableBodyItem from './body/AppCollectionTableBodyItem.vue'
     import AppCollectionTableHeader from './head/AppCollectionTableHeader.vue'
