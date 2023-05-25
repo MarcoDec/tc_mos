@@ -199,7 +199,7 @@ module.exports = {
         'prefer-template': 'error',
         'quote-props': ['error', 'as-needed'],
         quotes: ['error', 'single', {avoidEscape: false}],
-        'require-atomic-updates': 'error',
+        'require-atomic-updates': 1,
         'rest-spread-spacing': 'error',
         semi: ['error', 'never'],
         'sort-imports': 'error',

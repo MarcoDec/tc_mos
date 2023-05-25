@@ -6,11 +6,11 @@
     import generateSupplierContact from '../../../stores/supplier/supplierContact'
     import {useIncotermStore} from '../../../stores/incoterm/incoterm'
     import useOptions from '../../../stores/option/options'
+    import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../stores/societies/societies'
     import {useSupplierAttachmentStore} from '../../../stores/supplier/supplierAttachement'
     import {useSupplierContactsStore} from '../../../stores/supplier/supplierContacts'
     import {useSuppliersStore} from '../../../stores/supplier/suppliers'
-    import {useRoute} from 'vue-router'
 
     const route = useRoute()
     const idSupplier = route.params.id_supplier

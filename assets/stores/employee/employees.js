@@ -4,12 +4,6 @@ import generateEmployee from './employee'
 
 export const useEmployeeStore = defineStore('employee', {
     actions: {
-
-        async fetchOne(id = 24) {
-            const response = await api(`/api/employees/${id}`, 'GET')
-            const item = generateEmployee(response, this)
-            this.employee = item
-        },
         async fetchAll() {
             const response = await api('/api/employees?pagination=false', 'GET')
             // const item = generateEmployee(response, this)
@@ -21,6 +15,11 @@ export const useEmployeeStore = defineStore('employee', {
                 const item = generateEmployee(employee, this)
                 this.employeeContacts.push(item)
             }
+        },
+        async fetchOne(id = 24) {
+            const response = await api(`/api/employees/${id}`, 'GET')
+            const item = generateEmployee(response, this)
+            this.employee = item
         },
         async fetchTeams() {
             const response = await api('/api/teams', 'GET')

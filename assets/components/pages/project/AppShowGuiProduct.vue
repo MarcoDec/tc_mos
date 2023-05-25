@@ -1,6 +1,6 @@
 <script setup>
-    import AppShowGuiGen from '../AppShowGuiGen.vue'
     import AppProductFormShow from '../../../router/pages/product/AppProductFormShow.vue'
+    import AppShowGuiGen from '../AppShowGuiGen.vue'
     import AppTab from '../../tab/AppTab.vue'
     import AppTabs from '../../tab/AppTabs.vue'
     import {useRoute} from 'vue-router'

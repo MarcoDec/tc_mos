@@ -9,9 +9,9 @@
     import {useCustomerStore} from '../../../stores/customers/customers'
     import {useIncotermStore} from '../../../stores/incoterm/incoterm'
     import useOptions from '../../../stores/option/options'
+    import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../stores/societies/societies'
     import {useSuppliersStore} from '../../../stores/supplier/suppliers'
-    import {useRoute} from 'vue-router'
 
     const route = useRoute()
     const idCustomer = route.params.id_customer
