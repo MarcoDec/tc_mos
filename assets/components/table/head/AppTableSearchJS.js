@@ -37,7 +37,7 @@ function AppTableSearchJS(props, context) {
             store: props.store,
             async submit() {
                 props.machine.send('submit')
-                await props.store.fetchOne()
+                await props.store.fetch()
                 props.machine.send('success')
             },
             type: 'search'

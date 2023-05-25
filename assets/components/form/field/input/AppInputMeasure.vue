@@ -28,7 +28,7 @@
         <AppInputGuesserJS
             :id="valueId"
             :disabled="disabled"
-            :field="field.name"
+            :field="field.measure.value"
             :form="form"
             :name="valueName"
             :model-value="modelValue?.value"
@@ -36,7 +36,7 @@
         <AppInputGuesserJS
             :id="codeId"
             :disabled="disabled"
-            :field="field.name"
+            :field="field.measure.code"
             :form="form"
             :name="codeName"
             :model-value="modelValue?.code"

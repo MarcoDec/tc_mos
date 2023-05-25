@@ -88,6 +88,7 @@ export default [
         name: 'supplier-contacts',
         path: '/supplier-contacts',
         props: {
+            apiBaseRoute: 'supplier-contacts',
             fields: [
                 {label: 'Nom', name: 'name'}
 

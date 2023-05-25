@@ -15,7 +15,7 @@ export const useSocietyListStore = defineStore('societyList', {
             await api(`/api/societies/${payload}`, 'DELETE')
             this.societies = this.societies.filter(society => Number(society['@id'].match(/\d+/)[0]) !== payload)
         },
-        async fetchOne() {
+        async fetch() {
             const response = await api('/api/societies', 'GET')
             this.societies = await this.updatePagination(response)
         },

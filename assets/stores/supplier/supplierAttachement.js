@@ -9,9 +9,9 @@ export const useSupplierAttachmentStore = defineStore('supplierAttachment', {
             form.append('category', data.category)
             form.append('supplier', data.supplier)
             await api('/api/supplier-attachments', 'POST', form)
-            this.fetchOne()
+            this.fetch()
         },
-        async fetchOne() {
+        async fetch() {
             const response = await api('/api/supplier-attachments?pagination=false', 'GET')
             this.supplierAttachment = await response['hydra:member']
         }

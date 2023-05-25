@@ -5,6 +5,7 @@
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         canReverse: {type: Boolean},
+        disableAdd: {required: false, type: Boolean},
         fields: {required: true, type: Object},
         icon: {default: 'search', type: String},
         id: {required: true, type: String},
@@ -38,7 +39,7 @@
         <td class="text-center">
             <template v-if="canReverse">
                 <Fa :icon="icon"/>
-                <AppBtnJS :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
+                <AppBtnJS v-if="!disableAdd" :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
             </template>
         </td>
         <td class="text-center">

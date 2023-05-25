@@ -37,7 +37,7 @@
     await fetchCustomerAttachmentStore.fetchOne()
     await fetchCustomerStore.fetchInvoiceTime()
     await fetchSocietyStore.fetch()
-    await fecthIncotermStore.fetchOne()
+    await fecthIncotermStore.fetch()
     await fecthSuppliersStore.fetchVatMessage()
     onUnmounted(() => {
         fecthCompanyOptions.dispose()
@@ -206,9 +206,9 @@
             name: 'nbDeliveries',
             type: 'number'
         },
-        {label: 'DuréeTransport', name: 'conveyanceDuration', type: 'measure'},
-        {label: 'Encours maximum', name: 'outstandingMax', type: 'measure'},
-        {label: 'Commande minimum', name: 'orderMin', type: 'measure'},
+        {label: 'DuréeTransport', measure: {code: 'j', value: 'valeur'}, name: 'conveyanceDuration', type: 'measure'},
+        {label: 'Encours maximum', measure: {code: 'U', value: 'valeur'}, name: 'outstandingMax', type: 'measure'},
+        {label: 'Commande minimum', measure: {code: 'U', value: 'valeur'}, name: 'orderMin', type: 'measure'},
         {
             label: 'Incoterm',
             name: 'incotermsValue',
@@ -250,6 +250,7 @@
         },
         {
             label: 'montant de la facture minimum',
+            measure: {code: 'Devise', value: 'valeur'},
             name: 'invoiceMin',
             type: 'measure'
         },

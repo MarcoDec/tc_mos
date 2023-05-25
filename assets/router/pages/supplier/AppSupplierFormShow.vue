@@ -37,10 +37,10 @@
 
     await fetchSuppliersStore.fetchOne(idSupplier)
     await fetchSuppliersStore.fetchVatMessage()
-    await fetchIncotermStore.fetchOne()
+    await fetchIncotermStore.fetch()
     await fetchSocietyStore.fetch()
     await fetchCurrencyOptions.fetchOp()
-    await fetchSupplierAttachmentStore.fetchOne()
+    await fetchSupplierAttachmentStore.fetch()
     await fetchOptions.fetchOp()
     await fetchCompanyOptions.fetchOp()
     const supplierAttachment = computed(() =>
@@ -212,7 +212,12 @@
         {label: 'Taux de PPM', name: 'ppmRate', type: 'number'}
     ]
     const Achatfields = [
-        {label: 'Minimum de commande', name: 'orderMin', type: 'measure'},
+        {
+            label: 'Minimum de commande',
+            measure: {code: 'Devise', value: 'valeur'},
+            name: 'orderMin',
+            type: 'measure'
+        },
         {
             label: 'Incoterm',
             name: 'incotermsValue',
@@ -232,6 +237,7 @@
     const Comptabilitéfields = [
         {
             label: 'Montant minimum de facture',
+            measure: {code: 'Devise', value: 'valeur'},
             name: 'invoiceMin',
             type: 'measure'
         },
@@ -339,7 +345,7 @@
         const item = generateSupplier(value)
         await item.updateMain(data)
         await item.updateAdmin(dataAdmin)
-        await fetchSuppliersStore.fetchOne()
+        await fetchSuppliersStore.fetchOne(idSupplier)
     }
     async function updateLogistique(value) {
         const form = document.getElementById('addAchatLogistique')

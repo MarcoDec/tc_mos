@@ -17,7 +17,7 @@ export default function useTree(id) {
                     node.dispose()
                 this.$dispose()
             },
-            async fetchOne() {
+            async fetch() {
                 const response = await api(this.url)
                 for (const node of response['hydra:member'])
                     this.nodes.push(useNode(node, this))

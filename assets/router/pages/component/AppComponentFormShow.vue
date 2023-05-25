@@ -21,7 +21,7 @@
     const fecthOptions = useOptions('units')
     const fecthColors = useColorsStore()
     await fecthOptions.fetchOp()
-    await fecthColors.fetchOne()
+    await fecthColors.fetch()
 
     const optionsAtt = computed(() =>
         fecthOptions.options.map(op => {
@@ -203,7 +203,7 @@
     ]
 
     const Spécificationfields = [
-        {label: 'Prix', name: 'price', type: 'measure'},
+        {label: 'Prix', name: 'price', type: 'measure', measure: {code: 'Devise', value: 'valeur'}},
         {
             label: 'Poids Cuivre',
             name: 'copperWeight',
@@ -237,7 +237,7 @@
 
         await item.updateAttributes(data)
 
-        await useComponentStore.fetchOne()
+        await useComponentStore.fetchOne(idComponent)
     }
     function updateLogistique() {
         const form = document.getElementById('addLogistique')

@@ -60,13 +60,11 @@ class ApiRequest {
     set #jsonBody(body) {
         for (const [key, value] of Object.entries(body)) {
             if (typeof value === 'undefined' || value === null)
-                //delete body[key]
-                body[key] = value
+                delete body[key]
             else if (typeof value === 'string') {
                 body[key] = value.trim()
                 if (body[key].length === 0)
-                    //delete body[key]
-                    body[key] = value
+                    delete body[key]
             }
         }
         this.#body = JSON.stringify(body)

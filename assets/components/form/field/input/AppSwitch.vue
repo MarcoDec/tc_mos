@@ -10,6 +10,7 @@
         modelValue: {type: Boolean}
     })
     const checked = ref(props.modelValue)
+
     function input(e) {
         emit('update:modelValue', checked.value = e.target.checked)
     }

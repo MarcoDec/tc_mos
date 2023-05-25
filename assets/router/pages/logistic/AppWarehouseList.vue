@@ -29,7 +29,7 @@
     }
     const machine = useTableMachine(route.name)
     const storeWarehouseListItems = useWarehouseListItemsStore()
-    storeWarehouseListItems.fetchOne()
+    storeWarehouseListItems.fetch()
 </script>
 
 <template>

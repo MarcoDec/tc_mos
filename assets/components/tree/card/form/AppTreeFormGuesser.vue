@@ -12,9 +12,9 @@
     })
     const route = useRoute()
     const storedFields = useFields(route.name, props.fields)
-    await storedFields.fetchOne()
+    await storedFields.fetch()
     const form = computed(() => (props.tree.hasSelected ? AppTreeFormUpdate : AppTreeFormCreate))
-    console.log('storedFields', storedFields)
+
     onUnmounted(() => {
         storedFields.dispose()
     })

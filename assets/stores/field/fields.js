@@ -9,12 +9,13 @@ export default function useFields(id, initialFields) {
                     field.dispose()
                 this.$dispose()
             },
-            async fetchOne() {
+            async fetch() {
                 for (const field of this.fields)
                     // eslint-disable-next-line no-await-in-loop
-                    await field.fetchOne()
+                    await field.fetch()
             },
             push(fields) {
+                console.log(fields)
                 for (const field of fields)
                     this.fields.push(useField(field, this))
             }

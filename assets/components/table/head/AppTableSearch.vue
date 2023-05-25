@@ -15,7 +15,7 @@
 
     async function search() {
         props.send('submit')
-        await props.store.fetchOne()
+        await props.store.fetch()
         props.send('success')
     }
 </script>

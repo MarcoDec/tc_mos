@@ -16,14 +16,13 @@ export default function useOptions(base, valueProp = '@id') {
                         option.$dispose()
                 this.$dispose()
             },
-            async fetchOne() {
+            async fetch() {
                 if (!this.fetchable)
                     return
                 const response = await api(this.url)
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
                 this.options.sort(sort)
-                //console.log('this.options', this.options.sort(sort))
                 this.fetchable = false
             },
             async fetchOp() {
@@ -51,10 +50,8 @@ export default function useOptions(base, valueProp = '@id') {
                 for (const option of state.options) {
                     if (typeof groups[option.group] === 'undefined')
                         groups[option.group] = []
-                    console.log('groups', groups)
                     groups[option.group].push(option)
                 }
-                console.log('groups--->', groups)
                 return Object.entries(groups).map(([group, options]) => ({label: group, options})).reverse()
             },
             hasGroups() {

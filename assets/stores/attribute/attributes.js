@@ -9,7 +9,7 @@ export default defineStore('attributes', {
                 attribute.dispose()
             this.$dispose()
         },
-        async fetchOne() {
+        async fetch() {
             const response = await api(this.url)
             for (const attribute of response['hydra:member'])
                 this.attributes.push(useAttribute(attribute, this))

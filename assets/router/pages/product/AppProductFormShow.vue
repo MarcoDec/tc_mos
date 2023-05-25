@@ -23,8 +23,8 @@
     await fetchProductStore.fetchOne(idProduct)
     await fetchProductStore.fetchProductFamily()
     await fecthOptions.fetchOp()
-    await fetchProductAttachmentStore.fetchOne()
-    await fetchIncotermStore.fetchOne()
+    await fetchProductAttachmentStore.fetch()
+    await fetchIncotermStore.fetch()
 
     const managedCopperValue = ref(fetchProductStore.product.managedCopper)
     console.log('managedCopperValue', managedCopperValue)
@@ -99,38 +99,38 @@
     ]
     const Projectfields = [
         {label: 'Date Fin', name: 'getEndOfLife', type: 'date'},
-        {label: 'maxProto', name: 'maxProto', type: 'measure'},
-        {label: 'Prix (champ calculé)', name: 'price', type: 'measure'},
+        {label: 'maxProto', name: 'maxProto', type: 'measure', measure: {code: 'U', value: 'valeur'}},
+        {label: 'Prix (champ calculé)', name: 'price', type: 'measure', measure: {code: 'Devise', value: 'valeur'}},
         //   { label: "Prix Cuivre", name: "priceWithoutCopper", type: "measure" },
         {
             label: 'Prix Transfer Fournisseur (champ calculé)',
             name: 'transfertPriceSupplies',
-            type: 'measure'
+            type: 'measure', measure: {code: 'Devise', value: 'valeur'}
         },
         {
             label: 'Prix Transfer Work (champ calculé)',
             name: 'transfertPriceWork',
-            type: 'measure'
+            type: 'measure', measure: {code: 'Devise', value: 'valeur'}
         }
     ]
     const ProjectfieldsPrix = [
         {
             label: 'Prix Cuivre (champ calculé)',
             name: 'priceWithoutCopper',
-            type: 'measure'
+            type: 'measure', measure: {code: 'Devise', value: 'valeur'}
         }
     ]
     const Productionfields = [
-        {label: 'Duration Auto', name: 'autoDuration', type: 'measure'},
-        {label: 'Duration Manual', name: 'manualDuration', type: 'measure'},
-        {label: 'Production Min', name: 'minProd', type: 'measure'},
-        {label: 'Production Delay', name: 'productionDelay', type: 'measure'},
+        {label: 'Duration Auto', name: 'autoDuration', type: 'measure', measure: {code: 'h', value: 'valeur'}},
+        {label: 'Duration Manual', name: 'manualDuration', type: 'measure', measure: {code: 'h', value: 'valeur'}},
+        {label: 'Production Min', name: 'minProd', type: 'measure', measure: {code: 'U', value: 'valeur'}},
+        {label: 'Production Delay', name: 'productionDelay', type: 'measure', measure: {code: 'jr', value: 'valeur'}},
         {
             label: 'Volume prévisionnel (champ calculé)',
             name: 'forecastVolume',
-            type: 'measure'
+            type: 'measure', measure: {code: 'U', value: 'valeur'}
         },
-        {label: 'Packaging', name: 'packaging', type: 'measure'},
+        {label: 'Packaging', name: 'packaging', type: 'measure', measure: {code: 'Devise', value: 'valeur'}},
         {label: 'Packaging Kind', name: 'packagingKind', type: 'text'}
     ]
     const Logistiquefields = [
@@ -223,7 +223,7 @@
 
         const item = generateProduct(value)
         await item.updateMain(data)
-        await fetchProductStore.fetchOne()
+        await fetchProductStore.fetchOne(idProduct)
     }
     async function updateAdmin(value) {
         const form = document.getElementById('addAdmin')
@@ -238,7 +238,7 @@
 
         const item = generateProduct(value)
         await item.updateAdmin(data)
-        await fetchProductStore.fetchOne()
+        await fetchProductStore.fetchOne(idProduct)
     }
     async function updateProject(value) {
         const form = document.getElementById('addProject')
@@ -254,7 +254,7 @@
 
         const item = generateProduct(value)
         await item.updateProject(data)
-        await fetchProductStore.fetchOne()
+        await fetchProductStore.fetchOne(idProduct)
     }
     async function updateProduction(value) {
         const form = document.getElementById('addProduction')
@@ -290,7 +290,7 @@
 
         const item = generateProduct(value)
         await item.updateProduction(data)
-        await fetchProductStore.fetchOne()
+        await fetchProductStore.fetchOne(idProduct)
     }
     async function updateLogistique(value) {
         const form = document.getElementById('addLogistique')
@@ -316,7 +316,7 @@
         try {
             const item = generateProduct(value)
             await item.updateLogistique(data)
-            await fetchProductStore.fetchOne()
+            await fetchProductStore.fetchOne(idProduct)
         } catch (error) {
             if (Array.isArray(error)) {
                 violations2.value = error

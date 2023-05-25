@@ -9,26 +9,28 @@
     import useTable from '../../../stores/table/table'
 
     const props = defineProps({
+        apiBaseRoute: {default: '', type: String},
         brands: {type: Boolean},
+        disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
+        readFilter: {default: '', required: false, type: String},
         sort: {required: true, type: Object},
         title: {required: true, type: String}
     })
     const route = useRoute()
-    console.log('route', route.name)
     const machine = useTableMachine(route.name)
     const {slots} = useSlots(props.fields)
-    console.log('machine', machine)
-
     const store = useTable(route.name)
-    store.sorted = props.sort ? props.sort.name : null
-    store.sortName = props.sort ? props.sort.name : null
-    await store.fetchOne()
-    console.log('store table', store)
+    store.sorted = props.sort.name
+    store.sortName = props.sort.sortName ?? props.sort.name
+    store.readFilter = props.readFilter
+    store.apiBaseRoute = props.apiBaseRoute
+    await store.fetch()
+
     const storedFields = useFields(route.name, props.fields)
-    await storedFields.fetchOne()
+    await storedFields.fetch()
 
     onUnmounted(() => {
         store.dispose()
@@ -46,6 +48,7 @@
         </div>
         <AppTable
             :id="route.name"
+            :disable-add="disableAdd"
             :disable-remove="disableRemove"
             :fields="storedFields"
             :machine="machine"

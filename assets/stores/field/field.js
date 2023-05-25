@@ -15,11 +15,11 @@ export default function useField(field, parent) {
                     this.options.dispose()
                 this.$dispose()
             },
-            async fetchOne() {
+            async fetch() {
                 if (this.measure !== null)
-                    await this.measure.code.fetchOne()
+                    await this.measure.code.fetch()
                 if (this.options !== null && this.options.$id.startsWith('options/'))
-                    await this.options.fetchOne()
+                    await this.options.fetch()
             }
         },
         getters: {

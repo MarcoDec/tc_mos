@@ -6,8 +6,8 @@
     defineProps({fields: {required: true, type: Array}, label: {required: true, type: String}})
 
     const attributes = useAttributes()
-    await attributes.fetchOne()
-    console.log('aaaaa', attributes)
+    await attributes.fetch()
+
     onUnmounted(() => {
         attributes.dispose()
     })

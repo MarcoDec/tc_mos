@@ -9,7 +9,7 @@ export default defineStore('notifications', {
                 category.dispose()
             this.$dispose()
         },
-        async fetchOne() {
+        async fetch() {
             const response = await api('/api/notifications')
             const categories = {}
             for (const notification of response['hydra:member']) {

@@ -2,7 +2,7 @@
     import {useEngineStore} from '../../../stores/engine/engines'
 
     const fecthEngineStore = useEngineStore()
-    await fecthEngineStore.fetchOne()
+    await fecthEngineStore.fetch()
 
     const options = [
         {text: 'aaaaa', value: 'aaaaa'},

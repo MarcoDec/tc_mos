@@ -203,7 +203,7 @@ module.exports = {
         'rest-spread-spacing': 'error',
         semi: ['error', 'never'],
         'sort-imports': 'error',
-        'sort-keys': 'error',
+        'sort-keys': 1,
         'sort-vars': 'error',
         'space-before-function-paren': ['error', {
             anonymous: 'always', asyncArrow: 'always', named: 'never'
