@@ -10,6 +10,7 @@ export default [
         name: 'colors',
         path: '/colors',
         props: {
+            apiBaseRoute: 'colors',
             fields: [{label: 'Nom', name: 'name'}, {label: 'RGB', name: 'rgb', type: 'color'}],
             icon: 'palette',
             sort: readonly({label: 'Nom', name: 'name'}),
@@ -22,6 +23,7 @@ export default [
         name: 'invoice-time-dues',
         path: '/invoice-time-dues',
         props: {
+            apiBaseRoute: 'invoice-time-dues',
             fields: [
                 {label: 'Nom', name: 'name'},
                 {label: 'Jours', name: 'days', sort: false, type: 'number'},
@@ -39,6 +41,7 @@ export default [
         name: 'printers',
         path: '/printers',
         props: {
+            apiBaseRoute: 'printers',
             disableRemove: true,
             fields: [
                 {create: false, label: 'Nom', name: 'name', search: false, sort: false, update: false},
@@ -67,6 +70,7 @@ export default [
         name: 'units',
         path: '/units',
         props: {
+            apiBaseRoute: 'units',
             fields: [
                 {label: 'Code', name: 'code'},
                 {label: 'Nom', name: 'name'},
@@ -99,6 +103,7 @@ export default [
         name: 'vat-messages',
         path: '/vat-messages',
         props: {
+            apiBaseRoute: 'vat-messages',
             fields: [{label: 'Nom', name: 'name'}],
             icon: 'comments-dollar',
             sort: readonly({label: 'Nom', name: 'name'}),
@@ -119,6 +124,23 @@ export default [
         props: {
             icon: 'city',
             title: 'Société'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Définition des Equipes — T-Concept GPAO'},
+        name: 'teams',
+        path: '/teams',
+        props: {
+            apiBaseRoute: 'teams',
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {label: 'Compagnie', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
+                {label: 'Créneaux horaires', name: 'timeSlot', options: {base: 'time-slots'}, sort: false, /* sortName: 'timeSlot.name', */ type: 'select'}
+            ],
+            icon: 'people-group',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Définition des équipes'
         }
     }
 ]

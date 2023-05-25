@@ -50,6 +50,9 @@
                     <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
                         Familles de composants
                     </AppNavbarLink>
+                    <AppNavbarLink icon="gear" to="purchase-parameters" variant="warning">
+                        Paramètres
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isManagementReader" id="management" icon="sitemap" title="Direction">
@@ -69,6 +72,9 @@
                     <AppNavbarLink icon="palette" to="colors" variant="warning">
                         Couleurs
                     </AppNavbarLink>
+                    <AppNavbarLink icon="euro-sign" to="currencies" variant="warning">
+                        Devises
+                    </AppNavbarLink>
                     <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
                         Délais de paiement des factures
                     </AppNavbarLink>
@@ -80,6 +86,9 @@
                     </AppNavbarLink>
                     <AppNavbarLink icon="ruler-horizontal" to="units" variant="warning">
                         Unités
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="people-group" to="teams" variant="warning">
+                        Equipes
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
@@ -129,8 +138,14 @@
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
                     </AppDropdownItem>
+                    <AppNavbarLink disabled icon="calendar-day" to="engine-events" variant="danger">
+                        Catégories d'événements des équipements
+                    </AppNavbarLink>
                     <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
                         Groupes d'équipements
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="gear" to="production-parameters" variant="warning">
+                        Paramètres
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
@@ -150,6 +165,9 @@
                     </AppNavbarLink>
                     <AppNavbarLink brands icon="elementor" to="operation-types" variant="warning">
                         Types d'opérations
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="gear" to="project-parameters" variant="warning">
+                        Paramètres
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>
@@ -188,6 +206,28 @@
                     </AppNavbarLink>
                     <AppNavbarLink icon="clock" to="time-slots" variant="warning">
                         Plages horaires
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="gear" to="hr-parameters" variant="warning">
+                        Paramètres
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="signal" to="skill-types" variant="warning">
+                        Types de Compétences
+                    </AppNavbarLink>
+                </template>
+            </AppNavbarItem>
+            <AppNavbarItem v-if="user.isSellingReader" id="selling" icon="euro-sign" title="Ventes">
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <!-- <AppNavbarLink icon="user-graduate" to="out-trainers" variant="success">
+                    Formateurs extérieurs
+                </AppNavbarLink> -->
+                <template v-if="user.isSellingAdmin">
+                    <AppDropdownItem disabled variant="warning">
+                        Administrateur
+                    </AppDropdownItem>
+                    <AppNavbarLink icon="gear" to="selling-parameters" variant="warning">
+                        Paramètres
                     </AppNavbarLink>
                 </template>
             </AppNavbarItem>

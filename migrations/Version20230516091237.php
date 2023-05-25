@@ -21,13 +21,11 @@ final class Version20230516091237 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE customer ADD logistic_portal_password VARCHAR(255) DEFAULT NULL, ADD logistic_portal_url VARCHAR(255) DEFAULT NULL, ADD logistic_portal_username VARCHAR(255) DEFAULT NULL');
-        $this->addSql('ALTER TABLE parameter CHANGE type type ENUM(\'ARRAY\', \'SELECT_MULTIPLE_LINK\', \'INTEGER\') NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE customer DROP logistic_portal_password, DROP logistic_portal_url, DROP logistic_portal_username');
-        $this->addSql('ALTER TABLE parameter CHANGE type type VARCHAR(255) NOT NULL');
     }
 }

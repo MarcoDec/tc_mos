@@ -1,8 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import AppHome from '../components/pages/AppHome'
 import AppLogin from '../components/pages/AppLogin.vue'
-// import component from './routes/component'
-// import customer from './routes/customer'
 import hr from './hr'
 import logistics from './logistics'
 import management from './management'
@@ -22,8 +20,6 @@ const router = createRouter({
         ...project,
         ...purchase,
         ...quality,
-        //...component,
-        //...customer,
         ...selling,
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},

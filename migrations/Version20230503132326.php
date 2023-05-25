@@ -26,7 +26,6 @@ final class Version20230503132326 extends AbstractMigration
         $this->addSql('ALTER TABLE supplier_company DROP FOREIGN KEY IDX_CEDA7D502ADD6D8C');
         $this->addSql('ALTER TABLE supplier_company DROP FOREIGN KEY IDX_CEDA7D50979B1AD6');
         $this->addSql('DROP TABLE supplier_company');
-        $this->addSql('ALTER TABLE parameter CHANGE type type ENUM(\'ARRAY\', \'SELECT_MULTIPLE_LINK\', \'INTEGER\') NOT NULL');
     }
 
     public function down(Schema $schema): void
@@ -38,6 +37,5 @@ final class Version20230503132326 extends AbstractMigration
         $this->addSql('ALTER TABLE supplier_administered_by DROP FOREIGN KEY FK_8124AD3C2ADD6D8C');
         $this->addSql('ALTER TABLE supplier_administered_by DROP FOREIGN KEY FK_8124AD3C979B1AD6');
         $this->addSql('DROP TABLE supplier_administered_by');
-        $this->addSql('ALTER TABLE parameter CHANGE type type VARCHAR(255) NOT NULL');
     }
 }

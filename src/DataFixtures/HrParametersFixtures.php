@@ -60,7 +60,7 @@ class HrParametersFixtures extends Fixture {
                 ->setName($parameter['name'])
                 ->setValue($parameter['value'])
                 ->setTarget(ParameterAlias::PROCESSES['hr'])
-                ->setType($parameter['type']);
+                ->setKind($parameter['type']);
             $manager->persist($newHrParameter);
         }
         $manager->flush();

@@ -9,7 +9,7 @@ export default function useTable(id) {
             async cancel() {
                 this.id = id
                 this.search = {}
-                await this.fetchOne()
+                await this.fetch()
             },
             async create() {
                 const response = await api(this.url, 'POST', this.createBody)
@@ -21,10 +21,9 @@ export default function useTable(id) {
                     row.dispose()
                 this.$dispose()
             },
-            async fetchOne() {
-                const response = await api(this.url, 'GET', this.fetchBody)
+            async fetch() {
+                const response = await api(this.url + this.readFilter, 'GET', this.fetchBody)
                 this.resetItems()
-                console.log('row', response)
                 for (const row of response['hydra:member'])
                     this.rows.push(useRow(row, this))
             },
@@ -45,7 +44,7 @@ export default function useTable(id) {
                     this.sorted = field.name
                     this.sortName = field.sortName ?? field.name
                 }
-                await this.fetchOne()
+                await this.fetch()
             }
         },
         getters: {
@@ -53,7 +52,7 @@ export default function useTable(id) {
                 return field => (this.isSorter(field) ? this.order : 'none')
             },
             baseUrl() {
-                return `/api/${this.$id}`
+                return this.url
             },
             fetchBody() {
                 return {...this.orderBody, ...this.flatSearch}
@@ -67,12 +66,14 @@ export default function useTable(id) {
                 return state.sortName === null ? {} : {[`order[${state.sortName}]`]: this.orderParam}
             },
             orderParam: state => (state.asc ? 'asc' : 'desc'),
-            url: state => `/api/${state.id}`
+            url: state => `/api/${state.apiBaseRoute}`
         },
         state: () => ({
+            apiBaseRoute: '',
             asc: true,
             createBody: {},
             id,
+            readFilter: '',
             rows: [],
             search: {},
             sortName: null,
