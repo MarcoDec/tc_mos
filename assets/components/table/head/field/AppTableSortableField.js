@@ -20,7 +20,6 @@ export default {
             await props.store.sort(props.field)
             props.machine.send('success')
         }
-
         return () => h(
             'th',
             {ariaSort: ariaSort.value, onClick},

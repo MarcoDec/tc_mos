@@ -40,6 +40,10 @@ $dropdown-success: #57ec57 !default;
 .bg-success .dropdown-item {
   background-color: $dropdown-success !important;
 }
+.display-flex {
+  display: flex;
+}
+
 .d-flex{
   flex-direction: column;
 }
