@@ -4,7 +4,7 @@ import generateComponentAttribute from './componentAttribute'
 
 export const useComponentShowStore = defineStore('componentAttributes', {
     actions: {
-        async fetch() {
+        async fetchOne() {
             this.componentAttribute = []
             const response = await api('/api/component-attributes?component=1', 'GET')
             for (const attribute of response['hydra:member']) {

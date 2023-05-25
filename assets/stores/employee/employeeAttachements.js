@@ -9,9 +9,9 @@ export const useEmployeeAttachmentStore = defineStore('employeeAttachment', {
             form.append('category', data.category)
             form.append('employee', data.employee)
             await api('/api/employee-attachments', 'POST', form)
-            this.fetch()
+            this.fetchOne()
         },
-        async fetch() {
+        async fetchOne() {
             const response = await api('/api/employee-attachments?pagination=false', 'GET')
             this.employeeAttachment = await response['hydra:member']
         }

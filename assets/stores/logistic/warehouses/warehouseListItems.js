@@ -7,7 +7,7 @@ const userCompanyIri = user.company
 
 export const useWarehouseListItemsStore = defineStore('warehouseListItems', {
     actions: {
-        async fetch() {
+        async fetchOne() {
             this.items = []
             const response = await api(`/api/warehouses?company=${userCompanyIri}&pagination=false`, 'GET')
             console.log('res', response)

@@ -13,7 +13,7 @@ export default defineStore('eventsEngine', {
             for (const event of this.items) event.dispose()
             this.$dispose()
         },
-        async fetch() {
+        async fetchOne() {
             const response = await api('/api/engine-events', 'GET')
             for (const event of response['hydra:member']) this.items.push(generateEvent(event, this))
         }

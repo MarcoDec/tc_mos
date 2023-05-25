@@ -17,16 +17,16 @@ export default function generateItems(iriType) {
         actions: {
             async create(fields, data, url = null) {
                 this.reset()
-                const response = await api(fields).fetch(url ?? this.iri, 'POST', data)
+                const response = await api(fields).fetchOne(url ?? this.iri, 'POST', data)
                 this.items.push(generateItem(this.iriType, response, this))
             },
             dispose() {
                 this.reset()
                 this.$dispose()
             },
-            async fetch(url = null) {
+            async fetchOne(url = null) {
                 this.resetItems()
-                const response = await api.fetch(url ?? this.iri, 'GET', this.fetchBody)
+                const response = await api.fetchOne(url ?? this.iri, 'GET', this.fetchBody)
                 const view = response['hydra:view']
                 this.first = extractPage(view, 'first')
                 this.last = extractPage(view, 'last')
@@ -38,14 +38,14 @@ export default function generateItems(iriType) {
                 if (this.current > this.pages) {
                     this.current = this.pages
                     if (this.current > 0)
-                        await this.fetch(url)
+                        await this.fetchOne(url)
                     else
                         this.current = 1
                 }
             },
             async goTo(index, url = null) {
                 this.current = index
-                await this.fetch(url)
+                await this.fetchOne(url)
             },
             remove(removed) {
                 this.items = this.items.filter(item => item['@id'] !== removed)
@@ -64,7 +64,7 @@ export default function generateItems(iriType) {
             },
             async resetSearch() {
                 this.search = {}
-                await this.fetch()
+                await this.fetchOne()
             },
             async sort(field) {
                 if (this.sorted === field.name)
@@ -74,7 +74,7 @@ export default function generateItems(iriType) {
                     this.sorted = field.name
                     this.sortName = field.sortName ?? field.name
                 }
-                await this.fetch()
+                await this.fetchOne()
             }
         },
         getters: {

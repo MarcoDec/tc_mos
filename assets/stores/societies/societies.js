@@ -4,7 +4,7 @@ import generateSocieties from './societie'
 
 export const useSocietyStore = defineStore('societies', {
     actions: {
-        async fetch() {
+        async fetchOne() {
             this.societies = []
             const response = await api('/api/societies', 'GET')
             for (const society of response['hydra:member']) {

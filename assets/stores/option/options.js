@@ -16,7 +16,7 @@ export default function useOptions(base, valueProp = '@id') {
                         option.$dispose()
                 this.$dispose()
             },
-            async fetch() {
+            async fetchOne() {
                 if (!this.fetchable)
                     return
                 const response = await api(this.url)

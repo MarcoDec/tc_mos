@@ -5,7 +5,7 @@ import generateEmployee from './employee'
 export const useEmployeeStore = defineStore('employee', {
     actions: {
 
-        async fetch() {
+        async fetchOne() {
             const response = await api('/api/employees/24', 'GET')
             const item = generateEmployee(response, this)
             this.employee = item

@@ -53,16 +53,16 @@
     })
     onMounted(async () => {
         if (user.isManagementReader) {
-            listEventsCompany.fetch()
+            listEventsCompany.fetchOne()
         }
         if (user.isHrReader) {
-            listEventsEmployee.fetch()
+            listEventsEmployee.fetchOne()
         }
         if (user.isSellingReader) {
-            listEventsCustomer.fetch()
+            listEventsCustomer.fetchOne()
         }
         if (user.isMaintenanceReader) {
-            listEventsEngine.fetch()
+            listEventsEngine.fetchOne()
         }
     })
     function closeModal() {

@@ -17,7 +17,7 @@
     const fecthOptions = useOptions('units')
     const fecthColors = useColorsStore()
     await fecthOptions.fetchOp()
-    await fecthColors.fetch()
+    await fecthColors.fetchOne()
 
     const optionsAtt = computed(() =>
         fecthOptions.options.map(op => {
@@ -44,9 +44,9 @@
     const useFetchComponentStore = useComponentListStore()
     const useComponentStore = useComponentShowStore()
     const fetchComponentAttachment = useComponentAttachmentStore()
-    await useComponentStore.fetch()
-    await fetchComponentAttachment.fetch()
-    await useFetchComponentStore.fetch()
+    await useComponentStore.fetchOne()
+    await fetchComponentAttachment.fetchOne()
+    await useFetchComponentStore.fetchOne()
     const rohsValue = computed(() => useFetchComponentStore.component.rohs)
     const reachValue = computed(() => useFetchComponentStore.component.reach)
     useFetchComponentStore.component.price.code = 'EUR'
@@ -233,7 +233,7 @@
 
         await item.updateAttributes(data)
 
-        await useComponentStore.fetch()
+        await useComponentStore.fetchOne()
     }
     function updateLogistique(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -261,7 +261,7 @@
         }
 
         useFetchComponentStore.update(data, componentId)
-        useFetchComponentStore.fetch()
+        useFetchComponentStore.fetchOne()
     }
     function updateAchats(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -272,7 +272,7 @@
             manufacturerCode: formData.get('manufacturerCode')
         }
         useFetchComponentStore.updatePurchase(data, componentId)
-        useFetchComponentStore.fetch()
+        useFetchComponentStore.fetchOne()
     }
     const val = ref(Number(useFetchComponentStore.component.quality))
     async function input(value) {
@@ -284,7 +284,7 @@
             quality: val.value
         }
         await useFetchComponentStore.updateQuality(data, componentId)
-        await useFetchComponentStore.fetch()
+        await useFetchComponentStore.fetchOne()
     }
     async function updateQuality(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -304,7 +304,7 @@
             }
             try {
                 await fetchComponentAttachment.ajout(dataFichierRohs)
-                await fetchComponentAttachment.fetch()
+                await fetchComponentAttachment.fetchOne()
 
                 isError2.value = false
             } catch (error) {
@@ -323,7 +323,7 @@
             }
             try {
                 await fetchComponentAttachment.ajout(dataFichierReach)
-                await fetchComponentAttachment.fetch()
+                await fetchComponentAttachment.fetchOne()
 
                 isError2.value = false
             } catch (error) {
@@ -335,7 +335,7 @@
             }
         }
         await useFetchComponentStore.updateQuality(data, componentId)
-        await useFetchComponentStore.fetch()
+        await useFetchComponentStore.fetchOne()
         rohsValue.value = computed(() => useFetchComponentStore.component.rohs)
         reachValue.value = computed(() => useFetchComponentStore.component.reach)
     }
@@ -350,7 +350,7 @@
         }
         await useFetchComponentStore.updateAdmin(data, componentId)
         await useFetchComponentStore.updateMain(data, componentId)
-        await useFetchComponentStore.fetch()
+        await useFetchComponentStore.fetchOne()
     }
     async function updateSpecification(value) {
         const componentId = Number(value['@id'].match(/\d+/)[0])
@@ -373,7 +373,7 @@
 
         await useFetchComponentStore.updatePrice(data, componentId)
         // await useFetchComponentStore.update(dataWeight, componentId);
-        await useFetchComponentStore.fetch()
+        await useFetchComponentStore.fetchOne()
         useFetchComponentStore.component.price.code = 'EUR'
     }
     async function updateFichiers(value) {
@@ -388,7 +388,7 @@
 
         try {
             await fetchComponentAttachment.ajout(data)
-            await fetchComponentAttachment.fetch()
+            await fetchComponentAttachment.fetchOne()
 
             isError.value = false
         } catch (error) {

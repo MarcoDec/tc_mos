@@ -10,6 +10,10 @@
     import {useSupplierAttachmentStore} from '../../../stores/supplier/supplierAttachement'
     import {useSupplierContactsStore} from '../../../stores/supplier/supplierContacts'
     import {useSuppliersStore} from '../../../stores/supplier/suppliers'
+    import {useRoute} from 'vue-router'
+
+    const route = useRoute()
+    const idSupplier = route.params.id_supplier
 
     const emit = defineEmits([
         'update',
@@ -22,24 +26,25 @@
     const isShow = ref(false)
     const violations = ref([])
     const violations2 = ref([])
-    const fecthCurrencyOptions = useOptions('currencies')
-    const fecthCompanyOptions = useOptions('companies')
-    const fecthOptions = useOptions('countries')
+    const fetchCurrencyOptions = useOptions('currencies')
+    const fetchCompanyOptions = useOptions('companies')
+    const fetchOptions = useOptions('countries')
     const fetchSuppliersStore = useSuppliersStore()
-    const fecthIncotermStore = useIncotermStore()
+    const fetchIncotermStore = useIncotermStore()
     const fetchSocietyStore = useSocietyStore()
-    const fecthSupplierAttachmentStore = useSupplierAttachmentStore()
-    const fecthSupplierContactsStore = useSupplierContactsStore()
-    await fetchSuppliersStore.fetch()
+    const fetchSupplierAttachmentStore = useSupplierAttachmentStore()
+    const fetchSupplierContactsStore = useSupplierContactsStore()
+
+    await fetchSuppliersStore.fetchOne(idSupplier)
     await fetchSuppliersStore.fetchVatMessage()
-    await fecthIncotermStore.fetch()
-    await fetchSocietyStore.fetch()
-    await fecthCurrencyOptions.fetchOp()
-    await fecthSupplierAttachmentStore.fetch()
-    await fecthOptions.fetchOp()
-    await fecthCompanyOptions.fetchOp()
+    await fetchIncotermStore.fetchOne()
+    await fetchSocietyStore.fetchOne()
+    await fetchCurrencyOptions.fetchOp()
+    await fetchSupplierAttachmentStore.fetchOne()
+    await fetchOptions.fetchOp()
+    await fetchCompanyOptions.fetchOp()
     const supplierAttachment = computed(() =>
-        fecthSupplierAttachmentStore.supplierAttachment.map(attachment => ({
+        fetchSupplierAttachmentStore.supplierAttachment.map(attachment => ({
             icon: 'file-contract',
             id: attachment['@id'],
             label: attachment.url.split('/').pop(),
@@ -63,21 +68,21 @@
         {text: 'Force SANS TVA', value: 'Force SANS TVA'}
     ]
     const optionsCompany = computed(() =>
-        fecthCompanyOptions.options.map(op => {
+        fetchCompanyOptions.options.map(op => {
             const text = op.text
             const value = op['@id']
             const optionList = {text, value}
             return optionList
         }))
     const optionsCountries = computed(() =>
-        fecthOptions.options.map(op => {
+        fetchOptions.options.map(op => {
             const text = op.text
             const value = op.id
             const optionList = {text, value}
             return optionList
         }))
     const optionsCurrency = computed(() =>
-        fecthCurrencyOptions.options.map(op => {
+        fetchCurrencyOptions.options.map(op => {
             const text = op.text
             const value = op.value
             const optionList = {text, value}
@@ -91,13 +96,13 @@
             return optionList
         }))
 
-    const societyId = Number(fetchSuppliersStore.suppliers.society.match(/\d+/))
-    const supplierId = Number(fetchSuppliersStore.suppliers.id)
+    const societyId = Number(fetchSuppliersStore.supplier.society.match(/\d+/))
+    const supplierId = Number(fetchSuppliersStore.supplier.id)
     await fetchSocietyStore.fetchById(societyId)
-    await fecthSupplierContactsStore.fetchBySociety(societyId)
+    await fetchSupplierContactsStore.fetchBySociety(societyId)
 
     const itemsTable = computed(() =>
-        fecthSupplierContactsStore.itemsSocieties.reduce(
+        fetchSupplierContactsStore.itemsSocieties.reduce(
             (acc, curr) => acc.concat(curr),
             []
         ))
@@ -114,14 +119,14 @@
     const list = computed(() => ({...fetchSocietyStore.item, ...managed.value}))
 
     const listSuppliers = computed(() => ({
-        ...fetchSuppliersStore.suppliers,
+        ...fetchSuppliersStore.supplier,
         ...list.value,
         ...fetchSocietyStore.vatMessageValue,
         ...fetchSocietyStore.incotermsValue
     }))
     console.log('listSuppliers', listSuppliers)
     const optionsIncoterm = computed(() =>
-        fecthIncotermStore.incoterms.map(incoterm => {
+        fetchIncotermStore.incoterms.map(incoterm => {
             const text = incoterm.name
             const value = incoterm['@id']
             const optionList = {text, value}
@@ -288,7 +293,7 @@
         },
         {label: 'Fax', name: 'getPhone', type: 'text'}
     ]
-    const val = ref(Number(fetchSuppliersStore.suppliers.confidenceCriteria))
+    const val = ref(Number(fetchSuppliersStore.supplier.confidenceCriteria))
     async function input(value) {
         val.value = value.confidenceCriteria
         emit('update:modelValue', val.value)
@@ -297,7 +302,7 @@
         }
         const item = generateSupplier(value)
         await item.updateQuality(data)
-        await fetchSocietyStore.fetch()
+        await fetchSocietyStore.fetchOne()
     }
     async function update(value) {
         const form = document.getElementById('addQualite')
@@ -314,7 +319,7 @@
         const itemSoc = generateSocieties(value)
         await itemSoc.update(dataSociety)
         await item.updateQuality(data)
-        await fetchSocietyStore.fetch()
+        await fetchSocietyStore.fetchOne()
     }
     async function updateGeneral(value) {
         const form = document.getElementById('addGeneralites')
@@ -334,7 +339,7 @@
         const item = generateSupplier(value)
         await item.updateMain(data)
         await item.updateAdmin(dataAdmin)
-        await fetchSuppliersStore.fetch()
+        await fetchSuppliersStore.fetchOne()
     }
     async function updateLogistique(value) {
         const form = document.getElementById('addAchatLogistique')
@@ -360,7 +365,7 @@
         await fetchSocietyStore.fetchById(societyId)
         const item = generateSupplier(value)
         await item.updateLog(data)
-        await fetchSocietyStore.fetch()
+        await fetchSocietyStore.fetchOne()
 
         list.value = computed(() => ({
             ...fetchSocietyStore.item,
@@ -368,7 +373,7 @@
         }))
 
         listSuppliers.value = computed(() => ({
-            ...fetchSuppliersStore.suppliers,
+            ...fetchSuppliersStore.supplier,
             ...list.value,
             ...fetchSocietyStore.incotermsValue
         }))
@@ -428,7 +433,7 @@
         }))
 
         listSuppliers.value = computed(() => ({
-            ...fetchSuppliersStore.suppliers,
+            ...fetchSuppliersStore.supplier,
             ...list.value,
             ...fetchSocietyStore.vatMessageValue
         }))
@@ -444,7 +449,7 @@
             supplier: `/api/suppliers/${suppliersId}`
         }
         try {
-            await fecthSupplierAttachmentStore.ajout(data)
+            await fetchSupplierAttachmentStore.ajout(data)
 
             isError.value = false
         } catch (error) {
@@ -475,7 +480,7 @@
             surname: inputValues.surname ?? ''
         }
         try {
-            await fecthSupplierContactsStore.ajout(data, societyId)
+            await fetchSupplierContactsStore.ajout(data, societyId)
 
             isError2.value = false
         } catch (error) {
@@ -492,7 +497,7 @@
         }
     }
     async function deleted(id) {
-        await fecthSupplierContactsStore.deleted(id)
+        await fetchSupplierContactsStore.deleted(id)
     }
     async function updateSuppliers(inputValues) {
         const dataUpdate = {
@@ -517,8 +522,8 @@
             await item.update(dataUpdate)
             isError2.value = false
         } catch (error) {
-            await fecthSupplierContactsStore.fetchBySociety(societyId)
-            itemsTable.value = fecthSupplierContactsStore.itemsSocieties.reduce(
+            await fetchSupplierContactsStore.fetchBySociety(societyId)
+            itemsTable.value = fetchSupplierContactsStore.itemsSocieties.reduce(
                 (acc, curr) => acc.concat(curr),
                 []
             )
@@ -547,8 +552,8 @@
             <AppCardShow
                 id="addGeneralites"
                 :fields="Géneralitésfields"
-                :component-attribute="fetchSuppliersStore.suppliers"
-                @update="updateGeneral(fetchSuppliersStore.suppliers)"/>
+                :component-attribute="fetchSuppliersStore.supplier"
+                @update="updateGeneral(fetchSuppliersStore.supplier)"/>
         </AppTab>
         <AppTab
             id="gui-start-files"
@@ -558,7 +563,7 @@
             <AppCardShow
                 id="addFichiers"
                 :fields="Fichiersfields"
-                @update="updateFichiers(fetchSuppliersStore.suppliers)"/>
+                @update="updateFichiers(fetchSuppliersStore.supplier)"/>
             <div v-if="isError" class="alert alert-danger" role="alert">
                 <div v-for="violation in violations" :key="violation">
                     <li>{{ violation.message }}</li>
@@ -609,8 +614,8 @@
             <AppCardShow
                 id="addAdresses"
                 :fields="Adressefields"
-                :component-attribute="fetchSuppliersStore.suppliers"
-                @update="updateAddress(fetchSuppliersStore.suppliers)"/>
+                :component-attribute="fetchSuppliersStore.supplier"
+                @update="updateAddress(fetchSuppliersStore.supplier)"/>
         </AppTab>
         <AppTab
             id="gui-start-contacts"

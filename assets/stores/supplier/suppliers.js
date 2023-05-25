@@ -4,10 +4,10 @@ import generateSupplier from './supplier'
 
 export const useSuppliersStore = defineStore('suppliers', {
     actions: {
-        async fetch() {
-            const response = await api('/api/suppliers/1', 'GET')
+        async fetchOne(id = 1) {
+            const response = await api(`/api/suppliers/${id}`, 'GET')
             const item = generateSupplier(response, this)
-            this.suppliers = item
+            this.supplier = item
         },
         async fetchVatMessage() {
             const response = await api('/api/vat-messages', 'GET')
@@ -18,6 +18,7 @@ export const useSuppliersStore = defineStore('suppliers', {
     getters: {
     },
     state: () => ({
+        supplier: {},
         suppliers: {},
         vatMessage: []
     })

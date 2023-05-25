@@ -8,7 +8,7 @@
 
     const route = useRoute()
     const tree = useTree(route.name)
-    await tree.fetch()
+    await tree.fetchOne()
     console.log('tree', tree)
     console.log('route', route.name)
 

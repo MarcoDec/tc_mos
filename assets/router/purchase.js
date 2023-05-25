@@ -1,4 +1,5 @@
 import AppShowGui from '../components/pages/AppShowGui.vue'
+import AppShowGuiSupplier from '../components/pages/purchase/AppShowGuiSupplier.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
@@ -55,10 +56,10 @@ export default [
         }
     },
     {
-        component: AppShowGui,
+        component: AppShowGuiSupplier,
         meta: {container: false, title: 'Fournisseur — T-Concept GPAO'},
         name: 'supplier',
-        path: '/supplier'
+        path: '/supplier/:id_supplier'
     },
     {
         component: AppShowGui,

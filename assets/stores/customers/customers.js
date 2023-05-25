@@ -4,7 +4,7 @@ import generateCustomer from './customer'
 
 export const useCustomerStore = defineStore('customers', {
     actions: {
-        async fetch() {
+        async fetchOne() {
             const response = await api('/api/customers/1', 'GET')
             const item = generateCustomer(response, this)
             this.customer = item
@@ -15,7 +15,7 @@ export const useCustomerStore = defineStore('customers', {
         },
         async update(data, id) {
             await api(`/api/customers/${id}/logistics`, 'PATCH', data)
-            this.fetch()
+            this.fetchOne()
         }
     },
     getters: {

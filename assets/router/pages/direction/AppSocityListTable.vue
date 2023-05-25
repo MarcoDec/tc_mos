@@ -19,7 +19,7 @@
     let filterBy = {}
 
     const storeSocietyList = useSocietyListStore()
-    await storeSocietyList.fetch()
+    await storeSocietyList.fetchOne()
     await storeSocietyList.countryOption()
     const itemsTable = computed(() => storeSocietyList.itemsSocieties.reduce((acc, curr) => acc.concat(curr), []))
     const listCountry = computed(() => storeSocietyList.countriesOption)
@@ -188,7 +188,7 @@
     }
     async function cancelSearch() {
         filter.value = false
-        await storeSocietyList.fetch()
+        await storeSocietyList.fetchOne()
     }
 </script>
 

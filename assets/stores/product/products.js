@@ -4,7 +4,7 @@ import generateProduct from './product'
 
 export const useProductStore = defineStore('products', {
     actions: {
-        async fetch() {
+        async fetchOne() {
             const response = await api('/api/products/1', 'GET')
             const item = generateProduct(response, this)
             this.products = item

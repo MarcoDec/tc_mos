@@ -7,7 +7,7 @@
     import useNotifications from '../../../stores/notification/notifications'
 
     const notifications = useNotifications()
-    await notifications.fetch()
+    await notifications.fetchOne()
 
     const {send, state} = useMachine({
         id: 'notifications',

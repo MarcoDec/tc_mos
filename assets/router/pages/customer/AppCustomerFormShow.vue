@@ -29,11 +29,11 @@
     const fecthIncotermStore = useIncotermStore()
     const fecthSuppliersStore = useSuppliersStore()
     const fecthCustomerContactsStore = useCustomerContactsStore()
-    await fetchCustomerStore.fetch()
-    await fetchCustomerAttachmentStore.fetch()
+    await fetchCustomerStore.fetchOne()
+    await fetchCustomerAttachmentStore.fetchOne()
     await fetchCustomerStore.fetchInvoiceTime()
-    await fetchSocietyStore.fetch()
-    await fecthIncotermStore.fetch()
+    await fetchSocietyStore.fetchOne()
+    await fecthIncotermStore.fetchOne()
     await fecthSuppliersStore.fetchVatMessage()
     onUnmounted(() => {
         fecthCompanyOptions.dispose()
@@ -356,7 +356,7 @@
         await item.updateAccounting(dataAccounting)
         const itemSoc = generateSocieties(value)
         await itemSoc.update(data)
-        await fetchCustomerStore.fetch()
+        await fetchCustomerStore.fetchOne()
         console.log('je suis ici', dataCustomers.value)
     }
     async function updateLogistique(value) {
@@ -397,7 +397,7 @@
         await fetchSocietyStore.update(dataSociety, societyId)
         // const itemSoc = generateSocieties(value)
         // await itemSoc.update(dataSociety)
-        await fetchCustomerStore.fetch()
+        await fetchCustomerStore.fetchOne()
     }
     async function updateComp(value) {
         const form = document.getElementById('addComptabilite')
@@ -429,7 +429,7 @@
         //   const itemSoc = generateSocieties(value);
         //   await itemSoc.update(dataSociety);
         await fetchSocietyStore.fetchById(societyId)
-        await fetchCustomerStore.fetch()
+        await fetchCustomerStore.fetchOne()
     }
     const val = ref(Number(fetchCustomerStore.customer.administeredBy))
     async function input(value) {
@@ -440,7 +440,7 @@
         }
         const item = generateCustomer(value)
         await item.updateMain(data)
-        await fetchCustomerStore.fetch()
+        await fetchCustomerStore.fetchOne()
     }
     async function updateGeneral(value) {
         const form = document.getElementById('addGeneralites')
@@ -461,7 +461,7 @@
 
         await fetchSocietyStore.update(dataSociety, societyId)
         await fetchSocietyStore.fetchById(societyId)
-        await fetchCustomerStore.fetch()
+        await fetchCustomerStore.fetchOne()
     }
 
     async function updateAdresse(value) {
@@ -482,8 +482,8 @@
 
         const item = generateCustomer(value)
         await item.updateMain(dataSociety)
-        await fetchSocietyStore.fetch()
-        await fetchCustomerStore.fetch()
+        await fetchSocietyStore.fetchOne()
+        await fetchCustomerStore.fetchOne()
     }
 
     async function ajout(inputValues) {

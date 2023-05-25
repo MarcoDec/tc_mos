@@ -23,11 +23,11 @@
     const fetchEmployeeStore = useEmployeeStore()
     const fetchEmployeeContactsStore = useEmployeeContactsStore()
     const fetchEmployeeAttachementStore = useEmployeeAttachmentStore()
-    await fetchEmployeeStore.fetch()
+    await fetchEmployeeStore.fetchOne()
     await fetchEmployeeStore.fetchAll()
     await fetchEmployeeStore.fetchTeams()
 
-    await fetchEmployeeAttachementStore.fetch()
+    await fetchEmployeeAttachementStore.fetchOne()
     const emplId = Number(fetchEmployeeStore.employee.id)
     await fetchEmployeeContactsStore.fetchContactsEmpl(emplId)
     console.log('fetchEmployeeStore', fetchEmployeeStore)

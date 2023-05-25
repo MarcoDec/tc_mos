@@ -3,7 +3,7 @@ import {defineStore} from 'pinia'
 
 export const useIncotermStore = defineStore('incoterms', {
     actions: {
-        async fetch() {
+        async fetchOne() {
             const response = await api('/api/incoterms', 'GET')
             this.incoterms = response['hydra:member']
         }

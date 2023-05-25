@@ -9,9 +9,9 @@ export const useComponentAttachmentStore = defineStore('componentAttachment', {
             form.append('category', data.category)
             form.append('component', data.component)
             await api('/api/component-attachments', 'POST', form)
-            this.fetch()
+            this.fetchOne()
         },
-        async fetch() {
+        async fetchOne() {
             this.items = []
             const response = await api('/api/component-attachments?pagination=false', 'GET')
             this.componentAttachment = await response['hydra:member']

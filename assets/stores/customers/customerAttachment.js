@@ -9,9 +9,9 @@ export const useCustomerAttachmentStore = defineStore('customerAttachment', {
             form.append('category', data.category)
             form.append('customer', data.customer)
             await api('/api/customer-attachments', 'POST', form)
-            this.fetch()
+            this.fetchOne()
         },
-        async fetch() {
+        async fetchOne() {
             this.items = []
             const response = await api('/api/customer-attachments?pagination=false', 'GET')
             this.customerAttachment = await response['hydra:member']

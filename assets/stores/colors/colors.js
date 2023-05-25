@@ -3,7 +3,7 @@ import {defineStore} from 'pinia'
 
 export const useColorsStore = defineStore('colors', {
     actions: {
-        async fetch() {
+        async fetchOne() {
             const response = await api('/api/colors', 'GET')
             this.colors = await response['hydra:member']
         }

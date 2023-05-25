@@ -16,11 +16,11 @@
     const fetchProductAttachmentStore = useProductAttachmentStore()
     const fetchIncotermStore = useIncotermStore()
 
-    await fetchProductStore.fetch()
+    await fetchProductStore.fetchOne()
     await fetchProductStore.fetchProductFamily()
     await fecthOptions.fetchOp()
-    await fetchProductAttachmentStore.fetch()
-    await fetchIncotermStore.fetch()
+    await fetchProductAttachmentStore.fetchOne()
+    await fetchIncotermStore.fetchOne()
 
     const managedCopperValue = ref(fetchProductStore.products.managedCopper)
     console.log('managedCopperValue', managedCopperValue)
@@ -219,7 +219,7 @@
 
         const item = generateProduct(value)
         await item.updateMain(data)
-        await fetchProductStore.fetch()
+        await fetchProductStore.fetchOne()
     }
     async function updateAdmin(value) {
         const form = document.getElementById('addAdmin')
@@ -234,7 +234,7 @@
 
         const item = generateProduct(value)
         await item.updateAdmin(data)
-        await fetchProductStore.fetch()
+        await fetchProductStore.fetchOne()
     }
     async function updateProject(value) {
         const form = document.getElementById('addProject')
@@ -250,7 +250,7 @@
 
         const item = generateProduct(value)
         await item.updateProject(data)
-        await fetchProductStore.fetch()
+        await fetchProductStore.fetchOne()
     }
     async function updateProduction(value) {
         const form = document.getElementById('addProduction')
@@ -286,7 +286,7 @@
 
         const item = generateProduct(value)
         await item.updateProduction(data)
-        await fetchProductStore.fetch()
+        await fetchProductStore.fetchOne()
     }
     async function updateLogistique(value) {
         const form = document.getElementById('addLogistique')
@@ -312,7 +312,7 @@
         try {
             const item = generateProduct(value)
             await item.updateLogistique(data)
-            await fetchProductStore.fetch()
+            await fetchProductStore.fetchOne()
         } catch (error) {
             if (Array.isArray(error)) {
                 violations2.value = error

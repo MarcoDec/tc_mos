@@ -9,7 +9,7 @@ export default function useTable(id) {
             async cancel() {
                 this.id = id
                 this.search = {}
-                await this.fetch()
+                await this.fetchOne()
             },
             async create() {
                 const response = await api(this.url, 'POST', this.createBody)
@@ -21,7 +21,7 @@ export default function useTable(id) {
                     row.dispose()
                 this.$dispose()
             },
-            async fetch() {
+            async fetchOne() {
                 const response = await api(this.url, 'GET', this.fetchBody)
                 this.resetItems()
                 console.log('row', response)
@@ -45,7 +45,7 @@ export default function useTable(id) {
                     this.sorted = field.name
                     this.sortName = field.sortName ?? field.name
                 }
-                await this.fetch()
+                await this.fetchOne()
             }
         },
         getters: {

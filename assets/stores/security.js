@@ -54,7 +54,7 @@ function defineUserStore() {
                 }
             },
             cookies,
-            async fetch() {
+            async fetchOne() {
                 if (cookies.get('token')) {
                     try {
                         save(await api('/api/user'))

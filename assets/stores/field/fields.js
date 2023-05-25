@@ -9,10 +9,10 @@ export default function useFields(id, initialFields) {
                     field.dispose()
                 this.$dispose()
             },
-            async fetch() {
+            async fetchOne() {
                 for (const field of this.fields)
                     // eslint-disable-next-line no-await-in-loop
-                    await field.fetch()
+                    await field.fetchOne()
             },
             push(fields) {
                 for (const field of fields)

@@ -25,10 +25,10 @@
     const store = useTable(route.name)
     store.sorted = props.sort ? props.sort.name : null
     store.sortName = props.sort ? props.sort.name : null
-    await store.fetch()
+    await store.fetchOne()
     console.log('store table', store)
     const storedFields = useFields(route.name, props.fields)
-    await storedFields.fetch()
+    await storedFields.fetchOne()
 
     onUnmounted(() => {
         store.dispose()
