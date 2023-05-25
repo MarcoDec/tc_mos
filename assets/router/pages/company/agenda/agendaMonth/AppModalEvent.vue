@@ -1,5 +1,4 @@
 <script setup>
-    import {defineProps} from 'vue'
     defineProps({
         date: {required: true, type: String},
         id: {required: true, type: Number},

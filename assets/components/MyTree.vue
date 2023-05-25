@@ -1,6 +1,4 @@
 <script setup>
-    import {defineProps, ref} from 'vue'
-
     defineProps({
         node: {
             required: true,

@@ -1,6 +1,5 @@
 <script setup>
     import AppCollectionTableBody from './AppCollectionTableBody.vue'
-    import {defineProps} from 'vue'
 
     defineProps({
         currentPage: {required: true, type: String},

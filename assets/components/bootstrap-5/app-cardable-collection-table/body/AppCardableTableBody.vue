@@ -1,6 +1,5 @@
 <script setup>
     import AppCardableTableItem from './AppCardableTableItem.vue'
-    import {defineProps} from 'vue'
 
     defineProps({
         fields: {required: true, type: Array},

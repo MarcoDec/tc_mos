@@ -1,5 +1,5 @@
 <script setup>
-    import {defineProps, ref} from 'vue'
+    import {ref} from 'vue'
     const emit = defineEmits(['trierAlphabet'])
     defineProps({
         field: {required: true, type: Object}

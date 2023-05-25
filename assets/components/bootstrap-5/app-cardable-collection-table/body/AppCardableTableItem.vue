@@ -1,5 +1,4 @@
 <script setup>
-    import {defineProps} from 'vue'
     const props = defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object}

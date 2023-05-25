@@ -24,7 +24,7 @@ export default {
         return () => h(
             'th',
             {ariaSort: ariaSort.value, onClick},
-            h('span', {class: 'd-flex justify-content-between'}, [
+            h('span', {class: 'justify-content-between'}, [
                 h('span', props.field.label),
                 h('span', {class: 'd-flex flex-column'}, [
                     h(resolveComponent('Fa'), {class: up.value, icon: 'caret-up'}),

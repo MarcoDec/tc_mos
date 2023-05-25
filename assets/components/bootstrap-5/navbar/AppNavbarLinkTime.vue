@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineProps, ref} from 'vue'
+    import {computed, ref} from 'vue'
     import ClockAnalog from '../../clock/ClockAnalog.vue'
     import moment from 'moment-timezone'
     const props = defineProps({

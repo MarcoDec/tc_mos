@@ -1,6 +1,6 @@
 <script setup>
-    import {computed, defineProps} from 'vue'
     import clone from 'clone'
+    import {computed} from 'vue'
 
     const props = defineProps({
         fields: {required: true, type: Array},

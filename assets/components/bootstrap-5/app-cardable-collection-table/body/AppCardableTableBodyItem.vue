@@ -1,6 +1,5 @@
 <script setup>
     import AppCardableTableBody from './AppCardableTableBody.vue'
-    import {defineProps} from 'vue'
 
     defineProps({
         currentPage: {required: true, type: String},

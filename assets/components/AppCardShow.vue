@@ -1,5 +1,4 @@
 <script setup>
-    import {defineProps, ref} from 'vue'
     import AppBtnJS from './AppBtnJS'
     import AppFormJS from './form/AppFormJS'
 

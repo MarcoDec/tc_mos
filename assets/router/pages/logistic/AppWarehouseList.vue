@@ -5,7 +5,6 @@
     import AppModal from '../../../components/modal/AppModal.vue'
     import AppTableJS from '../../../components/table/AppTableJS'
     import Fa from '../../../components/Fa'
-    import {defineProps} from 'vue'
     import {useTableMachine} from '../../../machine'
     import {useWarehouseListItemsStore} from '../../../stores/logistic/warehouses/warehouseListItems'
 

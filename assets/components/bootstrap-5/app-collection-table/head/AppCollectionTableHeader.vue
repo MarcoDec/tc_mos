@@ -1,6 +1,5 @@
 <script setup>
     import AppCollectionTableHeaderfieleds from './AppCollectionTableHeaderfieleds.vue'
-    import {defineProps} from 'vue'
 
     const emit = defineEmits(['trierAlphabet'])
 

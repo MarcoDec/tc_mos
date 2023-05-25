@@ -1,5 +1,4 @@
 <script setup>
-    import {defineProps, ref} from 'vue'
     import AppCollectionTableItem from './AppCollectionTableItem.vue'
     import AppCollectionTableUpdateItem from './AppCollectionTableUpdateItem.vue'
 

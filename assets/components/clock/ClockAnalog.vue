@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineProps, onBeforeUnmount, onMounted, ref} from 'vue'
+    import {computed, onBeforeUnmount, onMounted, ref} from 'vue'
     import anime from 'animejs'
     import moment from 'moment-timezone'
     let interval = null
