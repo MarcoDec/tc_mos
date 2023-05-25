@@ -4,7 +4,7 @@ import generateSocieties from './societie'
 
 export const useSocietyStore = defineStore('societies', {
     actions: {
-        async fetchOne() {
+        async fetch() {
             this.societies = []
             const response = await api('/api/societies', 'GET')
             for (const society of response['hydra:member']) {
@@ -15,7 +15,7 @@ export const useSocietyStore = defineStore('societies', {
         async fetchById(id) {
             const response = await api(`/api/societies/${id}`, 'GET')
             console.log('response', response)
-            this.item = response
+            this.society = response
         },
         async update(data, id) {
             await api(`/api/societies/${id}`, 'PATCH', data)
@@ -24,23 +24,22 @@ export const useSocietyStore = defineStore('societies', {
 
     },
     getters: {
-
         incotermsValue: state => {
             const newObject = {
-                incotermsValue: state.item.incoterms ? state.item.incoterms['@id'] : null
+                incotermsValue: state.society.incoterms ? state.society.incoterms['@id'] : null
             }
             return newObject
         },
         vatMessageValue: state => {
             const newObject = {
-                vatMessageValue: state.item.vatMessage ? state.item.vatMessage['@id'] : null
+                vatMessageValue: state.society.vatMessage ? state.society.vatMessage['@id'] : null
             }
             return newObject
         }
     },
     state: () => ({
-        item: {},
-        societies: []
+        societies: [],
+        society: {}
 
     })
 })

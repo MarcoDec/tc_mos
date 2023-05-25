@@ -38,7 +38,7 @@
     await fetchSuppliersStore.fetchOne(idSupplier)
     await fetchSuppliersStore.fetchVatMessage()
     await fetchIncotermStore.fetchOne()
-    await fetchSocietyStore.fetchOne()
+    await fetchSocietyStore.fetch()
     await fetchCurrencyOptions.fetchOp()
     await fetchSupplierAttachmentStore.fetchOne()
     await fetchOptions.fetchOp()
@@ -110,13 +110,13 @@
     // const dataSuppliers = computed(() =>
     //     Object.assign(fetchSuppliersStore.suppliers, fetchSocietyStore.item))
     const managed = computed(() => {
-        const data = {managedCopper: fetchSocietyStore.item.copper.managed}
+        const data = {managedCopper: fetchSocietyStore.society.copper.managed}
         return data
     })
-    fetchSocietyStore.item.orderMin.code = 'EUR'
-    fetchSocietyStore.item.invoiceMin.code = 'EUR'
+    fetchSocietyStore.society.orderMin.code = 'EUR'
+    fetchSocietyStore.society.invoiceMin.code = 'EUR'
 
-    const list = computed(() => ({...fetchSocietyStore.item, ...managed.value}))
+    const list = computed(() => ({...fetchSocietyStore.society, ...managed.value}))
 
     const listSuppliers = computed(() => ({
         ...fetchSuppliersStore.supplier,
@@ -302,7 +302,7 @@
         }
         const item = generateSupplier(value)
         await item.updateQuality(data)
-        await fetchSocietyStore.fetchOne()
+        await fetchSocietyStore.fetch()
     }
     async function update(value) {
         const form = document.getElementById('addQualite')
@@ -319,7 +319,7 @@
         const itemSoc = generateSocieties(value)
         await itemSoc.update(dataSociety)
         await item.updateQuality(data)
-        await fetchSocietyStore.fetchOne()
+        await fetchSocietyStore.fetch()
     }
     async function updateGeneral(value) {
         const form = document.getElementById('addGeneralites')
@@ -365,10 +365,10 @@
         await fetchSocietyStore.fetchById(societyId)
         const item = generateSupplier(value)
         await item.updateLog(data)
-        await fetchSocietyStore.fetchOne()
+        await fetchSocietyStore.fetch()
 
         list.value = computed(() => ({
-            ...fetchSocietyStore.item,
+            ...fetchSocietyStore.society,
             ...managed.value
         }))
 
@@ -423,12 +423,12 @@
         await fetchSocietyStore.fetchById(societyId)
         //await fetchSocietyStore.fetch();
         managed.value = computed(() => {
-            const dataM = {managedCopper: fetchSocietyStore.item.copper.managed}
+            const dataM = {managedCopper: fetchSocietyStore.society.copper.managed}
             return dataM
         })
 
         list.value = computed(() => ({
-            ...fetchSocietyStore.item,
+            ...fetchSocietyStore.society,
             ...managed.value
         }))
 

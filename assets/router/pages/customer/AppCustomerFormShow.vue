@@ -11,6 +11,10 @@
     import useOptions from '../../../stores/option/options'
     import {useSocietyStore} from '../../../stores/societies/societies'
     import {useSuppliersStore} from '../../../stores/supplier/suppliers'
+    import {useRoute} from 'vue-router'
+
+    const route = useRoute()
+    const idCustomer = route.params.id_customer
 
     const emit = defineEmits(['update', 'update:modelValue'])
 
@@ -29,10 +33,10 @@
     const fecthIncotermStore = useIncotermStore()
     const fecthSuppliersStore = useSuppliersStore()
     const fecthCustomerContactsStore = useCustomerContactsStore()
-    await fetchCustomerStore.fetchOne()
+    await fetchCustomerStore.fetchOne(idCustomer)
     await fetchCustomerAttachmentStore.fetchOne()
     await fetchCustomerStore.fetchInvoiceTime()
-    await fetchSocietyStore.fetchOne()
+    await fetchSocietyStore.fetch()
     await fecthIncotermStore.fetchOne()
     await fecthSuppliersStore.fetchVatMessage()
     onUnmounted(() => {
@@ -42,7 +46,7 @@
     const customerId = Number(fetchCustomerStore.customer.id)
     await fetchSocietyStore.fetchById(societyId)
     await fecthCustomerContactsStore.fetchBySociety(societyId)
-    fetchSocietyStore.item.orderMin.code = 'EUR'
+    fetchSocietyStore.society.orderMin.code = 'EUR'
     fetchCustomerStore.customer.outstandingMax.code = 'EUR'
     const itemsTable = computed(() =>
         fecthCustomerContactsStore.itemsSocieties.reduce(
@@ -50,10 +54,10 @@
             []
         ))
     // const dataSuppliers = computed(() =>
-    //     Object.assign(fetchSuppliersStore.suppliers, fetchSocietyStore.item))
+    //     Object.assign(fetchSuppliersStore.suppliers, fetchSocietyStore.society))
     const dataCustomers = computed(() => ({
         ...fetchCustomerStore.customer,
-        ...fetchSocietyStore.item,
+        ...fetchSocietyStore.society,
         ...fetchSocietyStore.incotermsValue,
         ...fetchSocietyStore.vatMessageValue
     }))
@@ -356,7 +360,7 @@
         await item.updateAccounting(dataAccounting)
         const itemSoc = generateSocieties(value)
         await itemSoc.update(data)
-        await fetchCustomerStore.fetchOne()
+        await fetchCustomerStore.fetchOne(idCustomer)
         console.log('je suis ici', dataCustomers.value)
     }
     async function updateLogistique(value) {
@@ -397,7 +401,7 @@
         await fetchSocietyStore.update(dataSociety, societyId)
         // const itemSoc = generateSocieties(value)
         // await itemSoc.update(dataSociety)
-        await fetchCustomerStore.fetchOne()
+        await fetchCustomerStore.fetchOne(idCustomer)
     }
     async function updateComp(value) {
         const form = document.getElementById('addComptabilite')
@@ -429,7 +433,7 @@
         //   const itemSoc = generateSocieties(value);
         //   await itemSoc.update(dataSociety);
         await fetchSocietyStore.fetchById(societyId)
-        await fetchCustomerStore.fetchOne()
+        await fetchCustomerStore.fetchOne(idCustomer)
     }
     const val = ref(Number(fetchCustomerStore.customer.administeredBy))
     async function input(value) {
@@ -440,7 +444,7 @@
         }
         const item = generateCustomer(value)
         await item.updateMain(data)
-        await fetchCustomerStore.fetchOne()
+        await fetchCustomerStore.fetchOne(idCustomer)
     }
     async function updateGeneral(value) {
         const form = document.getElementById('addGeneralites')
@@ -461,7 +465,7 @@
 
         await fetchSocietyStore.update(dataSociety, societyId)
         await fetchSocietyStore.fetchById(societyId)
-        await fetchCustomerStore.fetchOne()
+        await fetchCustomerStore.fetchOne(idCustomer)
     }
 
     async function updateAdresse(value) {
@@ -482,8 +486,8 @@
 
         const item = generateCustomer(value)
         await item.updateMain(dataSociety)
-        await fetchSocietyStore.fetchOne()
-        await fetchCustomerStore.fetchOne()
+        await fetchSocietyStore.fetch()
+        await fetchCustomerStore.fetchOne(idCustomer)
     }
 
     async function ajout(inputValues) {
