@@ -7,6 +7,10 @@
     import {useEmployeeContactsStore} from '../../../stores/employee/employeeContacts'
     import {useEmployeeStore} from '../../../stores/employee/employees'
     import useOptions from '../../../stores/option/options'
+    import {useRoute} from 'vue-router'
+
+    const route = useRoute()
+    const idEmployee = route.params.id_employee
 
     const emit = defineEmits(['update', 'update:modelValue'])
     const isError = ref(false)
@@ -23,7 +27,7 @@
     const fetchEmployeeStore = useEmployeeStore()
     const fetchEmployeeContactsStore = useEmployeeContactsStore()
     const fetchEmployeeAttachementStore = useEmployeeAttachmentStore()
-    await fetchEmployeeStore.fetchOne()
+    await fetchEmployeeStore.fetchOne(idEmployee)
     await fetchEmployeeStore.fetchAll()
     await fetchEmployeeStore.fetchTeams()
 

@@ -1,3 +1,4 @@
+import AppShowGuiEmployee from '../components/pages/hr/AppShowGuiEmployee.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 
@@ -65,5 +66,11 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Plages horaires'
         }
+    },
+    {
+        component: AppShowGuiEmployee,
+        meta: {container: false, title: 'Employee — T-Concept GPAO'},
+        name: 'employee',
+        path: '/employee/:id_employee'
     }
 ]

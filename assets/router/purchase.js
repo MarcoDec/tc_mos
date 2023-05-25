@@ -70,12 +70,6 @@ export default [
     },
     {
         component: AppShowGui,
-        meta: {container: false, title: 'Employee — T-Concept GPAO'},
-        name: 'employee',
-        path: '/employee'
-    },
-    {
-        component: AppShowGui,
         meta: {container: false, title: 'Equipement — T-Concept GPAO'},
         name: 'equipment',
         path: '/equipment'

@@ -1,8 +1,5 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import AppComponentFormShow from '../../router/pages/component/AppComponentFormShow.vue'
-    import AppCustomerFormShow from '../../router/pages/customer/AppCustomerFormShow.vue'
-    import AppEmployeeFormShow from '../../router/pages/employee/AppEmployeeFormShow.vue'
     import AppTab from '../tab/AppTab.vue'
     import AppTabs from '../tab/AppTabs.vue'
     import AppToolFormShow from '../../router/pages/equipment/AppToolFormShow.vue'
@@ -37,19 +34,7 @@
     <div class="gui">
         <div class="gui-left">
             <div class="gui-card">
-                <AppSuspense><AppComponentFormShow v-if="route.name === 'component'"/></AppSuspense>
-                <AppSuspense><AppCustomerFormShow v-if="route.name === 'customer'"/></AppSuspense>
-                <AppSuspense> <AppEmployeeFormShow v-if="route.name === 'employee'"/></AppSuspense>
                 <AppSuspense><AppToolFormShow v-if="route.name === 'equipment'"/></AppSuspense>
-                <!-- <AppTabs id="gui-left">
-                    <AppTab id="gui-left-main" active icon="bars" tabs="gui-left" title="Généralités"/>
-                    <AppTab id="gui-left-files" icon="folder" tabs="gui-left" title="Fichiers"/>
-                    <AppTab id="gui-left-quality" icon="certificate" tabs="gui-left" title="Qualité"/>
-                    <AppTab id="gui-left-purchase-logistics" icon="boxes" tabs="gui-left" title="Achat/Logistique"/>
-                    <AppTab id="gui-left-accounting" icon="file-invoice-dollar" tabs="gui-left" title="Comptabilité"/>
-                    <AppTab id="gui-left-addresses" icon="map-marked-alt" tabs="gui-left" title="Adresses"/>
-                    <AppTab id="gui-left-contacts" icon="address-card" tabs="gui-left" title="Contacts"/>
-                </AppTabs> -->
             </div>
         </div>
         <div class="gui-right">
