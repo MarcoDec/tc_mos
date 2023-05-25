@@ -3,8 +3,8 @@ import {defineStore} from 'pinia'
 
 export const useComponentListStore = defineStore('component', {
     actions: {
-        async fetchOne() {
-            const response = await api('/api/components/1', 'GET')
+        async fetchOne(id = 1) {
+            const response = await api(`/api/components/${id}`, 'GET')
             this.component = await response
         },
         async update(data, id) {

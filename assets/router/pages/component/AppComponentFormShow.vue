@@ -7,6 +7,10 @@
     import {useComponentListStore} from '../../../stores/component/components'
     import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
     import useOptions from '../../../stores/option/options'
+    import {useRoute} from 'vue-router'
+
+    const route = useRoute()
+    const idComponent = route.params.id_component
 
     const emit = defineEmits(['update', 'update:modelValue'])
 
@@ -44,9 +48,9 @@
     const useFetchComponentStore = useComponentListStore()
     const useComponentStore = useComponentShowStore()
     const fetchComponentAttachment = useComponentAttachmentStore()
-    await useComponentStore.fetchOne()
-    await fetchComponentAttachment.fetchOne()
-    await useFetchComponentStore.fetchOne()
+    await useComponentStore.fetchOne(idComponent)
+    await fetchComponentAttachment.fetchOne(idComponent)
+    await useFetchComponentStore.fetchOne(idComponent)
     const rohsValue = computed(() => useFetchComponentStore.component.rohs)
     const reachValue = computed(() => useFetchComponentStore.component.reach)
     useFetchComponentStore.component.price.code = 'EUR'
@@ -235,8 +239,7 @@
 
         await useComponentStore.fetchOne()
     }
-    function updateLogistique(value) {
-        const componentId = Number(value['@id'].match(/\d+/)[0])
+    function updateLogistique() {
         const form = document.getElementById('addLogistique')
         const formData = new FormData(form)
         const data = {
@@ -260,34 +263,30 @@
             }
         }
 
-        useFetchComponentStore.update(data, componentId)
-        useFetchComponentStore.fetchOne()
+        useFetchComponentStore.update(data, idComponent)
+        useFetchComponentStore.fetchOne(idComponent)
     }
-    function updateAchats(value) {
-        const componentId = Number(value['@id'].match(/\d+/)[0])
+    function updateAchats() {
         const form = document.getElementById('addAchat')
         const formData = new FormData(form)
         const data = {
             manufacturer: formData.get('manufacturer'),
             manufacturerCode: formData.get('manufacturerCode')
         }
-        useFetchComponentStore.updatePurchase(data, componentId)
-        useFetchComponentStore.fetchOne()
+        useFetchComponentStore.updatePurchase(data, idComponent)
+        useFetchComponentStore.fetchOne(idComponent)
     }
     const val = ref(Number(useFetchComponentStore.component.quality))
     async function input(value) {
-        const componentId = Number(value['@id'].match(/\d+/)[0])
-
         val.value = value.quality
         emit('update:modelValue', val.value)
         const data = {
             quality: val.value
         }
-        await useFetchComponentStore.updateQuality(data, componentId)
-        await useFetchComponentStore.fetchOne()
+        await useFetchComponentStore.updateQuality(data, idComponent)
+        await useFetchComponentStore.fetchOne(idComponent)
     }
-    async function updateQuality(value) {
-        const componentId = Number(value['@id'].match(/\d+/)[0])
+    async function updateQuality() {
         const form = document.getElementById('addQualite')
         const formData = new FormData(form)
         const data = {
@@ -299,12 +298,12 @@
         if (rohsValue.value) {
             const dataFichierRohs = {
                 category: 'rohs',
-                component: `/api/components/${componentId}`,
+                component: `/api/components/${idComponent}`,
                 file: formData.get('rohsAttachment')
             }
             try {
                 await fetchComponentAttachment.ajout(dataFichierRohs)
-                await fetchComponentAttachment.fetchOne()
+                await fetchComponentAttachment.fetchOne(idComponent)
 
                 isError2.value = false
             } catch (error) {
@@ -318,12 +317,12 @@
         if (reachValue.value) {
             const dataFichierReach = {
                 category: 'reach',
-                component: `/api/components/${componentId}`,
+                component: `/api/components/${idComponent}`,
                 file: formData.get('reachAttachment')
             }
             try {
                 await fetchComponentAttachment.ajout(dataFichierReach)
-                await fetchComponentAttachment.fetchOne()
+                await fetchComponentAttachment.fetchOne(idComponent)
 
                 isError2.value = false
             } catch (error) {
@@ -334,13 +333,12 @@
                 isError2.value = true
             }
         }
-        await useFetchComponentStore.updateQuality(data, componentId)
-        await useFetchComponentStore.fetchOne()
+        await useFetchComponentStore.updateQuality(data, idComponent)
+        await useFetchComponentStore.fetchOne(idComponent)
         rohsValue.value = computed(() => useFetchComponentStore.component.rohs)
         reachValue.value = computed(() => useFetchComponentStore.component.reach)
     }
-    async function updateGeneral(value) {
-        const componentId = Number(value['@id'].match(/\d+/)[0])
+    async function updateGeneral() {
         const form = document.getElementById('addGeneralites')
         const formData = new FormData(form)
         const data = {
@@ -348,12 +346,11 @@
             name: formData.get('name'),
             notes: formData.get('notes')
         }
-        await useFetchComponentStore.updateAdmin(data, componentId)
-        await useFetchComponentStore.updateMain(data, componentId)
-        await useFetchComponentStore.fetchOne()
+        await useFetchComponentStore.updateAdmin(data, idComponent)
+        await useFetchComponentStore.updateMain(data, idComponent)
+        await useFetchComponentStore.fetchOne(idComponent)
     }
-    async function updateSpecification(value) {
-        const componentId = Number(value['@id'].match(/\d+/)[0])
+    async function updateSpecification() {
         const form = document.getElementById('addSpécification')
         const formData = new FormData(form)
 
@@ -371,24 +368,22 @@
         //   },
         // };
 
-        await useFetchComponentStore.updatePrice(data, componentId)
-        // await useFetchComponentStore.update(dataWeight, componentId);
-        await useFetchComponentStore.fetchOne()
+        await useFetchComponentStore.updatePrice(data, idComponent)
+        await useFetchComponentStore.fetchOne(idComponent)
         useFetchComponentStore.component.price.code = 'EUR'
     }
-    async function updateFichiers(value) {
-        const componentId = Number(value['@id'].match(/\d+/)[0])
+    async function updateFichiers() {
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
         const data = {
             category: formData.get('category'),
-            component: `/api/components/${componentId}`,
+            component: `/api/components/${idComponent}`,
             file: formData.get('file')
         }
 
         try {
             await fetchComponentAttachment.ajout(data)
-            await fetchComponentAttachment.fetchOne()
+            await fetchComponentAttachment.fetchOne(idComponent)
 
             isError.value = false
         } catch (error) {
@@ -413,7 +408,7 @@
                 id="addGeneralites"
                 :fields="Géneralitésfields"
                 :component-attribute="useFetchComponentStore.component"
-                @update="updateGeneral(useFetchComponentStore.component)"/>
+                @update="updateGeneral"/>
         </AppTab>
         <AppTab
             id="gui-start-attribut"
