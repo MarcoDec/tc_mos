@@ -15,7 +15,6 @@ export default function useFields(id, initialFields) {
                     await field.fetch()
             },
             push(fields) {
-                console.log(fields)
                 for (const field of fields)
                     this.fields.push(useField(field, this))
             }

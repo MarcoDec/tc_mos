@@ -7,6 +7,7 @@ import {
     faBell,
     faBoxes,
     faCalendar,
+    faCalendarDay,
     faCalendarWeek,
     faCaretDown,
     faCaretUp,
@@ -79,6 +80,7 @@ library.add(faAngleDoubleLeft)
 library.add(faBars)
 library.add(faBell)
 library.add(faBoxes)
+library.add(faCalendarDay)
 library.add(faCaretDown)
 library.add(faCaretUp)
 library.add(faCertificate)
