@@ -26,22 +26,27 @@
 </script>
 
 <template>
-    <div class="gui">
-        <div class="gui-left">
-            <div class="gui-card">
-                <slot name="gui-left"/>
-            </div>
+    <div class="gui-wrapper">
+        <div class="gui-header">
+            <slot name="gui-header"/>
         </div>
-        <div class="gui-right">
-            <div class="gui-card">
-                <slot name="gui-right"/>
+        <div class="gui">
+            <div class="gui-left">
+                <div class="gui-card">
+                    <slot name="gui-left"/>
+                </div>
             </div>
-        </div>
-        <div class="gui-bottom">
-            <div class="gui-card">
-                <slot name="gui-bottom"/>
+            <div class="gui-right">
+                <div class="gui-card">
+                    <slot name="gui-right"/>
+                </div>
             </div>
-            <hr class="gui-resizer" @mousedown="resize"/>
+            <div class="gui-bottom">
+                <div class="gui-card">
+                    <slot name="gui-bottom"/>
+                </div>
+                <hr class="gui-resizer" @mousedown="resize"/>
+            </div>
         </div>
     </div>
 </template>
