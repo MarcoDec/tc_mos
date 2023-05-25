@@ -9,7 +9,7 @@
     import {useRoute} from 'vue-router'
 
     const route = useRoute()
-    const id_product = route.params.id_product
+    const idProduct = route.params.id_product
 
     const isError = ref(false)
     const isError2 = ref(false)
@@ -20,7 +20,7 @@
     const fetchProductAttachmentStore = useProductAttachmentStore()
     const fetchIncotermStore = useIncotermStore()
 
-    await fetchProductStore.fetchOne(id_product)
+    await fetchProductStore.fetchOne(idProduct)
     await fetchProductStore.fetchProductFamily()
     await fecthOptions.fetchOp()
     await fetchProductAttachmentStore.fetchOne()
