@@ -72,7 +72,7 @@ export default [
         component: AppShowGuiWarehouse,
         meta: {container: false, title: 'Entrepot — T-Concept GPAO'},
         name: 'warehouse-show',
-        path: '/warehouse-show',
+        path: '/warehouse/:id_warehouse',
         props: {
             icon: 'warehouse',
             title: 'Entrepot',

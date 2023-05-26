@@ -29,7 +29,7 @@
         console.debug(`AppTableItemJSinVue showItem ${props.id}`, props.item.id)
         store.setCurrentId(props.item.id)
         emit('itemShow', props.item)
-        router.push('warehouse-show') //{props.item.id}\`
+        router.push('warehouse-show' + props.item.id) //{props.item.id}\`
     }
 </script>
 

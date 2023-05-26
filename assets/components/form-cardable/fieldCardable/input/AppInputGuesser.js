@@ -1,5 +1,5 @@
 import {h, resolveComponent} from 'vue'
-import AppGroupButton from './AppGroupButton.vue'
+//import AppGroupButton from './AppGroupButton.vue'
 import AppInputFile from './AppInputFile'
 import AppInputNumber from './AppInputNumber'
 import AppSelect from '../../../form/field/input/select/AppSelect.vue'
@@ -17,7 +17,7 @@ function getType(field) {
     case 'select':
         return AppSelect
     case 'grpbutton':
-        return AppGroupButton
+        return AppSwitch
     default:
         return resolveComponent('AppInput')
     }

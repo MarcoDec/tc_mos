@@ -2,6 +2,8 @@
     import {computed, ref} from 'vue'
     import {useTableMachine} from '../../../machine'
     import {useWarehouseStocksItemsStore} from '../../../stores/production/warehouseStocksItems'
+    import AppWarehouseListStockTable from './provisoir/AppWarehouseListStockTable.vue'
+    import AppWarehouseListVolumeTable from './provisoir/AppWarehouseListVolumeTable.vue'
     import {useRoute} from 'vue-router'
     const route = useRoute()
     const machine = useTableMachine(route.name)
@@ -120,10 +122,16 @@
 <template>
     <AppTabs id="gui-start-bottom" class="gui-start-content-bottom">
         <AppTab id="gui-start-stock" active title="Stock" icon="cubes-stacked" tabs="gui-start-bottom">
-            <AppTableJS id="warehouse:stock" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
+            <AppSuspense>
+                <AppTableJS id="warehouse:stock" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
+                <AppWarehouseListStockTable/>
+            </AppSuspense>
         </AppTab>
         <AppTab id="gui-start-volume" title="Volume" icon="ruler-vertical" tabs="gui-start-bottom">
-            <AppTableJS :id="route.name" :fields="Volumefields" :store="storeWarehouseStocksItems" items="Volumeitems" :machine="machine"/>
+            <AppSuspense>
+                <AppTableJS :id="route.name" :fields="Volumefields" :store="storeWarehouseStocksItems" items="Volumeitems" :machine="machine"/>
+                <AppWarehouseListVolumeTable/>
+            </AppSuspense>
         </AppTab>
     </AppTabs>
 </template>

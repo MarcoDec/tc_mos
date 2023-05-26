@@ -3,6 +3,7 @@
     import AppInputMeasure from './AppInputMeasure.vue'
     import AppInputNumber from './AppInputNumber.vue'
     import AppSelect from './select/AppSelect.vue'
+    import AppMultiselect from './select/AppMultiselect.vue'
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
     import AppTextArea from './AppTextArea.vue'
@@ -16,15 +17,18 @@
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
     const type = computed(() => {
+        //console.log(props.field)
         switch (props.field.type) {
             case 'boolean':
+                //console.log(props.field)
                 return AppSwitch
             case 'number':
                 return AppInputNumber
             case 'measure':
                 return AppInputMeasure
             case 'multiselect':
-                return 'AppMultiselect'
+                //console.log('multiselect')
+                return AppMultiselect
             case 'select':
                 return AppSelect
             case 'textarea':
@@ -35,7 +39,6 @@
     })
 
     function input(v) {
-        //console.log('input guesser', v)
         emit('update:modelValue', v)
     }
 </script>

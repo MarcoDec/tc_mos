@@ -8,10 +8,15 @@ export const useWarehouseShowStore = defineStore('warehouseShow', {
     }),
     actions: {
         async fetch() {
-            this.items = []
-            const response = await api(`/api/warehouses/${this.index}`, 'GET')
+            try {
+                this.items = []
+                const response = await api(`/api/warehouses/${this.index}`, 'GET')
 
-            this.items = response
+                this.items = response
+            } catch (error){
+                return true
+            }
+            return false
         },
 
         setCurrentId(id){

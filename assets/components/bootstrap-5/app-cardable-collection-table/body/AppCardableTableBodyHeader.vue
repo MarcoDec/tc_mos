@@ -8,20 +8,20 @@
         form: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
-    let inputValues = {}
+    let inputValues = []
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
-
+        /*
         if (cloned.type === 'boolean'){
             cloned.type = 'grpbutton'
-        }
+        }*/
         return cloned
     }))
     function search() {
         emit('search', inputValues)
     }
     async function cancelSearch() {
-        inputValues = {}
+        inputValues = []
         emit('cancelSearch', inputValues)
     }
 </script>

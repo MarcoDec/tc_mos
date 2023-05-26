@@ -2,7 +2,7 @@
     import {computed, ref} from 'vue'
     import {useWarehouseShowStore as warehouseStore} from '../../../stores/logistic/warehouses/warehouseShow.js'
     import {useSocietyListStore} from '../../../stores/direction/societyList.js'
-    import {useRouter} from 'vue-router'
+    import {useRoute} from 'vue-router'
     //import {useComponentListStore} from '../../../stores/component/components'
     //import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
     import useOptions from '../../../stores/option/options'
@@ -15,13 +15,9 @@
         await fecthCompanyOptions.fetchOp()
     }
 
-    /*const useComponentStore = useComponentShowStore()
-    const fetchComponentAttachment = useComponentAttachmentStore()
-    await useComponentStore.fetch()
-    await fetchComponentAttachment.fetch()
-    await useFetchComponentStore.fetch()*/
+    const maRoute = useRoute()
+    const warehouseId = maRoute.params.id_warehouse
 
-    const router = useRouter()
     const store = warehouseStore()
     const storeCompanyAll = useSocietyListStore()
     storeCompanyAll.fetch()
@@ -45,11 +41,13 @@
     }
 
     let Generalitesfields = []
+    const probl = await store.fetch()
     //const storedId = sessionStorage.getItem('warehouseID')
-    if (store.getCurrentId === null){
-        router.push('warehouse-list') //{props.item.id}\`
+    if (warehouseId === null || probl === true){
+        console.log('aie')
+        maRoute.push('/warehouse-list') //{props.item.id}\`
     } else {
-        await store.fetch()
+        // store.setCurrentId(props.)
         Generalitesfields = [
             {label: 'Name', name: 'name', type: 'text'},
             {

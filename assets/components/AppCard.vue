@@ -1,5 +1,6 @@
 <script setup>
-    defineProps({title: {required: true, type: String}})
+    const props = defineProps({title: {required: true, type: String}})
+    console.log(props)
 </script>
 
 <template>
