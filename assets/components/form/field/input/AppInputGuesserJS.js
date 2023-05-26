@@ -4,6 +4,7 @@ import AppInputNumberJS from './AppInputNumberJS'
 import AppMultiselect from './select/AppMultiselect.vue'
 import AppSelectJS from './select/AppSelectJS'
 import AppSwitch from './AppSwitch.vue'
+import AppTrafficLight from './AppTrafficLight.vue'
 import {generateField} from '../../../props'
 
 function getType(field) {
@@ -18,6 +19,8 @@ function getType(field) {
         return AppSelectJS
     case 'multiselect':
         return AppMultiselect
+        case 'trafficLight':
+        return AppTrafficLight
     default:
         return resolveComponent('AppInputJS')
     }

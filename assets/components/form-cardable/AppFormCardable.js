@@ -4,7 +4,7 @@ import AppFormGroup from './fieldCardable/AppFormGroup'
 
 function AppForm(props, context) {
     function generateSlot() {
-        return context.slots['default']({
+        return context.slots.default({
             disabled: props.disabled,
             form: props.id,
             submitLabel: props.submitLabel,
@@ -14,7 +14,7 @@ function AppForm(props, context) {
 
     const groups = []
     if (props.noContent) {
-        if (typeof context.slots['default'] === 'function')
+        if (typeof context.slots.default === 'function')
             groups.push(generateSlot())
     } else {
         for (const field of props.fields)
@@ -39,7 +39,7 @@ function AppForm(props, context) {
                 h(
                     'div',
                     {class: 'col d-inline-flex justify-content-end'},
-                    typeof context.slots['default'] === 'function'
+                    typeof context.slots.default === 'function'
                         ? generateSlot()
                         : h(
                             resolveComponent('AppBtn'),
@@ -61,18 +61,18 @@ function AppForm(props, context) {
             const data = new FormData(e.target)
             for (const [key, value] of Object.entries(Object.fromEntries(data))) {
                 if (typeof value === 'undefined' || value === null)
-                    data['delete'](key)
+                    data.delete(key)
                 if (typeof value === 'string') {
                     data.set(key, value.trim())
                     if (!props.noIgnoreNull && data.get(key).length === 0)
-                        data['delete'](key)
+                        data.delete(key)
                 }
             }
             context.emit('submit', data)
         }
     }
     if (props.inline)
-        attrs['class'] = 'd-inline m-0 p-0'
+        attrs.class = 'd-inline m-0 p-0'
     return h('form', attrs, groups)
 }
 

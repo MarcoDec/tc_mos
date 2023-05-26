@@ -3,6 +3,7 @@
     const emit = defineEmits(['update:modelValue', 'input'])
     const props = defineProps({
         field: {required: true, type: Object},
+        newField: {required: true, type: Object},
         form: {required: true, type: String},
         modelValue: {default: null, type: Object}
     })
@@ -20,6 +21,7 @@
     function input(value) {
         emit('update:modelValue', value)
     }
+    
 </script>
 
 <template>
@@ -28,6 +30,7 @@
         :field="field"
         :form="form"
         :model-value="modelValue"
+        :newField="newField"
         :values="modelValue"
         @update:model-value="input">
         <slot/>

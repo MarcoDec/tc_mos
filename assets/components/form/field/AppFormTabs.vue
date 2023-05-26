@@ -10,10 +10,10 @@
 
     const props = defineProps({
         field: {required: true, type: Object},
+        newField: {required: true, type: Object},
         form: {required: true, type: String},
         modelValue: {default: null}
     })
-    console.log('field', props.field)
     function input(value) {
         emit('update:modelValue', value)
     }
@@ -30,6 +30,7 @@
             <slot>
                 <AppFormField
                     v-for="child in field.children"
+                    :new-field="newField"
                     :key="child"
                     :field="child"
                     :form="form"

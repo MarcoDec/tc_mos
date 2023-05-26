@@ -1,7 +1,7 @@
 import {h} from 'vue'
 
 function AppContainer(props, context) {
-    const slot = context.slots['default']
+    const slot = context.slots.default
     return h('div', {class: props.fluid ? 'container-fluid' : 'container'}, typeof slot === 'function' ? slot() : null)
 }
 

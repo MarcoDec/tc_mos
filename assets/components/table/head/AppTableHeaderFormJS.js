@@ -40,8 +40,8 @@ function AppTableHeaderFormJS(props, context) {
                 })
             )
     ]
-    if (typeof context.slots['default'] === 'function')
-        formTd.push(context.slots['default']())
+    if (typeof context.slots.default === 'function')
+        formTd.push(context.slots.default())
     const children = [
         h('td', [
             h(resolveComponent('Fa'), {icon: props.icon}),

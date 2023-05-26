@@ -14,7 +14,7 @@ function AppFormGroupJS(props, context) {
     }
     const children = []
     if (props.violation) {
-        attrs['class'] = 'is-invalid'
+        attrs.class = 'is-invalid'
         children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
         children.push(h('div', {class: 'invalid-feedback'}, props.violation.message))
     } else

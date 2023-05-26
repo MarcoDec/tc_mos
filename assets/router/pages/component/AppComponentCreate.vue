@@ -78,13 +78,17 @@
             name: 'attributs'
         }
     ])
+    let formData = {};
+    function input(value) {
+        console.log('value', value)
+    }
 </script>
 
 <template>
     <div class="gui-card">
         <AppTabs id="gui-form-create" style="display: block !important;">
             <AppTab v-for="field in fields" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
-                <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children"/>
+                <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children"  @update:model-value="input"/>
                 <p v-else>
                     {{ field.label }} à définir
                 </p>

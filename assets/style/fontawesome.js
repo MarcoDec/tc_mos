@@ -6,6 +6,7 @@ import {
     faBell,
     faBoxes,
     faCalendar,
+    faCalendarDay,
     faCalendarWeek,
     faCaretDown,
     faCaretUp,
@@ -65,6 +66,7 @@ import {
     faUserTag,
     faWarehouse,
     faWrench
+
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -136,3 +138,4 @@ library.add(faChartLine)
 library.add(faWarehouse)
 library.add(faCubesStacked)
 library.add(faRulerVertical)
+library.add(faCalendarDay)
