@@ -1,4 +1,5 @@
 <script setup>
+    import AppInputGuesserJS from './AppInputGuesserJS'
     import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
@@ -15,10 +16,12 @@
     const codeName = computed(() => `${props.field.name}-code`)
 
     function codeValue(code) {
+        console.log('code', props.field, code)
         emit('update:modelValue', {...props.modelValue, code})
     }
 
     function inputValue(value) {
+        console.log('input', props.field, value)
         emit('update:modelValue', {...props.modelValue, value})
     }
 </script>

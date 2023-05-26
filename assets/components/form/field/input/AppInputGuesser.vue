@@ -1,7 +1,9 @@
 <script setup>
     /* eslint-disable vue/no-unused-properties */
+    import AppInput from './AppInput.vue'
     import AppInputMeasure from './AppInputMeasure.vue'
     import AppInputNumber from './AppInputNumber.vue'
+    import AppMultiselect from './select/AppMultiselect.vue'
     import AppSelect from './select/AppSelect.vue'
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
@@ -23,11 +25,11 @@
             case 'measure':
                 return AppInputMeasure
             case 'multiselect':
-                return 'AppMultiselect'
+                return AppMultiselect
             case 'select':
                 return AppSelect
             default:
-                return 'AppInput'
+                return AppInput
         }
     })
 

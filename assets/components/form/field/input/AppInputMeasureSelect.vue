@@ -1,5 +1,5 @@
 <script setup>
-    import AppSelectMesaure from './select/AppSelectMesaure.vue'
+    import AppSelectMeasure from './select/AppSelectMeasure.vue'
     import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
@@ -35,7 +35,7 @@
             :model-value="modelValue?.value"
             @update:model-value="inputValue"/>
 
-        <AppSelectMesaure
+        <AppSelectMeasure
             :id="codeId"
             :disabled="disabled"
             :field="field"

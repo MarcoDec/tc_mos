@@ -1,5 +1,6 @@
 <script setup>
     import AppOptionGroups from './AppOptionGroups.vue'
+    import AppOptions from './AppOptions.vue'
 
     const props = defineProps({
         disabled: {type: Boolean},
