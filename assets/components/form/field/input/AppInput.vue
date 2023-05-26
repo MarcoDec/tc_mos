@@ -26,6 +26,7 @@
         :type="type"
         :value="modelValue"
         autocomplete="off"
+        step="0.01"
         class="form-control form-control-sm"
         @input="input"/>
 </template>
