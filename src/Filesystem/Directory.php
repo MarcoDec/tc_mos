@@ -3,6 +3,7 @@
 namespace App\Filesystem;
 
 use App\Collection;
+use PHPUnit\Exception;
 use Stringable;
 
 final class Directory implements Stringable {
@@ -10,6 +11,9 @@ final class Directory implements Stringable {
     private readonly Collection $files;
 
     public function __construct(private readonly string $path) {
+        if (!file_exists($path)) {
+            mkdir($path,0777,false);
+        }
         $this->files = Collection::collect(scandir($path) ?: [])
             ->filter(static fn (string $file): bool => !in_array($file, ['.', '..', '.gitignore']));
     }
