@@ -61,7 +61,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:engine-group', 'read:id'],
             'openapi_definition_name' => 'EngineGroup-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationEnabled: false
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'engine'),
     ORM\DiscriminatorMap(self::TYPES),
@@ -72,7 +73,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class Group extends Entity {
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPartGroup::class,
-        EngineType::TYPE_TOOL => ToolGroup::class,
+        EngineType::TYPE_TOOL => ToolGroup::class,git 
         EngineType::TYPE_WORKSTATION => WorkstationGroup::class
     ];
 
