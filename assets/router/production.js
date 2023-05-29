@@ -9,7 +9,7 @@ export default [
         name: 'engine-groups',
         path: '/engine-groups',
         props: {
-            apiBaseRoute: 'manufacturers',
+            apiBaseRoute: 'engine-groups',
             fields: [
                 {label: 'Code', name: 'code'},
                 {label: 'Nom', name: 'name'},
