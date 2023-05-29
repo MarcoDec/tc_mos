@@ -65,6 +65,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Manufacturer-read',
             'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity
 ]
