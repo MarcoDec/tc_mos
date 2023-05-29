@@ -73,7 +73,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class Group extends Entity {
     final public const TYPES = [
         EngineType::TYPE_COUNTER_PART => CounterPartGroup::class,
-        EngineType::TYPE_TOOL => ToolGroup::class,git 
+        EngineType::TYPE_TOOL => ToolGroup::class,
         EngineType::TYPE_WORKSTATION => WorkstationGroup::class
     ];
 
