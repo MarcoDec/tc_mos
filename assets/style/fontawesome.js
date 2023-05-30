@@ -19,11 +19,13 @@ import {
     faCommentsDollar,
     faCubesStacked,
     faDatabase,
+    faEuroSign,
     faEye,
     faFileContract,
     faFileInvoiceDollar,
     faFilter,
     faFolder,
+    faGear,
     faHourglassHalf,
     faIcons,
     faIndustry,
@@ -36,6 +38,7 @@ import {
     faOilWell,
     faPalette,
     faPencilAlt,
+    faPeopleGroup,
     faPlus,
     faPlusCircle,
     faPrint,
@@ -45,6 +48,7 @@ import {
     faRulerHorizontal,
     faRulerVertical,
     faSearch,
+    faSignal,
     faShoppingBag,
     faShoppingCart,
     faShuttleVan,
@@ -79,11 +83,13 @@ library.add(faClock)
 library.add(faCommentsDollar)
 library.add(faDatabase)
 library.add(faElementor)
+library.add(faEuroSign)
 library.add(faEye)
 library.add(faFileContract)
 library.add(faFileInvoiceDollar)
 library.add(faFilter)
 library.add(faFolder)
+library.add(faGear)
 library.add(faHourglassHalf)
 library.add(faIcons)
 library.add(faIndustry)
@@ -96,6 +102,7 @@ library.add(faMapMarkedAlt)
 library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencilAlt)
+library.add(faPeopleGroup)
 library.add(faPlus)
 library.add(faPlusCircle)
 library.add(faPrint)
@@ -104,6 +111,7 @@ library.add(faPuzzlePiece)
 library.add(faReceipt)
 library.add(faRulerHorizontal)
 library.add(faSearch)
+library.add(faSignal)
 library.add(faShoppingBag)
 library.add(faShoppingCart)
 library.add(faShuttleVan)

@@ -22,7 +22,7 @@ export default function useTable(id) {
                 this.$dispose()
             },
             async fetch() {
-                const response = await api(this.url, 'GET', this.fetchBody)
+                const response = await api(this.url + this.readFilter, 'GET', this.fetchBody)
                 this.resetItems()
                 for (const row of response['hydra:member'])
                     this.rows.push(useRow(row, this))
@@ -52,7 +52,7 @@ export default function useTable(id) {
                 return field => (this.isSorter(field) ? this.order : 'none')
             },
             baseUrl() {
-                return `/api/${this.$id}`
+                return this.url
             },
             fetchBody() {
                 return {...this.orderBody, ...this.flatSearch}
@@ -66,12 +66,14 @@ export default function useTable(id) {
                 return state.sortName === null ? {} : {[`order[${state.sortName}]`]: this.orderParam}
             },
             orderParam: state => (state.asc ? 'asc' : 'desc'),
-            url: state => `/api/${state.id}`
+            url: state => `/api/${state.apiBaseRoute}`
         },
         state: () => ({
+            apiBaseRoute: '',
             asc: true,
             createBody: {},
             id,
+            readFilter: '',
             rows: [],
             search: {},
             sortName: null,

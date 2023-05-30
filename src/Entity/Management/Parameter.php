@@ -11,10 +11,48 @@ use App\Entity\Project\Parameter as ProjectParam;
 use App\Entity\Selling\Parameter as SellingParam;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\DiscriminatorFilter;
 
 #[
+   ApiFilter(DiscriminatorFilter::class),
+   ApiFilter(
+       filterClass: SearchFilter::class,
+       properties: ['name' => 'partial', 'description' => 'partial', 'kind' => 'partial', 'value' => 'partial']
+   ),
+   ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'description', 'kind', 'value']),
+   ApiResource(
+    description: 'Paramètre de processus Metier',
+    collectionOperations: [
+        'get' => [
+            'openapi_context' => [
+                'description' => 'Récupère les paramètres de processus Metier',
+                'summary' => 'Récupère les paramètres de processus Metier',
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'type',
+                        'required' => false,
+                        'schema' => ['enum' => ['hr', 'purchase', 'production', 'project', 'selling'], 'type' => 'string']
+                    ]
+                ],
+            ]
+        ]
+    ],
+    itemOperations: [
+        'get',
+        'patch'
+    ],
+    shortName: 'Parameter',
+    paginationItemsPerPage: 15,
+    paginationClientEnabled: true
+    ),
    ORM\MappedSuperclass,
-   ORM\DiscriminatorColumn('process', 'string'),
+   ORM\DiscriminatorColumn('type', 'string'),
    ORM\DiscriminatorMap(Parameter::PROCESSES),
    ORM\Entity,
    ORM\InheritanceType('SINGLE_TABLE')
@@ -22,11 +60,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Parameter extends Entity {
 
    #[
+      ApiProperty(description: 'Description du paramètre', example: 'Ce paramètre liste tous les id des familles de composant qui ...'),
       ORM\Column(nullable: true)
    ]
    private string|null $description;
 
-   #[ ORM\Column(type: "string")
+   #[ 
+        ApiProperty(description: 'Nom du paramètre à utiliser dans le code', example: 'PRODUCT_IDS_TERMINAUX'),
+        ORM\Column(type: "string")
       ]
    private string $name;
 
@@ -51,15 +92,17 @@ class Parameter extends Entity {
     private string|null $target;
 
     #[
+       ApiProperty(description: 'Type de paramètre (ARRAY / INTEGER / SELECT_MULTIPLE_LINK)', example: 'ARRAY'),
        ORM\Column(type: 'type')
        ]
-    private string|null $type;
+    private string|null $kind;
 
     /**
      * AppAssert\Directories(parameters={PurchaseParam::SUPPLIER_DIRECTORIES})
      * AppAssert\ExpirationDir(parameters={PurchaseParam::SUPPLIER_EXPIRATION_DIRECTORIES}).
      */
     #[
+       ApiProperty(description: 'Valeur du paramètre (ARRAY / INTEGER / SELECT_MULTIPLE_LINK)', example: '22,23,24'),
        Assert\NotBlank,
        ORM\Column
        ]
@@ -73,15 +116,15 @@ class Parameter extends Entity {
         return $this->target;
     }
 
-    final public function getType(): ?string {
-        return $this->type;
+    final public function getKind(): ?string {
+        return $this->kind;
     }
 
    /**
     * @return array<mixed>
     */
     final public function getTypedValue():array {
-        switch ($this->type) {
+        switch ($this->kind) {
             case Type::TYPE_SELECT_MULTIPLE_LINK:
             case Type::TYPE_ARRAY:
                 return !empty($this->value) ? explode(',', $this->value) : [];
@@ -114,8 +157,8 @@ class Parameter extends Entity {
         return $this;
     }
 
-    final public function setType(?string $type): self {
-        $this->type = $type;
+    final public function setKind(?string $type): self {
+        $this->kind = $type;
 
         return $this;
     }

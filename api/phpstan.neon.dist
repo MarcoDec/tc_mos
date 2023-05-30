@@ -1,9 +1,0 @@
-parameters:
-    level: 9
-    paths:
-        - config
-        - dev
-        - migrations
-        - src
-    symfony:
-        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml

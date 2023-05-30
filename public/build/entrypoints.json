@@ -10,6 +10,10 @@
         "http://0.0.0.0:8001/build/assets/index.js"
       ]
     }
+<<<<<<< HEAD
+  }
+=======
   },
   "assets": null
+>>>>>>> develop
 }

@@ -7,8 +7,7 @@ use App\Entity\Management\Parameter as BaseParameter;
 use Doctrine\ORM\Mapping as ORM;
 
 #[
-   ORM\Entity,
-   ApiResource
+   ORM\Entity
 ]
 class Parameter extends BaseParameter {
     public const SUPPLIER_ATTACHMENT_CATEGORIES = 'SUPPLIER_ATTACHMENT_CATEGORIES'; //Liste représentant les choix possibles des catégories de pièces jointes accepté par Supplier

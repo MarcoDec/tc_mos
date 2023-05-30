@@ -10,6 +10,7 @@ export default [
         name: 'carriers',
         path: '/carriers',
         props: {
+            apiBaseRoute: 'carriers',
             fields: [
                 {label: 'Nom', name: 'name'},
                 {label: 'Adresse', name: 'address.address'},
@@ -31,6 +32,7 @@ export default [
         name: 'incoterms',
         path: '/incoterms',
         props: {
+            apiBaseRoute: 'incoterms',
             fields: [{label: 'Code', name: 'code'}, {label: 'Nom', name: 'name'}],
             icon: 'file-contract',
             sort: readonly({label: 'Code', name: 'code'}),

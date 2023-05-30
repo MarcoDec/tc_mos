@@ -10,11 +10,18 @@ use App\Entity\Hr\TimeSlot;
 use App\Entity\Management\Society\Company\Company;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'timeSlot']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
     ApiResource(
         description: 'Équipe',
         collectionOperations: [

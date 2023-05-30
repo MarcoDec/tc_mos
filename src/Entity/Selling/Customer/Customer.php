@@ -212,6 +212,12 @@ class Customer extends Entity {
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private ?string $language = null;
+    #[
+        ApiProperty(description: 'Portail logistique'),
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private WebPortal $logisticPortal;
 
     #[
         ApiProperty(description: 'Encours mensuels', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -486,5 +492,16 @@ class Customer extends Entity {
         return $this;
     }
 
+    
+    public function getLogisticPortal(): WebPortal
+    {
+        return $this->logisticPortal;
+    }
 
+    public function setLogisticPortal(WebPortal $logisticPortal): self
+    {
+        $this->logisticPortal = $logisticPortal;
+
+        return $this;
+    }
 }
