@@ -11,17 +11,14 @@
 
     function getOptions() {
         if (typeof props.field.optionsList === 'undefined') {
-            //console.log(props.field)
             return props.field.options.options
         }
-        //console.log(props.field)
         return props.field.optionsList
     }
 
     const emit = defineEmits(['update:modelValue'])
 
     function update(v) {
-        console.log(v)
         emit('update:modelValue', v)
     }
 

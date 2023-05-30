@@ -1,6 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useWarehouseStockListStore} from './warehouseStockList'
+    import {useRoute} from 'vue-router'
 
     //import {useWarehouseListItemsStore} from '../../../../stores/logistic/warehouses/warehouseListItems'
 
@@ -19,7 +20,11 @@
     let trierAlpha = {}
     let filterBy = {}
 
+    const maRoute = useRoute()
+    const warehouseId = maRoute.params.id_warehouse
+
     const storeWarehouseStockList = useWarehouseStockListStore()
+    storeWarehouseStockList.setIdWarehouse(warehouseId)
     await storeWarehouseStockList.fetch()
     const itemsTable = ref(storeWarehouseStockList.itemsWarehousesStock)
     //console.log(storeWarehouseStockList.itemsWarehousesStock)
@@ -27,15 +32,8 @@
         composant: null, produit: null, numeroDeSerie: null, localisation: null, quantite: null, prison: null
     })
 
-    const optionComposant = [
-        {text: 'CAB-1000', value: 100},
-        {text: 'CAB-100', value: 10}
-    ]
-    const optionProduit = [
-        {text: '1188481x', value: 1000},
-        {text: '1188481', value: 10000},
-        {text: 'ywx', value: 20}
-    ]
+    const optionComposant = storeWarehouseStockList.getOptionComposant
+    const optionProduit = storeWarehouseStockList.getOptionProduit
 
     const fieldsForm = [
         {

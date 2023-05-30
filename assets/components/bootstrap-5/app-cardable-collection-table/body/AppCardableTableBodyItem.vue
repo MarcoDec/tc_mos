@@ -10,6 +10,7 @@
     })
     const emit = defineEmits(['deleted', 'update'])
     function update(item) {
+        //console.log(item)
         emit('update', item)
     }
     function deleted(id){

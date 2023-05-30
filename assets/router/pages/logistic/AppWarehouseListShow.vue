@@ -13,15 +13,6 @@
     const storeWarehouseStocksItems = useWarehouseStocksItemsStore()
     storeWarehouseStocksItems.fetchItems()
 
-    const optionComposant = [
-        {text: 'CAB-1000', value: 100},
-        {text: 'CAB-100', value: 10}
-    ]
-    const optionProduit = [
-        {text: '1188481x', value: 1000},
-        {text: '1188481', value: 10000},
-        {text: 'ywx', value: 20}
-    ]
     const optionRef = [
         {text: 'CAB-1000', value: 100},
         {text: 'CAB-100', value: 10},
@@ -29,64 +20,7 @@
         {text: '1188481', value: 10000},
         {text: 'ywx', value: 20}
     ]
-    const fieldsStocks = [
-        {
-            create: true,
-            filter: true,
-            label: 'Composant',
-            name: 'composant',
-            options: {label: value => optionComposant.find(option => option.value === value)?.text ?? null, options: optionComposant},
-            sort: true,
-            type: 'select',
-            update: true
-        },
-        {
-            create: true,
-            filter: true,
-            label: 'Produit',
-            name: 'produit',
-            options: {label: value => optionProduit.find(option => option.value === value)?.text ?? null, options: optionProduit},
-            sort: true,
-            type: 'select',
-            update: true
-        },
-        {
-            create: true,
-            filter: true,
-            label: 'Numéro de série',
-            name: 'numeroDeSerie',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            filter: true,
-            label: 'Localisation',
-            name: 'localisation',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            filter: true,
-            label: 'Quantité ',
-            name: 'quantite',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            filter: true,
-            label: 'Prison',
-            name: 'prison',
-            sort: true,
-            type: 'boolean',
-            update: true
-        }
-    ]
+
     const Volumefields = [
         {
             create: true,
@@ -123,7 +57,6 @@
     <AppTabs id="gui-start-bottom" class="gui-start-content-bottom">
         <AppTab id="gui-start-stock" active title="Stock" icon="cubes-stacked" tabs="gui-start-bottom">
             <AppSuspense>
-                <AppTableJS id="warehouse:stock" :fields="fieldsStocks" :store="storeWarehouseStocksItems" :machine="machine"/>
                 <AppWarehouseListStockTable/>
             </AppSuspense>
         </AppTab>

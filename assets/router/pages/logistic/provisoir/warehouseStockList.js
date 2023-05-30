@@ -3,20 +3,20 @@ import {defineStore} from 'pinia'
 
 export const useWarehouseStockListStore = defineStore('warehouseStockList', {
     actions: {
+        setIdWarehouse(id){
+            this.warehouseID = id
+        },
         async addWarehouseStock(payload){
             await api('/api/stocks', 'POST', payload)
-            //this.itemsPagination(this.lastPage)
             this.fetch()
         },
-
         async delated(payload){
             await api(`/api/stocks/${payload}`, 'DELETE')
             this.warehousesStock = this.warehousesStock.filter(warehouse => Number(warehouse['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
-            const response = await api('/api/stocks', 'GET')
+            const response = await api(`/api/stocks?warehouse=${this.warehouseID}`, 'GET')
             this.warehousesStock = await this.updatePagination(response)
-            //console.log('creê')
         },
         async filterBy(payload){
             let url = '/api/stocks?'
@@ -40,14 +40,14 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
             this.warehousesStock = await this.updatePagination(response)
         },
         async itemsPagination(nPage) {
-            const response = await api(`/api/stocks?page=${nPage}`, 'GET')
+            const response = await api(`/api/stocks?page=${nPage}&warehouse=${this.warehouseID}`, 'GET')
             this.warehousesStock = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
                 if (payload.trierAlpha.value.composant === 'composant') {
-                    let url = `/api/stocks?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&`
+                    let url = `/api/stocks?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&warehouse=${this.warehouseID}&`
                     if (payload.filterBy.value.composant !== '') {
                         url += `composant=${payload.filterBy.value.composant}&`
                     }
@@ -114,13 +114,13 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
                 response = await api(url, 'GET')
                 this.warehousesStock = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
-                response = await api(`/api/stocks?page=${payload.nPage}`, 'GET')
+                response = await api(`/api/stocks?page=${payload.nPage}&warehouse=${this.warehouseID}`, 'GET')
                 this.warehousesStock = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'composant') {
-                    response = await api(`/api/stocks?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/stocks?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}&warehouse=${this.warehouseID}`, 'GET')
                 } else {
-                    response = await api(`/api/stocks?order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/stocks?order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}&warehouse=${this.warehouseID}`, 'GET')
                 }
                 this.warehousesStock = await this.updatePagination(response)
             }
@@ -148,7 +148,7 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
                 } else {
-                    let url = `/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&`
+                    let url = `/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&warehouse=${this.warehouseID}&`
                     if (filterBy.value.composant !== '') {
                         url += `composant=${filterBy.value.composant}&`
                     }
@@ -170,9 +170,9 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
                 this.warehousesStock = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'composant') {
-                    response = await api(`/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}&warehouse=${this.warehouseID}`, 'GET')
                 } else {
-                    response = await api(`/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}&warehouse=${this.warehouseID}`, 'GET')
                 }
                 this.warehousesStock = await this.updatePagination(response)
             }
@@ -209,24 +209,46 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
     },
     getters: {
         itemsWarehousesStock: state => state.warehousesStock.map(item => {
-            const comp = item['@id']
-            const prod = 10
+            let prod = null
+            let comp = null
+            if (item['@type'] === 'ProductStock'){
+                prod = item.item.code
+            } else {
+                comp = item.item.code
+            }
             const numSerie = item.batchNumber
-            const loc = 'l'
-            const quant = item.quantity_value
+            const loc = item.location
+            const quant = item.quantity.value + ' ' + item.quantity.code
             const pris = item.jail
             const newObject = {
                 ...item,
                 composant: comp,
                 produit: prod,
                 numeroDeSerie: numSerie,
-                location: loc,
+                localisation: loc,
                 quantite: quant,
                 prison: pris
             }
-            //console.log(newObject)
             return newObject
-        })
+        }),
+        getOptionComposant() {
+            const opt = []
+            for (const warehouse of this.warehousesStock){
+                if (warehouse['@type'] === 'ComponentStock'){
+                    opt.push({text: warehouse.item.code, value: warehouse.item.id})
+                }
+            }
+            return opt
+        },
+        getOptionProduit() {
+            const opt = []
+            for (const warehouse of this.warehousesStock){
+                if (warehouse['@type'] === 'ProductStock'){
+                    opt.push({text: warehouse.item.code, value: warehouse.item.id})
+                }
+            }
+            return opt
+        }
     },
     state: () => ({
         currentPage: '',
@@ -235,6 +257,7 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
         nextPage: '',
         pagination: false,
         previousPage: '',
-        warehousesStock: []
+        warehousesStock: [],
+        warehouseID: 0
     })
 })
