@@ -16,7 +16,7 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
-    const type = computed(() => {
+    const kind = computed(() => {
         switch (props.field.type) {
             case 'boolean':
                 return AppSwitch
@@ -39,5 +39,5 @@
 </script>
 
 <template>
-    <component :is="type" v-bind="$props" @update:model-value="input"/>
+    <component :is="kind" v-bind="$props" @update:model-value="input"/>
 </template>

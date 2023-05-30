@@ -19,7 +19,6 @@
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref({})
-    console.log('je suis ici', input)
     const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'search', 'cancelSearch', 'ajout'])
     function update(item){
         emit('update', item)

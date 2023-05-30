@@ -27,7 +27,6 @@
     await fetchIncotermStore.fetch()
 
     const managedCopperValue = ref(fetchProductStore.product.managedCopper)
-    console.log('managedCopperValue', managedCopperValue)
     const productAttachment = computed(() =>
         fetchProductAttachmentStore.productAttachment.map(attachment => ({
             icon: 'file-contract',
@@ -348,7 +347,6 @@
             await fetchProductAttachmentStore.ajout(data)
             isError.value = false
         } catch (error) {
-            console.log('error', error)
             const err = {
                 message: error
             }

@@ -101,6 +101,23 @@ abstract class Group extends Entity {
     ]
     private bool $safetyDevice = false;
 
+    #[
+        Serializer\Groups(['read:engine-group'])
+    ]
+    public function getType(): string {
+        switch (get_class($this)) {
+            case CounterPartGroup::class:
+                return EngineType::TYPE_COUNTER_PART;
+            case ToolGroup::class:
+                return EngineType::TYPE_TOOL;
+            case WorkstationGroup::class:
+                return EngineType::TYPE_WORKSTATION;
+            default:
+                return '';
+        }
+    }
+
+
     final public function getCode(): ?string {
         return $this->code;
     }

@@ -2,6 +2,14 @@
     import AppTablePageSuspense from './AppTablePageSuspense.vue'
 
     defineProps({
+        apiBaseRoute: {default: '', required: true, type: String},
+        apiTypedRoutes: {
+            default: () => {
+                const obj = {}
+                return obj
+            },
+            type: Object
+        },
         disableRemove: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
@@ -26,7 +34,13 @@
 </script>
 
 <template>
-    <AppTablePageSuspense :disable-remove="disableRemove" :fields="fields" :icon="icon" :sort="sort" :title="title">
+    <AppTablePageSuspense
+        :api-base-route="apiBaseRoute"
+        :api-typed-routes="apiTypedRoutes"
+        :disable-remove="disableRemove"
+        :fields="fields" :icon="icon"
+        :sort="sort"
+        :title="title">
         <template #create(btn)="{fields: createFields, form, icon: submitIcon, label, send, store, submit, variant}">
             <AppForm :id="form" class="d-inline m-0 p-0" @submit="() => onSubmit(createFields, send, store, submit)">
                 <AppBtn :icon="submitIcon" :label="label" :variant="variant" type="submit"/>

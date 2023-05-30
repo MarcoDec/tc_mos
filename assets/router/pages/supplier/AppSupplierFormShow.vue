@@ -124,7 +124,6 @@
         ...fetchSocietyStore.vatMessageValue,
         ...fetchSocietyStore.incotermsValue
     }))
-    console.log('listSuppliers', listSuppliers)
     const optionsIncoterm = computed(() =>
         fetchIncotermStore.incoterms.map(incoterm => {
             const text = incoterm.name

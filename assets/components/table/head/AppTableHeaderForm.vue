@@ -28,7 +28,6 @@
     function input(v) {
         emit('update:modelValue', v)
     }
-
     function reverse() {
         props.send(props.reverseMode)
     }

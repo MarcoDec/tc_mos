@@ -34,7 +34,6 @@
     await fetchEmployeeAttachementStore.fetchOne()
     const emplId = Number(fetchEmployeeStore.employee.id)
     await fetchEmployeeContactsStore.fetchContactsEmpl(emplId)
-    console.log('fetchEmployeeStore', fetchEmployeeStore)
     const employeeAttachment = computed(() =>
         fetchEmployeeAttachementStore.employeeAttachment.map(attachment => ({
             icon: 'file-contract',

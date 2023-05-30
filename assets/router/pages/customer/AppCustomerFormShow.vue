@@ -61,7 +61,6 @@
         ...fetchSocietyStore.incotermsValue,
         ...fetchSocietyStore.vatMessageValue
     }))
-    console.log('dataCustomers', dataCustomers)
     const customerAttachment = computed(() =>
         fetchCustomerAttachmentStore.customerAttachment.map(attachment => ({
             icon: 'file-contract',
@@ -108,8 +107,6 @@
             const optionList = {text, value}
             return optionList
         }))
-    console.log('optionsCompany', optionsCompany)
-    console.log('fecthCompanyOptions', fecthCompanyOptions)
     const optionsVat = computed(() =>
         fecthSuppliersStore.vatMessage.map(op => {
             const text = op.name
@@ -362,7 +359,6 @@
         const itemSoc = generateSocieties(value)
         await itemSoc.update(data)
         await fetchCustomerStore.fetchOne(idCustomer)
-        console.log('je suis ici', dataCustomers.value)
     }
     async function updateLogistique(value) {
         const form = document.getElementById('addLogistique')

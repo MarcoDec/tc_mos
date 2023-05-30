@@ -14,7 +14,6 @@ export const useSocietyStore = defineStore('societies', {
         },
         async fetchById(id) {
             const response = await api(`/api/societies/${id}`, 'GET')
-            console.log('response', response)
             this.society = response
         },
         async update(data, id) {

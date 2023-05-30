@@ -9,7 +9,6 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: String}
     })
-
     function getOptions() {
         if (typeof props.field.optionsList === 'undefined') {
             return props.field.options.options

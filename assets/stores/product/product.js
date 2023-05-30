@@ -2,7 +2,6 @@ import api from '../../api'
 import {defineStore} from 'pinia'
 
 export default function generateProduct(products) {
-    console.log('pppp', products)
     const id = Number(products['@id'].match(/\d+/))
 
     return defineStore(`${products['@id']}`, {

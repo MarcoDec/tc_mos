@@ -12,9 +12,26 @@ export default function useTable(id) {
                 await this.fetch()
             },
             async create() {
-                const response = await api(this.url, 'POST', this.createBody)
-                this.resetItems()
-                this.rows.push(useRow(response, this))
+                const fieldType = this.getApiTypedRoutes.field
+                if (fieldType) {
+                    const fieldValue = this.createBody[fieldType]
+                    const urls = this.getApiTypedRoutes.routes
+                    const urlLength = urls.length
+                    let url = ''
+                    for (let i = 0; i < urlLength; i++) {
+                        const theValue = urls[i].valeur
+                        if (theValue === fieldValue) {
+                            url = urls[i].url
+                        }
+                    }
+                    const response = await api(url, 'POST', this.createBody)
+                    this.resetItems()
+                    this.rows.push(useRow(response, this))
+                } else {
+                    const response = await api(this.url, 'POST', this.createBody)
+                    this.resetItems()
+                    this.rows.push(useRow(response, this))
+                }
             },
             dispose() {
                 for (const row of this.rows)
@@ -58,6 +75,7 @@ export default function useTable(id) {
                 return {...this.orderBody, ...this.flatSearch}
             },
             flatSearch: state => flat(state.search),
+            getApiTypedRoutes: state => state.apiTypedRoutes,
             isSorter: state => field => field.name === state.sorted,
             order() {
                 return `${this.orderParam}ending`
@@ -70,6 +88,7 @@ export default function useTable(id) {
         },
         state: () => ({
             apiBaseRoute: '',
+            apiTypedRoutes: null,
             asc: true,
             createBody: {},
             id,
