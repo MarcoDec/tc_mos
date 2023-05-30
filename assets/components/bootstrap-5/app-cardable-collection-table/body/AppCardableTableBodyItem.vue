@@ -10,7 +10,6 @@
     })
     const emit = defineEmits(['deleted', 'update'])
     function update(item) {
-        //console.log(item)
         emit('update', item)
     }
     function deleted(id){
@@ -30,6 +29,6 @@
         <th scope="row" :title="currentPage">
             {{ calculIndice(index, currentPage) }}
         </th>
-        <AppCardableTableBody :item="item" :fields="fields" @update="update" @deleted="deleted"/>
+        <AppCardableTableBody :item="item" :fields="fields" :indice="index" @update="update" @deleted="deleted"/>
     </tr>
 </template>

@@ -17,17 +17,14 @@
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
     const type = computed(() => {
-        //console.log(props.field)
         switch (props.field.type) {
             case 'boolean':
-                //console.log(props.field)
                 return AppSwitch
             case 'number':
                 return AppInputNumber
             case 'measure':
                 return AppInputMeasure
             case 'multiselect':
-                //console.log('multiselect')
                 return AppMultiselect
             case 'select':
                 return AppSelect

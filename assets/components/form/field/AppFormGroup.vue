@@ -15,9 +15,8 @@
     const violation = computed(() => props.violations.find(v => v.propertyPath === props.field.name)?.message)
     const hasViolation = computed(() => Boolean(violation.value))
     const css = computed(() => ({'is-invalid': hasViolation.value}))
-    //console.log(props)
+
     function input(v) {
-        //console.log(props)
         emit('input', props.field, v)
         emit('update:modelValue', {...props.modelValue, [props.field.name]: v})
     }

@@ -20,8 +20,8 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
         },
         async filterBy(payload){
             let url = '/api/stocks?'
-            if (payload.composant !== '') {
-                url += `composant=${payload.composant}&`
+            if (payload.component !== '') {
+                url += `component=${payload.component}&`
             }
             // if (payload.porduit !== '') {
             //     url += `produit=${payload.produit}&`
@@ -46,10 +46,10 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
-                if (payload.trierAlpha.value.composant === 'composant') {
-                    let url = `/api/stocks?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&warehouse=${this.warehouseID}&`
-                    if (payload.filterBy.value.composant !== '') {
-                        url += `composant=${payload.filterBy.value.composant}&`
+                if (payload.trierAlpha.value.component === 'component') {
+                    let url = `/api/stocks?order%5B${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&warehouse=${this.warehouseID}&`
+                    if (payload.filterBy.value.component !== '') {
+                        url += `component=${payload.filterBy.value.component}&`
                     }
                     // if (payload.porduit !== '') {
                     //     url += `produit=${payload.produit}&`
@@ -67,9 +67,9 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
                     response = await api(url, 'GET')
                     this.societies = await this.updatePagination(response)
                 } else {
-                    let url = `/api/stocks?order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&`
-                    if (payload.filterBy.value.composant !== '') {
-                        url += `composant=${payload.filterBy.value.composant}&`
+                    let url = `/api/stocks?order%5Baddress.${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&`
+                    if (payload.filterBy.value.component !== '') {
+                        url += `component=${payload.filterBy.value.component}&`
                     }
                     // if (payload.porduit !== '') {
                     //     url += `produit=${payload.produit}&`
@@ -92,8 +92,8 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
                 }
             } else if (payload.filter.value === true){
                 let url = '/api/stocks?'
-                if (payload.filterBy.value.composant !== '') {
-                    url += `composant=${payload.filterBy.value.composant}&`
+                if (payload.filterBy.value.component !== '') {
+                    url += `component=${payload.filterBy.value.component}&`
                 }
                 // if (payload.porduit !== '') {
                 //     url += `produit=${payload.produit}&`
@@ -117,10 +117,10 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
                 response = await api(`/api/stocks?page=${payload.nPage}&warehouse=${this.warehouseID}`, 'GET')
                 this.warehousesStock = await this.updatePagination(response)
             } else {
-                if (payload.trierAlpha.value.composant === 'composant') {
-                    response = await api(`/api/stocks?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}&warehouse=${this.warehouseID}`, 'GET')
+                if (payload.trierAlpha.value.component === 'component') {
+                    response = await api(`/api/stocks?order%5B${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}&warehouse=${this.warehouseID}`, 'GET')
                 } else {
-                    response = await api(`/api/stocks?order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}&warehouse=${this.warehouseID}`, 'GET')
+                    response = await api(`/api/stocks?order%5Baddress.${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}&warehouse=${this.warehouseID}`, 'GET')
                 }
                 this.warehousesStock = await this.updatePagination(response)
             }
@@ -128,10 +128,10 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
         async sortableItems(payload, filterBy, filter) {
             let response = {}
             if (filter.value === true){
-                if (payload.composant === 'composant') {
-                    let url = `/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&`
-                    if (filterBy.value.composant !== '') {
-                        url += `composant=${filterBy.value.composant}&`
+                if (payload.component === 'component') {
+                    let url = `/api/stocks?order%5B${payload.component}%5D=${payload.trier.value}&`
+                    if (filterBy.value.component !== '') {
+                        url += `component=${filterBy.value.component}&`
                     }
                     // if (payload.porduit !== '') {
                     //     url += `produit=${payload.produit}&`
@@ -148,9 +148,9 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
                 } else {
-                    let url = `/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&warehouse=${this.warehouseID}&`
-                    if (filterBy.value.composant !== '') {
-                        url += `composant=${filterBy.value.composant}&`
+                    let url = `/api/stocks?order%5B${payload.component}%5D=${payload.trier.value}&warehouse=${this.warehouseID}&`
+                    if (filterBy.value.component !== '') {
+                        url += `component=${filterBy.value.component}&`
                     }
                     // if (payload.porduit !== '') {
                     //     url += `produit=${payload.produit}&`
@@ -169,10 +169,10 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
                 }
                 this.warehousesStock = await this.updatePagination(response)
             } else {
-                if (payload.composant === 'composant') {
-                    response = await api(`/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}&warehouse=${this.warehouseID}`, 'GET')
+                if (payload.component === 'component') {
+                    response = await api(`/api/stocks?order%5B${payload.component}%5D=${payload.trier.value}&page=${this.currentPage}&warehouse=${this.warehouseID}`, 'GET')
                 } else {
-                    response = await api(`/api/stocks?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}&warehouse=${this.warehouseID}`, 'GET')
+                    response = await api(`/api/stocks?order%5B${payload.component}%5D=${payload.trier.value}&page=${this.currentPage}&warehouse=${this.warehouseID}`, 'GET')
                 }
                 this.warehousesStock = await this.updatePagination(response)
             }
@@ -218,7 +218,7 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
             }
             const numSerie = item.batchNumber
             const loc = item.location
-            const quant = item.quantity.value + ' ' + item.quantity.code
+            const quant = item.quantity
             const pris = item.jail
             const newObject = {
                 ...item,
@@ -233,21 +233,28 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
         }),
         getOptionComposant() {
             const opt = []
-            for (const warehouse of this.warehousesStock){
-                if (warehouse['@type'] === 'ComponentStock'){
-                    opt.push({text: warehouse.item.code, value: warehouse.item.id})
+            const codes = new Set()
+
+            for (const warehouse of this.warehousesStock) {
+                if (warehouse['@type'] === 'ComponentStock' && !codes.has(warehouse.item.code)) {
+                    opt.push({text: warehouse.item.code})
+                    codes.add(warehouse.item.code)
                 }
             }
-            return opt
+            return opt.length === 0 ? [{text: 'Aucun élément'}] : opt
         },
         getOptionProduit() {
             const opt = []
-            for (const warehouse of this.warehousesStock){
-                if (warehouse['@type'] === 'ProductStock'){
-                    opt.push({text: warehouse.item.code, value: warehouse.item.id})
+            const codes = new Set()
+
+            for (const warehouse of this.warehousesStock) {
+                if (warehouse['@type'] === 'ProductStock' && !codes.has(warehouse.item.code)) {
+                    opt.push({text: warehouse.item.code})
+                    codes.add(warehouse.item.code)
                 }
             }
-            return opt
+
+            return opt.length === 0 ? [{text: 'Aucun élément'}] : opt
         }
     },
     state: () => ({
