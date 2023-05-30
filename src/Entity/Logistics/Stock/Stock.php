@@ -4,6 +4,7 @@ namespace App\Entity\Logistics\Stock;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Embeddable\Logistics\Order\ReceiptStateType;
@@ -31,7 +32,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template T of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse', 'item']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['batchNumber' => 'partial', 'location' => 'partial', 'jail' => 'company']),
+
     ApiResource(
         description: 'Stock',
         collectionOperations: [
