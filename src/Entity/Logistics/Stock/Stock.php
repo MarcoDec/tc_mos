@@ -50,7 +50,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récu^père un stock',
+                    'summary' => 'Récupère un stock'
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un stock',
