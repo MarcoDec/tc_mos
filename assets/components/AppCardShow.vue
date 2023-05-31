@@ -7,8 +7,8 @@
         componentAttribute: {required: true, type: Object},
         // disabled: {type: Boolean},
         fields: {default: () => [], type: Array},
-        id: {required: true, type: String}
-
+        id: {required: true, type: String},
+        title: {default: '', type: String}
     })
     const emit = defineEmits(['update', 'update:modelValue'])
     const updated = ref(false)
@@ -34,12 +34,13 @@
 <template>
     <div class="card">
         <div class="bg-secondary card-header">
-            <div v-if="!updated">
-                <AppBtnJS icon="pencil-alt" variant="primary" @click="update"/>
-            </div>
-            <div v-else>
-                <AppBtnJS icon="check" variant="success" @click="success"/>
-                <AppBtnJS icon="times" variant="danger" @click="annule"/>
+            <div>
+                <AppBtnJS v-if="!updated" icon="pencil-alt" variant="primary" @click="update"/>
+                <span v-else>
+                    <AppBtnJS icon="check" variant="success" @click="success"/>
+                    <AppBtnJS icon="times" variant="danger" @click="annule"/>
+                </span>
+                <span class="text-white">{{ title }}</span>
             </div>
         </div>
         <ul v-if="disable" class="card-body">

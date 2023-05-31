@@ -1,16 +1,26 @@
 <script setup>
     import {computed, ref} from 'vue'
     import MyTree from '../../../MyTree.vue'
+    import {useParametersStore} from '../../../../stores/parameters/parameters'
     import {useSupplierAttachmentStore} from '../../../../stores/supplier/supplierAttachement'
     import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
 
     const currentSupplierData = ref({})
     const fetchSuppliersStore = useSuppliersStore()
     currentSupplierData.value = fetchSuppliersStore.supplier
+    const parametersStore = useParametersStore()
+    await parametersStore.getByName('SUPPLIER_ATTACHMENT_CATEGORIES')
+    const folderList = parametersStore.parameter.value.split(',').map(x => {
+        const theReturn = {
+            text: x,
+            value: x
+        }
+        return theReturn
+    })
     const fetchSupplierAttachmentStore = useSupplierAttachmentStore()
     await fetchSupplierAttachmentStore.fetchBySupplier(currentSupplierData.value.id)
     const fichiersfields = [
-        {label: 'Catégorie', name: 'category', type: 'text'},
+        {label: 'Catégorie', name: 'category', options: {options: folderList}, type: 'select'},
         {label: 'Fichier', name: 'file', type: 'file'}
     ]
     const isError = ref(false)
@@ -63,11 +73,14 @@
             id="addFichiers"
             :fields="fichiersfields"
             :component-attribute="currentSupplierData"
+            title="Ajouter un nouveau Fichier"
             @update="updateFichiers(fetchSuppliersStore.supplier)"/>
         <div v-if="isError" class="alert alert-danger" role="alert">
-            <div v-for="violation in violations" :key="violation">
-                <li>{{ violation.message }}</li>
-            </div>
+            <ul>
+                <li v-for="violation in violations" :key="violation">
+                    {{ violation.message }}
+                </li>
+            </ul>
         </div>
         <MyTree :node="treeData"/>
     </AppTab>

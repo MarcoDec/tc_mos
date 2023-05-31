@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 
 export default function useParameter(parameter, parent) {
-    return defineStore(`${parent.$id}/${attribute.id}`, {
+    return defineStore(`${parent.$id}/${parameter.id}`, {
         actions: {
             dispose() {
                 this.parent.removeParameter(this)
@@ -9,7 +9,7 @@ export default function useParameter(parameter, parent) {
             }
         },
         getters: {
-            field: state => ({label: state.name, name: state['@id'], type: 'boolean'}),
+            field: state => ({label: state.name, name: state['@id'], type: 'boolean'})
         },
         state: () => ({...parameter, parent})
     })()
