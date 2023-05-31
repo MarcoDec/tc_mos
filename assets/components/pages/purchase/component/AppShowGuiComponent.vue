@@ -1,8 +1,8 @@
 <script setup>
-    import AppShowGuiGen from '../AppShowGuiGen.vue'
-    import AppSupplierFormShow from '../../../router/pages/supplier/AppSupplierFormShow.vue'
-    import AppTab from '../../tab/AppTab.vue'
-    import AppTabs from '../../tab/AppTabs.vue'
+    import AppComponentFormShow from '../../../../router/pages/component/AppComponentFormShow.vue'
+    import AppShowGuiGen from '../../AppShowGuiGen.vue'
+    import AppTab from '../../../tab/AppTab.vue'
+    import AppTabs from '../../../tab/AppTabs.vue'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()
@@ -11,7 +11,7 @@
 <template>
     <AppShowGuiGen>
         <template #gui-left>
-            <AppSuspense> <AppSupplierFormShow/></AppSuspense>
+            <AppSuspense><AppComponentFormShow/></AppSuspense>
         </template>
         <template #gui-bottom>
             <AppTabs id="gui-bottom">
@@ -21,7 +21,7 @@
             </AppTabs>
         </template>
         <template #gui-right>
-            {{ route.params.id_supplier }}
+            {{ route.params.id_component }}
         </template>
     </AppShowGuiGen>
 </template>

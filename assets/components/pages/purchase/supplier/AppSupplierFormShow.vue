@@ -1,16 +1,16 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import MyTree from '../../MyTree.vue'
-    import generateSocieties from '../../../stores/societies/societie'
-    import generateSupplier from '../../../stores/supplier/supplier'
-    import generateSupplierContact from '../../../stores/supplier/supplierContact'
-    import {useIncotermStore} from '../../../stores/incoterm/incoterm'
-    import useOptions from '../../../stores/option/options'
+    import MyTree from '../../../MyTree.vue'
+    import generateSocieties from '../../../../stores/societies/societie'
+    import generateSupplier from '../../../../stores/supplier/supplier'
+    import generateSupplierContact from '../../../../stores/supplier/supplierContact'
+    import {useIncotermStore} from '../../../../stores/incoterm/incoterm'
+    import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
-    import {useSocietyStore} from '../../../stores/societies/societies'
-    import {useSupplierAttachmentStore} from '../../../stores/supplier/supplierAttachement'
-    import {useSupplierContactsStore} from '../../../stores/supplier/supplierContacts'
-    import {useSuppliersStore} from '../../../stores/supplier/suppliers'
+    import {useSocietyStore} from '../../../../stores/societies/societies'
+    import {useSupplierAttachmentStore} from '../../../../stores/supplier/supplierAttachement'
+    import {useSupplierContactsStore} from '../../../../stores/supplier/supplierContacts'
+    import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
 
     const route = useRoute()
     const idSupplier = route.params.id_supplier

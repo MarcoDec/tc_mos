@@ -1,6 +1,7 @@
 <script setup>
     import AppCollectionTableItem from './AppCollectionTableItem.vue'
     import AppCollectionTableUpdateItem from './AppCollectionTableUpdateItem.vue'
+    import {ref} from 'vue'
 
     defineProps({
         fields: {required: true, type: Array},

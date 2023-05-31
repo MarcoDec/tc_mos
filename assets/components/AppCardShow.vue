@@ -4,7 +4,7 @@
     import {ref} from 'vue'
 
     defineProps({
-        componentAttribute: {default: () => [], type: Array},
+        componentAttribute: {required: true, type: Object},
         // disabled: {type: Boolean},
         fields: {default: () => [], type: Array},
         id: {required: true, type: String}

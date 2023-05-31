@@ -1,4 +1,6 @@
 <script setup>
+    import AppFormFieldset from './AppFormFieldset.vue'
+    import AppFormGroupJS from './AppFormGroupJS'
     import {computed} from 'vue'
     // import AppFormFieldset from './AppFormFieldset.vue'
 
@@ -14,9 +16,9 @@
             // case 'tab':
             //     return 'AppFormTabs'
             case 'fieldset':
-                return 'AppFormFieldset'
+                return AppFormFieldset
             default:
-                return 'AppFormGroupJS'
+                return AppFormGroupJS
         }
     })
     function input(value) {
