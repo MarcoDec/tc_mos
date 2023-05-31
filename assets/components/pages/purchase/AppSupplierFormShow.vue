@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import MyTree from '../../../components/MyTree.vue'
+    import MyTree from '../../MyTree.vue'
     import generateSocieties from '../../../stores/societies/societie'
     import generateSupplier from '../../../stores/supplier/supplier'
     import generateSupplierContact from '../../../stores/supplier/supplierContact'
@@ -14,18 +14,21 @@
 
     const route = useRoute()
     const idSupplier = route.params.id_supplier
-
+    //Définition des évènements
     const emit = defineEmits([
         'update',
         'update:modelValue',
         'rating',
         'cancelSearch'
     ])
+    //Création des variables locales
     const isError = ref(false)
     const isError2 = ref(false)
     const isShow = ref(false)
     const violations = ref([])
     const violations2 = ref([])
+    const currentSupplierData = ref({})
+    //Création des Stores
     const fetchCurrencyOptions = useOptions('currencies')
     const fetchCompanyOptions = useOptions('companies')
     const fetchOptions = useOptions('countries')
@@ -34,9 +37,10 @@
     const fetchSocietyStore = useSocietyStore()
     const fetchSupplierAttachmentStore = useSupplierAttachmentStore()
     const fetchSupplierContactsStore = useSupplierContactsStore()
-
+    //Chargement du Fournisseur courant
     await fetchSuppliersStore.fetchOne(idSupplier)
-    const currentSupplierData = ref(fetchSuppliersStore.supplier)
+    currentSupplierData.value = fetchSuppliersStore.supplier
+    //Chargement des informations liées
     await fetchSuppliersStore.fetchVatMessage()
     await fetchIncotermStore.fetch()
     await fetchSocietyStore.fetch()
@@ -44,6 +48,7 @@
     await fetchSupplierAttachmentStore.fetch()
     await fetchOptions.fetchOp()
     await fetchCompanyOptions.fetchOp()
+
     const supplierAttachment = computed(() =>
         fetchSupplierAttachmentStore.supplierAttachment.map(attachment => ({
             icon: 'file-contract',
