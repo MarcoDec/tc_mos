@@ -36,6 +36,7 @@
     const fetchSupplierContactsStore = useSupplierContactsStore()
 
     await fetchSuppliersStore.fetchOne(idSupplier)
+    const currentSupplierData = ref(fetchSuppliersStore.supplier)
     await fetchSuppliersStore.fetchVatMessage()
     await fetchIncotermStore.fetch()
     await fetchSocietyStore.fetch()
@@ -139,7 +140,7 @@
             type: 'text'
         },
         {
-            label: 'Prenom ',
+            label: 'Prénom ',
             name: 'surname',
 
             type: 'text'
@@ -192,7 +193,7 @@
     const Géneralitésfields = [
         {label: 'Nom', name: 'name', type: 'text'},
         {
-            label: 'Compagnies',
+            label: 'Compagnies dirigeantes',
             name: 'administeredBy',
             options: {
                 label: value =>
@@ -200,7 +201,7 @@
                     ?? null,
                 options: optionsCompany.value
             },
-            type: 'select'
+            type: 'multiselect'
         },
         {label: 'Langue', name: 'language', type: 'text'},
         {label: 'Note', name: 'notes', type: 'textarea'}
@@ -326,25 +327,32 @@
         await item.updateQuality(data)
         await fetchSocietyStore.fetch()
     }
-    async function updateGeneral(value) {
-        const form = document.getElementById('addGeneralites')
-        const formData = new FormData(form)
 
+    //Mise à jour de la variable locale en fonction de ce qu'a saisi l'utilisateur
+    async function updateLocalSupplierValue(value) {
+        currentSupplierData.value = value
+        console.log(currentSupplierData.value)
+    }
+
+    async function updateGeneralApi() {
+        //Création des data à passer pour les PATCH API
         const data = {
-            //managedProduction: JSON.parse(formData.get("managedProduction")),
-            //administeredBy:  formData.get("administeredBy"),
-            //administeredBy: ["/api/companies/1"],
-            language: formData.get('language'),
-            notes: formData.get('notes')
+            language: currentSupplierData.value.language,
+            notes: currentSupplierData.value.notes
         }
         const dataAdmin = {
-            administeredBy: [formData.get('administeredBy')],
-            name: formData.get('name')
+            administeredBy: currentSupplierData.value.administeredBy,
+            name: currentSupplierData.value.name
         }
-        const item = generateSupplier(value)
+        console.log(data, dataAdmin)
+        //Appels de l'API pour mises à jour
+        const item = generateSupplier(currentSupplierData.value)
         await item.updateMain(data)
         await item.updateAdmin(dataAdmin)
+        //Rechargement suite à mise à jour
         await fetchSuppliersStore.fetchOne(idSupplier)
+        //Réinitialisation variable locale suite à la mise à jour
+        currentSupplierData.value = fetchSuppliersStore.supplier
     }
     async function updateLogistique(value) {
         const form = document.getElementById('addAchatLogistique')
@@ -557,8 +565,9 @@
             <AppCardShow
                 id="addGeneralites"
                 :fields="Géneralitésfields"
-                :component-attribute="fetchSuppliersStore.supplier"
-                @update="updateGeneral(fetchSuppliersStore.supplier)"/>
+                :component-attribute="currentSupplierData"
+                @update="updateGeneralApi"
+                @update:model-value="updateLocalSupplierValue"/>
         </AppTab>
         <AppTab
             id="gui-start-files"
