@@ -1,6 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import MyTree from '../../../MyTree.vue'
+    import AppSupplierShowTabFichiers from './AppSupplierShowTabFichiers.vue'
+    import AppSupplierShowTabGeneral from './AppSupplierShowTabGeneral.vue'
     import generateSocieties from '../../../../stores/societies/societie'
     import generateSupplier from '../../../../stores/supplier/supplier'
     import generateSupplierContact from '../../../../stores/supplier/supplierContact'
@@ -8,7 +9,6 @@
     import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../../stores/societies/societies'
-    import {useSupplierAttachmentStore} from '../../../../stores/supplier/supplierAttachement'
     import {useSupplierContactsStore} from '../../../../stores/supplier/supplierContacts'
     import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
 
@@ -22,12 +22,9 @@
         'cancelSearch'
     ])
     //Création des variables locales
-    const isError = ref(false)
     const isError2 = ref(false)
     const isShow = ref(false)
-    const violations = ref([])
     const violations2 = ref([])
-    const currentSupplierData = ref({})
     //Création des Stores
     const fetchCurrencyOptions = useOptions('currencies')
     const fetchCompanyOptions = useOptions('companies')
@@ -35,36 +32,18 @@
     const fetchSuppliersStore = useSuppliersStore()
     const fetchIncotermStore = useIncotermStore()
     const fetchSocietyStore = useSocietyStore()
-    const fetchSupplierAttachmentStore = useSupplierAttachmentStore()
     const fetchSupplierContactsStore = useSupplierContactsStore()
     //Chargement du Fournisseur courant
     await fetchSuppliersStore.fetchOne(idSupplier)
-    currentSupplierData.value = fetchSuppliersStore.supplier
+
     //Chargement des informations liées
     await fetchSuppliersStore.fetchVatMessage()
     await fetchIncotermStore.fetch()
     await fetchSocietyStore.fetch()
     await fetchCurrencyOptions.fetchOp()
-    await fetchSupplierAttachmentStore.fetch()
     await fetchOptions.fetchOp()
     await fetchCompanyOptions.fetchOp()
 
-    const supplierAttachment = computed(() =>
-        fetchSupplierAttachmentStore.supplierAttachment.map(attachment => ({
-            icon: 'file-contract',
-            id: attachment['@id'],
-            label: attachment.url.split('/').pop(),
-            url: attachment.url
-        })))
-    const treeData = computed(() => {
-        const data = {
-            children: supplierAttachment.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments (${supplierAttachment.value.length})`
-        }
-        return data
-    })
     const optionsVatMessageForce = [
         {
             text: 'TVA par défaut selon le pays du client',
@@ -73,13 +52,7 @@
         {text: 'Force AVEC TVA', value: 'Force AVEC TVA'},
         {text: 'Force SANS TVA', value: 'Force SANS TVA'}
     ]
-    const optionsCompany = computed(() =>
-        fetchCompanyOptions.options.map(op => {
-            const text = op.text
-            const value = op['@id']
-            const optionList = {text, value}
-            return optionList
-        }))
+
     const optionsCountries = computed(() =>
         fetchOptions.options.map(op => {
             const text = op.text
@@ -195,22 +168,6 @@
         }
     ]
 
-    const Géneralitésfields = [
-        {label: 'Nom', name: 'name', type: 'text'},
-        {
-            label: 'Compagnies dirigeantes',
-            name: 'administeredBy',
-            options: {
-                label: value =>
-                    optionsCompany.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsCompany.value
-            },
-            type: 'multiselect'
-        },
-        {label: 'Langue', name: 'language', type: 'text'},
-        {label: 'Note', name: 'notes', type: 'textarea'}
-    ]
     const Qualitéfields = [
         {label: 'Gestion de la qualité', name: 'managedQuality', type: 'boolean'},
         {label: 'Niveau de confiance', name: 'confidenceCriteria', type: 'rating'},
@@ -281,10 +238,7 @@
             type: 'select'
         }
     ]
-    const Fichiersfields = [
-        {label: 'Categorie', name: 'category', type: 'text'},
-        {label: 'Fichier', name: 'file', type: 'file'}
-    ]
+
     const Adressefields = [
         {label: 'Email', name: 'getEmail', type: 'text'},
         {label: 'Adresse', name: 'getAddress', type: 'text'},
@@ -331,33 +285,6 @@
         await itemSoc.update(dataSociety)
         await item.updateQuality(data)
         await fetchSocietyStore.fetch()
-    }
-
-    //Mise à jour de la variable locale en fonction de ce qu'a saisi l'utilisateur
-    async function updateLocalSupplierValue(value) {
-        currentSupplierData.value = value
-        console.log(currentSupplierData.value)
-    }
-
-    async function updateGeneralApi() {
-        //Création des data à passer pour les PATCH API
-        const data = {
-            language: currentSupplierData.value.language,
-            notes: currentSupplierData.value.notes
-        }
-        const dataAdmin = {
-            administeredBy: currentSupplierData.value.administeredBy,
-            name: currentSupplierData.value.name
-        }
-        console.log(data, dataAdmin)
-        //Appels de l'API pour mises à jour
-        const item = generateSupplier(currentSupplierData.value)
-        await item.updateMain(data)
-        await item.updateAdmin(dataAdmin)
-        //Rechargement suite à mise à jour
-        await fetchSuppliersStore.fetchOne(idSupplier)
-        //Réinitialisation variable locale suite à la mise à jour
-        currentSupplierData.value = fetchSuppliersStore.supplier
     }
     async function updateLogistique(value) {
         const form = document.getElementById('addAchatLogistique')
@@ -456,28 +383,7 @@
             ...fetchSocietyStore.vatMessageValue
         }))
     }
-    async function updateFichiers(value) {
-        const suppliersId = Number(value['@id'].match(/\d+/)[0])
-        const form = document.getElementById('addFichiers')
-        const formData = new FormData(form)
 
-        const data = {
-            category: formData.get('category'),
-            file: formData.get('file'),
-            supplier: `/api/suppliers/${suppliersId}`
-        }
-        try {
-            await fetchSupplierAttachmentStore.ajout(data)
-
-            isError.value = false
-        } catch (error) {
-            const err = {
-                message: error
-            }
-            violations.value.push(err)
-            isError.value = true
-        }
-    }
     async function ajout(inputValues) {
         const data = {
             address: {
@@ -561,35 +467,8 @@
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
-        <AppTab
-            id="gui-start-main"
-            active
-            title="Généralités"
-            icon="pencil"
-            tabs="gui-start">
-            <AppCardShow
-                id="addGeneralites"
-                :fields="Géneralitésfields"
-                :component-attribute="currentSupplierData"
-                @update="updateGeneralApi"
-                @update:model-value="updateLocalSupplierValue"/>
-        </AppTab>
-        <AppTab
-            id="gui-start-files"
-            title="Fichiers"
-            icon="laptop"
-            tabs="gui-start">
-            <AppCardShow
-                id="addFichiers"
-                :fields="Fichiersfields"
-                @update="updateFichiers(fetchSuppliersStore.supplier)"/>
-            <div v-if="isError" class="alert alert-danger" role="alert">
-                <div v-for="violation in violations" :key="violation">
-                    <li>{{ violation.message }}</li>
-                </div>
-            </div>
-            <MyTree :node="treeData"/>
-        </AppTab>
+        <AppSupplierShowTabGeneral :supplier-id="idSupplier"/>
+        <AppSupplierShowTabFichiers/>
         <AppTab
             id="gui-start-quality"
             title="Qualité"
