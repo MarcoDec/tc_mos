@@ -6,6 +6,8 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Production\Manufacturing\Operation;
 use App\Entity\Quality\Reject\Type;
 use Doctrine\ORM\Mapping\Embedded;
@@ -47,7 +49,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ),
     \Doctrine\ORM\Mapping\Entity
 ]
-class ProductionQualityReject extends Entity
+class ProductionQualityReject extends Entity implements MeasuredInterface
 {
      #[
          ApiProperty(description: 'Opération de production concerné par le rejet qualité', readableLink: false,  example: '/api/production-operations/1'),
@@ -119,5 +121,15 @@ class ProductionQualityReject extends Entity
     public function setQuantity(int $quantity): self {
         $this->quantity = $quantity;
         return $this;
+    }
+
+    public function getMeasures(): array
+    {
+        return [$this->quantity];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return $this->productionOperation->getOrder()->getProduct()->getUnit();
     }
 }
