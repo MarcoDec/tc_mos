@@ -41,9 +41,10 @@
     }
 
     let Generalitesfields = []
+    store.setCurrentId(warehouseId)
     const probl = await store.fetch()
     //const storedId = sessionStorage.getItem('warehouseID')
-    if (warehouseId === null || probl === true){
+    if (probl){
         console.log('aie')
         maRoute.push('/warehouse-list') //{props.item.id}\`
     } else {

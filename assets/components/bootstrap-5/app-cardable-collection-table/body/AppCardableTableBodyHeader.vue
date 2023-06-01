@@ -8,6 +8,7 @@
         form: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
+
     let inputValues = []
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)

@@ -5,6 +5,7 @@ export const useWarehouseListStore = defineStore('warehouseList', {
     actions: {
         async addWarehouse(payload){
             await api('/api/warehouses', 'POST', payload)
+            console.log(payload)
             //this.itemsPagination(this.lastPage)
             this.fetch()
         },

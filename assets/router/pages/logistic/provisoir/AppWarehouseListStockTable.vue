@@ -27,7 +27,6 @@
     storeWarehouseStockList.setIdWarehouse(warehouseId)
     await storeWarehouseStockList.fetch()
     const itemsTable = ref(storeWarehouseStockList.itemsWarehousesStock)
-    //console.log(storeWarehouseStockList.itemsWarehousesStock)
     const formData = ref({
         composant: null, produit: null, numeroDeSerie: null, localisation: null, quantite: null, prison: null
     })
@@ -41,8 +40,7 @@
             filter: true,
             label: 'Composant',
             name: 'composant',
-            options: {label: value => optionComposant.find(option => option.value === value)?.text ?? null, options: optionComposant},
-            sort: true,
+            options: {label: value => optionComposant.find(option => option.value === value)?.text.code ?? null, options: optionComposant},
             type: 'select',
             update: true
         },
@@ -51,7 +49,7 @@
             filter: true,
             label: 'Produit',
             name: 'produit',
-            options: {label: value => optionProduit.find(option => option.value === value)?.text ?? null, options: optionProduit},
+            options: {label: value => optionProduit.find(option => option.value === value)?.text.code ?? null, options: optionProduit},
             sort: true,
             type: 'select',
             update: true
@@ -156,8 +154,6 @@
         AddForm.value = true
         updated.value = false
         const itemsNull = {
-            composant: null,
-            produit: null,
             numeroDeSerie: null,
             localisation: null,
             quantite: null,
@@ -200,13 +196,18 @@
         updated.value = true
         AddForm.value = true
         const itemsData = {
-            families: item.families
+            composant: item.composant,
+            produit: item.produit,
+            numeroDeSerie: item.numeroDeSerie,
+            localisation: item.localisation,
+            quantite: item.quantite,
+            prison: item.prison
         }
         formData.value = itemsData
     }
 
     async function deleted(id){
-        await storeWarehouseStockList.delated(id)
+        await storeWarehouseStockList.deleted(id)
         itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
     }
     async function getPage(nPage){
@@ -218,10 +219,25 @@
         trierAlpha = computed(() => payload)
     }
     async function search(inputValues) {
-        const payload = {
-            families: inputValues.families ?? '',
-            name: inputValues.name ?? ''
+        let comp = ''
+        if (typeof inputValues.composant !== 'undefined'){
+            comp = inputValues.composant
         }
+
+        let prod = ''
+        if (typeof inputValues.produit !== 'undefined'){
+            prod = inputValues.produit
+        }
+
+        const payload = {
+            composant: comp,
+            produit: prod,
+            numeroDeSerie: inputValues.numeroDeSerie ?? '',
+            localisation: inputValues.localisation ?? '',
+            quantite: inputValues.quantite ?? '',
+            prison: inputValues.prison ?? ''
+        }
+
         await storeWarehouseStockList.filterBy(payload)
         itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
         filter.value = true

@@ -1,6 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useWarehouseVolumeListStore} from './warehouseVolumeList'
+    import {useRoute} from 'vue-router'
 
     //import {useWarehouseListItemsStore} from '../../../../stores/logistic/warehouses/warehouseListItems'
 
@@ -19,19 +20,18 @@
     let trierAlpha = {}
     let filterBy = {}
 
+    const maRoute = useRoute()
+    const warehouseId = maRoute.params.id_warehouse
+
     const storeWarehouseVolumeList = useWarehouseVolumeListStore()
+    storeWarehouseVolumeList.setIdWarehouse(warehouseId)
     await storeWarehouseVolumeList.fetch()
-    const itemsTable = ref(storeWarehouseVolumeList.itemsWarehousesStock)
+    const itemsTable = ref(storeWarehouseVolumeList.itemsWarehousesVolume)
     const formData = ref({
         ref: null, quantite: null, type: null
     })
-    const optionRef = [
-        {text: 'CAB-1000', value: 100},
-        {text: 'CAB-100', value: 10},
-        {text: '1188481x', value: 1000},
-        {text: '1188481', value: 10000},
-        {text: 'ywx', value: 20}
-    ]
+    const optionRef = storeWarehouseVolumeList.getOptionRef
+    const optionType = storeWarehouseVolumeList.getOptionType
     const fieldsForm = [
         {
             create: true,
@@ -57,8 +57,9 @@
             filter: true,
             label: 'Type',
             name: 'type',
+            options: {label: value => optionType.find(option => option.value === value)?.text ?? null, options: optionType},
             sort: true,
-            type: 'text',
+            type: 'select',
             update: true
         }
     ]
@@ -88,8 +89,9 @@
             filter: true,
             label: 'Type',
             name: 'type',
+            options: {label: value => optionType.find(option => option.value === value)?.text ?? null, options: optionType},
             sort: true,
-            type: 'text',
+            type: 'select',
             update: true
         }
     ]
@@ -104,18 +106,15 @@
         formData.value = itemsNull
     }
     async function ajoutWarehouseVolume(){
-        const form = document.getElementById('addWarehouseStock')
+        const form = document.getElementById('addWarehouseVolume')
         const formData1 = new FormData(form)
         const itemsAddData = {
-            composant: formData1.get('composant'),
-            produit: formData1.get('produit'),
-            numeroDeSerie: formData1.get('numeroDeSerie'),
-            localisation: formData1.get('localisation'),
+            ref: formData1.get('ref'),
             quantite: formData1.get('quantite'),
-            prison: formData1.get('prison')
+            type: formData1.get('type')
         }
-        await storeWarehouseVolumeList.addWarehouseStock(itemsAddData)
-        itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesStock]
+        await storeWarehouseVolumeList.addWarehouseVolume(itemsAddData)
+        itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
         AddForm.value = false
         updated.value = false
     }
@@ -123,12 +122,9 @@
         AddForm.value = false
         updated.value = false
         const itemsNull = {
-            composant: null,
-            produit: null,
-            numeroDeSerie: null,
-            localisation: null,
+            ref: null,
             quantite: null,
-            prison: null
+            type: null
         }
         formData.value = itemsNull
         isPopupVisible.value = false
@@ -138,14 +134,17 @@
         updated.value = true
         AddForm.value = true
         const itemsData = {
-            families: item.families
+            ref: item.ref,
+            quantite: item.quantite,
+            type: item.type
+
         }
         formData.value = itemsData
     }
 
     async function deleted(id){
-        await storeWarehouseVolumeList.delated(id)
-        itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesStock]
+        await storeWarehouseVolumeList.deleted(id)
+        itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
     }
     async function getPage(nPage){
         await storeWarehouseVolumeList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
@@ -156,12 +155,18 @@
         trierAlpha = computed(() => payload)
     }
     async function search(inputValues) {
+        let reference = ''
+        if (typeof inputValues.ref !== 'undefined'){
+            reference = inputValues.ref
+        }
+
         const payload = {
-            families: inputValues.families ?? '',
-            name: inputValues.name ?? ''
+            ref: reference,
+            quantite: inputValues.quantite ?? '',
+            type: inputValues.type ?? ''
         }
         await storeWarehouseVolumeList.filterBy(payload)
-        itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesStock]
+        itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
         filter.value = true
         filterBy = computed(() => payload)
     }
@@ -214,7 +219,7 @@
                     </h4>
                 </AppRow>
                 <br/>
-                <AppFormCardable id="addWarehouseStock" :fields="fieldsForm" :model-value="formData" label-cols/>
+                <AppFormCardable id="addWarehouseVolume" :fields="fieldsForm" :model-value="formData" label-cols/>
                 <AppCol class="btnright">
                     <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutWarehouseVolume">
                         <Fa icon="plus"/> Ajouter

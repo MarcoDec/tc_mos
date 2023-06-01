@@ -123,9 +123,9 @@
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
                     </AppDropdownItem>
-                    <AppNavbarLink disabled icon="calendar-day" to="engine-events" variant="danger">
+                    <!-- <AppNavbarLink disabled icon="calendar-day" to="engine-events" variant="danger">
                         Catégories d'événements des équipements
-                    </AppNavbarLink>
+                    </AppNavbarLink> -->
                     <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
                         Groupes d'équipements
                     </AppNavbarLink>

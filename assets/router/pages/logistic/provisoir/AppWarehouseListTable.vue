@@ -176,7 +176,7 @@
 
     function update(item) {
         storeWarehouseShow.setCurrentId(item.id)
-        router.push('warehouse/' + item.id)
+        router.push(`warehouse/${item.id}`)
         // updated.value = true
         // AddForm.value = true
         // const itemsData = {
