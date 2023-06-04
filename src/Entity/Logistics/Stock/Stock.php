@@ -90,8 +90,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'method' => 'POST',
                 'openapi_context' => [
-                    'description' => 'Transfert un stock',
-                    'summary' => 'Transfert un stock'
+                    'description' => 'Transfère un stock',
+                    'summary' => 'Transfère un stock'
                 ],
                 'path' => '/stocks/{id}/transfer',
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
