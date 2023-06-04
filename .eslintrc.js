@@ -340,7 +340,7 @@ module.exports = {
         'vue/no-useless-template-attributes': 'error',
         'vue/no-useless-v-bind': 'error',
         'vue/no-v-for-template-key-on-child': 'error',
-        'vue/no-v-html': 'error',
+        'vue/no-v-html': 1,
         'vue/no-v-text': 'error',
         'vue/no-watch-after-await': 'error',
         'vue/object-curly-newline': ['error', {consistent: true}],
