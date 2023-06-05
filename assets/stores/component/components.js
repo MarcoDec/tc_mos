@@ -1,3 +1,4 @@
+import api from '../../api'
 import {actionsItems, gettersItems} from '../tables/items'
 import {defineStore} from 'pinia'
 import generateComponent from './component'
@@ -32,6 +33,10 @@ export default defineStore('components', {
             ]
             for (const component of response)
                 this.items.push(generateComponent(component, this))
+        },
+        async addComponent(payload){
+            console.log('payload', payload)
+            await api('/api/components', 'POST', payload)
         }
     },
     getters: {

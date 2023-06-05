@@ -4,19 +4,20 @@
     import AppTabs from '../../../components/tab/AppTabs.vue'
     import {computed} from 'vue-demi'
 
+    const emit = defineEmits(['update:modelValue'])
     const fields = computed(() => [
         {
             active: true,
             children: [
                 {
                     children: [
-                        {label: 'Désignation ', name: 'designation'},
+                        {label: 'Désignation ', name: 'name'},
                         {
                             label: 'Famille',
-                            name: 'famille'
+                            name: 'family'
                         },
-                        {label: 'Unité', name: 'unite'},
-                        {label: 'poids (g) ', name: 'code'}
+                        {label: 'Unité', name: 'unit'},
+                        {label: 'poids (g) ', name: 'weight'}
                     ],
                     label: 'General',
                     mode: 'fieldset',
@@ -24,8 +25,8 @@
                 },
                 {
                     children: [
-                        {label: 'Fabricant ', name: 'Fabricant '},
-                        {label: 'Référence du Fabricant', name: 'refF'}
+                        {label: 'Fabricant ', name: 'manufacturer'},
+                        {label: 'Référence du Fabricant', name: 'manufacturerCode'}
                     ],
                     label: 'Fabricant',
                     mode: 'fieldset',
@@ -37,40 +38,39 @@
             mode: 'tab',
             name: 'composant'
         },
-        {
-            children: [
-                {label: 'Fournisseur ', name: 'gestion'},
-                {label: 'Référence Fournisseur', name: 'refFournisseur'},
-                {label: 'Incoterms   ', name: 'incoterms'},
-                {label: 'Délai de livraison moyen (jour ouvrés) ', name: 'delai'},
-                {label: 'Moq ', name: 'moq', type: 'number'},
-                {label: 'Quantité par conditionnement ', name: 'qte'},
-                {label: 'Type de conditionnement ', name: 'type'}
-            ],
-            icon: 'puzzle-piece',
-            label: 'Fournisseur',
-            mode: 'tab',
-            name: 'Fournisseur'
-        },
-        {
-            children: [
-                {
-                    children: [
-                        {label: 'Désignation ', name: 'designation'},
-                        {label: 'Famille', name: 'famille'},
-                        {label: 'Unité', name: 'unite'},
-                        {label: 'Poids (g) ', name: 'code'}
-                    ],
-                    label: 'Prix',
-                    mode: 'fieldset',
-                    name: 'prix'
-                }
-            ],
-            icon: 'puzzle-piece',
-            label: 'Prix',
-            mode: 'tab',
-            name: 'prix'
-        },
+        // {
+        //     children: [
+        //         {label: 'Référence Fournisseur', name: 'refFournisseur'},
+        //         {label: 'Incoterms   ', name: 'incoterms'},
+        //         {label: 'Délai de livraison moyen (jour ouvrés) ', name: 'delai'},
+        //         {label: 'Moq ', name: 'moq', type: 'number'},
+        //         {label: 'Quantité par conditionnement ', name: 'qte'},
+        //         {label: 'Type de conditionnement ', name: 'type'}
+        //     ],
+        //     icon: 'puzzle-piece',
+        //     label: 'Fournisseur',
+        //     mode: 'tab',
+        //     name: 'Fournisseur'
+        // },
+        // {
+        //     children: [
+        //         {
+        //             children: [
+        //                 {label: 'Désignation ', name: 'designation'},
+        //                 {label: 'Famille', name: 'famille'},
+        //                 {label: 'Unité', name: 'unite'},
+        //                 {label: 'Poids (g) ', name: 'code'}
+        //             ],
+        //             label: 'Prix',
+        //             mode: 'fieldset',
+        //             name: 'prix'
+        //         }
+        //     ],
+        //     icon: 'puzzle-piece',
+        //     label: 'Prix',
+        //     mode: 'tab',
+        //     name: 'prix'
+        // },
         {
             icon: 'puzzle-piece',
             label: 'Attributs',
@@ -78,9 +78,10 @@
             name: 'attributs'
         }
     ])
-    let formData = {};
+    let formInput = {}
     function input(value) {
-        console.log('value', value)
+        formInput = {...formInput, ...value}
+        emit('update:modelValue', formInput)
     }
 </script>
 
@@ -88,7 +89,7 @@
     <div class="gui-card">
         <AppTabs id="gui-form-create" style="display: block !important;">
             <AppTab v-for="field in fields" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
-                <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children"  @update:model-value="input"/>
+                <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children" @update:model-value="input"/>
                 <p v-else>
                     {{ field.label }} à définir
                 </p>

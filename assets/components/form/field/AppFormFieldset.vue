@@ -12,7 +12,6 @@
     function input(value) {
         emit('update:modelValue', value)
     }
-    console.log('newField',props.newField);
 </script>
 
 <template>

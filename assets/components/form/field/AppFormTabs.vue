@@ -30,8 +30,8 @@
             <slot>
                 <AppFormField
                     v-for="child in field.children"
-                    :new-field="newField"
                     :key="child"
+                    :new-field="newField"
                     :field="child"
                     :form="form"
                     :model-value="modelValue"

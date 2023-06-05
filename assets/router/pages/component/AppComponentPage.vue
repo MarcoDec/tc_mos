@@ -2,14 +2,14 @@
     import AppComponentCreate from './AppComponentCreate.vue'
     import AppTablePage from '../AppTablePage'
     import {computed} from 'vue-demi'
-    import useComponent from '../../../stores/component/components'
+    import useComponentsStore from '../../../stores/component/components'
     import {useTableMachine} from '../../../machine'
     const title = 'Créer un Composant'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
     const machineComponet = useTableMachine('machine-component')
-    const component = useComponent()
-    console.log('component', component)
+    const StoreComponents = useComponentsStore()
+    // console.log('component', component)
 
     const fields = [
         {
@@ -77,18 +77,36 @@
             type: 'trafficLight'
         }
     ]
+    let fInput = {}
+    function input(formInput) {
+        console.log('formInput', formInput)
+        fInput = computed(() => formInput)
+    }
+    async function Componentcreate() {
+        const componentInput = {
+            family: fInput.value.family,
+            manufacturer: fInput.value.manufacturer,
+            manufacturerCode: fInput.value.manufacturerCode,
+            name: fInput.value.name,
+            unit: fInput.value.unit,
+            weight: fInput.value.weight
+        }
+        console.log('componentInput', componentInput)
+        await StoreComponents.addComponent(componentInput)
+    }
 </script>
 
 <template>
     <div class="row">
         <AppModal :id="modalId" class="four" :title="title" size="xl">
-            <AppComponentCreate/>
+            <AppComponentCreate @update:model-value="input"/>
             <template #buttons>
                 <AppBtn
                     variant="success"
                     label="Créer"
                     data-bs-toggle="modal"
-                    :data-bs-target="target">
+                    :data-bs-target="target"
+                    @click="Componentcreate">
                     Créer
                 </AppBtn>
             </template>
@@ -99,7 +117,7 @@
                 :fields="fields"
                 icon="user-tag"
                 :machine="machineComponet"
-                :store="component"
+                :store="StoreComponents"
                 title="La liste de composants">
                 <template #cell(etat)>
                     <AppTrafficLight/>

@@ -20,7 +20,7 @@ function AppFormJS(props, context) {
         if (typeof context.slots.default === 'function')
             groups.push(generateSlot())
     } else {
-        // for (const field of props.fields)
+        //  for (const field of props.fields)
         //     groups.push(h(AppFormField, {
         //         disabled: props.disabled,
         //         field,
@@ -51,13 +51,12 @@ function AppFormJS(props, context) {
                             [child.name]: value
                         }),
                         violation: props.violations.find(violation => violation.propertyPath === child.name)
-                    }));
+                    }))
                 }
             } else {
                 groups.push(h(AppFormField, {
                     disabled: props.disabled,
                     field,
-                    newField: field,
                     form: props.id,
                     key: field.name,
                     labelCols: props.labelCols,
@@ -67,9 +66,10 @@ function AppFormJS(props, context) {
                         [field.name]: value
                     }),
                     violation: props.violations.find(violation => violation.propertyPath === field.name)
-                }));
+                }))
             }
-        }        
+        }
+
         if (props.submitLabel !== null){
             groups.push(h(
                 'div',

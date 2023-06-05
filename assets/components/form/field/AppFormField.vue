@@ -3,11 +3,14 @@
     const emit = defineEmits(['update:modelValue', 'input'])
     const props = defineProps({
         field: {required: true, type: Object},
-        newField: {required: true, type: Object},
+        newField: {required: false, type: Object},
         form: {required: true, type: String},
         modelValue: {default: null, type: Object}
     })
-
+    // console.log('newField',props.newField);
+    // console.log('field',props.field);
+    // const myFieled = computed(()=>props.newField?props.newField:props.field)
+    // console.log('myFieled', myFieled);
     const td = computed(() => {
         switch (props.field.mode) {
             case 'tab':
@@ -21,7 +24,6 @@
     function input(value) {
         emit('update:modelValue', value)
     }
-    
 </script>
 
 <template>
@@ -30,7 +32,7 @@
         :field="field"
         :form="form"
         :model-value="modelValue"
-        :newField="newField"
+        :new-field="newField"
         :values="modelValue"
         @update:model-value="input">
         <slot/>

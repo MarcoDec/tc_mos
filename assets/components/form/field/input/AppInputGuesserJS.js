@@ -19,7 +19,7 @@ function getType(field) {
         return AppSelectJS
     case 'multiselect':
         return AppMultiselect
-        case 'trafficLight':
+    case 'trafficLight':
         return AppTrafficLight
     default:
         return resolveComponent('AppInputJS')
