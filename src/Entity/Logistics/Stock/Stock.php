@@ -33,7 +33,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse', 'item']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['batchNumber' => 'partial', 'location' => 'partial', 'jail' => 'company']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['batchNumber' => 'partial', 'location' => 'partial', 'quantity.value' => 'partial', 'quantity.code' => 'partial','jail' => 'partial']),
 
     ApiResource(
         description: 'Stock',
