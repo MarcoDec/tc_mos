@@ -37,7 +37,6 @@
     }
     async function cancelSearch(inputValues) {
         input.value = inputValues
-        //console.log(inputValues)
         emit('cancelSearch', inputValues)
     }
 </script>

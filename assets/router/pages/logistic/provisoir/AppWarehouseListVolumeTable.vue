@@ -2,13 +2,7 @@
     import {computed, ref} from 'vue'
     import {useWarehouseVolumeListStore} from './warehouseVolumeList'
     import {useRoute} from 'vue-router'
-
-    //import {useWarehouseListItemsStore} from '../../../../stores/logistic/warehouses/warehouseListItems'
-
-    // defineProps({
-    //     icon: {required: true, type: String},
-    //     title: {required: true, type: String}
-    // })
+    import useField from '../../../../stores/field/field'
 
     const roleuser = ref('reader')
     // let violations = []
@@ -30,7 +24,7 @@
     const formData = ref({
         ref: null, quantite: null, type: null
     })
-    const optionRef = storeWarehouseVolumeList.getOptionRef
+    const optionRef = await storeWarehouseVolumeList.getOptionRef
     const optionType = storeWarehouseVolumeList.getOptionType
     const fieldsForm = [
         {
@@ -48,8 +42,12 @@
             filter: true,
             label: 'Quantité ',
             name: 'quantite',
+            measure: {
+                code: null,
+                value: null
+            },
             sort: true,
-            type: 'text',
+            type: 'measure',
             update: true
         },
         {
@@ -63,6 +61,12 @@
             update: true
         }
     ]
+    const parent = {
+        $id: `${warehouseId}Volume`
+    }
+
+    const storeUnit = useField(fieldsForm[1], parent)
+    // storeUnit.fetch()
 
     const tabFields = [
         {
@@ -80,8 +84,12 @@
             filter: true,
             label: 'Quantité ',
             name: 'quantite',
+            measure: {
+                code: storeUnit.measure.code,
+                value: storeUnit.measure.value
+            },
             sort: true,
-            type: 'text',
+            type: 'measure',
             update: true
         },
         {
@@ -147,7 +155,9 @@
         itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
     }
     async function getPage(nPage){
+        console.log(filterBy)
         await storeWarehouseVolumeList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
     }
     async function trierAlphabet(payload) {
         await storeWarehouseVolumeList.sortableItems(payload, filterBy, filter)
@@ -164,6 +174,12 @@
             ref: reference,
             quantite: inputValues.quantite ?? '',
             type: inputValues.type ?? ''
+        }
+        if (typeof payload.quantite.value === 'undefined' && payload.quantite !== '') {
+            payload.quantite.value = ''
+        }
+        if (typeof payload.quantite.code === 'undefined' && payload.quantite !== '') {
+            payload.quantite.code = ''
         }
         await storeWarehouseVolumeList.filterBy(payload)
         itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]

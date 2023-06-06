@@ -21,5 +21,5 @@
         :field="field"
         :form="form"
         :model-value="modelValue"
-        :update:model-value="input"/>
+        @update:model-value="input"/>
 </template>

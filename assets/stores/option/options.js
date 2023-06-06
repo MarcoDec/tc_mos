@@ -51,10 +51,10 @@ export default function useOptions(base, valueProp = '@id') {
                 for (const option of state.options) {
                     if (typeof groups[option.group] === 'undefined')
                         groups[option.group] = []
-                    console.log('groups', groups)
+                        // console.log('groups', groups)
                     groups[option.group].push(option)
                 }
-                console.log('groups--->', groups)
+                // console.log('groups--->', groups)
                 return Object.entries(groups).map(([group, options]) => ({label: group, options})).reverse()
             },
             hasGroups() {

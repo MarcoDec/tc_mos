@@ -15,6 +15,12 @@
             return res.text
         }
         //TODO: gérer Multiselect et measures
+
+        if (props.field.type === 'measure'){
+            if (thevalue.value.value === 'undefined' || thevalue.value.code === 'undefined') return thevalue.value
+            return `${thevalue.value.value} ${thevalue.value.code}`
+        }
+
         return thevalue.value
     }
     const bool = computed(() => props.field.type === 'boolean')

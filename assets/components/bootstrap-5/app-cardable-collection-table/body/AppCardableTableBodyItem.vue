@@ -18,7 +18,7 @@
 
     function calculIndice(index, currentPage){
         if (props.pagine === false){
-            return index + 1 + 15 * currentPage
+            return index + 1
         }
         return index + 1 + 15 * (currentPage - 1)
     }

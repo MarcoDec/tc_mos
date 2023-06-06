@@ -2,13 +2,7 @@
     import {computed, ref} from 'vue'
     import {useWarehouseStockListStore} from './warehouseStockList'
     import {useRoute} from 'vue-router'
-
-    //import {useWarehouseListItemsStore} from '../../../../stores/logistic/warehouses/warehouseListItems'
-
-    // defineProps({
-    //     icon: {required: true, type: String},
-    //     title: {required: true, type: String}
-    // })
+    import useField from '../../../../stores/field/field'
 
     const roleuser = ref('reader')
     // let violations = []
@@ -31,8 +25,8 @@
         composant: null, produit: null, numeroDeSerie: null, localisation: null, quantite: null, prison: null
     })
 
-    const optionComposant = storeWarehouseStockList.getOptionComposant
-    const optionProduit = storeWarehouseStockList.getOptionProduit
+    const optionComposant = await storeWarehouseStockList.getOptionComposant
+    const optionProduit = await storeWarehouseStockList.getOptionProduit
 
     const fieldsForm = [
         {
@@ -77,8 +71,12 @@
             filter: true,
             label: 'Quantité ',
             name: 'quantite',
+            measure: {
+                code: null,
+                value: null
+            },
             sort: true,
-            type: 'text',
+            type: 'measure',
             update: true
         },
         {
@@ -91,6 +89,12 @@
             update: true
         }
     ]
+
+    const parent = {
+        $id: `${warehouseId}Stock`
+    }
+    const storeUnit = useField(fieldsForm[4], parent)
+    storeUnit.fetch()
 
     const tabFields = [
         {
@@ -136,8 +140,12 @@
             filter: true,
             label: 'Quantité ',
             name: 'quantite',
+            measure: {
+                code: storeUnit.measure.code,
+                value: storeUnit.measure.value
+            },
             sort: true,
-            type: 'text',
+            type: 'measure',
             update: true
         },
         {
@@ -150,6 +158,7 @@
             update: true
         }
     ]
+
     function ajoute(){
         AddForm.value = true
         updated.value = false
@@ -212,6 +221,7 @@
     }
     async function getPage(nPage){
         await storeWarehouseStockList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
     }
     async function trierAlphabet(payload) {
         await storeWarehouseStockList.sortableItems(payload, filterBy, filter)
@@ -238,23 +248,25 @@
             prison: inputValues.prison ?? ''
         }
 
+        if (typeof payload.quantite.value === 'undefined' && payload.quantite !== '') {
+            payload.quantite.value = ''
+        }
+        if (typeof payload.quantite.code === 'undefined' && payload.quantite !== '') {
+            payload.quantite.code = ''
+        }
         await storeWarehouseStockList.filterBy(payload)
         itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
         filter.value = true
         filterBy = computed(() => payload)
     }
     async function cancelSearch() {
-        filter.value = false
-        await storeWarehouseStockList.fetch()
+        filter.value = true
+        storeWarehouseStockList.fetch()
     }
 </script>
 
 <template>
     <AppCol class="d-flex justify-content-between mb-2">
-        <!-- <h1>
-            <Fa :icon="icon"/>
-            {{ title }}
-        </h1> -->
         <AppBtn variant="success" label="Ajout" @click="ajoute">
             <Fa icon="plus"/>
             Ajouter

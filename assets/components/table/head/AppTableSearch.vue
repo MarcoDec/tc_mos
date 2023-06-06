@@ -7,6 +7,7 @@
         store: {required: true, type: Object}
     })
 
+    console.log(props.store.search)
     async function cancel() {
         props.send('submit')
         await props.store.cancel()

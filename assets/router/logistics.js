@@ -99,6 +99,13 @@ export default [
                     options: {base: 'warehouses'},
                     type: 'multiselect'
 
+                },
+                {
+                    label: 'Qualite',
+                    name: 'qualite',
+                    search: false,
+                    sort: false,
+                    type: 'measure'
                 }
             ]
         }
