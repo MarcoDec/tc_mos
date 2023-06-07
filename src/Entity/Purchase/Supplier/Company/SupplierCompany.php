@@ -36,14 +36,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
                     'summary' => 'Supprime une Relation SupplierCompany',
                     'description' => 'Supprime une relation SupplierCompany, et indique donc qu\'une compagnie ne gère désormais plus le fournisseur passé en paramètre'
                 ]
-            ]
+            ],
+            'get'
         ],
         denormalizationContext: [
            'groups' => ['write:supplier-company'],
            'openapi_definition_name' => 'SupplierCompany-write'
         ],
         normalizationContext: [
-            'groups' => ['read:supplier-company'],
+            'groups' => ['read:supplier-company', 'read:id'],
             'openapi_definition_name' => "SupplierCompany-read"
         ]
     ),
