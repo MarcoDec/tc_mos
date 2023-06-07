@@ -2,11 +2,9 @@
     import {computed, ref} from 'vue'
     import generateSupplier from '../../../../stores/supplier/supplier'
     import useOptions from '../../../../stores/option/options'
+    import {useSupplierCompaniesStore} from '../../../../stores/supplier/supplierCompanies'
     import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
 
-    const props = defineProps({
-        supplierId: {required: true, type: String}
-    })
     const fetchCompanyOptions = useOptions('companies')
     const optionsCompany = computed(() =>
         fetchCompanyOptions.options.map(op => {
@@ -16,8 +14,21 @@
             return optionList
         }))
     const currentSupplierData = ref({})
+    const currentSupplierCompaniesData = ref([])
     const fetchSuppliersStore = useSuppliersStore()
-    currentSupplierData.value = fetchSuppliersStore.supplier
+    const fetchSupplierCompaniesStore = useSupplierCompaniesStore()
+    async function updateStores() {
+        await fetchSuppliersStore.fetchOne(currentSupplierData.value.id)
+        await fetchSupplierCompaniesStore.fetchBySupplier(fetchSuppliersStore.supplier)
+    }
+    function updateLocalData() {
+        currentSupplierData.value = JSON.parse(JSON.stringify(fetchSuppliersStore.supplier))
+        currentSupplierCompaniesData.value = fetchSupplierCompaniesStore.supplierCompanies
+        currentSupplierData.value.administeredBy = currentSupplierCompaniesData.value.map(item3 => JSON.parse(JSON.stringify(item3.company['@id'])))
+        //console.log(currentSupplierData.value)
+    }
+    await fetchSupplierCompaniesStore.fetchBySupplier(fetchSuppliersStore.supplier)
+    updateLocalData()
     const Géneralitésfields = [
         {label: 'Nom', name: 'name', type: 'text'},
         {
@@ -41,21 +52,43 @@
     async function updateGeneralApi() {
         //Création des data à passer pour les PATCH API
         const data = {
+            //administeredBy: currentSupplierData.value.administeredBy,
             language: currentSupplierData.value.language,
             notes: currentSupplierData.value.notes
         }
         const dataAdmin = {
-            administeredBy: currentSupplierData.value.administeredBy,
             name: currentSupplierData.value.name
         }
+        // Suppression en back des éléments supprimés en front
+        currentSupplierCompaniesData.value.forEach(supplierCompany => {
+            const currentCompanyIri = supplierCompany.company['@id']
+            if (!currentSupplierData.value.administeredBy.includes(currentCompanyIri)) {
+                //Il faut alors supprimer supplierCompany en back
+                //console.log('suppression', supplierCompany)
+                fetchSupplierCompaniesStore.removeOne(supplierCompany.id)
+            }
+        })
+        // Ajout en back des nouveaux éléments
+        currentSupplierData.value.administeredBy.forEach(companyIri => {
+            let found = false
+            currentSupplierCompaniesData.value.forEach(supplierCompany => {
+                if (supplierCompany.company['@id'] === companyIri) {
+                    found = true
+                }
+            })
+            if (!found) {
+                //il faut ajouter companyIri
+                //console.log('Ajout', companyIri)
+                fetchSupplierCompaniesStore.addCompany(companyIri)
+            }
+        })
         //Appels de l'API pour mises à jour
         const item = generateSupplier(currentSupplierData.value)
         await item.updateMain(data)
         await item.updateAdmin(dataAdmin)
         //Rechargement suite à mise à jour
-        await fetchSuppliersStore.fetchOne(props.supplierId)
-        //Réinitialisation variable locale suite à la mise à jour
-        currentSupplierData.value = fetchSuppliersStore.supplier
+        await updateStores()
+        updateLocalData()
     }
 </script>
 
