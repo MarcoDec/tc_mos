@@ -330,9 +330,12 @@ class Supplier extends Entity {
      * @return DoctrineCollection<int, Company>
      */
     final public function getAdministeredBy(): DoctrineCollection {
-        return $this->supplierCompanies->map(function(SupplierCompany $supplierCompany) {
+        $this->administeredBy = $this->supplierCompanies->filter( function(SupplierCompany $supplierCompany) {
+            return !$supplierCompany->isDeleted();
+        })->map(function(SupplierCompany $supplierCompany) {
             return $supplierCompany->getCompany();
         });
+        return $this->administeredBy;
     }
 
     final public function getBlocker(): string {
@@ -423,9 +426,9 @@ class Supplier extends Entity {
 
     final public function removeAdministeredBy(Company $administeredBy): self {
         /** @var SupplierCompany $supplierCompany */
-        foreach ($this->getSupplierCompanies() as $supplierCompany) {
+        foreach ($this->getSupplierCompanies() as $key => $supplierCompany) {
             if ($supplierCompany->getCompany() === $administeredBy) {
-                $this->supplierCompanies->remove($supplierCompany);
+                $this->supplierCompanies->remove($key);
             }
         }
         return $this;
