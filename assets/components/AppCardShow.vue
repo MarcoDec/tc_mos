@@ -3,7 +3,7 @@
     import AppFormJS from './form/AppFormJS'
     import {ref} from 'vue'
 
-    defineProps({
+    const props = defineProps({
         componentAttribute: {required: true, type: Object},
         // disabled: {type: Boolean},
         fields: {default: () => [], type: Array},
@@ -13,6 +13,7 @@
     const emit = defineEmits(['update', 'update:modelValue'])
     const updated = ref(false)
     const disable = ref(true)
+    const localData = ref(props.componentAttribute)
     function update() {
         updated.value = true
         disable.value = false
@@ -27,6 +28,7 @@
         disable.value = true
     }
     function input(value) {
+        localData.value = value
         emit('update:modelValue', value)
     }
 </script>
@@ -44,10 +46,10 @@
             </div>
         </div>
         <ul v-if="disable" class="card-body">
-            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" disabled/>
+            <AppFormJS :id="id" :fields="fields" :model-value="localData" disabled/>
         </ul>
         <ul v-else class="card-body">
-            <AppFormJS :id="id" :fields="fields" :model-value="componentAttribute" @update:model-value="input"/>
+            <AppFormJS :id="id" :fields="fields" :model-value="localData" @update:model-value="input"/>
         </ul>
     </div>
 </template>
