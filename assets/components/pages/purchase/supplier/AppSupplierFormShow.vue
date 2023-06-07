@@ -2,7 +2,7 @@
     import {computed, ref} from 'vue'
     import AppSupplierShowTabFichiers from './AppSupplierShowTabFichiers.vue'
     import AppSupplierShowTabGeneral from './AppSupplierShowTabGeneral.vue'
-    import generateSocieties from '../../../../stores/societies/societie'
+    import AppSupplierShowTabQuality from './AppSupplierShowTabQuality.vue'
     import generateSupplier from '../../../../stores/supplier/supplier'
     import generateSupplierContact from '../../../../stores/supplier/supplierContact'
     import {useIncotermStore} from '../../../../stores/incoterm/incoterm'
@@ -168,11 +168,6 @@
         }
     ]
 
-    const Qualitéfields = [
-        {label: 'Gestion de la qualité', name: 'managedQuality', type: 'boolean'},
-        {label: 'Niveau de confiance', name: 'confidenceCriteria', type: 'rating'},
-        {label: 'Taux de PPM', name: 'ppmRate', type: 'number'}
-    ]
     const Achatfields = [
         {
             label: 'Minimum de commande',
@@ -266,23 +261,6 @@
             confidenceCriteria: val.value
         }
         const item = generateSupplier(value)
-        await item.updateQuality(data)
-        await fetchSocietyStore.fetch()
-    }
-    async function update(value) {
-        const form = document.getElementById('addQualite')
-        const formData = new FormData(form)
-
-        const data = {
-            managedQuality: JSON.parse(formData.get('managedQuality'))
-        }
-        const dataSociety = {
-            ppmRate: JSON.parse(formData.get('ppmRate'))
-        }
-
-        const item = generateSupplier(value)
-        const itemSoc = generateSocieties(value)
-        await itemSoc.update(dataSociety)
         await item.updateQuality(data)
         await fetchSocietyStore.fetch()
     }
@@ -467,20 +445,9 @@
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
-        <AppSupplierShowTabGeneral :supplier-id="idSupplier"/>
+        <AppSupplierShowTabGeneral/>
         <AppSupplierShowTabFichiers/>
-        <AppTab
-            id="gui-start-quality"
-            title="Qualité"
-            icon="certificate"
-            tabs="gui-start">
-            <AppCardShow
-                id="addQualite"
-                :fields="Qualitéfields"
-                :component-attribute="listSuppliers"
-                @update="update(listSuppliers)"
-                @update:model-value="input"/>
-        </AppTab>
+        <AppSupplierShowTabQuality :component-attribute="listSuppliers"/>
         <AppTab
             id="gui-start-purchase-logistics"
             title="Achat/Logistique"
