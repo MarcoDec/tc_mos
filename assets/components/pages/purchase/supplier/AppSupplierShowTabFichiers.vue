@@ -66,7 +66,7 @@
         })
         //Etape 2 - nodes = noeuds de type dossier
         folders.value = foldersId.value.map(folder => {
-            console.log(folder)
+            //console.log(folder)
             return {
                 category: folder,
                 children: [],
