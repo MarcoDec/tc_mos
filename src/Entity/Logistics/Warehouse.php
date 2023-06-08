@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company']),
-    ApiFilter(filterClass: SetFilter::class, properties: ['families']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['families' => 'partial']),
     ApiResource(
         description: 'Entrepôt',
         collectionOperations: [
