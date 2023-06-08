@@ -48,7 +48,7 @@
     const Achatfields = [
         {
             label: 'Minimum de commande',
-            measure: {code: {label: 'Unité', name: 'unit', options: {options: optionsUnit.value}, sortName: 'unit.code', type: 'select'}, value: 'valeur'},
+            measure: {code: {label: 'Unité', name: 'unit', options: {options: [{text: 'EUR', value: 'EUR'}]}, sortName: 'unit.code', type: 'select'}, value: 'valeur'},
             name: 'orderMin',
             type: 'measure'
         },
