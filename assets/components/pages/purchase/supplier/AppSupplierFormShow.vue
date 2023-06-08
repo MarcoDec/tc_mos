@@ -1,5 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import AppSupplierShowTabAccounting from './AppSupplierShowTabAccounting.vue'
     import AppSupplierShowTabFichiers from './AppSupplierShowTabFichiers.vue'
     import AppSupplierShowTabGeneral from './AppSupplierShowTabGeneral.vue'
     import AppSupplierShowTabPurchase from './AppSupplierShowTabPurchase.vue'
@@ -39,15 +40,6 @@
     await fetchOptions.fetchOp()
     await fetchCompanyOptions.fetchOp()
 
-    const optionsVatMessageForce = [
-        {
-            text: 'TVA par défaut selon le pays du client',
-            value: 'TVA par défaut selon le pays du client'
-        },
-        {text: 'Force AVEC TVA', value: 'Force AVEC TVA'},
-        {text: 'Force SANS TVA', value: 'Force SANS TVA'}
-    ]
-
     const optionsCountries = computed(() =>
         fetchOptions.options.map(op => {
             const text = op.text
@@ -55,21 +47,6 @@
             const optionList = {text, value}
             return optionList
         }))
-    const optionsCurrency = computed(() =>
-        fetchCurrencyOptions.options.map(op => {
-            const text = op.text
-            const value = op.value
-            const optionList = {text, value}
-            return optionList
-        }))
-    const optionsVat = computed(() =>
-        fetchSuppliersStore.vatMessage.map(op => {
-            const text = op.name
-            const value = op['@id']
-            const optionList = {text, value}
-            return optionList
-        }))
-
     const societyId = Number(fetchSuppliersStore.supplier.society.match(/\d+/))
     const supplierId = Number(fetchSuppliersStore.supplier.id)
     await fetchSocietyStore.fetchById(societyId)
@@ -91,7 +68,6 @@
     fetchSocietyStore.society.invoiceMin.code = 'EUR'
 
     const list = computed(() => ({...fetchSocietyStore.society, ...managed.value}))
-
     const listSuppliers = computed(() => ({
         ...fetchSuppliersStore.supplier,
         ...list.value,
@@ -155,48 +131,6 @@
             type: 'text'
         }
     ]
-    const Comptabilitéfields = [
-        {
-            label: 'Montant minimum de facture',
-            measure: {code: 'Devise', value: 'valeur'},
-            name: 'invoiceMin',
-            type: 'measure'
-        },
-        {
-            label: 'Devise',
-            name: 'currency',
-            options: {
-                label: value =>
-                    optionsCurrency.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsCurrency.value
-            },
-            type: 'select'
-        },
-        {label: 'Compte de comptabilité', name: 'accountingAccount', type: 'text'},
-        {label: 'TVA', name: 'vat', type: 'text'},
-        {
-            label: 'Forcer la TVA',
-            name: 'forceVat',
-            options: {
-                label: value =>
-                    optionsVatMessageForce.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsVatMessageForce
-            },
-            type: 'select'
-        },
-        {
-            label: 'Message TVA',
-            name: 'vatMessageValue',
-            options: {
-                label: value =>
-                    optionsVat.value.find(option => option.type === value)?.text ?? null,
-                options: optionsVat.value
-            },
-            type: 'select'
-        }
-    ]
 
     const Adressefields = [
         {label: 'Email', name: 'getEmail', type: 'text'},
@@ -236,47 +170,6 @@
         const item = generateSupplier(value)
         await item.updateMain(data)
     }
-    async function updateComptabilite(value) {
-        const form = document.getElementById('addComptabilite')
-        const formData = new FormData(form)
-
-        const dataSociety = {
-            accountingAccount: formData.get('accountingAccount'),
-            forceVat: formData.get('forceVat'),
-            invoiceMin: {
-                code: 'EUR',
-                value: JSON.parse(formData.get('invoiceMin-value'))
-            },
-            vat: formData.get('vat'),
-            vatMessage: formData.get('vatMessageValue')
-        }
-        const data = {
-            currency: formData.get('currency')
-        }
-        const item = generateSupplier(value)
-        await item.updateAccounting(data)
-        // const itemSoc = generateSocieties(value);
-        // await itemSoc.update(dataSociety);
-        await fetchSocietyStore.update(dataSociety, societyId)
-        await fetchSocietyStore.fetchById(societyId)
-        //await fetchSocietyStore.fetch();
-        managed.value = computed(() => {
-            const dataM = {managedCopper: fetchSocietyStore.society.copper.managed}
-            return dataM
-        })
-
-        list.value = computed(() => ({
-            ...fetchSocietyStore.society,
-            ...managed.value
-        }))
-
-        listSuppliers.value = computed(() => ({
-            ...fetchSuppliersStore.supplier,
-            ...list.value,
-            ...fetchSocietyStore.vatMessageValue
-        }))
-    }
-
     async function ajout(inputValues) {
         const data = {
             address: {
@@ -364,17 +257,7 @@
         <AppSupplierShowTabFichiers/>
         <AppSupplierShowTabQuality :component-attribute="listSuppliers"/>
         <AppSupplierShowTabPurchase/>
-        <AppTab
-            id="gui-start-accounting"
-            title="Comptabilité"
-            icon="industry"
-            tabs="gui-start">
-            <AppCardShow
-                id="addComptabilite"
-                :fields="Comptabilitéfields"
-                :component-attribute="listSuppliers"
-                @update="updateComptabilite(listSuppliers)"/>
-        </AppTab>
+        <AppSupplierShowTabAccounting :component-attribute="listSuppliers"/>
         <AppTab
             id="gui-start-addresses"
             title="Adresses"
