@@ -1,0 +1,303 @@
+$width-xxl: 1500px !default;
+
+@use 'bootstrap/scss/bootstrap' as * with (
+  $accordion-bg: #212529,
+  $accordion-button-bg: #212529,
+  $accordion-button-color: #fff,
+  $accordion-button-active-bg: #343a40,
+  $accordion-button-active-color: #fff,
+  $container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: $width-xxl
+  )
+);
+
+$dropdown-success: #57ec57 !default;
+
+[data-mode=tags] {
+  --ms-font-size: $input-font-size-sm;
+}
+
+@each $color, $value in $grays {
+  .bg-gray-#{$color} {
+    background-color: $value;
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .bg-#{$color}.text-dark .disabled.dropdown-item {
+    color: $black !important;
+  }
+}
+
+.bg-primary.card {
+  background-color: #8ac2f1 !important;
+}
+
+.bg-success .dropdown-item {
+  background-color: $dropdown-success !important;
+}
+
+.btn-icon {
+  height: 20px;
+  line-height: .8;
+  margin: 3.5px;
+  padding: 1px;
+  width: 20px;
+}
+
+.container {
+  min-width: 100%;
+}
+
+.dropdown-item .text-success {
+  color: $dropdown-success !important;
+}
+
+.enter-key-icon {
+  @extend .btn;
+  @extend .btn-icon;
+  background-image: url(/img/enter-key.svg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 20px;
+  width: 20px;
+}
+
+.gui {
+  --gui-margin: 2px;
+  --gui-margin-between: calc(var(--gui-margin) - 1px);
+
+  @extend .bg-secondary;
+
+  .gui-card > :first-child {
+    bottom: 3px;
+    left: 3px;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+  }
+
+  .gui-card .tab-content {
+    position: relative;
+
+    .tab-pane {
+      bottom: 0;
+      left: 0;
+      overflow: auto;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  }
+
+  .gui-card .icon-mode .nav-link-text {
+    display: none;
+  }
+}
+
+.gui-bottom .gui-card {
+  @extend .bg-danger;
+  bottom: var(--gui-margin);
+  left: var(--gui-margin);
+  position: absolute;
+  right: var(--gui-margin);
+  top: var(--gui-margin-between);
+}
+
+.gui-left .gui-card {
+  @extend .bg-info;
+  bottom: var(--gui-margin-between);
+  left: var(--gui-margin);
+  position: absolute;
+  right: var(--gui-margin-between);
+  top: var(--gui-margin);
+}
+
+.gui-resizer {
+  background-color: black;
+  cursor: row-resize;
+  left: var(--gui-margin);
+  margin: 0;
+  padding: 1px;
+  position: absolute;
+  right: var(--gui-margin);
+  top: var(--gui-margin-between);
+}
+
+.gui-right .gui-card {
+  @extend .bg-warning;
+  bottom: var(--gui-margin-between);
+  left: var(--gui-margin-between);
+  position: absolute;
+  right: var(--gui-margin);
+  top: var(--gui-margin);
+}
+
+.pointer, th[aria-sort] {
+  cursor: pointer;
+}
+
+.text-white .navbar-text {
+  color: $white !important;
+}
+.sortable {
+  cursor: pointer;
+  background-position: right;
+  background-repeat: no-repeat;
+  padding-right: 30px !important;
+}
+.asc {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZ0lEQVQ4y2NgGLKgquEuFxBPAGI2ahhWCsS/gDibUoO0gPgxEP8H4ttArEyuQYxAPBdqEAxPBImTY5gjEL9DM+wTENuQahAvEO9DMwiGdwAxOymGJQLxTyD+jgWDxCMZRsEoGAVoAADeemwtPcZI2wAAAABJRU5ErkJggg==);
+}
+.desc {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZUlEQVQ4y2NgGAWjYBSggaqGu5FA/BOIv2PBIPFEUgxjB+IdQPwfC94HxLykus4GiD+hGfQOiB3J8SojEE9EM2wuSJzcsFMG4ttQgx4DsRalkZENxL+AuJQaMcsGxBOAmGvopk8AVz1sLZgg0bsAAAAASUVORK5CYII=);
+}
+.both {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC");
+}
+
+@media (width < 800px) {
+  .gui-card .nav-link-text, .tab-icon {
+    display: none !important;
+  }
+}
+
+@media (width < 1000px) {
+  .gui {
+    .gui-bottom, .gui-left {
+      .gui-card .tab-content {
+        width: 100%;
+      }
+    }
+
+    #gui-left, #gui-bottom {
+      display: flex;
+      flex-direction: row;
+
+      > :first-child {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tab-icon {
+        display: flex;
+        flex-direction: row;
+      }
+    }
+  }
+}
+
+@media (width >= 1000px) {
+  .gui {
+    .gui-bottom .gui-card .tab-content {
+      width: 100%;
+    }
+
+    .gui-left .gui-card .tab-content {
+      height: 100%;
+    }
+
+    #gui-bottom {
+      display: flex;
+      flex-direction: row;
+
+      > :first-child {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tab-icon {
+        display: flex;
+        flex-direction: row;
+      }
+    }
+
+    #gui-left {
+      display: flex;
+      flex-direction: column;
+
+      > :first-child {
+        display: flex;
+        flex-direction: row;
+      }
+
+      .tab-icon {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}
+
+@media (width < $width-xxl) {
+  .gui {
+    --gui-height: 500px;
+
+    display: flex;
+    flex-direction: column;
+    left: var(--gui-margin);
+    position: absolute;
+    right: var(--gui-margin);
+    top: calc(56px + var(--gui-margin));
+  }
+
+  .gui-bottom {
+    height: var(--gui-height);
+    position: relative;
+    width: 100%;
+  }
+
+  .gui-left {
+    height: var(--gui-height);
+    position: relative;
+    width: 100%;
+  }
+
+  .gui-resizer {
+    display: none;
+  }
+
+  .gui-right {
+    height: var(--gui-height);
+    position: relative;
+    width: 100%;
+  }
+}
+
+@media ($width-xxl <= width) {
+  .gui {
+    bottom: var(--gui-margin);
+    left: var(--gui-margin);
+    position: absolute;
+    right: var(--gui-margin);
+    top: calc(46px + var(--gui-margin));
+  }
+
+  .gui-bottom {
+    bottom: 0;
+    height: calc(100% - var(--gui-ratio));
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  .gui-left {
+    height: var(--gui-ratio);
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 50%;
+  }
+
+  .gui-right {
+    height: var(--gui-ratio);
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50%;
+  }
+}
