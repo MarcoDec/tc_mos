@@ -5,7 +5,7 @@
     import useField from '../../../../stores/field/field'
 
     const roleuser = ref('reader')
-    // let violations = []
+    let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
     const isPopupVisible = ref(false)
@@ -96,6 +96,9 @@
     const storeUnit = useField(fieldsForm[4], parent)
     storeUnit.fetch()
 
+    fieldsForm[4].measure.code = storeUnit.measure.code
+    fieldsForm[4].measure.value = storeUnit.measure.value
+
     const tabFields = [
         {
             create: true,
@@ -173,18 +176,25 @@
     async function ajoutWarehouseStock(){
         const form = document.getElementById('addWarehouseStock')
         const formData1 = new FormData(form)
+
         const itemsAddData = {
             composant: formData1.get('composant'),
             produit: formData1.get('produit'),
             numeroDeSerie: formData1.get('numeroDeSerie'),
             localisation: formData1.get('localisation'),
-            quantite: formData1.get('quantite'),
+            quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
             prison: formData1.get('prison')
         }
-        await storeWarehouseStockList.addWarehouseStock(itemsAddData)
-        itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
-        AddForm.value = false
-        updated.value = false
+        violations = await storeWarehouseStockList.addWarehouseStock(itemsAddData)
+
+        if (violations.length > 0){
+            isPopupVisible.value = true
+        } else {
+            AddForm.value = false
+            updated.value = false
+            isPopupVisible.value = false
+            itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
+        }
     }
     function annule(){
         AddForm.value = false
@@ -305,6 +315,11 @@
                 </AppRow>
                 <br/>
                 <AppFormCardable id="addWarehouseStock" :fields="fieldsForm" :model-value="formData" label-cols/>
+                <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                    <div v-for="violation in violations" :key="violation">
+                        <li>{{ violation.message }}</li>
+                    </div>
+                </div>
                 <AppCol class="btnright">
                     <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutWarehouseStock">
                         <Fa icon="plus"/> Ajouter

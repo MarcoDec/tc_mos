@@ -1,6 +1,5 @@
 <script setup>
-    const props = defineProps({title: {required: true, type: String}})
-    console.log(props)
+    defineProps({title: {required: true, type: String}})
 </script>
 
 <template>

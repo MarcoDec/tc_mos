@@ -8,7 +8,7 @@
     import {computed} from 'vue'
     import AppTextArea from './AppTextArea.vue'
 
-    const emit = defineEmits(['update:modelValue'])
+    const emit = defineEmits(['update:model-value'])
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -16,6 +16,7 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
+
     const type = computed(() => {
         switch (props.field.type) {
             case 'boolean':
@@ -36,7 +37,7 @@
     })
 
     function input(v) {
-        emit('update:modelValue', v)
+        emit('update:model-value', v)
     }
 </script>
 

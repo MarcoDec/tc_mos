@@ -4,10 +4,14 @@ import {defineStore} from 'pinia'
 export const useWarehouseListStore = defineStore('warehouseList', {
     actions: {
         async addWarehouse(payload){
-            await api('/api/warehouses', 'POST', payload)
-            console.log(payload)
-            //this.itemsPagination(this.lastPage)
+            const violations = []
+            try {
+                await api('/api/warehouses', 'POST', payload)
+            } catch (error){
+                violations.push({message: 'Vous devez obligatoirement saisir un Nom'})
+            }
             this.fetch()
+            return violations
         },
 
         async delated(payload){
@@ -23,9 +27,9 @@ export const useWarehouseListStore = defineStore('warehouseList', {
             if (payload.name !== '') {
                 url += `name=${payload.name}&`
             }
-            // if (payload.families !== '') {
-            //     url += `address.families=${payload.address.families}&`
-            // }
+            if (payload.families !== '') {
+                url += `families%5B%5D=${payload.families}&`
+            }
             url += 'page=1'
             const response = await api(url, 'GET')
             this.warehouses = await this.updatePagination(response)
@@ -37,48 +41,53 @@ export const useWarehouseListStore = defineStore('warehouseList', {
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
+                console.log('je suis ici')
                 if (payload.trierAlpha.value.name === 'name') {
                     let url = `/api/warehouses?order%5B${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&`
                     if (payload.filterBy.value.name !== '') {
                         url += `name=${payload.filterBy.value.name}&`
                     }
-                    // if (payload.filterBy.value.address.families !== '') {
-                    //     url += `address.families=${payload.filterBy.value.address.families}&`
-                    // }
+                    if (payload.filterBy.value.families !== '') {
+                        url += `families%5B%5D=${payload.filterBy.value.families}&`
+                    }
                     url += `page=${payload.nPage}`
                     response = await api(url, 'GET')
                     this.societies = await this.updatePagination(response)
                 } else {
-                    let url = `/api/warehouses?order%5Baddress.${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&`
+                    let url = `/api/warehouses?order%5B${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&`
                     if (payload.filterBy.value.name !== '') {
                         url += `name=${payload.filterBy.value.name}&`
                     }
-                    // if (payload.filterBy.value.address.families !== '') {
-                    //     url += `address.families=${payload.filterBy.value.address.families}&`
-                    // }
-                    // url += `page=${payload.nPage}`
+                    if (payload.filterBy.value.families !== '') {
+                        url += `families%5B%5D=${payload.filterBy.value.families}&`
+                    }
+                    url += `page=${payload.nPage}`
                     response = await api(url, 'GET')
                     this.warehouses = await this.updatePagination(response)
                 }
             } else if (payload.filter.value === true){
+                console.log('je suis ici')
                 let url = '/api/warehouses?'
                 if (payload.filterBy.value.name !== '') {
                     url += `name=${payload.filterBy.value.name}&`
                 }
-                // if (payload.filterBy.value.address.families !== '') {
-                //     url += `address.families=${payload.filterBy.value.address.families}&`
-                // }
+                if (payload.filterBy.value.families !== '') {
+                    url += `families%5B%5D==${payload.filterBy.value.families}&`
+                }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
                 this.warehouses = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
+                console.log('je suis ici')
                 response = await api(`/api/warehouses?page=${payload.nPage}`, 'GET')
+                console.log(response)
                 this.warehouses = await this.updatePagination(response)
+                console.log(this.warehouses)
             } else {
                 if (payload.trierAlpha.value.name === 'name') {
                     response = await api(`/api/warehouses?order%5B${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
-                    response = await api(`/api/warehouses?order%5Baddress.${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/warehouses?order%5B${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
                 this.warehouses = await this.updatePagination(response)
             }
@@ -91,9 +100,9 @@ export const useWarehouseListStore = defineStore('warehouseList', {
                     if (filterBy.value.name !== '') {
                         url += `name=${filterBy.value.name}&`
                     }
-                    // if (filterBy.value.address.families !== '') {
-                    //     url += `address.families=${filterBy.value.address.families}&`
-                    // }
+                    if (filterBy.value.families !== '') {
+                        url += `families%5B%5D=${filterBy.value.families}&`
+                    }
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
                 } else {
@@ -101,9 +110,9 @@ export const useWarehouseListStore = defineStore('warehouseList', {
                     if (filterBy.value.name !== '') {
                         url += `name=${filterBy.value.name}&`
                     }
-                    // if (filterBy.value.address.families !== '') {
-                    //     url += `address.families=${filterBy.value.address.families}&`
-                    // }
+                    if (filterBy.value.families !== '') {
+                        url += `families%5B%5D=${filterBy.value.families}&`
+                    }
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
                 }
@@ -152,7 +161,6 @@ export const useWarehouseListStore = defineStore('warehouseList', {
             const {families} = item
             const newObject = {
                 ...item,
-                // address: undefined, // Supprimer l'objet address imbriqué d'origine
                 families: families.toString() ?? null
             }
             return newObject
@@ -165,6 +173,7 @@ export const useWarehouseListStore = defineStore('warehouseList', {
         nextPage: '',
         pagination: false,
         previousPage: '',
-        warehouses: []
+        warehouses: [],
+        families: []
     })
 })

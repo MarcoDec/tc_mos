@@ -10,7 +10,9 @@ function AppFormGroup(props, context) {
         form: props.form,
         id,
         modelValue: props.modelValue,
-        'onUpdate:modelValue': value => context.emit('update:modelValue', value)
+        'onUpdate:modelValue': value => {
+            context.emit('update:modelValue', value)
+        }
     }
     const children = []
     if (props.violation) {
@@ -26,6 +28,7 @@ function AppFormGroup(props, context) {
 }
 
 AppFormGroup.emits = ['update:modelValue']
+
 AppFormGroup.props = {
     disabled: {type: Boolean},
     field: generateField(),

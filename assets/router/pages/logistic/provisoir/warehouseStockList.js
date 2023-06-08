@@ -7,58 +7,35 @@ export const useWarehouseStockListStore = defineStore('warehouseStockList', {
             this.warehouseID = id
         },
         async addWarehouseStock(payload){
-            console.log(payload)
-            if (!payload.composant || !payload.produit) {
-                if (payload.prison === ''){
-                    payload.prison = false
-                }
-                if (payload.composant) {
-                    // const element = [
-                    //     {
-                    //         '@context': '/api/contexts/ComponentStock',
-                    //         '@id': payload.composant,
-                    //         '@type': 'ComponentStock',
-                    //         batchNumber: payload.numeroDeSerie,
-                    //         item: payload.composant,
-                    //         jail: payload.prison,
-                    //         location: payload.localisation,
-                    //         quantity: {
-                    //             code: 'U',
-                    //             value: 1
-                    //         }
-                    //     },
-                    //     {warehouse: `/api/warehouses/${this.warehouseID}`}
-                    // ]
-                    const element = {
-                        batchNumber: '1654854543',
-                        item: '/api/components/1',
-                        jail: true,
-                        location: 'Rayon B',
-                        quantity: {
-                            code: 'm',
-                            value: 1
-                        },
-                        warehouse: '/api/warehouses/1'
+            const violations = []
+            if (payload.composant && payload.produit){
+                violations.push({message: 'Vous ne pouvez ajouter simultanément un composant et un produit'})
+            } else {
+                try {
+                    if (payload.quantite.value !== ''){
+                        payload.quantite.value = parseInt(payload.quantite.value)
                     }
-                    console.log(element)
-                    await api('/api/component-stocks', 'POST', element)
-                } else {
-                    const element = [
-                        {
-                            item: '/api/products/faire',
-                            batchNumber: payload.numeroDeSerie,
-                            jail: payload.prison,
-                            location: payload.localisation,
-                            quantity: payload.quantite
-                        },
-                        {
-                            warehouse: payload.warehouse
-                        }
-                    ]
-                    await api('/api/product-stocks', 'POST', element)
+                    const element = {
+                        batchNumber: payload.numeroDeSerie,
+                        jail: payload.prison,
+                        location: payload.localisation,
+                        quantity: payload.quantite,
+                        warehouse: `/api/warehouses/${this.warehouseID}`
+                    }
+                    if (payload.produit) {
+                        element.item = payload.produit
+                        await api('/api/product-stocks', 'POST', element)
+                    }
+                    if (payload.composant) {
+                        element.item = payload.composant
+                        await api('/api/component-stocks', 'POST', element)
+                    }
+                    this.fetch()
+                } catch (error) {
+                    violations.push({message: error})
                 }
             }
-            this.fetch()
+            return violations
         },
         async deleted(payload) {
             await api(`/api/stocks/${payload}`, 'DELETE')

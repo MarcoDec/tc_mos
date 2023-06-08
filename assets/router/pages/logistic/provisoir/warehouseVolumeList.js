@@ -7,8 +7,35 @@ export const useWarehouseVolumeListStore = defineStore('warehouseVolumeList', {
             this.warehouseID = id
         },
         async addWarehouseVolume(payload){
-            await api('/api/stocks', 'POST', payload)
-            this.fetch()
+            const violations = []
+            if (payload.type === null){
+                violations.push({message: 'Veuillez sélectionner un type'})
+            } else {
+                try {
+                    if (payload.quantite.value === '' && payload.quantite.code === null){
+                        violations.push({message: 'Veuillez saisir une quantité'})
+                    }
+                    if (payload.quantite.value !== ''){
+                        payload.quantite.value = parseInt(payload.quantite.value)
+                    }
+                    const element = {
+                        quantity: payload.quantite,
+                        warehouse: `/api/warehouses/${this.warehouseID}`
+                    }
+                    if (payload.type === 'produit') {
+                        element.item = payload.ref
+                        await api('/api/product-stocks', 'POST', element)
+                    }
+                    if (payload.type === 'composant') {
+                        element.item = payload.ref
+                        await api('/api/component-stocks', 'POST', element)
+                    }
+                    this.fetch()
+                } catch (error) {
+                    violations.push({message: error})
+                }
+            }
+            return violations
         },
         async deleted(payload) {
             await api(`/api/stocks/${payload}`, 'DELETE')
@@ -307,8 +334,8 @@ export const useWarehouseVolumeListStore = defineStore('warehouseVolumeList', {
         },
         getOptionType() {
             const opt = []
-            opt.push({text: 'Composant'})
-            opt.push({text: 'Produit'})
+            opt.push({text: 'Composant', value: 'composant'})
+            opt.push({text: 'Produit', value: 'produit'})
             opt.sort((a, b) => a.text.localeCompare(b.text))
             return opt.length === 0 ? [{text: 'Aucun élément'}] : opt
         }

@@ -4,15 +4,12 @@
     import {useRouter} from 'vue-router'
     import {useWarehouseShowStore} from '../../../../stores/logistic/warehouses/warehouseShow.js'
 
-    //import {useWarehouseListItemsStore} from '../../../../stores/logistic/warehouses/warehouseListItems'
-
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
-
     const roleuser = ref('reader')
-    // let violations = []
+    let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
     const isPopupVisible = ref(false)
@@ -30,7 +27,6 @@
     const formData = ref({
         families: null, name: null
     })
-
     const fieldsForm = [
         {label: 'Nom *', name: 'name', type: 'text'},
         {
@@ -152,17 +148,26 @@
     async function ajoutWarehouse(){
         const form = document.getElementById('addWarehouse')
         const formData1 = new FormData(form)
-        //console.log(formData1)
-        const itemsAddData = {
-            name: formData1.get('name'),
-            families: formData1.get('families')
+
+        if (typeof formData.value.families !== 'undefined') {
+            formData.value.families = JSON.parse(JSON.stringify(formData.value.families))
         }
 
-        //console.log(itemsAddData)
-        await storeWarehouseList.addWarehouse(itemsAddData)
-        itemsTable.value = [...storeWarehouseList.itemsWarehouses]
-        AddForm.value = false
-        updated.value = false
+        const itemsAddData = {
+            name: formData1.get('name'),
+            families: formData.value.families
+        }
+
+        violations = await storeWarehouseList.addWarehouse(itemsAddData)
+
+        if (violations.length > 0){
+            isPopupVisible.value = true
+        } else {
+            AddForm.value = false
+            updated.value = false
+            isPopupVisible.value = false
+            itemsTable.value = [...storeWarehouseList.itemsWarehouses]
+        }
     }
     function annule(){
         AddForm.value = false
@@ -176,13 +181,13 @@
 
     function update(item) {
         storeWarehouseShow.setCurrentId(item.id)
-        router.push(`warehouse/${item.id}`)
         // updated.value = true
         // AddForm.value = true
         // const itemsData = {
         //     families: item.families
         // }
         // formData.value = itemsData
+        router.push(`warehouse/${item.id}`)
     }
 
     async function deleted(id){
@@ -190,7 +195,9 @@
         itemsTable.value = [...storeWarehouseList.itemsWarehouses]
     }
     async function getPage(nPage){
+        console.log(nPage)
         await storeWarehouseList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        itemsTable.value = [...storeWarehouseList.itemsWarehouses]
     }
     async function trierAlphabet(payload) {
         await storeWarehouseList.sortableItems(payload, filterBy, filter)
@@ -210,6 +217,10 @@
     async function cancelSearch() {
         filter.value = false
         await storeWarehouseList.fetch()
+    }
+
+    function input(v){
+        formData.value.families = v.families
     }
 </script>
 
@@ -256,7 +267,12 @@
                     </h4>
                 </AppRow>
                 <br/>
-                <AppFormCardable id="addWarehouse" :fields="fieldsForm" :model-value="formData" label-cols/>
+                <AppFormCardable id="addWarehouse" :fields="fieldsForm" label-cols @update:model-value="input"/>
+                <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                    <div v-for="violation in violations" :key="violation">
+                        <li>{{ violation.message }}</li>
+                    </div>
+                </div>
                 <AppCol class="btnright">
                     <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutWarehouse">
                         <Fa icon="plus"/> Ajouter

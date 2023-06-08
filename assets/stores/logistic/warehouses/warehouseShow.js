@@ -49,7 +49,6 @@ export const useWarehouseShowStore = defineStore('warehouseShow', {
                 destination: this.items.destination,
                 families: this.items.families
             }
-
             const response = await api(`/api/warehouses/${this.index}`, 'PATCH', data)
             this.$state = {...response}
         }

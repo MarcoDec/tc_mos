@@ -5,7 +5,7 @@
     import useField from '../../../../stores/field/field'
 
     const roleuser = ref('reader')
-    // let violations = []
+    let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
     const isPopupVisible = ref(false)
@@ -68,6 +68,8 @@
     const storeUnit = useField(fieldsForm[1], parent)
     // storeUnit.fetch()
 
+    fieldsForm[1].measure.code = storeUnit.measure.code
+    fieldsForm[1].measure.value = storeUnit.measure.value
     const tabFields = [
         {
             create: true,
@@ -118,13 +120,19 @@
         const formData1 = new FormData(form)
         const itemsAddData = {
             ref: formData1.get('ref'),
-            quantite: formData1.get('quantite'),
+            quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
             type: formData1.get('type')
         }
-        await storeWarehouseVolumeList.addWarehouseVolume(itemsAddData)
-        itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
-        AddForm.value = false
-        updated.value = false
+        violations = await storeWarehouseVolumeList.addWarehouseVolume(itemsAddData)
+
+        if (violations.length > 0){
+            isPopupVisible.value = true
+        } else {
+            AddForm.value = false
+            updated.value = false
+            isPopupVisible.value = false
+            itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
+        }
     }
     function annule(){
         AddForm.value = false
@@ -236,6 +244,11 @@
                 </AppRow>
                 <br/>
                 <AppFormCardable id="addWarehouseVolume" :fields="fieldsForm" :model-value="formData" label-cols/>
+                <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                    <div v-for="violation in violations" :key="violation">
+                        <li>{{ violation.message }}</li>
+                    </div>
+                </div>
                 <AppCol class="btnright">
                     <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutWarehouseVolume">
                         <Fa icon="plus"/> Ajouter
