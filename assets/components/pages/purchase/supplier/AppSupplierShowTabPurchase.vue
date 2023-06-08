@@ -9,9 +9,7 @@
     //Définition des évènements
     const emit = defineEmits([
         'update',
-        'update:modelValue',
-        'rating',
-        'cancelSearch'
+        'update:modelValue'
     ])
     const fetchIncotermStore = useIncotermStore()
     const fetchSocietyStore = useSocietyStore()
@@ -29,20 +27,14 @@
         localData.value.incoterms = fetchSocietyStore.society.incoterms
         localData.value.orderMin = fetchSocietyStore.society.orderMin
         localData.value.managedCopper = fetchSocietyStore.society.copper.managed
-        localData.value.vatMessageValue = fetchSocietyStore.society.vatMessageValue
-        localData.value.incotermsValue = fetchSocietyStore.society.incoterms['@id']
+        localData.value.vatMessageValue = fetchSocietyStore.society.vatMessage
+        localData.value.incotermsValue = fetchSocietyStore.society.incoterms ? fetchSocietyStore.society.incoterms['@id'] : null
     }
     initLocalData()
     const optionsIncoterm = computed(() =>
         fetchIncotermStore.incoterms.map(incoterm => {
             const text = incoterm.name
             const value = incoterm['@id']
-            return {text, value}
-        }))
-    const optionsUnit = computed(() =>
-        fetchUnitOptions.options.map(op => {
-            const text = op.text
-            const value = op.text
             return {text, value}
         }))
     const Achatfields = [
@@ -74,13 +66,7 @@
         emit('update:modelValue', value)
     }
     async function update() {
-        // const data = {
-        //     confidenceCriteria: localData.value.confidenceCriteria
-        // }
-        // const item = generateSupplier(value)
-        // await item.updateQuality(data)
         const societyId = fetchSocietyStore.society.id
-        console.log(`societe : ${societyId}`)
         const dataSociety = {
             ar: localData.value.ar,
             copper: {
@@ -92,21 +78,15 @@
                 value: Number(localData.value.orderMin.value)
             }
         }
-        console.log('dataSociety', dataSociety)
         const data = {
             confidenceCriteria: localData.value.confidenceCriteria,
             openOrdersEnabled: localData.value.openOrdersEnabled
         }
-        console.log('data', data)
-        // const itemSoc = generateSocieties(value);
-        // await itemSoc.update(dataSociety);
         await fetchSocietyStore.update(dataSociety, societyId)
 
         await fetchSocietyStore.fetchById(societyId)
-        console.log(localData.value)
         const item = generateSupplier(localData.value)
         await item.updateLog(data)
-
         await fetchSocietyStore.fetch()
     }
 </script>
