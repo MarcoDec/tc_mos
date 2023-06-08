@@ -86,7 +86,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'groups' => ['read:id', 'read:unit'],
             'openapi_definition_name' => 'Unit-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     Base,
     ORM\Entity(repositoryClass: UnitRepository::class),

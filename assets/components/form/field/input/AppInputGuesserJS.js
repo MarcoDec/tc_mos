@@ -3,6 +3,7 @@ import AppInputFile from './AppInputFile'
 import AppInputNumberJS from './AppInputNumberJS'
 import AppMultiselect from './select/AppMultiselect.vue'
 import AppInputMeasure from './AppInputMeasure.vue'
+import AppInputMeasureSelect from './AppInputMeasureSelect.vue'
 import AppSelectJS from './select/AppSelectJS'
 import AppSwitch from './AppSwitch.vue'
 import AppTrafficLight from './AppTrafficLight.vue'
@@ -22,6 +23,8 @@ function getType(field) {
         return AppMultiselect
     case 'measure':
         return AppInputMeasure
+    case 'measureSelect':
+        return AppInputMeasureSelect
     case 'trafficLight':
         return AppTrafficLight
     default:

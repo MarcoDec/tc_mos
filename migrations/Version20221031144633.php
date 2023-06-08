@@ -353,7 +353,7 @@ CREATE TABLE `attribute` (
     `name` VARCHAR(255) NOT NULL,
     `unit_id` INT UNSIGNED DEFAULT NULL,
     `attribut_id_family` VARCHAR(255) DEFAULT NULL,
-    `type` enum('bool', 'color', 'int', 'percent', 'text', 'unit') DEFAULT 'text' NOT NULL COMMENT '(DC2Type:attribute)',
+    `type` enum('bool', 'color', 'int', 'percent', 'text', 'measure', 'measureSelect') DEFAULT 'text' NOT NULL COMMENT '(DC2Type:attribute)',
     CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
 )
 SQL);

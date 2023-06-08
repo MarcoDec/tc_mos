@@ -22,7 +22,7 @@ export default defineStore('attributes', {
                 attribute.update(attributes, family)
         },
         async getAttributes(){
-            const response = await api('/api/attributes', 'GET')
+            const response = await api('/api/attributes?pagination=false', 'GET')
             this.listAttributes = response['hydra:member']
         }
     },
