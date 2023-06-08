@@ -3,6 +3,9 @@
     import AppTab from '../../../components/tab/AppTab.vue'
     import AppTabs from '../../../components/tab/AppTabs.vue'
     import {computed} from 'vue-demi'
+    import AppAttributeCreate from './AppAttributeCreate.vue'
+    import AppSuspense from '../../../components/AppSuspense.vue'
+
 
     const emit = defineEmits(['update:modelValue'])
     const fields = computed(() => [
@@ -83,17 +86,25 @@
         formInput = {...formInput, ...value}
         emit('update:modelValue', formInput)
     }
+    
 </script>
 
 <template>
+    <AppSuspense>
     <div class="gui-card">
         <AppTabs id="gui-form-create" style="display: block !important;">
             <AppTab v-for="field in fields" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
                 <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children" @update:model-value="input"/>
+                <p v-else-if="field.name === 'attributs'">
+                    <AppSuspense>
+                        <AppAttributeCreate/> 
+                    </AppSuspense>
+                </p>
                 <p v-else>
                     {{ field.label }} à définir
                 </p>
             </AppTab>
         </AppTabs>
     </div>
+    </AppSuspense>
 </template>

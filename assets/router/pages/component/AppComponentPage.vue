@@ -3,12 +3,15 @@
     import AppTablePage from '../AppTablePage'
     import {computed} from 'vue-demi'
     import useComponentsStore from '../../../stores/component/components'
+    import useAttributesStore from '../../../stores/attribute/attributes'
     import {useTableMachine} from '../../../machine'
     const title = 'Créer un Composant'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
     const machineComponet = useTableMachine('machine-component')
     const StoreComponents = useComponentsStore()
+    const StoreAttributes = useAttributesStore()
+
     // console.log('component', component)
 
     const fields = [
@@ -94,6 +97,7 @@
         console.log('componentInput', componentInput)
         await StoreComponents.addComponent(componentInput)
     }
+    // StoreAttributes.getAttributes()
 </script>
 
 <template>

@@ -20,6 +20,10 @@ export default defineStore('attributes', {
         update(attributes, family) {
             for (const attribute of this.attributes)
                 attribute.update(attributes, family)
+        },
+        async getAttributes(){
+            const response = await api('/api/attributes', 'GET')
+            this.listAttributes = response['hydra:member']
         }
     },
     getters: {
@@ -34,5 +38,5 @@ export default defineStore('attributes', {
             return `/api/${this.$id}?pagination=false`
         }
     },
-    state: () => ({attributes: []})
+    state: () => ({attributes: [],listAttributes: []})
 })
