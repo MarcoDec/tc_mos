@@ -1,4 +1,5 @@
-<script setup>
+<script setup> 
+    //inlist
     import generateItems from '../../../stores/table/items'
     import {useRoute} from 'vue-router'
     import {useTableMachine} from '../../../machine'
