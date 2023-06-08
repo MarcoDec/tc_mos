@@ -2,6 +2,7 @@
     import {computed, ref} from 'vue'
     import AppSupplierShowTabFichiers from './AppSupplierShowTabFichiers.vue'
     import AppSupplierShowTabGeneral from './AppSupplierShowTabGeneral.vue'
+    import AppSupplierShowTabPurchase from './AppSupplierShowTabPurchase.vue'
     import AppSupplierShowTabQuality from './AppSupplierShowTabQuality.vue'
     import generateSupplier from '../../../../stores/supplier/supplier'
     import generateSupplierContact from '../../../../stores/supplier/supplierContact'
@@ -14,13 +15,7 @@
 
     const route = useRoute()
     const idSupplier = route.params.id_supplier
-    //Définition des évènements
-    const emit = defineEmits([
-        'update',
-        'update:modelValue',
-        'rating',
-        'cancelSearch'
-    ])
+
     //Création des variables locales
     const isError2 = ref(false)
     const isShow = ref(false)
@@ -103,13 +98,6 @@
         ...fetchSocietyStore.vatMessageValue,
         ...fetchSocietyStore.incotermsValue
     }))
-    const optionsIncoterm = computed(() =>
-        fetchIncotermStore.incoterms.map(incoterm => {
-            const text = incoterm.name
-            const value = incoterm['@id']
-            const optionList = {text, value}
-            return optionList
-        }))
 
     const fieldsSupp = [
         {
@@ -166,30 +154,6 @@
             name: 'zipCode',
             type: 'text'
         }
-    ]
-
-    const Achatfields = [
-        {
-            label: 'Minimum de commande',
-            measure: {code: 'Devise', value: 'valeur'},
-            name: 'orderMin',
-            type: 'measure'
-        },
-        {
-            label: 'Incoterm',
-            name: 'incotermsValue',
-            options: {
-                label: value =>
-                    optionsIncoterm.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsIncoterm.value
-            },
-            type: 'select'
-        },
-        {label: 'Gestion du cuivre', name: 'managedCopper', type: 'boolean'},
-        {label: 'Niveau de confiance', name: 'confidenceCriteria', type: 'rating'},
-        {label: 'Commande ouverte', name: 'openOrdersEnabled', type: 'boolean'},
-        {label: 'Accusé de réception', name: 'ar', type: 'boolean'}
     ]
     const Comptabilitéfields = [
         {
@@ -253,55 +217,6 @@
         },
         {label: 'Fax', name: 'getPhone', type: 'text'}
     ]
-    const val = ref(Number(fetchSuppliersStore.supplier.confidenceCriteria))
-    async function input(value) {
-        val.value = value.confidenceCriteria
-        emit('update:modelValue', val.value)
-        const data = {
-            confidenceCriteria: val.value
-        }
-        const item = generateSupplier(value)
-        await item.updateQuality(data)
-        await fetchSocietyStore.fetch()
-    }
-    async function updateLogistique(value) {
-        const form = document.getElementById('addAchatLogistique')
-        const formData = new FormData(form)
-
-        const dataSociety = {
-            ar: JSON.parse(formData.get('ar')),
-            copper: {
-                managed: JSON.parse(formData.get('managedCopper'))
-            },
-            incoterms: formData.get('incotermsValue'),
-            orderMin: {
-                code: 'EUR',
-                value: JSON.parse(formData.get('orderMin-value'))
-            }
-        }
-        const data = {
-            openOrdersEnabled: JSON.parse(formData.get('openOrdersEnabled'))
-        }
-        // const itemSoc = generateSocieties(value);
-        // await itemSoc.update(dataSociety);
-        await fetchSocietyStore.update(dataSociety, societyId)
-        await fetchSocietyStore.fetchById(societyId)
-        const item = generateSupplier(value)
-        await item.updateLog(data)
-        await fetchSocietyStore.fetch()
-
-        list.value = computed(() => ({
-            ...fetchSocietyStore.society,
-            ...managed.value
-        }))
-
-        listSuppliers.value = computed(() => ({
-            ...fetchSuppliersStore.supplier,
-            ...list.value,
-            ...fetchSocietyStore.incotermsValue
-        }))
-    }
-
     async function updateAddress(value) {
         const form = document.getElementById('addAdresses')
         const formData = new FormData(form)
@@ -448,18 +363,7 @@
         <AppSupplierShowTabGeneral/>
         <AppSupplierShowTabFichiers/>
         <AppSupplierShowTabQuality :component-attribute="listSuppliers"/>
-        <AppTab
-            id="gui-start-purchase-logistics"
-            title="Achat/Logistique"
-            icon="bag-shopping"
-            tabs="gui-start">
-            <AppCardShow
-                id="addAchatLogistique"
-                :fields="Achatfields"
-                :component-attribute="listSuppliers"
-                @update="updateLogistique(listSuppliers)"
-                @update:model-value="input"/>
-        </AppTab>
+        <AppSupplierShowTabPurchase/>
         <AppTab
             id="gui-start-accounting"
             title="Comptabilité"

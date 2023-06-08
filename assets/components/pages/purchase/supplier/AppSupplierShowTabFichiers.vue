@@ -65,17 +65,15 @@
             })
         })
         //Etape 2 - nodes = noeuds de type dossier
-        folders.value = foldersId.value.map(folder => {
-            //console.log(folder)
-            return {
+        folders.value = foldersId.value.map(folder =>
+            ({
                 category: folder,
                 children: [],
                 icon: 'folder',
                 id: folder,
                 label: folder.split('/')[folder.split('/').length - 1],
                 level: folder.split('/').length
-            }
-        })
+            }))
         //Etape 3 - nodes création de l'arborescence sur base folders
         //region recupération de la profondeur maximale
         const maxLevel = ref(0)
