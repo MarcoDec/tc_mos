@@ -6,7 +6,7 @@
 </script>
 
 <template>
-    <nav class="bg-dark mb-1 navbar navbar-dark navbar-expand-xxl sticky-top">
+    <nav id="app-nav-bar" class="bg-dark mb-1 navbar navbar-dark navbar-expand-xxl sticky-top">
         <AppContainer fluid>
             <span class="m-0 navbar-brand p-0">
                 <AppRouterLink :to="{name: 'home'}">T-Concept</AppRouterLink>
