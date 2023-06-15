@@ -24,19 +24,19 @@
     const zoneUtile = ref({
         x0: 0, //en px
         x1: 100, //en px
+        xs: 0, // position x souris 'screen'
         y0: 100, //en px
         y1: 200, //en px
-        xs: 0, // position x souris 'screen'
         ys: 0 // position y souris 'screen'
     })
     function handleMouseMove(event) {
         if (event.pageX === null && event.clientX !== null) {
-            const eventDoc = (event.target && event.target.ownerDocument) || document
+            const eventDoc = event.target && event.target.ownerDocument || document
             const doc = eventDoc.documentElement
             const body = eventDoc.body
 
             event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0)
-            event.pageY = event.clientY + (doc && doc.scrollTop  || body && body.scrollTop  || 0) - (doc && doc.clientTop  || body && body.clientTop  || 0 )
+            event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0)
         }
 
         // Use event.pageX / event.pageY here
@@ -109,10 +109,10 @@
 
 <template>
     <div id="gui-wrapper" class="" :style="guiWrapperStyle">
-        <div id="gui-header" class="text-bg-danger" :style="guiHeaderStyle">
+        <div id="gui-header" :style="guiHeaderStyle">
             <slot name="gui-header"/>
         </div>
-        <div id="gui" class="bg-secondary" :style="guiStyle">
+        <div id="gui" :style="guiStyle">
             <div id="gui-top" class="gui-top" :style="guiTopStyle">
                 <div id="gui-left" class="bg-info">
                     <div class="bg-info gui-card">
@@ -137,7 +137,6 @@
 
 <style scoped>
     #gui-wrapper {
-       background-color: darkgrey;
     }
     #gui-header {
        position: fixed;
@@ -158,10 +157,12 @@
     #gui-left {
         min-width: 50%;
         max-width: 50%;
+        overflow: auto;
     }
     #gui-right {
         min-width: 50%;
         max-width: 50%;
+        overflow: auto;
     }
     .gui-resizer {
         background-color: black;
@@ -176,5 +177,6 @@
         display: flex;
         flex-direction: row;
         align-items: stretch;
+        overflow: auto;
     }
 </style>
