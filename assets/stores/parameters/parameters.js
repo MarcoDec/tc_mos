@@ -26,7 +26,7 @@ export const useParametersStore = defineStore('parameters', {
         }
     },
     getters: {
-        fields: state => state.attributes.map(parameter => parameter.field),
+        fields: state => state.parameters.map(parameter => parameter.field),
         url() {
             return `/api/${this.$id}?pagination=false`
         }
