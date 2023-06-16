@@ -35,7 +35,7 @@
     const Comptabilitéfields = [
         {
             label: 'Montant minimum de facture',
-            measure: {code: 'Devise', value: 'valeur'},
+            measure: {code: {label: 'Unité', name: 'unit', options: {options: [{text: 'EUR', value: 'EUR'}]}, sortName: 'unit.code', type: 'select'}, value: 'valeur'},
             name: 'invoiceMin',
             type: 'measure'
         },
@@ -107,7 +107,7 @@
         const data = {
             currency: localData.value.currency
         }
-        const item = generateSupplier(localData.value)
+        const item = generateSupplier(fetchSuppliersStore.supplier)
         await item.updateAccounting(data)
         await fetchSocietyStore.update(dataSociety, societyId)
         await fetchSocietyStore.fetchById(societyId)
