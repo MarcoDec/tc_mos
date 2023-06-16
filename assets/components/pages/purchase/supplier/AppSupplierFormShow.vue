@@ -112,7 +112,7 @@
             </AppTab>
             <AppTab
                 id="gui-start-addresses"
-                title="Adresses"
+                title="Adresse"
                 icon="location-dot"
                 tabs="gui-start">
                 <AppSupplierShowTabAddresses :options-countries="optionsCountries"/>
