@@ -115,16 +115,10 @@
 </script>
 
 <template>
-    <AppTab
-        id="gui-start-accounting"
-        title="Comptabilité"
-        icon="industry"
-        tabs="gui-start">
-        <AppCardShow
-            id="addComptabilite"
-            :fields="Comptabilitéfields"
-            :component-attribute="localData"
-            @update="updateComptabilite"
-            @update:model-value="updateModelValue"/>
-    </AppTab>
+    <AppCardShow
+        id="addComptabilite"
+        :fields="Comptabilitéfields"
+        :component-attribute="localData"
+        @update="updateComptabilite"
+        @update:model-value="updateModelValue"/>
 </template>

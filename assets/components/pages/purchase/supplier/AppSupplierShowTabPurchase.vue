@@ -92,16 +92,10 @@
 </script>
 
 <template>
-    <AppTab
-        id="gui-start-purchase-logistics"
-        title="Achat/Logistique"
-        icon="bag-shopping"
-        tabs="gui-start">
-        <AppCardShow
-            id="addAchatLogistique"
-            :fields="Achatfields"
-            :component-attribute="localData"
-            @update="update"
-            @update:model-value="updateModelValue"/>
-    </AppTab>
+    <AppCardShow
+        id="addAchatLogistique"
+        :fields="Achatfields"
+        :component-attribute="localData"
+        @update="update"
+        @update:model-value="updateModelValue"/>
 </template>

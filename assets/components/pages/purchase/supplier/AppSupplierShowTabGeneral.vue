@@ -93,18 +93,11 @@
 </script>
 
 <template>
-    <AppTab
-        id="gui-start-main"
-        active
-        title="Généralités"
-        icon="pencil"
-        tabs="gui-start">
-        <AppCardShow
-            id="addGeneralites"
-            :fields="Géneralitésfields"
-            :component-attribute="currentSupplierData"
-            @update="updateGeneralApi"
-            @update:model-value="updateLocalSupplierValue"/>
-    </AppTab>
+    <AppCardShow
+        id="addGeneralites"
+        :fields="Géneralitésfields"
+        :component-attribute="currentSupplierData"
+        @update="updateGeneralApi"
+        @update:model-value="updateLocalSupplierValue"/>
 </template>
 

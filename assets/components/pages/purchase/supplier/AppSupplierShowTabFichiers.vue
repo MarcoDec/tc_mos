@@ -132,11 +132,7 @@
 </script>
 
 <template>
-    <AppTab
-        id="gui-start-files"
-        title="Fichiers"
-        icon="laptop"
-        tabs="gui-start">
+    <div>
         <AppCardShow
             id="addFichiers"
             :fields="fichiersFields"
@@ -151,5 +147,5 @@
             </ul>
         </div>
         <MyTree :node="rootFolder"/>
-    </AppTab>
+    </div>
 </template>

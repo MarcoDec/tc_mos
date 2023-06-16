@@ -24,7 +24,6 @@
         managedQuality: fetchSuppliersStore.supplier.managedQuality,
         ppmRate: Number(fetchSocietyStore.society.ppmRate)
     })
-
     async function update() {
         const data = {
             confidenceCriteria: localData.value.confidenceCriteria,
@@ -44,22 +43,16 @@
         })
     }
     async function input(value) {
-        localData.value = value
+        localData.value = {...localData.value, ...value}
         emit('update:modelValue', localData.value)
     }
 </script>
 
 <template>
-    <AppTab
-        id="gui-start-quality"
-        title="Qualité"
-        icon="certificate"
-        tabs="gui-start">
-        <AppCardShow
-            id="addQualite"
-            :fields="qualityFields"
-            :component-attribute="localData"
-            @update="update"
-            @update:model-value="input"/>
-    </AppTab>
+    <AppCardShow
+        id="addQualite"
+        :fields="qualityFields"
+        :component-attribute="localData"
+        @update="update"
+        @update:model-value="input"/>
 </template>
