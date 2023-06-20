@@ -19,8 +19,8 @@
             name: formData.get('name'),
             notes: formData.get('notes')
         }
-        await useFetchComponentStore.updateAdmin(data, idComponent)
-        await useFetchComponentStore.updateMain(data, idComponent)
+        await useFetchComponentStore.updateAdmin(data, idComponent) //pour index et name
+        await useFetchComponentStore.updateMain(data, idComponent) //pour notes
         await useFetchComponentStore.fetchOne(idComponent)
     }
 </script>
