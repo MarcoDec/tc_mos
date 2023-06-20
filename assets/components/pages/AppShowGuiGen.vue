@@ -1,9 +1,8 @@
 <script setup>
-    import {computed, onBeforeUnmount, onMounted, ref} from 'vue'
+    import {onBeforeUnmount, onMounted, ref} from 'vue'
 
     // Ratio de la zone top par rapport à la zone top+bottom
     const guiRatio = ref(0.5)
-    const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
 
     // Dimensions de la fenêtre du navigateur
     const windowSize = ref({height: window.innerHeight, width: window.innerWidth})
@@ -88,7 +87,7 @@
         document.removeEventListener('mousemove', handleMouseMove)
     })
 
-    function resize(e) {
+    function resize() {
         function drag(position) {
             if (position.y > zoneUtile.value.y0) {
                 const ratio = (position.y - zoneUtile.value.y0) / (zoneUtile.value.y1 - zoneUtile.value.y0)
