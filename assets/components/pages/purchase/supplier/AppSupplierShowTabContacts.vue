@@ -4,18 +4,32 @@
     import {useSupplierContactsStore} from '../../../../stores/supplier/supplierContacts'
     import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
 
+    const emit = defineEmits(['error'])
     const fetchSuppliersStore = useSuppliersStore()
     const fetchSupplierContactsStore = useSupplierContactsStore()
     const supplierId = Number(fetchSuppliersStore.supplier.id)
     const societyId = Number(fetchSuppliersStore.supplier.society.match(/\d+/))
-    await fetchSupplierContactsStore.fetchBySociety(societyId)
+    await fetchSupplierContactsStore.fetchBySociety(supplierId)
     const isShow = ref(false)
     const itemsTable = computed(() =>
         fetchSupplierContactsStore.itemsSocieties.reduce(
             (acc, curr) => acc.concat(curr),
             []
         ))
-    const typesContact = ['comptabilité','chiffrage','direction','ingénierie','fabrication','achat','qualité','commercial','approvisionnement']
+    //Création des variables locales
+    const isError2 = ref(false)
+    const violations2 = ref([])
+    const typesContact = [
+        'comptabilité',
+        'chiffrage',
+        'direction',
+        'ingénierie',
+        'fabrication',
+        'achat',
+        'qualité',
+        'commercial',
+        'approvisionnement'
+    ]
     const fieldsSupp = [
         {
             label: 'Nom ',
@@ -49,37 +63,6 @@
             },
             type: 'select'
         }
-        // {
-        //     label: 'Adresse',
-        //     name: 'address',
-        //     type: 'text'
-        // },
-        // {
-        //     label: 'Complément d\'adresse ',
-        //     name: 'address2',
-        //     type: 'text'
-        // },
-        // {
-        //     label: 'Pays',
-        //     name: 'country',
-        //     options: {
-        //         label: value =>
-        //             props.optionsCountries.find(option => option.type === value)?.text
-        //             ?? null,
-        //         options: props.optionsCountries
-        //     },
-        //     type: 'select'
-        // },
-        // {
-        //     label: 'Ville ',
-        //     name: 'city',
-        //     type: 'text'
-        // },
-        // {
-        //     label: 'Code Postal ',
-        //     name: 'zipCode',
-        //     type: 'text'
-        // }
     ]
     async function ajout(inputValues) {
         const data = {
@@ -94,7 +77,7 @@
                 zipCode: inputValues.zipCode ?? ''
             },
             // default: true,
-            // kind: "comptabilité",
+            kind: inputValues.kind ?? '',
             mobile: inputValues.mobile ?? '',
             name: inputValues.name ?? '',
             society: `/api/suppliers/${supplierId}`,
@@ -133,6 +116,7 @@
             },
             // default: true,
             // kind: "comptabilité",
+            kind: inputValues.kind ?? '',
             mobile: inputValues.mobile ?? '',
             name: inputValues.name ?? '',
             society: `/api/suppliers/${supplierId}`,
@@ -143,7 +127,7 @@
             await item.update(dataUpdate)
             isError2.value = false
         } catch (error) {
-            await fetchSupplierContactsStore.fetchBySociety(societyId)
+            await fetchSupplierContactsStore.fetchBySociety(supplierId)
             itemsTable.value = fetchSupplierContactsStore.itemsSocieties.reduce(
                 (acc, curr) => acc.concat(curr),
                 []
@@ -151,6 +135,7 @@
             if (Array.isArray(error)) {
                 violations2.value = error
                 isError2.value = true
+                emit('error', {violation: violations2.value})
             } else {
                 const err = {
                     message: error
@@ -166,6 +151,7 @@
     <AppCollectionTable
         v-if="!isShow"
         id="addContacts"
+        :allowed-actions="{add: true, cancel: true, search: false}"
         :fields="fieldsSupp"
         :items="itemsTable"
         @ajout="ajout"

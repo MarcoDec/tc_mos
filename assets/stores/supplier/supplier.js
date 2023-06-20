@@ -1,8 +1,8 @@
 import api from '../../api'
 import {defineStore} from 'pinia'
 
-export default function generateSupplier(suppliers) {
-    return defineStore(`suppliers/${suppliers.id}`, {
+export default function generateSupplier(supplier) {
+    return defineStore(`suppliers/${supplier.id}`, {
         actions: {
             dispose() {
                 this.$reset()
@@ -10,27 +10,26 @@ export default function generateSupplier(suppliers) {
             },
 
             async updateAccounting(data) {
-                const response = await api(`/api/suppliers/${suppliers.id}/accounting`, 'PATCH', data)
+                const response = await api(`/api/suppliers/${supplier.id}/accounting`, 'PATCH', data)
                 this.$state = {...response}
             },
 
             async updateAdmin(data) {
-                const response = await api(`/api/suppliers/${suppliers.id}/admin`, 'PATCH', data)
+                const response = await api(`/api/suppliers/${supplier.id}/admin`, 'PATCH', data)
                 this.$state = {...response}
             },
             async updateLog(data) {
-                const response = await api(`/api/suppliers/${suppliers.id}/purchase-logistics`, 'PATCH', data)
+                const response = await api(`/api/suppliers/${supplier.id}/purchase-logistics`, 'PATCH', data)
                 this.$state = {...response}
             },
             async updateMain(data) {
-                const response = await api(`/api/suppliers/${suppliers.id}/main`, 'PATCH', data)
+                const response = await api(`/api/suppliers/${supplier.id}/main`, 'PATCH', data)
                 this.$state = {...response}
             },
             async updateQuality(data) {
-                const response = await api(`/api/suppliers/${suppliers.id}/quality`, 'PATCH', data)
+                const response = await api(`/api/suppliers/${supplier.id}/quality`, 'PATCH', data)
                 this.$state = {...response}
             }
-
         },
         getters: {
             getAddress: state => state.address.address,
@@ -42,8 +41,7 @@ export default function generateSupplier(suppliers) {
             getPostal: state => state.address.zipCode
             // incotermsValue: state => (state.incoterms ? state.incoterms['@id'] : null),
             // vatMessageValue: state => (state.vatMessage ? state.vatMessage['@id'] : null)
-
         },
-        state: () => ({...suppliers})
+        state: () => ({...supplier})
     })()
 }

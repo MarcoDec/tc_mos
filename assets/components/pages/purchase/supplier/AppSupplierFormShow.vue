@@ -62,6 +62,9 @@
         ...fetchSocietyStore.vatMessageValue,
         ...fetchSocietyStore.incotermsValue
     }))
+    function manageErrors(e) {
+        console.log(e)
+    }
 </script>
 
 <template>
@@ -83,11 +86,11 @@
                 </div>
             </AppTab>
             <AppTab
-            id="gui-start-files"
-            title="Fichiers"
-            icon="laptop"
-            tabs="gui-start">
-            <AppSupplierShowTabFichiers/>
+                id="gui-start-files"
+                title="Fichiers"
+                icon="laptop"
+                tabs="gui-start">
+                <AppSupplierShowTabFichiers/>
             </AppTab>
             <AppTab
                 id="gui-start-quality"
@@ -122,7 +125,7 @@
                 title="Contacts"
                 icon="file-contract"
                 tabs="gui-start">
-                <AppSupplierShowTabContacts :options-countries="optionsCountries"/>
+                <AppSupplierShowTabContacts :options-countries="optionsCountries" @error="manageErrors"/>
             </AppTab>
         </AppTabs>
     </div>

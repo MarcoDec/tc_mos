@@ -1,11 +1,9 @@
 <script setup>
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import AppSupplierFormShow from './AppSupplierFormShow.vue'
-    import AppTab from '../../../tab/AppTab.vue'
-    import AppTabs from '../../../tab/AppTabs.vue'
-    import {useRoute} from 'vue-router'
-
-    const route = useRoute()
+    // import {useRoute} from 'vue-router'
+    //
+    // const route = useRoute()
 </script>
 
 <template>
@@ -23,8 +21,7 @@
             <!--                <AppTab id="gui-bottom-orders" icon="shopping-cart" tabs="gui-bottom" title="Commandes"/>-->
             <!--            </AppTabs>-->
         </template>
-        <template #gui-right>
-        </template>
+        <template #gui-right/>
     </AppShowGuiGen>
 </template>
 
