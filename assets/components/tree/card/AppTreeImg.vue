@@ -16,8 +16,14 @@
 </script>
 
 <template>
-    <img v-if="hasImage" :src="imageUrl" style="max-width: 40vw"/>
+    <img v-if="hasImage" :src="imageUrl"/>
     <div v-else class="alert alert-primary">
         Aucune Image
     </div>
 </template>
+
+<style scoped>
+    img {
+        max-width: 40vw
+    }
+</style>
