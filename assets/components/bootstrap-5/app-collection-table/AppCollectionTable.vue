@@ -5,6 +5,7 @@
     import AppCollectionTableHeader from './head/AppCollectionTableHeader.vue'
 
     const props = defineProps({
+        allowedActions: {default: () => ({add: true, cancel: true, search: true}), required: false, type: Object},
         currentPage: {required: true, type: String},
         fields: {required: true, type: Array},
         firstPage: {required: true, type: String},
@@ -52,7 +53,7 @@
     <table class="table table-bordered table-hover table-striped">
         <AppCollectionTableHeader :fields="displayedFileds" @trier-alphabet="trierAlphabet"/>
         <tbody>
-            <AppCollectionTableBodyHeader v-if="!opened" :form="form" :fields="displayedFileds" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @ajout="ajouter"/>
+            <AppCollectionTableBodyHeader v-if="!opened" :allowed-actions="allowedActions" :form="form" :fields="displayedFileds" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @ajout="ajouter"/>
             <!-- <AppCollectionTableAddRow v-else :fields="displayedFileds" @close="bascule" @ajout="ajouter" :model-value="input"/> -->
             <tr class="bg-dark">
                 <td colspan="11"/>

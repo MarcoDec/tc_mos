@@ -4,11 +4,11 @@
 
     const emit = defineEmits(['cancelSearch', 'search', 'open', 'ajout'])
     const props = defineProps({
+        allowedActions: {default: () => ({add: true, cancel: true, search: true}), required: false, type: Object},
         fields: {required: true, type: Array},
         form: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
-
     let inputValues = {}
     const tabFields = computed(() =>
         props.fields.map(element => {
@@ -37,9 +37,9 @@
             <Fa icon="search"/>
         </th>
         <td class="tdHeader">
-            <AppBtn icon="times" label="Annuler" variant="danger" @click="cancelSearch"/>
-            <AppBtn icon="search" label="Modifier" @click="search"/>
-            <AppBtn icon="plus" label="Ajouter" variant="success" @click="ajout"/>
+            <AppBtn v-if="allowedActions.cancel" icon="times" label="Annuler" variant="danger" @click="cancelSearch"/>
+            <AppBtn v-if="allowedActions.search" icon="search" label="Modifier" @click="search"/>
+            <AppBtn v-if="allowedActions.add" icon="plus" label="Ajouter" variant="success" @click="ajout"/>
         </td>
 
         <td v-for="field in tabFields" :key="field.name">
