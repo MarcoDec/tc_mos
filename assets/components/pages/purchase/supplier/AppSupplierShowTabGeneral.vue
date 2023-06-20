@@ -22,10 +22,9 @@
         await fetchSupplierCompaniesStore.fetchBySupplier(fetchSuppliersStore.supplier)
     }
     function updateLocalData() {
-        currentSupplierData.value = JSON.parse(JSON.stringify(fetchSuppliersStore.supplier))
+        currentSupplierData.value = fetchSuppliersStore.getSupplier
         currentSupplierCompaniesData.value = fetchSupplierCompaniesStore.supplierCompanies
         currentSupplierData.value.administeredBy = currentSupplierCompaniesData.value.map(item3 => JSON.parse(JSON.stringify(item3.company['@id'])))
-        //console.log(currentSupplierData.value)
     }
     await fetchSupplierCompaniesStore.fetchBySupplier(fetchSuppliersStore.supplier)
     updateLocalData()
@@ -52,7 +51,6 @@
     async function updateGeneralApi() {
         //Création des data à passer pour les PATCH API
         const data = {
-            //administeredBy: currentSupplierData.value.administeredBy,
             language: currentSupplierData.value.language,
             notes: currentSupplierData.value.notes
         }
@@ -64,7 +62,6 @@
             const currentCompanyIri = supplierCompany.company['@id']
             if (!currentSupplierData.value.administeredBy.includes(currentCompanyIri)) {
                 //Il faut alors supprimer supplierCompany en back
-                //console.log('suppression', supplierCompany)
                 fetchSupplierCompaniesStore.removeOne(supplierCompany.id)
             }
         })
@@ -78,7 +75,6 @@
             })
             if (!found) {
                 //il faut ajouter companyIri
-                //console.log('Ajout', companyIri)
                 fetchSupplierCompaniesStore.addCompany(companyIri)
             }
         })
