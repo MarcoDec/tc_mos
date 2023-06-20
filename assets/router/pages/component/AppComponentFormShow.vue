@@ -335,8 +335,10 @@
         }
         await useFetchComponentStore.updateQuality(data, idComponent)
         await useFetchComponentStore.fetchOne(idComponent)
-        rohsValue.value = computed(() => useFetchComponentStore.component.rohs)
-        reachValue.value = computed(() => useFetchComponentStore.component.reach)
+        // eslint-disable-next-line require-atomic-updates
+        rohsValue.value = useFetchComponentStore.component.rohs
+        // eslint-disable-next-line require-atomic-updates
+        reachValue.value = useFetchComponentStore.component.reach
     }
     async function updateGeneral() {
         const form = document.getElementById('addGeneralites')
@@ -370,6 +372,7 @@
 
         await useFetchComponentStore.updatePrice(data, idComponent)
         await useFetchComponentStore.fetchOne(idComponent)
+        // eslint-disable-next-line require-atomic-updates
         useFetchComponentStore.component.price.code = 'EUR'
     }
     async function updateFichiers() {
