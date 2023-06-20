@@ -1,0 +1,174 @@
+<script setup>
+    import {computed, ref} from 'vue'
+    import generateSupplierContact from '../../../../stores/supplier/supplierContact'
+    import {useSupplierContactsStore} from '../../../../stores/supplier/supplierContacts'
+    import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
+
+    const fetchSuppliersStore = useSuppliersStore()
+    const fetchSupplierContactsStore = useSupplierContactsStore()
+    const supplierId = Number(fetchSuppliersStore.supplier.id)
+    const societyId = Number(fetchSuppliersStore.supplier.society.match(/\d+/))
+    await fetchSupplierContactsStore.fetchBySociety(societyId)
+    const isShow = ref(false)
+    const itemsTable = computed(() =>
+        fetchSupplierContactsStore.itemsSocieties.reduce(
+            (acc, curr) => acc.concat(curr),
+            []
+        ))
+    const typesContact = ['comptabilité','chiffrage','direction','ingénierie','fabrication','achat','qualité','commercial','approvisionnement']
+    const fieldsSupp = [
+        {
+            label: 'Nom ',
+            name: 'name',
+            type: 'text'
+        },
+        {
+            label: 'Prénom ',
+            name: 'surname',
+            type: 'text'
+        },
+        {
+            label: 'Mobile ',
+            name: 'mobile',
+            type: 'text'
+        },
+        {
+            label: 'Email ',
+            name: 'email',
+            type: 'text'
+        },
+        {
+            label: 'Type',
+            name: 'kind',
+            options: {
+                label: 'Sélectionner un type',
+                options: typesContact.map(item => ({
+                    text: item,
+                    value: item
+                }))
+            },
+            type: 'select'
+        }
+        // {
+        //     label: 'Adresse',
+        //     name: 'address',
+        //     type: 'text'
+        // },
+        // {
+        //     label: 'Complément d\'adresse ',
+        //     name: 'address2',
+        //     type: 'text'
+        // },
+        // {
+        //     label: 'Pays',
+        //     name: 'country',
+        //     options: {
+        //         label: value =>
+        //             props.optionsCountries.find(option => option.type === value)?.text
+        //             ?? null,
+        //         options: props.optionsCountries
+        //     },
+        //     type: 'select'
+        // },
+        // {
+        //     label: 'Ville ',
+        //     name: 'city',
+        //     type: 'text'
+        // },
+        // {
+        //     label: 'Code Postal ',
+        //     name: 'zipCode',
+        //     type: 'text'
+        // }
+    ]
+    async function ajout(inputValues) {
+        const data = {
+            address: {
+                address: inputValues.address ?? '',
+                address2: inputValues.address2 ?? '',
+                city: inputValues.city ?? '',
+                country: inputValues.country ?? '',
+                email: inputValues.email ?? '',
+
+                // phoneNumber: inputValues.getPhone ?? "",
+                zipCode: inputValues.zipCode ?? ''
+            },
+            // default: true,
+            // kind: "comptabilité",
+            mobile: inputValues.mobile ?? '',
+            name: inputValues.name ?? '',
+            society: `/api/suppliers/${supplierId}`,
+            surname: inputValues.surname ?? ''
+        }
+        try {
+            await fetchSupplierContactsStore.ajout(data, societyId)
+
+            isError2.value = false
+        } catch (error) {
+            if (Array.isArray(error)) {
+                violations2.value = error
+                isError2.value = true
+            } else {
+                const err = {
+                    message: error
+                }
+                violations2.value.push(err)
+                isError2.value = true
+            }
+        }
+    }
+    async function deleted(id) {
+        await fetchSupplierContactsStore.deleted(id)
+    }
+    async function updateSuppliers(inputValues) {
+        const dataUpdate = {
+            address: {
+                address: inputValues.address ?? '',
+                address2: inputValues.address2 ?? '',
+                city: inputValues.city ?? '',
+                country: inputValues.country ?? '',
+                email: inputValues.email ?? '',
+                // phoneNumber: inputValues.getPhone ?? "",
+                zipCode: inputValues.zipCode ?? ''
+            },
+            // default: true,
+            // kind: "comptabilité",
+            mobile: inputValues.mobile ?? '',
+            name: inputValues.name ?? '',
+            society: `/api/suppliers/${supplierId}`,
+            surname: inputValues.surname ?? ''
+        }
+        try {
+            const item = generateSupplierContact(inputValues)
+            await item.update(dataUpdate)
+            isError2.value = false
+        } catch (error) {
+            await fetchSupplierContactsStore.fetchBySociety(societyId)
+            itemsTable.value = fetchSupplierContactsStore.itemsSocieties.reduce(
+                (acc, curr) => acc.concat(curr),
+                []
+            )
+            if (Array.isArray(error)) {
+                violations2.value = error
+                isError2.value = true
+            } else {
+                const err = {
+                    message: error
+                }
+                violations2.value.push(err)
+                isError2.value = true
+            }
+        }
+    }
+</script>
+
+<template>
+    <AppCollectionTable
+        v-if="!isShow"
+        id="addContacts"
+        :fields="fieldsSupp"
+        :items="itemsTable"
+        @ajout="ajout"
+        @deleted="deleted"
+        @update="updateSuppliers"/>
+</template>
