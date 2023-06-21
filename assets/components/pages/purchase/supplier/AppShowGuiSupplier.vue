@@ -9,7 +9,9 @@
 <template>
     <AppShowGuiGen>
         <template #gui-header>
-            Supplier
+            <div class="bg-white border-1 border-dark">
+                Supplier
+            </div>
         </template>
         <template #gui-left>
             <AppSuspense> <AppSupplierFormShow/></AppSuspense>
@@ -25,3 +27,8 @@
     </AppShowGuiGen>
 </template>
 
+<style>
+.border-dark {
+    border-bottom: 1px solid grey;
+}
+</style>
