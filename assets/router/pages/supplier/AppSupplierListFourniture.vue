@@ -1,0 +1,312 @@
+<script setup>
+    import {computed, ref} from 'vue'
+    import {useSupplierListFournitureStore} from './storeProvisoir/supplierListFourniture'
+    // import {useRoute} from 'vue-router'
+    import useField from '../../../stores/field/field'
+
+    const roleuser = ref('reader')
+    let violations = []
+    const updated = ref(false)
+    const AddForm = ref(false)
+    const isPopupVisible = ref(false)
+    const sortable = ref(false)
+    const filter = ref(false)
+    let trierAlpha = {}
+    let filterBy = {}
+
+    // const maRoute = useRoute()
+    // const Id = maRoute.params.id_warehouse
+
+    const storeSupplierListFourniture = useSupplierListFournitureStore()
+    // storeSupplierListFourniture.setIdWarehouse(warehouseId)
+    await storeSupplierListFourniture.fetch()
+    const itemsTable = ref(storeSupplierListFourniture.itemsSupplierFourniture)
+    const formData = ref({
+        composant: null, refFournisseur: null, prix: null, quantité: null, texte: null
+    })
+
+    const fieldsForm = [
+        {
+            create: false,
+            filter: true,
+            label: 'Composant',
+            name: 'composant',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Ref. Fournisseur ',
+            name: 'refFournisseur ',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Prix ',
+            name: 'prix ',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Quantité ',
+            name: 'quantité ',
+            measure: {
+                code: null,
+                value: null
+            },
+            sort: true,
+            type: 'measure',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Texte ',
+            name: 'texte ',
+            sort: true,
+            type: 'text',
+            update: true
+        }
+    ]
+
+    const parent = {
+        //$id: `${warehouseId}Stock`
+        $id: 'supplierFourniture'
+    }
+    const storeUnit = useField(fieldsForm[3], parent)
+    storeUnit.fetch()
+
+    fieldsForm[3].measure.code = storeUnit.measure.code
+    fieldsForm[3].measure.value = storeUnit.measure.value
+
+    const tabFields = [
+        {
+            create: false,
+            filter: true,
+            label: 'Composant',
+            name: 'composant',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Ref. Fournisseur ',
+            name: 'refFournisseur ',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Prix ',
+            name: 'prix ',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Quantité ',
+            name: 'quantité ',
+            measure: {
+                code: storeUnit.measure.code,
+                value: storeUnit.measure.value
+            },
+            sort: true,
+            type: 'measure',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Texte ',
+            name: 'texte ',
+            sort: true,
+            type: 'text',
+            update: true
+        }
+    ]
+
+    function ajoute(){
+        AddForm.value = true
+        updated.value = false
+        const itemsNull = {
+            composant: null,
+            refFournisseur: null,
+            prix: null,
+            quantité: null,
+            texte: null
+        }
+        formData.value = itemsNull
+    }
+
+    async function ajoutSupplierFourniture(){
+        const form = document.getElementById('addSupplierFourniture')
+        const formData1 = new FormData(form)
+
+        const itemsAddData = {
+            composant: formData.value.composant,
+            refFournisseur: formData.value.refFournisseur,
+            prix: formData.value.prix,
+            quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
+            texte: formData.value.texte
+        }
+        violations = await storeSupplierListFourniture.addSupplierFourniture(itemsAddData)
+
+        if (violations.length > 0){
+            isPopupVisible.value = true
+        } else {
+            AddForm.value = false
+            updated.value = false
+            isPopupVisible.value = false
+            itemsTable.value = [...storeSupplierListFourniture.itemsSupplierFourniture]
+        }
+    }
+    function annule(){
+        AddForm.value = false
+        updated.value = false
+        const itemsNull = {
+            composant: null,
+            refFournisseur: null,
+            prix: null,
+            quantite: null,
+            texte: null
+        }
+        formData.value = itemsNull
+        isPopupVisible.value = false
+    }
+
+    function update(item) {
+        updated.value = true
+        AddForm.value = true
+        const itemsData = {
+            composant: item.composant,
+            refFournisseur: item.refFournisseur,
+            prix: item.prix,
+            quantite: item.quantite,
+            texte: item.texte
+        }
+        formData.value = itemsData
+    }
+
+    async function deleted(id){
+        await storeSupplierListFourniture.deleted(id)
+        itemsTable.value = [...storeSupplierListFourniture.itemsSupplierFourniture]
+    }
+    async function getPage(nPage){
+        await storeSupplierListFourniture.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        itemsTable.value = [...storeSupplierListFourniture.itemsSupplierFourniture]
+    }
+    async function trierAlphabet(payload) {
+        await storeSupplierListFourniture.sortableItems(payload, filterBy, filter)
+        sortable.value = true
+        trierAlpha = computed(() => payload)
+    }
+    async function search(inputValues) {
+        // let comp = ''
+        // if (typeof inputValues.composant !== 'undefined'){
+        //     comp = inputValues.composant
+        // }
+
+        // let prod = ''
+        // if (typeof inputValues.produit !== 'undefined'){
+        //     prod = inputValues.produit
+        // }
+
+        const payload = {
+            composant: inputValues.refFournisseur ?? '',
+            refFournisseur: inputValues.refFournisseur ?? '',
+            prix: inputValues.prix ?? '',
+            quantite: inputValues.quantite ?? '',
+            texte: inputValues.texte ?? ''
+        }
+
+        if (typeof payload.quantite.value === 'undefined' && payload.quantite !== '') {
+            payload.quantite.value = ''
+        }
+        if (typeof payload.quantite.code === 'undefined' && payload.quantite !== '') {
+            payload.quantite.code = ''
+        }
+        await storeSupplierListFourniture.filterBy(payload)
+        itemsTable.value = [...storeSupplierListFourniture.itemsSupplierFourniture]
+        filter.value = true
+        filterBy = computed(() => payload)
+    }
+    async function cancelSearch() {
+        filter.value = true
+        storeSupplierListFourniture.fetch()
+    }
+</script>
+
+<template>
+    <AppCol class="d-flex justify-content-between mb-2">
+        <AppBtn variant="success" label="Ajout" @click="ajoute">
+            <Fa icon="plus"/>
+            Ajouter
+        </AppBtn>
+    </AppCol>
+    <AppRow>
+        <AppCol>
+            <AppCardableTable
+                :current-page="storeSupplierListFourniture.currentPage"
+                :fields="tabFields"
+                :first-page="storeSupplierListFourniture.firstPage"
+                :items="itemsTable"
+                :last-page="storeSupplierListFourniture.lastPage"
+                :min="AddForm"
+                :next-page="storeSupplierListFourniture.nextPage"
+                :pag="storeSupplierListFourniture.pagination"
+                :previous-page="storeSupplierListFourniture.previousPage"
+                :user="roleuser"
+                form="formSupplierCardableTable"
+                @update="update"
+                @deleted="deleted"
+                @get-page="getPage"
+                @trier-alphabet="trierAlphabet"
+                @search="search"
+                @cancel-search="cancelSearch"/>
+        </AppCol>
+        <AppCol v-if="AddForm && !updated" class="col-7">
+            <AppCard class="bg-blue col" title="">
+                <AppRow>
+                    <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                        <Fa icon="angle-double-left"/>
+                    </button>
+                    <h4 class="col">
+                        <Fa icon="plus"/> Ajout
+                    </h4>
+                </AppRow>
+                <br/>
+                <AppFormCardable id="addSupplierFourniture" :fields="fieldsForm" :model-value="formData" label-cols/>
+                <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                    <div v-for="violation in violations" :key="violation">
+                        <li>{{ violation.message }}</li>
+                    </div>
+                </div>
+                <AppCol class="btnright">
+                    <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutSupplierFourniture">
+                        <Fa icon="plus"/> Ajouter
+                    </AppBtn>
+                </AppCol>
+            </AppCard>
+        </AppCol>
+    </AppRow>
+</template>
+
+<style scoped>
+    .btn-float-right{
+        float: right;
+    }
+</style>
