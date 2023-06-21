@@ -1,13 +1,17 @@
 <script setup>
     import generateComponentAttribute from '../../../../stores/component/componentAttribute'
-    import {useComponentShowStore} from '../../../../stores/component/componentAttributesList'
+    import useAttributes from '../../../../stores/attribute/attributes'
+    import {useComponentAttributesStore} from '../../../../stores/component/componentAttributesList'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()
     const idComponent = route.params.id_component
 
-    const useComponentStore = useComponentShowStore()
-    await useComponentStore.fetchOne(idComponent)
+    const componentAttributesStore = useComponentAttributesStore()
+    const attributesStore = useAttributes()
+    await componentAttributesStore.fetchByComponentId(idComponent)
+    await attributesStore.fetch()
+    // console.log(attributesStore.attributes)
     // const fecthColors = useColorsStore()
     // await fecthColors.fetch()
     //
@@ -60,13 +64,13 @@
 
         await item.updateAttributes(data)
 
-        await useComponentStore.fetchOne(idComponent)
+        await componentAttributesStore.fetchByComponentId(idComponent)
     }
 </script>
 
 <template>
     <AppCardShow
-        v-for="item in useComponentStore.componentAttribute"
+        v-for="item in componentAttributesStore.componentAttribute"
         id="addAttribut"
         :key="item.id"
         :fields="Attributfields"
