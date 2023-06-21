@@ -6,9 +6,10 @@
     import {useRoute} from 'vue-router'
 
     const route = useRoute()
+    const idComponent = route.params.id_component
+    const emit = defineEmits(['update:modelValue'])
     const isError2 = ref(false)
     const violations2 = ref([])
-    const idComponent = route.params.id_component
     const useFetchComponentStore = useComponentListStore()
     const fetchComponentAttachment = useComponentAttachmentStore()
     await fetchComponentAttachment.fetchByComponent(idComponent)
@@ -24,7 +25,7 @@
     const reachValue = computed(() => useFetchComponentStore.component.reach)
     const attachmentByCategory = computed(() =>
         fetchComponentAttachment.componentAttachments.filter(
-            attachment => attachment.category === 'rohs'
+            attachment => attachment.category.includes('rohs')
         ))
     const componentAttachmentByCategory = computed(() =>
         attachmentByCategory.value.map(attachment => ({
@@ -46,7 +47,7 @@
 
     const attachmentByCategoryReach = computed(() =>
         fetchComponentAttachment.componentAttachments.filter(
-            attachment => attachment.category === 'reach'
+            attachment => attachment.category.includes('reach')
         ))
     const componentAttachmentByCategoryReach = computed(() =>
         attachmentByCategoryReach.value.map(attachment => ({
