@@ -1,4 +1,4 @@
-import api from '../../api'
+import api from '../../Api'
 import {defineStore} from 'pinia'
 import flat from 'flat'
 import useRow from './row'

@@ -1,8 +1,10 @@
 <script setup>
     import {defineEmits, defineProps} from 'vue'
+    import AppTableItemField from '../../../table/body/read/AppTableItemField.vue'
     const props = defineProps({
         fields: {required: true, type: Array},
-        item: {required: true, type: Object}
+        item: {required: true, type: Object},
+        indice: {required: true, type: Number}
     })
 
     const emit = defineEmits(['deleted', 'update'])
@@ -24,7 +26,5 @@
             <Fa icon="trash"/>
         </button>
     </td>
-    <td v-for="field in fields" :key="field.name">
-        {{ item[field.name] }}
-    </td>
+    <AppTableItemField v-for="field in fields" :key="field.name" :field="field" :item="item" :row="indice + field.name"/>
 </template>

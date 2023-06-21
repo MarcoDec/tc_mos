@@ -11,7 +11,6 @@
     })
     const codeId = computed(() => `${props.id}-code`)
     const valueId = computed(() => `${props.id}-value`)
-
     function codeValue(code) {
         emit('update:modelValue', {...props.modelValue, code})
     }

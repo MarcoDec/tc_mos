@@ -13,7 +13,7 @@
         lastPage: {required: true, type: String},
         min: {type: Boolean},
         nextPage: {required: true, type: String},
-        pag: {type: Boolean},
+        pag: {required: true, type: Boolean},
         previousPage: {required: true, type: String},
         user: {required: true, type: String}
     })
@@ -49,7 +49,7 @@
             <tr class="bg-dark">
                 <td colspan="10"/>
             </tr>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" :current-page="currentPage" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" :current-page="currentPage" :pagine="pag" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">

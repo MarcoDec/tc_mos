@@ -22,7 +22,9 @@
     const route = useRoute()
     const machine = useTableMachine(route.name)
     const {slots} = useSlots(props.fields)
+    console.log('ok')
     const store = useTable(route.name)
+    console.log(store)
     store.sorted = props.sort.name
     store.sortName = props.sort.sortName ?? props.sort.name
     store.readFilter = props.readFilter

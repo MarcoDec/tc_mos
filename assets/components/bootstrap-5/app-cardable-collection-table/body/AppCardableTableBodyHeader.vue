@@ -1,28 +1,27 @@
 <script setup>
-    import {computed, defineProps} from 'vue'
+    import {computed, defineProps, ref} from 'vue'
     import clone from 'clone'
 
     const emit = defineEmits(['cancelSearch', 'search'])
     const props = defineProps({
         fields: {required: true, type: Array},
-        form: {required: true, type: String},
-        modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
+        form: {required: true, type: String}
     })
-    let inputValues = {}
+    const inputValues = ref([])
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
-
+        /*
         if (cloned.type === 'boolean'){
             cloned.type = 'grpbutton'
-        }
+        }*/
         return cloned
     }))
     function search() {
-        emit('search', inputValues)
+        emit('search', inputValues.value)
     }
     async function cancelSearch() {
-        inputValues = {}
-        emit('cancelSearch', inputValues)
+        inputValues.value = []
+        emit('cancelSearch', inputValues.value)
     }
 </script>
 
@@ -41,7 +40,7 @@
         </td>
 
         <td v-for="field in tabFields" :key="field.name">
-            <AppInputGuesser :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" :update:model-value="modelValue"/>
+            <AppInputGuesser :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field"/>
         </td>
     </tr>
 </template>

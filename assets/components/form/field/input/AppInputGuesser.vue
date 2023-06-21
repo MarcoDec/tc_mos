@@ -3,10 +3,12 @@
     import AppInputMeasure from './AppInputMeasure.vue'
     import AppInputNumber from './AppInputNumber.vue'
     import AppSelect from './select/AppSelect.vue'
+    import AppMultiselect from './select/AppMultiselect.vue'
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
+    import AppTextArea from './AppTextArea.vue'
 
-    const emit = defineEmits(['update:modelValue'])
+    const emit = defineEmits(['update:model-value'])
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -14,6 +16,7 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
+
     const type = computed(() => {
         switch (props.field.type) {
             case 'boolean':
@@ -23,16 +26,18 @@
             case 'measure':
                 return AppInputMeasure
             case 'multiselect':
-                return 'AppMultiselect'
+                return AppMultiselect
             case 'select':
                 return AppSelect
+            case 'textarea':
+                return AppTextArea
             default:
                 return 'AppInput'
         }
     })
 
     function input(v) {
-        emit('update:modelValue', v)
+        emit('update:model-value', v)
     }
 </script>
 

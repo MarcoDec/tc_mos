@@ -1,8 +1,8 @@
 import {h, resolveComponent} from 'vue'
-//import AppGroupButton from './AppGroupButton.vue'
 import AppInputFile from './AppInputFile'
-import AppInputNumber from './AppInputNumber'
-import AppSelect from '../../../form/field/input/select/AppSelect.vue'
+import AppInputNumberJS from './AppInputNumber.js'
+import AppMultiselect from './select/AppMultiselect.vue'
+import AppSelectJS from './select/AppSelectJS'
 import AppSwitch from './AppSwitch.vue'
 import {generateField} from '../../../props'
 
@@ -13,17 +13,17 @@ function getType(field) {
     case 'file':
         return AppInputFile
     case 'number':
-        return AppInputNumber
+        return AppInputNumberJS
     case 'select':
-        return AppSelect
-    case 'grpbutton':
-        return AppSwitch
+        return AppSelectJS
+    case 'multiselect':
+        return AppMultiselect
     default:
-        return resolveComponent('AppInput')
+        return resolveComponent('AppInputJS')
     }
 }
 
-function AppInputGuesser(props, context) {
+function AppInputGuesserJS(props, context) {
     return h(getType(props.field), {
         disabled: props.disabled,
         field: props.field,
@@ -34,13 +34,13 @@ function AppInputGuesser(props, context) {
     })
 }
 
-AppInputGuesser.emits = ['update:modelValue']
-AppInputGuesser.props = {
+AppInputGuesserJS.emits = ['update:modelValue']
+AppInputGuesserJS.props = {
     disabled: {type: Boolean},
     field: generateField(),
-    form: {required: false, type: String},
-    id: {required: false, type: String},
+    form: {required: true, type: String},
+    id: {required: true, type: String},
     modelValue: {}
 }
 
-export default AppInputGuesser
+export default AppInputGuesserJS
