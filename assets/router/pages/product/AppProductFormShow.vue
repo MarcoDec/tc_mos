@@ -158,7 +158,7 @@
                     ?? null,
                 options: optionsUnitText.value
             },
-            type: 'measureselect'
+            type: 'measureSelect'
         },
         {
             label: 'Delivery Min',
@@ -169,7 +169,7 @@
                     ?? null,
                 options: optionsUnitText.value
             },
-            type: 'measureselect'
+            type: 'measureSelect'
         },
         {
             label: 'Poids',
@@ -180,7 +180,7 @@
                     ?? null,
                 options: optionsUnitText.value
             },
-            type: 'measureselect'
+            type: 'measureSelect'
         }
     ]
     const Adminfields = [

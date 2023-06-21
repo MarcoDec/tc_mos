@@ -27,7 +27,7 @@
                     optionsUnit.value.find(option => option.type === value)?.text ?? null,
                 options: optionsUnit.value
             },
-            type: 'measureselect'
+            type: 'measureSelect'
         },
         {label: 'Info Cmde', name: 'orderInfo', type: 'text'}
     ]

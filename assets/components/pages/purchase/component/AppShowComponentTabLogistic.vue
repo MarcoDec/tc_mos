@@ -35,7 +35,7 @@
                     optionsUnit.value.find(option => option.type === value)?.text ?? null,
                 options: optionsUnit.value
             },
-            type: 'measureselect'
+            type: 'measureSelect'
         },
         {
             label: 'Unité',
@@ -55,7 +55,7 @@
                     optionsUnit.value.find(option => option.type === value)?.text ?? null,
                 options: optionsUnit.value
             },
-            type: 'measureselect'
+            type: 'measureSelect'
         },
         {
             label: 'Stock Minimum',
@@ -65,7 +65,7 @@
                     optionsUnit.value.find(option => option.type === value)?.text ?? null,
                 options: optionsUnit.value
             },
-            type: 'measureselect'
+            type: 'measureSelect'
         },
         {label: 'gestionStock', name: 'managedStock', type: 'boolean'}
     ]

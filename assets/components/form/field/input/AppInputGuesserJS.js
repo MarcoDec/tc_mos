@@ -24,7 +24,7 @@ function getType(field) {
         return AppMultiselect
     case 'measure':
         return AppInputMeasure
-    case 'measureselect':
+    case 'measureSelect':
         return AppInputMeasureSelect
     case 'rating':
         return AppRating
