@@ -9,19 +9,20 @@ export const useComponentAttachmentStore = defineStore('componentAttachment', {
             form.append('category', data.category)
             form.append('component', data.component)
             await api('/api/component-attachments', 'POST', form)
-            this.fetchOne()
+            this.fetchByComponent(this.componentId)
         },
-        async fetchOne(id = 1) {
+        async fetchByComponent(id = 1) {
             this.items = []
+            this.componentId = id
             const response = await api(`/api/component-attachments?pagination=false&component=/api/components/${id}`, 'GET')
-            this.componentAttachment = await response['hydra:member']
+            this.componentAttachments = await response['hydra:member']
         }
-
     },
     getters: {
 
     },
     state: () => ({
-        componentAttachment: []
+        componentAttachments: [],
+        componentId: 1
     })
 })

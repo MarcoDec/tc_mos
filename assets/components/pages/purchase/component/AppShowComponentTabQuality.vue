@@ -11,7 +11,7 @@
     const idComponent = route.params.id_component
     const useFetchComponentStore = useComponentListStore()
     const fetchComponentAttachment = useComponentAttachmentStore()
-    await fetchComponentAttachment.fetchOne(idComponent)
+    await fetchComponentAttachment.fetchByComponent(idComponent)
     //await useFetchComponentStore.fetchOne(idComponent)
     const Qualitéfields = [
         {label: 'rohs ', name: 'rohs', type: 'boolean'},
@@ -23,7 +23,7 @@
     const rohsValue = computed(() => useFetchComponentStore.component.rohs)
     const reachValue = computed(() => useFetchComponentStore.component.reach)
     const attachmentByCategory = computed(() =>
-        fetchComponentAttachment.componentAttachment.filter(
+        fetchComponentAttachment.componentAttachments.filter(
             attachment => attachment.category === 'rohs'
         ))
     const componentAttachmentByCategory = computed(() =>
@@ -45,7 +45,7 @@
     })
 
     const attachmentByCategoryReach = computed(() =>
-        fetchComponentAttachment.componentAttachment.filter(
+        fetchComponentAttachment.componentAttachments.filter(
             attachment => attachment.category === 'reach'
         ))
     const componentAttachmentByCategoryReach = computed(() =>
@@ -93,7 +93,7 @@
             }
             try {
                 await fetchComponentAttachment.ajout(dataFichierRohs)
-                await fetchComponentAttachment.fetchOne(idComponent)
+                await fetchComponentAttachment.fetchByComponent(idComponent)
 
                 isError2.value = false
             } catch (error) {
@@ -112,7 +112,7 @@
             }
             try {
                 await fetchComponentAttachment.ajout(dataFichierReach)
-                await fetchComponentAttachment.fetchOne(idComponent)
+                await fetchComponentAttachment.fetchByComponent(idComponent)
 
                 isError2.value = false
             } catch (error) {
