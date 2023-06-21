@@ -26,10 +26,10 @@
 </script>
 
 <template>
-        <AppCardShow
-            id="addGeneralites"
-            :fields="Géneralitésfields"
-            :component-attribute="useFetchComponentStore.component"
-            @update="updateGeneral"/>
+    <AppCardShow
+        id="addGeneralites"
+        :fields="Géneralitésfields"
+        :component-attribute="useFetchComponentStore.component"
+        @update="updateGeneral"/>
 </template>
 
