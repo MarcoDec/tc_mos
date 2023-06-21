@@ -9,9 +9,13 @@ use App\Entity\Purchase\Component\Component;
 use App\Repository\Purchase\Order\ComponentItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\RelationFilter;
+
 
 /**
- * @template-extends Item<Component>
+ * @template-extends Item<Component>  ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
  */
 #[
     ApiResource(
@@ -40,6 +44,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'skip_null_values' => false
         ],
     ),
+    ORM\DiscriminatorColumn(name: 'type', type: 'item'),
     ORM\Entity(repositoryClass: ComponentItemRepository::class)
 ]
 class ComponentItem extends Item {
@@ -50,4 +55,5 @@ class ComponentItem extends Item {
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
+
 }

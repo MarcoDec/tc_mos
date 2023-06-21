@@ -6,7 +6,10 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
+use App\Controller\Purchase\Order\ItemSupplierControler;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -22,8 +25,10 @@ use App\Entity\Purchase\Component\Family as ComponentFamily;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use App\Filter\RelationFilter;
+use App\Filter\GetFilter;
 use App\Filter\SetFilter;
 use App\Repository\Purchase\Order\ItemRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,12 +36,16 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
- *
+ *    ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
+
  * @template-extends BaseItem<I, Order>
+ *
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['order', 'item']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedQuantity.value' => 'partial', 'confirmedQuantity.code' => 'partial', 'requestedQuantity.value' => 'partial',  'requestedQuantity.code' => 'partial']),
+
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -46,7 +55,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Récupère les lignes',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\') or is_granted(\''.Roles::ROLE_PURCHASE_READER.'\')'
-            ]
+            ],
+            'filtreSupplier' => [
+                'controller' => ItemSupplierControler::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer par fournisseur',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par fournisseur'
+                ],
+                'path' => '/purchase-order-items/supplierFilter/{api}',
+                'read' => false,
+                'write' => false
+            ],
         ],
         itemOperations: [
             'delete' => [
@@ -112,6 +139,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'purchase_order_item')
 ]
+
 abstract class Item extends BaseItem {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
@@ -124,13 +152,13 @@ abstract class Item extends BaseItem {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:item'])
+        Serializer\Groups(['read:item']),
     ]
     protected Closer $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:item'])
+        Serializer\Groups(['read:item']),
     ]
     protected State $embState;
 
@@ -147,6 +175,53 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected ?Company $targetCompany = null;
+
+    /***************new *
+     *     ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 
+     * 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
+     */
+    #[
+        ApiProperty(description: 'Date crée', example: '01/01/2000'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:stock', 'write:stock'])
+    ]
+    protected ?DateTimeImmutable  $confirmedDate = null;
+
+    #[
+        ApiProperty(description: 'Date souhaitée', example: '01/01/2000'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:stock', 'write:stock'])
+    ]
+    protected ?DateTimeImmutable  $requestedDate = null;
+
+
+    /** @var null|T */
+    #[
+        ApiProperty(description: 'Élément', readableLink: false,  example: '/api/components/1'),
+        Serializer\Groups(['read:stock'])
+    ]
+    protected $item;
+
+    #[
+        ApiProperty(description: 'Quantité effectuée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
+        ORM\JoinColumn(name: 'confirmed_quantity'),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'receipt:item', 'transfer:item', 'write:item'])
+    ]
+    protected Measure $confirmedQuantity;
+
+    #[
+        ApiProperty(description: 'Quantité souhaitée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
+        AppAssert\Measure,
+        ORM\JoinColumn(name: 'requested_quantity'),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'receipt:item', 'transfer:item', 'write:item'])
+    ]
+    protected Measure $requestedQuantity;
+
+
+    /********************* */
 
     /** @var DoctrineCollection<int, Receipt<I>> */
     #[ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class)]
@@ -219,7 +294,7 @@ abstract class Item extends BaseItem {
         return $this->item?->getChecks() ?? new Collection();
     }
    public function getMeasures(): array {
-      return array_merge(parent::getMeasures(),[$this->copperPrice]);
+        return array_merge(parent::getMeasures(),[$this->copperPrice/* , $this->getReceiptQuantity() */]);
    }
     /**
      * @return Collection<int, Check<I, Company|Component|ComponentFamily|Product|ProductFamily|Supplier>>
@@ -239,7 +314,10 @@ abstract class Item extends BaseItem {
         return $checks->mapWithKeys($mapper);
     }
 
-    #[Serializer\Groups(['read:item'])]
+    #[
+        ApiProperty(description: 'Quantité réceptionnée', openapiContext: ['$ref' => '#/components/schemas/Measure-generic']),
+        Serializer\Groups(['read:item']
+    )]
     final public function getReceiptQuantity(): Measure {
         $quantity = (new Measure())
             ->setCode($this->getUnit()?->getCode())
@@ -261,6 +339,10 @@ abstract class Item extends BaseItem {
         return $this->embState->getState();
     }
 
+    #[
+        ApiProperty(description: 'Fournisseur', readableLink: false, example: '/api/suppliers/1'),
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
     final public function getSupplier(): ?Supplier {
         return $this->order?->getSupplier();
     }

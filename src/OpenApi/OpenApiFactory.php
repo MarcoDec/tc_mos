@@ -302,6 +302,23 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 'type' => 'object'
             ]),
+            'Measure-generic' => new ArrayObject([
+                'description' => 'Mesure composant',
+                'properties' => [
+                    'code' => [
+                        'default' => 'm',
+                        'description' => 'Code',
+                        'example' => 'm',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
             'Measure-length' => new ArrayObject([
                 'description' => 'Masse linéique',
                 'properties' => [

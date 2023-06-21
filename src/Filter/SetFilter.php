@@ -33,7 +33,6 @@ final class SetFilter extends EnumFilter {
         if (!$this->isPropertyEnabled($property, $resourceClass) || !$this->isPropertyMapped($property, $resourceClass)) {
             return;
         }
-
         $parameter = $queryNameGenerator->generateParameterName($property);
         $queryBuilder
             ->andWhere("{$queryBuilder->getRootAliases()[0]}.$property IN (:$parameter)")

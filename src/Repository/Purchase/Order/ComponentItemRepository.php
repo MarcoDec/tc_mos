@@ -3,10 +3,12 @@
 namespace App\Repository\Purchase\Order;
 
 use App\Entity\Purchase\Order\ComponentItem;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Purchase\Order\Order;
 
 /**
  * @extends ItemRepository<ComponentItem>
@@ -78,5 +80,41 @@ final class ComponentItemRepository extends ItemRepository {
         } catch (NonUniqueResultException) {
             return null;
         }
+    }
+
+    //public function find
+    // public function __toString(): string
+    // {
+    //     $where = $this->conditions === [] ? '' : ' WHERE ' . implode(' AND ', $this->conditions);
+    //     return 'SELECT ' . implode(', ', $this->fields)
+    //         . ' FROM ' . implode(', ', $this->from)
+    //         . $where;
+    // }
+
+
+    public function findBySupplierId($supplierId, $currentPage = null) : array
+    {
+
+        dump($currentPage);
+        $first = 0;
+        $max = 15;
+        // dump($supplierId);
+        if ($currentPage !== null && $currentPage !== '1'){
+            $first = 15 * $currentPage -1;
+            $max = $first + 15;
+        }
+        // dump($first, $max);
+        $query =  $this->createQueryBuilder('i')
+            ->select('i')
+            ->from(Order::class, 'o')
+            ->where('i.order = o')
+            ->andWhere('o.supplier = :supplier')
+            ->andWhere('i.deleted = FALSE')
+            ->setFirstResult($first)
+            ->setMaxResults($max)
+            ->setParameter('supplier', $supplierId)
+            ->getQuery();
+        // dump($query);
+        return $query->getResult();
     }
 }

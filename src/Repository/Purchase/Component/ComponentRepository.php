@@ -57,7 +57,6 @@ final class ComponentRepository extends ServiceEntityRepository {
             ->innerJoin('c.family', 'f', Join::WITH, 'f.deleted = FALSE')
             ->where('c.deleted = FALSE')
             ->orderBy('c.id')
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
     }
 }
