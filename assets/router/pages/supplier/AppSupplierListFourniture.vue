@@ -1,7 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useSupplierListFournitureStore} from './storeProvisoir/supplierListFourniture'
-    // import {useRoute} from 'vue-router'
+    import {useRoute} from 'vue-router'
     import useField from '../../../stores/field/field'
 
     const roleuser = ref('reader')
@@ -14,32 +14,34 @@
     let trierAlpha = {}
     let filterBy = {}
 
-    // const maRoute = useRoute()
-    // const Id = maRoute.params.id_warehouse
+    const maRoute = useRoute()
+    const supplierID = maRoute.params.id_supplier
 
     const storeSupplierListFourniture = useSupplierListFournitureStore()
-    // storeSupplierListFourniture.setIdWarehouse(warehouseId)
+    storeSupplierListFourniture.setIdSupplier(supplierID)
     await storeSupplierListFourniture.fetch()
     const itemsTable = ref(storeSupplierListFourniture.itemsSupplierFourniture)
     const formData = ref({
-        composant: null, refFournisseur: null, prix: null, quantité: null, texte: null
+        composant: null, refFournisseur: null, prix: null, quantite: null, texte: null
     })
 
+    const optionComposant = await storeSupplierListFourniture.getOptionComposant
     const fieldsForm = [
         {
             create: false,
             filter: true,
             label: 'Composant',
             name: 'composant',
+            options: {label: value => optionComposant.find(option => option.value === value)?.text.code ?? null, options: optionComposant},
             sort: true,
-            type: 'text',
+            type: 'select',
             update: true
         },
         {
             create: false,
             filter: true,
             label: 'Ref. Fournisseur ',
-            name: 'refFournisseur ',
+            name: 'refFournisseur',
             sort: true,
             type: 'text',
             update: true
@@ -48,16 +50,20 @@
             create: false,
             filter: true,
             label: 'Prix ',
-            name: 'prix ',
+            name: 'prix',
+            measure: {
+                code: null,
+                value: null
+            },
             sort: true,
-            type: 'text',
+            type: 'price',
             update: true
         },
         {
             create: false,
             filter: true,
             label: 'Quantité ',
-            name: 'quantité ',
+            name: 'quantite',
             measure: {
                 code: null,
                 value: null
@@ -70,22 +76,31 @@
             create: false,
             filter: true,
             label: 'Texte ',
-            name: 'texte ',
+            name: 'texte',
             sort: true,
             type: 'text',
             update: true
         }
     ]
 
-    const parent = {
+    const parentQuantityFourniture = {
         //$id: `${warehouseId}Stock`
         $id: 'supplierFourniture'
     }
-    const storeUnit = useField(fieldsForm[3], parent)
-    storeUnit.fetch()
+    const storeUnitQtyFourniture = useField(fieldsForm[3], parentQuantityFourniture)
+    storeUnitQtyFourniture.fetch()
 
-    fieldsForm[3].measure.code = storeUnit.measure.code
-    fieldsForm[3].measure.value = storeUnit.measure.value
+    fieldsForm[3].measure.code = storeUnitQtyFourniture.measure.code
+    fieldsForm[3].measure.value = storeUnitQtyFourniture.measure.value
+
+    const parentPrice = {
+        $id: 'supplierFourniturePrice'
+    }
+    const storeUnitPrice = useField(fieldsForm[2], parentPrice)
+    storeUnitPrice.fetch()
+
+    fieldsForm[2].measure.code = storeUnitPrice.measure.code
+    fieldsForm[2].measure.value = storeUnitPrice.measure.value
 
     const tabFields = [
         {
@@ -93,15 +108,16 @@
             filter: true,
             label: 'Composant',
             name: 'composant',
+            options: {label: value => optionComposant.find(option => option.value === value)?.text.code ?? null, options: optionComposant},
             sort: true,
-            type: 'text',
+            type: 'select',
             update: true
         },
         {
             create: false,
             filter: true,
             label: 'Ref. Fournisseur ',
-            name: 'refFournisseur ',
+            name: 'refFournisseur',
             sort: true,
             type: 'text',
             update: true
@@ -110,19 +126,23 @@
             create: false,
             filter: true,
             label: 'Prix ',
-            name: 'prix ',
+            name: 'prix',
+            measure: {
+                code: storeUnitPrice.measure.code,
+                value: storeUnitPrice.measure.value
+            },
             sort: true,
-            type: 'text',
+            type: 'measure',
             update: true
         },
         {
             create: false,
             filter: true,
             label: 'Quantité ',
-            name: 'quantité ',
+            name: 'quantite',
             measure: {
-                code: storeUnit.measure.code,
-                value: storeUnit.measure.value
+                code: storeUnitQtyFourniture.measure.code,
+                value: storeUnitQtyFourniture.measure.value
             },
             sort: true,
             type: 'measure',
@@ -132,7 +152,7 @@
             create: false,
             filter: true,
             label: 'Texte ',
-            name: 'texte ',
+            name: 'texte',
             sort: true,
             type: 'text',
             update: true
@@ -159,7 +179,7 @@
         const itemsAddData = {
             composant: formData.value.composant,
             refFournisseur: formData.value.refFournisseur,
-            prix: formData.value.prix,
+            prix: {code: formData1.get('prix[code]'), value: formData1.get('prix[value]')},
             quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
             texte: formData.value.texte
         }
@@ -215,10 +235,10 @@
         trierAlpha = computed(() => payload)
     }
     async function search(inputValues) {
-        // let comp = ''
-        // if (typeof inputValues.composant !== 'undefined'){
-        //     comp = inputValues.composant
-        // }
+        let comp = ''
+        if (typeof inputValues.composant !== 'undefined'){
+            comp = inputValues.composant
+        }
 
         // let prod = ''
         // if (typeof inputValues.produit !== 'undefined'){
@@ -226,7 +246,7 @@
         // }
 
         const payload = {
-            composant: inputValues.refFournisseur ?? '',
+            composant: comp,
             refFournisseur: inputValues.refFournisseur ?? '',
             prix: inputValues.prix ?? '',
             quantite: inputValues.quantite ?? '',
@@ -239,6 +259,14 @@
         if (typeof payload.quantite.code === 'undefined' && payload.quantite !== '') {
             payload.quantite.code = ''
         }
+
+        if (typeof payload.prix.value === 'undefined' && payload.prix !== '') {
+            payload.prix.value = ''
+        }
+        if (typeof payload.prix.code === 'undefined' && payload.prix !== '') {
+            payload.prix.code = ''
+        }
+
         await storeSupplierListFourniture.filterBy(payload)
         itemsTable.value = [...storeSupplierListFourniture.itemsSupplierFourniture]
         filter.value = true

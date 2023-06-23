@@ -1,4 +1,4 @@
-import Api from '../../Api'
+import Api from '../../api'
 import {defineStore} from 'pinia'
 import generateItem from './item'
 

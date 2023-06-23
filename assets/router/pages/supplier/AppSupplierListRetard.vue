@@ -5,10 +5,10 @@
     import useField from '../../../stores/field/field'
 
     const roleuser = ref('reader')
-    let violations = []
+    // let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
-    const isPopupVisible = ref(false)
+    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
@@ -23,7 +23,7 @@
     await storeSupplierListRetard.fetch()
     const itemsTable = ref(storeSupplierListRetard.itemsSupplierRetard)
     const formData = ref({
-        creeLe: null, composant: null, retard: null, evenement: null, dateSouhaitee: null, note: null, fournisseurFerme: null, composantFournisseur: null, quantiteSouhaitee: null, quantiteEffectuee: null
+        creeLe: null, composant: null, retard: null, dateSouhaitee: null, note: null, /*fournisseurFerme: null, composantFournisseur: null,*/ quantiteSouhaitee: null, quantiteEffectuee: null
     })
 
     const optionComposant = await storeSupplierListRetard.getOptionComposant
@@ -59,15 +59,6 @@
         {
             create: false,
             filter: true,
-            label: 'Evènement ',
-            name: 'evenement',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
             label: 'Date souhaitée',
             name: 'dateSouhaitee',
             sort: true,
@@ -83,6 +74,7 @@
             type: 'text',
             update: true
         },
+        /*
         {
             create: false,
             filter: true,
@@ -101,6 +93,7 @@
             type: 'text',
             update: true
         },
+        */
         {
             create: false,
             filter: true,
@@ -133,21 +126,19 @@
         //$id: `${supplierID}Stock`
         $id: 'supplierRetardQtSouhaitee'
     }
-    const storeUnitQtSouhaitee = useField(fieldsForm[8], parentQtSouhaitee)
+    const storeUnitQtSouhaitee = useField(fieldsForm[5], parentQtSouhaitee)
     //storeUnit.fetch()
-
-    fieldsForm[8].measure.code = storeUnitQtSouhaitee.measure.code
-    fieldsForm[8].measure.value = storeUnitQtSouhaitee.measure.value
+    fieldsForm[5].measure.code = storeUnitQtSouhaitee.measure.code
+    fieldsForm[5].measure.value = storeUnitQtSouhaitee.measure.value
 
     const parentQtEffectuee = {
         //$id: `${supplierID}Stock`
         $id: 'supplierRetardQtEffectuee'
     }
-    const storeUnitQtEffectuee = useField(fieldsForm[9], parentQtEffectuee)
+    const storeUnitQtEffectuee = useField(fieldsForm[6], parentQtEffectuee)
     //storeUnit.fetch()
-
-    fieldsForm[9].measure.code = storeUnitQtEffectuee.measure.code
-    fieldsForm[9].measure.value = storeUnitQtEffectuee.measure.value
+    fieldsForm[6].measure.code = storeUnitQtEffectuee.measure.code
+    fieldsForm[6].measure.value = storeUnitQtEffectuee.measure.value
 
     const tabFields = [
         {
@@ -181,15 +172,6 @@
         {
             create: false,
             filter: true,
-            label: 'Evènement ',
-            name: 'evenement',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
             label: 'Date souhaitée',
             name: 'dateSouhaitee',
             sort: true,
@@ -205,6 +187,7 @@
             type: 'text',
             update: true
         },
+        /*
         {
             create: false,
             filter: true,
@@ -223,6 +206,7 @@
             type: 'text',
             update: true
         },
+        */
         {
             create: false,
             filter: true,
@@ -251,68 +235,65 @@
         }
     ]
 
-    function ajoute(){
-        AddForm.value = true
-        updated.value = false
-        const itemsNull = {
-            creeLe: null,
-            composant: null,
-            retard: null,
-            evenement: null,
-            dateSouhaitee: null,
-            note: null,
-            fournisseurFerme: null,
-            composantFournisseur: null,
-            quantiteSouhaitee: null,
-            quantiteEffectuee: null
-        }
-        formData.value = itemsNull
-    }
+    // function ajoute(){
+    //     AddForm.value = true
+    //     updated.value = false
+    //     const itemsNull = {
+    //         creeLe: null,
+    //         composant: null,
+    //         retard: null,
+    //         dateSouhaitee: null,
+    //         note: null,
+    //         // fournisseurFerme: null,
+    //         // composantFournisseur: null,
+    //         quantiteSouhaitee: null,
+    //         quantiteEffectuee: null
+    //     }
+    //     formData.value = itemsNull
+    // }
 
-    async function ajoutSupplierRetard(){
-        const form = document.getElementById('addSupplierRetard')
-        const formData1 = new FormData(form)
+    // async function ajoutSupplierRetard(){
+    //     const form = document.getElementById('addSupplierRetard')
+    //     const formData1 = new FormData(form)
 
-        const itemsAddData = {
-            creeLe: formData.value.creeLe,
-            composant: formData.value.composant,
-            retard: formData.value.retard,
-            evenement: formData.value.evenement,
-            dateSouhaitee: formData.value.dateSouhaitee,
-            fournisseurFerme: formData.value.fournisseurFerme,
-            composantFournisseur: formData.value.composantFournisseur,
-            quantiteSouhaitee: {code: formData1.get('quantiteSouhaitee[code]'), value: formData1.get('quantiteSouhaitee[value]')},
-            quantiteEffectuee: {code: formData1.get('quantiteEffectuee[code]'), value: formData1.get('quantiteEffectuee[value]')}
-        }
-        violations = await storeSupplierListRetard.addSupplierRetard(itemsAddData)
+    //     const itemsAddData = {
+    //         creeLe: formData.value.creeLe,
+    //         composant: formData.value.composant,
+    //         retard: formData.value.retard,
+    //         dateSouhaitee: formData.value.dateSouhaitee,
+    //         // fournisseurFerme: formData.value.fournisseurFerme,
+    //         // composantFournisseur: formData.value.composantFournisseur,
+    //         quantiteSouhaitee: {code: formData1.get('quantiteSouhaitee[code]'), value: formData1.get('quantiteSouhaitee[value]')},
+    //         quantiteEffectuee: {code: formData1.get('quantiteEffectuee[code]'), value: formData1.get('quantiteEffectuee[value]')}
+    //     }
+    //     violations = await storeSupplierListRetard.addSupplierRetard(itemsAddData)
 
-        if (violations.length > 0){
-            isPopupVisible.value = true
-        } else {
-            AddForm.value = false
-            updated.value = false
-            isPopupVisible.value = false
-            itemsTable.value = [...storeSupplierListRetard.itemsSupplierRetard]
-        }
-    }
-    function annule(){
-        AddForm.value = false
-        updated.value = false
-        const itemsNull = {
-            creeLe: null,
-            composant: null,
-            retard: null,
-            evenement: null,
-            dateSouhaitee: null,
-            note: null,
-            fournisseurFerme: null,
-            composantFournisseur: null,
-            quantiteSouhaitee: null,
-            quantiteEffectuee: null
-        }
-        formData.value = itemsNull
-        isPopupVisible.value = false
-    }
+    //     if (violations.length > 0){
+    //         isPopupVisible.value = true
+    //     } else {
+    //         AddForm.value = false
+    //         updated.value = false
+    //         isPopupVisible.value = false
+    //         itemsTable.value = [...storeSupplierListRetard.itemsSupplierRetard]
+    //     }
+    // }
+    // function annule(){
+    //     AddForm.value = false
+    //     updated.value = false
+    //     const itemsNull = {
+    //         creeLe: null,
+    //         composant: null,
+    //         retard: null,
+    //         dateSouhaitee: null,
+    //         note: null,
+    //         // fournisseurFerme: null,
+    //         // composantFournisseur: null,
+    //         quantiteSouhaitee: null,
+    //         quantiteEffectuee: null
+    //     }
+    //     formData.value = itemsNull
+    //     isPopupVisible.value = false
+    // }
 
     function update(item) {
         updated.value = true
@@ -321,11 +302,10 @@
             creeLe: item.creeLe,
             composant: item.composant,
             retard: item.retard,
-            evenement: item.evenement,
             dateSouhaitee: item.dateSouhaitee,
             note: item.note,
-            fournisseurFerme: item.fournisseurFerme,
-            composantFournisseur: item.composantFournisseur,
+            // fournisseurFerme: item.fournisseurFerme,
+            // composantFournisseur: item.composantFournisseur,
             quantiteSouhaitee: item.quantiteSouhaitee,
             quantiteEffectuee: item.quantiteEffectuee
         }
@@ -355,11 +335,10 @@
             creeLe: inputValues.creeLe ?? '',
             composant: comp,
             retard: inputValues.retard ?? '',
-            evenement: inputValues.evenement ?? '',
             dateSouhaitee: inputValues.dateSouhaitee ?? '',
             note: inputValues.note ?? '',
-            fournisseurFerme: inputValues.fournisseurFerme ?? '',
-            composantFournisseur: inputValues.composantFournisseur ?? '',
+            // fournisseurFerme: inputValues.fournisseurFerme ?? '',
+            // composantFournisseur: inputValues.composantFournisseur ?? '',
             quantiteSouhaitee: inputValues.quantiteSouhaitee ?? '',
             quantiteEffectuee: inputValues.quantiteEffectuee ?? ''
         }
@@ -377,6 +356,7 @@
         if (typeof payload.quantiteEffectuee.code === 'undefined' && payload.quantiteEffectuee !== '') {
             payload.quantiteEffectuee.code = ''
         }
+        console.log(payload)
         await storeSupplierListRetard.filterBy(payload)
         itemsTable.value = [...storeSupplierListRetard.itemsSupplierRetard]
         filter.value = true
@@ -389,12 +369,12 @@
 </script>
 
 <template>
-    <AppCol class="d-flex justify-content-between mb-2">
+    <!-- <AppCol class="d-flex justify-content-between mb-2">
         <AppBtn variant="success" label="Ajout" @click="ajoute">
             <Fa icon="plus"/>
             Ajouter
         </AppBtn>
-    </AppCol>
+    </AppCol> -->
     <AppRow>
         <AppCol>
             <AppCardableTable
@@ -416,7 +396,7 @@
                 @search="search"
                 @cancel-search="cancelSearch"/>
         </AppCol>
-        <AppCol v-if="AddForm && !updated" class="col-7">
+        <!-- <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
                 <AppRow>
                     <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
@@ -439,7 +419,7 @@
                     </AppBtn>
                 </AppCol>
             </AppCard>
-        </AppCol>
+        </AppCol> -->
     </AppRow>
 </template>
 

@@ -6,26 +6,26 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
         setIdSupplier(id){
             this.supplierID = id
         },
-        async addSupplierRetard(payload){
-            const violations = []
-            try {
-                if (payload.quantite.value !== ''){
-                    payload.quantite.value = parseInt(payload.quantite.value)
-                }
-                const element = {
-                    component: payload.composant,
-                    refFournisseur: payload.refFournisseur,
-                    prix: payload.prix,
-                    quantity: payload.quantite,
-                    texte: payload.texte
-                }
-                await api('/api/component-stocks', 'POST', element)
-                this.fetch()
-            } catch (error) {
-                violations.push({message: error})
-            }
-            return violations
-        },
+        // async addSupplierRetard(payload){
+        //     const violations = []
+        //     try {
+        //         if (payload.quantite.value !== ''){
+        //             payload.quantite.value = parseInt(payload.quantite.value)
+        //         }
+        //         const element = {
+        //             component: payload.composant,
+        //             refFournisseur: payload.refFournisseur,
+        //             prix: payload.prix,
+        //             quantity: payload.quantite,
+        //             texte: payload.texte
+        //         }
+        //         await api('/api/component-stocks', 'POST', element)
+        //         this.fetch()
+        //     } catch (error) {
+        //         violations.push({message: error})
+        //     }
+        //     return violations
+        // },
         async deleted(payload) {
             await api(`/api/purchase-order-items/${payload}`, 'DELETE')
             this.supplierRetard = this.supplierRetard.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
@@ -36,7 +36,7 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
                 this.currentPage = 1
             }
             // const response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?page=${this.currentPage}`, 'GET')
-            const response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?page=${this.currentPage}`, 'GET')
+            const response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}`, 'GET')
             this.supplierRetard = await this.updatePagination(response)
         },
         async filterBy(payload) {
@@ -57,20 +57,27 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
 
                 if (payload.quantiteSouhaitee !== ''){
                     if (payload.quantiteSouhaitee.value !== '') {
-                        url += `requestedQuantity.value=${payload.quantiteSouhaitee.value}&`
+                        url += `requestedQuantityValue=${payload.quantiteSouhaitee.value}&`
                     }
                     if (payload.quantiteSouhaitee.code !== '') {
-                        url += `requestedQuantity.code=${payload.quantiteSouhaitee.code}&`
+                        url += `requestedQuantityCode=${payload.quantiteSouhaitee.code}&`
                     }
                 }
 
                 if (payload.quantiteEffectuee !== ''){
                     if (payload.quantiteEffectuee.value !== '') {
-                        url += `confirmedQuantity.value=${payload.quantiteEffectuee.value}&`
+                        url += `confirmedQuantityValue=${payload.quantiteEffectuee.value}&`
                     }
                     if (payload.quantiteEffectuee.code !== '') {
-                        url += `confirmedQuantity.code=${payload.quantiteEffectuee.code}&`
+                        url += `confirmedQuantityCode=${payload.quantiteEffectuee.code}&`
                     }
+                }
+                if (payload.note !== ''){
+                    url += `note=${payload.note}&`
+                }
+
+                if (payload.retard !== ''){
+                    url += `retard=${payload.retard}&`
                 }
                 url += 'page=1'
                 this.currentPage = 1
@@ -79,125 +86,140 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
             }
         },
         async itemsPagination(nPage) {
-            const response = await api(`/api/stocks?warehouse=${this.supplierID}&page=${nPage}`, 'GET')
+            const response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?page=${nPage}`, 'GET')
             this.supplierRetard = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
                 if (payload.trierAlpha.value.component === 'component') {
-                    let url = '/api/'
+                    let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
+
+                    if (payload.filterBy.value.creeLe !== '') {
+                        url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                    }
                     if (payload.filterBy.value.composant !== '') {
-                        url += `component-stocks?warehouse=${this.supplierID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&item=${payload.filterBy.value.composant}&`
+                        url += `item=${payload.filterBy.value.composant}&`
                     }
-                    if (payload.filterBy.value.produit !== '') {
-                        url += `product-stocks?warehouse=${this.supplierID}&order%5B${payload.trierAlpha.value.produit}%5D=${payload.trierAlpha.value.trier.value}&item=${payload.filterBy.value.produit}&`
+
+                    if (payload.filterBy.value.dateSouhaitee !== '') {
+                        url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
                     }
-                    if (payload.filterBy.value.composant === '' && payload.filterBy.value.produit === ''){
-                        url += `stocks?warehouse=${this.supplierID}&order%5B${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&`
-                    }
-                    if (payload.filterBy.value.numeroDeSerie !== '') {
-                        url += `batchNumber=${payload.filterBy.value.numeroDeSerie}&`
-                    }
-                    if (payload.filterBy.value.localisation !== '') {
-                        url += `location=${payload.filterBy.value.localisation}&`
-                    }
-                    if (payload.filterBy.value.prison !== '') {
-                        if (payload.filterBy.value.prison === true){
-                            url += 'jail=1&'
-                        } else {
-                            url += 'jail=0&'
+
+                    if (payload.filterBy.value.quantiteSouhaitee !== ''){
+                        if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
+                            url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
+                        }
+                        if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
+                            url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
                         }
                     }
-                    if (payload.filterBy.value.quantite !== ''){
-                        if (payload.filterBy.value.quantite.value !== '') {
-                            url += `quantity.value=${payload.filterBy.value.quantite.value}&`
+
+                    if (payload.filterBy.value.quantiteEffectuee !== ''){
+                        if (payload.filterBy.value.quantiteEffectuee.value !== '') {
+                            url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
                         }
-                        if (payload.filterBy.value.quantite.code !== '') {
-                            url += `quantity.code=${payload.filterBy.value.quantite.code}&`
+                        if (payload.filterBy.value.quantiteEffectuee.code !== '') {
+                            url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
                         }
+                    }
+                    if (payload.filterBy.value.note !== ''){
+                        url += `note=${payload.filterBy.value.note}&`
+                    }
+                    if (payload.filterBy.value.retard !== ''){
+                        url += `retard=${payload.filterBy.value.retard}&`
                     }
                     url += `page=${payload.nPage}`
                     response = await api(url, 'GET')
                     this.supplierRetard = await this.updatePagination(response)
                 } else {
-                    let url = '/api/'
+                    let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
+
+                    if (payload.filterBy.value.creeLe !== '') {
+                        url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                    }
                     if (payload.filterBy.value.composant !== '') {
-                        url += `component-stocks?warehouse=${this.supplierID}&order%5Baddress.${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&item=${payload.filterBy.value.composant}&`
+                        url += `item=${payload.filterBy.value.composant}&`
                     }
-                    if (payload.filterBy.value.produit !== '') {
-                        url += `product-stocks?warehouse=${this.supplierID}&order%5Baddress.${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}item=${payload.filterBy.value.produit}&`
+
+                    if (payload.filterBy.value.dateSouhaitee !== '') {
+                        url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
                     }
-                    if (payload.filterBy.value.composant === '' && payload.filterBy.value.produit === ''){
-                        url += `stocks?warehouse=${this.supplierID}&order%5Baddress.${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&`
-                    }
-                    if (payload.filterBy.value.numeroDeSerie !== '') {
-                        url += `batchNumber=${payload.filterBy.value.numeroDeSerie}&`
-                    }
-                    if (payload.filterBy.value.localisation !== '') {
-                        url += `location=${payload.filterBy.value.localisation}&`
-                    }
-                    if (payload.filterBy.value.prison !== '') {
-                        if (payload.filterBy.value.prison === true){
-                            url += 'jail=1&'
-                        } else {
-                            url += 'jail=0&'
+
+                    if (payload.filterBy.value.quantiteSouhaitee !== ''){
+                        if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
+                            url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
+                        }
+                        if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
+                            url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
                         }
                     }
-                    if (payload.filterBy.value.quantite !== ''){
-                        if (payload.filterBy.value.quantite.value !== '') {
-                            url += `quantity.value=${payload.filterBy.value.quantite.value}&`
+
+                    if (payload.filterBy.value.quantiteEffectuee !== ''){
+                        if (payload.filterBy.value.quantiteEffectuee.value !== '') {
+                            url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
                         }
-                        if (payload.filterBy.value.quantite.code !== '') {
-                            url += `quantity.code=${payload.filterBy.value.quantite.code}&`
+                        if (payload.filterBy.value.quantiteEffectuee.code !== '') {
+                            url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
                         }
+                    }
+                    if (payload.filterBy.value.note !== ''){
+                        url += `note=${payload.filterBy.value.note}&`
+                    }
+                    if (payload.filterBy.value.retard !== ''){
+                        url += `retard=${payload.filterBy.value.retard}&`
                     }
                     response = await api(url, 'GET')
                     this.supplierRetard = await this.updatePagination(response)
                 }
             } else if (payload.filter.value === true){
-                let url = '/api/'
+                let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
+
+                if (payload.filterBy.value.creeLe !== '') {
+                    url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                }
                 if (payload.filterBy.value.composant !== '') {
-                    url += `component-stocks?warehouse=${this.supplierID}&item=${payload.filterBy.value.composant}&`
+                    url += `item=${payload.filterBy.value.composant}&`
                 }
-                if (payload.filterBy.value.produit !== '') {
-                    url += `product-stocks?warehouse=${this.supplierID}&item=${payload.filterBy.value.produit}&`
+
+                if (payload.filterBy.value.dateSouhaitee !== '') {
+                    url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
                 }
-                if (payload.filterBy.value.composant === '' && payload.filterBy.value.produit === ''){
-                    url += `stocks?warehouse=${this.supplierID}&`
-                }
-                if (payload.filterBy.value.numeroDeSerie !== '') {
-                    url += `batchNumber=${payload.filterBy.value.numeroDeSerie}&`
-                }
-                if (payload.filterBy.value.localisation !== '') {
-                    url += `location=${payload.filterBy.value.localisation}&`
-                }
-                if (payload.filterBy.value.prison !== '') {
-                    if (payload.filterBy.value.prison === true){
-                        url += 'jail=1&'
-                    } else {
-                        url += 'jail=0&'
+
+                if (payload.filterBy.value.quantiteSouhaitee !== ''){
+                    if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
+                        url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
+                    }
+                    if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
+                        url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
                     }
                 }
-                if (payload.filterBy.value.quantite !== ''){
-                    if (payload.filterBy.value.quantite.value !== '') {
-                        url += `quantity.value=${payload.filterBy.value.quantite.value}&`
+
+                if (payload.filterBy.value.quantiteEffectuee !== ''){
+                    if (payload.filterBy.value.quantiteEffectuee.value !== '') {
+                        url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
                     }
-                    if (payload.filterBy.value.quantite.code !== '') {
-                        url += `quantity.code=${payload.filterBy.value.quantite.code}&`
+                    if (payload.filterBy.value.quantiteEffectuee.code !== '') {
+                        url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
                     }
+                }
+                if (payload.filterBy.value.note !== ''){
+                    url += `note=${payload.filterBy.value.note}&`
+                }
+                if (payload.filterBy.value.retard !== ''){
+                    url += `retard=${payload.filterBy.value.retard}&`
                 }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
                 this.supplierRetard = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
-                response = await api(`/api/stocks?warehouse=${this.supplierID}&page=${payload.nPage}`, 'GET')
+                response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?page=${payload.nPage}`, 'GET')
                 this.supplierRetard = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'component') {
-                    response = await api(`/api/stocks?warehouse=${this.supplierID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
-                    response = await api(`/api/stocks?warehouse=${this.supplierID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
                 this.supplierRetard = await this.updatePagination(response)
             }
@@ -207,70 +229,81 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
             let response = {}
             if (filter.value === true){
                 if (payload.composant === 'component') {
-                    let url = '/api/'
+                    let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
+
+                    if (filterBy.value.creeLe !== '') {
+                        url += `confirmedDate=${filter.value.creeLe}&`
+                    }
                     if (filterBy.value.composant !== '') {
-                        url += `component-stocks?warehouse=${this.supplierID}&order%5B${filterBy.value.composant}%5D=${payload.trier.value}&item=${filterBy.value.composant}&`
+                        url += `item=${filterBy.value.composant}&`
                     }
-                    if (filterBy.value.produit !== '') {
-                        url += `product-stocks?warehouse=${this.supplierID}&order%5B${filterBy.value.produit}%5D=${payload.trier.value}&item=${filterBy.value.produit}&`
+
+                    if (filterBy.value.dateSouhaitee !== '') {
+                        url += `requestedDate=${filterBy.value.dateSouhaitee}&`
                     }
-                    if (filterBy.value.composant === '' && filterBy.value.produit === ''){
-                        url += `stocks?warehouse=${this.supplierID}&order%5B${filterBy.value.composant}%5D=${payload.trier.value}&`
-                    }
-                    if (filterBy.value.numeroDeSerie !== '') {
-                        url += `batchNumber=${filterBy.value.numeroDeSerie}&`
-                    }
-                    if (filterBy.value.localisation !== '') {
-                        url += `location=${filterBy.value.localisation}&`
-                    }
-                    if (filterBy.value.prison !== '') {
-                        if (filterBy.value.prison === true){
-                            url += 'jail=1&'
-                        } else {
-                            url += 'jail=0&'
+
+                    if (filterBy.value.quantiteSouhaitee !== ''){
+                        if (filterBy.value.quantiteSouhaitee.value !== '') {
+                            url += `requestedQuantityValue=${filterBy.value.quantiteSouhaitee.value}&`
+                        }
+                        if (filterBy.value.quantiteSouhaitee.code !== '') {
+                            url += `requestedQuantityCode=${filterBy.value.quantiteSouhaitee.code}&`
                         }
                     }
-                    if (filterBy.value.quantite !== ''){
-                        if (filterBy.value.quantite.value !== '') {
-                            url += `quantity.value=${filterBy.value.quantite.value}&`
+
+                    if (filterBy.value.quantiteEffectuee !== ''){
+                        if (filterBy.value.quantiteEffectuee.value !== '') {
+                            url += `confirmedQuantityValue=${filterBy.value.quantiteEffectuee.value}&`
                         }
-                        if (filterBy.value.quantite.code !== '') {
-                            url += `quantity.code=${filterBy.value.quantite.code}&`
+                        if (filterBy.value.quantiteEffectuee.code !== '') {
+                            url += `confirmedQuantityCode=${filterBy.value.quantiteEffectuee.code}&`
                         }
                     }
+                    if (filterBy.value.note !== ''){
+                        url += `note=${filterBy.value.note}&`
+                    }
+                    if (filterBy.value.retard !== ''){
+                        url += `retard=${filterBy.value.retard}&`
+                    }
+
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
                 } else {
-                    let url = '/api/'
+                    let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
+
+                    if (filterBy.value.creeLe !== '') {
+                        url += `confirmedDate=${filter.value.creeLe}&`
+                    }
                     if (filterBy.value.composant !== '') {
-                        url += `component-stocks?warehouse=${this.supplierID}&order%5B${filterBy.value.composant}%5D=${payload.trier.value}&item=${filterBy.value.composant}&`
+                        url += `item=${filterBy.value.composant}&`
                     }
-                    if (filterBy.value.produit !== '') {
-                        url += `product-stocks?warehouse=${this.supplierID}&order%5B${filterBy.value.produit}%5D=${payload.trier.value}&item=${filterBy.value.produit}&`
+
+                    if (filterBy.value.dateSouhaitee !== '') {
+                        url += `requestedDate=${filterBy.value.dateSouhaitee}&`
                     }
-                    if (filterBy.value.composant === '' && filterBy.value.produit === ''){
-                        url += `stocks?warehouse=${this.supplierID}&order%5B${filterBy.value.composant}%5D=${payload.trier.value}&`
-                    }
-                    if (filterBy.value.numeroDeSerie !== '') {
-                        url += `batchNumber=${filterBy.value.numeroDeSerie}&`
-                    }
-                    if (filterBy.value.localisation !== '') {
-                        url += `location=${filterBy.value.localisation}&`
-                    }
-                    if (filterBy.value.prison !== '') {
-                        if (filterBy.value.prison === true){
-                            url += 'jail=1&'
-                        } else {
-                            url += 'jail=0&'
+
+                    if (filterBy.value.quantiteSouhaitee !== ''){
+                        if (filterBy.value.quantiteSouhaitee.value !== '') {
+                            url += `requestedQuantityValue=${filterBy.value.quantiteSouhaitee.value}&`
+                        }
+                        if (filterBy.value.quantiteSouhaitee.code !== '') {
+                            url += `requestedQuantityCode=${filterBy.value.quantiteSouhaitee.code}&`
                         }
                     }
-                    if (filterBy.value.quantite !== ''){
-                        if (filterBy.value.quantite.value !== '') {
-                            url += `quantity.value=${filterBy.value.quantite.value}&`
+
+                    if (filterBy.value.quantiteEffectuee !== ''){
+                        if (filterBy.value.quantiteEffectuee.value !== '') {
+                            url += `confirmedQuantityValue=${filterBy.value.quantiteEffectuee.value}&`
                         }
-                        if (filterBy.value.quantite.code !== '') {
-                            url += `quantity.code=${filterBy.value.quantite.code}&`
+                        if (filterBy.value.quantiteEffectuee.code !== '') {
+                            url += `confirmedQuantityCode=${filterBy.value.quantiteEffectuee.code}&`
                         }
+                    }
+                    if (filterBy.value.note !== ''){
+                        url += `note=${filterBy.value.note}&`
+                    }
+                    if (filterBy.value.retard !== ''){
+                        url += `retard=${filterBy.value.retard}&`
                     }
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
@@ -278,14 +311,15 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
                 this.supplierRetard = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'component') {
-                    response = await api(`/api/stocks?warehouse=${this.supplierID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`api/purchase-order-items/supplierFilter/${this.supplierID}?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
-                    response = await api(`/api/stocks?warehouse=${this.supplierID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`api/purchase-order-items/supplierFilter/${this.supplierID}?order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
                 this.supplierRetard = await this.updatePagination(response)
             }
         },
         async updatePagination(response) {
+            // console.log(response)
             const responseData = await response['hydra:member']
             let paginationView = {}
             if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
@@ -293,6 +327,7 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
             } else {
                 paginationView = responseData
             }
+            // console.log(paginationView)
             if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
                 this.pagination = true
                 this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
@@ -389,7 +424,7 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
-            const response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}&page=${this.currentPage}`, 'GET')
+            const response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?page=${this.currentPage}`, 'GET')
             for (const supplier of response['hydra:member']) {
                 if (!codes.has(supplier.item.code)) {
                     opt.push({value: supplier.item['@id'], '@type': supplier.item['@type'], text: supplier.item.code, id: supplier.item.id})
