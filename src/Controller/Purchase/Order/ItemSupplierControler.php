@@ -20,42 +20,29 @@ class ItemSupplierControler
     * @throws \ReflectionException
     */
     public function __invoke(Request $request): array{
-
-        $tab = []; 
+        $tab = [
+            'item' => $request->get('item'),
+            'confQuantityCode' => $request->get('confirmedQuantityCode'),
+            'confQuantityValue' => $request->get('confirmedQuantityValue'),
+            'reqQuantityCode' => $request->get('requestedQuantityCode'),
+            'reqQuantityValue' => $request->get('requestedQuantityValue'),
+            'confDate' => $request->get('confirmedDate'),
+            'reqDate' => $request->get('requestedDate'),
+            'currentPage' => $request->get('currentPage'),
+            'note' => $request->get('note'),
+            'retard' => $request->get('retard'),
+            'ref' => $request->get('ref'),
+            'prixCode' => $request->get('prixCode'),
+            'prixValue' => $request->get('prixValue')
+        ];
+        dump($tab);
         
         $itemId = $request->get('api');
-        $input = $request->request->all();
-        $content = $request->getContent();
         $currentPage = $request->get('page');
-        dump($currentPage);
 
-        // var_dump($input);
-        dump($content);
-
-        $sourceItem = $this->repository->findBySupplierId($itemId, $currentPage);
-        dump($sourceItem);
+        $sourceItem = $this->repository->findBySupplierId($itemId, $tab);
+        // dump($sourceItem);
         $entityStr = 'componentItem';
-  
-        // if (empty($sourceItem)) {
-        //    throw new NotFoundHttpException();
-        // }
-        // dump($sourceItem);
-        // $sourceItem = $this->repository->find($itemId);
-        // $content = json_decode($sourceItem);
-        // var_dump($a);
-        // if (empty($sourceItem)) {
-        //    throw new NotFoundHttpException();
-        // }
-        // $refClass = new \ReflectionClass($sourceItem);
-
-        // foreach ($sourceItem as &$element) {
-        //     dump($element);
-        //     $id = $element.getId();
-        //     $element = array_merge($element, ['@id' => $id]);
-        //     dump($element);
-        // }
-
-        // dump($sourceItem);
         return $sourceItem;
     }
 }

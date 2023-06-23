@@ -82,39 +82,138 @@ final class ComponentItemRepository extends ItemRepository {
         }
     }
 
-    //public function find
-    // public function __toString(): string
-    // {
-    //     $where = $this->conditions === [] ? '' : ' WHERE ' . implode(' AND ', $this->conditions);
-    //     return 'SELECT ' . implode(', ', $this->fields)
-    //         . ' FROM ' . implode(', ', $this->from)
-    //         . $where;
-    // }
-
-
-    public function findBySupplierId($supplierId, $currentPage = null) : array
+    public function findBySupplierId($supplierId, $tab = null) : array
     {
 
-        dump($currentPage);
+        $currentPage = $tab['currentPage'];
         $first = 0;
         $max = 15;
-        // dump($supplierId);
+    
         if ($currentPage !== null && $currentPage !== '1'){
             $first = 15 * $currentPage -1;
             $max = $first + 15;
         }
-        // dump($first, $max);
+
         $query =  $this->createQueryBuilder('i')
             ->select('i')
             ->from(Order::class, 'o')
             ->where('i.order = o')
             ->andWhere('o.supplier = :supplier')
             ->andWhere('i.deleted = FALSE')
-            ->setFirstResult($first)
-            ->setMaxResults($max)
-            ->setParameter('supplier', $supplierId)
-            ->getQuery();
-        // dump($query);
-        return $query->getResult();
+            ->andWhere('o.deleted = FALSE')
+            ->setParameter('supplier', $supplierId);
+
+        if ($tab['item'] !== null) {
+            $nbItem = explode('/', $tab['item']);
+            $nbItem = $nbItem[3];
+            $query->andWhere('i.item = :composant')
+                ->setParameter('composant',$nbItem);
+        }
+        if ($tab['confQuantityCode'] !== null) {
+            $query->andWhere('i.confirmedQuantity.code LIKE :confQuantityCode')
+                ->setParameter('confQuantityCode', '%' . $tab['confQuantityCode'] . '%');
+        }
+        if ($tab['confQuantityValue'] !== null) {
+            $query->andWhere('i.confirmedQuantity.value LIKE :confQuantityValue')
+                ->setParameter('confQuantityValue', '%' . $tab['confQuantityValue'] . '%');
+        }
+        if ($tab['reqQuantityCode'] !== null) {
+            $query->andWhere('i.requestedQuantity.code LIKE :reqQuantityCode')
+                ->setParameter('reqQuantityCode', '%' . $tab['reqQuantityCode'] . '%');
+        }
+        if ($tab['reqQuantityValue'] !== null) {
+            $query->andWhere('i.requestedQuantity.value LIKE :reqQuantityValue')
+                ->setParameter('reqQuantityValue', '%' . $tab['reqQuantityValue'] . '%');
+        }
+        if ($tab['confDate'] !== null) {
+            $query->andWhere('i.confirmedDate LIKE :confDate')
+                ->setParameter('confDate', '%' . $tab['confDate'] . '%');
+        }
+        if ($tab['reqDate'] !== null) {
+            $query->andWhere('i.requestedDate LIKE :reqDate')
+                ->setParameter('reqDate', '%' . $tab['reqDate'] . '%');
+        }
+        if ($tab['note'] !== null) {
+            $query->andWhere('i.notes LIKE :note')
+                ->setParameter('note', '%' . $tab['note'] . '%');
+        }
+
+        if ($tab['retard'] !== null) {
+            if (strcasecmp($tab['retard'], 'aucun') === 0 || $tab['retard'] === '0') {
+        
+                $query->andWhere('i.requestedDate = i.confirmedDate');
+            } else{
+                $retard = $tab['retard'];
+     
+                $parts = explode(' ', $retard);
+        
+                $retard = array('0', '0', '0');
+                foreach ($parts as $part) {
+                    if (strpos($part, 'y') !== false) {
+                        $retard[0] = trim($part, 'y');
+                    } elseif (strpos($part, 'm') !== false) {
+                        $retard[1] = trim($part, 'm');
+                    } elseif (strpos($part, 'd') !== false) {
+                        $retard[2] = trim($part, 'd');
+                    }
+                }
+                $retard = implode('-', $retard);
+                
+        
+        
+                $partRetard = explode('-', $retard);
+                $currentDate = date('Y-m-d');
+                $partCurrentDate = explode('-', $currentDate);
+        
+        
+                $partRetard[0] = $partCurrentDate[0] - $partRetard[0];
+                
+                $diffMois = $partCurrentDate[1] - $partRetard[1];
+                if($diffMois < 0 ){
+                    $partRetard[0]--;
+                    $partRetard[1] = $diffMois % 12;
+                } else {
+                    $partRetard[1] = $diffMois;
+                }
+                $tabMoisJour = [31, 30, 28, 31, 30, 31, 30, 31, 30, 31, 30, 31];
+        
+                $diffJour = $partCurrentDate[2] - $partRetard[2];
+                if($diffJour < 0){
+                    if($partRetard[1] == 1) {
+                        $partRetard[1] = 12;
+                    } else {
+                        $partRetard[1]--;
+                        $partRetard[2] = $tabMoisJour[$partRetard[1]-1] - $diffJour;
+                    }
+                } else {
+                    $partRetard[2] = $diffJour;
+                }
+                $retard = $partRetard[0].'-'.$partRetard[1].'-'.$partRetard[2];
+
+                $query->andWhere('i.requestedDate = :retard')
+                    ->andWhere('i.confirmedDate IS NULL OR i.requestedDate != i.confirmedDate')
+                    ->setParameter('retard', $retard);
+            }
+        }
+
+        if ($tab['prixValue'] !== null) {
+            $query->andWhere('i.price.value LIKE :prixValue')
+                ->setParameter('prixValue', '%' . $tab['prixValue'] . '%');
+        }
+        if ($tab['prixCode'] !== null) {
+            $query->andWhere('i.price.code LIKE :prixCode')
+                ->setParameter('prixCode', '%' . $tab['prixCode'] . '%');
+        }
+
+        
+        if ($tab['ref'] !== null) {
+            $query->andWhere('i.notes LIKE :ref')
+                ->setParameter('ref', '%' . $tab['ref'] . '%');
+        }
+
+        $query->setFirstResult($first)
+            ->setMaxResults($max);
+        
+        return ($query->getQuery()->getResult());
     }
 }

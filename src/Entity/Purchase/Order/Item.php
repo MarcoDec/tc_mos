@@ -25,8 +25,8 @@ use App\Entity\Purchase\Component\Family as ComponentFamily;
 use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use App\Filter\RelationFilter;
-use App\Filter\GetFilter;
 use App\Filter\SetFilter;
+use App\Entity\Purchase\Order\Item;
 use App\Repository\Purchase\Order\ItemRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -42,9 +42,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  *
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['order', 'item']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedQuantity.value' => 'partial', 'confirmedQuantity.code' => 'partial', 'requestedQuantity.value' => 'partial',  'requestedQuantity.code' => 'partial']),
 
     ApiResource(
         description: 'Ligne de commande',
@@ -151,6 +150,14 @@ abstract class Item extends BaseItem {
     protected Measure $copperPrice;
 
     #[
+        ApiProperty(description: 'Prix du', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
+        ORM\Embedded,
+        Serializer\Groups(['read:item', 'write:item'])
+    ]
+    protected Measure $price;
+
+
+    #[
         ORM\Embedded,
         Serializer\Groups(['read:item']),
     ]
@@ -176,52 +183,6 @@ abstract class Item extends BaseItem {
     ]
     protected ?Company $targetCompany = null;
 
-    /***************new *
-     *     ApiFilter(filterClass: SearchFilter::class, properties: ['confirmedDate' => 'partial', 
-     * 'requestedDate' => 'partial', 'confirmedQuantity' => 'partial', 'requestedQuantity' => 'partial']),
-     */
-    #[
-        ApiProperty(description: 'Date crée', example: '01/01/2000'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:stock', 'write:stock'])
-    ]
-    protected ?DateTimeImmutable  $confirmedDate = null;
-
-    #[
-        ApiProperty(description: 'Date souhaitée', example: '01/01/2000'),
-        ORM\Column(nullable: true),
-        Serializer\Groups(['read:stock', 'write:stock'])
-    ]
-    protected ?DateTimeImmutable  $requestedDate = null;
-
-
-    /** @var null|T */
-    #[
-        ApiProperty(description: 'Élément', readableLink: false,  example: '/api/components/1'),
-        Serializer\Groups(['read:stock'])
-    ]
-    protected $item;
-
-    #[
-        ApiProperty(description: 'Quantité effectuée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        AppAssert\Measure,
-        ORM\JoinColumn(name: 'confirmed_quantity'),
-        ORM\Embedded,
-        Serializer\Groups(['read:item', 'receipt:item', 'transfer:item', 'write:item'])
-    ]
-    protected Measure $confirmedQuantity;
-
-    #[
-        ApiProperty(description: 'Quantité souhaitée', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
-        AppAssert\Measure,
-        ORM\JoinColumn(name: 'requested_quantity'),
-        ORM\Embedded,
-        Serializer\Groups(['read:item', 'receipt:item', 'transfer:item', 'write:item'])
-    ]
-    protected Measure $requestedQuantity;
-
-
-    /********************* */
 
     /** @var DoctrineCollection<int, Receipt<I>> */
     #[ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class)]

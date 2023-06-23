@@ -2,16 +2,19 @@
 
 namespace App\Entity\Purchase\Order;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Purchase\Component\Component;
-use App\Repository\Purchase\Order\ComponentItemRepository;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\RelationFilter;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\Purchase\Order\ComponentItemRepository;
+use Symfony\Component\Serializer\Annotation as Serializer;
+
 
 
 /**
@@ -21,6 +24,13 @@ use App\Filter\RelationFilter;
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère les fournisseurs de composants',
+                    'summary' => 'Récupère les fournisseurs de composants',
+                    'tags' => ['PurchaseOrderItem']
+                ]
+            ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer une ligne',
@@ -48,12 +58,17 @@ use App\Filter\RelationFilter;
     ORM\Entity(repositoryClass: ComponentItemRepository::class)
 ]
 class ComponentItem extends Item {
+
     #[
         ApiProperty(description: 'Composant', example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
-        ORM\ManyToOne(targetEntity: Component::class, fetch: "EAGER"),
+        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
+
+    final protected function getType(): string {
+        return ItemType::TYPE_COMPONENT;
+    }
 
 }
