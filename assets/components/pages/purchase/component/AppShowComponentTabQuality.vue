@@ -8,6 +8,7 @@
     const route = useRoute()
     const idComponent = route.params.id_component
     const emit = defineEmits(['update:modelValue'])
+    const localData = ref({})
     const isError2 = ref(false)
     const violations2 = ref([])
     const useFetchComponentStore = useComponentListStore()
@@ -66,27 +67,25 @@
         }
         return data
     })
-
-    const val = ref(Number(useFetchComponentStore.component.quality))
     async function input(value) {
-        val.value = value.quality
-        emit('update:modelValue', val.value)
-        const data = {
-            quality: val.value
-        }
-        await useFetchComponentStore.updateQuality(data, idComponent)
-        await useFetchComponentStore.fetchOne(idComponent)
+        localData.value = value
+        emit('update:modelValue', localData.value)
+        console.log('input', localData.value)
+        // const data = {
+        //     quality: val.value
+        // }
+        // await useFetchComponentStore.updateQuality(data, idComponent)
+        // await useFetchComponentStore.fetchOne(idComponent)
     }
     async function updateQuality() {
         const form = document.getElementById('addQualite')
         const formData = new FormData(form)
         const data = {
-            //quality: JSON.parse(formData.get("quality")),
-            reach: JSON.parse(formData.get('reach')),
-            rohs: JSON.parse(formData.get('rohs'))
+            quality: localData.value.quality,
+            reach: localData.value.reach,
+            rohs: localData.value.rohs
         }
-
-        if (rohsValue.value) {
+        if (localData.value.rohs) {
             const dataFichierRohs = {
                 category: 'rohs',
                 component: `/api/components/${idComponent}`,
