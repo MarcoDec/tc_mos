@@ -45,7 +45,7 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                 await this.fetch()
             } else {
                 if (payload.reference !== '') {
-                    url += `ref=${payload.reference}&`
+                    url += `refOrder=${payload.reference}&`
                 }
                 if (payload.statutFournisseur !== '') {
                     url += `statutFournisseur=${payload.statutFournisseur}&`

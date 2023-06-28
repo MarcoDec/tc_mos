@@ -258,6 +258,10 @@ final class ComponentItemRepository extends ItemRepository {
         if ($tab['embState'] !== null) {
             $sql .= " AND poi.emb_state_state LIKE '%" . $tab['embState'] . "%'";
         }
+
+        if ($tab['refOrder'] !== null) {
+            $sql .= " AND po.ref LIKE '%" . $tab['refOrder'] . "%'";
+        }
         //offset decallage
         //recuperer nb de page
         // $query->setFirstResult($first)

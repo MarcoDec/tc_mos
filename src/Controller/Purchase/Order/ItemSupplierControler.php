@@ -36,7 +36,8 @@ class ItemSupplierControler
             'prixValue' => $request->get('prixValue'),
             'notePo' => $request->get('infoPublic'),
             'embState' => $request->get('statutFournisseur'),
-            'supplementFret' => $request->get('supplementFret')
+            'supplementFret' => $request->get('supplementFret'),
+            'refOrder' => $request->get('refOrder')
         ]; 
         dump($tab);
         
