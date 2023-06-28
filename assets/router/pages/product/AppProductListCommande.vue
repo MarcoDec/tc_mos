@@ -1,7 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useProductListCommandeStore} from './storeProvisoir/productListCommande'
-    // import {useRoute} from 'vue-router'
+    import {useRoute} from 'vue-router'
     import useField from '../../../stores/field/field'
 
     const roleuser = ref('reader')
@@ -14,15 +14,15 @@
     let trierAlpha = {}
     let filterBy = {}
 
-    // const maRoute = useRoute()
-    // const Id = maRoute.params.id_warehouse
+    const maRoute = useRoute()
+    const productId = maRoute.params.id_product
 
     const storeProductListCommande = useProductListCommandeStore()
-    // storeProductListCommande.setIdWarehouse(warehouseId)
+    storeProductListCommande.setIdProduct(productId)
     await storeProductListCommande.fetch()
     const itemsTable = ref(storeProductListCommande.itemsProductCommande)
     const formData = ref({
-        client: null, reference: null, quantiteConfirmee: null, quantiteSouhaitee: null, quantiteEnvoyee: null, dateLivraison: null, dateLivraisonSouhaitee: null
+        client: null, reference: null, quantiteConfirmee: null, quantiteSouhaitee: null, quantiteEffetctuee: null, dateLivraison: null, dateLivraisonSouhaitee: null
     })
 
     const fieldsForm = [
@@ -73,8 +73,8 @@
         {
             create: false,
             filter: true,
-            label: 'Quantité envoyée',
-            name: 'quantiteEnvoyee',
+            label: 'Quantité effectuée',
+            name: 'quantiteEffetctuee',
             measure: {
                 code: null,
                 value: null
@@ -181,7 +181,7 @@
             create: false,
             filter: true,
             label: 'Quantité envoyée',
-            name: 'quantiteEnvoyee',
+            name: 'quantiteEffetctuee',
             measure: {
                 code: storeUnitQtEnvoyee.measure.code,
                 value: storeUnitQtEnvoyee.measure.value
@@ -218,7 +218,7 @@
             reference: null,
             quantiteConfirmee: null,
             quantiteSouhaitee: null,
-            quantiteEnvoyee: null,
+            quantiteEffetctuee: null,
             dateLivraison: null,
             dateLivraisonSouhaitee: null
         }
@@ -239,7 +239,7 @@
             quantiteConfirmee: formData.value.quantiteConfirmee,
             //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
             quantiteSouhaitee: formData.value.quantiteSouhaitee,
-            quantiteEnvoyee: formData.value.quantiteEnvoyee,
+            quantiteEffetctuee: formData.value.quantiteEffetctuee,
             dateLivraison: formData.value.dateLivraison,
             dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
         }
@@ -262,7 +262,7 @@
             reference: null,
             quantiteConfirmee: null,
             quantiteSouhaitee: null,
-            quantiteEnvoyee: null,
+            quantiteEffetctuee: null,
             dateLivraison: null,
             dateLivraisonSouhaitee: null
         }
@@ -278,7 +278,7 @@
             reference: item.reference,
             quantiteConfirmee: item.quantiteConfirmee,
             quantiteSouhaitee: item.quantiteSouhaitee,
-            quantiteEnvoyee: item.quantiteEnvoyee,
+            quantiteEffetctuee: item.quantiteEffetctuee,
             dateLivraison: item.dateLivraison,
             dateLivraisonSouhaitee: item.dateLivraisonSouhaitee
         }
@@ -314,7 +314,7 @@
             reference: inputValues.reference ?? '',
             quantiteConfirmee: inputValues.quantiteConfirmee ?? '',
             quantiteSouhaitee: inputValues.quantiteSouhaitee ?? '',
-            quantiteEnvoyee: inputValues.quantiteEnvoyee ?? '',
+            quantiteEffetctuee: inputValues.quantiteEffetctuee ?? '',
             dateLivraison: inputValues.dateLivraison ?? '',
             dateLivraisonSouhaitee: inputValues.dateLivraisonSouhaitee ?? ''
         }

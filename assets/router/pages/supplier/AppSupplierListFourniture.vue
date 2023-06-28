@@ -5,10 +5,10 @@
     import useField from '../../../stores/field/field'
 
     const roleuser = ref('reader')
-    let violations = []
+    // let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
-    const isPopupVisible = ref(false)
+    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
@@ -159,54 +159,54 @@
         }
     ]
 
-    function ajoute(){
-        AddForm.value = true
-        updated.value = false
-        const itemsNull = {
-            composant: null,
-            refFournisseur: null,
-            prix: null,
-            quantité: null,
-            texte: null
-        }
-        formData.value = itemsNull
-    }
+    // function ajoute(){
+    //     AddForm.value = true
+    //     updated.value = false
+    //     const itemsNull = {
+    //         composant: null,
+    //         refFournisseur: null,
+    //         prix: null,
+    //         quantité: null,
+    //         texte: null
+    //     }
+    //     formData.value = itemsNull
+    // }
 
-    async function ajoutSupplierFourniture(){
-        const form = document.getElementById('addSupplierFourniture')
-        const formData1 = new FormData(form)
+    // async function ajoutSupplierFourniture(){
+    //     const form = document.getElementById('addSupplierFourniture')
+    //     const formData1 = new FormData(form)
 
-        const itemsAddData = {
-            composant: formData.value.composant,
-            refFournisseur: formData.value.refFournisseur,
-            prix: {code: formData1.get('prix[code]'), value: formData1.get('prix[value]')},
-            quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-            texte: formData.value.texte
-        }
-        violations = await storeSupplierListFourniture.addSupplierFourniture(itemsAddData)
+    //     const itemsAddData = {
+    //         composant: formData.value.composant,
+    //         refFournisseur: formData.value.refFournisseur,
+    //         prix: {code: formData1.get('prix[code]'), value: formData1.get('prix[value]')},
+    //         quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
+    //         texte: formData.value.texte
+    //     }
+    //     violations = await storeSupplierListFourniture.addSupplierFourniture(itemsAddData)
 
-        if (violations.length > 0){
-            isPopupVisible.value = true
-        } else {
-            AddForm.value = false
-            updated.value = false
-            isPopupVisible.value = false
-            itemsTable.value = [...storeSupplierListFourniture.itemsSupplierFourniture]
-        }
-    }
-    function annule(){
-        AddForm.value = false
-        updated.value = false
-        const itemsNull = {
-            composant: null,
-            refFournisseur: null,
-            prix: null,
-            quantite: null,
-            texte: null
-        }
-        formData.value = itemsNull
-        isPopupVisible.value = false
-    }
+    //     if (violations.length > 0){
+    //         isPopupVisible.value = true
+    //     } else {
+    //         AddForm.value = false
+    //         updated.value = false
+    //         isPopupVisible.value = false
+    //         itemsTable.value = [...storeSupplierListFourniture.itemsSupplierFourniture]
+    //     }
+    // }
+    // function annule(){
+    //     AddForm.value = false
+    //     updated.value = false
+    //     const itemsNull = {
+    //         composant: null,
+    //         refFournisseur: null,
+    //         prix: null,
+    //         quantite: null,
+    //         texte: null
+    //     }
+    //     formData.value = itemsNull
+    //     isPopupVisible.value = false
+    // }
 
     function update(item) {
         updated.value = true
@@ -279,12 +279,12 @@
 </script>
 
 <template>
-    <AppCol class="d-flex justify-content-between mb-2">
+    <!-- <AppCol class="d-flex justify-content-between mb-2">
         <AppBtn variant="success" label="Ajout" @click="ajoute">
             <Fa icon="plus"/>
             Ajouter
         </AppBtn>
-    </AppCol>
+    </AppCol> -->
     <AppRow>
         <AppCol>
             <AppCardableTable
@@ -306,7 +306,7 @@
                 @search="search"
                 @cancel-search="cancelSearch"/>
         </AppCol>
-        <AppCol v-if="AddForm && !updated" class="col-7">
+        <!-- <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
                 <AppRow>
                     <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
@@ -329,7 +329,7 @@
                     </AppBtn>
                 </AppCol>
             </AppCard>
-        </AppCol>
+        </AppCol> -->
     </AppRow>
 </template>
 

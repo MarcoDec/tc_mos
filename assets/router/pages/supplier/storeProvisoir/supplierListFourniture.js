@@ -346,6 +346,7 @@ export const useSupplierListFournitureStore = defineStore('supplierListFournitur
     },
     getters: {
         itemsSupplierFourniture: state => state.supplierFourniture.map(item => {
+            // console.log(item)
             const newObject = {
                 '@id': item['@id'],
                 creeLe: item.confirmedDate,
@@ -360,7 +361,7 @@ export const useSupplierListFournitureStore = defineStore('supplierListFournitur
         async getOptionComposant() {
             const opt = []
             const codes = new Set()
-            //todo changeer
+            //todo changer
             if (this.currentPage < 1){
                 this.currentPage = 1
             }

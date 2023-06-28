@@ -5,10 +5,10 @@
     // import useField from '../../../stores/field/field'
 
     const roleuser = ref('reader')
-    let violations = []
+    // let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
-    const isPopupVisible = ref(false)
+    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
@@ -22,93 +22,59 @@
     await storeSupplierListCommande.fetch()
     const itemsTable = ref(storeSupplierListCommande.itemsSupplierCommande)
     const formData = ref({
-        reference: null, dateDemandee: null, dateConfirmation: null, derniereReception: null, statutFournisseur: null, supplementFret: null, commentaire: null, infoPublic: null
+        reference: null, statutFournisseur: null, supplementFret: null, commentaire: null, infoPublic: null
     })
 
-    const fieldsForm = [
-        {
-            create: false,
-            filter: true,
-            label: 'Référence',
-            name: 'reference',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'date Demandée',
-            name: 'dateDemandee',
-            sort: true,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'date de Confirmation',
-            name: 'dateConfirmation',
-            sort: true,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Dernière Réception',
-            name: 'derniereReception',
-            sort: true,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Statut de Cmde Fournisseur',
-            name: 'statutFournisseur',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Supplément Fret',
-            name: 'supplementFret',
-            sort: true,
-            type: 'boolean',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Commentaire',
-            name: 'commentaire',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Info Public',
-            name: 'infoPublic',
-            sort: true,
-            type: 'text',
-            update: true
-        }
-    ]
+    const optionEmbState = await storeSupplierListCommande.getOptionEmbState
 
-    // const parent = {
-    //     //$id: `${warehouseId}Stock`
-    //     $id: 'supplierCommande'
-    // }
-    // const storeUnit = useField(fieldsForm[8], parent)
-    // //storeUnit.fetch()
-
-    // fieldsForm[8].measure.code = storeUnit.measure.code
-    // fieldsForm[8].measure.value = storeUnit.measure.value
+    // const fieldsForm = [
+    //     {
+    //         create: false,
+    //         filter: true,
+    //         label: 'Référence',
+    //         name: 'reference',
+    //         sort: true,
+    //         type: 'text',
+    //         update: true
+    //     },
+    //     {
+    //         create: false,
+    //         filter: true,
+    //         label: 'Statut de Cmde Fournisseur',
+    //         name: 'statutFournisseur',
+    //         options: {label: value => optionEmbState.find(option => option.value === value)?.text.code ?? null, options: optionEmbState},
+    //         sort: true,
+    //         type: 'select',
+    //         update: true
+    //     },
+    //     {
+    //         create: false,
+    //         filter: true,
+    //         label: 'Supplément Fret',
+    //         name: 'supplementFret',
+    //         sort: true,
+    //         type: 'boolean',
+    //         update: true
+    //     },
+    //     {
+    //         create: false,
+    //         filter: true,
+    //         label: 'Commentaire',
+    //         name: 'commentaire',
+    //         sort: true,
+    //         type: 'text',
+    //         update: true
+    //     },
+    //     {
+    //         create: false,
+    //         filter: true,
+    //         label: 'Info Public',
+    //         name: 'infoPublic',
+    //         sort: true,
+    //         type: 'text',
+    //         update: true
+    //     }
+    // ]
 
     const tabFields = [
         {
@@ -123,37 +89,11 @@
         {
             create: false,
             filter: true,
-            label: 'date Demandée',
-            name: 'dateDemandee',
-            sort: true,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'date de Confirmation',
-            name: 'dateConfirmation',
-            sort: true,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Dernière Réception',
-            name: 'derniereReception',
-            sort: true,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
             label: 'Statut de Cmde Fournisseur',
             name: 'statutFournisseur',
+            options: {label: value => optionEmbState.find(option => option.value === value)?.text.code ?? null, options: optionEmbState},
             sort: true,
-            type: 'text',
+            type: 'select',
             update: true
         },
         {
@@ -185,73 +125,58 @@
         }
     ]
 
-    function ajoute(){
-        AddForm.value = true
-        updated.value = false
-        const itemsNull = {
-            reference: null,
-            dateDemandee: null,
-            dateConfirmation: null,
-            derniereReception: null,
-            statutFournisseur: null,
-            supplementFret: null,
-            commentaire: null,
-            infoPublic: null
-        }
-        formData.value = itemsNull
-    }
+    // function ajoute(){
+    //     AddForm.value = true
+    //     updated.value = false
+    //     const itemsNull = {
+    //         reference: null,
+    //         statutFournisseur: null,
+    //         supplementFret: null,
+    //         commentaire: null,
+    //         infoPublic: null
+    //     }
+    //     formData.value = itemsNull
+    // }
 
-    async function ajoutSupplierCommande(){
-        //const form = document.getElementById('addSupplierCommande')
-        //const formData1 = new FormData(form)
+    // async function ajoutSupplierCommande(){
+    //     const itemsAddData = {
+    //         reference: formData.value.reference,
+    //         statutFournisseur: formData.value.statutFournisseur,
+    //         supplementFret: formData.value.supplementFret,
+    //         commentaire: formData.value.commentaire,
+    //         infoPublic: formData.value.infoPublic
+    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')}
+    //     }
+    //     violations = await storeSupplierListCommande.addSupplierCommande(itemsAddData)
 
-        const itemsAddData = {
-            reference: formData.value.reference,
-            dateDemandee: formData.value.dateDemandee,
-            dateConfirmation: formData.value.dateConfirmation,
-            derniereReception: formData.value.derniereReception,
-            statutFournisseur: formData.value.statutFournisseur,
-            supplementFret: formData.value.supplementFret,
-            commentaire: formData.value.commentaire,
-            infoPublic: formData.value.infoPublic
-            //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')}
-        }
-        violations = await storeSupplierListCommande.addSupplierCommande(itemsAddData)
-
-        if (violations.length > 0){
-            isPopupVisible.value = true
-        } else {
-            AddForm.value = false
-            updated.value = false
-            isPopupVisible.value = false
-            itemsTable.value = [...storeSupplierListCommande.itemsSupplierCommande]
-        }
-    }
-    function annule(){
-        AddForm.value = false
-        updated.value = false
-        const itemsNull = {
-            reference: null,
-            dateDemandee: null,
-            dateConfirmation: null,
-            derniereReception: null,
-            statutFournisseur: null,
-            supplementFret: null,
-            commentaire: null,
-            infoPublic: null
-        }
-        formData.value = itemsNull
-        isPopupVisible.value = false
-    }
+    //     if (violations.length > 0){
+    //         isPopupVisible.value = true
+    //     } else {
+    //         AddForm.value = false
+    //         updated.value = false
+    //         isPopupVisible.value = false
+    //         itemsTable.value = [...storeSupplierListCommande.itemsSupplierCommande]
+    //     }
+    // }
+    // function annule(){
+    //     AddForm.value = false
+    //     updated.value = false
+    //     const itemsNull = {
+    //         reference: null,
+    //         statutFournisseur: null,
+    //         supplementFret: null,
+    //         commentaire: null,
+    //         infoPublic: null
+    //     }
+    //     formData.value = itemsNull
+    //     isPopupVisible.value = false
+    // }
 
     function update(item) {
         updated.value = true
         AddForm.value = true
         const itemsData = {
             reference: item.reference,
-            dateDemandee: item.dateDemandee,
-            dateConfirmation: item.dateConfirmation,
-            derniereReception: item.derniereReception,
             statutFournisseur: item.statutFournisseur,
             supplementFret: item.supplementFret,
             commentaire: item.commentaire,
@@ -283,12 +208,8 @@
         // if (typeof inputValues.produit !== 'undefined'){
         //     prod = inputValues.produit
         // }
-
         const payload = {
             reference: inputValues.reference ?? '',
-            dateDemandee: inputValues.dateDemandee ?? '',
-            dateConfirmation: inputValues.dateConfirmation ?? '',
-            derniereReception: inputValues.derniereReception ?? '',
             statutFournisseur: inputValues.statutFournisseur ?? '',
             supplementFret: inputValues.supplementFret ?? '',
             commentaire: inputValues.commentaire ?? '',
@@ -313,12 +234,12 @@
 </script>
 
 <template>
-    <AppCol class="d-flex justify-content-between mb-2">
+    <!-- <AppCol class="d-flex justify-content-between mb-2">
         <AppBtn variant="success" label="Ajout" @click="ajoute">
             <Fa icon="plus"/>
             Ajouter
         </AppBtn>
-    </AppCol>
+    </AppCol> -->
     <AppRow>
         <AppCol>
             <AppCardableTable
@@ -340,7 +261,7 @@
                 @search="search"
                 @cancel-search="cancelSearch"/>
         </AppCol>
-        <AppCol v-if="AddForm && !updated" class="col-7">
+        <!-- <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
                 <AppRow>
                     <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
@@ -363,7 +284,7 @@
                     </AppBtn>
                 </AppCol>
             </AppCard>
-        </AppCol>
+        </AppCol> -->
     </AppRow>
 </template>
 
