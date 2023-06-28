@@ -15,15 +15,13 @@
         fecthOptions.options.map(op => {
             const text = op.text
             const value = op.value
-            const optionList = {text, value}
-            return optionList
+            return {text, value}
         }))
     const optionsUnit = computed(() =>
         fecthOptions.options.map(op => {
             const text = op.text
             const value = op.text
-            const optionList = {text, value}
-            return optionList
+            return {text, value}
         }))
     const Logistiquefields = [
         {label: 'Code douanier', name: 'customsCode', type: 'text'},
