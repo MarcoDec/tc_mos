@@ -59,7 +59,7 @@ class Preparation extends Entity {
     private Employee $askedBy;
 
      #[
-         ApiProperty(description: 'Composant demandé', readableLink: false, example: '/api/components/1'),
+         ApiProperty(description: 'Composant demandé'),
          ManyToOne(targetEntity: Component::class),
          Groups(['write:component-preparation', 'read:component-preparation'])
      ]
