@@ -65,16 +65,15 @@
     ]
     async function ajout(inputValues) {
         const data = {
-            // address: {
-            //     address: inputValues.address ?? '',
-            //     address2: inputValues.address2 ?? '',
-            //     city: inputValues.city ?? '',
-            //     country: inputValues.country ?? '',
-            //     email: inputValues.email ?? '',
-            //
-            //     // phoneNumber: inputValues.getPhone ?? "",
-            //     zipCode: inputValues.zipCode ?? ''
-            // },
+            address: {
+                //address: inputValues.address ?? '',
+                // address2: inputValues.address2 ?? '',
+                // city: inputValues.city ?? '',
+                // country: inputValues.country ?? '',
+                email: inputValues.email ?? ''
+                // phoneNumber: inputValues.getPhone ?? "",
+                //zipCode: inputValues.zipCode ?? ''
+            },
             // default: true,
             kind: inputValues.kind ?? '',
             mobile: inputValues.mobile ?? '',
@@ -105,13 +104,13 @@
     async function updateSuppliers(inputValues) {
         const dataUpdate = {
             address: {
-                address: inputValues.address ?? '',
-                address2: inputValues.address2 ?? '',
-                city: inputValues.city ?? '',
-                country: inputValues.country ?? '',
-                email: inputValues.email ?? '',
+                // address: inputValues.address ?? '',
+                // address2: inputValues.address2 ?? '',
+                // city: inputValues.city ?? '',
+                // country: inputValues.country ?? '',
+                email: inputValues.email ?? ''
                 // phoneNumber: inputValues.getPhone ?? "",
-                zipCode: inputValues.zipCode ?? ''
+                //zipCode: inputValues.zipCode ?? ''
             },
             // default: true,
             // kind: "comptabilité",
