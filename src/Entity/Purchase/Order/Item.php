@@ -288,7 +288,24 @@ abstract class Item extends BaseItem {
         }
         return $quantity;
     }
+    
+    /***
+     * ref
+    */
+    // #[
+    //     ApiProperty(description: 'Réference', readableLink: false, example: 'azerty'),
+    //     ORM\ManyToOne,
+    //     Serializer\Groups(['read:item', 'write:item'])
+    // ]
+    // protected string $ref; 
+    // final public function getRef(): string {
+    //     return $this->ref;
+    // }
 
+    // final public function setRef(string $reference): self {
+    //     $this->ref = $reference;
+    //     return $this;
+    // }
     /**
      * @return DoctrineCollection<int, Receipt<I>>
      */

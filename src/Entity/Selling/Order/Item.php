@@ -15,6 +15,8 @@ use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Controller\Project\Product\ItemProductControler;
+
 
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
@@ -31,7 +33,25 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les lignes',
                     'summary' => 'Récupère les lignes',
                 ]
-            ]
+            ],
+            'filtreSupplier' => [
+                'controller' => ItemProductControler::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer par fournisseur',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par fournisseur'
+                ],
+                'path' => '/purchase-order-items/productFilter/{api}',
+                'read' => false,
+                'write' => false
+            ],
         ],
         itemOperations: [
             'delete' => [

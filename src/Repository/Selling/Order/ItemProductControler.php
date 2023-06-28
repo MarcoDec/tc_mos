@@ -5,13 +5,13 @@ namespace App\Controller\Purchase\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use App\Repository\Purchase\Order\ComponentItemRepository;
+use ProductItemRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
-class ItemSupplierControler
+class ItemProductControler
 {
-    public function __construct(private readonly EntityManagerInterface $em, private ComponentItemRepository $repository, private LoggerInterface $logger) {
+    public function __construct(private readonly EntityManagerInterface $em, private ProductItemRepository $repository, private LoggerInterface $logger) {
     }
 
    /**
@@ -33,18 +33,15 @@ class ItemSupplierControler
             'retard' => $request->get('retard'),
             'ref' => $request->get('ref'),
             'prixCode' => $request->get('prixCode'),
-            'prixValue' => $request->get('prixValue'),
-            'notePo' => $request->get('infoPublic'),
-            'embState' => $request->get('statutFournisseur'),
-            'supplementFret' => $request->get('supplementFret')
-        ]; 
+            'prixValue' => $request->get('prixValue')
+        ];
         dump($tab);
         
         $itemId = $request->get('api');
         $currentPage = $request->get('page');
 
         $sourceItem = $this->repository->findBySupplierId($itemId, $tab);
-        dump($sourceItem);
+        // dump($sourceItem);
         $entityStr = 'componentItem';
         return $sourceItem;
     }
