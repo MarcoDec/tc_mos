@@ -8,16 +8,15 @@
     const route = useRoute()
     const idComponent = route.params.id_component
     const useFetchComponentStore = useComponentListStore()
-    //await useFetchComponentStore.fetchOne(idComponent)
     const fecthOptions = useOptions('units')
+    await fecthOptions.fetchOp()
     const optionsUnit = computed(() =>
         fecthOptions.options.map(op => {
             const text = op.text
             const value = op.text
-            const optionList = {text, value}
-            return optionList
+            return {text, value}
         }))
-    const Spécificationfields = [
+    const specificationFields = [
         {label: 'Prix', measure: {code: 'Devise', value: 'valeur'}, name: 'price', type: 'measure'},
         {
             label: 'Poids Cuivre',
@@ -42,24 +41,16 @@
             },
             orderInfo: formData.get('orderInfo')
         }
-        // const dataWeight = {
-        //   copperWeight: {
-        //     code: formData.get("copperWeight-code"),
-        //     value: formData.get("copperWeight-value"),
-        //   },
-        // };
-
         await useFetchComponentStore.updatePrice(data, idComponent)
         await useFetchComponentStore.fetchOne(idComponent)
-        // eslint-disable-next-line require-atomic-updates
-        useFetchComponentStore.component.price.code = 'EUR'
+        //useFetchComponentStore.component.price.code = 'EUR'
     }
 </script>
 
 <template>
     <AppCardShow
         id="addSpécification"
-        :fields="Spécificationfields"
+        :fields="specificationFields"
         :component-attribute="useFetchComponentStore.component"
         @update="updateSpecification(useFetchComponentStore.component)"/>
 </template>
