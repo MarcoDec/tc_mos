@@ -15,7 +15,7 @@
     const fetchComponentAttachment = useComponentAttachmentStore()
     await fetchComponentAttachment.fetchByComponent(idComponent)
     //await useFetchComponentStore.fetchOne(idComponent)
-    const Qualitéfields = [
+    const qualityFields = [
         {label: 'rohs ', name: 'rohs', type: 'boolean'},
         {label: 'rohsAttachment', name: 'rohsAttachment', type: 'file'},
         {label: 'reach', name: 'reach', type: 'boolean'},
@@ -37,13 +37,12 @@
         })))
 
     const treeDataByRohs = computed(() => {
-        const data = {
+        return {
             children: componentAttachmentByCategory.value,
             icon: 'folder',
             id: 1,
             label: `Attachments Rohs (${componentAttachmentByCategory.value.length})`
         }
-        return data
     })
 
     const attachmentByCategoryReach = computed(() =>
@@ -59,23 +58,17 @@
         })))
 
     const treeDataByReach = computed(() => {
-        const data = {
+        return {
             children: componentAttachmentByCategoryReach.value,
             icon: 'folder',
             id: 1,
             label: `Attachments Reach (${componentAttachmentByCategoryReach.value.length})`
         }
-        return data
     })
     async function input(value) {
         localData.value = value
         emit('update:modelValue', localData.value)
         console.log('input', localData.value)
-        // const data = {
-        //     quality: val.value
-        // }
-        // await useFetchComponentStore.updateQuality(data, idComponent)
-        // await useFetchComponentStore.fetchOne(idComponent)
     }
     async function updateQuality() {
         const form = document.getElementById('addQualite')
@@ -85,7 +78,8 @@
             reach: localData.value.reach,
             rohs: localData.value.rohs
         }
-        if (localData.value.rohs) {
+        //console.log('rohsAttachment', formData.get('rohsAttachment'))
+        if (localData.value.rohs && formData.get('rohsAttachment').size > 0) {
             const dataFichierRohs = {
                 category: 'rohs',
                 component: `/api/components/${idComponent}`,
@@ -104,7 +98,8 @@
                 isError2.value = true
             }
         }
-        if (reachValue.value) {
+        //console.log('reachAttachment', formData.get('reachAttachment'))
+        if (reachValue.value && formData.get('reachAttachment').size > 0) {
             const dataFichierReach = {
                 category: 'reach',
                 component: `/api/components/${idComponent}`,
@@ -136,7 +131,7 @@
     <div>
         <AppCardShow
             id="addQualite"
-            :fields="Qualitéfields"
+            :fields="qualityFields"
             :component-attribute="useFetchComponentStore.component"
             @update="updateQuality(useFetchComponentStore.component)"
             @update:model-value="input"/>
@@ -145,7 +140,13 @@
                 <li>{{ violation.message }}</li>
             </div>
         </div>
-        <MyTree v-show="rohsValue" :node="treeDataByRohs"/>
-        <MyTree v-show="reachValue" :node="treeDataByReach"/>
+        <div class="row">
+            <div class="col">
+                <MyTree v-show="rohsValue" :node="treeDataByRohs"/>
+            </div>
+            <div class="col">
+                <MyTree v-show="reachValue" :node="treeDataByReach"/>
+            </div>
+        </div>
     </div>
 </template>
