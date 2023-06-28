@@ -8,7 +8,6 @@
     const fetchSuppliersStore = useSuppliersStore()
     const fetchSupplierContactsStore = useSupplierContactsStore()
     const supplierId = Number(fetchSuppliersStore.supplier.id)
-    const societyId = Number(fetchSuppliersStore.supplier.society.match(/\d+/))
     await fetchSupplierContactsStore.fetchBySociety(supplierId)
     const isShow = ref(false)
     const itemsTable = computed(() =>
@@ -66,16 +65,16 @@
     ]
     async function ajout(inputValues) {
         const data = {
-            address: {
-                address: inputValues.address ?? '',
-                address2: inputValues.address2 ?? '',
-                city: inputValues.city ?? '',
-                country: inputValues.country ?? '',
-                email: inputValues.email ?? '',
-
-                // phoneNumber: inputValues.getPhone ?? "",
-                zipCode: inputValues.zipCode ?? ''
-            },
+            // address: {
+            //     address: inputValues.address ?? '',
+            //     address2: inputValues.address2 ?? '',
+            //     city: inputValues.city ?? '',
+            //     country: inputValues.country ?? '',
+            //     email: inputValues.email ?? '',
+            //
+            //     // phoneNumber: inputValues.getPhone ?? "",
+            //     zipCode: inputValues.zipCode ?? ''
+            // },
             // default: true,
             kind: inputValues.kind ?? '',
             mobile: inputValues.mobile ?? '',
@@ -84,7 +83,7 @@
             surname: inputValues.surname ?? ''
         }
         try {
-            await fetchSupplierContactsStore.ajout(data, societyId)
+            await fetchSupplierContactsStore.ajout(data, supplierId)
 
             isError2.value = false
         } catch (error) {
