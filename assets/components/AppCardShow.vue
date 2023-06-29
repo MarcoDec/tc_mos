@@ -5,7 +5,6 @@
 
     const props = defineProps({
         componentAttribute: {required: true, type: Object},
-        // disabled: {type: Boolean},
         fields: {default: () => [], type: Array},
         id: {required: true, type: String},
         title: {default: '', type: String}

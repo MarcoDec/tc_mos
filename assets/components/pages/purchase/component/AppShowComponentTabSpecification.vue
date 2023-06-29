@@ -17,7 +17,7 @@
             return {text, value}
         }))
     const specificationFields = [
-        {label: 'Prix', measure: {code: 'Devise', value: 'valeur'}, name: 'price', type: 'measure'},
+        {disabled: true, label: 'Prix', measure: {code: 'Devise', value: 'valeur'}, name: 'price', type: 'measure'},
         {
             label: 'Poids Cuivre',
             name: 'copperWeight',

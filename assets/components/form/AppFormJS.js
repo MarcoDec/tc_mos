@@ -18,8 +18,8 @@ function AppFormJS(props, context) {
         if (typeof context.slots['default'] === 'function')
             groups.push(generateSlot())
     } else {
-        for (const field of props.fields)
-            groups.push(h(AppFormField, {
+        for (const field of props.fields) {
+            const theProps = {
                 disabled: props.disabled,
                 field,
                 form: props.id,
@@ -31,7 +31,10 @@ function AppFormJS(props, context) {
                     [field.name]: value
                 }),
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
-            }))
+            }
+            if (field.disabled) theProps.disabled = true
+            groups.push(h(AppFormField, theProps))
+        }
         if (props.submitLabel !== null){
             groups.push(h(
                 'div',
