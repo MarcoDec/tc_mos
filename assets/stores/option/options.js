@@ -65,6 +65,6 @@ export default function useOptions(base, valueProp = '@id') {
             },
             url: state => `/api/${state.base}/options`
         },
-        state: () => ({base, fetchable: false, id, options: [], valueProp, isLoaded: false})
+        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp})
     })()
 }

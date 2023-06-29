@@ -1,8 +1,8 @@
 <script setup>
     import AppComponentFormShow from '../../../../router/pages/component/AppComponentFormShow.vue'
-    import useOptions from '../../../../stores/option/options'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import {useComponentListStore} from '../../../../stores/component/components'
+    import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()
