@@ -26,7 +26,8 @@ export default [
                         {text: 'Entier', value: 'int'},
                         {text: 'Pourcentage', value: 'percent'},
                         {text: 'Texte', value: 'text'},
-                        {text: 'Unité', value: 'unit'}
+                        {text: 'Mesure', value: 'measure'},
+                        {text: 'MesureSelect', value: 'measureSelect'}
                     ],
                     type: 'select',
                     update: false
@@ -91,7 +92,7 @@ export default [
                 {label: 'Valeur', name: 'value', type: 'text'}
             ],
             icon: 'gear',
-            readFilter: '?page=1&pagination=false&type=purchase',
+            readFilter: '?pagination=false&type=purchase',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }
