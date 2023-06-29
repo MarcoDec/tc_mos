@@ -18,49 +18,49 @@
             title="Généralités"
             icon="pencil"
             tabs="gui-start">
-            <AppShowComponentTabGeneral/>
+            <AppSuspense><AppShowComponentTabGeneral/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-attribut"
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">
-            <AppShowComponentTabAttributes/>
+            <AppSuspense><AppShowComponentTabAttributes/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <AppShowComponentTabFichiers/>
+            <AppSuspense><AppShowComponentTabFichiers/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-quality"
             title="Qualité"
             icon="certificate"
             tabs="gui-start">
-            <AppShowComponentTabQuality/>
+            <AppSuspense><AppShowComponentTabQuality/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-achat"
             title="Achat"
             icon="bag-shopping"
             tabs="gui-start">
-            <AppShowComponentTabPurchase/>
+            <AppSuspense><AppShowComponentTabPurchase/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-logistics"
             title="Logistique"
             icon="pallet"
             tabs="gui-start">
-            <AppShowComponentTabLogistic/>
+            <AppSuspense><AppShowComponentTabLogistic/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-spécifications"
             title="Spécification"
             icon="file-contract"
             tabs="gui-start">
-            <AppShowComponentTabSpecification/>
+            <AppSuspense><AppShowComponentTabSpecification/></AppSuspense>
         </AppTab>
     </AppTabs>
 </template>

@@ -1,12 +1,15 @@
 <script setup>
     import AppComponentFormShow from '../../../../router/pages/component/AppComponentFormShow.vue'
+    import useOptions from '../../../../stores/option/options'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import {useComponentListStore} from '../../../../stores/component/components'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()
     const idComponent = Number(route.params.id_component)
+    const fetchUnits = useOptions('units')
     const useFetchComponentStore = useComponentListStore()
+    fetchUnits.fetchOp()
     useFetchComponentStore.fetchOne(idComponent)
 </script>
 
@@ -18,7 +21,7 @@
             </div>
         </template>
         <template #gui-left>
-            <AppSuspense><AppComponentFormShow/></AppSuspense>
+            <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
         </template>
         <template #gui-bottom>
             <!--            <AppTabs id="gui-bottom">-->

@@ -31,6 +31,7 @@ export default function useOptions(base, valueProp = '@id') {
                 this.resetItems()
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
+                this.isLoaded = true
                 this.options.sort(sort)
             },
             resetItems() {
@@ -64,6 +65,6 @@ export default function useOptions(base, valueProp = '@id') {
             },
             url: state => `/api/${state.base}/options`
         },
-        state: () => ({base, fetchable: false, id, options: [], valueProp})
+        state: () => ({base, fetchable: false, id, options: [], valueProp, isLoaded: false})
     })()
 }
