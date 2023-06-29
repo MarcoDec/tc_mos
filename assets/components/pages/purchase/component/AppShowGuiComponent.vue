@@ -1,16 +1,20 @@
 <script setup>
     import AppComponentFormShow from '../../../../router/pages/component/AppComponentFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
-    // import {useRoute} from 'vue-router'
-    //
-    // const route = useRoute()
+    import {useComponentListStore} from '../../../../stores/component/components'
+    import {useRoute} from 'vue-router'
+
+    const route = useRoute()
+    const idComponent = Number(route.params.id_component)
+    const useFetchComponentStore = useComponentListStore()
+    useFetchComponentStore.fetchOne(idComponent)
 </script>
 
 <template>
     <AppShowGuiGen>
         <template #gui-header>
             <div class="bg-white border-1 border-dark">
-                Component
+                <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
             </div>
         </template>
         <template #gui-left>

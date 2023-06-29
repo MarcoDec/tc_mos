@@ -9,7 +9,7 @@
     const idComponent = route.params.id_component
     const useFetchComponentStore = useComponentListStore()
     const fecthOptions = useOptions('units')
-    await fecthOptions.fetchOp()
+    //await fecthOptions.fetchOp()
     const optionsUnit = computed(() =>
         fecthOptions.options.map(op => {
             const text = op.text

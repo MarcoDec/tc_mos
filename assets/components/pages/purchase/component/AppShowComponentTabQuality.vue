@@ -36,14 +36,12 @@
             url: attachment.url
         })))
 
-    const treeDataByRohs = computed(() => {
-        return {
-            children: componentAttachmentByCategory.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments Rohs (${componentAttachmentByCategory.value.length})`
-        }
-    })
+    const treeDataByRohs = computed(() => ({
+        children: componentAttachmentByCategory.value,
+        icon: 'folder',
+        id: 1,
+        label: `Attachments Rohs (${componentAttachmentByCategory.value.length})`
+    }))
 
     const attachmentByCategoryReach = computed(() =>
         fetchComponentAttachment.componentAttachments.filter(
@@ -57,14 +55,12 @@
             url: attachment.url
         })))
 
-    const treeDataByReach = computed(() => {
-        return {
-            children: componentAttachmentByCategoryReach.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments Reach (${componentAttachmentByCategoryReach.value.length})`
-        }
-    })
+    const treeDataByReach = computed(() => ({
+        children: componentAttachmentByCategoryReach.value,
+        icon: 'folder',
+        id: 1,
+        label: `Attachments Reach (${componentAttachmentByCategoryReach.value.length})`
+    }))
     async function input(value) {
         localData.value = value
         emit('update:modelValue', localData.value)

@@ -6,13 +6,8 @@
     import AppShowComponentTabPurchase from '../../../components/pages/purchase/component/AppShowComponentTabPurchase.vue'
     import AppShowComponentTabQuality from '../../../components/pages/purchase/component/AppShowComponentTabQuality.vue'
     import AppShowComponentTabSpecification from '../../../components/pages/purchase/component/AppShowComponentTabSpecification.vue'
-    import {useComponentListStore} from '../../../stores/component/components'
-    import {useRoute} from 'vue-router'
-    //On charge les informations générales composant pour tout le monde
-    const route = useRoute()
-    const idComponent = route.params.id_component
-    const useFetchComponentStore = useComponentListStore()
-    await useFetchComponentStore.fetchOne(idComponent)
+    //import {useComponentListStore} from '../../../stores/component/components'
+    //import {useRoute} from 'vue-router'
 </script>
 
 <template>

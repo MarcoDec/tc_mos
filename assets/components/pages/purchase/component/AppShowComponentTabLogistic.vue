@@ -10,7 +10,7 @@
     const useFetchComponentStore = useComponentListStore()
     const fecthOptions = useOptions('units')
     //await useFetchComponentStore.fetchOne(idComponent)
-    await fecthOptions.fetchOp()
+    //await fecthOptions.fetchOp()
     const optionsAtt = computed(() =>
         fecthOptions.options.map(op => {
             const text = op.text

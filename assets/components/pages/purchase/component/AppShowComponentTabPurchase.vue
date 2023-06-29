@@ -4,11 +4,11 @@
     import {useRoute} from 'vue-router'
 
     const route = useRoute()
-    const idComponent = route.params.id_component
+    const idComponent = Number(route.params.id_component)
     const useFetchComponentStore = useComponentListStore()
     //await useFetchComponentStore.fetchOne(idComponent)
-    useFetchComponentStore.component.price.code = 'EUR'
-    const Achatfields = [
+    //useFetchComponentStore.component.price.code = 'EUR'
+    const purchaseFields = [
         {label: 'Fabricant', name: 'manufacturer', type: 'text'},
         {label: 'Référence du Fabricant', name: 'manufacturerCode', type: 'text'}
     ]
@@ -27,7 +27,7 @@
 <template>
     <AppCardShow
         id="addAchat"
-        :fields="Achatfields"
+        :fields="purchaseFields"
         :component-attribute="useFetchComponentStore.component"
         @update="updateAchats(useFetchComponentStore.component)"/>
 </template>
