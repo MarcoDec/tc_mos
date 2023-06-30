@@ -27,55 +27,6 @@
 
     const optionEmbState = await storeSupplierListCommande.getOptionEmbState
 
-    // const fieldsForm = [
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Référence',
-    //         name: 'reference',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Statut de Cmde Fournisseur',
-    //         name: 'statutFournisseur',
-    //         options: {label: value => optionEmbState.find(option => option.value === value)?.text.code ?? null, options: optionEmbState},
-    //         sort: true,
-    //         type: 'select',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Supplément Fret',
-    //         name: 'supplementFret',
-    //         sort: true,
-    //         type: 'boolean',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Commentaire',
-    //         name: 'commentaire',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Info Public',
-    //         name: 'infoPublic',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     }
-    // ]
-
     const tabFields = [
         {
             create: false,
@@ -190,6 +141,7 @@
         itemsTable.value = [...storeSupplierListCommande.itemsSupplierCommande]
     }
     async function getPage(nPage){
+        console.log(nPage)
         await storeSupplierListCommande.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
         itemsTable.value = [...storeSupplierListCommande.itemsSupplierCommande]
     }

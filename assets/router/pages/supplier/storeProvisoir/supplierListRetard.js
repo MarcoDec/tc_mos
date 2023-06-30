@@ -232,7 +232,7 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
                     let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
 
                     if (filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${filter.value.creeLe}&`
+                        url += `confirmedDate=${filterBy.value.creeLe}&`
                     }
                     if (filterBy.value.composant !== '') {
                         url += `item=${filterBy.value.composant}&`
@@ -319,26 +319,26 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
             }
         },
         async updatePagination(response) {
-            // console.log(response)
             const responseData = await response['hydra:member']
-            let paginationView = {}
-            if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
-                paginationView = response['hydra:view']
-            } else {
-                paginationView = responseData
-            }
-            // console.log(paginationView)
-            if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
+            if (responseData.length === 3 && responseData[1] > 1) {
                 this.pagination = true
-                this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
-                this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-                this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-                this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
-                this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-                return responseData
+                this.firstPage = 1
+                this.currentPage = responseData[0]
+                this.lastPage = responseData[1]
+                if (this.currentPage >= this.lastPage){
+                    this.nextPage = this.lastPage
+                } else {
+                    this.nextPage = parseInt(responseData[0]) + 1
+                }
+                if (this.currentPage <= this.firstPage) {
+                    this.previousPage = this.firstPage
+                } else {
+                    this.previousPage = this.currentPage - 1
+                }
+                return responseData[2]
             }
             this.pagination = false
-            return responseData
+            return responseData[2]
         },
         async updateWarehouseStock(payload){
             await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
@@ -425,7 +425,8 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
                 this.currentPage = 1
             }
             const response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?page=${this.currentPage}`, 'GET')
-            for (const supplier of response['hydra:member']) {
+
+            for (const supplier of response['hydra:member'][2]) {
                 if (!codes.has(supplier.item.code)) {
                     opt.push({value: supplier.item['@id'], '@type': supplier.item['@type'], text: supplier.item.code, id: supplier.item.id})
                     codes.add(supplier.item.code)
@@ -442,7 +443,6 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
                 }
                 return 0
             })
-
             return opt.length === 0 ? [{text: 'Aucun élément'}] : opt
         }
     },

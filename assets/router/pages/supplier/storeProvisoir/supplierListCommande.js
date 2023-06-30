@@ -78,39 +78,21 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                 if (payload.trierAlpha.value.component === 'component') {
                     let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
 
-                    if (payload.filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                    if (payload.filterBy.value.reference !== '') {
+                        url += `refOrder=${payload.filterBy.value.reference}&`
                     }
-                    if (payload.filterBy.value.composant !== '') {
-                        url += `item=${payload.filterBy.value.composant}&`
-                    }
-
-                    if (payload.filterBy.value.dateSouhaitee !== '') {
-                        url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
+                    if (payload.filterBy.value.statutFournisseur !== '') {
+                        url += `statutFournisseur=${payload.filterBy.value.statutFournisseur}&`
                     }
 
-                    if (payload.filterBy.value.quantiteSouhaitee !== ''){
-                        if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
-                            url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
-                        }
-                        if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
-                            url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
-                        }
+                    if (payload.filterBy.value.supplementFret !== '') {
+                        url += `supplementFret=${payload.filterBy.value.supplementFret}&`
                     }
-
-                    if (payload.filterBy.value.quantiteEffectuee !== ''){
-                        if (payload.filterBy.value.quantiteEffectuee.value !== '') {
-                            url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
-                        }
-                        if (payload.filterBy.value.quantiteEffectuee.code !== '') {
-                            url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
-                        }
+                    if (payload.filterBy.value.commentaire !== ''){
+                        url += `note=${payload.filterBy.value.commentaire}&`
                     }
-                    if (payload.filterBy.value.note !== ''){
-                        url += `note=${payload.filterBy.value.note}&`
-                    }
-                    if (payload.filterBy.value.commande !== ''){
-                        url += `commande=${payload.filterBy.value.commande}&`
+                    if (payload.filterBy.value.infoPublic !== ''){
+                        url += `infoPublic=${payload.filterBy.value.infoPublic}&`
                     }
                     url += `page=${payload.nPage}`
                     response = await api(url, 'GET')
@@ -118,39 +100,24 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                 } else {
                     let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
 
-                    if (payload.filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                    if (payload.filterBy.value.reference !== '') {
+                        url += `refOrder=${payload.filterBy.value.reference}&`
                     }
                     if (payload.filterBy.value.composant !== '') {
                         url += `item=${payload.filterBy.value.composant}&`
                     }
 
-                    if (payload.filterBy.value.dateSouhaitee !== '') {
-                        url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
+                    if (payload.filterBy.value.statutFournisseur !== '') {
+                        url += `statutFournisseur=${payload.filterBy.value.statutFournisseur}&`
                     }
-
-                    if (payload.filterBy.value.quantiteSouhaitee !== ''){
-                        if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
-                            url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
-                        }
-                        if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
-                            url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
-                        }
+                    if (payload.filterBy.value.supplementFret !== '') {
+                        url += `supplementFret=${payload.filterBy.value.supplementFret}&`
                     }
-
-                    if (payload.filterBy.value.quantiteEffectuee !== ''){
-                        if (payload.filterBy.value.quantiteEffectuee.value !== '') {
-                            url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
-                        }
-                        if (payload.filterBy.value.quantiteEffectuee.code !== '') {
-                            url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
-                        }
+                    if (payload.filterBy.value.infoPublic !== '') {
+                        url += `infoPublic=${payload.filterBy.value.infoPublic}&`
                     }
-                    if (payload.filterBy.value.note !== ''){
-                        url += `note=${payload.filterBy.value.note}&`
-                    }
-                    if (payload.filterBy.value.commande !== ''){
-                        url += `commande=${payload.filterBy.value.commande}&`
+                    if (payload.filterBy.value.commentaire !== ''){
+                        url += `note=${payload.filterBy.value.commentaire}&`
                     }
                     response = await api(url, 'GET')
                     this.supplierCommande = await this.updatePagination(response)
@@ -158,39 +125,23 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
             } else if (payload.filter.value === true){
                 let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
 
-                if (payload.filterBy.value.creeLe !== '') {
-                    url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                if (payload.filterBy.value.reference !== '') {
+                    url += `refOrder=${payload.filterBy.value.reference}&`
                 }
                 if (payload.filterBy.value.composant !== '') {
                     url += `item=${payload.filterBy.value.composant}&`
                 }
-
-                if (payload.filterBy.value.dateSouhaitee !== '') {
-                    url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
+                if (payload.filterBy.value.statutFournisseur !== '') {
+                    url += `statutFournisseur=${payload.filterBy.value.statutFournisseur}&`
                 }
-
-                if (payload.filterBy.value.quantiteSouhaitee !== ''){
-                    if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
-                        url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
-                    }
-                    if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
-                        url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
-                    }
+                if (payload.filterBy.value.supplementFret !== '') {
+                    url += `supplementFret=${payload.filterBy.value.supplementFret}&`
                 }
-
-                if (payload.filterBy.value.quantiteEffectuee !== ''){
-                    if (payload.filterBy.value.quantiteEffectuee.value !== '') {
-                        url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
-                    }
-                    if (payload.filterBy.value.quantiteEffectuee.code !== '') {
-                        url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
-                    }
+                if (payload.filterBy.value.infoPublic !== '') {
+                    url += `infoPublic=${payload.filterBy.value.infoPublic}&`
                 }
-                if (payload.filterBy.value.note !== ''){
-                    url += `note=${payload.filterBy.value.note}&`
-                }
-                if (payload.filterBy.value.commande !== ''){
-                    url += `commande=${payload.filterBy.value.commande}&`
+                if (payload.filterBy.value.commentaire !== ''){
+                    url += `note=${payload.filterBy.value.commentaire}&`
                 }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
@@ -214,39 +165,21 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                 if (payload.composant === 'component') {
                     let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
 
-                    if (filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${filter.value.creeLe}&`
+                    if (filterBy.value.reference !== '') {
+                        url += `refOrder=${filterBy.value.reference}&`
                     }
-                    if (filterBy.value.composant !== '') {
-                        url += `item=${filterBy.value.composant}&`
-                    }
-
-                    if (filterBy.value.dateSouhaitee !== '') {
-                        url += `requestedDate=${filterBy.value.dateSouhaitee}&`
+                    if (filterBy.value.statutFournisseur !== '') {
+                        url += `statutFournisseur=${filterBy.value.statutFournisseur}&`
                     }
 
-                    if (filterBy.value.quantiteSouhaitee !== ''){
-                        if (filterBy.value.quantiteSouhaitee.value !== '') {
-                            url += `requestedQuantityValue=${filterBy.value.quantiteSouhaitee.value}&`
-                        }
-                        if (filterBy.value.quantiteSouhaitee.code !== '') {
-                            url += `requestedQuantityCode=${filterBy.value.quantiteSouhaitee.code}&`
-                        }
+                    if (filterBy.value.supplementFret !== '') {
+                        url += `supplementFret=${filterBy.value.supplementFret}&`
                     }
-
-                    if (filterBy.value.quantiteEffectuee !== ''){
-                        if (filterBy.value.quantiteEffectuee.value !== '') {
-                            url += `confirmedQuantityValue=${filterBy.value.quantiteEffectuee.value}&`
-                        }
-                        if (filterBy.value.quantiteEffectuee.code !== '') {
-                            url += `confirmedQuantityCode=${filterBy.value.quantiteEffectuee.code}&`
-                        }
+                    if (filterBy.value.commentaire !== ''){
+                        url += `note=${filterBy.value.commentaire}&`
                     }
-                    if (filterBy.value.note !== ''){
-                        url += `note=${filterBy.value.note}&`
-                    }
-                    if (filterBy.value.commande !== ''){
-                        url += `commande=${filterBy.value.commande}&`
+                    if (filterBy.value.infoPublic !== ''){
+                        url += `infoPublic=${filterBy.value.infoPublic}&`
                     }
 
                     url += `page=${this.currentPage}`
@@ -254,39 +187,21 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                 } else {
                     let url = `api/purchase-order-items/supplierFilter/${this.supplierID}?`
 
-                    if (filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${filter.value.creeLe}&`
+                    if (filterBy.value.reference !== '') {
+                        url += `refOrder=${filter.value.reference}&`
                     }
-                    if (filterBy.value.composant !== '') {
-                        url += `item=${filterBy.value.composant}&`
-                    }
-
-                    if (filterBy.value.dateSouhaitee !== '') {
-                        url += `requestedDate=${filterBy.value.dateSouhaitee}&`
+                    if (filterBy.value.statutFournisseur !== '') {
+                        url += `statutFournisseur=${filterBy.value.statutFournisseur}&`
                     }
 
-                    if (filterBy.value.quantiteSouhaitee !== ''){
-                        if (filterBy.value.quantiteSouhaitee.value !== '') {
-                            url += `requestedQuantityValue=${filterBy.value.quantiteSouhaitee.value}&`
-                        }
-                        if (filterBy.value.quantiteSouhaitee.code !== '') {
-                            url += `requestedQuantityCode=${filterBy.value.quantiteSouhaitee.code}&`
-                        }
+                    if (filterBy.value.supplementFret !== '') {
+                        url += `supplementFret=${filterBy.value.supplementFret}&`
                     }
-
-                    if (filterBy.value.quantiteEffectuee !== ''){
-                        if (filterBy.value.quantiteEffectuee.value !== '') {
-                            url += `confirmedQuantityValue=${filterBy.value.quantiteEffectuee.value}&`
-                        }
-                        if (filterBy.value.quantiteEffectuee.code !== '') {
-                            url += `confirmedQuantityCode=${filterBy.value.quantiteEffectuee.code}&`
-                        }
+                    if (filterBy.value.infoPublic !== ''){
+                        url += `infoPublic=${filterBy.value.infoPublic}&`
                     }
-                    if (filterBy.value.note !== ''){
-                        url += `note=${filterBy.value.note}&`
-                    }
-                    if (filterBy.value.commande !== ''){
-                        url += `commande=${filterBy.value.commande}&`
+                    if (filterBy.value.commentaire !== ''){
+                        url += `note=${filterBy.value.commentaire}&`
                     }
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
@@ -302,26 +217,26 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
             }
         },
         async updatePagination(response) {
-            // console.log(response)
             const responseData = await response['hydra:member']
-            let paginationView = {}
-            if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
-                paginationView = response['hydra:view']
-            } else {
-                paginationView = responseData
-            }
-            //console.log(paginationView)
-            if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
+            if (responseData.length === 3 && responseData[1] > 1) {
                 this.pagination = true
-                this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
-                this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-                this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-                this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
-                this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-                return responseData
+                this.firstPage = 1
+                this.currentPage = responseData[0]
+                this.lastPage = responseData[1]
+                if (this.currentPage >= this.lastPage){
+                    this.nextPage = this.lastPage
+                } else {
+                    this.nextPage = parseInt(responseData[0]) + 1
+                }
+                if (this.currentPage <= this.firstPage) {
+                    this.previousPage = this.firstPage
+                } else {
+                    this.previousPage = this.currentPage - 1
+                }
+                return responseData[2]
             }
             this.pagination = false
-            return responseData
+            return responseData[2]
         },
         async updateWarehouseStock(payload){
             await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
@@ -353,7 +268,8 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                 this.currentPage = 1
             }
             const response = await api(`/api/purchase-order-items/supplierFilter/${this.supplierID}?page=${this.currentPage}`, 'GET')
-            for (const supplier of response['hydra:member']) {
+
+            for (const supplier of response['hydra:member'][2]) {
                 if (!codes.has(supplier.embState.state)) {
                     opt.push({value: supplier.embState.state, text: supplier.embState.state, id: supplier.embState['@id']})
                     codes.add(supplier.embState.state)
