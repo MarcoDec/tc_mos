@@ -16,7 +16,6 @@ use App\Entity\Embeddable\Copper;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\EventState;
 
-
 /**
  * @extends ItemRepository<ComponentItem>
  *
@@ -24,7 +23,12 @@ use App\Entity\Embeddable\EventState;
  * @method ComponentItem|null findOneBy(array $criteria, ?array $orderBy = null)
  * @method ComponentItem[]    findAll()
  */
+
+
 final class ComponentItemRepository extends ItemRepository {
+
+    const ITEMS_PER_PAGE = 15;
+
     public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, ComponentItem::class);
     }
@@ -93,23 +97,30 @@ final class ComponentItemRepository extends ItemRepository {
     {
 
         $currentPage = $tab['currentPage'];
-        $first = 0;
+        // $first = 0;
         $max = 15;
-    
-        if ($currentPage !== null && $currentPage !== '1'){
-            $first = 15 * $currentPage -1;
-            $max = $first + 15;
+        dump('page current repestory :',$currentPage);
+        if ($currentPage !== null && $currentPage !== '1' && isset($currentPage)){
+            // $currentPage = 15 * $currentPage -1;
+            $currentPage = $currentPage;
+        } else{
+            // $currentPage = 0;
+            $currentPage = 1;
         }
 
-        $sql =  'SELECT poi.id as id, poi.component_id as component, poi.confirmed_date as confirmedDate, '. 
+        $sqlCount = 'SELECT COUNT(poi.id) as count ';
+        $rsmCount = new ResultSetMapping();
+        $rsmCount->addScalarResult('count', 'count');
+
+        $sql =  'SELECT DISTINCT poi.id as id, poi.component_id as component, poi.confirmed_date as confirmedDate, '. 
         'poi.confirmed_quantity_code as confirmedQuantityCode, poi.confirmed_quantity_denominator as confirmedQuantityDenominator, poi.confirmed_quantity_value as confirmedQuantityValue, ' . 
         'poi.copper_price_code as copperPriceCode, poi.copper_price_denominator as copperPriceDenominator, poi.copper_price_value as copperPriceValue, '.
         'poi.emb_blocker_state as embBlockerState, poi.emb_state_state as embStateState, poi.notes as notes, '.
         'poi.order_id as order_id, poi.price_code as priceCode, poi.price_denominator as priceDenominator, poi.price_value as priceValue, '.
         'poi.product_id as product, poi.ref as ref, poi.requested_date as requestedDate, poi.requested_quantity_code as requestedQuantityCode, poi.requested_quantity_denominator as requestedQuantityDenominator, poi.requested_quantity_value as requestedQuantityValue, '.
-        'poi.target_company_id as targetCompany, poi.type as type, po.id as idOrder, po.company_id as company, po.contact_id as contact, po.delivery_company_id as deliveryCompany, po.emb_blocker_state as embBlockerStatepo, po.emb_state_state as embStateStatepo, po.notes as notesPo, po.order_id as orderIdPo, '.
+        'poi.target_company_id as targetCompany, poi.type as type , po.id as idOrder, po.company_id as company, po.contact_id as contact, po.delivery_company_id as deliveryCompany, po.emb_blocker_state as embBlockerStatepo, po.emb_state_state as embStateStatepo, po.notes as notesPo, po.order_id as orderIdPo, '.
         'po.ref as refPo, po.supplement_fret as supplementFret, po.supplier_id as supplier, '.
-        'component.id as idComp, cf.code as codeComp ';
+        'component.id as idComp , cf.code as codeComp ';
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('id', 'id');
@@ -150,42 +161,44 @@ final class ComponentItemRepository extends ItemRepository {
         $rsm->addScalarResult('idComp', 'idComp');
         $rsm->addScalarResult('codeComp', 'codeComp');
 
-        $sql .= 'FROM purchase_order_item as poi '.
-        ' INNER JOIN purchase_order as po ON poi.order_id = po.supplier_id '.
-        ' INNER JOIN component ON poi.component_id = component.id AND component.deleted = 0 '.
-        ' INNER JOIN component_family AS cf ON component.family_id = cf.id AND cf.deleted = 0 '.
+        $from = 'FROM purchase_order_item as poi '.
+        ' LEFT JOIN purchase_order as po ON poi.order_id = po.id '.
+        ' LEFT JOIN component ON poi.component_id = component.id AND component.deleted = 0 '.
+        ' LEFT JOIN component_family AS cf ON component.family_id = cf.id AND cf.deleted = 0 '.
         ' WHERE poi.deleted = 0 AND po.deleted = 0 AND po.supplier_id = '. $supplierId;
-            
-        if ($tab['item'] !== null) {
+
+        $where = '';
+
+        if ($tab['item'] !== null && isset($tab['item'])){
             $nbItem = explode('/', $tab['item']);
             $nbItem = $nbItem[3];
-            $sql .= ' AND poi.component_id = '. $nbItem;
+            $where .= ' AND poi.component_id = '. $nbItem;
         }
-        if ($tab['confQuantityCode'] !== null) {
-            $sql .= " AND poi.confirmed_quantity_code LIKE '%" . $tab['confQuantityCode'] . "%'";
+        if ($tab['confQuantityCode'] !== null && isset($tab['confQuantityCode'])) {
+            $where .= " AND poi.confirmed_quantity_code LIKE '%" . $tab['confQuantityCode'] . "%'";
         }
-        if ($tab['confQuantityValue'] !== null) {
-            $sql .= " AND poi.confirmed_quantity_value LIKE '%" . $tab['confQuantityValue'] . "%'";
+        if ($tab['confQuantityValue'] !== null && isset($tab['confQuantityvalue'])) {
+            $where .= " AND poi.confirmed_quantity_value LIKE '%" . $tab['confQuantityValue'] . "%'";
         }
-        if ($tab['reqQuantityCode'] !== null) {
-            $sql .= " AND poi.requested_quantity_code LIKE '%" . $tab['reqQuantityCode'] . "%'";
+        if ($tab['reqQuantityCode'] !== null && isset($tab['reqQuantityCode'])) {
+            $where .= " AND poi.requested_quantity_code LIKE '%" . $tab['reqQuantityCode'] . "%'";
         }
-        if ($tab['reqQuantityValue'] !== null) {
-            $sql .= " AND poi.requested_quantity_value LIKE '%" . $tab['reqQuantityValue'] . "%'";
+        if ($tab['reqQuantityValue'] !== null && isset($tab['reqQuantityValue'])) {
+            $where .= " AND poi.requested_quantity_value LIKE '%" . $tab['reqQuantityValue'] . "%'";
         }
-        if ($tab['confDate'] !== null) {
-            $sql .= " AND poi.confirmed_date LIKE '%" . $tab['confDate'] . "%'";
+        if ($tab['confDate'] !== null && isset($tab['confDate'])) {
+            $where .= " AND poi.confirmed_date LIKE '%" . $tab['confDate'] . "%'";
         }
-        if ($tab['reqDate'] !== null) {
-            $sql .= " AND poi.requested_date LIKE '%" . $tab['reqDate'] . "%'";
+        if ($tab['reqDate'] !== null && isset($tab['reqDate'])) {
+            $where .= " AND poi.requested_date LIKE '%" . $tab['reqDate'] . "%'";
         }
-        if ($tab['note'] !== null) {
-            $sql .= " AND poi.notes LIKE '%" . $tab['note'] . "%'";
+        if ($tab['note'] !== null && isset($tab['note'])) {
+            $where .= " AND poi.notes LIKE '%" . $tab['note'] . "%'";
         }
 
-        if ($tab['retard'] !== null) {
+        if ($tab['retard'] !== null && isset($tab['retard'])) {
             if (strcasecmp($tab['retard'], 'aucun') === 0 || $tab['retard'] === '0') {
-                $sql .= ' AND poi.requested_quantity_value >= poi.confirmed_quantity_value';
+                $where .= ' AND poi.requested_quantity_value >= poi.confirmed_quantity_value';
             } else{
                 $retard = $tab['retard'];
      
@@ -232,43 +245,53 @@ final class ComponentItemRepository extends ItemRepository {
                     $partRetard[2] = $diffJour;
                 }
                 $retard = $partRetard[0].'-'.$partRetard[1].'-'.$partRetard[2];
-                $sql .= ' AND poi.requested_date = ' . $retard . ' AND (poi.confirmed_date IS NULL OR poi.requested_date != poi.confirmed_date)';
+                $where .= ' AND poi.requested_date = ' . $retard . ' AND (poi.confirmed_date IS NULL OR poi.requested_date != poi.confirmed_date)';
             }
         }
 
-        if ($tab['prixValue'] !== null) {
-            $sql .= " AND poi.price_value LIKE '%" . $tab['prixValue'] . "%'";
+        if ($tab['prixValue'] !== null && isset($tab['prixValue'])) {
+            $where .= " AND poi.price_value LIKE '%" . $tab['prixValue'] . "%'";
         }
-        if ($tab['prixCode'] !== null) {
-            $sql .= " AND poi.price_code LIKE '%" . $tab['prixCode'] . "%'";
+        if ($tab['prixCode'] !== null && isset($tab['prixCode'])) {
+            $where .= " AND poi.price_code LIKE '%" . $tab['prixCode'] . "%'";
         }
 
         
-        if ($tab['ref'] !== null) {
-            $sql .= " AND poi.ref LIKE '%" . $tab['ref'] . "%'";
+        if ($tab['ref'] !== null && isset($tab['ref'])) {
+            $where .= " AND poi.ref LIKE '%" . $tab['ref'] . "%'";
         }
 
-        if ($tab['supplementFret'] !== null) {
-            $sql .= " AND po.supplement_fret LIKE '%" . $tab['supplementFret'] . "%'";
+        if ($tab['supplementFret'] !== null && isset($tab['supplementFret'])) {
+            $where .= " AND po.supplement_fret LIKE '%" . $tab['supplementFret'] . "%'";
         }
 
-        if ($tab['notePo'] !== null) {
-            $sql .= " AND po.notes LIKE '%" . $tab['notePo'] . "%'";
+        if ($tab['notePo'] !== null && isset($tab['notePo'])) {
+            $where .= " AND po.notes LIKE '%" . $tab['notePo'] . "%'";
         }
-        if ($tab['embState'] !== null) {
-            $sql .= " AND poi.emb_state_state LIKE '%" . $tab['embState'] . "%'";
+        if ($tab['embState'] !== null && isset($tab['embState'])) {
+            $where .= " AND poi.emb_state_state LIKE '%" . $tab['embState'] . "%'";
         }
 
-        if ($tab['refOrder'] !== null) {
-            $sql .= " AND po.ref LIKE '%" . $tab['refOrder'] . "%'";
+        if ($tab['refOrder'] !== null && isset($tab['refOrder'])) {
+            $where .= " AND po.ref LIKE '%" . $tab['refOrder'] . "%'";
         }
-        //offset decallage
-        //recuperer nb de page
-        // $query->setFirstResult($first)
-        //     ->setMaxResults($max);
 
+        $sqlCount .= $from .$where;
+        $queryCount = $this->_em->createNativeQuery($sqlCount, $rsmCount);
+        $resultsCount = $queryCount->getResult();
+        $countElement = $resultsCount[0]['count'];
+        dump($countElement);
+        if($countElement > $max){
+        
+            $limitCurrent = ' LIMIT ' . $currentPage . ', ' . $max;
+
+            $sql .= $from .$where. $limitCurrent;
+        } else {
+            $sql .= $from .$where;
+        }
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $results = $query->getResult();
+        dump($results);
 
         foreach( $results as &$element){
             $element['@context'] = '/api/contexts/PurchaseOrderItemComponent';
@@ -378,7 +401,24 @@ final class ComponentItemRepository extends ItemRepository {
 
             $element['order'] = $order;
         };
+        $list = [];
+        if($countElement > $max){
+            $nbPage = intval(ceil($countElement / $max));
 
-        return $results;
+            $list = [
+                'page' => $currentPage,
+                'nbPage' => $nbPage,
+                'current' => $results
+            ];
+        } else { 
+            $list = [
+                'page' => $currentPage,
+                'nbPage' => 1,
+                'current' => $results
+            ];
+        };
+
+        dump($list);
+        return $list;
     }
 }

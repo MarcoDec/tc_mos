@@ -28,7 +28,7 @@ class ItemSupplierControler
             'reqQuantityValue' => $request->get('requestedQuantityValue'),
             'confDate' => $request->get('confirmedDate'),
             'reqDate' => $request->get('requestedDate'),
-            'currentPage' => $request->get('currentPage'),
+            'currentPage' => $request->get('page'),
             'note' => $request->get('note'),
             'retard' => $request->get('retard'),
             'ref' => $request->get('ref'),
@@ -47,6 +47,7 @@ class ItemSupplierControler
         $sourceItem = $this->repository->findBySupplierId($itemId, $tab);
         dump($sourceItem);
         $entityStr = 'componentItem';
+
         return $sourceItem;
     }
 }
