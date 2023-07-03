@@ -1,4 +1,4 @@
-import AppShowGuiEmployee from '../components/pages/hr/AppShowGuiEmployee.vue'
+import AppShowGuiEmployee from '../components/pages/hr/employee/AppShowGuiEmployee.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 

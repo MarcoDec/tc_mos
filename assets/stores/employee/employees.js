@@ -17,13 +17,16 @@ export const useEmployeeStore = defineStore('employee', {
             }
         },
         async fetchOne(id = 24) {
+            this.isLoading = true
             const response = await api(`/api/employees/${id}`, 'GET')
-            const item = generateEmployee(response, this)
-            this.employee = item
+            this.employee = generateEmployee(response, this)
+            this.isLoading = false
+            this.isLoaded = true
         },
         async fetchTeams() {
             const response = await api('/api/teams', 'GET')
             this.teams = response['hydra:member']
+            this.teamsIsLoaded = true
         }
 
     },
@@ -32,7 +35,10 @@ export const useEmployeeStore = defineStore('employee', {
     state: () => ({
         employee: {},
         employeeContacts: [],
+        isLoaded: false,
+        isLoading: false,
         items: [],
-        teams: {}
+        teams: [],
+        teamsIsLoaded: false
     })
 })
