@@ -5,10 +5,10 @@
     import useField from '../../../stores/field/field'
 
     const roleuser = ref('reader')
-    let violations = []
+    // let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
-    const isPopupVisible = ref(false)
+    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
@@ -22,7 +22,7 @@
     await storeProductListCommande.fetch()
     const itemsTable = ref(storeProductListCommande.itemsProductCommande)
     const formData = ref({
-        client: null, reference: null, quantiteConfirmee: null, quantiteSouhaitee: null, quantiteEffetctuee: null, dateLivraison: null, dateLivraisonSouhaitee: null
+        client: null, reference: null, quantiteConfirmee: null, quantiteSouhaitee: null, dateLivraison: null, dateLivraisonSouhaitee: null
     })
 
     const fieldsForm = [
@@ -38,7 +38,7 @@
         {
             create: false,
             filter: true,
-            label: 'reference',
+            label: 'Référence',
             name: 'reference',
             sort: false,
             type: 'text',
@@ -73,19 +73,6 @@
         {
             create: false,
             filter: true,
-            label: 'Quantité effectuée',
-            name: 'quantiteEffetctuee',
-            measure: {
-                code: null,
-                value: null
-            },
-            sort: false,
-            type: 'measure',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
             label: 'date de livraison',
             name: 'dateLivraison',
             sort: false,
@@ -107,7 +94,7 @@
         $id: 'productCommandeQtConfirmee'
     }
     const storeUnitQtConfirmee = useField(fieldsForm[2], parentQtConfirmee)
-    // storeUnitQtConfirmee.fetch()
+    storeUnitQtConfirmee.fetch()
 
     fieldsForm[2].measure.code = storeUnitQtConfirmee.measure.code
     fieldsForm[2].measure.value = storeUnitQtConfirmee.measure.value
@@ -122,16 +109,6 @@
     fieldsForm[3].measure.code = storeUnitQtSouhaitee.measure.code
     fieldsForm[3].measure.value = storeUnitQtSouhaitee.measure.value
 
-    const parentQtEnvoyee = {
-        //$id: `${warehouseId}Stock`
-        $id: 'productCommandeQtEnvoyee'
-    }
-    const storeUnitQtEnvoyee = useField(fieldsForm[4], parentQtEnvoyee)
-    // storeUnitQtEnvoyee.fetch()
-
-    fieldsForm[4].measure.code = storeUnitQtEnvoyee.measure.code
-    fieldsForm[4].measure.value = storeUnitQtEnvoyee.measure.value
-
     const tabFields = [
         {
             create: false,
@@ -145,7 +122,7 @@
         {
             create: false,
             filter: true,
-            label: 'reference',
+            label: 'Référence',
             name: 'reference',
             sort: false,
             type: 'text',
@@ -180,19 +157,6 @@
         {
             create: false,
             filter: true,
-            label: 'Quantité envoyée',
-            name: 'quantiteEffetctuee',
-            measure: {
-                code: storeUnitQtEnvoyee.measure.code,
-                value: storeUnitQtEnvoyee.measure.value
-            },
-            sort: false,
-            type: 'measure',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
             label: 'date de livraison',
             name: 'dateLivraison',
             sort: false,
@@ -210,65 +174,65 @@
         }
     ]
 
-    function ajoute(){
-        AddForm.value = true
-        updated.value = false
-        const itemsNull = {
-            client: null,
-            reference: null,
-            quantiteConfirmee: null,
-            quantiteSouhaitee: null,
-            quantiteEffetctuee: null,
-            dateLivraison: null,
-            dateLivraisonSouhaitee: null
-        }
-        formData.value = itemsNull
-    }
+    // function ajoute(){
+    //     AddForm.value = true
+    //     updated.value = false
+    //     const itemsNull = {
+    //         client: null,
+    //         reference: null,
+    //         quantiteConfirmee: null,
+    //         quantiteSouhaitee: null,
+    //         quantiteEffetctuee: null,
+    //         dateLivraison: null,
+    //         dateLivraisonSouhaitee: null
+    //     }
+    //     formData.value = itemsNull
+    // }
 
-    async function ajoutProductCommande(){
-        // const form = document.getElementById('addProductCommande')
-        // const formData1 = new FormData(form)
+    // async function ajoutProductCommande(){
+    //     // const form = document.getElementById('addProductCommande')
+    //     // const formData1 = new FormData(form)
 
-        // if (typeof formData.value.families !== 'undefined') {
-        //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-        // }
+    //     // if (typeof formData.value.families !== 'undefined') {
+    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
+    //     // }
 
-        const itemsAddData = {
-            client: formData.value.client,
-            reference: formData.value.reference,
-            quantiteConfirmee: formData.value.quantiteConfirmee,
-            //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-            quantiteSouhaitee: formData.value.quantiteSouhaitee,
-            quantiteEffetctuee: formData.value.quantiteEffetctuee,
-            dateLivraison: formData.value.dateLivraison,
-            dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-        }
-        violations = await storeProductListCommande.addProductCommande(itemsAddData)
+    //     const itemsAddData = {
+    //         client: formData.value.client,
+    //         reference: formData.value.reference,
+    //         quantiteConfirmee: formData.value.quantiteConfirmee,
+    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
+    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
+    //         quantiteEffetctuee: formData.value.quantiteEffetctuee,
+    //         dateLivraison: formData.value.dateLivraison,
+    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
+    //     }
+    //     violations = await storeProductListCommande.addProductCommande(itemsAddData)
 
-        if (violations.length > 0){
-            isPopupVisible.value = true
-        } else {
-            AddForm.value = false
-            updated.value = false
-            isPopupVisible.value = false
-            itemsTable.value = [...storeProductListCommande.itemsProductCommande]
-        }
-    }
-    function annule(){
-        AddForm.value = false
-        updated.value = false
-        const itemsNull = {
-            client: null,
-            reference: null,
-            quantiteConfirmee: null,
-            quantiteSouhaitee: null,
-            quantiteEffetctuee: null,
-            dateLivraison: null,
-            dateLivraisonSouhaitee: null
-        }
-        formData.value = itemsNull
-        isPopupVisible.value = false
-    }
+    //     if (violations.length > 0){
+    //         isPopupVisible.value = true
+    //     } else {
+    //         AddForm.value = false
+    //         updated.value = false
+    //         isPopupVisible.value = false
+    //         itemsTable.value = [...storeProductListCommande.itemsProductCommande]
+    //     }
+    // }
+    // function annule(){
+    //     AddForm.value = false
+    //     updated.value = false
+    //     const itemsNull = {
+    //         client: null,
+    //         reference: null,
+    //         quantiteConfirmee: null,
+    //         quantiteSouhaitee: null,
+    //         quantiteEffetctuee: null,
+    //         dateLivraison: null,
+    //         dateLivraisonSouhaitee: null
+    //     }
+    //     formData.value = itemsNull
+    //     isPopupVisible.value = false
+    // }
 
     function update(item) {
         updated.value = true
@@ -278,7 +242,6 @@
             reference: item.reference,
             quantiteConfirmee: item.quantiteConfirmee,
             quantiteSouhaitee: item.quantiteSouhaitee,
-            quantiteEffetctuee: item.quantiteEffetctuee,
             dateLivraison: item.dateLivraison,
             dateLivraisonSouhaitee: item.dateLivraisonSouhaitee
         }
@@ -314,17 +277,23 @@
             reference: inputValues.reference ?? '',
             quantiteConfirmee: inputValues.quantiteConfirmee ?? '',
             quantiteSouhaitee: inputValues.quantiteSouhaitee ?? '',
-            quantiteEffetctuee: inputValues.quantiteEffetctuee ?? '',
             dateLivraison: inputValues.dateLivraison ?? '',
             dateLivraisonSouhaitee: inputValues.dateLivraisonSouhaitee ?? ''
         }
 
-        // if (typeof payload.quantite.value === 'undefined' && payload.quantite !== '') {
-        //     payload.quantite.value = ''
-        // }
-        // if (typeof payload.quantite.code === 'undefined' && payload.quantite !== '') {
-        //     payload.quantite.code = ''
-        // }
+        if (typeof payload.quantiteConfirmee.value === 'undefined' && payload.quantiteConfirmee !== '') {
+            payload.quantiteConfirmee.value = ''
+        }
+        if (typeof payload.quantiteConfirmee.code === 'undefined' && payload.quantiteConfirmee !== '') {
+            payload.quantiteConfirmee.code = ''
+        }
+
+        if (typeof payload.quantiteSouhaitee.value === 'undefined' && payload.quantiteSouhaitee !== '') {
+            payload.quantiteSouhaitee.value = ''
+        }
+        if (typeof payload.quantiteSouhaitee.code === 'undefined' && payload.quantiteSouhaitee !== '') {
+            payload.quantiteSouhaitee.code = ''
+        }
         await storeProductListCommande.filterBy(payload)
         itemsTable.value = [...storeProductListCommande.itemsProductCommande]
         filter.value = true
@@ -337,12 +306,12 @@
 </script>
 
 <template>
-    <AppCol class="d-flex justify-content-between mb-2">
+    <!-- <AppCol class="d-flex justify-content-between mb-2">
         <AppBtn variant="success" label="Ajout" @click="ajoute">
             <Fa icon="plus"/>
             Ajouter
         </AppBtn>
-    </AppCol>
+    </AppCol> -->
     <AppRow>
         <AppCol>
             <AppCardableTable
@@ -364,7 +333,7 @@
                 @search="search"
                 @cancel-search="cancelSearch"/>
         </AppCol>
-        <AppCol v-if="AddForm && !updated" class="col-7">
+        <!-- <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
                 <AppRow>
                     <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
@@ -387,7 +356,7 @@
                     </AppBtn>
                 </AppCol>
             </AppCard>
-        </AppCol>
+        </AppCol> -->
     </AppRow>
 </template>
 

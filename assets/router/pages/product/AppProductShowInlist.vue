@@ -7,7 +7,7 @@
     // const route = useRoute()
     // const machine = useTableMachine(route.name)
     import {computed, ref} from 'vue'
-    import AppProductListComposition from './AppProductListComposition.vue'
+    // import AppProductListComposition from './AppProductListComposition.vue'
     import AppProductListCommande from './AppProductListCommande.vue'
 
     const guiRatio = ref(0.5)
@@ -168,7 +168,7 @@
         <h1>Compositions</h1>
         <AppTab id="gui-start-compositions" active title="Compositions" icon="sitemap" tabs="gui-start-bottom">
             <AppSuspense>
-                <AppProductListComposition/>
+                <!-- <AppProductListComposition/> -->
             </AppSuspense>
         </AppTab>
         <h1>Commandes</h1>

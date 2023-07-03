@@ -28,7 +28,7 @@ export const useProductListCommandeStore = defineStore('productListCommande', {
         // },
         async deleted(payload) {
             await api(`/api/selling-order-items/${payload}`, 'DELETE')
-            this.productCommande = this.productCommande.filter(commande => Number(commande['@id'].match(/\d+/)[0]) !== payload)
+            this.productCommande = this.productCommande.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
             // const response = await api(`/api/selling-order-items?product=${this.productID}`, 'GET')
@@ -36,48 +36,45 @@ export const useProductListCommandeStore = defineStore('productListCommande', {
                 this.currentPage = 1
             }
             // const response = await api(`/api/selling-order-items/productFilter/${this.productID}?page=${this.currentPage}`, 'GET')
-            const response = await api('/api/selling-order-items/', 'GET')
+            const response = await api(`/api/selling-order-product?item=/api/products/${this.productID}`, 'GET')
             this.productCommande = await this.updatePagination(response)
         },
         async filterBy(payload) {
-            let url = `api/selling-order-items/productFilter/${this.productID}?`
+            let url = `/api/selling-order-product?item=/api/products/${this.productID}&`
             if (payload === ''){
                 await this.fetch()
             } else {
-                if (payload.creeLe !== '') {
-                    url += `confirmedDate=${payload.creeLe}&`
-                }
-                if (payload.composant !== '') {
-                    url += `item=${payload.composant}&`
+                if (payload.client !== '') {
+                    url += `order.customer.name=${payload.client}&`
                 }
 
-                if (payload.dateSouhaitee !== '') {
-                    url += `requestedDate=${payload.dateSouhaitee}&`
+                if (payload.reference !== ''){
+                    url += `ref=${payload.reference}&`
                 }
 
                 if (payload.quantiteSouhaitee !== ''){
                     if (payload.quantiteSouhaitee.value !== '') {
-                        url += `requestedQuantityValue=${payload.quantiteSouhaitee.value}&`
+                        url += `requestedQuantity.value=${payload.quantiteSouhaitee.value}&`
                     }
                     if (payload.quantiteSouhaitee.code !== '') {
-                        url += `requestedQuantityCode=${payload.quantiteSouhaitee.code}&`
+                        url += `requestedQuantity.code=${payload.quantiteSouhaitee.code}&`
+                    }
+                }
+                if (payload.quantiteConfirmee !== ''){
+                    if (payload.quantiteConfirmee.value !== '') {
+                        url += `confirmedQuantity.value=${payload.quantiteConfirmee.value}&`
+                    }
+                    if (payload.quantiteConfirmee.code !== '') {
+                        url += `confirmedQuantity.code=${payload.quantiteConfirmee.code}&`
                     }
                 }
 
-                if (payload.quantiteEffectuee !== ''){
-                    if (payload.quantiteEffectuee.value !== '') {
-                        url += `confirmedQuantityValue=${payload.quantiteEffectuee.value}&`
-                    }
-                    if (payload.quantiteEffectuee.code !== '') {
-                        url += `confirmedQuantityCode=${payload.quantiteEffectuee.code}&`
-                    }
-                }
-                if (payload.note !== ''){
-                    url += `note=${payload.note}&`
+                if (payload.dateLivraison !== ''){
+                    url += `confirmedDate=${payload.dateLivraison}&`
                 }
 
-                if (payload.commande !== ''){
-                    url += `commande=${payload.commande}&`
+                if (payload.dateLivraisonSouhaitee !== ''){
+                    url += `requestedDate=${payload.dateLivraisonSouhaitee}&`
                 }
                 url += 'page=1'
                 this.currentPage = 1
@@ -93,133 +90,124 @@ export const useProductListCommandeStore = defineStore('productListCommande', {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
                 if (payload.trierAlpha.value.component === 'component') {
-                    let url = `api/selling-order-items/productFilter/${this.productID}?`
-
-                    if (payload.filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                    let url = `/api/selling-order-product?item=/api/products/${this.productID}&`
+                    if (payload.filterBy.value.client !== ''){
+                        url += `order.customer.name=${payload.filterBy.value.client}&`
                     }
-                    if (payload.filterBy.value.composant !== '') {
-                        url += `item=${payload.filterBy.value.composant}&`
-                    }
-
-                    if (payload.filterBy.value.dateSouhaitee !== '') {
-                        url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
+                    if (payload.filterBy.value.reference !== ''){
+                        url += `ref=${payload.filterBy.value.reference}&`
                     }
 
                     if (payload.filterBy.value.quantiteSouhaitee !== ''){
                         if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
-                            url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
+                            url += `requestedQuantity.value=${payload.filterBy.value.quantiteSouhaitee.value}&`
                         }
                         if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
-                            url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
+                            url += `requestedQuantity.code=${payload.filterBy.value.quantiteSouhaitee.code}&`
                         }
                     }
 
-                    if (payload.filterBy.value.quantiteEffectuee !== ''){
-                        if (payload.filterBy.value.quantiteEffectuee.value !== '') {
-                            url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
+                    if (payload.filterBy.value.quantiteConfirmee !== ''){
+                        if (payload.filterBy.value.quantiteConfirmee.value !== '') {
+                            url += `confirmedQuantity.value=${payload.filterBy.value.quantiteConfirmee.value}&`
                         }
-                        if (payload.filterBy.value.quantiteEffectuee.code !== '') {
-                            url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
+                        if (payload.filterBy.value.quantiteConfirmee.code !== '') {
+                            url += `confirmedQuantity.code=${payload.filterBy.value.quantiteConfirmee.code}&`
                         }
                     }
-                    if (payload.filterBy.value.note !== ''){
-                        url += `note=${payload.filterBy.value.note}&`
+
+                    if (payload.filterBy.value.dateLivraison !== ''){
+                        url += `confirmedDate=${payload.filterBy.value.dateLivraison}&`
                     }
-                    if (payload.filterBy.value.commande !== ''){
-                        url += `commande=${payload.filterBy.value.commande}&`
+                    if (payload.filterBy.value.dateLivraisonSouhaitee !== ''){
+                        url += `requestedDate=${payload.filterBy.value.dateLivraisonSouhaitee}&`
                     }
+
                     url += `page=${payload.nPage}`
+
                     response = await api(url, 'GET')
                     this.productCommande = await this.updatePagination(response)
                 } else {
-                    let url = `api/selling-order-items/productFilter/${this.productID}?`
-
-                    if (payload.filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                    let url = `/api/selling-order-product?item=/api/products/${this.productID}&`
+                    if (payload.filterBy.value.client !== ''){
+                        url += `order.customer.name=${payload.filterBy.value.client}&`
                     }
-                    if (payload.filterBy.value.composant !== '') {
-                        url += `item=${payload.filterBy.value.composant}&`
-                    }
-
-                    if (payload.filterBy.value.dateSouhaitee !== '') {
-                        url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
+                    if (payload.filterBy.value.reference !== ''){
+                        url += `ref=${payload.filterBy.value.reference}&`
                     }
 
                     if (payload.filterBy.value.quantiteSouhaitee !== ''){
                         if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
-                            url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
+                            url += `requestedQuantity.value=${payload.filterBy.value.quantiteSouhaitee.value}&`
                         }
                         if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
-                            url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
+                            url += `requestedQuantity.code=${payload.filterBy.value.quantiteSouhaitee.code}&`
                         }
                     }
 
-                    if (payload.filterBy.value.quantiteEffectuee !== ''){
-                        if (payload.filterBy.value.quantiteEffectuee.value !== '') {
-                            url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
+                    if (payload.filterBy.value.quantiteConfirmee !== ''){
+                        if (payload.filterBy.value.quantiteConfirmee.value !== '') {
+                            url += `confirmedQuantity.value=${payload.filterBy.value.quantiteConfirmee.value}&`
                         }
-                        if (payload.filterBy.value.quantiteEffectuee.code !== '') {
-                            url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
+                        if (payload.filterBy.value.quantiteConfirmee.code !== '') {
+                            url += `confirmedQuantity.code=${payload.filterBy.value.quantiteConfirmee.code}&`
                         }
                     }
-                    if (payload.filterBy.value.note !== ''){
-                        url += `note=${payload.filterBy.value.note}&`
+
+                    if (payload.filterBy.value.dateLivraison !== ''){
+                        url += `confirmedDate=${payload.filterBy.value.dateLivraison}&`
                     }
-                    if (payload.filterBy.value.commande !== ''){
-                        url += `commande=${payload.filterBy.value.commande}&`
+                    if (payload.filterBy.value.dateLivraisonSouhaitee !== ''){
+                        url += `requestedDate=${payload.filterBy.value.dateLivraisonSouhaitee}&`
                     }
                     response = await api(url, 'GET')
+
                     this.productCommande = await this.updatePagination(response)
                 }
             } else if (payload.filter.value === true){
-                let url = `api/selling-order-items/productFilter/${this.productID}?`
-
-                if (payload.filterBy.value.creeLe !== '') {
-                    url += `confirmedDate=${payload.filterBy.value.creeLe}&`
+                let url = `/api/selling-order-product?item=/api/products/${this.productID}&`
+                if (payload.filterBy.value.client !== ''){
+                    url += `order.customer.name=${payload.filterBy.value.client}&`
                 }
-                if (payload.filterBy.value.composant !== '') {
-                    url += `item=${payload.filterBy.value.composant}&`
-                }
-
-                if (payload.filterBy.value.dateSouhaitee !== '') {
-                    url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
+                if (payload.filterBy.value.reference !== ''){
+                    url += `ref=${payload.filterBy.value.reference}&`
                 }
 
                 if (payload.filterBy.value.quantiteSouhaitee !== ''){
                     if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
-                        url += `requestedQuantityValue=${payload.filterBy.value.quantiteSouhaitee.value}&`
+                        url += `requestedQuantity.value=${payload.filterBy.value.quantiteSouhaitee.value}&`
                     }
                     if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
-                        url += `requestedQuantityCode=${payload.filterBy.value.quantiteSouhaitee.code}&`
+                        url += `requestedQuantity.code=${payload.filterBy.value.quantiteSouhaitee.code}&`
                     }
                 }
 
-                if (payload.filterBy.value.quantiteEffectuee !== ''){
-                    if (payload.filterBy.value.quantiteEffectuee.value !== '') {
-                        url += `confirmedQuantityValue=${payload.filterBy.value.quantiteEffectuee.value}&`
+                if (payload.filterBy.value.quantiteConfirmee !== ''){
+                    if (payload.filterBy.value.quantiteConfirmee.value !== '') {
+                        url += `confirmedQuantity.value=${payload.filterBy.value.quantiteConfirmee.value}&`
                     }
-                    if (payload.filterBy.value.quantiteEffectuee.code !== '') {
-                        url += `confirmedQuantityCode=${payload.filterBy.value.quantiteEffectuee.code}&`
+                    if (payload.filterBy.value.quantiteConfirmee.code !== '') {
+                        url += `confirmedQuantity.code=${payload.filterBy.value.quantiteConfirmee.code}&`
                     }
                 }
-                if (payload.filterBy.value.note !== ''){
-                    url += `note=${payload.filterBy.value.note}&`
+
+                if (payload.filterBy.value.dateLivraison !== ''){
+                    url += `confirmedDate=${payload.filterBy.value.dateLivraison}&`
                 }
-                if (payload.filterBy.value.commande !== ''){
-                    url += `commande=${payload.filterBy.value.commande}&`
+                if (payload.filterBy.value.dateLivraisonSouhaitee !== ''){
+                    url += `requestedDate=${payload.filterBy.value.dateLivraisonSouhaitee}&`
                 }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
                 this.productCommande = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
-                response = await api(`/api/selling-order-items/productFilter/${this.productID}?page=${payload.nPage}`, 'GET')
+                response = await api(`/api/selling-order-product?item=/api/products/${this.productID}&page=${payload.nPage}`, 'GET')
                 this.productCommande = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'component') {
-                    response = await api(`/api/selling-order-items/productFilter/${this.productID}?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/selling-order-product?item=/api/products/${this.productID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
-                    response = await api(`/api/selling-order-items/productFilter/${this.productID}?&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/selling-order-product?item=/api/products/${this.productID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
                 this.productCommande = await this.updatePagination(response)
             }
@@ -229,81 +217,76 @@ export const useProductListCommandeStore = defineStore('productListCommande', {
             let response = {}
             if (filter.value === true){
                 if (payload.composant === 'component') {
-                    let url = `api/selling-order-items/productFilter/${this.productID}?`
-
-                    if (filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${filter.value.creeLe}&`
-                    }
-                    if (filterBy.value.composant !== '') {
-                        url += `item=${filterBy.value.composant}&`
-                    }
-
-                    if (filterBy.value.dateSouhaitee !== '') {
-                        url += `requestedDate=${filterBy.value.dateSouhaitee}&`
-                    }
-
-                    if (filterBy.value.quantiteSouhaitee !== ''){
-                        if (filterBy.value.quantiteSouhaitee.value !== '') {
-                            url += `requestedQuantityValue=${filterBy.value.quantiteSouhaitee.value}&`
+                    let url = `/api/selling-order-product?item=/api/products/${this.productID}&`
+                    if (filterBy.value === ''){
+                        await this.fetch()
+                    } else {
+                        if (filterBy.value.client !== '') {
+                            url += `order.customer.name=${filterBy.value.client}&`
                         }
-                        if (filterBy.value.quantiteSouhaitee.code !== '') {
-                            url += `requestedQuantityCode=${filterBy.value.quantiteSouhaitee.code}&`
+                        if (filterBy.value.reference !== ''){
+                            url += `ref=${filterBy.value.reference}&`
                         }
-                    }
+                        if (filterBy.value.quantiteSouhaitee !== ''){
+                            if (filterBy.value.quantiteSouhaitee.value !== '') {
+                                url += `requestedQuantity.value=${filterBy.value.quantiteSouhaitee.value}&`
+                            }
+                            if (filterBy.value.quantiteSouhaitee.code !== '') {
+                                url += `requestedQuantity.code=${filterBy.value.quantiteSouhaitee.code}&`
+                            }
+                        }
+                        if (filterBy.value.quantiteConfirmee !== ''){
+                            if (filterBy.value.quantiteConfirmee.value !== '') {
+                                url += `confirmedQuantity.value=${filterBy.value.quantiteConfirmee.value}&`
+                            }
+                            if (filterBy.value.quantiteConfirmee.code !== '') {
+                                url += `confirmedQuantity.code=${filterBy.value.quantiteConfirmee.code}&`
+                            }
+                        }
+                        if (filterBy.value.dateLivraison !== ''){
+                            url += `confirmedDate=${filterBy.value.dateLivraison}&`
+                        }
 
-                    if (filterBy.value.quantiteEffectuee !== ''){
-                        if (filterBy.value.quantiteEffectuee.value !== '') {
-                            url += `confirmedQuantityValue=${filterBy.value.quantiteEffectuee.value}&`
-                        }
-                        if (filterBy.value.quantiteEffectuee.code !== '') {
-                            url += `confirmedQuantityCode=${filterBy.value.quantiteEffectuee.code}&`
+                        if (filterBy.value.dateLivraisonSouhaitee !== ''){
+                            url += `confirmedDate=${filterBy.value.dateLivraisonSouhaitee}&`
                         }
                     }
-                    if (filterBy.value.note !== ''){
-                        url += `note=${filterBy.value.note}&`
-                    }
-                    if (filterBy.value.commande !== ''){
-                        url += `commande=${filterBy.value.commande}&`
-                    }
-
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
                 } else {
-                    let url = `api/selling-order-items/productFilter/${this.productID}?`
-
-                    if (filterBy.value.creeLe !== '') {
-                        url += `confirmedDate=${filter.value.creeLe}&`
-                    }
-                    if (filterBy.value.composant !== '') {
-                        url += `item=${filterBy.value.composant}&`
-                    }
-
-                    if (filterBy.value.dateSouhaitee !== '') {
-                        url += `requestedDate=${filterBy.value.dateSouhaitee}&`
-                    }
-
-                    if (filterBy.value.quantiteSouhaitee !== ''){
-                        if (filterBy.value.quantiteSouhaitee.value !== '') {
-                            url += `requestedQuantityValue=${filterBy.value.quantiteSouhaitee.value}&`
+                    let url = `/api/selling-order-product?item=/api/products/${this.productID}&`
+                    if (filterBy.value === ''){
+                        await this.fetch()
+                    } else {
+                        if (filterBy.value.client !== '') {
+                            url += `order.customer.name=${filterBy.value.client}&`
                         }
-                        if (filterBy.value.quantiteSouhaitee.code !== '') {
-                            url += `requestedQuantityCode=${filterBy.value.quantiteSouhaitee.code}&`
+                        if (filterBy.value.reference !== ''){
+                            url += `ref=${filterBy.value.reference}&`
                         }
-                    }
+                        if (filterBy.value.quantiteSouhaitee !== ''){
+                            if (filterBy.value.quantiteSouhaitee.value !== '') {
+                                url += `requestedQuantity.value=${filterBy.value.quantiteSouhaitee.value}&`
+                            }
+                            if (filterBy.value.quantiteSouhaitee.code !== '') {
+                                url += `requestedQuantity.code=${filterBy.value.quantiteSouhaitee.code}&`
+                            }
+                        }
+                        if (filterBy.value.quantiteConfirmee !== ''){
+                            if (filterBy.value.quantiteConfirmee.value !== '') {
+                                url += `confirmedQuantity.value=${filterBy.value.quantiteConfirmee.value}&`
+                            }
+                            if (filterBy.value.quantiteConfirmee.code !== '') {
+                                url += `confirmedQuantity.code=${filterBy.value.quantiteConfirmee.code}&`
+                            }
+                        }
+                        if (filterBy.value.dateLivraison !== ''){
+                            url += `confirmedDate=${filterBy.value.dateLivraison}&`
+                        }
 
-                    if (filterBy.value.quantiteEffectuee !== ''){
-                        if (filterBy.value.quantiteEffectuee.value !== '') {
-                            url += `confirmedQuantityValue=${filterBy.value.quantiteEffectuee.value}&`
+                        if (filterBy.value.dateLivraisonSouhaitee !== ''){
+                            url += `confirmedDate=${filterBy.value.dateLivraisonSouhaitee}&`
                         }
-                        if (filterBy.value.quantiteEffectuee.code !== '') {
-                            url += `confirmedQuantityCode=${filterBy.value.quantiteEffectuee.code}&`
-                        }
-                    }
-                    if (filterBy.value.note !== ''){
-                        url += `note=${filterBy.value.note}&`
-                    }
-                    if (filterBy.value.commande !== ''){
-                        url += `commande=${filterBy.value.commande}&`
                     }
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
@@ -311,15 +294,14 @@ export const useProductListCommandeStore = defineStore('productListCommande', {
                 this.productCommande = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'component') {
-                    response = await api(`api/selling-order-items/productFilter/${this.productID}?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/selling-order-product?item=/api/products/${this.productID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
-                    response = await api(`api/selling-order-items/productFilter/${this.productID}?order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/selling-order-product?item=/api/products/${this.productID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
                 this.productCommande = await this.updatePagination(response)
             }
         },
         async updatePagination(response) {
-            // console.log(response)
             const responseData = await response['hydra:member']
             let paginationView = {}
             if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
@@ -327,7 +309,6 @@ export const useProductListCommandeStore = defineStore('productListCommande', {
             } else {
                 paginationView = responseData
             }
-            //console.log(paginationView)
             if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
                 this.pagination = true
                 this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
@@ -339,93 +320,38 @@ export const useProductListCommandeStore = defineStore('productListCommande', {
             }
             this.pagination = false
             return responseData
-        },
-        async updateWarehouseStock(payload){
-            await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-            if (payload.sortable.value === true || payload.filter.value === true) {
-                this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-            } else {
-                this.itemsPagination(this.currentPage)
-            }
-            this.fetch()
         }
+        // async updateWarehouseStock(payload){
+        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
+        //     if (payload.sortable.value === true || payload.filter.value === true) {
+        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
+        //     } else {
+        //         this.itemsPagination(this.currentPage)
+        //     }
+        //     this.fetch()
+        // }
     },
     getters: {
         itemsProductCommande: state => state.productCommande.map(item => {
-            console.log(item)
-            let retrd = 'Aucun'
-            const quantiteEff = item.confirmedQuantity
-            const quantiteSou = item.requestedQuantity
-            const dateSou = item.requestedDate
-
-            const currentDate = new Date()
-            const dateSouSplit = dateSou.split('-')
-            const yearSouhaitee = parseInt(dateSouSplit[0].trim())
-            const monthSouhaitee = parseInt(dateSouSplit[1].trim())
-            const daySouhaitee = parseInt(dateSouSplit[2].trim())
-            const souhaiteeDate = new Date(yearSouhaitee, monthSouhaitee - 1, daySouhaitee)
-
-            if (quantiteSou.value > quantiteEff.value && currentDate > souhaiteeDate){
-                let years = currentDate.getFullYear() - souhaiteeDate.getFullYear()
-                let months = currentDate.getMonth() - souhaiteeDate.getMonth()
-                let days = currentDate.getDate() - souhaiteeDate.getDate()
-
-                if (months < 0 || months === 0 && days < 0) {
-                    years--
-                    if (currentDate.getMonth() < souhaiteeDate.getMonth()) {
-                        months += 12
-                    } else if (currentDate.getMonth() === souhaiteeDate.getMonth()) {
-                        if (currentDate.getDate() < souhaiteeDate.getDate()) {
-                            months--
-                        }
-                    }
-                }
-
-                if (days < 0) {
-                    const lastMonthDate = new Date(
-                        currentDate.getFullYear(),
-                        currentDate.getMonth() - 1,
-                        0
-                    )
-                    days += lastMonthDate.getDate()
-                    months--
-                }
-
-                retrd = ''
-                if (years !== 0){
-                    retrd += `${years}y `
-                }
-                if (months !== 0){
-                    retrd += `${months}m `
-                }
-                if (days !== 0){
-                    retrd += `${days}d `
-                }
-            }
             const newObject = {
                 '@id': item['@id'],
-                creeLe: item.confirmedDate,
-                composant: item.item.code,
-                commande: retrd,
-                evenement: '',
-                message: '',
-                dateSouhaitee: dateSou,
-                note: item.notes,
-                fournisseurFerme: '',
-                composantFournisseur: '',
-                quantiteSouhaitee: quantiteSou,
-                quantiteEffectuee: quantiteEff
+                client: item.customer.name,
+                reference: item.ref,
+                quantiteConfirmee: item.confirmedQuantity,
+                quantiteSouhaitee: item.requestedQuantity,
+                dateLivraison: item.confirmedDate,
+                dateLivraisonSouhaitee: item.requestedDate
             }
             return newObject
         }),
         async getOptionComposant() {
             const opt = []
             const codes = new Set()
-            //todo changeer
+            //todo changer
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
-            const response = await api(`/api/selling-order-items/productFilter/${this.productID}?page=${this.currentPage}`, 'GET')
+            const response = await api(`/api/selling-order-product?item=/api/products/${this.productID}&page=${this.currentPage}`, 'GET')
             for (const product of response['hydra:member']) {
                 if (!codes.has(product.item.code)) {
                     opt.push({value: product.item['@id'], '@type': product.item['@type'], text: product.item.code, id: product.item.id})

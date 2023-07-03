@@ -1,24 +1,24 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useProductListCompositionStore} from './storeProvisoir/productListComposition'
-    // import {useRoute} from 'vue-router'
+    import {useRoute} from 'vue-router'
     import useField from '../../../stores/field/field'
 
     const roleuser = ref('reader')
-    let violations = []
+    // let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
-    const isPopupVisible = ref(false)
+    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
     let filterBy = {}
 
-    // const maRoute = useRoute()
-    // const Id = maRoute.params.id_warehouse
+    const maRoute = useRoute()
+    const productId = maRoute.params.id_product
 
     const storeProductListComposition = useProductListCompositionStore()
-    // storeProductListComposition.setIdWarehouse(warehouseId)
+    storeProductListComposition.setIdProduct(productId)
     await storeProductListComposition.fetch()
     const itemsTable = ref(storeProductListComposition.itemsProductComposition)
     const formData = ref({
@@ -281,66 +281,66 @@
         }
     ]
 
-    function ajoute(){
-        AddForm.value = true
-        updated.value = false
-        const itemsNull = {
-            refDesignation: null,
-            photo: null,
-            famille: null,
-            quantity: null,
-            stkSite: null,
-            capFabSite: null,
-            stkTotal: null,
-            capFabTconcept: null
-        }
-        formData.value = itemsNull
-    }
+    // function ajoute(){
+    //     AddForm.value = true
+    //     updated.value = false
+    //     const itemsNull = {
+    //         refDesignation: null,
+    //         photo: null,
+    //         famille: null,
+    //         quantity: null,
+    //         stkSite: null,
+    //         capFabSite: null,
+    //         stkTotal: null,
+    //         capFabTconcept: null
+    //     }
+    //     formData.value = itemsNull
+    // }
 
-    async function ajoutProductComposition(){
-        const form = document.getElementById('addProductComposition')
-        const formData1 = new FormData(form)
+    // async function ajoutProductComposition(){
+    //     const form = document.getElementById('addProductComposition')
+    //     const formData1 = new FormData(form)
 
-        // if (typeof formData.value.families !== 'undefined') {
-        //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-        // }
+    //     // if (typeof formData.value.families !== 'undefined') {
+    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
+    //     // }
 
-        const itemsAddData = {
-            refDesignation: formData.value.refDesignation,
-            photo: formData.value.photo,
-            famille: formData.value.dateConfifamillermation,
-            quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-            stkSite: formData.value.stkSite,
-            stkTotal: formData.value.stkTotal,
-            capFabTconcept: formData.value.capFabTconcept
-        }
-        violations = await storeProductListComposition.addProductComposition(itemsAddData)
+    //     const itemsAddData = {
+    //         refDesignation: formData.value.refDesignation,
+    //         photo: formData.value.photo,
+    //         famille: formData.value.dateConfifamillermation,
+    //         quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
+    //         stkSite: formData.value.stkSite,
+    //         stkTotal: formData.value.stkTotal,
+    //         capFabTconcept: formData.value.capFabTconcept
+    //     }
+    //     violations = await storeProductListComposition.addProductComposition(itemsAddData)
 
-        if (violations.length > 0){
-            isPopupVisible.value = true
-        } else {
-            AddForm.value = false
-            updated.value = false
-            isPopupVisible.value = false
-            itemsTable.value = [...storeProductListComposition.itemsProductComposition]
-        }
-    }
-    function annule(){
-        AddForm.value = false
-        updated.value = false
-        const itemsNull = {
-            refDesignation: null,
-            photo: null,
-            famille: null,
-            quantity: null,
-            stkSite: null,
-            capFabSite: null,
-            stkTotal: null,
-            capFabTconcept: null
-        }
-        formData.value = itemsNull
-        isPopupVisible.value = false
-    }
+    //     if (violations.length > 0){
+    //         isPopupVisible.value = true
+    //     } else {
+    //         AddForm.value = false
+    //         updated.value = false
+    //         isPopupVisible.value = false
+    //         itemsTable.value = [...storeProductListComposition.itemsProductComposition]
+    //     }
+    // }
+    // function annule(){
+    //     AddForm.value = false
+    //     updated.value = false
+    //     const itemsNull = {
+    //         refDesignation: null,
+    //         photo: null,
+    //         famille: null,
+    //         quantity: null,
+    //         stkSite: null,
+    //         capFabSite: null,
+    //         stkTotal: null,
+    //         capFabTconcept: null
+    //     }
+    //     formData.value = itemsNull
+    //     isPopupVisible.value = false
+    // }
 
     function update(item) {
         updated.value = true
@@ -411,12 +411,12 @@
 </script>
 
 <template>
-    <AppCol class="d-flex justify-content-between mb-2">
+    <!-- <AppCol class="d-flex justify-content-between mb-2">
         <AppBtn variant="success" label="Ajout" @click="ajoute">
             <Fa icon="plus"/>
             Ajouter
         </AppBtn>
-    </AppCol>
+    </AppCol> -->
     <AppRow>
         <AppCol>
             <AppCardableTable
@@ -438,7 +438,7 @@
                 @search="search"
                 @cancel-search="cancelSearch"/>
         </AppCol>
-        <AppCol v-if="AddForm && !updated" class="col-7">
+        <!-- <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
                 <AppRow>
                     <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
@@ -461,7 +461,7 @@
                     </AppBtn>
                 </AppCol>
             </AppCard>
-        </AppCol>
+        </AppCol> -->
     </AppRow>
 </template>
 
