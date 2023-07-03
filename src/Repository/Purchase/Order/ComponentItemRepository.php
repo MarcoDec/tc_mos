@@ -99,7 +99,6 @@ final class ComponentItemRepository extends ItemRepository {
         $currentPage = $tab['currentPage'];
         // $first = 0;
         $max = 15;
-        dump('page current repestory :',$currentPage);
         if ($currentPage !== null && $currentPage !== '1' && isset($currentPage)){
             // $currentPage = 15 * $currentPage -1;
             $currentPage = $currentPage;
@@ -280,7 +279,6 @@ final class ComponentItemRepository extends ItemRepository {
         $queryCount = $this->_em->createNativeQuery($sqlCount, $rsmCount);
         $resultsCount = $queryCount->getResult();
         $countElement = $resultsCount[0]['count'];
-        dump($countElement);
         if($countElement > $max){
         
             $limitCurrent = ' LIMIT ' . $currentPage . ', ' . $max;
@@ -418,7 +416,6 @@ final class ComponentItemRepository extends ItemRepository {
             ];
         };
 
-        dump($list);
         return $list;
     }
 }

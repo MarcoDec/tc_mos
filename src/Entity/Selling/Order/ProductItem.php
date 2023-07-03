@@ -6,14 +6,20 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Project\Product\Product;
-use App\Repository\Selling\Order\ProductItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Repository\Selling\Order\ProductItemRepository;
 
 /**
  * @template-extends Item<Product>
  */
-#[
+#[   
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'order.customer.name']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuanity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial']),
+
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -23,6 +29,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Créer une ligne',
                     'tags' => ['SellingOrderItem']
                 ]
+            ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Créer une ligne',
+                    'summary' => 'Créer une ligne'
+                ],
+                'path' => '/selling-order-product',
             ]
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],

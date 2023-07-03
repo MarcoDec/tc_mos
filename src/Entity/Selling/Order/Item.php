@@ -10,12 +10,13 @@ use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Selling\Order\Item\State;
+use App\Entity\Selling\Customer\Customer;
 use App\Entity\Item as BaseItem;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use App\Controller\Project\Product\ItemProductControler;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 
 /**
@@ -25,6 +26,7 @@ use App\Controller\Project\Product\ItemProductControler;
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
+
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -33,25 +35,7 @@ use App\Controller\Project\Product\ItemProductControler;
                     'description' => 'Récupère les lignes',
                     'summary' => 'Récupère les lignes',
                 ]
-            ],
-            'filtreSupplier' => [
-                'controller' => ItemProductControler::class,
-                'method' => 'GET',
-                'openapi_context' => [
-                    'description' => 'Filtrer par fournisseur',
-                    'parameters' => [[
-                        'in' => 'path',
-                        'name' => 'api',
-                        'schema' => [
-                            'type' => 'integer',
-                        ]
-                    ]],
-                    'summary' => 'Filtrer par fournisseur'
-                ],
-                'path' => '/purchase-order-items/productFilter/{api}',
-                'read' => false,
-                'write' => false
-            ],
+            ]
         ],
         itemOperations: [
             'delete' => [
@@ -105,7 +89,7 @@ use App\Controller\Project\Product\ItemProductControler;
             'openapi_definition_name' => 'SellingOrderItem-write'
         ],
         normalizationContext: [
-            'groups' => ['read:id', 'read:item', 'read:measure', 'read:state'],
+            'groups' => ['read:id', 'read:item', 'read:measure', 'read:state', 'read:order', 'read:customer'],
             'openapi_definition_name' => 'SellingOrderItem-read',
             'skip_null_values' => false
         ]
@@ -139,8 +123,8 @@ abstract class Item extends BaseItem {
     protected State $embState;
 
     #[
-        ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
-        ORM\ManyToOne(targetEntity: Order::class),
+        ApiProperty(description: 'Commande'),
+        ORM\ManyToOne(targetEntity: Order::class, fetch: "EAGER"),
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $order;
@@ -149,6 +133,13 @@ abstract class Item extends BaseItem {
         parent::__construct();
         $this->embBlocker = new Closer();
         $this->embState = new State();
+    }
+    #[
+        ApiProperty(description: 'Client'),
+        Serializer\Groups(['read:item','write:item'])
+    ]
+    final public function getCustomer(): ?Customer {
+        return $this->order->getCustomer();
     }
 
     final public function getBlocker(): string {

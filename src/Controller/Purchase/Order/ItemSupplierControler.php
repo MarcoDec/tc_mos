@@ -39,13 +39,11 @@ class ItemSupplierControler
             'supplementFret' => $request->get('supplementFret'),
             'refOrder' => $request->get('refOrder')
         ]; 
-        dump($tab);
         
         $itemId = $request->get('api');
         $currentPage = $request->get('page');
 
         $sourceItem = $this->repository->findBySupplierId($itemId, $tab);
-        dump($sourceItem);
         $entityStr = 'componentItem';
 
         return $sourceItem;
