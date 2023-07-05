@@ -2,10 +2,12 @@
 
 namespace App\Entity\Selling\Order;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Project\Product\Product;
+use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ProductItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -14,6 +16,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  * @template-extends Item<Product>
  */
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item']),
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -23,6 +26,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Créer une ligne',
                     'tags' => ['SellingOrderItem']
                 ]
+            ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère les lignes',
+                    'summary' => 'Récupère les lignes',
+                ],
+                'path' => '/selling-order-products',
             ]
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],
