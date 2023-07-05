@@ -16,7 +16,7 @@
 <template>
     <AppShowGuiGen>
         <template #gui-header>
-            <div class="bg-white border-1 border-dark">
+            <div v-if="useFetchComponentStore.isLoaded" class="bg-white border-1 border-dark">
                 <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
             </div>
         </template>
