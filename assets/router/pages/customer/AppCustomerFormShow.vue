@@ -1,6 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppShowCustomerTabGeneral from '../../../components/pages/selling/customer/AppShowCustomerTabGeneral.vue'
+    import AppShowCustomerTabLogistic from '../../../components/pages/selling/customer/AppShowCustomerTabLogistic.vue'
     import AppShowCustomerTabQuality from '../../../components/pages/selling/customer/AppShowCustomerTabQuality.vue'
     import AppTabFichiers from '../../../components/tab/AppTabFichiers.vue'
     import generateCustomer from '../../../stores/customers/customer'
@@ -8,7 +9,6 @@
     import {useCustomerAttachmentStore} from '../../../stores/customers/customerAttachment'
     import {useCustomerContactsStore} from '../../../stores/customers/customerContacts'
     import {useCustomerStore} from '../../../stores/customers/customers'
-    import {useIncotermStore} from '../../../stores/incoterm/incoterm'
     import useOptions from '../../../stores/option/options'
     import {useRoute} from 'vue-router'
     import {useSocietyStore} from '../../../stores/societies/societies'
@@ -23,14 +23,12 @@
     await fecthOptions.fetchOp()
     const fetchCustomerStore = useCustomerStore()
     const fetchSocietyStore = useSocietyStore()
-    const fecthIncotermStore = useIncotermStore()
     const fecthSuppliersStore = useSuppliersStore()
     const fetchCustomerAttachmentStore = useCustomerAttachmentStore()
     const fecthCustomerContactsStore = useCustomerContactsStore()
     await fetchCustomerStore.fetchOne(idCustomer)
     await fetchCustomerStore.fetchInvoiceTime()
     await fetchSocietyStore.fetch()
-    await fecthIncotermStore.fetch()
     await fecthSuppliersStore.fetchVatMessage()
     const societyId = Number(fetchCustomerStore.customer.society.match(/\d+/))
     const customerId = Number(fetchCustomerStore.customer.id)
@@ -59,13 +57,6 @@
         {text: 'Force AVEC TVA', value: 'Force AVEC TVA'},
         {text: 'Force SANS TVA', value: 'Force SANS TVA'}
     ]
-    const optionsIncoterm = computed(() =>
-        fecthIncotermStore.incoterms.map(incoterm => {
-            const text = incoterm.name
-            const value = incoterm['@id']
-            const optionList = {text, value}
-            return optionList
-        }))
     const optionsCountries = computed(() =>
         fecthOptions.options.map(op => {
             const text = op.text
@@ -144,30 +135,6 @@
             type: 'text'
         }
     ]
-    const Logistiquefields = computed(() => [
-        {
-            label: 'Nombre de bons de livraison mensuel ',
-            name: 'nbDeliveries',
-            type: 'number'
-        },
-        {label: 'DuréeTransport', measure: {code: 'j', value: 'valeur'}, name: 'conveyanceDuration', type: 'measure'},
-        {label: 'Encours maximum', measure: {code: 'U', value: 'valeur'}, name: 'outstandingMax', type: 'measure'},
-        {label: 'Commande minimum', measure: {code: 'U', value: 'valeur'}, name: 'orderMin', type: 'measure'},
-        {
-            label: 'Incoterm',
-            name: 'incotermsValue',
-            options: {
-                label: value =>
-                    optionsIncoterm.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsIncoterm.value
-            },
-            type: 'select'
-        },
-        {label: 'Url *', name: 'getUrl', type: 'text'},
-        {label: 'Ident', name: 'getUsername', type: 'text'},
-        {label: 'Password', name: 'getPassword', type: 'text'}
-    ])
     const Comptabilitéfields = [
         {label: 'compte de comptabilité', name: 'accountingAccount', type: 'text'},
         {
@@ -234,46 +201,6 @@
         {label: 'Fax', name: 'getPhone', type: 'text'}
     ]
 
-    async function updateLogistique(value) {
-        const form = document.getElementById('addLogistique')
-        const formData = new FormData(form)
-
-        const data = {
-            conveyanceDuration: {
-                code: 'j',
-                value: JSON.parse(formData.get('conveyanceDuration-value'))
-            },
-            nbDeliveries: JSON.parse(formData.get('nbDeliveries')),
-            outstandingMax: {
-                code: 'EUR',
-                value: JSON.parse(formData.get('outstandingMax-value'))
-            }
-        }
-        const dataSociety = {
-            incoterms: formData.get('incotermsValue'),
-            orderMin: {
-                code: 'EUR',
-                value: JSON.parse(formData.get('orderMin-value'))
-            }
-        }
-        const dataAccounting = {
-            accountingPortal: {
-                password: formData.get('getPassword'),
-                url: formData.get('getUrl'),
-                username: formData.get('getUsername')
-            }
-        }
-
-        const item = generateCustomer(value)
-        await item.updateAccounting(dataAccounting)
-        //await fetchCustomerStore.update(dataAccounting, customerId);
-
-        await item.update(data)
-        await fetchSocietyStore.update(dataSociety, societyId)
-        // const itemSoc = generateSocieties(value)
-        // await itemSoc.update(dataSociety)
-        await fetchCustomerStore.fetchOne(idCustomer)
-    }
     async function updateComp(value) {
         const form = document.getElementById('addComptabilite')
         const formData = new FormData(form)
@@ -446,11 +373,7 @@
             title="Logistique"
             icon="pallet"
             tabs="gui-start">
-            <AppCardShow
-                id="addLogistique"
-                :fields="Logistiquefields"
-                :component-attribute="dataCustomers"
-                @update="updateLogistique(dataCustomers)"/>
+            <Suspense><AppShowCustomerTabLogistic/></Suspense>
         </AppTab>
         <AppTab
             id="gui-start-accounting"
