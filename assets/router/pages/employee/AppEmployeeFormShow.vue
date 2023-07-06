@@ -2,10 +2,17 @@
     import AppShowEmployeeContact from '../../../components/pages/hr/employee/AppShowEmployeeContact.vue'
     import AppShowEmployeeTabAccess from '../../../components/pages/hr/employee/AppShowEmployeeTabAccess.vue'
     import AppShowEmployeeTabDroits from '../../../components/pages/hr/employee/AppShowEmployeeTabDroits.vue'
-    import AppShowEmployeeTabFichiers from '../../../components/pages/hr/employee/AppShowEmployeeTabFichiers.vue'
     import AppShowEmployeeTabGeneral from '../../../components/pages/hr/employee/AppShowEmployeeTabGeneral.vue'
     import AppShowEmployeeTabInfos from '../../../components/pages/hr/employee/AppShowEmployeeTabInfos.vue'
     import AppShowEmployeeTabProduction from '../../../components/pages/hr/employee/AppShowEmployeeTabProduction.vue'
+    import AppTabFichiers from '../../../components/tab/AppTabFichiers.vue'
+    import {useEmployeeAttachmentStore} from '../../../stores/employee/employeeAttachements'
+    import {useEmployeeStore} from '../../../stores/employee/employees'
+    import {useRoute} from 'vue-router'
+    const route = useRoute()
+    const employeeId = route.params.id_employee
+    const employeeAttachmentStore = useEmployeeAttachmentStore()
+    employeeAttachmentStore.fetchByElement(employeeId)
 </script>
 
 <template>
@@ -51,7 +58,15 @@
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <Suspense><AppShowEmployeeTabFichiers/></Suspense>
+            <Suspense>
+                <AppTabFichiers
+                    attachment-element-label="employee"
+                    :element-api-url="`/api/employees/${employeeId}`"
+                    :element-attachment-store="employeeAttachmentStore"
+                    :element-id="employeeId"
+                    element-parameter-name="EMPLOYEE_ATTACHMENT_CATEGORIES"
+                    :element-store="useEmployeeStore"/>
+            </Suspense>
         </AppTab>
         <AppTab
             id="gui-start-production"

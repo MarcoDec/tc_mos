@@ -9,17 +9,19 @@ export const useEmployeeAttachmentStore = defineStore('employeeAttachment', {
             form.append('category', data.category)
             form.append('employee', data.employee)
             await api('/api/employee-attachments', 'POST', form)
-            this.fetchOne()
+            this.fetchByElement(this.id)
         },
-        async fetchOne() {
-            const response = await api('/api/employee-attachments?pagination=false', 'GET')
-            this.employeeAttachment = await response['hydra:member']
+        async fetchByElement(id) {
+            console.log(id)
+            const response = await api(`/api/employee-attachments?pagination=false&employee=/api/employees/${id}`, 'GET')
+            this.elementAttachments = await response['hydra:member']
+            this.id = id
         }
-
     },
     getters: {
     },
     state: () => ({
-        employeeAttachment: []
+        elementAttachments: [],
+        id: 1
     })
 })
