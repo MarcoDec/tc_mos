@@ -2,11 +2,11 @@
     import {computed, ref} from 'vue'
     import AppShowCustomerTabAccounting
         from '../../../components/pages/selling/customer/AppShowCustomerTabAccounting.vue'
+    import AppShowCustomerTabAddress from '../../../components/pages/selling/customer/AppShowCustomerTabAddress.vue'
     import AppShowCustomerTabGeneral from '../../../components/pages/selling/customer/AppShowCustomerTabGeneral.vue'
     import AppShowCustomerTabLogistic from '../../../components/pages/selling/customer/AppShowCustomerTabLogistic.vue'
     import AppShowCustomerTabQuality from '../../../components/pages/selling/customer/AppShowCustomerTabQuality.vue'
     import AppTabFichiers from '../../../components/tab/AppTabFichiers.vue'
-    import generateCustomer from '../../../stores/customers/customer'
     import generateCustomerContact from '../../../stores/customers/customerContact'
     import {useCustomerAttachmentStore} from '../../../stores/customers/customerAttachment'
     import {useCustomerContactsStore} from '../../../stores/customers/customerContacts'
@@ -107,47 +107,6 @@
             type: 'text'
         }
     ]
-    const Adressefields = [
-        {label: 'Email', name: 'getEmail', type: 'text'},
-        {label: 'Adresse', name: 'getAddress', type: 'text'},
-        {label: 'Complément d\'adresse', name: 'getAddress2', type: 'text'},
-        {label: 'Code postal', name: 'getPostal', type: 'text'},
-        {label: 'Ville', name: 'getCity', type: 'text'},
-        {
-            label: 'Pays',
-            name: 'getCountry',
-            options: {
-                label: value =>
-                    optionsCountries.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsCountries.value
-            },
-            type: 'select'
-        },
-        {label: 'Fax', name: 'getPhone', type: 'text'}
-    ]
-    async function updateAdresse(value) {
-        const form = document.getElementById('addAdresses')
-        const formData = new FormData(form)
-
-        const dataSociety = {
-            address: {
-                address: formData.get('getAddress'),
-                address2: formData.get('getAddress2'),
-                city: formData.get('getCity'),
-                country: formData.get('getCountry'),
-                email: formData.get('getEmail'),
-                phoneNumber: formData.get('getPhone'),
-                zipCode: formData.get('getPostal')
-            }
-        }
-
-        const item = generateCustomer(value)
-        await item.updateMain(dataSociety)
-        await fetchSocietyStore.fetch()
-        await fetchCustomerStore.fetchOne(idCustomer)
-    }
-
     async function ajout(inputValues) {
         const data = {
             address: {
@@ -280,11 +239,10 @@
             title="Adresse"
             icon="location-dot"
             tabs="gui-start">
-            <AppCardShow
-                id="addAdresses"
-                :fields="Adressefields"
-                :component-attribute="fetchCustomerStore.customer"
-                @update="updateAdresse(fetchCustomerStore.customer)"/>
+            <Suspense>
+                <AppShowCustomerTabAddress
+                    :options-countries="optionsCountries"/>
+            </Suspense>
         </AppTab>
         <AppTab
             id="gui-start-contacts"
