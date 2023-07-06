@@ -1,10 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppShowCustomerTabGeneral from '../../../components/pages/selling/customer/AppShowCustomerTabGeneral.vue'
+    import AppShowCustomerTabQuality from '../../../components/pages/selling/customer/AppShowCustomerTabQuality.vue'
     import AppTabFichiers from '../../../components/tab/AppTabFichiers.vue'
     import generateCustomer from '../../../stores/customers/customer'
     import generateCustomerContact from '../../../stores/customers/customerContact'
-    import generateSocieties from '../../../stores/societies/societie'
     import {useCustomerAttachmentStore} from '../../../stores/customers/customerAttachment'
     import {useCustomerContactsStore} from '../../../stores/customers/customerContacts'
     import {useCustomerStore} from '../../../stores/customers/customers'
@@ -144,25 +144,6 @@
             type: 'text'
         }
     ]
-    const Qualitéfields = [
-        {label: 'Nb PPM', name: 'ppmRate', type: 'number'},
-        {label: 'Url *', name: 'getUrl', type: 'text'},
-        {label: 'Ident', name: 'getUsername', type: 'text'},
-        {label: 'Password', name: 'getPassword', type: 'text'}
-        //  {
-        //   children: [
-        //       { label: "Nb PPM", name: "ppmRate", type: "number" },
-
-        //     { label: "Url1 *", name: "getUrl", type: "text" },
-        //     { label: "Ident1", name: "getUsername", type: "text" },
-        //     { label: "Password1", name: "getPassword", type: "text" },
-        //   ],
-
-        //   label: "",
-        //   mode: "fieldset",
-        //   name: "",
-        // },
-    ]
     const Logistiquefields = computed(() => [
         {
             label: 'Nombre de bons de livraison mensuel ',
@@ -186,17 +167,6 @@
         {label: 'Url *', name: 'getUrl', type: 'text'},
         {label: 'Ident', name: 'getUsername', type: 'text'},
         {label: 'Password', name: 'getPassword', type: 'text'}
-        //   {
-        //     children: [
-        //       { label: "Url *", name: "getUrl", type: "text" },
-        //       { label: "Ident", name: "getUsername", type: "text" },
-        //       { label: "Password", name: "getPassword", type: "text" },
-        //     ],
-
-        //     label: "",
-        //     mode: "fieldset",
-        //     name: "webPo",
-        //   },
     ])
     const Comptabilitéfields = [
         {label: 'compte de comptabilité', name: 'accountingAccount', type: 'text'},
@@ -263,24 +233,7 @@
         },
         {label: 'Fax', name: 'getPhone', type: 'text'}
     ]
-    async function updateQte(value) {
-        const form = document.getElementById('addQualite')
-        const formData = new FormData(form)
-        const data = {ppmRate: JSON.parse(formData.get('ppmRate'))}
-        const dataAccounting = {
-            accountingPortal: {
-                password: formData.get('getPassword'),
-                url: formData.get('getUrl'),
-                username: formData.get('getUsername')
-            }
-        }
 
-        const item = generateCustomer(value)
-        await item.updateAccounting(dataAccounting)
-        const itemSoc = generateSocieties(value)
-        await itemSoc.update(data)
-        await fetchCustomerStore.fetchOne(idCustomer)
-    }
     async function updateLogistique(value) {
         const form = document.getElementById('addLogistique')
         const formData = new FormData(form)
@@ -486,11 +439,7 @@
             title="Qualité"
             icon="certificate"
             tabs="gui-start">
-            <AppCardShow
-                id="addQualite"
-                :fields="Qualitéfields"
-                :component-attribute="dataCustomers"
-                @update="updateQte(dataCustomers)"/>
+            <Suspense><AppShowCustomerTabQuality/></Suspense>
         </AppTab>
         <AppTab
             id="gui-start-purchase-logistics"
