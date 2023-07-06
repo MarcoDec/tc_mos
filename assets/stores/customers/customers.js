@@ -12,6 +12,7 @@ export const useCustomerStore = defineStore('customers', {
             const response = await api(`/api/customers/${id}`, 'GET')
             const item = generateCustomer(response, this)
             this.customer = item
+            this.isLoaded = true
         },
         async update(data, id) {
             await api(`/api/customers/${id}/logistics`, 'PATCH', data)
@@ -22,7 +23,7 @@ export const useCustomerStore = defineStore('customers', {
     },
     state: () => ({
         customer: {},
-        invoicesData: []
-
+        invoicesData: [],
+        isLoaded: false
     })
 })

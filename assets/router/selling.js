@@ -1,4 +1,4 @@
-import AppShowGuiCustomer from '../components/pages/selling/AppShowGuiCustomer.vue'
+import AppShowGuiCustomer from '../components/pages/selling/customer/AppShowGuiCustomer.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 

@@ -1,5 +1,6 @@
 <script setup>
-    import {computed, onUnmounted, ref} from 'vue'
+    import {computed, ref} from 'vue'
+    import AppShowCustomerTabGeneral from '../../../components/pages/selling/customer/AppShowCustomerTabGeneral.vue'
     import MyTree from '../../../components/MyTree.vue'
     import generateCustomer from '../../../stores/customers/customer'
     import generateCustomerContact from '../../../stores/customers/customerContact'
@@ -15,18 +16,13 @@
 
     const route = useRoute()
     const idCustomer = route.params.id_customer
-
-    const emit = defineEmits(['update', 'update:modelValue'])
-
     const isError = ref(false)
     const isError2 = ref(false)
     const isShow = ref(false)
     const violations = ref([])
     const violations2 = ref([])
     const fecthOptions = useOptions('countries')
-    const fecthCompanyOptions = useOptions('companies')
     await fecthOptions.fetchOp()
-    await fecthCompanyOptions.fetchOp()
     const fetchCustomerStore = useCustomerStore()
     const fetchCustomerAttachmentStore = useCustomerAttachmentStore()
     const fetchSocietyStore = useSocietyStore()
@@ -39,9 +35,6 @@
     await fetchSocietyStore.fetch()
     await fecthIncotermStore.fetch()
     await fecthSuppliersStore.fetchVatMessage()
-    onUnmounted(() => {
-        fecthCompanyOptions.dispose()
-    })
     const societyId = Number(fetchCustomerStore.customer.society.match(/\d+/))
     const customerId = Number(fetchCustomerStore.customer.id)
     await fetchSocietyStore.fetchById(societyId)
@@ -97,13 +90,6 @@
         fecthOptions.options.map(op => {
             const text = op.text
             const value = op.id
-            const optionList = {text, value}
-            return optionList
-        }))
-    const optionsCompany = computed(() =>
-        fecthCompanyOptions.options.map(op => {
-            const text = op.text
-            const value = op['@id']
             const optionList = {text, value}
             return optionList
         }))
@@ -297,25 +283,7 @@
         },
         {label: 'Fax', name: 'getPhone', type: 'text'}
     ]
-    const Géneralitésfields = [
-        {label: 'Langue', name: 'language', type: 'text'},
-        {label: 'SIREN', name: 'siren', type: 'text'},
-        {
-            label: 'Compagnies',
-            name: 'administeredBy',
-            options: {
-                label: value =>
-                    optionsCompany.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsCompany.value
-            },
-            type: 'multiselect'
-        },
-        {label: 'Web', name: 'web', type: 'text'},
-        {label: 'Note', name: 'notes', type: 'textarea'},
-        {label: 'Accusé de réception', name: 'ar', type: 'boolean'},
-        {label: 'Equivalence', name: 'equivalentEnabled', type: 'boolean'}
-    ]
+
     const Fichiersfields = [
         {label: 'Categorie', name: 'category', type: 'text'},
         {label: 'Fichier', name: 'file', type: 'file'}
@@ -432,39 +400,6 @@
         await fetchSocietyStore.fetchById(societyId)
         await fetchCustomerStore.fetchOne(idCustomer)
     }
-    const val = ref(Number(fetchCustomerStore.customer.administeredBy))
-    async function input(value) {
-        val.value = value.administeredBy
-        emit('update:modelValue', val.value)
-        const data = {
-            administeredBy: val.value
-        }
-        const item = generateCustomer(value)
-        await item.updateMain(data)
-        await fetchCustomerStore.fetchOne(idCustomer)
-    }
-    async function updateGeneral(value) {
-        const form = document.getElementById('addGeneralites')
-        const formData = new FormData(form)
-
-        const data = {
-            equivalentEnabled: JSON.parse(formData.get('equivalentEnabled')),
-            language: formData.get('language'),
-            notes: formData.get('notes') ? formData.get('notes') : null
-        }
-        const dataSociety = {
-            ar: JSON.parse(formData.get('ar')),
-            siren: formData.get('siren'),
-            web: formData.get('web')
-        }
-        const item = generateCustomer(value)
-        await item.updateMain(data)
-
-        await fetchSocietyStore.update(dataSociety, societyId)
-        await fetchSocietyStore.fetchById(societyId)
-        await fetchCustomerStore.fetchOne(idCustomer)
-    }
-
     async function updateAdresse(value) {
         const form = document.getElementById('addAdresses')
         const formData = new FormData(form)
@@ -576,12 +511,7 @@
             title="Généralités"
             icon="pencil"
             tabs="gui-start">
-            <AppCardShow
-                id="addGeneralites"
-                :fields="Géneralitésfields"
-                :component-attribute="dataCustomers"
-                @update="updateGeneral(dataCustomers)"
-                @update:model-value="input"/>
+            <AppShowCustomerTabGeneral/>
         </AppTab>
         <AppTab
             id="gui-start-files"
@@ -666,3 +596,14 @@
         </AppTab>
     </AppTabs>
 </template>
+
+<style scoped>
+div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+.gui-start-content {
+    font-size: 14px;
+}
+#gui-start-production, #gui-start-droits {
+    padding-bottom: 150px;
+}
+</style>
+
