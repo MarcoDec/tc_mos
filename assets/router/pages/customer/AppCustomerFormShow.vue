@@ -1,7 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppShowCustomerTabGeneral from '../../../components/pages/selling/customer/AppShowCustomerTabGeneral.vue'
-    import MyTree from '../../../components/MyTree.vue'
+    import AppTabFichiers from '../../../components/tab/AppTabFichiers.vue'
     import generateCustomer from '../../../stores/customers/customer'
     import generateCustomerContact from '../../../stores/customers/customerContact'
     import generateSocieties from '../../../stores/societies/societie'
@@ -16,21 +16,18 @@
 
     const route = useRoute()
     const idCustomer = route.params.id_customer
-    const isError = ref(false)
     const isError2 = ref(false)
     const isShow = ref(false)
-    const violations = ref([])
     const violations2 = ref([])
     const fecthOptions = useOptions('countries')
     await fecthOptions.fetchOp()
     const fetchCustomerStore = useCustomerStore()
-    const fetchCustomerAttachmentStore = useCustomerAttachmentStore()
     const fetchSocietyStore = useSocietyStore()
     const fecthIncotermStore = useIncotermStore()
     const fecthSuppliersStore = useSuppliersStore()
+    const fetchCustomerAttachmentStore = useCustomerAttachmentStore()
     const fecthCustomerContactsStore = useCustomerContactsStore()
     await fetchCustomerStore.fetchOne(idCustomer)
-    await fetchCustomerAttachmentStore.fetchOne()
     await fetchCustomerStore.fetchInvoiceTime()
     await fetchSocietyStore.fetch()
     await fecthIncotermStore.fetch()
@@ -54,23 +51,6 @@
         ...fetchSocietyStore.incotermsValue,
         ...fetchSocietyStore.vatMessageValue
     }))
-    const customerAttachment = computed(() =>
-        fetchCustomerAttachmentStore.customerAttachment.map(attachment => ({
-            icon: 'file-contract',
-            id: attachment['@id'],
-            label: attachment.url.split('/').pop(), // get the filename from the URL
-            url: attachment.url
-        })))
-    const treeData = computed(() => {
-        const data = {
-            children: customerAttachment.value,
-            icon: 'folder',
-            id: 1,
-            label: `Attachments (${customerAttachment.value.length})`
-        }
-        return data
-    })
-
     const optionsVatMessageForce = [
         {
             text: 'TVA par défaut selon le pays du client',
@@ -283,33 +263,6 @@
         },
         {label: 'Fax', name: 'getPhone', type: 'text'}
     ]
-
-    const Fichiersfields = [
-        {label: 'Categorie', name: 'category', type: 'text'},
-        {label: 'Fichier', name: 'file', type: 'file'}
-    ]
-    async function updateFichiers(value) {
-        const custId = Number(value['@id'].match(/\d+/)[0])
-        const form = document.getElementById('addFichiers')
-        const formData = new FormData(form)
-
-        const data = {
-            category: formData.get('category'),
-            customer: `/api/customers/${custId}`,
-            file: formData.get('file')
-        }
-        try {
-            await fetchCustomerAttachmentStore.ajout(data)
-
-            isError.value = false
-        } catch (error) {
-            const err = {
-                message: error
-            }
-            violations.value.push(err)
-            isError.value = true
-        }
-    }
     async function updateQte(value) {
         const form = document.getElementById('addQualite')
         const formData = new FormData(form)
@@ -511,24 +464,22 @@
             title="Généralités"
             icon="pencil"
             tabs="gui-start">
-            <AppShowCustomerTabGeneral/>
+            <Suspense><AppShowCustomerTabGeneral/></Suspense>
         </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <AppCardShow
-                id="addFichiers"
-                :fields="Fichiersfields"
-                :component-attribute="dataCustomers"
-                @update="updateFichiers(dataCustomers)"/>
-            <div v-if="isError" class="alert alert-danger" role="alert">
-                <div v-for="violation in violations" :key="violation">
-                    <li>{{ violation.message }}</li>
-                </div>
-            </div>
-            <MyTree :node="treeData"/>
+            <Suspense>
+                <AppTabFichiers
+                    attachment-element-label="customer"
+                    :element-api-url="`/api/customers/${customerId}`"
+                    :element-attachment-store="fetchCustomerAttachmentStore"
+                    :element-id="customerId"
+                    element-parameter-name="CUSTOMER_ATTACHMENT_CATEGORIES"
+                    :element-store="useCustomerStore"/>
+            </Suspense>
         </AppTab>
         <AppTab
             id="gui-start-quality"

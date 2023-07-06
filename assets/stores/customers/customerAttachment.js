@@ -9,12 +9,13 @@ export const useCustomerAttachmentStore = defineStore('customerAttachment', {
             form.append('category', data.category)
             form.append('customer', data.customer)
             await api('/api/customer-attachments', 'POST', form)
-            this.fetchOne()
+            this.fetchByElement(this.id)
         },
-        async fetchOne() {
-            this.items = []
-            const response = await api('/api/customer-attachments?pagination=false', 'GET')
-            this.customerAttachment = await response['hydra:member']
+        async fetchByElement(id) {
+            console.log(id)
+            const response = await api(`/api/customer-attachments?pagination=false&employee=/api/customers/${id}`, 'GET')
+            this.elementAttachments = await response['hydra:member']
+            this.id = id
         }
 
     },
@@ -22,6 +23,7 @@ export const useCustomerAttachmentStore = defineStore('customerAttachment', {
 
     },
     state: () => ({
-        customerAttachment: []
+        elementAttachments: [],
+        id: 1
     })
 })
