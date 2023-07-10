@@ -49,7 +49,6 @@ function defineUserStore() {
                 try {
                     save(await api('/api/login', 'POST', data))
                 } catch (error) {
-                    console.log('ok')
                     clear()
                     throw error
                 }
