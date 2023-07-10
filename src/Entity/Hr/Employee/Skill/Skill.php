@@ -3,6 +3,7 @@
 namespace App\Entity\Hr\Employee\Skill;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -19,6 +20,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['employee']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['startedDate' => 'partial', 'endedDate' => 'partial', 'remindedDate' => 'partial', 'type.name' => 'partial', 'family.code' => 'partial', 'family.value' => 'partial', 'engine.name' => 'partial', 'engine.surname' => 'partial', 'level' => 'partial', 'commentaire' => 'partial', 'inTrainer.name' => 'partial', 'inTrainer.surname' => 'partial', 'outTrainer.name' => 'partial', 'outTrainer.surname' => 'partial']),
+
     ApiResource(
         description: 'Compétence',
         collectionOperations: [
@@ -84,7 +87,7 @@ class Skill extends Entity {
     private ?DateTimeImmutable $endedDate = null;
 
     #[
-        ApiProperty(description: 'Employé', readableLink: false, example: '/api/engines/3'),
+        ApiProperty(description: 'Employé'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
@@ -98,7 +101,7 @@ class Skill extends Entity {
     private ?Group $family = null;
 
     #[
-        ApiProperty(description: 'Formateur interne', readableLink: false, example: '/api/employees/1'),
+        ApiProperty(description: 'Formateur interne'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
@@ -112,7 +115,7 @@ class Skill extends Entity {
     private int $level = 0;
 
     #[
-        ApiProperty(description: 'Formateur extérieur', readableLink: false, example: '/api/out-trainers/1'),
+        ApiProperty(description: 'Formateur extérieur'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
@@ -154,7 +157,7 @@ class Skill extends Entity {
     private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Type', readableLink: false, example: '/api/skill-types/4'),
+        ApiProperty(description: 'Type'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]

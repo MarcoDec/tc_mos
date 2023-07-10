@@ -35,6 +35,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Hr\Employee\EmployeePatchController;
+use App\Entity\Production\Manufacturing\OperationEmployee;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['userEnabled']),
@@ -263,7 +264,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
     ]
     private ?string $name = null;
 
@@ -304,7 +305,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Nom', example: 'Roosevelt'),
         ORM\Column,
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation'])
+        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
     ]
     private ?string $surname = null;
 
@@ -332,9 +333,21 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'identifiant', example: 'super'),
         ORM\Column(length: 20, nullable: true),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'read:manufacturing-operation', 'write:employee', 'write:employee:it'])
+        Serializer\Groups(['read:operation-employee', 'create:employee', 'read:employee','read:employee:collection', 'read:user', 'read:manufacturing-operation', 'write:employee', 'write:employee:it'])
     ]
     private ?string $username = null;
+
+    #[
+        ApiProperty(description: 'Opération'),
+        ORM\OneToMany(targetEntity: OperationEmployee::class, mappedBy: 'employee'),
+        Serializer\Groups(['read:manufacturing-operation', 'read:operation-employee', 'read:employee'])
+    ]
+    private ?Collection $operationEmployees = null;
+    
+    public function getOperationEmployees(): ?Collection
+    {
+        return $this->operationEmployees;
+    }
 
     public function __construct() {
         $this->apiTokens = new ArrayCollection();

@@ -6,7 +6,6 @@ namespace App\Entity\Hr\TimeClock;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Hr\Employee\ClockingController;
 use App\Entity\AbstractAttachment;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -15,8 +14,19 @@ use App\Entity\Traits\AttachmentTrait;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Filter\RelationFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
+/*   
+   ApiFilter(filterClass: SearchFilter::class, properties: ['employee'=> 'exact', 'creationDate' => 'partial', 'date' => 'partial', 'enter' => 'partial']),
+   ApiFilter(filterClass: RelationFilter:class, properties:['-creationDate']),
+   ApiFilter(OrderFilter::class, properties: ['creationDate' => 'DESC']),
+*/
 #[
+   ApiFilter(filterClass: OrderFilter::class, properties: ['creationDate' => 'desc']),
+   ApiFilter(filterClass: SearchFilter::class, properties: ['employee'=> 'exact', 'creationDate' => 'partial', 'date' => 'partial', 'enter' => 'partial']),
+
    ORM\Entity,
    ApiResource(
       description: 'Pointages',
@@ -80,9 +90,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
       attributes: [
          'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
       ],
-      paginationItemsPerPage: 2
+      paginationItemsPerPage: 15
    ),
-   ApiFilter(SearchFilter::class, properties: ['employee' => 'exact'])
 ]
 class Clocking extends AbstractAttachment {
    use AttachmentTrait;
@@ -108,7 +117,8 @@ class Clocking extends AbstractAttachment {
     private bool $enter;
 
    #[
-      ORM\Column(type: "datetime", nullable: true)
+      ORM\Column(type: "datetime", nullable: true),
+      Serializer\Groups(['read:clocking:collection']),
    ]
    private DateTime $creationDate;
 
