@@ -1,8 +1,4 @@
 <script setup>
-    //inlist
-    // import generateItems from '../../../stores/table/items'
-    // import {useRoute} from 'vue-router'
-    // import {useTableMachine} from '../../../machine'
     import {computed, ref} from 'vue'
     import AppSupplierListFourniture from './AppSupplierListFourniture.vue'
     import AppSupplierListRetard from './AppSupplierListRetard.vue'

@@ -52,7 +52,11 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                 }
 
                 if (payload.supplementFret !== ''){
-                    url += `supplementFret=${payload.supplementFret}&`
+                    if (payload.supplementFret === true){
+                        url += 'supplementFret=1&'
+                    } else {
+                        url += 'supplementFret=0&'
+                    }
                 }
 
                 if (payload.infoPublic !== ''){
@@ -86,7 +90,11 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                     }
 
                     if (payload.filterBy.value.supplementFret !== '') {
-                        url += `supplementFret=${payload.filterBy.value.supplementFret}&`
+                        if (payload.filterBy.value.supplementFret === true){
+                            url += 'supplementFret=1&'
+                        } else {
+                            url += 'supplementFret=0&'
+                        }
                     }
                     if (payload.filterBy.value.commentaire !== ''){
                         url += `note=${payload.filterBy.value.commentaire}&`
@@ -111,7 +119,11 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                         url += `statutFournisseur=${payload.filterBy.value.statutFournisseur}&`
                     }
                     if (payload.filterBy.value.supplementFret !== '') {
-                        url += `supplementFret=${payload.filterBy.value.supplementFret}&`
+                        if (payload.filterBy.value.supplementFret === true){
+                            url += 'supplementFret=1&'
+                        } else {
+                            url += 'supplementFret=0&'
+                        }
                     }
                     if (payload.filterBy.value.infoPublic !== '') {
                         url += `infoPublic=${payload.filterBy.value.infoPublic}&`
@@ -135,7 +147,11 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                     url += `statutFournisseur=${payload.filterBy.value.statutFournisseur}&`
                 }
                 if (payload.filterBy.value.supplementFret !== '') {
-                    url += `supplementFret=${payload.filterBy.value.supplementFret}&`
+                    if (payload.filterBy.value.supplementFret === true){
+                        url += 'supplementFret=1&'
+                    } else {
+                        url += 'supplementFret=0&'
+                    }
                 }
                 if (payload.filterBy.value.infoPublic !== '') {
                     url += `infoPublic=${payload.filterBy.value.infoPublic}&`
@@ -173,7 +189,11 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                     }
 
                     if (filterBy.value.supplementFret !== '') {
-                        url += `supplementFret=${filterBy.value.supplementFret}&`
+                        if (filterBy.value.supplementFret === true){
+                            url += 'supplementFret=1&'
+                        } else {
+                            url += 'supplementFret=0&'
+                        }
                     }
                     if (filterBy.value.commentaire !== ''){
                         url += `note=${filterBy.value.commentaire}&`
@@ -195,7 +215,11 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
                     }
 
                     if (filterBy.value.supplementFret !== '') {
-                        url += `supplementFret=${filterBy.value.supplementFret}&`
+                        if (filterBy.value.supplementFret === true){
+                            url += 'supplementFret=1&'
+                        } else {
+                            url += 'supplementFret=0&'
+                        }
                     }
                     if (filterBy.value.infoPublic !== ''){
                         url += `infoPublic=${filterBy.value.infoPublic}&`

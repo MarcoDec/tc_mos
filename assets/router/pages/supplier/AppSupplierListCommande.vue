@@ -141,7 +141,6 @@
         itemsTable.value = [...storeSupplierListCommande.itemsSupplierCommande]
     }
     async function getPage(nPage){
-        console.log(nPage)
         await storeSupplierListCommande.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
         itemsTable.value = [...storeSupplierListCommande.itemsSupplierCommande]
     }

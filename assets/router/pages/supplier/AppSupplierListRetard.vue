@@ -356,7 +356,6 @@
         if (typeof payload.quantiteEffectuee.code === 'undefined' && payload.quantiteEffectuee !== '') {
             payload.quantiteEffectuee.code = ''
         }
-        console.log(payload)
         await storeSupplierListRetard.filterBy(payload)
         itemsTable.value = [...storeSupplierListRetard.itemsSupplierRetard]
         filter.value = true
