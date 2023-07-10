@@ -17,8 +17,8 @@ export default function generateCustomer(customers) {
                 const response = await api(`/api/customers/${customers.id}/accounting`, 'PATCH', data)
                 this.$state = {...response}
             },
-            async updateMain(data) {
-                const response = await api(`/api/customers/${customers.id}/main`, 'PATCH', data)
+            async updateMain(id, data) {
+                const response = await api(`/api/customers/${id}/main`, 'PATCH', data)
                 this.$state = {...response}
             }
         },
