@@ -14,7 +14,7 @@ class Measure {
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
         Serializer\Groups(['read:measure', 
         'write:measure', 'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
-        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project'])
+        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project', 'read:operation-employee:collection'])
     ]
     private ?string $code = null;
 
@@ -22,7 +22,7 @@ class Measure {
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
         Serializer\Groups(['read:measure', 'write:measure', 
         'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
-        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project'])
+        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project', 'read:operation-employee:collection'])
     ]
     private ?string $denominator = null;
 
@@ -33,7 +33,7 @@ class Measure {
         ORM\Column(options: ['default' => 0]),
         Serializer\Groups(['read:measure', 'write:measure', 
         'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
-        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project'])
+        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project','read:operation-employee:collection'])
     ]
     private float $value = 0;
 

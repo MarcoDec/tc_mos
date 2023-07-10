@@ -14,7 +14,7 @@ class Closer extends State {
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => CloserStateType::TYPES]),
         ORM\Column(type: 'closer_state', options: ['default' => 'enabled']),
-        Serializer\Groups(['read:state'])
+        Serializer\Groups(['read:state', 'read:operation-employee:collection'])
     ]
     protected string $state = CloserStateType::TYPE_STATE_ENABLED;
 }

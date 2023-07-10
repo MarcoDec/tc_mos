@@ -123,14 +123,14 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Marque', example: 'Apple'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event',  'read:operation-employee:collection'])
     ]
     protected ?string $brand = null;
 
     #[
         ApiProperty(description: 'Référence', example: 'MA-1'),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:skill', 'read:operation-employee:collection'])
     ]
     protected ?string $code = null;
 
@@ -149,32 +149,32 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
         ORM\Column,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:skill', 'read:operation-employee:collection'])
     ]
     protected ?string $name = null;
 
     #[
         ApiProperty(description: 'Zone'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:operation-employee:collection'])
     ]
     protected ?Zone $zone = null;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Blocker $embBlocker;
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:engine','read:manufacturing-operation'])
+        Serializer\Groups(['read:engine','read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private EmployeeEngineState $embState;
 
     #[
         ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist']),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation']),
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation', 'read:operation-employee:collection']),
         Serializer\MaxDepth(1)
     ]
     private ManufacturerEngine $manufacturerEngine;
