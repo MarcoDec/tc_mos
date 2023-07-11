@@ -177,7 +177,7 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
             }
         },
         async itemsPagination(nPage) {
-            const response = await api(`/api/selling-order-items/employeeFilter/${this.employeeID}?page=${nPage}`, 'GET')
+            const response = await api(`/api/manufacturing-operations?pic.id=${this.employeeID}&page=${nPage}`, 'GET')
             this.employeeOF = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {

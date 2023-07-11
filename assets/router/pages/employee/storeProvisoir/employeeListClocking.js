@@ -67,7 +67,7 @@ export const useEmployeeListClockingStore = defineStore('employeeListClocking', 
             }
         },
         async itemsPagination(nPage) {
-            const response = await api(`/api/selling-order-items/employeeFilter/${this.employeeID}?page=${nPage}`, 'GET')
+            const response = await api(`/api/clockings?employee=/api/employees/${this.employeeID}?page=${nPage}`, 'GET')
             this.employeeClocking = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
@@ -240,8 +240,15 @@ export const useEmployeeListClockingStore = defineStore('employeeListClocking', 
     },
     getters: {
         itemsEmployeeClocking: state => state.employeeClocking.map(item => {
-            const createDt = item.creationDate.replace(/T/g, ' ')
-            const dt = item.date.replace(/T/g, ' ')
+            let createDt = ' '
+            if (item.creationDate !== null && typeof item.creationDate !== 'undefined'){
+                createDt = item.creationDate.replace(/T/g, ' ')
+            }
+            let dt = ' '
+            if (item.date !== null && typeof item.date !== 'undefined'){
+                dt = item.date.replace(/T/g, ' ')
+            }
+
             const newObject = {
                 '@id': item['@id'],
                 creationDate: createDt,
