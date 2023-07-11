@@ -16,6 +16,7 @@ import employee from './routes/employee'
 import equipment from './routes/equipment'
 import product from './routes/product'
 import supplier from './routes/supplier'
+import direction from './routes/direction'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
@@ -33,6 +34,7 @@ const router = createRouter({
         ...employee,
         ...equipment,
         ...selling,
+        ...direction,
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},
         {component: AppHome, meta: {title: 'T-Concept GPAO'}, name: 'home', path: '/'},
         {meta: {title: 'T-Concept GPAO'}, name: 'all', path: '/:pathMatch(.*)*'}
