@@ -1,5 +1,5 @@
 <script setup>
-    import AppSocityListTable from './AppSocityListTable.vue'
+    import AppSocietyListTable from './AppSocietyListTable.vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
 
     defineProps({
@@ -10,6 +10,6 @@
 
 <template>
     <AppSuspense>
-        <AppSocityListTable :icon="icon" :title="title"/>
+        <AppSocietyListTable :icon="icon" :title="title"/>
     </AppSuspense>
 </template>
