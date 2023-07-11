@@ -23,8 +23,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Management\Company\CompanyPatchController;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'deliveryTime' => 'partial',
+        'deliveryTimeOpenDays' => 'partial', 'engineHourRate' => 'partial', 'generalMargin' => 'partial', 'handlingHourRate' => 'partial',
+        'managementFees' => 'partial', 'numberOfTeamPerDay' => 'partial'
+    ]),
     ApiResource(
         description: 'Compagnie',
         collectionOperations: [
@@ -111,7 +117,7 @@ use App\Controller\Management\Company\CompanyPatchController;
 ]
 class Company extends Entity {
     #[
-        ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/2'),
+        ApiProperty(description: 'Monnaie', readableLink: true, example: '/api/currencies/2'),
         ORM\ManyToOne(targetEntity: Currency::class, fetch: "EAGER"),
         Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
     ]
@@ -125,14 +131,14 @@ class Company extends Entity {
         ApiProperty(description: 'Temps de livraison', example: 7),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:logistics'])
+        Serializer\Groups(['read:company', 'write:company', 'read:company:collection', 'write:company:logistics'])
     ]
     private int $deliveryTime = 0;
 
     #[
         ApiProperty(description: 'Est-ce un temps de livraison en jours ouvrés ?', example: true),
         ORM\Column(options: ['default' => true]),
-        Serializer\Groups(['read:company', 'write:company', 'write:company:logistics'])
+        Serializer\Groups(['read:company', 'write:company', 'read:company:collection', 'write:company:logistics'])
     ]
     private bool $deliveryTimeOpenDays = true;
 
@@ -140,7 +146,7 @@ class Company extends Entity {
         ApiProperty(description: 'Taux horaire machine', example: 27),
         ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
     ]
     private float $engineHourRate = 0;
 
@@ -148,7 +154,7 @@ class Company extends Entity {
         ApiProperty(description: 'Marge générale', example: 2),
         ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
     ]
     private float $generalMargin = 0;
 
@@ -156,7 +162,7 @@ class Company extends Entity {
         ApiProperty(description: 'Taux horaire manutention', example: 15),
         ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
     ]
     private float $handlingHourRate = 0;
 
@@ -172,7 +178,7 @@ class Company extends Entity {
         ApiProperty(description: 'Frais de gestion', example: 15),
         ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'write:company', 'read:company:collection', 'write:company:selling'])
     ]
     private float $managementFees = 0;
 
@@ -195,7 +201,7 @@ class Company extends Entity {
         ApiProperty(description: 'Nombre de travailleurs dans l\'équipe par jour', example: 4),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:main'])
+        Serializer\Groups(['read:company', 'write:company', 'read:company:collection', 'write:company:main'])
     ]
     private int $numberOfTeamPerDay = 0;
 
