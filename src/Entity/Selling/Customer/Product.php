@@ -16,9 +16,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'product']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['product.code' => 'partial', 'product.name' => 'partial', 'product.price.code' => 'partial', 'product.price.value' => 'partial',
+        'product.index' => 'partial', 'product.forecastVolume.value' => 'partial', 'product.forecastVolume.code' => 'partial'
+    ]),
     ApiResource(
         description: 'Produit Client',
         collectionOperations: [
@@ -59,7 +63,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'CustomerProduct-read',
             'skip_null_values' => false
         ],
-        paginationEnabled: false
+        paginationEnabled: true
     ),
     ORM\Entity(repositoryClass: ProductRepository::class),
     ORM\Table(name: 'product_customer')
@@ -74,15 +78,15 @@ class Product extends Entity {
     private Collection $administeredBy;
 
     #[
-        ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/8'),
+        ApiProperty(description: 'Client', readableLink: true, example: '/api/customers/8'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:product-customer', 'write:product-customer'])
+        Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order'])
     ]
     private ?Customer $customer;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/45'),
+        ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/45'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:product-customer', 'write:product-customer'])
