@@ -1,13 +1,15 @@
 <script setup>
-    //inlist
-    import generateItems from '../../../stores/table/items'
-    import {useRoute} from 'vue-router'
-    import {useTableMachine} from '../../../machine'
-    const products = generateItems('products')
-    const route = useRoute()
-    const machine = useTableMachine(route.name)
+    import {computed, ref} from 'vue'
+    import AppCustomerListProduct from './AppCustomerListProduct.vue'
+    import AppCustomerListOF from './AppCustomerListOF.vue'
+    import AppCustomerListCommande from './AppCustomerListCommande.vue'
+    import AppCustomerListBL from './AppCustomerListBL.vue'
+    import AppCustomerListFacture from './AppCustomerListFacture.vue'
 
-    const fieldsProduits = [
+    const guiRatio = ref(0.5)
+    const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
+
+    /*const fieldsProduits = [
         {
             create: false,
             filter: true,
@@ -315,27 +317,48 @@
             type: 'text',
             update: true
         }
-    ]
+    ]*/
 </script>
 
 <template>
     <div>
-        <AppTabs id="gui-start" class="gui-start-content">
-            <AppTab id="gui-start-products" active icon="product-hunt" brands title="Produits">
-                <AppTable :id="route.name" :fields="fieldsProduits" :store="products" :machine="machine"/>
+        <AppTabs id="gui-start-bottom" class="gui-start-content-bottom">
+            <h1>Produits</h1>
+            <AppTab id="gui-start-products" active title="Produits" icon="product-hunt" tabs="gui-start-bottom">
+                <AppSuspense>
+                    <AppCustomerListProduct/>
+                </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-commandes" icon="hand-holding-usd" title="Commandes">
-                <AppTable :id="route.name" :fields="fieldsCommandes" :store="products" :machine="machine"/>
+            <h1>OF</h1>
+            <AppTab id="gui-start-of" active title="OF" icon="file-invoice" tabs="gui-start-bottom">
+                <AppSuspense>
+                    <AppCustomerListOF/>
+                </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-of" icon="file-invoice" title="OF">
-                <AppTable :id="route.name" :fields="fieldsOF" :store="products" :machine="machine"/>
+            <h1>Commandes</h1>
+            <AppTab id="gui-start-commandes" active title="Commandes" icon="hand-holding-usd" tabs="gui-start-bottom">
+                <AppSuspense>
+                    <AppCustomerListCommande/>
+                </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-bl" icon="clipboard-list" title="BL">
-                <AppTable :id="route.name" :fields="fieldsBL" :store="products" :machine="machine"/>
+            <h1>BL</h1>
+            <AppTab id="gui-start-bl" active title="BL" icon="clipboard-list" tabs="gui-start-bottom">
+                <AppSuspense>
+                    <AppCustomerListBL/>
+                </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-factures" icon="file-invoice" title="Factures">
-                <AppTable :id="route.name" :fields="fieldsFactures" :store="products" :machine="machine"/>
+            <h1>Factures</h1>
+            <AppTab id="gui-start-factures" active title="Factures" icon="file-invoice" tabs="gui-start-bottom">
+                <AppSuspense>
+                    <AppCustomerListFacture/>
+                </AppSuspense>
             </AppTab>
         </AppTabs>
     </div>
 </template>
+
+<style scoped>
+    .gui {
+        --gui-ratio: v-bind(guiRatioPercent);
+    }
+</style>
