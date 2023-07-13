@@ -85,20 +85,20 @@
         //$id: `${warehouseId}Stock`
         $id: 'customerProduct'
     }
-    const storeUnitQtyProduct = useField(fieldsForm[8], parentQuantityProduct)
+    const storeUnitQtyProduct = useField(fieldsForm[4], parentQuantityProduct)
     storeUnitQtyProduct.fetch()
 
-    fieldsForm[8].measure.code = storeUnitQtyProduct.measure.code
-    fieldsForm[8].measure.value = storeUnitQtyProduct.measure.value
+    fieldsForm[4].measure.code = storeUnitQtyProduct.measure.code
+    fieldsForm[4].measure.value = storeUnitQtyProduct.measure.value
 
     const parentPrice = {
         $id: 'customerProductPrice'
     }
-    const storeUnitPrice = useField(fieldsForm[7], parentPrice)
+    const storeUnitPrice = useField(fieldsForm[3], parentPrice)
     storeUnitPrice.fetch()
 
-    fieldsForm[7].measure.code = storeUnitPrice.measure.code
-    fieldsForm[7].measure.value = storeUnitPrice.measure.value
+    fieldsForm[3].measure.code = storeUnitPrice.measure.code
+    fieldsForm[3].measure.value = storeUnitPrice.measure.value
 
     const tabFields = [
         {
