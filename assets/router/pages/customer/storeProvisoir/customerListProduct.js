@@ -243,7 +243,7 @@ export const useCustomerListProductStore = defineStore('customerListProduct', {
         // }
     },
     getters: {
-        itemsCustomerProduct: state => state.customerProduct.map(item => {
+        itemsCustomerProduct: state => state.customerProduct.map(item => { 
             const newObject = {
                 '@id': item['@id'],
                 produit: item.product.name,
