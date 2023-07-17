@@ -8,21 +8,22 @@
         dataSociety: {required: true, type: Object}
     })
     const localData = ref({})
+    console.log(props.dataSociety)
     localData.value = {
-        nbDeliveries: props.dataCustomers.nbDeliveries,
         conveyanceDuration: {
             code: 'j',
             value: props.dataCustomers.conveyanceDuration.value
         },
+        getPassword,
+        getUrl,
+        getUsername,
+        incotermsValue,
+        nbDeliveries: props.dataCustomers.nbDeliveries,
+        orderMin,
         outstandingMax: {
             code: 'EUR',
             value: props.dataCustomers.outstandingMax.value
-        },
-        orderMin,
-        incotermsValue,
-        getUrl,
-        getUsername,
-        getPassword
+        }
     }
     const fecthIncotermStore = useIncotermStore()
     await fecthIncotermStore.fetch()

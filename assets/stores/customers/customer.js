@@ -18,13 +18,13 @@ export default function generateCustomer(customers) {
                 const response = await api(`/api/customers/${customers.id}/accounting`, 'PATCH', data)
                 this.$state = {...response}
             },
+            async updateMain(id, data) {
+                const response = await api(`/api/customers/${id}/main`, 'PATCH', data)
+                this.$state = {...response}
+            },
             async updateQuality(data) {
                 console.log(data)
                 const response = await api(`/api/customers/${customers.id}/quality`, 'PATCH', data)
-                this.$state = {...response}
-            },
-            async updateMain(id, data) {
-                const response = await api(`/api/customers/${id}/main`, 'PATCH', data)
                 this.$state = {...response}
             }
         },
