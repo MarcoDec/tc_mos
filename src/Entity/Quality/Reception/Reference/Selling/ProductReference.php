@@ -16,12 +16,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
  */
 #[
     ApiResource(
-        description: 'Définition d\'un contrôle réception',
+        description: 'Définition d\'un contrôle réception Produit',
         collectionOperations: [
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un contrôle réception',
-                    'summary' => 'Créer un contrôle réception',
+                    'description' => 'Créer un contrôle réception Produit',
+                    'summary' => 'Créer un contrôle réception Produit',
                     'tags' => ['Reference']
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_QUALITY_WRITER.'\')'
@@ -33,11 +33,11 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         denormalizationContext: [
             'groups' => ['write:reference'],
-            'openapi_definition_name' => 'ComponentReference-write'
+            'openapi_definition_name' => 'ProductReference-write'
         ],
         normalizationContext: [
             'groups' => ['read:id', 'read:reference'],
-            'openapi_definition_name' => 'ComponentReference-read',
+            'openapi_definition_name' => 'ProductReference-read',
             'skip_null_values' => false
         ]
     ),

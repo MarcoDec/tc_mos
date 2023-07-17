@@ -297,7 +297,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\Column,
-        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone'])
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:id', 'read:component-preparation'])
     ]
     private ?string $name = null;
 
@@ -455,7 +455,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     #[
         ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
-        Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item'])
+        Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
     ]
     final public function getCode(): ?string {
         if ($this->family) {
