@@ -5,7 +5,6 @@
     import AppInputNumber from './AppInputNumber.vue'
     import AppMultiselect from './select/AppMultiselect.vue'
     import AppSelect from './select/AppSelect.vue'
-    import AppMultiselect from './select/AppMultiselect.vue'
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
     import AppTextArea from './AppTextArea.vue'

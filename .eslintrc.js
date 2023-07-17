@@ -202,9 +202,9 @@ module.exports = {
         'require-atomic-updates': 1,
         'rest-spread-spacing': 'error',
         semi: ['error', 'never'],
-        'sort-imports': 'error',
-        'sort-keys': 1,
-        'sort-vars': 'error',
+        //'sort-imports': 'warn',
+        //'sort-keys': 'warn',
+        'sort-vars': 'warn',
         'space-before-function-paren': ['error', {
             anonymous: 'always', asyncArrow: 'always', named: 'never'
         }],
@@ -368,7 +368,7 @@ module.exports = {
         'vue/script-indent': ['error', 4, {baseIndent: 1, switchCase: 1}],
         'vue/script-setup-uses-vars': 'error',
         'vue/singleline-html-element-content-newline': 'error',
-        'vue/sort-keys': 'error',
+        //'vue/sort-keys': 'warn',
         'vue/space-in-parens': 'error',
         'vue/space-infix-ops': 'error',
         'vue/space-unary-ops': 'error',

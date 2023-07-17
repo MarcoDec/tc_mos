@@ -11,17 +11,14 @@ use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ProductItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use ApiPlatform\Core\Annotation\ApiFilter;
-use App\Filter\RelationFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Repository\Selling\Order\ProductItemRepository;
 
 /**
  * @template-extends Item<Product>
  */
 #[   
     ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'order.customer']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['oder.customer' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuanity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['order.customer' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuanity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial']),
 
     ApiResource(
         description: 'Ligne de commande',
