@@ -16,7 +16,7 @@ import useUser from '../stores/security'
 // import equipment from './routes/equipment'
 // import product from './routes/product'
 // import supplier from './routes/supplier'
- import direction from './routes/direction'
+import direction from './routes/direction'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
