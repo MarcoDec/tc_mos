@@ -10,13 +10,13 @@ import purchase from './purchase'
 import quality from './quality'
 import selling from './selling'
 import useUser from '../stores/security'
-import component from './routes/component'
-import customer from './routes/customer'
-import employee from './routes/employee'
-import equipment from './routes/equipment'
-import product from './routes/product'
-import supplier from './routes/supplier'
-import direction from './routes/direction'
+// import component from './routes/component'
+// import customer from './routes/customer'
+// import employee from './routes/employee'
+// import equipment from './routes/equipment'
+// import product from './routes/product'
+// import supplier from './routes/supplier'
+ import direction from './routes/direction'
 
 const router = createRouter({
     history: createWebHistory(), routes: [
@@ -27,12 +27,12 @@ const router = createRouter({
         ...project,
         ...purchase,
         ...quality,
-        ...supplier,
-        ...component,
-        ...customer,
-        ...product,
-        ...employee,
-        ...equipment,
+        // ...supplier,
+        // ...component,
+        // ...customer,
+        // ...product,
+        // ...employee,
+        // ...equipment,
         ...selling,
         ...direction,
         {component: AppLogin, meta: {title: 'Connexion — T-Concept GPAO'}, name: 'login', path: '/login'},

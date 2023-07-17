@@ -18,8 +18,9 @@ export default function useField(field, parent) {
             async fetch() {
                 if (this.measure !== null)
                     await this.measure.code.fetch()
-                if (this.options !== null && this.options.$id.startsWith('options/'))
+                if (this.options !== null && this.options.$id.startsWith('options/')) {
                     await this.options.fetch()
+                }
             }
         },
         getters: {
