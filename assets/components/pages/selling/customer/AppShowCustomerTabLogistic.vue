@@ -1,11 +1,29 @@
 <script setup>
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
     import generateCustomer from '../../../../stores/customers/customer'
     import {useIncotermStore} from '../../../../stores/incoterm/incoterm'
 
-    /*const props = */defineProps({
-        dataCustomers: {required: true, type: Object}
+    const props = defineProps({
+        dataCustomers: {required: true, type: Object},
+        dataSociety: {required: true, type: Object}
     })
+    const localData = ref({})
+    localData.value = {
+        nbDeliveries: props.dataCustomers.nbDeliveries,
+        conveyanceDuration: {
+            code: 'j',
+            value: props.dataCustomers.conveyanceDuration.value
+        },
+        outstandingMax: {
+            code: 'EUR',
+            value: props.dataCustomers.outstandingMax.value
+        },
+        orderMin,
+        incotermsValue,
+        getUrl,
+        getUsername,
+        getPassword
+    }
     const fecthIncotermStore = useIncotermStore()
     await fecthIncotermStore.fetch()
     const optionsIncoterm = computed(() =>

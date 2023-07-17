@@ -26,15 +26,15 @@
         const data = {
             ppmRate: localData.value.ppmRate
         }
-        const dataAccounting = {
-            accountingPortal: {
+        const dataQuality = {
+            qualityPortal: {
                 password: localData.value.getPassword,
                 url: localData.value.getUrl,
                 username: localData.value.getUsername
             }
         }
         const item = generateCustomer(props.dataCustomers)
-        await item.updateAccounting(dataAccounting)
+        await item.updateQuality(dataQuality)
         const itemSoc = generateSocieties(props.dataSociety)
         await itemSoc.update(data)
         await fetchCustomerStore.fetchOne(props.dataCustomers.id)
