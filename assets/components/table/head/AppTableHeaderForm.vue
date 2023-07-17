@@ -1,4 +1,5 @@
 <script setup>
+    import AppBtnJS from '../../AppBtnJS'
     import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
@@ -27,7 +28,6 @@
     function input(v) {
         emit('update:modelValue', v)
     }
-
     function reverse() {
         props.send(props.reverseMode)
     }
@@ -38,7 +38,7 @@
         <td class="text-center">
             <template v-if="canReverse">
                 <Fa :icon="icon"/>
-                <AppBtn v-if="!disableAdd" :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
+                <AppBtnJS v-if="!disableAdd" :icon="reverseIcon" :label="fullReverseLabel" @click="reverse"/>
             </template>
         </td>
         <td class="text-center">
@@ -53,7 +53,7 @@
                 :variant="variant"
                 name="form">
                 <AppForm :id="form" class="d-inline m-0 p-0" @submit="submit">
-                    <AppBtn :icon="icon" :label="label" :variant="variant" type="submit"/>
+                    <AppBtnJS :icon="icon" :label="label" :variant="variant" type="submit"/>
                 </AppForm>
             </slot>
             <slot/>

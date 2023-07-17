@@ -353,14 +353,80 @@ CREATE TABLE `attribute` (
     `name` VARCHAR(255) NOT NULL,
     `unit_id` INT UNSIGNED DEFAULT NULL,
     `attribut_id_family` VARCHAR(255) DEFAULT NULL,
-    `type` enum('bool', 'color', 'int', 'percent', 'text', 'unit') DEFAULT 'text' NOT NULL COMMENT '(DC2Type:attribute)',
+    `type` enum('bool', 'color', 'int', 'percent', 'text', 'measure', 'measureSelect') DEFAULT 'text' NOT NULL COMMENT '(DC2Type:attribute)',
     CONSTRAINT `IDX_FA7AEFFBF8BD700D` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`)
 )
 SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`
+//FROM `attribut`
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 14
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%section%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 10
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%taille%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 15
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%courant%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 16
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%dia%"
+//OR LOWER(libelle) LIKE "%largeur%"
+//OR LOWER(libelle) LIKE "%largueur%"
+//OR LOWER(libelle) LIKE "%longueur%"
+//OR LOWER(libelle) LIKE "%tolerance%"
+//OR LOWER(libelle) LIKE "%dimension%"
+//OR LOWER(libelle) LIKE "%paisseur%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 17
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%t°%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 18
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%voltage%"
+//SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 20
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%resistance%"
+//SQL);
+        $this->addQuery(<<<'SQL'
+INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`, `unit_id`)
+SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "measureSelect", 19
+FROM `attribut`
+WHERE LOWER(libelle) LIKE "%puissance%"
+SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`, `type`)
+//SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`, "text"
+//FROM `attribut`
+//WHERE LOWER(libelle) LIKE "%couleur%"
+//SQL);
         $this->addQuery(<<<'SQL'
 INSERT INTO `attribute` (`old_id`, `deleted`, `description`, `name`, `attribut_id_family`)
 SELECT `id`, `statut`, `description`, `libelle`, `attribut_id_family`
 FROM `attribut`
+WHERE LOWER(libelle) NOT LIKE "%puissance%"
 SQL);
         $this->addQuery('DROP TABLE `attribut`');
         $this->addQuery(<<<'SQL'
@@ -905,13 +971,24 @@ CREATE TABLE `component_attribute` (
     CONSTRAINT `IDX_248373AAE2ABAFFF` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`)
 )
 SQL);
+//        $this->addQuery(<<<'SQL'
+//INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `value`)
+//SELECT `component`.`id`, `attribute`.`id`, `component_attribut`.`valeur_attribut`
+//FROM `component_attribut`
+//INNER JOIN `attribute` ON `component_attribut`.`id_attribut` = `attribute`.`old_id`
+//INNER JOIN `component` ON `component_attribut`.`id_component` = `component`.`old_id`
+//WHERE `component_attribut`.`valeur_attribut` IS NOT NULL AND TRIM(`component_attribut`.`valeur_attribut`) != ''
+//SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `value`)
-SELECT `component`.`id`, `attribute`.`id`, `component_attribut`.`valeur_attribut`
+INSERT INTO `component_attribute` (`component_id`, `attribute_id`, `value`, `measure_value`)
+SELECT `component`.`id`, `attribute`.`id`, `component_attribut`.`valeur_attribut`, CAST(REGEXP_REPLACE(`component_attribut`.`valeur_attribut`, 'W', '') AS DOUBLE PRECISION)
 FROM `component_attribut`
 INNER JOIN `attribute` ON `component_attribut`.`id_attribut` = `attribute`.`old_id`
 INNER JOIN `component` ON `component_attribut`.`id_component` = `component`.`old_id`
-WHERE `component_attribut`.`valeur_attribut` IS NOT NULL AND TRIM(`component_attribut`.`valeur_attribut`) != ''
+WHERE 
+    `component_attribut`.`valeur_attribut` IS NOT NULL 
+    AND TRIM(`component_attribut`.`valeur_attribut`) != ''
+    AND `attribute`.`type` = "measureSelect"
 SQL);
         $this->addQuery('DROP TABLE `component_attribut`');
         $this->addQuery('CALL LINK_COMPONENTS_ATTRIBUTES');

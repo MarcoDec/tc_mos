@@ -12,7 +12,7 @@
 
 <template>
     <AppDropdownItem variant="none">
-        <AppRouterLink :css="text" :to="to">
+        <AppRouterLink :css="text" :to="{name: to}">
             <Fa :brands="brands" :icon="icon"/>
             <slot/>
         </AppRouterLink>

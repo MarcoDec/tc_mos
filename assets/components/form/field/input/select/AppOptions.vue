@@ -1,6 +1,5 @@
 <script setup>
     import AppOption from './AppOption.vue'
-
     defineProps({options: {required: true, type: [Array, Object]}})
 </script>
 

@@ -21,6 +21,7 @@ use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
 use App\Entity\Purchase\Order\Order;
 use App\Entity\Purchase\Supplier\Attachment\SupplierAttachment;
+use App\Entity\Purchase\Supplier\Company\SupplierCompany;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
 use App\Repository\Purchase\Supplier\SupplierRepository;
@@ -171,13 +172,15 @@ class Supplier extends Entity {
     /** @var DoctrineCollection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
-        JoinTable(name: 'supplier_administered_by'),
-        JoinColumn(name: 'supplier_id', referencedColumnName: 'id'),
-        InverseJoinColumn(name: 'company_id', referencedColumnName: 'id'),
-        ORM\ManyToMany(targetEntity: Company::class, cascade: ["all"]),
         Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
     ]
     private DoctrineCollection $administeredBy;
+
+    #[
+        ApiProperty(description: 'SupplierCompany associés', readableLink: false, example: ['/api/supplier-companies/1','/api/supplier-companies/2']),
+        ORM\OneToMany(targetEntity: SupplierCompany::class, mappedBy: 'supplier', cascade: ['persist', 'remove'])
+    ]
+    private DoctrineCollection $supplierCompanies;
 
    /** @var DoctrineCollection<int, Company>  */
    #[
@@ -260,7 +263,7 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Activation Commandes Ouvertes', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:purchase-logistics']) 
+        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
     ]
     private bool $openOrdersEnabled = false;
 
@@ -285,6 +288,7 @@ class Supplier extends Entity {
 
     public function __construct() {
         $this->administeredBy = new ArrayCollection();
+        $this->supplierCompanies = new ArrayCollection();
         $this->address = new Address();
         $this->copper = new Copper();
         $this->embBlocker = new Blocker();
@@ -294,8 +298,10 @@ class Supplier extends Entity {
     }
 
     final public function addAdministeredBy(Company $administeredBy): self {
-        if (!$this->administeredBy->contains($administeredBy)) {
-            $this->administeredBy->add($administeredBy);
+        if (!$this->getAdministeredBy()->contains($administeredBy)) {
+            $newSupplierCompany = new SupplierCompany();
+            $newSupplierCompany->setCompany($administeredBy)->setSupplier($this);
+            $this->supplierCompanies->add($newSupplierCompany);
         }
         return $this;
     }
@@ -324,6 +330,11 @@ class Supplier extends Entity {
      * @return DoctrineCollection<int, Company>
      */
     final public function getAdministeredBy(): DoctrineCollection {
+        $this->administeredBy = $this->supplierCompanies->filter( function(SupplierCompany $supplierCompany) {
+            return !$supplierCompany->isDeleted();
+        })->map(function(SupplierCompany $supplierCompany) {
+            return $supplierCompany->getCompany();
+        });
         return $this->administeredBy;
     }
 
@@ -414,8 +425,11 @@ class Supplier extends Entity {
    }
 
     final public function removeAdministeredBy(Company $administeredBy): self {
-        if ($this->administeredBy->contains($administeredBy)) {
-            $this->administeredBy->removeElement($administeredBy);
+        /** @var SupplierCompany $supplierCompany */
+        foreach ($this->getSupplierCompanies() as $key => $supplierCompany) {
+            if ($supplierCompany->getCompany() === $administeredBy) {
+                $this->supplierCompanies->remove($key);
+            }
         }
         return $this;
     }
@@ -534,5 +548,15 @@ class Supplier extends Entity {
       return $this;
    }
 
+    public function getSupplierCompanies(): DoctrineCollection
+    {
+        return $this->supplierCompanies;
+    }
+
+    public function setSupplierCompanies(DoctrineCollection $supplierCompanies): Supplier
+    {
+        $this->supplierCompanies = $supplierCompanies;
+        return $this;
+    }
 
 }

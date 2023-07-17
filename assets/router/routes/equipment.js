@@ -1,20 +1,20 @@
 export default [
     {
-        component: async () => import('../pages/equipment/AppWorkstationShowInlist.vue'),
+        component: () => import('../pages/equipment/AppWorkstationFormShow.vue'),
         meta: {requiresAuth: true},
-        name: 'workstationShow',
-        path: '/workstation/show'
+        name: 'workstationFormShow',
+        path: '/workstation/formshow'
     },
     {
-        component: async () => import('../pages/equipment/AppToolShowInlist.vue'),
+        component: () => import('../pages/equipment/AppToolFormShow.vue'),
         meta: {requiresAuth: true},
-        name: 'toolShow',
-        path: '/tool/show'
+        name: 'toolFormShow',
+        path: '/tool/formshow'
     },
     {
-        component: async () => import('../pages/equipment/AppTestCounterPartShowInlist.vue'),
+        component: () => import('../pages/equipment/AppTestCounterPartFormShow.vue'),
         meta: {requiresAuth: true},
-        name: 'testCounterPartShow',
-        path: '/testcounterpart/show'
+        name: 'testCounterPartFormShow',
+        path: '/testcounterpart/formshow'
     }
 ]

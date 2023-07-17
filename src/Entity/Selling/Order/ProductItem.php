@@ -2,10 +2,13 @@
 
 namespace App\Entity\Selling\Order;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Project\Product\Product;
+use App\Filter\RelationFilter;
+use App\Repository\Selling\Order\ProductItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -32,10 +35,10 @@ use App\Repository\Selling\Order\ProductItemRepository;
             ],
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Créer une ligne',
-                    'summary' => 'Créer une ligne'
+                    'description' => 'Récupère les lignes',
+                    'summary' => 'Récupère les lignes',
                 ],
-                'path' => '/selling-order-product',
+                'path' => '/selling-order-products',
             ]
         ],
         itemOperations: ['get' => NO_ITEM_GET_OPERATION],

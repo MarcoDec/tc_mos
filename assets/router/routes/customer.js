@@ -1,8 +1,8 @@
 export default [
     {
-        component: async () => import('../pages/customer/AppCustomerShowInlist.vue'),
+        component: () => import('../pages/customer/AppCustomerFormShow.vue'),
         meta: {requiresAuth: true},
-        name: 'customerShow',
-        path: '/customer/show/:id_customer'
+        name: 'customerFormShow',
+        path: '/customer/formshow'
     }
 ]

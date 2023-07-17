@@ -161,6 +161,13 @@ abstract class Item extends BaseItem {
     final public function isArSent(): bool {
         return $this->arSent;
     }
+    #[
+        ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-orders/1'),
+        Serializer\Groups(['read:item'])
+    ]
+    final public function getItem(){
+        return $this->item;
+    }
 
     /**
      * @return $this

@@ -16,7 +16,6 @@ use DateTimeImmutable;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Hr\Employee\Team;
-use App\Entity\Hr\Employee\TEmployee;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
@@ -27,7 +26,7 @@ class EmployeePatchController
 
    /**
     * @param Request $request
-    * @return Component
+    * @return Employee
     * @throws \ReflectionException
     */
    public function __invoke(Request $request): Employee {
@@ -132,7 +131,9 @@ class EmployeePatchController
                     );
                     $refProps->setValue($sourceItem, $hashedPassword);
                   } elseif ($key == 'team') {
-                     $this->setTeam($value, $refProps, $sourceItem);
+                      $this->setTeam($value, $refProps, $sourceItem);
+                  } elseif ($key == 'birthday' || $key == 'entryDate') {
+                      $refProps->setValue($sourceItem, new \DateTimeImmutable($value));
                   } elseif ($refProps->getValue($sourceItem)===null||in_array(getType($refProps->getValue($sourceItem)) ,["boolean", 'integer', 'double', 'string'])) {
                      $refProps->setValue($sourceItem, $value);
                   } else {

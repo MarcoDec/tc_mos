@@ -1,6 +1,7 @@
 import {
     faAddressCard,
     faAngleDoubleLeft,
+    faArrowRightToBracket,
     faAtom,
     faBars,
     faBell,
@@ -15,9 +16,13 @@ import {
     faCheckCircle,
     faChevronDown,
     faChevronUp,
+    faCircleDollarToSlot,
+    faCircleInfo,
     faCity,
+    faClipboardCheck,
     faClock,
     faCommentsDollar,
+    faCubesStacked,
     faDatabase,
     faEuroSign,
     faEye,
@@ -31,12 +36,15 @@ import {
     faIndustry,
     faLaptop,
     faLayerGroup,
+    faLocationDot,
     faMagnet,
     faMale,
     faMapMarked,
     faMapMarkedAlt,
     faOilWell,
     faPalette,
+    faPallet,
+    faPencil,
     faPencilAlt,
     faPeopleGroup,
     faPlus,
@@ -46,18 +54,21 @@ import {
     faPuzzlePiece,
     faReceipt,
     faRulerHorizontal,
+    faRulerVertical,
     faSearch,
-    faSignal,
     faShoppingBag,
     faShoppingCart,
     faShuttleVan,
     faSignOutAlt,
+    faSignal,
     faSitemap,
+    faStar,
     faTimes,
     faTrash,
     faUserCircle,
     faUserGraduate,
     faUserTag,
+    faWarehouse,
     faWrench
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor} from '@fortawesome/free-brands-svg-icons'
@@ -102,6 +113,7 @@ library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencilAlt)
 library.add(faPeopleGroup)
+library.add(faPencil)
 library.add(faPlus)
 library.add(faPlusCircle)
 library.add(faPrint)
@@ -122,5 +134,15 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faLocationDot)
+library.add(faPallet)
+library.add(faCircleDollarToSlot)
+library.add(faArrowRightToBracket)
+library.add(faClipboardCheck)
+library.add(faCircleInfo)
 library.add(faCalendar)
 library.add(faCalendarWeek)
+library.add(faWarehouse)
+library.add(faCubesStacked)
+library.add(faRulerVertical)
+library.add(faStar)

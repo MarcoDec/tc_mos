@@ -283,7 +283,8 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[
         ApiProperty(description: 'Mot de passe', example: 'L0r3m@Ipsum'),
-        ORM\Column(nullable: true)
+        ORM\Column(nullable: true),
+        Serializer\Groups(['create:employee', 'write:employee', 'write:employee:it'])
     ]
     private ?string $plainPassword = null;
 

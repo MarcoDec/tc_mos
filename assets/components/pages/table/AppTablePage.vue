@@ -10,6 +10,13 @@
 
     const props = defineProps({
         apiBaseRoute: {default: '', type: String},
+        apiTypedRoutes: {
+            default: () => {
+                const obj = {}
+                return obj
+            },
+            type: Object
+        },
         brands: {type: Boolean},
         disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
@@ -27,6 +34,7 @@
     store.sortName = props.sort.sortName ?? props.sort.name
     store.readFilter = props.readFilter
     store.apiBaseRoute = props.apiBaseRoute
+    store.apiTypedRoutes = props.apiTypedRoutes
     await store.fetch()
 
     const storedFields = useFields(route.name, props.fields)

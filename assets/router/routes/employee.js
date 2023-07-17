@@ -1,8 +1,8 @@
 export default [
     {
-        component: async () => import('../pages/employee/AppEmployeeShowInlist.vue'),
+        component: () => import('../pages/employee/AppEmployeeFormShow.vue'),
         meta: {requiresAuth: true},
-        name: 'employeeShow',
-        path: '/employee/show/:id_employee'
+        name: 'employeeFormShow',
+        path: '/employee/formshow'
     }
 ]

@@ -1,8 +1,8 @@
 export default [
     {
-        component: async () => import('../pages/product/AppProductShowInlist.vue'),
+        component: () => import('../pages/product/AppProductFormShow.vue'),
         meta: {requiresAuth: true},
-        name: 'productShow',
-        path: '/product/show/:id_product'
+        name: 'productFormShow',
+        path: '/product/formshow'
     }
 ]

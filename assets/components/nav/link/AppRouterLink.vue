@@ -1,5 +1,8 @@
 <script setup>
-    defineProps({css: {default: null, type: String}, to: {required: true, type: String}})
+    defineProps({
+        css: {default: null, type: String},
+        to: {required: true, type: Object}
+    })
 </script>
 
 <template>

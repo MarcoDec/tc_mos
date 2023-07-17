@@ -77,7 +77,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['accounting', 'admin', 'logistics', 'main'],
+                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality'],
                             'type' => 'string'
                         ]
                     ]],
@@ -215,7 +215,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Portail logistique'),
         ORM\Embedded,
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistic'])
     ]
     private WebPortal $logisticPortal;
 
@@ -268,7 +268,12 @@ class Customer extends Entity {
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private ?InvoiceTimeDue $paymentTerms = null;
-
+    #[
+        ApiProperty(description: 'Portail de gestion Qualité'),
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:quality'])
+    ]
+    private WebPortal $qualityPortal;
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         ORM\JoinColumn(nullable: false),

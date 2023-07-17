@@ -11,6 +11,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Production\Manufacturing\Operation as ManufacturingOperation;
 use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -75,7 +77,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity,
     ORM\Table(name: 'project_operation')
 ]
-class Operation extends Entity {
+class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Automatique', example: true),
         ORM\Column(options: ['default' => false]),
@@ -244,5 +246,15 @@ class Operation extends Entity {
     final public function setType(?Type $type): self {
         $this->type = $type;
         return $this;
+    }
+
+    public function getMeasures(): array
+    {
+        return [$this->cadence, $this->time, $this->price];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return null;
     }
 }

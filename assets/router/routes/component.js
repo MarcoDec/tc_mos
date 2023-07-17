@@ -1,8 +1,8 @@
 export default [
     {
-        component: async () => import('../pages/component/AppcomponentShowInlist.vue'),
+        component: () => import('../pages/component/AppComponentFormShow.vue'),
         meta: {requiresAuth: true},
-        name: 'componentShow',
-        path: '/component/show'
+        name: 'componentFormShow',
+        path: '/component/formshow'
     }
 ]

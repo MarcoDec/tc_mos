@@ -1,6 +1,7 @@
 <script setup>
     import {computed, defineProps, ref} from 'vue'
     import clone from 'clone'
+    import {computed} from 'vue'
 
     const emit = defineEmits(['cancelSearch', 'search'])
     const props = defineProps({

@@ -9,18 +9,25 @@ export default [
         name: 'engine-groups',
         path: '/engine-groups',
         props: {
-            apiBaseRoute: 'manufacturers',
+            apiBaseRoute: 'engine-groups',
+            apiTypedRoutes: {
+                field: 'type',
+                routes: [
+                    {url: '/api/counter-part-groups', valeur: 'counter-part'},
+                    {url: '/api/workstation-groups', valeur: 'workstation'},
+                    {url: '/api/tool-groups', valeur: 'tool'}
+                ]
+            },
             fields: [
                 {label: 'Code', name: 'code'},
                 {label: 'Nom', name: 'name'},
                 {
                     label: 'Type',
-                    name: '@type',
+                    name: 'type',
                     options: [
-                        {iri: 'engine-groups', text: '', value: null},
-                        {iri: 'counter-part-groups', text: 'Contrepartie de test', value: 'CounterPartGroup'},
-                        {iri: 'workstation-groups', text: 'Poste de travail', value: 'WorkstationGroup'},
-                        {iri: 'tool-groups', text: 'Outil', value: 'ToolGroup'}
+                        {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
+                        {iri: 'workstation', text: 'Poste de travail', value: 'workstation'},
+                        {iri: 'tool', text: 'Outil', value: 'tool'}
                     ],
                     sort: false,
                     type: 'select',

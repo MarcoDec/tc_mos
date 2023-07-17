@@ -14,7 +14,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
 class FileUploadController {
-    public function __construct(private EntityManagerInterface $entityManager, private FileManager $fileManager, private ParameterManager $parameterManager) {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private FileManager $fileManager,
+        private ParameterManager $parameterManager) {
     }
 
    public AbstractAttachment $entity;

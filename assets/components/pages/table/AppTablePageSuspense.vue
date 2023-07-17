@@ -4,6 +4,13 @@
 
     const props = defineProps({
         apiBaseRoute: {default: '', required: true, type: String},
+        apiTypedRoutes: {
+            default: () => {
+                const obj = {}
+                return obj
+            },
+            type: Object
+        },
         brands: {type: Boolean},
         disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
@@ -20,6 +27,7 @@
     <AppSuspense>
         <AppTablePage
             :api-base-route="apiBaseRoute"
+            :api-typed-routes="apiTypedRoutes"
             :brands="brands"
             :disable-add="disableAdd"
             :disable-remove="disableRemove"

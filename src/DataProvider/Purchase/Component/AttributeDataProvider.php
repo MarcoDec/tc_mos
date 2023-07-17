@@ -60,6 +60,6 @@ final class AttributeDataProvider implements ContextAwareCollectionDataProviderI
      * @param Context $context
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
-        return $resourceClass === Attribute::class && $operationName === 'get';
+        return $resourceClass === Attribute::class && $operationName === 'gete';
     }
 }

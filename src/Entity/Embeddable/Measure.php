@@ -12,18 +12,20 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class Measure {
     #[
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
-        Serializer\Groups(['read:measure', 
-        'write:measure', 'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
+        Serializer\Groups(['read:measure',
+        'write:measure', 'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
         'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project', 'read:operation-employee:collection',
-        'read:product-customer'])
+        'read:product-customer',
+        'read:production-quality-value', 'write:production-quality-value'])
     ]
     private ?string $code = null;
 
     #[
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
-        Serializer\Groups(['read:measure', 'write:measure', 
-        'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
-        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project', 'read:operation-employee:collection',
+        Serializer\Groups(['read:measure', 'write:measure',
+        'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
+        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project',
+        'read:production-quality-value', 'write:production-quality-value', 'read:operation-employee:collection',
         'read:product-customer'])
     ]
     private ?string $denominator = null;
@@ -33,9 +35,10 @@ class Measure {
 
     #[
         ORM\Column(options: ['default' => 0]),
-        Serializer\Groups(['read:measure', 'write:measure', 
-        'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
-        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project','read:operation-employee:collection',
+        Serializer\Groups(['read:measure', 'write:measure',
+        'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
+        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project',
+        'read:production-quality-value', 'write:production-quality-value','read:operation-employee:collection',
         'read:product-customer'])
     ]
     private float $value = 0;

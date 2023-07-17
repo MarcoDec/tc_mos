@@ -63,6 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Incoterms-read',
             'skip_null_values' => false
         ],
+        paginationEnabled: false
     ),
     ORM\Entity,
     UniqueEntity('code'),

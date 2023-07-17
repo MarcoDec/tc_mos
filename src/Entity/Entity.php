@@ -33,4 +33,7 @@ abstract class Entity {
     final public function isDeleted(): bool {
         return $this->deleted;
     }
+    final public function setDeleted(bool $deleted) {
+        $this->deleted = $deleted;
+    }
 }

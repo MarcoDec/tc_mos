@@ -336,6 +336,40 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 'type' => 'object'
             ]),
+            'Measure-section' => new ArrayObject([
+                'description' => 'Surface',
+                'properties' => [
+                    'code' => [
+                        'default' => 'm²',
+                        'description' => 'Code',
+                        'example' => 'm²',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 0.00025,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
+            'Measure-strength' => new ArrayObject([
+                'description' => 'Force',
+                'properties' => [
+                    'code' => [
+                        'default' => 'N',
+                        'description' => 'Code',
+                        'example' => 'N',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 5.2,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
             'Measure-mass' => new ArrayObject([
                 'description' => 'Masse',
                 'properties' => [

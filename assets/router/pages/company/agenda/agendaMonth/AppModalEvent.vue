@@ -1,5 +1,4 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
     defineProps({
         date: {required: true, type: String},
         id: {required: true, type: Number},

@@ -28,6 +28,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Récupère les caractéristiques d\'un composant',
                 ],
             ],
+            'post'
         ],
         itemOperations: [
             'get' => NO_ITEM_GET_OPERATION,
@@ -61,7 +62,7 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         ApiProperty(description: 'Attribut', readableLink: false, example: '/api/attributes/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(inversedBy: 'attributes'),
-        Serializer\Groups(['read:component-attribute'])
+        Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
     ]
     private ?Attribute $attribute = null;
 
@@ -76,7 +77,7 @@ class ComponentAttribute extends Entity implements MeasuredInterface {
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne(inversedBy: 'attributes'),
-        Serializer\Groups(['read:component-attribute'])
+        Serializer\Groups(['read:component-attribute', 'write:component-attribute'])
     ]
     private ?Component $component = null;
 
