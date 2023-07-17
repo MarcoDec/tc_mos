@@ -62,12 +62,10 @@ class EnumFilter extends AbstractFilter {
             return;
         }
 
-        if ($property === 'supplier') {
-            $alias = $queryBuilder->getRootAliases()[0];
-            $queryBuilder
-                ->andWhere("$alias.id = :supplierId")
-                ->setParameter('supplierId', $value->getSupplier());
-        }
+        $parameter = $queryNameGenerator->generateParameterName($property);
+        $queryBuilder
+            ->andWhere("{$queryBuilder->getRootAliases()[0]}.$property = :$parameter")
+            ->setParameter($parameter, $value);
     }
 
     /**
