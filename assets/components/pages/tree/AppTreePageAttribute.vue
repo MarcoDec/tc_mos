@@ -1,6 +1,6 @@
 <script setup>
     import AppTreeAttributes from '../../tree/attributes/AppTreeAttributes.vue'
-    import {onUnmounted} from 'vue'
+    //    import {onUnmounted} from 'vue'
     import useAttributes from '../../../stores/attribute/attributes'
 
     defineProps({fields: {required: true, type: Array}, label: {required: true, type: String}})
@@ -8,9 +8,9 @@
     const attributes = useAttributes()
     await attributes.fetch()
 
-    onUnmounted(() => {
-        attributes.dispose()
-    })
+    // onUnmounted(() => {
+    //     attributes.dispose()
+    // })
 </script>
 
 <template>

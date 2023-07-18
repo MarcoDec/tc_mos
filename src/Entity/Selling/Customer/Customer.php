@@ -274,6 +274,42 @@ class Customer extends Entity {
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:quality'])
     ]
     private WebPortal $qualityPortal;
+
+    /**
+     * @return Collection
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Collection $attachments
+     * @return Customer
+     */
+    public function setAttachments(Collection $attachments): Customer
+    {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
+    /**
+     * @return WebPortal
+     */
+    public function getQualityPortal(): WebPortal
+    {
+        return $this->qualityPortal;
+    }
+
+    /**
+     * @param WebPortal $qualityPortal
+     * @return Customer
+     */
+    public function setQualityPortal(WebPortal $qualityPortal): Customer
+    {
+        $this->qualityPortal = $qualityPortal;
+        return $this;
+    }
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         ORM\JoinColumn(nullable: false),
