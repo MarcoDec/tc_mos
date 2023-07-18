@@ -26,6 +26,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 // ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'type', 'unit.code']),
 #[
     ApiFilter(filterClass: EnumFilter::class, properties: ['type']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['unit']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['description' => 'partial', 'name' => 'partial']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'description', 'type', 'unit.code']),
     ApiResource(
         description: 'Attribut',
         collectionOperations: [

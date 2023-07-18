@@ -8,12 +8,11 @@
     import {useTableMachine} from '../../../machine'
     import {useWarehouseListItemsStore} from '../../../stores/logistic/warehouses/warehouseListItems'
 
-    const props = defineProps({
+    defineProps({
         fields: {default: () => [], type: Array},
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
-    console.debug(props.fields, props.icon, props.title)
     const route = useRoute()
     const router = useRouter()
 
