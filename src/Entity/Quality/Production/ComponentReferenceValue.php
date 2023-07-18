@@ -159,11 +159,11 @@ class ComponentReferenceValue extends Entity implements MeasuredInterface {
 
     public function getMeasures(): array
     {
-        // TODO: Implement getMeasures() method.
+        return [$this->section];
     }
 
     public function getUnit(): ?Unit
     {
-        // TODO: Implement getUnit() method.
+        return null;
     }
 }
