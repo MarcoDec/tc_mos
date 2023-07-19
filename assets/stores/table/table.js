@@ -4,7 +4,7 @@ import flat from 'flat'
 import useRow from './row'
 
 export default function useTable(id) {
-    return defineStore(id, {
+    return defineStore(`table${id}`, {
         actions: {
             async cancel() {
                 this.id = id
