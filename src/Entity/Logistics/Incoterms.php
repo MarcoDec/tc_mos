@@ -75,7 +75,7 @@ class Incoterms extends Entity {
         Assert\Length(min: 3, max: 25),
         Assert\NotBlank,
         ORM\Column(length: 25),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms', 'read:society'])
     ]
     private ?string $code = null;
 
@@ -84,7 +84,7 @@ class Incoterms extends Entity {
         Assert\Length(min: 3, max: 50),
         Assert\NotBlank,
         ORM\Column(length: 50),
-        Serializer\Groups(['read:incoterms', 'write:incoterms'])
+        Serializer\Groups(['read:incoterms', 'write:incoterms', 'read:society'])
     ]
     private ?string $name = null;
 

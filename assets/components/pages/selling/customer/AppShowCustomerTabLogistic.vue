@@ -1,25 +1,27 @@
 <script setup>
     import {computed, ref} from 'vue'
     import generateCustomer from '../../../../stores/customers/customer'
+    import {useCustomerStore} from '../../../../stores/customers/customers'
     import {useIncotermStore} from '../../../../stores/incoterm/incoterm'
 
     const props = defineProps({
         dataCustomers: {required: true, type: Object},
         dataSociety: {required: true, type: Object}
     })
+    const fetchCustomerStore = useCustomerStore()
     const localData = ref({})
-    console.log(props.dataSociety)
+    console.log(props.dataCustomers, props.dataSociety)
     localData.value = {
         conveyanceDuration: {
             code: 'j',
             value: props.dataCustomers.conveyanceDuration.value
         },
-        getPassword,
-        getUrl,
-        getUsername,
-        incotermsValue,
+        getPassword: props.dataCustomers.logisticPortal.password,
+        getUrl: props.dataCustomers.logisticPortal.url,
+        getUsername: props.dataCustomers.logisticPortal.username,
+        incotermsValue: props.dataSociety.incoterms.code,
         nbDeliveries: props.dataCustomers.nbDeliveries,
-        orderMin,
+        orderMin: props.dataSociety.orderMin,
         outstandingMax: {
             code: 'EUR',
             value: props.dataCustomers.outstandingMax.value
@@ -31,10 +33,9 @@
         fecthIncotermStore.incoterms.map(incoterm => {
             const text = incoterm.name
             const value = incoterm['@id']
-            const optionList = {text, value}
-            return optionList
+            return {text, value}
         }))
-    const Logistiquefields = computed(() => [
+    const logisticFields = computed(() => [
         {
             label: 'Nombre de bons de livraison mensuel ',
             name: 'nbDeliveries',
@@ -58,52 +59,54 @@
         {label: 'Ident', name: 'getUsername', type: 'text'},
         {label: 'Password', name: 'getPassword', type: 'text'}
     ])
-    async function updateLogistique(value) {
-        const form = document.getElementById('addLogistique')
-        const formData = new FormData(form)
-
+    async function updateLogistique() {
+        //
+        // const form = document.getElementById('addLogistique')
+        // const formData = new FormData(form)
         const data = {
             conveyanceDuration: {
                 code: 'j',
-                value: JSON.parse(formData.get('conveyanceDuration-value'))
+                value: localData.value.conveyanceDuration.value
             },
-            nbDeliveries: JSON.parse(formData.get('nbDeliveries')),
+            logisticPortal: {
+                password: localData.value.getPassword,
+                url: localData.value.getUrl,
+                username: localData.value.getUsername
+            },
+            nbDeliveries: localData.value.nbDeliveries,
             outstandingMax: {
                 code: 'EUR',
-                value: JSON.parse(formData.get('outstandingMax-value'))
+                value: localData.value.outstandingMax.value
             }
         }
         const dataSociety = {
-            incoterms: formData.get('incotermsValue'),
+            incoterms: localData.value.incotermsValue,
             orderMin: {
                 code: 'EUR',
-                value: JSON.parse(formData.get('orderMin-value'))
-            }
-        }
-        const dataAccounting = {
-            accountingPortal: {
-                password: formData.get('getPassword'),
-                url: formData.get('getUrl'),
-                username: formData.get('getUsername')
+                value: localData.value.orderMin
             }
         }
 
         const item = generateCustomer(value)
-        await item.updateAccounting(dataAccounting)
+        await item.updateLogistic(data)
         //await fetchCustomerStore.update(dataAccounting, customerId);
 
-        await item.update(data)
+        //await item.update(data)
         await fetchSocietyStore.update(dataSociety, societyId)
         // const itemSoc = generateSocieties(value)
         // await itemSoc.update(dataSociety)
         await fetchCustomerStore.fetchOne(idCustomer)
+    }
+    function updateLocalData(value) {
+        localData.value = value
     }
 </script>
 
 <template>
     <AppCardShow
         id="addLogistique"
-        :fields="Logistiquefields"
-        :component-attribute="dataCustomers"
-        @update="updateLogistique(dataCustomers)"/>
+        :fields="logisticFields"
+        :component-attribute="localData"
+        @update="updateLogistique"
+        @update:model-value="updateLocalData"/>
 </template>
