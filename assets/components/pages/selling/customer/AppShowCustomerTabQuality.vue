@@ -11,9 +11,9 @@
     const fetchCustomerStore = useCustomerStore()
     const localData = ref({})
     localData.value = {
-        getPassword: props.dataCustomers.getPassword,
-        getUrl: props.dataCustomers.getUrl,
-        getUsername: props.dataCustomers.getUsername,
+        getPassword: props.dataCustomers.qualityPortal.password,
+        getUrl: props.dataCustomers.qualityPortal.url,
+        getUsername: props.dataCustomers.qualityPortal.username,
         ppmRate: props.dataSociety.ppmRate
     }
     const qualityFields = [
