@@ -3,11 +3,13 @@
     import generateCustomer from '../../../../stores/customers/customer'
     import {useCustomerStore} from '../../../../stores/customers/customers'
     import {useIncotermStore} from '../../../../stores/incoterm/incoterm'
+    import {useSocietyStore} from '../../../../stores/societies/societies'
 
     const props = defineProps({
         dataCustomers: {required: true, type: Object},
         dataSociety: {required: true, type: Object}
     })
+    const fetchSocietyStore = useSocietyStore()
     const fetchCustomerStore = useCustomerStore()
     const localData = ref({})
     console.log(props.dataCustomers, props.dataSociety)
@@ -19,9 +21,12 @@
         getPassword: props.dataCustomers.logisticPortal.password,
         getUrl: props.dataCustomers.logisticPortal.url,
         getUsername: props.dataCustomers.logisticPortal.username,
-        incotermsValue: props.dataSociety.incoterms.code,
+        incotermsValue: props.dataSociety.incoterms,
         nbDeliveries: props.dataCustomers.nbDeliveries,
-        orderMin: props.dataSociety.orderMin,
+        orderMin: {
+            code: 'EUR',
+            value: props.dataSociety.orderMin.value
+        },
         outstandingMax: {
             code: 'EUR',
             value: props.dataCustomers.outstandingMax.value
@@ -66,7 +71,7 @@
         const data = {
             conveyanceDuration: {
                 code: 'j',
-                value: localData.value.conveyanceDuration.value
+                value: parseFloat(localData.value.conveyanceDuration.value)
             },
             logisticPortal: {
                 password: localData.value.getPassword,
@@ -76,26 +81,26 @@
             nbDeliveries: localData.value.nbDeliveries,
             outstandingMax: {
                 code: 'EUR',
-                value: localData.value.outstandingMax.value
+                value: parseFloat(localData.value.outstandingMax.value)
             }
         }
         const dataSociety = {
             incoterms: localData.value.incotermsValue,
             orderMin: {
                 code: 'EUR',
-                value: localData.value.orderMin
+                value: parseFloat(localData.value.orderMin.value)
             }
         }
 
-        const item = generateCustomer(value)
+        const item = generateCustomer(props.dataCustomers)
         await item.updateLogistic(data)
         //await fetchCustomerStore.update(dataAccounting, customerId);
 
         //await item.update(data)
-        await fetchSocietyStore.update(dataSociety, societyId)
+        await fetchSocietyStore.update(dataSociety, props.dataSociety.id)
         // const itemSoc = generateSocieties(value)
         // await itemSoc.update(dataSociety)
-        await fetchCustomerStore.fetchOne(idCustomer)
+        await fetchCustomerStore.fetchOne(props.dataCustomers.id)
     }
     function updateLocalData(value) {
         localData.value = value
