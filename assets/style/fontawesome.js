@@ -5,7 +5,11 @@ import {
     faAtom,
     faBars,
     faBell,
+    faBook,
     faBoxes,
+    faBriefcase,
+    faBuilding,
+    faBullseye,
     faCalendar,
     faCalendarDay,
     faCalendarWeek,
@@ -20,6 +24,7 @@ import {
     faCircleInfo,
     faCity,
     faClipboardCheck,
+    faClipboardList,
     faClock,
     faCommentsDollar,
     faCubesStacked,
@@ -27,10 +32,12 @@ import {
     faEuroSign,
     faEye,
     faFileContract,
+    faFileInvoice,
     faFileInvoiceDollar,
     faFilter,
     faFolder,
     faGear,
+    faHandHoldingUsd,
     faHourglassHalf,
     faIcons,
     faIndustry,
@@ -64,14 +71,16 @@ import {
     faSitemap,
     faStar,
     faTimes,
+    faToolbox,
     faTrash,
+    faTruckField,
     faUserCircle,
     faUserGraduate,
     faUserTag,
     faWarehouse,
     faWrench
 } from '@fortawesome/free-solid-svg-icons'
-import {faElementor} from '@fortawesome/free-brands-svg-icons'
+import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
 
 library.add(faAddressCard)
@@ -79,7 +88,11 @@ library.add(faAtom)
 library.add(faAngleDoubleLeft)
 library.add(faBars)
 library.add(faBell)
+library.add(faBook)
 library.add(faBoxes)
+library.add(faBriefcase)
+library.add(faBuilding)
+library.add(faBullseye)
 library.add(faCalendarDay)
 library.add(faCaretDown)
 library.add(faCaretUp)
@@ -96,10 +109,12 @@ library.add(faElementor)
 library.add(faEuroSign)
 library.add(faEye)
 library.add(faFileContract)
+library.add(faFileInvoice)
 library.add(faFileInvoiceDollar)
 library.add(faFilter)
 library.add(faFolder)
 library.add(faGear)
+library.add(faHandHoldingUsd)
 library.add(faHourglassHalf)
 library.add(faIcons)
 library.add(faIndustry)
@@ -117,6 +132,7 @@ library.add(faPencil)
 library.add(faPlus)
 library.add(faPlusCircle)
 library.add(faPrint)
+library.add(faProductHunt)
 library.add(faProjectDiagram)
 library.add(faPuzzlePiece)
 library.add(faReceipt)
@@ -129,7 +145,9 @@ library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSitemap)
 library.add(faTimes)
+library.add(faToolbox)
 library.add(faTrash)
+library.add(faTruckField)
 library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
@@ -139,6 +157,7 @@ library.add(faPallet)
 library.add(faCircleDollarToSlot)
 library.add(faArrowRightToBracket)
 library.add(faClipboardCheck)
+library.add(faClipboardList)
 library.add(faCircleInfo)
 library.add(faCalendar)
 library.add(faCalendarWeek)
