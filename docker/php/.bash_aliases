@@ -40,3 +40,6 @@ alias gpao:fix:code='gpao_fix_code'
 # API
 alias api:database:load='/var/www/html/TConcept-GPAO/api/bin/console gpao:database:load'
 alias api:fix:code='/var/www/html/TConcept-GPAO/api/vendor/bin/php-cs-fixer fix && /var/www/html/TConcept-GPAO/api/vendor/bin/rector process && /var/www/html/TConcept-GPAO/api/vendor/bin/phpstan analyse --memory-limit=500M && php /var/www/html/TConcept-GPAO/api/bin/console cache:clear'
+alias migration:status='php bin/console doctrine:migrations:status'
+alias migration:diff='php bin/console doctrine:migrations:diff'
+alias migration:migrate='php bin/console doctrine:migrations:migrate'
