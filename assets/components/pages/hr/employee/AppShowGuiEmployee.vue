@@ -1,6 +1,7 @@
 <script setup>
-    import AppEmployeeFormShow from '../../../../router/pages/employee/AppEmployeeFormShow.vue'
+    import AppEmployeeFormShow from './AppEmployeeFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
+    import AppEmployeeShowInlist from './bottom/AppEmployeeShowInlist.vue'
     import {useEmployeeStore} from '../../../../stores/employee/employees'
     import {useRoute} from 'vue-router'
 
@@ -23,11 +24,9 @@
             <AppSuspense><AppEmployeeFormShow v-if="fetchEmployeeStore.isLoaded && fetchEmployeeStore.teamsIsLoaded"/></AppSuspense>
         </template>
         <template #gui-bottom>
-            <!--            <AppTabs id="gui-bottom">-->
-            <!--                <AppTab id="gui-bottom-components" active icon="puzzle-piece" tabs="gui-bottom" title="Fournitures"/>-->
-            <!--                <AppTab id="gui-bottom-receipts" icon="receipt" tabs="gui-bottom" title="Réceptions"/>-->
-            <!--                <AppTab id="gui-bottom-orders" icon="shopping-cart" tabs="gui-bottom" title="Commandes"/>-->
-            <!--            </AppTabs>-->
+            <AppSuspense>
+                <AppEmployeeShowInlist/>
+            </AppSuspense>
         </template>
         <template #gui-right>
             <!--            {{ route.params.id_employee }}-->
