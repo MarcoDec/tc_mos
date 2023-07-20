@@ -89,7 +89,7 @@ class Product extends Entity {
         ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/45'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:product-customer', 'write:product-customer'])
+        Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order'])
     ]
     private ?TechnicalSheet $product;
 

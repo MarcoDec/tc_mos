@@ -268,7 +268,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Indice', required: false, example: '02'),
         Assert\Length(min: 1, max: 10, groups: ['Product-admin', 'Product-create']),
         ORM\Column(name: '`index`', length: 10, nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone', 'read:product-customer'])
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'write:product:clone', 'read:product-customer', 'read:manufacturing-order'])
     ]
     private ?string $index = null;
 
@@ -339,7 +339,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         Assert\Length(min: 3, max: 160),
         Assert\NotBlank(groups: ['Product-admin', 'Product-create']),
         ORM\Column(length: 160, nullable: true),
-        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'read:product-customer'])
+        Serializer\Groups(['create:product', 'read:product', 'read:product:collection', 'write:product', 'write:product:admin', 'read:product-customer', 'read:manufacturing-order'])
     ]
     private ?string $name = null;
 
@@ -379,7 +379,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[
         ApiProperty(description: 'Prix', required: true, openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         ORM\Embedded,
-        Serializer\Groups(['read:product', 'read:product-customer'])
+        Serializer\Groups(['read:product', 'read:product-customer', 'read:manufacturing-order'])
     ]
     private Measure $price; // Champ calculé
 
