@@ -8,23 +8,7 @@
         item: {required: true, type: Object},
         row: {required: true, type: String}
     })
-    function labelValue(thevalue) {
-        if (props.field.type === 'select') {
-            const res = props.field.options.options.find(e => e.value === thevalue.value)
-            if (typeof res === 'undefined') return thevalue.value
-            return res.text
-        }
-        //TODO: gérer Multiselect et measures
 
-        if (props.field.type === 'measure'){
-            if (typeof thevalue === 'undefined' || typeof thevalue.value === 'undefined' || typeof thevalue.value.value === 'undefined' || typeof thevalue.value.code === 'undefined') {
-                return null
-            }
-            return `${thevalue.value.value} ${thevalue.value.code}`
-        }
-
-        return thevalue.value
-    }
     const bool = computed(() => props.field.type === 'boolean')
     const color = computed(() => props.field.type === 'color')
     const id = computed(() => `${props.row}-${props.field.name}`)
