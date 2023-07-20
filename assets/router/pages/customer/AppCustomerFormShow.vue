@@ -1,6 +1,5 @@
 <script setup>
-    // import AppShowCustomerTabAccounting
-    //     from '../../../components/pages/selling/customer/AppShowCustomerTabAccounting.vue'
+    import AppShowCustomerTabAccounting from '../../../components/pages/selling/customer/AppShowCustomerTabAccounting.vue'
     // import AppShowCustomerTabAddress from '../../../components/pages/selling/customer/AppShowCustomerTabAddress.vue'
     // import AppShowCustomerTabContact from '../../../components/pages/selling/customer/AppShowCustomerTabContact.vue'
     import AppShowCustomerTabGeneral from '../../../components/pages/selling/customer/AppShowCustomerTabGeneral.vue'
@@ -94,33 +93,37 @@
                     :data-society="fetchSocietyStore.society"/>
             </Suspense>
         </AppTab>
-        <!--        <AppTab
+        <AppTab
             id="gui-start-accounting"
             title="Comptabilité"
             icon="industry"
             tabs="gui-start">
-            <Suspense><AppShowCustomerTabAccounting/></Suspense>
-        </AppTab>
-        <AppTab
-            id="gui-start-addresses"
-            title="Adresse"
-            icon="location-dot"
-            tabs="gui-start">
             <Suspense>
-                <AppShowCustomerTabAddress
-                    :options-countries="optionsCountries"/>
+                <AppShowCustomerTabAccounting
+                    :data-customers="fetchCustomerStore.customer"
+                    :data-society="fetchSocietyStore.society"/>
             </Suspense>
         </AppTab>
-        <AppTab
-            id="gui-start-contacts"
-            title="Contacts"
-            icon="file-contract"
-            tabs="gui-start">
-            <Suspense>
-                <AppShowCustomerTabContact
-                    :options-countries="optionsCountries"/>
-            </Suspense>
-        </AppTab>-->
+        <!--        <AppTab-->
+        <!--            id="gui-start-addresses"-->
+        <!--            title="Adresse"-->
+        <!--            icon="location-dot"-->
+        <!--            tabs="gui-start">-->
+        <!--            <Suspense>-->
+        <!--                <AppShowCustomerTabAddress-->
+        <!--                    :options-countries="optionsCountries"/>-->
+        <!--            </Suspense>-->
+        <!--        </AppTab>-->
+        <!--        <AppTab-->
+        <!--            id="gui-start-contacts"-->
+        <!--            title="Contacts"-->
+        <!--            icon="file-contract"-->
+        <!--            tabs="gui-start">-->
+        <!--            <Suspense>-->
+        <!--                <AppShowCustomerTabContact-->
+        <!--                    :options-countries="optionsCountries"/>-->
+        <!--            </Suspense>-->
+        <!--        </AppTab>-->
     </AppTabs>
 </template>
 

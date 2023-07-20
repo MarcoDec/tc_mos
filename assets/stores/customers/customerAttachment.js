@@ -12,7 +12,6 @@ export const useCustomerAttachmentStore = defineStore('customerAttachment', {
             this.fetchByElement(this.id)
         },
         async fetchByElement(id) {
-            console.log(id)
             const response = await api(`/api/customer-attachments?pagination=false&employee=/api/customers/${id}`, 'GET')
             this.elementAttachments = await response['hydra:member']
             this.id = id

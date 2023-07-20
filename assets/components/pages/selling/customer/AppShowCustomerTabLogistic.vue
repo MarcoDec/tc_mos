@@ -12,7 +12,6 @@
     const fetchSocietyStore = useSocietyStore()
     const fetchCustomerStore = useCustomerStore()
     const localData = ref({})
-    console.log(props.dataCustomers, props.dataSociety)
     localData.value = {
         conveyanceDuration: {
             code: 'j',
