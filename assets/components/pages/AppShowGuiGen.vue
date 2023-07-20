@@ -135,8 +135,6 @@
 </template>
 
 <style scoped>
-    #gui-wrapper {
-    }
     #gui-header {
        position: fixed;
     }
@@ -173,7 +171,6 @@
     #gui-bottom {
         min-width: 100%;
         max-width: 100%;
-        display: flex;
         flex-direction: row;
         align-items: stretch;
         overflow: auto;
