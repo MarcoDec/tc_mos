@@ -1,4 +1,4 @@
-import api from '../../../../api'
+import api from '../../api'
 import {defineStore} from 'pinia'
 
 export const useSupplierListRetardStore = defineStore('supplierListRetard', {
@@ -412,8 +412,8 @@ export const useSupplierListRetardStore = defineStore('supplierListRetard', {
                 note: item.notes,
                 fournisseurFerme: '',
                 composantFournisseur: '',
-                quantiteSouhaitee: quantiteSou,
-                quantiteEffectuee: quantiteEff
+                quantiteSouhaitee: `${quantiteSou.value} ${quantiteSou.code}`,
+                quantiteEffectuee: `${quantiteEff.value} ${quantiteEff.code}`
             }
             return newObject
         }),

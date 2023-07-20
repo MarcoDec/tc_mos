@@ -1,4 +1,4 @@
-import api from '../../../../api'
+import api from '../../api'
 import {defineStore} from 'pinia'
 
 export const useSupplierListFournitureStore = defineStore('supplierListFourniture', {
@@ -323,9 +323,9 @@ export const useSupplierListFournitureStore = defineStore('supplierListFournitur
                 '@id': item['@id'],
                 creeLe: item.confirmedDate,
                 composant: item.item.code,
-                prix: item.price,
+                prix: `${item.price.value} ${item.price.code}`,
                 refFournisseur: item.ref,
-                quantite: item.requestedQuantity,
+                quantite: `${item.requestedQuantity.value} ${item.requestedQuantity.code}`,
                 texte: item.notes
             }
             return newObject

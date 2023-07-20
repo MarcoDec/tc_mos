@@ -1,4 +1,4 @@
-import api from '../../../../api'
+import api from '../../api'
 import {defineStore} from 'pinia'
 
 export const useSupplierListCommandeStore = defineStore('supplierListCommande', {
@@ -261,16 +261,16 @@ export const useSupplierListCommandeStore = defineStore('supplierListCommande', 
             }
             this.pagination = false
             return responseData[2]
-        },
-        async updateWarehouseStock(payload){
-            await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-            if (payload.sortable.value === true || payload.filter.value === true) {
-                this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-            } else {
-                this.itemsPagination(this.currentPage)
-            }
-            this.fetch()
-        }
+        }// ,
+        // async updateWarehouseStock(payload){
+        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
+        //     if (payload.sortable.value === true || payload.filter.value === true) {
+        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
+        //     } else {
+        //         this.itemsPagination(this.currentPage)
+        //     }
+        //     this.fetch()
+        // }
     },
     getters: {
         itemsSupplierCommande: state => state.supplierCommande.map(item => {
