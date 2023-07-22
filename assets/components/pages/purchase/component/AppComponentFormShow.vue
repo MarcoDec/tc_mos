@@ -6,8 +6,6 @@
     import AppShowComponentTabPurchase from './tabs/AppShowComponentTabPurchase.vue'
     import AppShowComponentTabQuality from './tabs/AppShowComponentTabQuality.vue'
     import AppShowComponentTabSpecification from './tabs/AppShowComponentTabSpecification.vue'
-    //import {useComponentListStore} from '../../../stores/component/components'
-    //import {useRoute} from 'vue-router'
 </script>
 
 <template>

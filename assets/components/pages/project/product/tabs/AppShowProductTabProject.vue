@@ -1,8 +1,8 @@
 <script setup>
-    import {useRoute} from 'vue-router'
     import generateProduct from '../../../../../stores/product/product'
     import {ref} from 'vue'
     import {useProductStore} from '../../../../../stores/product/products'
+    import {useRoute} from 'vue-router'
 
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
