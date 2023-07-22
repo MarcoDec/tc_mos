@@ -25,7 +25,7 @@
             return {text, value}
         }))
     const Logistiquefields = [
-        {label: 'Code douanier', name: 'customsCode', type: 'text'},
+        {label: 'Code douanier (10 caractères max)', name: 'customsCode', type: 'text'},
         {
             label: 'Incoterms',
             name: 'incoterms',
@@ -39,25 +39,29 @@
         },
         {
             label: 'Stock Min',
+            measure: {code: 'U', value: 'valeur'},
             name: 'minStock',
-            options: {
-                label: value =>
-                    optionsUnitText.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsUnitText.value
-            },
-            type: 'measureSelect'
+            type: 'measure'
+            // options: {
+            //     label: value =>
+            //         optionsUnitText.value.find(option => option.type === value)?.text
+            //         ?? null,
+            //     options: optionsUnitText.value
+            // },
+            // type: 'measureSelect'
         },
         {
             label: 'Delivery Min',
+            measure: {code: 'U', value: 'valeur'},
             name: 'minDelivery',
-            options: {
-                label: value =>
-                    optionsUnitText.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsUnitText.value
-            },
-            type: 'measureSelect'
+            type: 'measure'
+            // options: {
+            //     label: value =>
+            //         optionsUnitText.value.find(option => option.type === value)?.text
+            //         ?? null,
+            //     options: optionsUnitText.value
+            // },
+            // type: 'measureSelect'
         },
         {
             label: 'Poids',

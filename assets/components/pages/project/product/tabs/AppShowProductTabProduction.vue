@@ -11,7 +11,7 @@
         {label: 'Duration Auto', measure: {code: 'h', value: 'valeur'}, name: 'autoDuration', type: 'measure'},
         {label: 'Duration Manual', measure: {code: 'h', value: 'valeur'}, name: 'manualDuration', type: 'measure'},
         {label: 'Production Min', measure: {code: 'U', value: 'valeur'}, name: 'minProd', type: 'measure'},
-        {label: 'Production Delay', measure: {code: 'jr', value: 'valeur'}, name: 'productionDelay', type: 'measure'},
+        {label: 'Production Delay', measure: {code: 'j', value: 'valeur'}, name: 'productionDelay', type: 'measure'},
         // {
         //     label: 'Volume prévisionnel (champ calculé)',
         //     measure: {code: 'U', value: 'valeur'},
