@@ -9,16 +9,18 @@ export const useProductAttachmentStore = defineStore('productAttachment', {
             form.append('category', data.category)
             form.append('product', data.product)
             await api('/api/product-attachments', 'POST', form)
-            this.fetch()
+            this.fetchByElement(this.id)
         },
-        async fetch() {
-            const response = await api('/api/product-attachments?pagination=false', 'GET')
-            this.productAttachment = await response['hydra:member']
+        async fetchByElement(id) {
+            const response = await api(`/api/product-attachments?pagination=false&product=/api/products/${id}`, 'GET')
+            this.elementAttachments = await response['hydra:member']
+            this.id = id
         }
     },
     getters: {
     },
     state: () => ({
-        productAttachment: []
+        elementAttachments: [],
+        id: 1
     })
 })

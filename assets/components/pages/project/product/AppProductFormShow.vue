@@ -13,7 +13,7 @@
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
     const fetchProductAttachmentStore = useProductAttachmentStore()
-    await fetchProductAttachmentStore.fetch()
+    await fetchProductAttachmentStore.fetchByElement(idProduct)
 </script>
 
 <template>
