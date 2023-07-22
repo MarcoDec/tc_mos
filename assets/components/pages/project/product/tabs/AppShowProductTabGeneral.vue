@@ -36,8 +36,8 @@
 
         const data = {
             family: formData.get('family'),
+            managedCopper: JSON.parse(formData.get('managedCopper')),
             notes: formData.get('notes')
-            //managedCopper: JSON.parse(formData.get("managedCopper")),
         }
 
         const item = generateProduct(value)
