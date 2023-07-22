@@ -1,11 +1,11 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import MyTree from '../../../components/MyTree.vue'
-    import generateProduct from '../../../stores/product/product'
-    import {useIncotermStore} from '../../../stores/incoterm/incoterm'
-    import useOptions from '../../../stores/option/options'
-    import {useProductAttachmentStore} from '../../../stores/product/productAttachement'
-    import {useProductStore} from '../../../stores/product/products'
+    import MyTree from '../../../MyTree.vue'
+    import generateProduct from '../../../../stores/product/product'
+    import {useIncotermStore} from '../../../../stores/incoterm/incoterm'
+    import useOptions from '../../../../stores/option/options'
+    import {useProductAttachmentStore} from '../../../../stores/product/productAttachement'
+    import {useProductStore} from '../../../../stores/product/products'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

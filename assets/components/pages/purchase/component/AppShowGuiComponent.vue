@@ -1,5 +1,5 @@
 <script setup>
-    import AppComponentFormShow from '../../../../router/pages/component/AppComponentFormShow.vue'
+    import AppComponentFormShow from './AppComponentFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import {useComponentListStore} from '../../../../stores/component/components'
     import useOptions from '../../../../stores/option/options'

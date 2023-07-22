@@ -1,15 +1,15 @@
 <script setup>
-    import AppBtnJS from '../../../components/AppBtnJS'
-    import AppCardShow from '../../../components/AppCardShow.vue'
-    import AppCol from '../../../components/layout/AppCol'
-    import AppRow from '../../../components/layout/AppRow'
-    import AppTab from '../../../components/tab/AppTab.vue'
-    import AppTableJS from '../../../components/table/AppTableJS'
-    import AppTabs from '../../../components/tab/AppTabs.vue'
-    import Fa from '../../../components/Fa'
+    import AppBtnJS from '../../../AppBtnJS'
+    import AppCardShow from '../../../AppCardShow.vue'
+    import AppCol from '../../../layout/AppCol'
+    import AppRow from '../../../layout/AppRow'
+    import AppTab from '../../../tab/AppTab.vue'
+    import AppTableJS from '../../../table/AppTableJS'
+    import AppTabs from '../../../tab/AppTabs.vue'
+    import Fa from '../../../Fa'
     import {useRoute} from 'vue-router'
-    import {useTableMachine} from '../../../machine'
-    import {useWarehouseStocksItemsStore} from '../../../stores/production/warehouseStocksItems'
+    import {useTableMachine} from '../../../../machine'
+    import {useWarehouseStocksItemsStore} from '../../../../stores/production/warehouseStocksItems'
 
     defineProps({
         icon: {required: true, type: String},

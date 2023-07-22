@@ -1,4 +1,4 @@
-import AppSocity from './pages/direction/AppSocity.vue'
+import AppSocity from '../components/pages/management/AppSocity.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import MonthCalendar from '../router/pages/company/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'

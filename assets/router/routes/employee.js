@@ -1,6 +1,6 @@
 export default [
     {
-        component: () => import('../pages/employee/AppEmployeeFormShow.vue'),
+        component: () => import('../../components/pages/hr/employee/AppEmployeeFormShow.vue'),
         meta: {requiresAuth: true},
         name: 'employeeFormShow',
         path: '/employee/formshow'

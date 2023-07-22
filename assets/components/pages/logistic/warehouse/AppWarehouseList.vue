@@ -1,12 +1,12 @@
 <script setup>
     import {useRoute, useRouter} from 'vue-router'
-    import AppBtnJS from '../../../components/AppBtnJS'
-    import AppFormJS from '../../../components/form/AppFormJS'
-    import AppModal from '../../../components/modal/AppModal.vue'
-    import AppTableJS from '../../../components/table/AppTableJS'
-    import Fa from '../../../components/Fa'
-    import {useTableMachine} from '../../../machine'
-    import {useWarehouseListItemsStore} from '../../../stores/logistic/warehouses/warehouseListItems'
+    import AppBtnJS from '../../../AppBtnJS'
+    import AppFormJS from '../../../form/AppFormJS'
+    import AppModal from '../../../modal/AppModal.vue'
+    import AppTableJS from '../../../table/AppTableJS'
+    import Fa from '../../../Fa'
+    import {useTableMachine} from '../../../../machine'
+    import {useWarehouseListItemsStore} from '../../../../stores/logistic/warehouses/warehouseListItems'
 
     defineProps({
         fields: {default: () => [], type: Array},

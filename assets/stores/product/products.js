@@ -8,6 +8,7 @@ export const useProductStore = defineStore('products', {
             const response = await api(`/api/products/${id}`, 'GET')
             const item = generateProduct(response, this)
             this.product = item
+            this.isLoaded = true
         },
         async fetchProductFamily() {
             const response = await api('/api/product-families', 'GET')
@@ -16,6 +17,7 @@ export const useProductStore = defineStore('products', {
     },
     getters: {},
     state: () => ({
+        isLoaded: false,
         product: {},
         products: {},
         productsFamily: []

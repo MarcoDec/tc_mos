@@ -1,4 +1,4 @@
-import AppShowGuiProduct from '../components/pages/project/AppShowGuiProduct.vue'
+import AppShowGuiProduct from '../components/pages/project/product/AppShowGuiProduct.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
 import {readonly} from 'vue'

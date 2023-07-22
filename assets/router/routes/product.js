@@ -1,6 +1,6 @@
 export default [
     {
-        component: () => import('../pages/product/AppProductFormShow.vue'),
+        component: () => import('../../components/pages/project/product/AppProductFormShow.vue'),
         meta: {requiresAuth: true},
         name: 'productFormShow',
         path: '/product/formshow'
