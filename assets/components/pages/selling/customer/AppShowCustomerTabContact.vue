@@ -1,21 +1,34 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import AppCollectionTable from '../../../bootstrap-5/app-collection-table/AppCollectionTable.vue'
     import generateCustomerContact from '../../../../stores/customers/customerContact'
     import {useCustomerContactsStore} from '../../../../stores/customers/customerContacts'
+    import {useCustomerStore} from '../../../../stores/customers/customers'
 
-    const props = defineProps({
-        optionsCountries: {required: true, type: Object}
-    })
+    const emit = defineEmits(['error'])
+    const fetchCustomersStore = useCustomerStore()
+    const fetchCustomerContactsStore = useCustomerContactsStore()
+    const customerId = Number(fetchCustomersStore.customer.id)
+    await fetchCustomerContactsStore.fetchBySociety(customerId)
     const isShow = ref(false)
-    const isError2 = ref(false)
-    const violations2 = ref([])
-    const fecthCustomerContactsStore = useCustomerContactsStore()
     const itemsTable = computed(() =>
-        fecthCustomerContactsStore.itemsSocieties.reduce(
+        fetchCustomerContactsStore.itemsSocieties.reduce(
             (acc, curr) => acc.concat(curr),
             []
         ))
+    //Création des variables locales
+    const isError2 = ref(false)
+    const violations2 = ref([])
+    const typesContact = [
+        'comptabilité',
+        'chiffrage',
+        'direction',
+        'ingénierie',
+        'fabrication',
+        'achat',
+        'qualité',
+        'commercial',
+        'approvisionnement'
+    ]
     const fieldsSupp = [
         {
             label: 'Nom ',
@@ -23,73 +36,54 @@
             type: 'text'
         },
         {
-            label: 'Prenom ',
+            label: 'Prénom ',
             name: 'surname',
-
             type: 'text'
         },
         {
             label: 'Mobile ',
             name: 'mobile',
-
             type: 'text'
         },
         {
             label: 'Email ',
             name: 'email',
-
             type: 'text'
         },
         {
-            label: 'Adresse',
-            name: 'address',
-            type: 'text'
-        },
-        {
-            label: 'Complément d\'adresse ',
-            name: 'address2',
-            type: 'text'
-        },
-        {
-            label: 'Pays',
-            name: 'country',
+            label: 'Type',
+            name: 'kind',
             options: {
-                label: value =>
-                    props.optionsCountries.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: props.optionsCountries.value
+                label: 'Sélectionner un type',
+                options: typesContact.map(item => ({
+                    text: item,
+                    value: item
+                }))
             },
             type: 'select'
-        },
-        {
-            label: 'Ville ',
-            name: 'city',
-            type: 'text'
-        },
-        {
-            label: 'Code Postal ',
-            name: 'zipCode',
-            type: 'text'
         }
     ]
     async function ajout(inputValues) {
         const data = {
             address: {
-                address: inputValues.address ?? '',
-                address2: inputValues.address2 ?? '',
-                city: inputValues.city ?? '',
-                country: inputValues.country ?? '',
-                email: inputValues.email ?? '',
-                zipCode: inputValues.zipCode ?? ''
+                //address: inputValues.address ?? '',
+                // address2: inputValues.address2 ?? '',
+                // city: inputValues.city ?? '',
+                // country: inputValues.country ?? '',
+                email: inputValues.email ?? ''
+                // phoneNumber: inputValues.getPhone ?? "",
+                //zipCode: inputValues.zipCode ?? ''
             },
+            // default: true,
+            kind: inputValues.kind ?? '',
             mobile: inputValues.mobile ?? '',
             name: inputValues.name ?? '',
             society: `/api/customers/${customerId}`,
             surname: inputValues.surname ?? ''
         }
-
         try {
-            await fecthCustomerContactsStore.ajout(data, societyId)
+            await fetchCustomerContactsStore.ajout(data, customerId)
+
             isError2.value = false
         } catch (error) {
             if (Array.isArray(error)) {
@@ -105,21 +99,25 @@
         }
     }
     async function deleted(id) {
-        await fecthCustomerContactsStore.deleted(id)
+        await fetchCustomerContactsStore.deleted(id)
     }
-    async function updateSuppliers(inputValues) {
+    async function updateCustomer(inputValues) {
         const dataUpdate = {
             address: {
-                address: inputValues.address ?? '',
-                address2: inputValues.address2 ?? '',
-                city: inputValues.city ?? '',
-                country: inputValues.country ?? '',
-                email: inputValues.email ?? '',
-                zipCode: inputValues.zipCode ?? ''
+                // address: inputValues.address ?? '',
+                // address2: inputValues.address2 ?? '',
+                // city: inputValues.city ?? '',
+                // country: inputValues.country ?? '',
+                email: inputValues.email ?? ''
+                // phoneNumber: inputValues.getPhone ?? "",
+                //zipCode: inputValues.zipCode ?? ''
             },
+            // default: true,
+            // kind: "comptabilité",
+            kind: inputValues.kind ?? '',
             mobile: inputValues.mobile ?? '',
             name: inputValues.name ?? '',
-            society: inputValues.society,
+            society: `/api/customers/${customerId}`,
             surname: inputValues.surname ?? ''
         }
         try {
@@ -127,14 +125,15 @@
             await item.update(dataUpdate)
             isError2.value = false
         } catch (error) {
-            await fecthCustomerContactsStore.fetchBySociety(societyId)
-            itemsTable.value = fecthCustomerContactsStore.itemsSocieties.reduce(
+            await fetchCustomerContactsStore.fetchBySociety(customerId)
+            itemsTable.value = fetchCustomerContactsStore.itemsSocieties.reduce(
                 (acc, curr) => acc.concat(curr),
                 []
             )
             if (Array.isArray(error)) {
                 violations2.value = error
                 isError2.value = true
+                emit('error', {violation: violations2.value})
             } else {
                 const err = {
                     message: error
@@ -150,21 +149,10 @@
     <AppCollectionTable
         v-if="!isShow"
         id="addContacts"
+        :allowed-actions="{add: true, cancel: true, search: false}"
         :fields="fieldsSupp"
         :items="itemsTable"
-        current-page=""
-        first-page=""
-        form=""
-        last-page=""
-        next-page=""
-        previous-page=""
-        user=""
         @ajout="ajout"
         @deleted="deleted"
-        @update="updateSuppliers"/>
-    <div v-if="isError2" class="alert alert-danger" role="alert">
-        <div v-for="violation in violations2" :key="violation">
-            <li>{{ violation.propertyPath }} {{ violation.message }}</li>
-        </div>
-    </div>
+        @update="updateCustomer"/>
 </template>

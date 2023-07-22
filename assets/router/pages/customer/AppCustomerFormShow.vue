@@ -1,7 +1,7 @@
 <script setup>
     import AppShowCustomerTabAccounting from '../../../components/pages/selling/customer/AppShowCustomerTabAccounting.vue'
     import AppShowCustomerTabAddress from '../../../components/pages/selling/customer/AppShowCustomerTabAddress.vue'
-    // import AppShowCustomerTabContact from '../../../components/pages/selling/customer/AppShowCustomerTabContact.vue'
+    import AppShowCustomerTabContact from '../../../components/pages/selling/customer/AppShowCustomerTabContact.vue'
     import AppShowCustomerTabGeneral from '../../../components/pages/selling/customer/AppShowCustomerTabGeneral.vue'
     import AppShowCustomerTabLogistic from '../../../components/pages/selling/customer/AppShowCustomerTabLogistic.vue'
     import AppShowCustomerTabQuality from '../../../components/pages/selling/customer/AppShowCustomerTabQuality.vue'
@@ -31,8 +31,6 @@
     await fecthCustomerContactsStore.fetchBySociety(societyId)
     fetchSocietyStore.society.orderMin.code = 'EUR'
     fetchCustomerStore.customer.outstandingMax.code = 'EUR'
-    // const dataSuppliers = computed(() =>
-    //     Object.assign(fetchSuppliersStore.suppliers, fetchSocietyStore.society))
 
     const optionsCountries = computed(() =>
         fecthOptions.options.map(op => {
@@ -113,16 +111,16 @@
                     :options-countries="optionsCountries"/>
             </Suspense>
         </AppTab>
-        <!--        <AppTab-->
-        <!--            id="gui-start-contacts"-->
-        <!--            title="Contacts"-->
-        <!--            icon="file-contract"-->
-        <!--            tabs="gui-start">-->
-        <!--            <Suspense>-->
-        <!--                <AppShowCustomerTabContact-->
-        <!--                    :options-countries="optionsCountries"/>-->
-        <!--            </Suspense>-->
-        <!--        </AppTab>-->
+        <AppTab
+            id="gui-start-contacts"
+            title="Contacts"
+            icon="file-contract"
+            tabs="gui-start">
+            <Suspense>
+                <AppShowCustomerTabContact
+                    :options-countries="optionsCountries"/>
+            </Suspense>
+        </AppTab>
     </AppTabs>
 </template>
 
