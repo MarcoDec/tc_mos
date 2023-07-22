@@ -12,12 +12,12 @@
         {label: 'Duration Manual', measure: {code: 'h', value: 'valeur'}, name: 'manualDuration', type: 'measure'},
         {label: 'Production Min', measure: {code: 'U', value: 'valeur'}, name: 'minProd', type: 'measure'},
         {label: 'Production Delay', measure: {code: 'jr', value: 'valeur'}, name: 'productionDelay', type: 'measure'},
-        {
-            label: 'Volume prévisionnel (champ calculé)',
-            measure: {code: 'U', value: 'valeur'},
-            name: 'forecastVolume',
-            type: 'measure'
-        },
+        // {
+        //     label: 'Volume prévisionnel (champ calculé)',
+        //     measure: {code: 'U', value: 'valeur'},
+        //     name: 'forecastVolume',
+        //     type: 'measure'
+        // },
         {label: 'Packaging', measure: {code: 'Devise', value: 'valeur'}, name: 'packaging', type: 'measure'},
         {label: 'Packaging Kind', name: 'packagingKind', type: 'text'}
     ]
@@ -27,28 +27,28 @@
 
         const data = {
             autoDuration: {
-                //code: formData.get("autoDuration-code"),
+                code: 'h',
                 value: JSON.parse(formData.get('autoDuration-value'))
             },
             // forecastVolume: {
-            //   code: formData.get("forecastVolume-code"),
-            //   value: JSON.parse(formData.get("forecastVolume-value")),
+            //     code: formData.get('forecastVolume-code'),
+            //     value: JSON.parse(formData.get('forecastVolume-value'))
             // },
             manualDuration: {
-                //code: formData.get("manualDuration-code"),
+                code: 'h',
                 value: JSON.parse(formData.get('manualDuration-value'))
             },
             minProd: {
-                //code: formData.get("minProd-code"),
+                code: 'U',
                 value: JSON.parse(formData.get('minProd-value'))
             },
             packaging: {
-                //code: formData.get("packaging-code"),
+                code: 'U',
                 value: JSON.parse(formData.get('packaging-value'))
             },
             packagingKind: formData.get('packagingKind'),
             productionDelay: {
-                //code: formData.get("productionDelay-code"),
+                code: 'j',
                 value: JSON.parse(formData.get('productionDelay-value'))
             }
         }
@@ -60,10 +60,44 @@
 </script>
 
 <template>
-    <AppCardShow
-        id="addProduction"
-        :fields="productionFields"
-        :component-attribute="fetchProductStore.product"
-        @update="updateProduction(fetchProductStore.product)"/>
+    <div>
+        <fieldset class="bg-light m-3 scheduler-border text-info" name="volume" disabled>
+            <legend data-v-c8d9e039="" class="scheduler-border">
+                Champs calculés
+            </legend>
+            <div class="mb-3 row">
+                <label
+                    class="col-form-label col-md-3 col-xs-12"
+                    for="manager-forecastedVolume">
+                    Volume prévisionnel
+                </label>
+                <div class="col">
+                    <div id="manager-forecastedVolume" class="input-group">
+                        <input
+                            id="manager-forecastedVolume-value"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="transfertPriceSupplies-value"
+                            :value="fetchProductStore.product.forecastVolume.value"
+                            type="text"/>
+                        <input
+                            id="manager-forecastedVolume-code"
+                            autocomplete="off"
+                            class="form-control form-control-sm"
+                            form="manager"
+                            name="transfertPriceSupplies-code"
+                            :value="fetchProductStore.product.forecastVolume.code"
+                            type="text"/>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <AppCardShow
+            id="addProduction"
+            :fields="productionFields"
+            :component-attribute="fetchProductStore.product"
+            @update="updateProduction(fetchProductStore.product)"/>
+    </div>
 </template>
 

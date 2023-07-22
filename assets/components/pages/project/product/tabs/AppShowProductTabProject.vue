@@ -29,14 +29,9 @@
 
 <template>
     <div>
-        <AppCardShow
-            id="addProject"
-            :fields="projectFields"
-            :component-attribute="fetchProductStore.product"
-            @update="updateProject(fetchProductStore.product)"/>
-        <fieldset class="m-3 scheduler-border" name="prix" disabled>
+        <fieldset class="bg-light m-3 scheduler-border text-info" name="prix" disabled>
             <legend data-v-c8d9e039="" class="scheduler-border">
-                Prix (champs calculés)
+                Champs calculés
             </legend>
             <div class="mb-3 row">
                 <label
@@ -143,6 +138,11 @@
                 </div>
             </div>
         </fieldset>
+        <AppCardShow
+            id="addProject"
+            :fields="projectFields"
+            :component-attribute="fetchProductStore.product"
+            @update="updateProject(fetchProductStore.product)"/>
     </div>
 </template>
 
