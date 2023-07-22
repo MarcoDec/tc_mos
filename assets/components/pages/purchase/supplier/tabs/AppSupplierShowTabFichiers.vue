@@ -2,8 +2,8 @@
     import {computed, ref} from 'vue'
     import MyTree from '../../../../MyTree.vue'
     import {useParametersStore} from '../../../../../stores/parameters/parameters'
-    import {useSupplierAttachmentStore} from '../../../../../stores/supplier/supplierAttachement'
-    import {useSuppliersStore} from '../../../../../stores/supplier/suppliers'
+    import {useSupplierAttachmentStore} from '../../../../../stores/purchase/supplier/supplierAttachement'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
     //region Déclaration des variables
     const currentSupplierData = ref({})
     const isError = ref(false)

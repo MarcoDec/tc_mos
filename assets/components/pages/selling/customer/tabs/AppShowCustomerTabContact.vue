@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import generateCustomerContact from '../../../../../stores/customers/customerContact'
-    import {useCustomerContactsStore} from '../../../../../stores/customers/customerContacts'
-    import {useCustomerStore} from '../../../../../stores/customers/customers'
+    import generateCustomerContact from '../../../../../stores/selling/customers/customerContact'
+    import {useCustomerContactsStore} from '../../../../../stores/selling/customers/customerContacts'
+    import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
 
     const emit = defineEmits(['error'])
     const fetchCustomersStore = useCustomerStore()

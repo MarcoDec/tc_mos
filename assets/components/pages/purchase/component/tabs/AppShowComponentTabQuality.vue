@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
     import MyTree from '../../../../MyTree.vue'
-    import {useComponentAttachmentStore} from '../../../../../stores/component/componentAttachment'
-    import {useComponentListStore} from '../../../../../stores/component/components'
+    import {useComponentAttachmentStore} from '../../../../../stores/purchase/component/componentAttachment'
+    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

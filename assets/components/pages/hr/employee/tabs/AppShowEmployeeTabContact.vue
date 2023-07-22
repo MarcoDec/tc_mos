@@ -1,9 +1,9 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppCollectionTable from '../../../../bootstrap-5/app-collection-table/AppCollectionTable.vue'
-    import generateEmployeeContact from '../../../../../stores/employee/employeeContact'
-    import {useEmployeeContactsStore} from '../../../../../stores/employee/employeeContacts'
-    import {useEmployeeStore} from '../../../../../stores/employee/employees'
+    import generateEmployeeContact from '../../../../../stores/hr/employee/employeeContact'
+    import {useEmployeeContactsStore} from '../../../../../stores/hr/employee/employeeContacts'
+    import {useEmployeeStore} from '../../../../../stores/hr/employee/employees'
 
     const emit = defineEmits(['error'])
     const fetchEmployeeContactsStore = useEmployeeContactsStore()

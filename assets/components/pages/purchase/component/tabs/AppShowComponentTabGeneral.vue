@@ -1,5 +1,5 @@
 <script setup>
-    import {useComponentListStore} from '../../../../../stores/component/components'
+    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

@@ -6,8 +6,8 @@
     import AppShowEmployeeTabInfos from './tabs/AppShowEmployeeTabInfos.vue'
     import AppShowEmployeeTabProduction from './tabs/AppShowEmployeeTabProduction.vue'
     import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
-    import {useEmployeeAttachmentStore} from '../../../../stores/employee/employeeAttachements'
-    import {useEmployeeStore} from '../../../../stores/employee/employees'
+    import {useEmployeeAttachmentStore} from '../../../../stores/hr/employee/employeeAttachements'
+    import {useEmployeeStore} from '../../../../stores/hr/employee/employees'
     import {useRoute} from 'vue-router'
     const route = useRoute()
     const employeeId = route.params.id_employee

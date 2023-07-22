@@ -1,11 +1,19 @@
 <script setup>
     import AppShowProductTabAdmin from './tabs/AppShowProductTabAdmin.vue'
-    import AppShowProductTabFichiers from './tabs/AppShowProductTabFichiers.vue'
     import AppShowProductTabGeneral from './tabs/AppShowProductTabGeneral.vue'
     import AppShowProductTabLogistic from './tabs/AppShowProductTabLogistic.vue'
     import AppShowProductTabPrice from './tabs/AppShowProductTabPrice.vue'
     import AppShowProductTabProduction from './tabs/AppShowProductTabProduction.vue'
     import AppShowProductTabProject from './tabs/AppShowProductTabProject.vue'
+    import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
+    import {useProductAttachmentStore} from '../../../../stores/project/product/productAttachement'
+    import {useProductStore} from '../../../../stores/project/product/products'
+    import {useRoute} from 'vue-router'
+
+    const route = useRoute()
+    const idProduct = Number(route.params.id_product)
+    const fetchProductAttachmentStore = useProductAttachmentStore()
+    await fetchProductAttachmentStore.fetch()
 </script>
 
 <template>
@@ -51,7 +59,15 @@
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <Suspense><AppShowProductTabFichiers/></Suspense>
+            <Suspense>
+                <AppTabFichiers
+                    attachment-element-label="product"
+                    :element-api-url="`/api/products/${idProduct}`"
+                    :element-attachment-store="fetchProductAttachmentStore"
+                    :element-id="idProduct"
+                    element-parameter-name="PRODUCT_ATTACHMENT_CATEGORIES"
+                    :element-store="useProductStore"/>
+            </Suspense>
         </AppTab>
         <AppTab
             id="gui-start-Prix"

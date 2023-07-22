@@ -1,9 +1,9 @@
 <script setup>
     import {computed, onUnmounted, ref} from 'vue'
-    import generateCustomer from '../../../../../stores/customers/customer'
-    import {useCustomerStore} from '../../../../../stores/customers/customers'
+    import generateCustomer from '../../../../../stores/selling/customers/customer'
+    import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
     import useOptions from '../../../../../stores/option/options'
-    import {useSocietyStore} from '../../../../../stores/societies/societies'
+    import {useSocietyStore} from '../../../../../stores/management/societies/societies'
 
     const props = defineProps({
         dataCustomers: {required: true, type: Object}

@@ -1,7 +1,7 @@
 <script setup>
     import {computed} from 'vue'
-    import generateProduct from '../../../../../stores/product/product'
-    import {useProductStore} from '../../../../../stores/product/products'
+    import generateProduct from '../../../../../stores/project/product/product'
+    import {useProductStore} from '../../../../../stores/project/product/products'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

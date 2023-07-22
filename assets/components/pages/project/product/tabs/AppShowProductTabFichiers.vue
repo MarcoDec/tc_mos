@@ -1,8 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
     import MyTree from '../../../../MyTree.vue'
-    import {useProductAttachmentStore} from '../../../../../stores/product/productAttachement'
-    import {useProductStore} from '../../../../../stores/product/products'
+    import {useProductAttachmentStore} from '../../../../../stores/project/product/productAttachement'
+    import {useProductStore} from '../../../../../stores/project/product/products'
 
     const fetchProductStore = useProductStore()
     const fetchProductAttachmentStore = useProductAttachmentStore()

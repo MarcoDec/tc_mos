@@ -1,9 +1,9 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import generateSupplier from '../../../../../stores/supplier/supplier'
+    import generateSupplier from '../../../../../stores/purchase/supplier/supplier'
     import useOptions from '../../../../../stores/option/options'
-    import {useSupplierCompaniesStore} from '../../../../../stores/supplier/supplierCompanies'
-    import {useSuppliersStore} from '../../../../../stores/supplier/suppliers'
+    import {useSupplierCompaniesStore} from '../../../../../stores/purchase/supplier/supplierCompanies'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
 
     const fetchCompanyOptions = useOptions('companies')
     const optionsCompany = computed(() =>

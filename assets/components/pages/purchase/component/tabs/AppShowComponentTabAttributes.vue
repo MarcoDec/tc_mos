@@ -2,8 +2,8 @@
     import {computed, ref} from 'vue'
     //import generateComponentAttribute from '../../../../stores/component/componentAttribute'
     import useAttributes from '../../../../../stores/attribute/attributes'
-    import {useColorsStore} from '../../../../../stores/colors/colors'
-    import {useComponentAttributesStore} from '../../../../../stores/component/componentAttributesList'
+    import {useColorsStore} from '../../../../../stores/management/colors/colors'
+    import {useComponentAttributesStore} from '../../../../../stores/purchase/component/componentAttributesList'
     import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
 

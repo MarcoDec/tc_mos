@@ -1,7 +1,7 @@
 <script setup>
     import AppEmployeeFormShow from './AppEmployeeFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
-    import {useEmployeeStore} from '../../../../stores/employee/employees'
+    import {useEmployeeStore} from '../../../../stores/hr/employee/employees'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

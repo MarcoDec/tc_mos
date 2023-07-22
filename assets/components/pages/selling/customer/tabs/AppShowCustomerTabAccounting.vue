@@ -1,9 +1,9 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import generateCustomer from '../../../../../stores/customers/customer'
-    import {useCustomerStore} from '../../../../../stores/customers/customers'
+    import generateCustomer from '../../../../../stores/selling/customers/customer'
+    import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
     import {useInvoiceTimeDuesStore} from '../../../../../stores/management/invoiceTimeDues'
-    import {useSocietyStore} from '../../../../../stores/societies/societies'
+    import {useSocietyStore} from '../../../../../stores/management/societies/societies'
     import {useVatMessagesStore} from '../../../../../stores/management/vatMessages'
 
     const props = defineProps({

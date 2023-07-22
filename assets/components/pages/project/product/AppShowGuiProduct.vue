@@ -2,7 +2,7 @@
     import AppProductFormShow from './AppProductFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import useOptions from '../../../../stores/option/options'
-    import {useProductStore} from '../../../../stores/product/products'
+    import {useProductStore} from '../../../../stores/project/product/products'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

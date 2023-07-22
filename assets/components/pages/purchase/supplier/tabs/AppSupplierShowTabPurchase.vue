@@ -1,10 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import generateSupplier from '../../../../../stores/supplier/supplier'
-    import {useIncotermStore} from '../../../../../stores/incoterm/incoterm'
+    import generateSupplier from '../../../../../stores/purchase/supplier/supplier'
+    import {useIncotermStore} from '../../../../../stores/logistic/incoterm/incoterm'
     import useOptions from '../../../../../stores/option/options'
-    import {useSocietyStore} from '../../../../../stores/societies/societies'
-    import {useSuppliersStore} from '../../../../../stores/supplier/suppliers'
+    import {useSocietyStore} from '../../../../../stores/management/societies/societies'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
 
     //Définition des évènements
     const emit = defineEmits([

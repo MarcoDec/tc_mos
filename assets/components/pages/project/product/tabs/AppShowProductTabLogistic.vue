@@ -1,9 +1,9 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import generateProduct from '../../../../../stores/product/product'
-    import {useIncotermStore} from '../../../../../stores/incoterm/incoterm'
+    import generateProduct from '../../../../../stores/project/product/product'
+    import {useIncotermStore} from '../../../../../stores/logistic/incoterm/incoterm'
     import useOptions from '../../../../../stores/option/options'
-    import {useProductStore} from '../../../../../stores/product/products'
+    import {useProductStore} from '../../../../../stores/project/product/products'
 
     const isError2 = ref(false)
     const violations2 = ref([])

@@ -7,12 +7,12 @@
     import AppShowCustomerTabQuality from './tabs/AppShowCustomerTabQuality.vue'
     import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
     import {computed} from 'vue'
-    import {useCustomerAttachmentStore} from '../../../../stores/customers/customerAttachment'
-    import {useCustomerContactsStore} from '../../../../stores/customers/customerContacts'
-    import {useCustomerStore} from '../../../../stores/customers/customers'
+    import {useCustomerAttachmentStore} from '../../../../stores/selling/customers/customerAttachment'
+    import {useCustomerContactsStore} from '../../../../stores/selling/customers/customerContacts'
+    import {useCustomerStore} from '../../../../stores/selling/customers/customers'
     import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
-    import {useSocietyStore} from '../../../../stores/societies/societies'
+    import {useSocietyStore} from '../../../../stores/management/societies/societies'
 
     const route = useRoute()
     const idCustomer = route.params.id_customer

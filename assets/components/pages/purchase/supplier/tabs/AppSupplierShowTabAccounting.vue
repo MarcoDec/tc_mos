@@ -1,9 +1,9 @@
 <script setup>
-    import generateSupplier from '../../../../../stores/supplier/supplier'
+    import generateSupplier from '../../../../../stores/purchase/supplier/supplier'
     import {ref} from 'vue'
     import useOptions from '../../../../../stores/option/options'
-    import {useSocietyStore} from '../../../../../stores/societies/societies'
-    import {useSuppliersStore} from '../../../../../stores/supplier/suppliers'
+    import {useSocietyStore} from '../../../../../stores/management/societies/societies'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
 
     //Définition des propriétés
     //Définition des évènements
