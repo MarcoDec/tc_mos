@@ -1,9 +1,9 @@
 <script setup>
-    import generateSocieties from '../../../../stores/societies/societie'
-    import generateSupplier from '../../../../stores/supplier/supplier'
+    import generateSocieties from '../../../../../stores/societies/societie'
+    import generateSupplier from '../../../../../stores/supplier/supplier'
     import {ref} from 'vue'
-    import {useSocietyStore} from '../../../../stores/societies/societies'
-    import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
+    import {useSocietyStore} from '../../../../../stores/societies/societies'
+    import {useSuppliersStore} from '../../../../../stores/supplier/suppliers'
 
     // const props = defineProps({
     //     componentAttribute: {required: true, type: Object}

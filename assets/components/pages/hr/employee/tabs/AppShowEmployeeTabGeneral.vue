@@ -1,6 +1,6 @@
 <script setup>
-    import generateEmployee from '../../../../stores/employee/employee'
-    import {useEmployeeStore} from '../../../../stores/employee/employees'
+    import generateEmployee from '../../../../../stores/employee/employee'
+    import {useEmployeeStore} from '../../../../../stores/employee/employees'
     const fetchEmployeeStore = useEmployeeStore()
     const generalFields = [{label: 'Note', name: 'notes', type: 'textarea'}]
     async function updateGeneral(value) {

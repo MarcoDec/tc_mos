@@ -1,10 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import generateCustomer from '../../../../stores/customers/customer'
-    import {useCustomerStore} from '../../../../stores/customers/customers'
-    import {useInvoiceTimeDuesStore} from '../../../../stores/management/invoiceTimeDues'
-    import {useSocietyStore} from '../../../../stores/societies/societies'
-    import {useVatMessagesStore} from '../../../../stores/management/vatMessages'
+    import generateCustomer from '../../../../../stores/customers/customer'
+    import {useCustomerStore} from '../../../../../stores/customers/customers'
+    import {useInvoiceTimeDuesStore} from '../../../../../stores/management/invoiceTimeDues'
+    import {useSocietyStore} from '../../../../../stores/societies/societies'
+    import {useVatMessagesStore} from '../../../../../stores/management/vatMessages'
 
     const props = defineProps({
         dataCustomers: {required: true, type: Object},

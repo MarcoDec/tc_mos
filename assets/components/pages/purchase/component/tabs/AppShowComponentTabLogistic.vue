@@ -1,8 +1,8 @@
 <script setup>
-    import AppCardShow from '../../../AppCardShow.vue'
+    import AppCardShow from '../../../../AppCardShow.vue'
     import {computed} from 'vue'
-    import {useComponentListStore} from '../../../../stores/component/components'
-    import useOptions from '../../../../stores/option/options'
+    import {useComponentListStore} from '../../../../../stores/component/components'
+    import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
 
     const route = useRoute()

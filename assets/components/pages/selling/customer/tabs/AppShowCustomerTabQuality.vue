@@ -1,8 +1,8 @@
 <script setup>
-    import generateCustomer from '../../../../stores/customers/customer'
-    import generateSocieties from '../../../../stores/societies/societie'
+    import generateCustomer from '../../../../../stores/customers/customer'
+    import generateSocieties from '../../../../../stores/societies/societie'
     import {ref} from 'vue'
-    import {useCustomerStore} from '../../../../stores/customers/customers'
+    import {useCustomerStore} from '../../../../../stores/customers/customers'
 
     const props = defineProps({
         dataCustomers: {required: true, type: Object},

@@ -1,16 +1,11 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import AppCardShow from '../../../AppCardShow.vue'
-    import MyTree from '../../../MyTree.vue'
-    import {useComponentAttachmentStore} from '../../../../stores/component/componentAttachment'
-    import {useComponentListStore} from '../../../../stores/component/components'
-    import {useParametersStore} from '../../../../stores/parameters/parameters'
-    import {useRoute} from 'vue-router'
-
-    const route = useRoute()
-    const idComponent = route.params.id_component
+    import MyTree from '../../../../MyTree.vue'
+    import {useParametersStore} from '../../../../../stores/parameters/parameters'
+    import {useSupplierAttachmentStore} from '../../../../../stores/supplier/supplierAttachement'
+    import {useSuppliersStore} from '../../../../../stores/supplier/suppliers'
     //region Déclaration des variables
-    const currentComponentData = ref({})
+    const currentSupplierData = ref({})
     const isError = ref(false)
     const violations = ref([])
     const fichiersFields = ref([])
@@ -19,14 +14,14 @@
     const foldersId = ref([])
     const files = ref([])
     const parametersStore = useParametersStore()
-    const fetchComponentAttachment = useComponentAttachmentStore()
-    const useFetchComponentStore = useComponentListStore()
-    const componentAttachments = computed(() =>
-        fetchComponentAttachment.componentAttachments.map(attachment => ({
+    const fetchSupplierAttachmentStore = useSupplierAttachmentStore()
+    const fetchSuppliersStore = useSuppliersStore()
+    const supplierAttachment = computed(() =>
+        fetchSupplierAttachmentStore.supplierAttachment.map(attachment => ({
             category: attachment.category,
             icon: 'file-contract',
             id: attachment['@id'],
-            label: attachment.url.split('/').pop(), // get the filename from the URL
+            label: attachment.url.split('/').pop(),
             url: attachment.url
         })))
     //endregion
@@ -50,18 +45,18 @@
         return arr
     }
     async function initializeData() {
-        currentComponentData.value = useFetchComponentStore.component
+        currentSupplierData.value = fetchSuppliersStore.supplier
         const folderList = parametersStore.parameter.value.split(',').map(x => ({
             text: x,
             value: x
         }))
-        await fetchComponentAttachment.fetchByComponent(idComponent)
+        await fetchSupplierAttachmentStore.fetchBySupplier(currentSupplierData.value.id)
         fichiersFields.value = [
             {label: 'Catégorie', name: 'category', options: {options: folderList}, type: 'select'},
             {label: 'Fichier', name: 'file', type: 'file'}
         ]
         //Etape 1 - nodes = noeuds de type fichier
-        files.value = componentAttachments.value
+        files.value = supplierAttachment.value
         files.value.forEach(file => {
             getAllPaths(file.category).forEach(folderPath => {
                 if (foldersId.value.indexOf(folderPath) === -1) {
@@ -92,7 +87,7 @@
             children: [],
             icon: 'folder',
             id: 1,
-            label: `Pièces jointes (${componentAttachments.value.length})`,
+            label: `Pièces jointes (${supplierAttachment.value.length})`,
             level: 0
         }
         folders.value.push(rootFolder.value)
@@ -109,16 +104,16 @@
         })
     }
     async function updateFichiers(value) {
-        const componentId = Number(value['@id'].match(/\d+/)[0])
+        const suppliersId = Number(value['@id'].match(/\d+/)[0])
         const form = document.getElementById('addFichiers')
         const formData = new FormData(form)
         const data = {
             category: formData.get('category'),
-            component: `/api/components/${componentId}`,
-            file: formData.get('file')
+            file: formData.get('file'),
+            supplier: `/api/suppliers/${suppliersId}`
         }
         try {
-            await fetchComponentAttachment.ajout(data)
+            await fetchSupplierAttachmentStore.ajout(data)
             isError.value = false
         } catch (error) {
             const err = {
@@ -130,49 +125,10 @@
         await initializeData()
     }
     //endregion
-    //region Chargement des données / Variables
-    await parametersStore.getByName('COMPONENT_ATTACHMENT_CATEGORIES')
+    //region Chargement des données / variables
+    await parametersStore.getByName('SUPPLIER_ATTACHMENT_CATEGORIES')
     await initializeData()
     //endregion
-    // const route = useRoute()
-    // const idComponent = route.params.id_component
-    // await fetchComponentAttachment.fetchOne(idComponent)
-    // //await useFetchComponentStore.fetchOne(idComponent)
-    // const Fichiersfields = [
-    //     {label: 'Categorie', name: 'category', type: 'text'},
-    //     {label: 'Fichier', name: 'file', type: 'file'}
-    // ]
-    // const treeData = computed(() => {
-    //     const data = {
-    //         children: componentAttachment.value,
-    //         icon: 'folder',
-    //         id: 1,
-    //         label: `Attachments (${componentAttachment.value.length})`
-    //     }
-    //     return data
-    // })
-    // async function updateFichiers() {
-    //     const form = document.getElementById('addFichiers')
-    //     const formData = new FormData(form)
-    //     const data = {
-    //         category: formData.get('category'),
-    //         component: `/api/components/${idComponent}`,
-    //         file: formData.get('file')
-    //     }
-    //
-    //     try {
-    //         await fetchComponentAttachment.ajout(data)
-    //         await fetchComponentAttachment.fetchOne(idComponent)
-    //
-    //         isError.value = false
-    //     } catch (error) {
-    //         const err = {
-    //             message: error
-    //         }
-    //         violations.value.push(err)
-    //         isError.value = true
-    //     }
-    // }
 </script>
 
 <template>
@@ -180,9 +136,9 @@
         <AppCardShow
             id="addFichiers"
             :fields="fichiersFields"
-            :component-attribute="currentComponentData"
+            :component-attribute="currentSupplierData"
             title="Ajouter un nouveau Fichier"
-            @update="updateFichiers(useFetchComponentStore.component)"/>
+            @update="updateFichiers(fetchSuppliersStore.supplier)"/>
         <div v-if="isError" class="alert alert-danger" role="alert">
             <ul>
                 <li v-for="violation in violations" :key="violation">
@@ -193,4 +149,3 @@
         <MyTree :node="rootFolder"/>
     </div>
 </template>
-

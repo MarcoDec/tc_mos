@@ -1,6 +1,6 @@
 <script setup>
-    import generateCustomer from '../../../../stores/customers/customer'
-    import {useCustomerStore} from '../../../../stores/customers/customers'
+    import generateCustomer from '../../../../../stores/customers/customer'
+    import {useCustomerStore} from '../../../../../stores/customers/customers'
 
     const props = defineProps({
         optionsCountries: {required: true, type: Array}

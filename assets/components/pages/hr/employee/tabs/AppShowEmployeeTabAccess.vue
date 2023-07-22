@@ -1,8 +1,8 @@
 <script setup>
     import {computed} from 'vue'
-    import generateEmployee from '../../../../stores/employee/employee'
-    import {useEmployeeStore} from '../../../../stores/employee/employees'
-    import useOptions from '../../../../stores/option/options'
+    import generateEmployee from '../../../../../stores/employee/employee'
+    import {useEmployeeStore} from '../../../../../stores/employee/employees'
+    import useOptions from '../../../../../stores/option/options'
 
     const fetchEmployeeStore = useEmployeeStore()
     const fecthCompanyOptions = useOptions('companies')

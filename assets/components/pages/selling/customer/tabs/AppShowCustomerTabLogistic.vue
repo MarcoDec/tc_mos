@@ -1,9 +1,9 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import generateCustomer from '../../../../stores/customers/customer'
-    import {useCustomerStore} from '../../../../stores/customers/customers'
-    import {useIncotermStore} from '../../../../stores/incoterm/incoterm'
-    import {useSocietyStore} from '../../../../stores/societies/societies'
+    import generateCustomer from '../../../../../stores/customers/customer'
+    import {useCustomerStore} from '../../../../../stores/customers/customers'
+    import {useIncotermStore} from '../../../../../stores/incoterm/incoterm'
+    import {useSocietyStore} from '../../../../../stores/societies/societies'
 
     const props = defineProps({
         dataCustomers: {required: true, type: Object},

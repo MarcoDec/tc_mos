@@ -1,17 +1,17 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import generateSupplierContact from '../../../../stores/supplier/supplierContact'
-    import {useSupplierContactsStore} from '../../../../stores/supplier/supplierContacts'
-    import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
+    import generateCustomerContact from '../../../../../stores/customers/customerContact'
+    import {useCustomerContactsStore} from '../../../../../stores/customers/customerContacts'
+    import {useCustomerStore} from '../../../../../stores/customers/customers'
 
     const emit = defineEmits(['error'])
-    const fetchSuppliersStore = useSuppliersStore()
-    const fetchSupplierContactsStore = useSupplierContactsStore()
-    const supplierId = Number(fetchSuppliersStore.supplier.id)
-    await fetchSupplierContactsStore.fetchBySociety(supplierId)
+    const fetchCustomersStore = useCustomerStore()
+    const fetchCustomerContactsStore = useCustomerContactsStore()
+    const customerId = Number(fetchCustomersStore.customer.id)
+    await fetchCustomerContactsStore.fetchBySociety(customerId)
     const isShow = ref(false)
     const itemsTable = computed(() =>
-        fetchSupplierContactsStore.itemsSocieties.reduce(
+        fetchCustomerContactsStore.itemsSocieties.reduce(
             (acc, curr) => acc.concat(curr),
             []
         ))
@@ -78,11 +78,11 @@
             kind: inputValues.kind ?? '',
             mobile: inputValues.mobile ?? '',
             name: inputValues.name ?? '',
-            society: `/api/suppliers/${supplierId}`,
+            society: `/api/customers/${customerId}`,
             surname: inputValues.surname ?? ''
         }
         try {
-            await fetchSupplierContactsStore.ajout(data, supplierId)
+            await fetchCustomerContactsStore.ajout(data, customerId)
 
             isError2.value = false
         } catch (error) {
@@ -99,9 +99,9 @@
         }
     }
     async function deleted(id) {
-        await fetchSupplierContactsStore.deleted(id)
+        await fetchCustomerContactsStore.deleted(id)
     }
-    async function updateSuppliers(inputValues) {
+    async function updateCustomer(inputValues) {
         const dataUpdate = {
             address: {
                 // address: inputValues.address ?? '',
@@ -117,16 +117,16 @@
             kind: inputValues.kind ?? '',
             mobile: inputValues.mobile ?? '',
             name: inputValues.name ?? '',
-            society: `/api/suppliers/${supplierId}`,
+            society: `/api/customers/${customerId}`,
             surname: inputValues.surname ?? ''
         }
         try {
-            const item = generateSupplierContact(inputValues)
+            const item = generateCustomerContact(inputValues)
             await item.update(dataUpdate)
             isError2.value = false
         } catch (error) {
-            await fetchSupplierContactsStore.fetchBySociety(supplierId)
-            itemsTable.value = fetchSupplierContactsStore.itemsSocieties.reduce(
+            await fetchCustomerContactsStore.fetchBySociety(customerId)
+            itemsTable.value = fetchCustomerContactsStore.itemsSocieties.reduce(
                 (acc, curr) => acc.concat(curr),
                 []
             )
@@ -154,5 +154,5 @@
         :items="itemsTable"
         @ajout="ajout"
         @deleted="deleted"
-        @update="updateSuppliers"/>
+        @update="updateCustomer"/>
 </template>

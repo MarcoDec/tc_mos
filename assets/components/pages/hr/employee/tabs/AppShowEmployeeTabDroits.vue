@@ -1,7 +1,7 @@
 <script setup>
-    import generateEmployee from '../../../../stores/employee/employee'
+    import generateEmployee from '../../../../../stores/employee/employee'
     import {ref} from 'vue'
-    import {useEmployeeStore} from '../../../../stores/employee/employees'
+    import {useEmployeeStore} from '../../../../../stores/employee/employees'
     const emit = defineEmits(['update', 'update:modelValue'])
     const fetchEmployeeStore = useEmployeeStore()
     await fetchEmployeeStore.fetchTeams()

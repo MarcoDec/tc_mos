@@ -1,9 +1,9 @@
 <script setup>
     //import api from '../../../../api'
     //import {computed} from 'vue'
-    import generateSupplier from '../../../../stores/supplier/supplier'
+    import generateSupplier from '../../../../../stores/supplier/supplier'
     //import useOptions from '../../../../stores/option/options'
-    import {useSuppliersStore} from '../../../../stores/supplier/suppliers'
+    import {useSuppliersStore} from '../../../../../stores/supplier/suppliers'
 
     const props = defineProps({
         optionsCountries: {required: true, type: Array}
