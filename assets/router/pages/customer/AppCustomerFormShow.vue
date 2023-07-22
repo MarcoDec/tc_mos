@@ -1,12 +1,12 @@
 <script setup>
     import AppShowCustomerTabAccounting from '../../../components/pages/selling/customer/AppShowCustomerTabAccounting.vue'
-    // import AppShowCustomerTabAddress from '../../../components/pages/selling/customer/AppShowCustomerTabAddress.vue'
+    import AppShowCustomerTabAddress from '../../../components/pages/selling/customer/AppShowCustomerTabAddress.vue'
     // import AppShowCustomerTabContact from '../../../components/pages/selling/customer/AppShowCustomerTabContact.vue'
     import AppShowCustomerTabGeneral from '../../../components/pages/selling/customer/AppShowCustomerTabGeneral.vue'
     import AppShowCustomerTabLogistic from '../../../components/pages/selling/customer/AppShowCustomerTabLogistic.vue'
     import AppShowCustomerTabQuality from '../../../components/pages/selling/customer/AppShowCustomerTabQuality.vue'
     import AppTabFichiers from '../../../components/tab/AppTabFichiers.vue'
-    // import {computed} from 'vue'
+    import {computed} from 'vue'
     import {useCustomerAttachmentStore} from '../../../stores/customers/customerAttachment'
     import {useCustomerContactsStore} from '../../../stores/customers/customerContacts'
     import {useCustomerStore} from '../../../stores/customers/customers'
@@ -34,13 +34,12 @@
     // const dataSuppliers = computed(() =>
     //     Object.assign(fetchSuppliersStore.suppliers, fetchSocietyStore.society))
 
-    // const optionsCountries = computed(() =>
-    //     fecthOptions.options.map(op => {
-    //         const text = op.text
-    //         const value = op.id
-    //         const optionList = {text, value}
-    //         return optionList
-    //     }))
+    const optionsCountries = computed(() =>
+        fecthOptions.options.map(op => {
+            const text = op.text
+            const value = op.id
+            return {text, value}
+        }))
 </script>
 
 <template>
@@ -104,16 +103,16 @@
                     :data-society="fetchSocietyStore.society"/>
             </Suspense>
         </AppTab>
-        <!--        <AppTab-->
-        <!--            id="gui-start-addresses"-->
-        <!--            title="Adresse"-->
-        <!--            icon="location-dot"-->
-        <!--            tabs="gui-start">-->
-        <!--            <Suspense>-->
-        <!--                <AppShowCustomerTabAddress-->
-        <!--                    :options-countries="optionsCountries"/>-->
-        <!--            </Suspense>-->
-        <!--        </AppTab>-->
+        <AppTab
+            id="gui-start-addresses"
+            title="Adresse"
+            icon="location-dot"
+            tabs="gui-start">
+            <Suspense>
+                <AppShowCustomerTabAddress
+                    :options-countries="optionsCountries"/>
+            </Suspense>
+        </AppTab>
         <!--        <AppTab-->
         <!--            id="gui-start-contacts"-->
         <!--            title="Contacts"-->

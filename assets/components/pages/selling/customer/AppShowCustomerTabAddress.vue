@@ -1,14 +1,12 @@
 <script setup>
     import generateCustomer from '../../../../stores/customers/customer'
     import {useCustomerStore} from '../../../../stores/customers/customers'
-    import {useSocietyStore} from '../../../../stores/societies/societies'
 
     const props = defineProps({
-        optionsCountries: {required: true, type: Object}
+        optionsCountries: {required: true, type: Array}
     })
-    const fetchCustomerStore = useCustomerStore()
-    const fetchSocietyStore = useSocietyStore()
-    const addressFields = [
+    const fetchCustomersStore = useCustomerStore()
+    const Adressefields = [
         {label: 'Email', name: 'getEmail', type: 'text'},
         {label: 'Adresse', name: 'getAddress', type: 'text'},
         {label: 'Complément d\'adresse', name: 'getAddress2', type: 'text'},
@@ -19,18 +17,20 @@
             name: 'getCountry',
             options: {
                 label: value =>
-                    props.optionsCountries.value.find(option => option.type === value)?.text
+                    props.optionsCountries.find(option => option.type === value)?.text
                     ?? null,
-                options: props.optionsCountries.value
+                options: props.optionsCountries
             },
             type: 'select'
         },
         {label: 'Fax', name: 'getPhone', type: 'text'}
     ]
-    async function updateAdresse(value) {
+
+    async function updateAddress() {
         const form = document.getElementById('addAdresses')
         const formData = new FormData(form)
-        const dataSociety = {
+
+        const data = {
             address: {
                 address: formData.get('getAddress'),
                 address2: formData.get('getAddress2'),
@@ -41,17 +41,16 @@
                 zipCode: formData.get('getPostal')
             }
         }
-        const item = generateCustomer(value)
-        await item.updateMain(dataSociety)
-        await fetchSocietyStore.fetch()
-        await fetchCustomerStore.fetchOne(idCustomer)
+
+        const item = generateCustomer(fetchCustomersStore.customer)
+        await item.updateMain(fetchCustomersStore.customer.id, data)
     }
 </script>
 
 <template>
     <AppCardShow
         id="addAdresses"
-        :fields="addressFields"
-        :component-attribute="fetchCustomerStore.customer"
-        @update="updateAdresse(fetchCustomerStore.customer)"/>
+        :fields="Adressefields"
+        :component-attribute="fetchCustomersStore.customer"
+        @update="updateAddress(fetchCustomersStore.customer)"/>
 </template>
