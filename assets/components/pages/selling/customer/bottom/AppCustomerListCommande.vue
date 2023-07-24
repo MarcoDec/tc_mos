@@ -2,7 +2,7 @@
     import {computed, ref} from 'vue'
     import {useCustomerListCommandeStore} from '../../../../../stores/customers/customerListCommande'
     import {useRoute} from 'vue-router'
-    // import useField from '../../../stores/field/field'
+    import useField from '../../../../../stores/field/field'
 
     const roleuser = ref('reader')
     // let violations = []
@@ -22,92 +22,16 @@
     await storeCustomerListCommande.fetch()
     const itemsTable = ref(storeCustomerListCommande.itemsCustomerCommande)
     const formData = ref({
-        company: null, etat: null, ref: null, DateLivraisonConfirmee: null, typeCommande: null,
-        dateValidation: null
+        company: null, etat: null, ref: null, dateConfirmee: null, typeCommande: null,
+        dateSouhaitee: null, quantiteEffectuee: null, quantiteSouhaitee: null
     })
 
-    // const fieldsForm = [
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Compagnie',
-    //         name: 'company',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Etat',
-    //         name: 'etat',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Réf',
-    //         name: 'ref',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date de livraison confirmée',
-    //         name: 'DateLivraisonConfirmee',
-    //         sort: true,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'type de commande',
-    //         name: 'typeCommande',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date de validation',
-    //         name: 'dateValidation',
-    //         sort: true,
-    //         type: 'date',
-    //         update: true
-    //     }
-    // ]
-
-    // const parentQuantityCommande = {
-    //     //$id: `${warehouseId}Stock`
-    //     $id: 'customerCommande'
-    // }
-    // const storeUnitQtyCommande = useField(fieldsForm[8], parentQuantityCommande)
-    // storeUnitQtyCommande.fetch()
-
-    // fieldsForm[8].measure.code = storeUnitQtyCommande.measure.code
-    // fieldsForm[8].measure.value = storeUnitQtyCommande.measure.value
-
-    // const parentPrice = {
-    //     $id: 'customerCommandePrice'
-    // }
-    // const storeUnitPrice = useField(fieldsForm[7], parentPrice)
-    // storeUnitPrice.fetch()
-
-    // fieldsForm[7].measure.code = storeUnitPrice.measure.code
-    // fieldsForm[7].measure.value = storeUnitPrice.measure.value
-
-    const tabFields = [
+    const fieldsForm = [
         {
             create: false,
             filter: true,
-            label: 'Compagnie',
-            name: 'company',
+            label: 'Réf',
+            name: 'ref',
             sort: true,
             type: 'text',
             update: true
@@ -124,6 +48,90 @@
         {
             create: false,
             filter: true,
+            label: 'type de commande',
+            name: 'typeCommande',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Quantité Effectuée',
+            name: 'quantiteEffectuee',
+            measure: {
+                code: null,
+                value: null
+            },
+            sort: true,
+            type: 'measure',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Quantité Demandée',
+            name: 'quantiteSouhaitee',
+            measure: {
+                code: null,
+                value: null
+            },
+            sort: true,
+            type: 'measure',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Date demandée',
+            name: 'dateSouhaitee',
+            sort: true,
+            type: 'date',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Date de livraison confirmée',
+            name: 'dateConfirmee',
+            sort: true,
+            type: 'date',
+            update: true
+        }
+    ]
+
+    const parentQuantityCommandeSouhaitee = {
+        //$id: `${warehouseId}Stock`
+        $id: 'customerCommandeQtySouhaitee'
+    }
+    const storeUnitQtyCommandeSouhaitee = useField(fieldsForm[3], parentQuantityCommandeSouhaitee)
+    storeUnitQtyCommandeSouhaitee.fetch()
+
+    fieldsForm[3].measure.code = storeUnitQtyCommandeSouhaitee.measure.code
+    fieldsForm[3].measure.value = storeUnitQtyCommandeSouhaitee.measure.value
+
+    const parentQuantityCommandeEffectuee = {
+        $id: 'customerCommandeQtyEffectuee'
+    }
+    const storeUnitQtyCommandeEffectuee = useField(fieldsForm[4], parentQuantityCommandeEffectuee)
+    // storeUnitQtyCommandeEffectuee.fetch()
+
+    fieldsForm[4].measure.code = storeUnitQtyCommandeEffectuee.measure.code
+    fieldsForm[4].measure.value = storeUnitQtyCommandeEffectuee.measure.value
+
+    const tabFields = [
+        // {
+        //     create: false,
+        //     filter: true,
+        //     label: 'Compagnie',
+        //     name: 'company',
+        //     sort: true,
+        //     type: 'text',
+        //     update: true
+        // },
+        {
+            create: false,
+            filter: true,
             label: 'Réf',
             name: 'ref',
             sort: true,
@@ -133,10 +141,10 @@
         {
             create: false,
             filter: true,
-            label: 'Date de livraison confirmée',
-            name: 'DateLivraisonConfirmee',
+            label: 'Etat',
+            name: 'etat',
             sort: true,
-            type: 'date',
+            type: 'text',
             update: true
         },
         {
@@ -151,8 +159,43 @@
         {
             create: false,
             filter: true,
-            label: 'Date de validation',
-            name: 'dateValidation',
+            label: 'Quantité Effectuée',
+            name: 'quantiteEffectuee',
+            measure: {
+                code: storeUnitQtyCommandeEffectuee.measure.code,
+                value: storeUnitQtyCommandeEffectuee.measure.value
+            },
+            sort: true,
+            type: 'measure',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Quantité Demandée',
+            name: 'quantiteSouhaitee',
+            measure: {
+                code: storeUnitQtyCommandeSouhaitee.measure.code,
+                value: storeUnitQtyCommandeSouhaitee.measure.value
+            },
+            sort: true,
+            type: 'measure',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Date demandée',
+            name: 'dateSouhaitee',
+            sort: true,
+            type: 'date',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Date de livraison confirmée',
+            name: 'dateConfirmee',
             sort: true,
             type: 'date',
             update: true
@@ -167,7 +210,7 @@
     //         reference: null,
     //         quantiteConfirmee: null,
     //         quantiteSouhaitee: null,
-    //         quantiteEffetctuee: null,
+    //         quantiteEffectuee: null,
     //         dateLivraison: null,
     //         dateLivraisonSouhaitee: null
     //     }
@@ -188,7 +231,7 @@
     //         quantiteConfirmee: formData.value.quantiteConfirmee,
     //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
     //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffetctuee: formData.value.quantiteEffetctuee,
+    //         quantiteEffectuee: formData.value.quantiteEffectuee,
     //         dateLivraison: formData.value.dateLivraison,
     //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
     //     }
@@ -211,7 +254,7 @@
     //         reference: null,
     //         quantiteConfirmee: null,
     //         quantiteSouhaitee: null,
-    //         quantiteEffetctuee: null,
+    //         quantiteEffectuee: null,
     //         dateLivraison: null,
     //         dateLivraisonSouhaitee: null
     //     }
@@ -223,12 +266,14 @@
         updated.value = true
         AddForm.value = true
         const itemsData = {
-            company: item.company,
+            // company: item.company,
             etat: item.etat,
             ref: item.ref,
-            DateLivraisonConfirmee: item.DateLivraisonConfirmee,
+            dateConfirmee: item.dateConfirmee,
             typeCommande: item.typeCommande,
-            dateValidation: item.dateValidation
+            dateSouhaitee: item.dateSouhaitee,
+            quantiteEffectuee: item.quantiteEffectuee,
+            quantiteSouhaitee: item.quantiteSouhaitee
         }
         formData.value = itemsData
     }
@@ -258,27 +303,29 @@
         // }
 
         const payload = {
-            company: inputValues.company ?? '',
+            // company: inputValues.company ?? '',
             etat: inputValues.etat ?? '',
             ref: inputValues.ref ?? '',
-            DateLivraisonConfirmee: inputValues.DateLivraisonConfirmee ?? '',
+            dateConfirmee: inputValues.dateConfirmee ?? '',
             typeCommande: inputValues.typeCommande ?? '',
-            dateValidation: inputValues.dateValidation ?? ''
+            dateSouhaitee: inputValues.dateSouhaitee ?? '',
+            quantiteEffectuee: inputValues.quantiteEffectuee ?? '',
+            quantiteSouhaitee: inputValues.quantiteSouhaitee ?? ''
         }
 
-        // if (typeof payload.quantite.value === 'undefined' && payload.quantite !== '') {
-        //     payload.quantite.value = ''
-        // }
-        // if (typeof payload.quantite.code === 'undefined' && payload.quantite !== '') {
-        //     payload.quantite.code = ''
-        // }
+        if (typeof payload.quantiteSouhaitee.value === 'undefined' && payload.quantiteSouhaitee !== '') {
+            payload.quantiteSouhaitee.value = ''
+        }
+        if (typeof payload.quantiteSouhaitee.code === 'undefined' && payload.quantiteSouhaitee !== '') {
+            payload.quantiteSouhaitee.code = ''
+        }
 
-        // if (typeof payload.prix.value === 'undefined' && payload.prix !== '') {
-        //     payload.prix.value = ''
-        // }
-        // if (typeof payload.prix.code === 'undefined' && payload.prix !== '') {
-        //     payload.prix.code = ''
-        // }
+        if (typeof payload.quantiteEffectuee.value === 'undefined' && payload.quantiteEffectuee !== '') {
+            payload.quantiteEffectuee.value = ''
+        }
+        if (typeof payload.quantiteEffectuee.code === 'undefined' && payload.quantiteEffectuee !== '') {
+            payload.quantiteEffectuee.code = ''
+        }
 
         await storeCustomerListCommande.filterBy(payload)
         itemsTable.value = [...storeCustomerListCommande.itemsCustomerCommande]

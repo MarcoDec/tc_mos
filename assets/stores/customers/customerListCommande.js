@@ -36,41 +36,47 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                 this.currentPage = 1
             }
             // const response = await api(`/api/selling-order-items/customerFilter/${this.customerID}?page=${this.currentPage}`, 'GET')
-            const response = await api(`/api/selling-order-product?customer=/api/customers/${this.customerID}`, 'GET')
+            const response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}`, 'GET')
             this.customerCommande = await this.updatePagination(response)
         },
         async filterBy(payload) {
-            let url = `/api/selling-order-product?order.customer=/api/customers/${this.customerID}&`
+            let url = `/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&`
             if (payload === ''){
                 await this.fetch()
             } else {
-                if (payload.produit !== '') {
-                    url += `product.name=${payload.produit}&`
+                if (payload.ref !== '') {
+                    url += `order.ref=${payload.ref}&`
                 }
 
-                if (payload.ref !== ''){
-                    url += `product.of=${payload.ref}&`
+                if (payload.etat !== '') {
+                    url += `embState.state=${payload.etat}&`
                 }
 
-                if (payload.indiceClient !== '') {
-                    url += `product.index=${payload.indiceClient}&`
+                if (payload.dateConfirmee !== '') {
+                    url += `confirmedDate=${payload.dateConfirmee}&`
+                }
+                if (payload.typeCommande !== '') {
+                    url += `order.kind=${payload.typeCommande}&`
+                }
+                if (payload.dateSouhaitee !== '') {
+                    url += `requestedDate=${payload.dateSouhaitee}&`
                 }
 
-                if (payload.quantite !== ''){
-                    if (payload.quantite.value !== '') {
-                        url += `product.forecastVolume.value=${payload.quantite.value}&`
+                if (payload.quantiteSouhaitee !== ''){
+                    if (payload.quantiteSouhaitee.value !== '') {
+                        url += `requestedQuantity.value=${payload.quantiteSouhaitee.value}&`
                     }
-                    if (payload.quantite.code !== '') {
-                        url += `product.forecastVolume.code=${payload.quantite.code}&`
+                    if (payload.quantiteSouhaitee.code !== '') {
+                        url += `requestedQuantity.code=${payload.quantiteSouhaitee.code}&`
                     }
                 }
 
-                if (payload.prix !== ''){
-                    if (payload.prix.value !== '') {
-                        url += `product.price.value=${payload.prix.value}&`
+                if (payload.quantiteEffectuee !== ''){
+                    if (payload.quantiteEffectuee.value !== '') {
+                        url += `confirmedQuantity.value=${payload.quantiteEffectuee.value}&`
                     }
-                    if (payload.prix.code !== '') {
-                        url += `product.price.code=${payload.prix.code}&`
+                    if (payload.quantiteEffectuee.code !== '') {
+                        url += `confirmedQuantity.code=${payload.quantiteEffectuee.code}&`
                     }
                 }
                 url += 'page=1'
@@ -86,82 +92,93 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
-                let url = `/api/selling-order-product?order.customer=/api/customers/${this.customerID}&`
-                if (payload.filterBy.value.produit !== '') {
-                    url += `product.name=${payload.filterBy.value.produit}&`
+                let url = `/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&`
+                if (payload.filterBy.value.ref !== '') {
+                    url += `order.ref=${payload.filterBy.value.ref}&`
                 }
 
-                if (payload.filterBy.value.ref !== ''){
-                    url += `product.of=${payload.filterBy.value.ref}&`
+                if (payload.filterBy.value.etat !== '') {
+                    url += `embState.state=${payload.filterBy.value.etat}&`
                 }
 
-                if (payload.filterBy.value.indiceClient !== '') {
-                    url += `product.index=${payload.filterBy.value.indiceClient}&`
+                if (payload.filterBy.value.dateConfirmee !== '') {
+                    url += `confirmedDate=${payload.filterBy.value.dateConfirmee}&`
+                }
+                if (payload.filterBy.value.typeCommande !== '') {
+                    url += `order.kind=${payload.filterBy.value.typeCommande}&`
+                }
+                if (payload.filterBy.value.dateSouhaitee !== '') {
+                    url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
                 }
 
-                if (payload.filterBy.value.quantite !== ''){
-                    if (payload.filterBy.value.quantite.value !== '') {
-                        url += `product.forecastVolume.value=${payload.filterBy.value.quantite.value}&`
+                if (payload.filterBy.value.quantiteSouhaitee !== ''){
+                    if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
+                        url += `requestedQuantity.value=${payload.filterBy.value.quantiteSouhaitee.value}&`
                     }
-                    if (payload.filterBy.value.quantite.code !== '') {
-                        url += `product.forecastVolume.code=${payload.filterBy.value.quantite.code}&`
+                    if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
+                        url += `requestedQuantity.code=${payload.filterBy.value.quantiteSouhaitee.code}&`
                     }
                 }
 
-                if (payload.filterBy.value.prix !== ''){
-                    if (payload.filterBy.value.prix.value !== '') {
-                        url += `product.price.value=${payload.filterBy.value.prix.value}&`
+                if (payload.filterBy.value.quantiteEffectuee !== ''){
+                    if (payload.filterBy.value.quantiteEffectuee.value !== '') {
+                        url += `confirmedQuantity.value=${payload.filterBy.value.quantiteEffectuee.value}&`
                     }
-                    if (payload.filterBy.value.prix.code !== '') {
-                        url += `product.price.code=${payload.filterBy.value.prix.code}&`
+                    if (payload.filterBy.value.quantiteEffectuee.code !== '') {
+                        url += `confirmedQuantity.code=${payload.filterBy.value.quantiteEffectuee.code}&`
                     }
                 }
 
                 response = await api(url, 'GET')
                 this.customerCommande = await this.updatePagination(response)
             } else if (payload.filter.value === true){
-                let url = `/api/selling-order-product?order.customer=/api/customers/${this.customerID}&`
-                if (payload.filterBy.value.produit !== '') {
-                    url += `product.name=${payload.filterBy.value.produit}&`
+                let url = `/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&`
+                if (payload.filterBy.value.ref !== '') {
+                    url += `order.ref=${payload.filterBy.value.ref}&`
                 }
 
-                if (payload.filterBy.value.ref !== ''){
-                    url += `product.of=${payload.filterBy.value.ref}&`
+                if (payload.filterBy.value.etat !== '') {
+                    url += `embState.state=${payload.filterBy.value.etat}&`
                 }
 
-                if (payload.filterBy.value.indiceClient !== '') {
-                    url += `product.index=${payload.filterBy.value.indiceClient}&`
+                if (payload.filterBy.value.dateConfirmee !== '') {
+                    url += `confirmedDate=${payload.filterBy.value.dateConfirmee}&`
+                }
+                if (payload.filterBy.value.typeCommande !== '') {
+                    url += `order.kind=${payload.filterBy.value.typeCommande}&`
+                }
+                if (payload.filterBy.value.dateSouhaitee !== '') {
+                    url += `requestedDate=${payload.filterBy.value.dateSouhaitee}&`
                 }
 
-                if (payload.filterBy.value.quantite !== ''){
-                    if (payload.filterBy.value.quantite.value !== '') {
-                        url += `product.forecastVolume.value=${payload.filterBy.value.quantite.value}&`
+                if (payload.filterBy.value.quantiteSouhaitee !== ''){
+                    if (payload.filterBy.value.quantiteSouhaitee.value !== '') {
+                        url += `requestedQuantity.value=${payload.filterBy.value.quantiteSouhaitee.value}&`
                     }
-                    if (payload.filterBy.value.quantite.code !== '') {
-                        url += `product.forecastVolume.code=${payload.filterBy.value.quantite.code}&`
-                    }
-                }
-
-                if (payload.filterBy.value.prix !== ''){
-                    if (payload.filterBy.value.prix.value !== '') {
-                        url += `product.price.value=${payload.filterBy.value.prix.value}&`
-                    }
-                    if (payload.filterBy.value.prix.code !== '') {
-                        url += `product.price.code=${payload.filterBy.value.prix.code}&`
+                    if (payload.filterBy.value.quantiteSouhaitee.code !== '') {
+                        url += `requestedQuantity.code=${payload.filterBy.value.quantiteSouhaitee.code}&`
                     }
                 }
 
+                if (payload.filterBy.value.quantiteEffectuee !== ''){
+                    if (payload.filterBy.value.quantiteEffectuee.value !== '') {
+                        url += `confirmedQuantity.value=${payload.filterBy.value.quantiteEffectuee.value}&`
+                    }
+                    if (payload.filterBy.value.quantiteEffectuee.code !== '') {
+                        url += `confirmedQuantity.code=${payload.filterBy.value.quantiteEffectuee.code}&`
+                    }
+                }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
                 this.customerCommande = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
-                response = await api(`/api/selling-order-product?order.customer=/api/customers/${this.customerID}&page=${payload.nPage}`, 'GET')
+                response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&page=${payload.nPage}`, 'GET')
                 this.customerCommande = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'component') {
-                    response = await api(`/api/selling-order-product?order.customer=/api/customers/${this.customerID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
-                    response = await api(`/api/selling-order-product?order.customer=/api/customers/${this.customerID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
                 this.customerCommande = await this.updatePagination(response)
             }
@@ -170,33 +187,39 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
         async sortableItems(payload, filterBy, filter) {
             let response = {}
             if (filter.value === true){
-                if (filterBy.value.produit !== '') {
-                    url += `product.name=${filterBy.value.produit}&`
+                if (filterBy.value.ref !== '') {
+                    url += `order.ref=${filterBy.value.ref}&`
                 }
 
-                if (filterBy.value.ref !== ''){
-                    url += `product.of=${filterBy.value.ref}&`
+                if (filterBy.value.etat !== '') {
+                    url += `embState.state=${filterBy.value.etat}&`
                 }
 
-                if (filterBy.value.indiceClient !== '') {
-                    url += `product.index=${filterBy.value.indiceClient}&`
+                if (filterBy.value.dateConfirmee !== '') {
+                    url += `confirmedDate=${filterBy.value.dateConfirmee}&`
+                }
+                if (filterBy.value.typeCommande !== '') {
+                    url += `order.kind=${filterBy.value.typeCommande}&`
+                }
+                if (filterBy.value.dateSouhaitee !== '') {
+                    url += `requestedDate=${filterBy.value.dateSouhaitee}&`
                 }
 
-                if (filterBy.value.quantite !== ''){
-                    if (filterBy.value.quantite.value !== '') {
-                        url += `product.forecastVolume.value=${filterBy.value.quantite.value}&`
+                if (filterBy.value.quantiteSouhaitee !== ''){
+                    if (filterBy.value.quantiteSouhaitee.value !== '') {
+                        url += `requestedQuantity.value=${filterBy.value.quantiteSouhaitee.value}&`
                     }
-                    if (filterBy.value.quantite.code !== '') {
-                        url += `product.forecastVolume.code=${filterBy.value.quantite.code}&`
+                    if (filterBy.value.quantiteSouhaitee.code !== '') {
+                        url += `requestedQuantity.code=${filterBy.value.quantiteSouhaitee.code}&`
                     }
                 }
 
-                if (filterBy.value.prix !== ''){
-                    if (filterBy.value.prix.value !== '') {
-                        url += `product.price.value=${filterBy.value.prix.value}&`
+                if (filterBy.value.quantiteEffectuee !== ''){
+                    if (filterBy.value.quantiteEffectuee.value !== '') {
+                        url += `confirmedQuantity.value=${filterBy.value.quantiteEffectuee.value}&`
                     }
-                    if (filterBy.value.prix.code !== '') {
-                        url += `product.price.code=${filterBy.value.prix.code}&`
+                    if (filterBy.value.quantiteEffectuee.code !== '') {
+                        url += `confirmedQuantity.code=${filterBy.value.quantiteEffectuee.code}&`
                     }
                 }
 
@@ -205,9 +228,9 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
                 this.customerCommande = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'component') {
-                    response = await api(`/api/selling-order-product?order.customer=/api/customers/${this.customerID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
-                    response = await api(`/api/selling-order-product?order.customer=/api/customers/${this.customerID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/selling-order-products?order.customer.id=/api/customers/${this.customerID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
                 this.customerCommande = await this.updatePagination(response)
             }
@@ -244,18 +267,17 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
     },
     getters: {
         itemsCustomerCommande: state => state.customerCommande.map(item => {
-            /*            company: inputValues.company ?? '',
-            etat: inputValues.etat ?? '',
-            ref: inputValues.ref ?? '',
-            DateLivraisonConfirmee: inputValues.DateLivraisonConfirmee ?? '',
-            typeCommande: inputValues.typeCommande ?? '',
-            dateValidation: inputValues.dateValidation ?? ''*/
-            console.log(item)
+            // console.log(item)
             const newObject = {
                 '@id': item['@id'],
-                ref: item.ref,
-                dateValidation: item.requestedDate,
-                etat: item.embState.state
+                ref: item.order.ref,
+                dateSouhaitee: item.requestedDate,
+                dateConfirmee: item.confirmedDate,
+                etat: item.embState.state,
+                typeCommande: item.order.kind,
+                destination: item.order.destination,
+                quantiteEffectuee: `${item.confirmedQuantity.value} ${item.confirmedQuantity.code}`,
+                quantiteSouhaitee: `${item.requestedQuantity.value} ${item.requestedQuantity.code}`
             }
             return newObject
         })

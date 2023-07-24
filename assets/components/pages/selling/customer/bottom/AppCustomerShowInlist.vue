@@ -1,7 +1,7 @@
 <script setup>
     import AppCustomerListProduct from './AppCustomerListProduct.vue'
     import AppCustomerListOF from './AppCustomerListOF.vue'
-    // import AppCustomerListCommande from './AppCustomerListCommande.vue'
+    import AppCustomerListCommande from './AppCustomerListCommande.vue'
     import AppCustomerListBL from './AppCustomerListBL.vue'
     import AppCustomerListFacture from './AppCustomerListFacture.vue'
 
@@ -329,11 +329,11 @@
                     <AppCustomerListOF/>
                 </AppSuspense>
             </AppTab>
-            <!-- <AppTab id="gui-start-commandes" title="Commandes" icon="hand-holding-usd" tabs="gui-start-bottom">
+            <AppTab id="gui-start-commandes" title="Commandes" icon="hand-holding-usd" tabs="gui-start-bottom">
                 <AppSuspense>
                     <AppCustomerListCommande/>
                 </AppSuspense>
-            </AppTab> -->
+            </AppTab>
             <AppTab id="gui-start-bl" title="BL" icon="clipboard-list" tabs="gui-start-bottom">
                 <AppSuspense>
                     <AppCustomerListBL/>

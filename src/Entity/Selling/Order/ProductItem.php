@@ -6,7 +6,8 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Project\Product\Product;
+// use App\Entity\Project\Product\Product;
+use App\Entity\Selling\Customer\Product;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ProductItemRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,8 +18,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @template-extends Item<Product>
  */
 #[   
-    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'order.customer']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['order.customer' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuanity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['item',  'order.customer.id']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['order.customer.id' => 'partial', 'ref' => 'partial', 'requestedQuantity.value' => 'partial', 'requestedQuantity.code' => 'partial', 'confirmedQuantity.code' => 'partial', 'confirmedQuantity.value' => 'partial', 'confirmedDate' => 'partial', 'requestedDate' => 'partial',
+    'order.ref' => 'partial', 'embState.state' =>'partial', 'order.kind' => 'partial'
+]),
 
     ApiResource(
         description: 'Ligne de commande',
@@ -63,4 +66,5 @@ class ProductItem extends Item {
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected $item;
+
 }
