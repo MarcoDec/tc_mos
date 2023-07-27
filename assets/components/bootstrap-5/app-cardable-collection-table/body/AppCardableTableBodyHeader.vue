@@ -23,6 +23,7 @@
         inputValues.value = []
         emit('cancelSearch', inputValues.value)
     }
+    console.log(props)
 </script>
 
 <template>
@@ -40,7 +41,16 @@
         </td>
 
         <td v-for="field in tabFields" :key="field.name">
-            <AppInputGuesser :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field"/>
+            <template v-if="field.filter !== false">
+                <AppInputGuesser
+                    :id="field.name"
+                    v-model="inputValues[field.name]"
+                    :form="form"
+                    :field="field"/>
+            </template>
+            <template v-else>
+                {{ inputValues[field.name] }}
+            </template>
         </td>
     </tr>
 </template>
