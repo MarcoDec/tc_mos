@@ -15,7 +15,7 @@ class State extends AbstractState {
     #[
         ApiProperty(description: 'état', openapiContext: ['enum' => ProductStateType::TYPES]),
         ORM\Column(type: 'product_state', options: ['default' => 'draft']),
-        Serializer\Groups(['read:state'])
+        Serializer\Groups(['read:state', 'read:nomenclature'])
     ]
     protected string $state = ProductStateType::TYPE_STATE_DRAFT;
 }

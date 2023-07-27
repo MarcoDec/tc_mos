@@ -16,11 +16,14 @@ use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Entity\Selling\Customer\Product;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['mandated']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'product']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['component.id', 'product.code']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code' => 'partial', 'product.product.name' => 'partial', 'product.product.embState.state' => 'partial', 'product.customer.name' => 'partial', 'product.product.forecastVolume.value' => 'partial', 'product.product.forecastVolume.code' => 'partial', 'product.product.internalIndex' => 'partial']),
     ApiResource(
         description: 'Nomenclature',
         collectionOperations: [
@@ -87,7 +90,7 @@ class Nomenclature extends Entity implements MeasuredInterface {
     private bool $mandated = true;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
