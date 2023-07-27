@@ -43,6 +43,7 @@ import {
     faIndustry,
     faLaptop,
     faLayerGroup,
+    faListSquares,
     faLocationDot,
     faMagnet,
     faMale,
@@ -62,6 +63,7 @@ import {
     faReceipt,
     faRulerHorizontal,
     faRulerVertical,
+    faScrewdriverWrench,
     faSearch,
     faShoppingBag,
     faShoppingCart,
@@ -120,6 +122,7 @@ library.add(faIcons)
 library.add(faIndustry)
 library.add(faLaptop)
 library.add(faLayerGroup)
+library.add(faListSquares)
 library.add(faMagnet)
 library.add(faMale)
 library.add(faMapMarked)
@@ -137,6 +140,7 @@ library.add(faProjectDiagram)
 library.add(faPuzzlePiece)
 library.add(faReceipt)
 library.add(faRulerHorizontal)
+library.add(faScrewdriverWrench)
 library.add(faSearch)
 library.add(faSignal)
 library.add(faShoppingBag)
