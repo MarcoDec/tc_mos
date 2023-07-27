@@ -239,11 +239,12 @@ export const useCustomerListBLStore = defineStore('customerListBL', {
     getters: {
         itemsCustomerBL: state => state.customerBL.map(item => {
             const dt = item.note.date.split('T')[0]
+            console.log(item)
             const newObject = {
                 '@id': item['@id'],
                 ref: item.note.ref,
                 name: null,
-                etat: item.note.embState,
+                etat: item.note.embState.state,
                 date: dt,
                 supplementFret: `${item.note.freightSurcharge.value} ${item.note.freightSurcharge.code}`,
                 noBl: item.note.nonBillable

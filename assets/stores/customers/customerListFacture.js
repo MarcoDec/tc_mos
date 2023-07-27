@@ -27,7 +27,7 @@ export const useCustomerListFactureStore = defineStore('customerListFacture', {
         //     return violations
         // },
         async deleted(payload) {
-            await api(`/api/expeditions/${payload}`, 'DELETE')
+            await api(`/api/bills/${payload}`, 'DELETE')
             this.customerFacture = this.customerFacture.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
