@@ -121,7 +121,8 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item'])
     ]
     protected State $embState;
-
+    
+    /*, 'read:expedition'*/
     #[
         ApiProperty(description: 'Commande'),
         ORM\ManyToOne(targetEntity: Order::class, fetch: "EAGER"),
@@ -134,6 +135,7 @@ abstract class Item extends BaseItem {
         $this->embBlocker = new Closer();
         $this->embState = new State();
     }
+    /*, 'read:expedition'*/
     #[
         ApiProperty(description: 'Client'),
         Serializer\Groups(['read:item','write:item'])

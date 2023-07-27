@@ -60,10 +60,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 ]
 class ProductItem extends Item {
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
+        ApiProperty(description: 'Produit', readableLink: true),
         ORM\JoinColumn(name: 'product_id'),
         ORM\ManyToOne(targetEntity: Product::class),
-        Serializer\Groups(['read:item', 'write:item'])
+        Serializer\Groups(['read:item', 'write:item', 'read:expedition'])
     ]
     protected $item;
 

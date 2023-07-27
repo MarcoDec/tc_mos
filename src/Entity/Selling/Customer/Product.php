@@ -81,7 +81,7 @@ class Product extends Entity {
         ApiProperty(description: 'Client', readableLink: true, example: '/api/customers/8'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order'])
+        Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order', 'read:expedition'])
     ]
     private ?Customer $customer;
 
