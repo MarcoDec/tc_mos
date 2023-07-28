@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity\Production\Engine\Manufacturer;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
@@ -62,18 +61,12 @@ class Engine extends Entity {
     private ?Manufacturer $manufacturer = null;
 
     #[
-        ApiProperty(description: 'Numéro de série', example: '54544244474432'),
+        ApiProperty(description: 'Numéro d\'article', example: '54544244474432'),
         ORM\Column(nullable: true),
         Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
-    private ?string $serialNumber = null;
+    private ?string $partNumber = null;
 
-    public function __construct(
-        #[ORM\OneToOne(inversedBy: 'manufacturerEngine'),
-        Serializer\Groups(['read:manufacturer-engine'])]
-        private ?Equipment $engine = null
-    ) {
-    }
 
     final public function getCode(): ?string {
         return $this->code;
@@ -91,8 +84,8 @@ class Engine extends Entity {
         return $this->manufacturer;
     }
 
-    final public function getSerialNumber(): ?string {
-        return $this->serialNumber;
+    final public function getPartNumber(): ?string {
+        return $this->partNumber;
     }
 
     final public function setCode(?string $code): self {
@@ -115,8 +108,8 @@ class Engine extends Entity {
         return $this;
     }
 
-    final public function setSerialNumber(?string $serialNumber): self {
-        $this->serialNumber = $serialNumber;
+    final public function setPartNumber(?string $partNumber): self {
+        $this->partNumber = $partNumber;
         return $this;
     }
 }

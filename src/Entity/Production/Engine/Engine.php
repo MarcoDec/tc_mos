@@ -145,13 +145,37 @@ abstract class Engine extends Entity implements BarCodeInterface {
      * @var Group|null
      */
     protected $group;
-
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
         ORM\Column,
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?string $name = null;
+
+    #[
+        ApiProperty(description: 'Numéro de série', example: '10021'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+    ]
+    protected ?string $serialNumber = null;
+
+    /**
+     * @return string|null
+     */
+    public function getSerialNumber(): ?string
+    {
+        return $this->serialNumber;
+    }
+
+    /**
+     * @param string|null $serialNumber
+     * @return Engine
+     */
+    public function setSerialNumber(?string $serialNumber): Engine
+    {
+        $this->serialNumber = $serialNumber;
+        return $this;
+    }
 
     #[
         ApiProperty(description: 'Zone'),
@@ -173,9 +197,8 @@ abstract class Engine extends Entity implements BarCodeInterface {
     private EmployeeEngineState $embState;
 
     #[
-        ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist']),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation']),
-        Serializer\MaxDepth(1)
+        ORM\ManyToOne(targetEntity: ManufacturerEngine::class),
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
     ]
     private ManufacturerEngine $manufacturerEngine;
 
