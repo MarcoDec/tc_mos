@@ -6,12 +6,20 @@ export default defineStore('units', {
       
         async getUnits() {
             const response = await api('/api/units?pagination=false', 'GET')
-            console.log('responseListUnits', response)
+            // console.log('responseListUnits', response)
             this.listUnits = response['hydra:member']
         }
     },
     getters: {
         unitsOption: state => state.listUnits.map(unit => {
+            // console.log('unit',unit);
+            const opt = {
+                text: unit.code,
+                value: unit.code
+            }
+            return opt
+        }),
+        unitsSelect: state => state.listUnits.map(unit => {
             const opt = {
                 text: unit.code,
                 value: unit['@id']

@@ -1,19 +1,24 @@
 <script setup>
+    import {ref} from 'vue'
     import AppComponentCreate from './AppComponentCreate.vue'
+    import AppSuspense from '../../../components/AppSuspense.vue'
     import AppTablePage from '../AppTablePage'
     import {computed} from 'vue-demi'
     import useComponentsStore from '../../../stores/component/components'
+    import useComponentAttributesStore from '../../../stores/component/componentAttribute'
     import useAttributesStore from '../../../stores/attribute/attributes'
+    import useUnitsStore from '../../../stores/unit/units'
     import {useTableMachine} from '../../../machine'
     const title = 'Créer un Composant'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
     const machineComponet = useTableMachine('machine-component')
     const StoreComponents = useComponentsStore()
-    const StoreAttributes = useAttributesStore()
+    const StoreComponentAttributes = useComponentAttributesStore()
+    const storeAttributes = useAttributesStore()
+    const storeUnits = useUnitsStore()
 
-    // console.log('component', component)
-
+    
     const fields = [
         {
             create: false,
@@ -81,10 +86,72 @@
         }
     ]
     let fInput = {}
-    function input(formInput) {
-        console.log('formInput', formInput)
+    const family = ref('') 
+    const myBooleanFamily = ref(false);
+    const fieldsAttributs = ref([])
+    const attributesFiltered = ref([])
+    const inputAttributes = ref({})
+    
+
+
+    async function input(formInput) {
         fInput = computed(() => formInput)
+        console.log('fInput', fInput);
+        const oldFamily = family.value;
+        console.log('oldFamily', oldFamily);
+        family.value = fInput.value.family
+        if (oldFamily === family.value) {
+            myBooleanFamily.value = false 
+            console.log('myBooleanFamily', myBooleanFamily);
+        }else{
+            myBooleanFamily.value = true 
+            console.log('myBooleanFamily', myBooleanFamily);
+        }
+
+        console.log('family', family);
+        if (family!== undefined) {
+            inputAttributes.value= {}
+            console.log('===>', inputAttributes.value);
+            await storeAttributes.getAttributes()
+            console.log('Attributes', storeAttributes.listAttributes)
+            await storeUnits.getUnits()
+            const listUnits = storeUnits.unitsOption
+
+            attributesFiltered.value = storeAttributes.listAttributes.filter(attribute => attribute.families.includes(family.value))
+            console.log('attributesFiltered', attributesFiltered.value)
+            const newFields = attributesFiltered.value.map(attribute => {
+                console.log('attribute',attribute);
+                if (attribute.type === 'measureSelect') {
+                    return {
+                    name: attribute.name,
+                    label: attribute.name,
+                    options: {
+                        label: value =>
+                        listUnits.find(option => option.type === value)?.text ?? null,
+                            options: listUnits
+                    },
+                    type: attribute.type
+                    }
+                } else {
+                    return {
+                        name: attribute.name,
+                        label: attribute.name,
+                        type: attribute.type
+                    }
+        }
+        })
+        fieldsAttributs.value = newFields
+        console.log('fieldsAttributs',fieldsAttributs.value);
     }
+    }
+    
+    function inputAttribute(data) {
+        // inputAttributes.value= {}
+        console.log('data',data);
+        inputAttributes.value= data
+        console.log('inputAttributes', inputAttributes);
+    }
+    let tabInput = [];
     async function Componentcreate() {
         const componentInput = {
             family: fInput.value.family,
@@ -94,16 +161,46 @@
             unit: fInput.value.unit,
             weight: fInput.value.weight
         }
-        console.log('componentInput', componentInput)
         await StoreComponents.addComponent(componentInput)
+        const newComponent = await StoreComponents.component
+        tabInput = []
+        for (let key in inputAttributes.formInput) {
+            if (typeof inputAttributes.formInput[key] === 'object') {
+                const attribute = inputAttributes.attribute.find(item => item.name === key);
+                tabInput.push({
+                    attribute: attribute['@id'],
+                    measure: inputAttributes.formInput[key],
+                    component: newComponent['@id'],
+                });
+            }else if (key === 'couleur') {
+                const attribute = inputAttributes.attribute.find(item => item.name === key);
+                tabInput.push({
+                    attribute: attribute['@id'],
+                    color: inputAttributes.formInput[key],
+                    component: newComponent['@id'],
+                });
+            }else{
+                const attribute = inputAttributes.attribute.find(item => item.name === key);
+                tabInput.push({
+                    attribute: attribute['@id'],
+                    value: inputAttributes.formInput[key],
+                    component: newComponent['@id'],
+                });
+            }
+        }
+        console.log('tabInput', tabInput);
+        for(let key in tabInput){
+            await StoreComponentAttributes.addComponentAttributes(tabInput[key])
+        }
     }
-    // StoreAttributes.getAttributes()
 </script>
 
 <template>
     <div class="row">
         <AppModal :id="modalId" class="four" :title="title" size="xl">
-            <AppComponentCreate @update:model-value="input"/>
+            <AppSuspense>
+                <AppComponentCreate :fieldsAttributs="fieldsAttributs" :myBooleanFamily="myBooleanFamily" @update:model-value="input" @dataAttribute="inputAttribute"/>
+            </AppSuspense>
             <template #buttons>
                 <AppBtn
                     variant="success"

@@ -36,7 +36,8 @@ export default defineStore('components', {
         },
         async addComponent(payload){
             console.log('payload', payload)
-            await api('/api/components', 'POST', payload)
+            this.component = await api('/api/components', 'POST', payload)
+            console.log('respanse', this.component);
         }
     },
     getters: {
@@ -51,5 +52,5 @@ export default defineStore('components', {
                 .sort((a, b) => a.text.localeCompare(b.text))
     },
 
-    state: () => ({items: []})
+    state: () => ({items: [], component:[] })
 })

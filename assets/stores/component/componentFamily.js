@@ -6,7 +6,7 @@ export default defineStore('componentFamily', {
         async getComponentFamily() {
             const response = await api('api/component-families', 'GET')
             this.listComponentFamilies = response['hydra:member']
-            console.log('responseComponentFamily',this.listComponentFamilies)
+            // console.log('responseComponentFamily',this.listComponentFamilies)
         }
     },
     getters: {
