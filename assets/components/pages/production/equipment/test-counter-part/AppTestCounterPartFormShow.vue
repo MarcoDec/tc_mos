@@ -16,12 +16,16 @@
         {label: 'Largeur de sertissage (mm)', name: 'LargeurSertissage', type: 'text'},
         {label: 'Paramètre de mesure', name: 'ParamètreMesure', type: 'text'}
     ]
+    // attachments, brand, code, entryDate, name, zone, manufacturerEngine, maxOperator, note, embState, embBlocker
 </script>
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-main" active title="Généralités" icon="pencil">
             <AppCardShow id="addGeneralites"/>
+        </AppTab>
+        <AppTab id="gui-start-fichiers" title="Fichiers" icon="certificate">
+            <AppCardShow id="addFichier" :fields="Qualitéfields"/>
         </AppTab>
         <AppTab id="gui-start-quality" title="Qualité" icon="certificate">
             <AppCardShow id="addQualite" :fields="Qualitéfields"/>
