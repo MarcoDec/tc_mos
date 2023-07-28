@@ -5,11 +5,11 @@
     import dayGridPlugin from '@fullcalendar/daygrid'
     import interactionPlugin from '@fullcalendar/interaction'
     import timeGridPlugin from '@fullcalendar/timegrid'
-    import useEventsCompany from '../../../../../stores/purchase/eventsCompany/events'
-    import useEventsCustomer from '../../../../../stores/selling/eventsCustomer/events'
-    import useEventsEmployee from '../../../../../stores/hr/eventsEmployee/events'
-    import useEventsEngine from '../../../../../stores/production/eventsEngine/events'
-    import useUser from '../../../../../stores/security'
+    import useEventsCompany from '../../../../../../stores/purchase/eventsCompany/events'
+    import useEventsCustomer from '../../../../../../stores/selling/eventsCustomer/events'
+    import useEventsEmployee from '../../../../../../stores/hr/eventsEmployee/events'
+    import useEventsEngine from '../../../../../../stores/production/eventsEngine/events'
+    import useUser from '../../../../../../stores/security'
 
     const today = new Date()
     const month = ref(today.getMonth() + 1)

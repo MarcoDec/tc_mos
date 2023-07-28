@@ -1,3 +1,7 @@
+import AppShowGuiTestCounterPart
+    from '../components/pages/production/equipment/test-counter-part/AppShowGuiTestCounterPart.vue'
+import AppShowGuiTool from '../components/pages/production/equipment/tool/AppShowGuiTool.vue'
+import AppShowGuiWorkstation from '../components/pages/production/equipment/workstation/AppShowGuiWorkstation.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
@@ -94,5 +98,23 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }
+    },
+    {
+        component: AppShowGuiTestCounterPart,
+        meta: {container: false, title: 'Test Counter Part — T-Concept GPAO'},
+        name: 'counterPartShow',
+        path: '/counter-part/:id_engine'
+    },
+    {
+        component: AppShowGuiWorkstation,
+        meta: {container: false, title: 'Workstation — T-Concept GPAO'},
+        name: 'workstationShow',
+        path: '/workstation/:id_engine'
+    },
+    {
+        component: AppShowGuiTool,
+        meta: {container: false, title: 'Tool — T-Concept GPAO'},
+        name: 'toolShow',
+        path: '/tool/:id_engine'
     }
 ]

@@ -1,6 +1,6 @@
 import AppSocity from '../components/pages/management/society/AppSocity.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
-import MonthCalendar from '../router/pages/company/agenda/agendaMonth/MonthCalendar.vue'
+import MonthCalendar from '../components/pages/management/company/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
 
 export default [
