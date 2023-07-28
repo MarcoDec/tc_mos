@@ -1,5 +1,5 @@
 <script setup>
-    import {useEngineStore} from '../../../stores/production/engine/engines'
+    import {useEngineStore} from '../../../../../stores/production/engine/engines'
 
     const fecthEngineStore = useEngineStore()
     await fecthEngineStore.fetch()
