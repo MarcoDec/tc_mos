@@ -100,6 +100,27 @@ export default [
         }
     },
     {
+        component: AppTablePageSuspense,
+        meta: {title: 'Machine de référence— T-Concept GPAO'},
+        name: 'manufacturer engines',
+        path: '/manufacturer-engines',
+        props: {
+            apiBaseRoute: 'manufacturer-engines',
+            disableAdd: true,
+            disableRemove: true,
+            fields: [
+                {label: 'Nom', name: 'name', update: false},
+                {label: 'Description', name: 'description', type: 'textarea'},
+                {label: 'Type', name: 'kind', type: 'text', update: false},
+                {label: 'Valeur', name: 'value', type: 'text'}
+            ],
+            icon: 'gear',
+            readFilter: '?page=1&pagination=false&type=production',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Paramètres'
+        }
+    },
+    {
         component: AppShowGuiTestCounterPart,
         meta: {container: false, title: 'Test Counter Part — T-Concept GPAO'},
         name: 'counterPartShow',

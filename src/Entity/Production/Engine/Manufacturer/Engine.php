@@ -14,16 +14,17 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiResource(
         description: 'Équipement : fiche fabricant',
-        collectionOperations: [],
+        collectionOperations: ['get', 'post'],
         itemOperations: [
-            'get' => NO_ITEM_GET_OPERATION,
+            'get',
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie une fiche fabricant',
                     'summary' => 'Modifie une fiche fabricant',
-                    'tags' => ['Engine']
+                    'tags' => ['ManufacturerEngine']
                 ]
-            ]
+            ],
+            'delete'
         ],
         shortName: 'ManufacturerEngine',
         denormalizationContext: [
@@ -65,6 +66,12 @@ class Engine extends Entity {
     ]
     private ?Manufacturer $manufacturer = null;
 
+    #[
+        ApiProperty(description: 'Nom', example: 'Machine'),
+        ORM\Column,
+        Serializer\Groups(['read:engine-engine', 'write:engine-engine'])
+    ]
+    protected ?string $name = null;
     #[
         ApiProperty(description: 'Numéro d\'article', example: '54544244474432'),
         ORM\Column(nullable: true),
@@ -135,4 +142,23 @@ class Engine extends Entity {
         $this->attachments = $attachments;
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     * @return Engine
+     */
+    public function setName(?string $name): Engine
+    {
+        $this->name = $name;
+        return $this;
+    }
+
 }
