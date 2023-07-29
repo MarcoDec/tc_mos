@@ -4,8 +4,10 @@ namespace App\Entity\Production\Engine\Manufacturer;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
+use App\Entity\Production\Engine\Attachment\ManufacturerEngineAttachment;
 use App\Entity\Production\Engine\Engine as Equipment;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -39,6 +41,9 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Table(name: 'manufacturer_engine')
 ]
 class Engine extends Entity {
+    #[ORM\OneToMany(mappedBy: 'engine', targetEntity: ManufacturerEngineAttachment::class)]
+    private Collection $attachments;
+
     #[
         ApiProperty(description: 'Référence'),
         ORM\Column(nullable: true),
@@ -110,6 +115,24 @@ class Engine extends Entity {
 
     final public function setPartNumber(?string $partNumber): self {
         $this->partNumber = $partNumber;
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Collection $attachments
+     * @return Engine
+     */
+    public function setAttachments(Collection $attachments): Engine
+    {
+        $this->attachments = $attachments;
         return $this;
     }
 }
