@@ -54,19 +54,19 @@
     </table>
     <nav v-if="pag" aria-label="Page navigation example">
         <ul class="pagination">
-            <li class="page-item">
+            <li v-if="firstPage" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(firstPage)">Début</a>
             </li>
-            <li class="page-item">
+            <li v-if="previousPage" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(previousPage)">Préc.</a>
             </li>
             <li class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(currentPage)">{{ currentPage }}</a>
             </li>
-            <li class="page-item">
+            <li v-if="nextPage" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(nextPage)">Suiv.</a>
             </li>
-            <li class="page-item">
+            <li v-if="lastPage" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(lastPage)">Fin</a>
             </li>
         </ul>
