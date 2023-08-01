@@ -198,10 +198,12 @@
             <Fa :icon="icon"/>
             {{ title }}
         </h1>
-        <AppBtn variant="success" label="Ajout" @click="ajoute">
-            <Fa icon="plus"/>
-            Ajouter
-        </AppBtn>
+        <div class="btn-float-right">
+            <AppBtn variant="success" label="Ajout" @click="ajoute">
+                <Fa icon="plus"/>
+                Ajouter
+            </AppBtn>
+        </div>
     </AppCol>
     <AppRow>
         <AppCol>

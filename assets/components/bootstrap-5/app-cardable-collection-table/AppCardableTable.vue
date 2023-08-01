@@ -17,7 +17,7 @@
         previousPage: {required: true, type: String},
         user: {required: true, type: String}
     })
-    const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
+    const displayedFields = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref('')
     const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'search', 'cancelSearch'])
     function update(item){
@@ -43,13 +43,13 @@
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCardableTableHeader :fields="displayedFileds" @trier-alphabet="trierAlphabet"/>
+        <AppCardableTableHeader :fields="displayedFields" @trier-alphabet="trierAlphabet"/>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :fields="displayedFileds" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch"/>
+            <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch"/>
             <tr class="bg-dark">
                 <td colspan="10"/>
             </tr>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" :current-page="currentPage" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">
