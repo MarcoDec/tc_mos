@@ -20,6 +20,11 @@ export default function useFetchCriteria(id) {
                     this.sorts.push({direction, field})
                 }
             },
+            gotoPage(pageStr) {
+                const result = /page=(\d+)/.exec(pageStr)
+                if (result === null) this.page = 1
+                this.page = Number(result[0].substring(5))
+            },
             resetAllFilter() {
                 this.filters = []
                 this.page = 1

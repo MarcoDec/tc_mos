@@ -38,7 +38,6 @@ export const useManufacturerEngineStore = defineStore('manufacturer-engines', {
         currentPage: state => {
             if (state.engines.length > 0) {
                 const result = /page=(\d+)/.exec(state.view['@id'])
-                console.log(state.view['@id'], result)
                 if (result === null) return 'page=1'
                 return result[0]
             }

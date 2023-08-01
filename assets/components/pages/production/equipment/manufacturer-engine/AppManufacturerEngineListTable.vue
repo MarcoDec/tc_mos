@@ -33,7 +33,7 @@
         {label: 'Fabriquant', min: true, name: 'manufacturer.name', trie: true, type: 'text'},
         {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
         {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
-        {label: 'Date', min: true, name: 'date', trie: true, type: 'text'}
+        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'}
     ]
     // function ajoute(){
     //     AddForm.value = true
@@ -138,8 +138,8 @@
     //     await storeManufacturerEnginers.delated(id)
     // }
     async function getPage(nPage){
+        tableCriteria.gotoPage(nPage)
         const criteria = tableCriteria.getFetchCriteria
-        console.log(nPage, criteria)
         await storeManufacturerEnginers.fetchAll(criteria)
     }
     // async function trierAlphabet(payload) {
@@ -186,13 +186,13 @@
                 <AppCardableTable
                     :current-page="storeManufacturerEnginers.currentPage"
                     :fields="tabFields"
-                    :first-page="storeManufacturerEnginers.view.firstPage"
+                    :first-page="storeManufacturerEnginers.view['hydra:first']"
                     :items="storeManufacturerEnginers.engines"
-                    :last-page="storeManufacturerEnginers.view.lastPage"
+                    :last-page="storeManufacturerEnginers.view['hydra:last']"
                     :min="AddForm"
-                    :next-page="storeManufacturerEnginers.view.nextPage"
+                    :next-page="storeManufacturerEnginers.view['hydra:next']"
                     :pag="storeManufacturerEnginers.pagination"
-                    :previous-page="storeManufacturerEnginers.view.previousPage"
+                    :previous-page="storeManufacturerEnginers.view['hydra:previous']"
                     :user="roleuser"
                     form="formSocietyCardableTable"
                     @cancel-search="cancelSearch"
