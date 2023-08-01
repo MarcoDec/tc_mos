@@ -7,7 +7,7 @@ export default function useFetchCriteria(id) {
                 const filteredFilters = this.filters.filter(element => element.field === field)
                 if (filteredFilters.length > 0) {
                     console.log('addFilter', filteredFilters)
-                    filteredFilters[0].value.push(value)
+                    filteredFilters[0].value = value
                 } else {
                     this.filters.push({field, value})
                 }
