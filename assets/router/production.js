@@ -1,5 +1,5 @@
-import AppShowGuiTestCounterPart
-    from '../components/pages/production/equipment/test-counter-part/AppShowGuiTestCounterPart.vue'
+import AppManufacturerEngine from '../components/pages/production/equipment/manufacturer-engine/AppManufacturerEngine.vue'
+import AppShowGuiTestCounterPart from '../components/pages/production/equipment/test-counter-part/AppShowGuiTestCounterPart.vue'
 import AppShowGuiTool from '../components/pages/production/equipment/tool/AppShowGuiTool.vue'
 import AppShowGuiWorkstation from '../components/pages/production/equipment/workstation/AppShowGuiWorkstation.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
@@ -100,24 +100,13 @@ export default [
         }
     },
     {
-        component: AppTablePageSuspense,
-        meta: {title: 'Machine de référence— T-Concept GPAO'},
-        name: 'manufacturer engines',
+        component: AppManufacturerEngine,
+        meta: {title: 'Listes des Références Machine  — T-Concept GPAO'},
+        name: 'manufacturer-engines',
         path: '/manufacturer-engines',
         props: {
-            apiBaseRoute: 'manufacturer-engines',
-            disableAdd: true,
-            disableRemove: true,
-            fields: [
-                {label: 'Nom', name: 'name', update: false},
-                {label: 'Description', name: 'description', type: 'textarea'},
-                {label: 'Type', name: 'kind', type: 'text', update: false},
-                {label: 'Valeur', name: 'value', type: 'text'}
-            ],
-            icon: 'gear',
-            readFilter: '?page=1&pagination=false&type=production',
-            sort: readonly({label: 'Nom', name: 'name'}),
-            title: 'Paramètres'
+            icon: 'city',
+            title: 'Références Machines'
         }
     },
     {
@@ -126,13 +115,13 @@ export default [
         name: 'counterPartShow',
         path: '/counter-part/:id_engine'
     },
-    {
+    { // <a target="_blank" href="https://icons8.com/icon/EIHtuCnFqwku/wiring">wiring</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
         component: AppShowGuiWorkstation,
         meta: {container: false, title: 'Workstation — T-Concept GPAO'},
         name: 'workstationShow',
         path: '/workstation/:id_engine'
     },
-    {
+    { //screwdriver-wrench
         component: AppShowGuiTool,
         meta: {container: false, title: 'Tool — T-Concept GPAO'},
         name: 'toolShow',
