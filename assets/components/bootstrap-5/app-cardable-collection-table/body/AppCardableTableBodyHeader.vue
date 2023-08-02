@@ -23,7 +23,6 @@
         inputValues.value = []
         emit('cancelSearch', inputValues.value)
     }
-    console.log(props)
 </script>
 
 <template>

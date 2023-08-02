@@ -1,11 +1,11 @@
 <script setup>
-    import AppShowComponentTabAttributes from '../../../components/pages/purchase/component/AppShowComponentTabAttributes.vue'
-    import AppShowComponentTabFichiers from '../../../components/pages/purchase/component/AppShowComponentTabFichiers.vue'
-    import AppShowComponentTabGeneral from '../../../components/pages/purchase/component/AppShowComponentTabGeneral.vue'
-    import AppShowComponentTabLogistic from '../../../components/pages/purchase/component/AppShowComponentTabLogistic.vue'
-    import AppShowComponentTabPurchase from '../../../components/pages/purchase/component/AppShowComponentTabPurchase.vue'
-    import AppShowComponentTabQuality from '../../../components/pages/purchase/component/AppShowComponentTabQuality.vue'
-    import AppShowComponentTabSpecification from '../../../components/pages/purchase/component/AppShowComponentTabSpecification.vue'
+    // import AppShowComponentTabAttributes from './AppShowComponentTabAttributes.vue'
+    import AppShowComponentTabFichiers from './AppShowComponentTabFichiers.vue'
+    import AppShowComponentTabGeneral from './AppShowComponentTabGeneral.vue'
+    import AppShowComponentTabLogistic from './AppShowComponentTabLogistic.vue'
+    import AppShowComponentTabPurchase from './AppShowComponentTabPurchase.vue'
+    import AppShowComponentTabQuality from './AppShowComponentTabQuality.vue'
+    import AppShowComponentTabSpecification from './AppShowComponentTabSpecification.vue'
     //import {useComponentListStore} from '../../../stores/component/components'
     //import {useRoute} from 'vue-router'
 </script>
@@ -20,13 +20,13 @@
             tabs="gui-start">
             <AppSuspense><AppShowComponentTabGeneral/></AppSuspense>
         </AppTab>
-        <AppTab
+        <!-- <AppTab
             id="gui-start-attribut"
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">
             <AppSuspense><AppShowComponentTabAttributes/></AppSuspense>
-        </AppTab>
+        </AppTab> -->
         <AppTab
             id="gui-start-files"
             title="Fichiers"
