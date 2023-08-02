@@ -11,9 +11,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Annotation\ApiFilter;
 
 #[
+    ApiFilter(OrderFilter::class, properties: ['code', 'manufacturer.name', 'name', 'partNumber']),
     ApiFilter(SearchFilter::class, properties: ['code' => 'partial', 'manufacturer.name' => 'partial', 'name' => 'partial', 'partNumber' => 'partial']),
     ApiResource(
         description: 'Équipement : fiche fabricant',

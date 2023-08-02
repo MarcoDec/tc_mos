@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {/*computed,*/ ref} from 'vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {useManufacturerEngineStore} from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
 
@@ -22,8 +22,8 @@
     // let trierAlpha = {}
     // let filterBy = {}
 
-    const itemsTable = computed(() => storeManufacturerEnginers.engines.reduce((acc, curr) => acc.concat(curr), []))
-    console.log(itemsTable.value, storeManufacturerEnginers.engines)
+    //const itemsTable = computed(() => storeManufacturerEnginers.engines.reduce((acc, curr) => acc.concat(curr), []))
+    //console.log(itemsTable.value, storeManufacturerEnginers.engines)
     //
     // const fieldsForm = [
     //     {label: 'Nom*', name: 'name', type: 'text'}
@@ -142,28 +142,35 @@
         const criteria = tableCriteria.getFetchCriteria
         await storeManufacturerEnginers.fetchAll(criteria)
     }
-    // async function trierAlphabet(payload) {
-    //     await storeManufacturerEnginers.sortableItems(payload, filterBy, filter)
-    //     sortable.value = true
-    //     trierAlpha = computed(() => payload)
-    // }
+    async function trier(payload) {
+        //console.log('trier', payload)
+        tableCriteria.addSort(payload.name, payload.direction)
+        const criteria = tableCriteria.getFetchCriteria
+        console.log('trier', criteria)
+        await storeManufacturerEnginers.fetchAll(criteria)
+        //await storeManufacturerEnginers.sortableItems(payload, filterBy, filter)
+        //sortable.value = true
+        //trierAlpha = computed(() => payload)
+    }
+    //region ## fonctions Recherche
     async function search(inputValues) {
-        console.log(inputValues)
+        //console.log(inputValues)
         const result = Object.keys(inputValues).map(key => ({field: key, value: inputValues[key]}))
-        console.log(result)
+        //console.log(result)
         result.forEach(filter => {
             tableCriteria.addFilter(filter.field, filter.value)
         })
         const criteria = tableCriteria.getFetchCriteria
-        console.log('search', criteria)
+        //console.log('search', criteria)
         await storeManufacturerEnginers.fetchAll(criteria)
     }
     async function cancelSearch() {
         tableCriteria.resetAllFilter()
         const criteria = tableCriteria.getFetchCriteria
-        console.log('search', criteria)
+        //console.log('search', criteria)
         await storeManufacturerEnginers.fetchAll(criteria)
     }
+    //endregion
 </script>
 
 <template>
@@ -197,10 +204,11 @@
                     form="formSocietyCardableTable"
                     @cancel-search="cancelSearch"
                     @get-page="getPage"
-                    @search="search"/>
+                    @search="search"
+                    @trier-alphabet="trier"/>
                 <!--                    @update="update"-->
                 <!--                    @deleted="deleted"-->
-                <!--                    @trier-alphabet="trierAlphabet"-->
+                <!--                    -->
             </div>
         </div>
         <!--        <AppRow>-->

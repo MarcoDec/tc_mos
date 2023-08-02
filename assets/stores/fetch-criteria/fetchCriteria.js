@@ -13,12 +13,16 @@ export default function useFetchCriteria(id) {
                 }
             },
             addSort(field, direction) {
+                console.log('addSort', field, direction)
                 const filteredSorts = this.sorts.filter(element => element.field === field)
+                const fieldIndex = this.sorts.findIndex( item => item.field === field)
                 if (filteredSorts.length > 0) {
-                    filteredSorts[0].direction = direction
+                    if (direction === 'both') this.sorts.splice(fieldIndex, 1)
+                    else this.sorts[fieldIndex].direction = direction
                 } else {
                     this.sorts.push({direction, field})
                 }
+                console.log(this.sorts)
             },
             gotoPage(pageStr) {
                 const result = /page=(\d+)/.exec(pageStr)
