@@ -1,12 +1,12 @@
 import api from '../../api'
 import {defineStore} from 'pinia'
 
-export const useComponentListCasEmploisStore = defineStore('componentListCasEmplois', {
+export const useComponentListStockStore = defineStore('componentListStock', {
     actions: {
         setIdComponent(id){
             this.componentID = id
         },
-        // async addCasEmploisCasEmplois(payload){
+        // async addStockStock(payload){
         //     const violations = []
         //     try {
         //         if (payload.quantite.value !== ''){
@@ -28,14 +28,14 @@ export const useComponentListCasEmploisStore = defineStore('componentListCasEmpl
         // },
         async deleted(payload) {
             await api(`/api/nomenclatures/${payload}`, 'DELETE')
-            this.componentCasEmplois = this.componentCasEmplois.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
+            this.componentStock = this.componentStock.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
             const response = await api(`/api/nomenclatures?component=/api/components/${this.componentID}`, 'GET')
-            this.componentCasEmplois = await this.updatePagination(response)
+            this.componentStock = await this.updatePagination(response)
         },
         async filterBy(payload) {
             let url = `/api/nomenclatures?component=/api/components/${this.componentID}&`
@@ -68,12 +68,12 @@ export const useComponentListCasEmploisStore = defineStore('componentListCasEmpl
                 url += 'page=1'
                 this.currentPage = 1
                 const response = await api(url, 'GET')
-                this.componentCasEmplois = await this.updatePagination(response)
+                this.componentStock = await this.updatePagination(response)
             }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/nomenclatures?component=/api/components/${this.componentID}&page=${nPage}`, 'GET')
-            this.componentCasEmplois = await this.updatePagination(response)
+            this.componentStock = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
@@ -104,7 +104,7 @@ export const useComponentListCasEmploisStore = defineStore('componentListCasEmpl
                 }
 
                 response = await api(url, 'GET')
-                this.componentCasEmplois = await this.updatePagination(response)
+                this.componentStock = await this.updatePagination(response)
             } else if (payload.filter.value === true){
                 let url = `/api/nomenclatures?component=/api/components/${this.componentID}&`
                 if (payload.filterBy.value.ref !== '') {
@@ -132,17 +132,17 @@ export const useComponentListCasEmploisStore = defineStore('componentListCasEmpl
                 }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
-                this.componentCasEmplois = await this.updatePagination(response)
+                this.componentStock = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
                 response = await api(`/api/nomenclatures?component=/api/components/${this.componentID}&page=${payload.nPage}`, 'GET')
-                this.componentCasEmplois = await this.updatePagination(response)
+                this.componentStock = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'component') {
                     response = await api(`/api/nomenclatures?component=/api/components/${this.componentID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
                     response = await api(`/api/nomenclatures?component=/api/components/${this.componentID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
-                this.componentCasEmplois = await this.updatePagination(response)
+                this.componentStock = await this.updatePagination(response)
             }
         },
 
@@ -174,14 +174,14 @@ export const useComponentListCasEmploisStore = defineStore('componentListCasEmpl
                 }
                 url += `page=${this.currentPage}`
                 response = await api(url, 'GET')
-                this.componentCasEmplois = await this.updatePagination(response)
+                this.componentStock = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'component') {
                     response = await api(`/api/nomenclatures?component=/api/components/${this.componentID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
                     response = await api(`/api/nomenclatures?component=/api/components/${this.componentID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
-                this.componentCasEmplois = await this.updatePagination(response)
+                this.componentStock = await this.updatePagination(response)
             }
         },
         async updatePagination(response) {
@@ -215,7 +215,7 @@ export const useComponentListCasEmploisStore = defineStore('componentListCasEmpl
         // }
     },
     getters: {
-        itemsComponentCasEmplois: state => state.componentCasEmplois.map(item => {
+        itemsComponentStock: state => state.componentStock.map(item => {
             const nbAnnuelComposant = item.product.product.forecastVolume.value * item.product.product.internalIndex
             const newObject = {
                 '@id': item['@id'],
@@ -237,7 +237,7 @@ export const useComponentListCasEmploisStore = defineStore('componentListCasEmpl
         nextPage: '',
         pagination: false,
         previousPage: '',
-        componentCasEmplois: [],
+        componentStock: [],
         componentID: 0
     })
 })
