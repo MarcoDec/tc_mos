@@ -117,7 +117,7 @@ class Warehouse extends Entity implements CompanyInterface {
         ApiProperty(description: 'Nom', example: 'Magasin RIOZ'),
         Assert\NotBlank,
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:warehouse', 'write:warehouse'])
+        Serializer\Groups(['read:warehouse', 'write:warehouse', 'read:stock'])
     ]
     private ?string $name = null;
 

@@ -170,7 +170,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     protected Collection $receipts;
 
     #[
-        ApiProperty(description: 'Entrepôt', readableLink: false, example: '/api/warehouses/1'),
+        ApiProperty(description: 'Entrepôt', readableLink: true, example: '/api/warehouses/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]

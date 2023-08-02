@@ -23,12 +23,16 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
+
 
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['deliveryDate' => 'DESC']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['embState.state','embBlocker.state', 'product.customer.id' => 'exact', 'product.product.name' => 'partial', 'deliveryDate' => 'partial', 'ref' => 'partial', 'product.product.index' => 'partial', 'quantityRequested.value' => 'partial', 'quantityRequested.code' => 'partial', 'product.product.price.code' => 'partial', 'product.product.price.value' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code'=> 'partial', 'embState.state','embBlocker.state', 'product.customer.id' => 'exact', 'product.product.name' => 'partial', 'deliveryDate' => 'partial', 'ref' => 'partial', 'product.product.index' => 'partial', 'quantityRequested.value' => 'partial', 'quantityRequested.code' => 'partial', 'product.product.price.code' => 'partial', 'product.product.price.value' => 'partial']),
+    ApiFilter(filterClass: SetFilter::class, properties:['product.product.code' => 'exact']),
+    
     ApiResource(
         description: 'OF',
         collectionOperations: [
@@ -44,6 +48,24 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
                     'summary' => 'Créer un OF',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
+            ], 
+            'filtreComponent' => [
+                'controller' => ItemManufacturingComponentController::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer par fournisseur',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par composant'
+                ],
+                'path' => '/manufacturing-orders/componentFilter/{api}',
+                'read' => false,
+                'write' => false
             ]
         ],
         itemOperations: [

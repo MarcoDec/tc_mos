@@ -217,7 +217,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Code douanier', required: false, example: '8544300089'),
         Assert\Length(min: 4, max: 10, groups: ['Product-logistics']),
         ORM\Column(length: 10, nullable: true),
-        Serializer\Groups(['read:product', 'write:product', 'write:product:logistics'])
+        Serializer\Groups(['read:product', 'write:product', 'write:product:logistics', 'read:manufacturing-order'])
     ]
     private ?string $customsCode = null;
 
