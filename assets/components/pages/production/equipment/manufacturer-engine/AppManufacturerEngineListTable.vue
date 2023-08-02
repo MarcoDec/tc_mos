@@ -134,40 +134,34 @@
     //         isPopupVisible.value = true
     //     }
     // }
-    // async function deleted(id){
-    //     await storeManufacturerEnginers.delated(id)
-    // }
+    async function deleted(id){
+        await storeManufacturerEnginers.remove(id)
+        const criteria = tableCriteria.getFetchCriteria
+        await storeManufacturerEnginers.fetchAll(criteria)
+    }
+
+    //region ## fonctions Recherche, Tri et pagination
     async function getPage(nPage){
         tableCriteria.gotoPage(nPage)
         const criteria = tableCriteria.getFetchCriteria
         await storeManufacturerEnginers.fetchAll(criteria)
     }
     async function trier(payload) {
-        //console.log('trier', payload)
         tableCriteria.addSort(payload.name, payload.direction)
         const criteria = tableCriteria.getFetchCriteria
-        console.log('trier', criteria)
         await storeManufacturerEnginers.fetchAll(criteria)
-        //await storeManufacturerEnginers.sortableItems(payload, filterBy, filter)
-        //sortable.value = true
-        //trierAlpha = computed(() => payload)
     }
-    //region ## fonctions Recherche
     async function search(inputValues) {
-        //console.log(inputValues)
         const result = Object.keys(inputValues).map(key => ({field: key, value: inputValues[key]}))
-        //console.log(result)
         result.forEach(filter => {
             tableCriteria.addFilter(filter.field, filter.value)
         })
         const criteria = tableCriteria.getFetchCriteria
-        //console.log('search', criteria)
         await storeManufacturerEnginers.fetchAll(criteria)
     }
     async function cancelSearch() {
         tableCriteria.resetAllFilter()
         const criteria = tableCriteria.getFetchCriteria
-        //console.log('search', criteria)
         await storeManufacturerEnginers.fetchAll(criteria)
     }
     //endregion
@@ -203,11 +197,12 @@
                     :user="roleuser"
                     form="formSocietyCardableTable"
                     @cancel-search="cancelSearch"
+                    @deleted="deleted"
                     @get-page="getPage"
                     @search="search"
                     @trier-alphabet="trier"/>
                 <!--                    @update="update"-->
-                <!--                    @deleted="deleted"-->
+                <!--                    -->
                 <!--                    -->
             </div>
         </div>
