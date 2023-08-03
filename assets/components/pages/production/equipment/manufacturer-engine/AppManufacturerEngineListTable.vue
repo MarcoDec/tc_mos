@@ -1,13 +1,26 @@
 <script setup>
-    import {ref} from 'vue'
+    import {computed, ref} from 'vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {
         useManufacturerEngineStore
     } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
+    import useOptions from '../../../../../stores/option/options'
 
     defineProps({
         title: {required: true, type: String}
     })
+
+    const fetchManufacturerOptions = useOptions('manufacturers')
+    fetchManufacturerOptions.fetchable = true
+    fetchManufacturerOptions.fetch()
+    console.log(fetchManufacturerOptions.options)
+    const optionsManufacturer = computed(() =>
+        fetchManufacturerOptions.options.map(op => {
+            const text = op.text
+            const value = op['@id']
+            return {text, value}
+        }))
+    console.log(optionsManufacturer)
     const tableCriteria = useFetchCriteria('manufacturerEngines')
     const roleuser = ref('reader')
     const AddForm = ref(false)
@@ -22,59 +35,56 @@
     //
     //
     const tabFields = [
-        {label: 'Fabriquant', min: true, name: 'manufacturer.name', trie: true, type: 'text'},
+        {
+            label: 'Fabriquant',
+            min: true,
+            name: 'manufacturer',
+            options: {
+                label: value =>
+                    optionsManufacturer.value.find(option => option.type === value)?.text
+                    ?? null,
+                options: optionsManufacturer.value
+            },
+            sortName: 'manufacturer',
+            trie: true,
+            type: 'select'
+        },
         {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
         {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'}
     ]
-    const fieldsForm = tabFields
+    const addFormfields = tabFields
+    async function refreshList() {
+        const criteria = tableCriteria.getFetchCriteria
+        await storeManufacturerEnginers.fetchAll(criteria)
+    }
     function showAddForm(){
+        // On vide le formulaire avant de l'afficher
+        formData.value = {
+            code: null,
+            manufacturer: null,
+            name: null,
+            partNumber: null
+        }
         AddForm.value = true
         updated.value = false
-        formData.value = {
-            address: null,
-            address2: null,
-            city: null,
-            country: null,
-            email: null,
-            name: null,
-            phoneNumber: null,
-            zipCode: null
-        }
     }
-    // async function ajoutSociety(){
-    //     const form = document.getElementById('addSociety')
-    //     const formData1 = new FormData(form)
-    //     const itemsAddData = {
-    //         address: {
-    //             address: formData1.get('address'),
-    //             address2: formData1.get('address2'),
-    //             city: formData1.get('city'),
-    //             country: formData1.get('country'),
-    //             email: formData1.get('email'),
-    //             phoneNumber: formData1.get('phoneNumber'),
-    //             zipCode: formData1.get('zipCode')
-    //         },
-    //         name: formData1.get('name')
-    //     }
-    //     await storeManufacturerEnginers.addSociety(itemsAddData)
-    //     AddForm.value = false
-    //     updated.value = false
-    // }
+    async function addNewItem(){
+        const form = document.getElementById('add-new-engine')
+        const formData1 = new FormData(form)
+        const itemsAddData = {
+            code: formData1.get('code'),
+            manufacturer: formData1.get('manufacturer.name'),
+            name: formData1.get('name'),
+            partNumber: formData1.get('partNumber')
+        }
+        await storeManufacturerEnginers.create(itemsAddData)
+        AddForm.value = false
+        updated.value = false
+    }
     function hideForm(){
         AddForm.value = false
         updated.value = false
-        // const itemsNull = {
-        //     address: null,
-        //     address2: null,
-        //     city: null,
-        //     country: null,
-        //     email: null,
-        //     name: null,
-        //     phoneNumber: null,
-        //     zipCode: null
-        // }
-        // formData.value = itemsNull
         // isPopupVisible.value = false
     }
     function update(item) {
@@ -129,33 +139,28 @@
     // }
     async function deleted(id){
         await storeManufacturerEnginers.remove(id)
-        const criteria = tableCriteria.getFetchCriteria
-        await storeManufacturerEnginers.fetchAll(criteria)
+        await refreshList()
     }
 
     //region ## fonctions Recherche, Tri et pagination
     async function getPage(nPage){
         tableCriteria.gotoPage(nPage)
-        const criteria = tableCriteria.getFetchCriteria
-        await storeManufacturerEnginers.fetchAll(criteria)
+        await refreshList()
     }
     async function trier(payload) {
         tableCriteria.addSort(payload.name, payload.direction)
-        const criteria = tableCriteria.getFetchCriteria
-        await storeManufacturerEnginers.fetchAll(criteria)
+        await refreshList()
     }
     async function search(inputValues) {
         const result = Object.keys(inputValues).map(key => ({field: key, value: inputValues[key]}))
         result.forEach(filter => {
             tableCriteria.addFilter(filter.field, filter.value)
         })
-        const criteria = tableCriteria.getFetchCriteria
-        await storeManufacturerEnginers.fetchAll(criteria)
+        await refreshList()
     }
     async function cancelSearch() {
         tableCriteria.resetAllFilter()
-        const criteria = tableCriteria.getFetchCriteria
-        await storeManufacturerEnginers.fetchAll(criteria)
+        await refreshList()
     }
     //endregion
 </script>
@@ -206,11 +211,11 @@
                         </h4>
                     </div>
                     <br/>
-                    <AppFormCardable id="addSociety" :fields="fieldsForm" :model-value="formData" label-cols/>
+                    <AppFormCardable id="add-new-engine" :fields="addFormfields" :model-value="formData" label-cols/>
                     <!-- On ne permet pas l'ajout de pièce jointe lors du formulaire de création afin de simplifier le traitement -->
                     <div class="col">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm">
-                            <!-- @click="ajoutSociety"-->
+                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="addNewItem">
+                            <!-- -->
                             <Fa icon="plus"/> Ajouter
                         </AppBtn>
                     </div>

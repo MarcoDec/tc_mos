@@ -12,6 +12,10 @@
         const id = Number(props.item['@id'].match(/\d+/)[0])
         emit('deleted', id)
     }
+    function isObject(val) {
+        if (val === null) { return false;}
+        return ( (typeof val === 'function') || (typeof val === 'object') );
+    }
 </script>
 
 <template>
@@ -24,6 +28,7 @@
         </button>
     </td>
     <td v-for="field in fields" :key="field.name">
-        {{ item[field.name] }}
+        <span v-if="isObject(item[field.name])">{{ item[field.name].name }}</span>
+        <span v-else>{{ item[field.name] }}</span>
     </td>
 </template>

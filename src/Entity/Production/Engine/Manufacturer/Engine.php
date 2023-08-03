@@ -12,11 +12,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use App\Filter\RelationFilter;
 use ApiPlatform\Core\Annotation\ApiFilter;
 
 #[
     ApiFilter(OrderFilter::class, properties: ['code', 'manufacturer.name', 'name', 'partNumber']),
-    ApiFilter(SearchFilter::class, properties: ['code' => 'partial', 'manufacturer.name' => 'partial', 'name' => 'partial', 'partNumber' => 'partial']),
+    ApiFilter(SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'partNumber' => 'partial']),
+    ApiFilter(RelationFilter::class, properties: ['manufacturer']),
     ApiResource(
         description: 'Équipement : fiche fabricant',
         collectionOperations: ['get', 'post'],
@@ -65,7 +67,7 @@ class Engine extends Entity {
     private ?DateTimeImmutable $date = null;
 
     #[
-        ApiProperty(description: 'Fabricant', readableLink: false, example: '/api/manufacturers/1'),
+        ApiProperty(description: 'Fabricant', readableLink: true, example: '/api/manufacturers/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
@@ -74,7 +76,7 @@ class Engine extends Entity {
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
         ORM\Column,
-        Serializer\Groups(['read:engine-engine', 'write:engine-engine'])
+        Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     protected ?string $name = null;
     #[
