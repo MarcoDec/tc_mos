@@ -1,7 +1,9 @@
 <script setup>
-    import {/*computed,*/ ref} from 'vue'
+    import {ref} from 'vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import {useManufacturerEngineStore} from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
+    import {
+        useManufacturerEngineStore
+    } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
 
     defineProps({
         title: {required: true, type: String}
@@ -9,25 +11,15 @@
     const tableCriteria = useFetchCriteria('manufacturerEngines')
     const roleuser = ref('reader')
     const AddForm = ref(false)
+    const updated = ref(false)
     const storeManufacturerEnginers = useManufacturerEngineStore()
     await storeManufacturerEnginers.fetchAll()
     console.log(storeManufacturerEnginers)
-    // const formData = new FormData()
+    const formData = new FormData()
     // let violations = []
-    // const updated = ref(false)
     // let itemId = ''
     // const isPopupVisible = ref(false)
-    // const sortable = ref(false)
-    // const filter = ref(false)
-    // let trierAlpha = {}
-    // let filterBy = {}
-
-    //const itemsTable = computed(() => storeManufacturerEnginers.engines.reduce((acc, curr) => acc.concat(curr), []))
-    //console.log(itemsTable.value, storeManufacturerEnginers.engines)
     //
-    // const fieldsForm = [
-    //     {label: 'Nom*', name: 'name', type: 'text'}
-    // ]
     //
     const tabFields = [
         {label: 'Fabriquant', min: true, name: 'manufacturer.name', trie: true, type: 'text'},
@@ -35,21 +27,21 @@
         {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'}
     ]
-    // function ajoute(){
-    //     AddForm.value = true
-    //     updated.value = false
-    //     const itemsNull = {
-    //         address: null,
-    //         address2: null,
-    //         city: null,
-    //         country: null,
-    //         email: null,
-    //         name: null,
-    //         phoneNumber: null,
-    //         zipCode: null
-    //     }
-    //     formData.value = itemsNull
-    // }
+    const fieldsForm = tabFields
+    function showAddForm(){
+        AddForm.value = true
+        updated.value = false
+        formData.value = {
+            address: null,
+            address2: null,
+            city: null,
+            country: null,
+            email: null,
+            name: null,
+            phoneNumber: null,
+            zipCode: null
+        }
+    }
     // async function ajoutSociety(){
     //     const form = document.getElementById('addSociety')
     //     const formData1 = new FormData(form)
@@ -69,38 +61,39 @@
     //     AddForm.value = false
     //     updated.value = false
     // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         address: null,
-    //         address2: null,
-    //         city: null,
-    //         country: null,
-    //         email: null,
-    //         name: null,
-    //         phoneNumber: null,
-    //         zipCode: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
-    // function update(item) {
-    //     updated.value = true
-    //     AddForm.value = true
-    //     itemId = Number(item['@id'].match(/\d+/)[0])
-    //     const itemsData = {
-    //         address: item.address,
-    //         address2: item.address2,
-    //         city: item.city,
-    //         country: item.country,
-    //         email: item.email,
-    //         name: item.name,
-    //         phoneNumber: item.phoneNumber,
-    //         zipCode: item.zipCode
-    //     }
-    //     formData.value = itemsData
-    // }
+    function hideForm(){
+        AddForm.value = false
+        updated.value = false
+        // const itemsNull = {
+        //     address: null,
+        //     address2: null,
+        //     city: null,
+        //     country: null,
+        //     email: null,
+        //     name: null,
+        //     phoneNumber: null,
+        //     zipCode: null
+        // }
+        // formData.value = itemsNull
+        // isPopupVisible.value = false
+    }
+    function update(item) {
+        console.log('update', item)
+        updated.value = true
+        AddForm.value = true
+        // itemId = Number(item['@id'].match(/\d+/)[0])
+        // const itemsData = {
+        //     address: item.address,
+        //     address2: item.address2,
+        //     city: item.city,
+        //     country: item.country,
+        //     email: item.email,
+        //     name: item.name,
+        //     phoneNumber: item.phoneNumber,
+        //     zipCode: item.zipCode
+        // }
+        // formData.value = itemsData
+    }
     // async function updateSociety(){
     //     try {
     //         const form = document.getElementById('updateSociety')
@@ -175,8 +168,7 @@
                 {{ title }}
             </h1>
             <span class="col">
-                <AppBtn variant="success" label="Ajout" class="btn-float-right">
-                    <!--@click="ajoute"-->
+                <AppBtn variant="success" label="Ajout" class="btn-float-right" @click="showAddForm">
                     <Fa icon="plus"/>
                     Ajouter
                 </AppBtn>
@@ -200,77 +192,60 @@
                     @deleted="deleted"
                     @get-page="getPage"
                     @search="search"
-                    @trier-alphabet="trier"/>
-                <!--                    @update="update"-->
-                <!--                    -->
-                <!--                    -->
+                    @trier-alphabet="trier"
+                    @update="update"/>
+            </div>
+            <div v-if="AddForm && !updated" class="col">
+                <AppCard class="bg-blue col" title="">
+                    <div class="row">
+                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
+                            <Fa icon="angle-double-left"/>
+                        </button>
+                        <h4 class="col">
+                            <Fa icon="plus"/> Ajout
+                        </h4>
+                    </div>
+                    <br/>
+                    <AppFormCardable id="addSociety" :fields="fieldsForm" :model-value="formData" label-cols/>
+                    <!-- On ne permet pas l'ajout de pièce jointe lors du formulaire de création afin de simplifier le traitement -->
+                    <div class="col">
+                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm">
+                            <!-- @click="ajoutSociety"-->
+                            <Fa icon="plus"/> Ajouter
+                        </AppBtn>
+                    </div>
+                </AppCard>
+            </div>
+            <div v-else-if="AddForm && updated" class="col">
+                <AppCard class="bg-blue col" title="">
+                    <div class="col">
+                        <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
+                            <Fa icon="angle-double-left"/>
+                        </button>
+                        <h4 class="col">
+                            <Fa icon="pencil-alt"/> Modification
+                        </h4>
+                    </div>
+                    <br/>
+                    <!--<AppFormCardable id="updateSociety"/>-->
+                    <!-- :fields="fieldsForm" :model-value="formData"-->
+                    <!-- :violations="violations"-->
+                    <p>Ici le formulaire de modification</p>
+                    <div class="alert alert-danger" role="alert">
+                        <!-- v-if="isPopupVisible" -->
+                        <!--                        <div v-for="violation in violations" :key="violation">-->
+                        <!--                            <li>{{ violation.message }}</li>-->
+                        <!--                        </div>-->
+                    </div>
+                    <div class="col">
+                        <AppBtn class="btn-float-right" label="retour" variant="success" size="sm">
+                            <!-- @click="updateSociety"-->
+                            <Fa icon="pencil-alt"/> Modifier
+                        </AppBtn>
+                    </div>
+                </AppCard>
             </div>
         </div>
-        <!--        <AppRow>-->
-        <!--            <AppCol>-->
-        <!--                <AppCardableTable-->
-        <!--                    :current-page="storeManufacturerEnginers.currentPage"-->
-        <!--                    :fields="tabFields"-->
-        <!--                    :first-page="storeManufacturerEnginers.firstPage"-->
-        <!--                    :items="itemsTable"-->
-        <!--                    :last-page="storeManufacturerEnginers.lastPage"-->
-        <!--                    :min="AddForm"-->
-        <!--                    :next-page="storeManufacturerEnginers.nextPage"-->
-        <!--                    :pag="storeManufacturerEnginers.pagination"-->
-        <!--                    :previous-page="storeManufacturerEnginers.previousPage"-->
-        <!--                    :user="roleuser"-->
-        <!--                    form="formSocietyCardableTable"-->
-        <!--                    @update="update"-->
-        <!--                    @deleted="deleted"-->
-        <!--                    @get-page="getPage"-->
-        <!--                    @trier-alphabet="trierAlphabet"-->
-        <!--                    @search="search"-->
-        <!--                    @cancel-search="cancelSearch"/>-->
-        <!--            </AppCol>-->
-        <!--            <AppCol v-if="AddForm && !updated" class="col-7">-->
-        <!--                <AppCard class="bg-blue col" title="">-->
-        <!--                    <AppRow>-->
-        <!--                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">-->
-        <!--                            <Fa icon="angle-double-left"/>-->
-        <!--                        </button>-->
-        <!--                        <h4 class="col">-->
-        <!--                            <Fa icon="plus"/> Ajout-->
-        <!--                        </h4>-->
-        <!--                    </AppRow>-->
-        <!--                    <br/>-->
-        <!--                    <AppFormCardable id="addSociety" :fields="fieldsForm" :model-value="formData" label-cols/>-->
-        <!--                    <AppCol class="btnright">-->
-        <!--                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutSociety">-->
-        <!--                            <Fa icon="plus"/> Ajouter-->
-        <!--                        </AppBtn>-->
-        <!--                    </AppCol>-->
-        <!--                </AppCard>-->
-        <!--            </AppCol>-->
-        <!--            <AppCol v-else-if="AddForm && updated" class="col-7">-->
-        <!--                <AppCard class="bg-blue col" title="">-->
-        <!--                    <AppRow>-->
-        <!--                        <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">-->
-        <!--                            <Fa icon="angle-double-left"/>-->
-        <!--                        </button>-->
-        <!--                        <h4 class="col">-->
-        <!--                            <Fa icon="pencil-alt"/> Modification-->
-        <!--                        </h4>-->
-        <!--                    </AppRow>-->
-        <!--                    <br/>-->
-        <!--                    <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData" :violations="violations"/>-->
-        <!--                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">-->
-        <!--                        <div v-for="violation in violations" :key="violation">-->
-        <!--                            <li>{{ violation.message }}</li>-->
-        <!--                        </div>-->
-        <!--                    </div>-->
-        <!--                    <AppCol class="btnright">-->
-        <!--                        <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">-->
-        <!--                            <Fa icon="pencil-alt"/> Modifier-->
-        <!--                        </AppBtn>-->
-        <!--                    </AppCol>-->
-        <!--                </AppCard>-->
-        <!--            </AppCol>-->
-        <!--        </AppRow>-->
     </div>
 </template>
 
