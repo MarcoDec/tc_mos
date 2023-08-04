@@ -1,5 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {
         useManufacturerEngineStore
@@ -12,25 +13,23 @@
 
     const fetchManufacturerOptions = useOptions('manufacturers')
     fetchManufacturerOptions.fetchable = true
-    fetchManufacturerOptions.fetch()
-    console.log(fetchManufacturerOptions.options)
+    await fetchManufacturerOptions.fetch()
     const optionsManufacturer = computed(() =>
         fetchManufacturerOptions.options.map(op => {
             const text = op.text
             const value = op['@id']
             return {text, value}
         }))
-    console.log(optionsManufacturer)
+    const key = ref(0)
     const tableCriteria = useFetchCriteria('manufacturerEngines')
     const roleuser = ref('reader')
     const AddForm = ref(false)
     const updated = ref(false)
     const storeManufacturerEnginers = useManufacturerEngineStore()
     await storeManufacturerEnginers.fetchAll()
-    console.log(storeManufacturerEnginers)
     const formData = new FormData()
-    // let violations = []
-    // let itemId = ''
+    const violations = ref([])
+    const itemId = ref(null)
     // const isPopupVisible = ref(false)
     //
     //
@@ -46,7 +45,7 @@
                 options: optionsManufacturer.value
             },
             sortName: 'manufacturer',
-            trie: true,
+            trie: false,
             type: 'select'
         },
         {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
@@ -74,7 +73,7 @@
         const formData1 = new FormData(form)
         const itemsAddData = {
             code: formData1.get('code'),
-            manufacturer: formData1.get('manufacturer.name'),
+            manufacturer: formData1.get('manufacturer'),
             name: formData1.get('name'),
             partNumber: formData1.get('partNumber')
         }
@@ -88,21 +87,16 @@
         // isPopupVisible.value = false
     }
     function update(item) {
-        console.log('update', item)
+        key.value++
+        itemId.value = Number(item['@id'].match(/\d+/)[0])
+        formData.value = {
+            code: item.code,
+            manufacturer: item.manufacturer ? item.manufacturer['@id'] : null,
+            name: item.name,
+            partNumber: item.partNumber
+        }
         updated.value = true
         AddForm.value = true
-        // itemId = Number(item['@id'].match(/\d+/)[0])
-        // const itemsData = {
-        //     address: item.address,
-        //     address2: item.address2,
-        //     city: item.city,
-        //     country: item.country,
-        //     email: item.email,
-        //     name: item.name,
-        //     phoneNumber: item.phoneNumber,
-        //     zipCode: item.zipCode
-        // }
-        // formData.value = itemsData
     }
     // async function updateSociety(){
     //     try {
@@ -232,9 +226,7 @@
                         </h4>
                     </div>
                     <br/>
-                    <!--<AppFormCardable id="updateSociety"/>-->
-                    <!-- :fields="fieldsForm" :model-value="formData"-->
-                    <!-- :violations="violations"-->
+                    <AppFormCardable id="update-engine" :key="key" :fields="addFormfields" :model-value="formData.value" :violations="violations"/>
                     <p>Ici le formulaire de modification</p>
                     <div class="alert alert-danger" role="alert">
                         <!-- v-if="isPopupVisible" -->
