@@ -8,8 +8,9 @@ export const useManufacturerEngineAttachmentStore = defineStore('manufacturerEng
             form.append('file', data.file)
             form.append('category', data.category)
             form.append('engine', data.engine)
-            await api('/api/manufacturer-engine-attachments', 'POST', form)
+            const result = await api('/api/manufacturer-engine-attachments', 'POST', form)
             this.fetchByElement(this.id)
+            return result
         },
         async fetchByElement(id) {
             const response = await api(`/api/manufacturer-engine-attachments?pagination=false&engine=/api/manufacturer-engines/${id}`, 'GET')

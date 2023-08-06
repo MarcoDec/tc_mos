@@ -63,7 +63,7 @@
         await props.elementAttachmentStore.fetchByElement(props.elementId)
         fichiersFields.value = [
             {label: 'Catégorie', name: 'category', options: {options: folderList}, type: 'select'},
-            {label: 'Fichier', name: 'file', type: 'file'}
+            {label: 'Fichier', multiple: true, name: 'file', type: 'file'}
         ]
         //Etape 1 - nodes = noeuds de type fichier
         files.value = elementAttachments.value
@@ -114,25 +114,37 @@
         })
     }
     async function updateFichiers() {
-        const form = document.getElementById('addFichiers')
-        const formData = new FormData(form)
-        const data = {
-            category: formData.get('category'),
-            //element: `/api/elements/${idElement}`,
-            file: formData.get('file')
-        }
-        data[props.attachmentElementLabel] = props.elementApiUrl
-        try {
-            await props.elementAttachmentStore.ajout(data)
-            isError.value = false
-        } catch (error) {
-            const err = {
-                message: error
+        const ins = document.getElementById('addFichiers-file').files.length
+        violations.value = []
+        const results = []
+        for (let x = 0; x < ins; x++) {
+            const form = document.getElementById('addFichiers')
+            const formData = new FormData(form)
+            const data = {
+                category: formData.get('category'),
+                file: document.getElementById('addFichiers-file').files[x]
             }
-            violations.value.push(err)
-            isError.value = true
+            //console.log(`updateFichiers fichier ${x + 1}/${ins}`, data)
+            data[props.attachmentElementLabel] = props.elementApiUrl
+            results.push(props.elementAttachmentStore.ajout(data))
         }
-        await initializeData()
+        isError.value = false
+        Promise.allSettled(await results)
+            .then(resultats => {
+                // eslint-disable-next-line array-callback-return
+                resultats.forEach(result => {
+                    if (result.status === 'fulfilled') console.log(`Fichier bien chargé ${result.value.url}`)
+                    else {
+                        //console.log('Erreur chargement', result.reason)
+                        isError.value = true
+                        const err = {
+                            message: result.reason
+                        }
+                        violations.value.push(err)
+                    }
+                })
+                initializeData()
+            })
     }
     //endregion
     //region Chargement des données / Variables

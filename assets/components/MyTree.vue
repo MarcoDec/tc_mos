@@ -45,6 +45,7 @@
   margin: 4px 0;
   flex-direction: column;
   padding-left: 30px;
+    background-color: lightyellow;
 }
 
 .icon {

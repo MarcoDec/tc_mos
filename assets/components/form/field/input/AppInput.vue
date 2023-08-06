@@ -17,6 +17,7 @@
         return props.modelValue
     })
     const type = computed(() => props.field.type ?? 'text')
+    const multiple = computed(() => props.field.multiple ?? true)
     function input(e) {
         emit('update:modelValue', e.target.value)
     }
@@ -28,6 +29,7 @@
         :disabled="disabled"
         :form="form"
         :name="field.name"
+        :multiple="multiple"
         :placeholder="field.label"
         :type="type"
         :value="theValue"
