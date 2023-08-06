@@ -1,7 +1,12 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
+    import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
+    import {useEmployeeStore} from '../../../../../stores/hr/employee/employees'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import {
+        useManufacturerEngineAttachmentStore
+    } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngineAttachements'
     import {
         useManufacturerEngineStore
     } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
@@ -14,6 +19,7 @@
     const fetchManufacturerOptions = useOptions('manufacturers')
     fetchManufacturerOptions.fetchable = true
     await fetchManufacturerOptions.fetch()
+    const fetchManufacturerAttachmentStore = useManufacturerEngineAttachmentStore()
     const optionsManufacturer = computed(() =>
         fetchManufacturerOptions.options.map(op => {
             const text = op.text
@@ -214,7 +220,16 @@
                     </div>
                     <br/>
                     <AppFormCardable id="update-engine" :key="key" :fields="addFormfields" :model-value="formData.value" :violations="violations"/>
-                    <p>Ici le formulaire de modification</p>
+                    <Suspense>
+                        <AppTabFichiers
+                            :key="`attachment_${key}`"
+                            attachment-element-label="engine"
+                            :element-api-url="`/api/manufacturer-engines/${storeManufacturerEnginers.engine.id}`"
+                            :element-attachment-store="fetchManufacturerAttachmentStore"
+                            :element-id="storeManufacturerEnginers.engine.id"
+                            element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
+                            :element-store="useManufacturerEngineStore"/>
+                    </Suspense>
                     <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
                         <div v-for="violation in violations" :key="violation">
                             <li>{{ violation.message }}</li>

@@ -111,11 +111,12 @@
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
-                <AppDropdownItem disabled variant="success">
-                    Lecteur
-                </AppDropdownItem>
+                <AppDropdownItem disabled variant="success"/>
                 <AppNavbarLink icon="oil-well" to="manufacturers" variant="success">
                     Fabricants
+                </AppNavbarLink>
+                <AppNavbarLink icon="oil-well" to="manufacturer-engines" variant="success">
+                    Equipements de référence
                 </AppNavbarLink>
                 <AppNavbarLink icon="map-marked" to="zones" variant="success">
                     Zones

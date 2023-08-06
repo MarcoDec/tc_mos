@@ -88,8 +88,7 @@ class ManufacturerEngineAttachment extends AbstractAttachment
    private Engine $engine;
 
    public function getBaseFolder(): string {
-      $path = explode('\\', Engine::class);
-      return '/'.array_pop($path).'/'.$this->getEngine()->getId();
+      return '/manufacturer-engine/'.$this->getEngine()->getId();
    }
 
    public function getExpirationDirectoriesParameter(): string

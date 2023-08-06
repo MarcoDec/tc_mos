@@ -101,12 +101,12 @@ export default [
     },
     {
         component: AppManufacturerEngine,
-        meta: {title: 'Listes des Références Machine  — T-Concept GPAO'},
+        meta: {title: 'Références Equipement — T-Concept GPAO'},
         name: 'manufacturer-engines',
         path: '/manufacturer-engines',
         props: {
             icon: 'city',
-            title: 'Références Machines'
+            title: 'Références Equipement'
         }
     },
     {
