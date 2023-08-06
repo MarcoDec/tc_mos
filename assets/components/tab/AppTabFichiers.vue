@@ -144,12 +144,13 @@
 
 <template>
     <div>
+        <MyTree :node="rootFolder"/>
         <AppCardShow
             id="addFichiers"
             :fields="fichiersFields"
             :component-attribute="currentElementData"
             title="Ajouter un nouveau Fichier"
-            @update="updateFichiers(useFetchElementStore.component)"/>
+            @update="updateFichiers"/>
         <div v-if="isError" class="alert alert-danger" role="alert">
             <ul>
                 <li v-for="violation in violations" :key="violation">
@@ -157,7 +158,6 @@
                 </li>
             </ul>
         </div>
-        <MyTree :node="rootFolder"/>
     </div>
 </template>
 

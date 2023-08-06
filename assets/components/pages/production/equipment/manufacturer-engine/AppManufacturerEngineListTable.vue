@@ -2,7 +2,6 @@
     import {computed, ref} from 'vue'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
-    import {useEmployeeStore} from '../../../../../stores/hr/employee/employees'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {
         useManufacturerEngineAttachmentStore
