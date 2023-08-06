@@ -30,9 +30,7 @@
     const formData = new FormData()
     const violations = ref([])
     const itemId = ref(null)
-    // const isPopupVisible = ref(false)
-    //
-    //
+    const isPopupVisible = ref(false)
     const tabFields = [
         {
             label: 'Fabriquant',
@@ -49,7 +47,7 @@
             type: 'select'
         },
         {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
-        {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
+        {label: 'Code', min: false, name: 'code', trie: true, type: 'text'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'}
     ]
     const addFormfields = tabFields
@@ -86,51 +84,40 @@
         updated.value = false
         // isPopupVisible.value = false
     }
-    function update(item) {
-        key.value++
+    async function showUpdateForm(item) {
         itemId.value = Number(item['@id'].match(/\d+/)[0])
+        await storeManufacturerEnginers.fetchOne(itemId.value)
+        const engine = storeManufacturerEnginers.engine
         formData.value = {
-            code: item.code,
-            manufacturer: item.manufacturer ? item.manufacturer['@id'] : null,
-            name: item.name,
-            partNumber: item.partNumber
+            code: engine.code,
+            manufacturer: engine.manufacturer ? engine.manufacturer['@id'] : null,
+            name: engine.name,
+            partNumber: engine.partNumber
         }
+        key.value++
         updated.value = true
         AddForm.value = true
     }
-    // async function updateSociety(){
-    //     try {
-    //         const form = document.getElementById('updateSociety')
-    //         const formData2 = new FormData(form)
-    //         const itemsUpdateData = {
-    //             address: {
-    //                 address: formData2.get('address'),
-    //                 address2: formData2.get('address2'),
-    //                 city: formData2.get('city'),
-    //                 country: formData2.get('country'),
-    //                 email: formData2.get('email'),
-    //                 phoneNumber: formData2.get('phoneNumber'),
-    //                 zipCode: formData2.get('zipCode')
-    //             },
-    //             name: formData2.get('name')
-    //         }
-    //         const payload = {
-    //             filter,
-    //             filterBy,
-    //             id: itemId,
-    //             itemsUpdateData,
-    //             sortable,
-    //             trierAlpha
-    //         }
-    //         await storeManufacturerEnginers.updateSociety(payload)
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //     } catch (error) {
-    //         violations = error
-    //         isPopupVisible.value = true
-    //     }
-    // }
+    async function updateItem(){
+        try {
+            const form = document.getElementById('update-engine')
+            const formData2 = new FormData(form)
+            const itemsUpdateData = {
+                code: formData2.get('code'),
+                manufacturer: formData2.get('manufacturer'),
+                name: formData2.get('name'),
+                partNumber: formData2.get('partNumber')
+            }
+            await storeManufacturerEnginers.update(itemsUpdateData)
+            AddForm.value = false
+            updated.value = false
+            isPopupVisible.value = false
+            await refreshList()
+        } catch (error) {
+            violations.value = error
+            isPopupVisible.value = true
+        }
+    }
     async function deleted(id){
         await storeManufacturerEnginers.remove(id)
         await refreshList()
@@ -146,7 +133,7 @@
         await refreshList()
     }
     async function search(inputValues) {
-        const result = Object.keys(inputValues).map(key => ({field: key, value: inputValues[key]}))
+        const result = Object.keys(inputValues).map(cle => ({field: cle, value: inputValues[cle]}))
         result.forEach(filter => {
             tableCriteria.addFilter(filter.field, filter.value)
         })
@@ -192,7 +179,7 @@
                     @get-page="getPage"
                     @search="search"
                     @trier-alphabet="trier"
-                    @update="update"/>
+                    @update="showUpdateForm"/>
             </div>
             <div v-if="AddForm && !updated" class="col">
                 <AppCard class="bg-blue col" title="">
@@ -228,15 +215,13 @@
                     <br/>
                     <AppFormCardable id="update-engine" :key="key" :fields="addFormfields" :model-value="formData.value" :violations="violations"/>
                     <p>Ici le formulaire de modification</p>
-                    <div class="alert alert-danger" role="alert">
-                        <!-- v-if="isPopupVisible" -->
-                        <!--                        <div v-for="violation in violations" :key="violation">-->
-                        <!--                            <li>{{ violation.message }}</li>-->
-                        <!--                        </div>-->
+                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                        <div v-for="violation in violations" :key="violation">
+                            <li>{{ violation.message }}</li>
+                        </div>
                     </div>
                     <div class="col">
-                        <AppBtn class="btn-float-right" label="retour" variant="success" size="sm">
-                            <!-- @click="updateSociety"-->
+                        <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateItem">
                             <Fa icon="pencil-alt"/> Modifier
                         </AppBtn>
                     </div>

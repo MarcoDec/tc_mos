@@ -30,7 +30,7 @@ export const useManufacturerEngineStore = defineStore('manufacturer-engines', {
             this.view = data['hydra:view']
         },
         async update(data) {
-            const response = await api(`${baseApi}/${id}`, 'PATCH', data)
+            const response = await api(`${baseApi}/${this.engine.id}`, 'PATCH', data)
             this.engine = await response
         }
     },
