@@ -29,6 +29,7 @@
     const elementAttachments = computed(() =>
         props.elementAttachmentStore.elementAttachments.map(attachment => ({
             category: attachment.category,
+            color: '#43abd7',
             icon: 'file-contract',
             id: attachment['@id'],
             label: attachment.url.split('/').pop(), // get the filename from the URL
@@ -75,15 +76,18 @@
             })
         })
         //Etape 2 - nodes = noeuds de type dossier
-        folders.value = foldersId.value.map(folder =>
-            ({
-                category: folder,
-                children: [],
-                icon: 'folder',
-                id: folder,
-                label: folder.split('/')[folder.split('/').length - 1],
-                level: folder.split('/').length
-            }))
+        folders.value = foldersId.value
+            .filter(folder => folder !== '')
+            .map(folder =>
+                ({
+                    category: folder,
+                    children: [],
+                    color: '#ffc107',
+                    icon: 'folder',
+                    id: folder,
+                    label: folder.split('/')[folder.split('/').length - 1],
+                    level: folder.split('/').length
+                }))
         //Etape 3 - nodes création de l'arborescence sur base folders
         //region recupération de la profondeur maximale
         const maxLevel = ref(0)
@@ -95,6 +99,7 @@
         rootFolder.value = {
             category: '',
             children: [],
+            color: '#ffc107',
             icon: 'folder',
             id: 1,
             label: `Pièces jointes (${elementAttachments.value.length})`,

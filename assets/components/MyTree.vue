@@ -19,7 +19,7 @@
 
 <template>
     <div class="tree-node">
-        <span class="icon"><Fa :icon="node.icon"/></span>
+        <span class="icon"><Fa :icon="node.icon" :style="{color: node.color}"/></span>
         <!-- <span class="label" @click="toggle"  @click.once="showChildUrl(node)">{{ node.label }} ({{ node.children ? node.children.length : 0 }})</span> -->
         <span class="label" @click="toggle" @click.once="showChildUrl(node)">{{ node.label }}</span>
         <div v-if="isOpen" class="divChil">
@@ -50,7 +50,6 @@
 
 .icon {
   margin-right: 4px;
-  color: #ffc107;
 }
 
 .label {

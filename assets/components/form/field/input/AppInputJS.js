@@ -8,6 +8,7 @@ function AppInputJS(props, context) {
         disabled: props.disabled,
         form: props.form,
         id: props.id,
+        multiple: props.field.multiple,
         name: props.field.name,
         onInput: e => context.emit('update:modelValue', e.target.value),
         placeholder: props.field.label,
