@@ -1,3 +1,4 @@
+import AppEngineList from '../components/pages/production/equipment/engine-list/AppEngineList.vue'
 import AppManufacturerEngine from '../components/pages/production/equipment/manufacturer-engine/AppManufacturerEngine.vue'
 import AppShowGuiTestCounterPart from '../components/pages/production/equipment/test-counter-part/AppShowGuiTestCounterPart.vue'
 import AppShowGuiTool from '../components/pages/production/equipment/tool/AppShowGuiTool.vue'
@@ -107,6 +108,16 @@ export default [
         props: {
             icon: 'city',
             title: 'Références Equipement'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Equipement — T-Concept GPAO'},
+        name: 'engines',
+        path: '/engines',
+        props: {
+            icon: 'city',
+            title: 'Equipement'
         }
     },
     {

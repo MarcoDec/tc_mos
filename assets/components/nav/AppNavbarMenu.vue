@@ -111,12 +111,11 @@
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
-                <AppDropdownItem disabled variant="success"/>
-                <AppNavbarLink icon="oil-well" to="manufacturers" variant="success">
-                    Fabricants Equipement
-                </AppNavbarLink>
-                <AppNavbarLink icon="oil-well" to="manufacturer-engines" variant="success">
-                    Equipements de référence
+                <AppDropdownItem disabled variant="success">
+                    Lecteur
+                </AppDropdownItem>
+                <AppNavbarLink icon="oil-well" to="engines" variant="success">
+                    Equipements
                 </AppNavbarLink>
                 <AppNavbarLink icon="map-marked" to="zones" variant="success">
                     Zones
@@ -125,6 +124,12 @@
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
                     </AppDropdownItem>
+                    <AppNavbarLink icon="oil-well" to="manufacturers" variant="warning">
+                        Fabricants Equipement
+                    </AppNavbarLink>
+                    <AppNavbarLink icon="oil-well" to="manufacturer-engines" variant="warning">
+                        Equipements de référence
+                    </AppNavbarLink>
                     <p>Catégories d'événements des équipements (engine-events)</p>
                     <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
                         Groupes d'équipements
