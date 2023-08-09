@@ -113,7 +113,7 @@
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                 <AppDropdownItem disabled variant="success"/>
                 <AppNavbarLink icon="oil-well" to="manufacturers" variant="success">
-                    Fabricants
+                    Fabricants Equipement
                 </AppNavbarLink>
                 <AppNavbarLink icon="oil-well" to="manufacturer-engines" variant="success">
                     Equipements de référence

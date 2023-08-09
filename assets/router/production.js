@@ -45,7 +45,7 @@ export default [
     },
     {
         component: AppTablePageSuspense,
-        meta: {title: 'Fabricants — T-Concept GPAO'},
+        meta: {title: 'Fabricants Equipement — T-Concept GPAO'},
         name: 'manufacturers',
         path: '/manufacturers',
         props: {
@@ -62,7 +62,7 @@ export default [
             ],
             icon: 'oil-well',
             sort: readonly({label: 'Nom', name: 'name'}),
-            title: 'Fabricants'
+            title: 'Fabricants Equipement'
         }
     },
     {
