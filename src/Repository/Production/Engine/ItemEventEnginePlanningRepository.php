@@ -157,7 +157,6 @@ final class ItemEventEnginePlanningRepository extends ItemRepository {
                 'current' => $results
             ];
         };
-        dump($list);
         return $list;
     }
 }

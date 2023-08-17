@@ -157,7 +157,6 @@ final class ItemEventEquipementTypeRepository extends ItemRepository {
                 'current' => $results
             ];
         };
-        dump($list);
         return $list;
     }
 }
