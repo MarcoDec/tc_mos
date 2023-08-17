@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useComponentListCasEmploisStore} from '../../../../../stores/component/componentListCasEmplois'
+    import {useComponentListEvenementQualiteStore} from '../../../../../stores/component/componentListEvenementQualite'
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
 
@@ -17,19 +17,37 @@
     const maRoute = useRoute()
     const componentId = maRoute.params.id_component
 
-    const storeComponentListCasEmplois = useComponentListCasEmploisStore()
-    storeComponentListCasEmplois.setIdComponent(componentId)
-    await storeComponentListCasEmplois.fetch()
-    const itemsTable = ref(storeComponentListCasEmplois.itemsComponentCasEmplois)
+    const storeComponentListEvenementQualite = useComponentListEvenementQualiteStore()
+    storeComponentListEvenementQualite.setIdComponent(componentId)
+    await storeComponentListEvenementQualite.fetch()
+    const itemsTable = ref(storeComponentListEvenementQualite.itemsComponentEvenementQualite)
     const formData = ref({
-        ref: null, etat: null, client: null, volumeAnnuel: null, name: null, quantiteProduit: null, volumeAnnuelComposant: null
+        creeLe: null, detectePar: null, ref: null, description: null, responsable: null, localisation: null, societe: null, progression: null, statut: null
     })
 
     const fieldsForm = [
         {
             create: false,
             filter: true,
-            label: 'Référence produit ',
+            label: 'Crée le',
+            name: 'creeLe',
+            sort: true,
+            type: 'date',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Détecté par',
+            name: 'detectePar',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Référence',
             name: 'ref',
             sort: true,
             type: 'text',
@@ -38,8 +56,8 @@
         {
             create: false,
             filter: true,
-            label: 'Client',
-            name: 'client',
+            label: 'Description',
+            name: 'description',
             sort: true,
             type: 'text',
             update: true
@@ -47,12 +65,39 @@
         {
             create: false,
             filter: true,
-            label: 'Volume Annuel',
-            name: 'volumeAnnuel',
+            label: 'Responsable',
+            name: 'responsable',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Localisation',
+            name: 'localisation',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Société',
+            name: 'societe',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Progression',
+            name: 'progression',
             sort: true,
             measure: {
-                value: null,
-                code: null
+                code: null,
+                value: null
             },
             type: 'measure',
             update: true
@@ -60,66 +105,46 @@
         {
             create: false,
             filter: true,
-            label: 'Etat',
-            name: 'etat',
+            label: 'Statut',
+            name: 'statut',
             sort: true,
             type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Nom',
-            name: 'name',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Quantité par produit',
-            name: 'quantiteProduit',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: false,
-            label: 'Volume annuel par composant',
-            name: 'volumeAnnuelComposant',
-            sort: false,
-            measure: {
-                value: null,
-                code: null
-            },
-            type: 'measure',
             update: true
         }
     ]
 
-    const parentQtyProduit = {
-        $id: 'componentCasEmploisQtyProduitAnnuel'
+    const parentQtyComponent = {
+        $id: 'componentEvenementQualiteQtyComponent'
     }
-    const storeUnitCasEmploisQtyAnnuel = useField(fieldsForm[2], parentQtyProduit)
-    await storeUnitCasEmploisQtyAnnuel.fetch()
+    const storeUnitEvenementQualiteQtyComponent = useField(fieldsForm[7], parentQtyComponent)
+    await storeUnitEvenementQualiteQtyComponent.fetch()
 
-    fieldsForm[2].measure.code = storeUnitCasEmploisQtyAnnuel.measure.code
-    fieldsForm[2].measure.value = storeUnitCasEmploisQtyAnnuel.measure.value
-
-    const parentVolumeAnnuel = {
-        $id: 'componentCasEmploisVolumeAnnuel'
-    }
-    const storeUnitCasEmploisVolumeAnnuel = useField(fieldsForm[6], parentVolumeAnnuel)
-    fieldsForm[6].measure.code = storeUnitCasEmploisVolumeAnnuel.measure.code
-    fieldsForm[6].measure.value = storeUnitCasEmploisVolumeAnnuel.measure.value
+    fieldsForm[7].measure.code = storeUnitEvenementQualiteQtyComponent.measure.code
+    fieldsForm[7].measure.value = storeUnitEvenementQualiteQtyComponent.measure.value
 
     const tabFields = [
         {
             create: false,
             filter: true,
-            label: 'Référence produit ',
+            label: 'Crée le',
+            name: 'creeLe',
+            sort: true,
+            type: 'date',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Détecté par',
+            name: 'detectePar',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Référence',
             name: 'ref',
             sort: true,
             type: 'text',
@@ -128,8 +153,8 @@
         {
             create: false,
             filter: true,
-            label: 'Client',
-            name: 'client',
+            label: 'Description',
+            name: 'description',
             sort: true,
             type: 'text',
             update: true
@@ -137,12 +162,39 @@
         {
             create: false,
             filter: true,
-            label: 'Volume Annuel',
-            name: 'volumeAnnuel',
+            label: 'Responsable',
+            name: 'responsable',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Localisation',
+            name: 'localisation',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Société',
+            name: 'societe',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Progression',
+            name: 'progression',
             sort: true,
             measure: {
-                value: storeUnitCasEmploisQtyAnnuel.measure.value,
-                code: storeUnitCasEmploisQtyAnnuel.measure.code
+                code: storeUnitEvenementQualiteQtyComponent.measure.code,
+                value: storeUnitEvenementQualiteQtyComponent.measure.value
             },
             type: 'measure',
             update: true
@@ -150,41 +202,10 @@
         {
             create: false,
             filter: true,
-            label: 'Etat',
-            name: 'etat',
+            label: 'Statut',
+            name: 'statut',
             sort: true,
             type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Nom',
-            name: 'name',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Quantité par produit',
-            name: 'quantiteProduit',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: false,
-            label: 'Volume annuel par composant',
-            name: 'volumeAnnuelComposant',
-            sort: false,
-            measure: {
-                value: storeUnitCasEmploisVolumeAnnuel.measure.value,
-                code: storeUnitCasEmploisVolumeAnnuel.measure.code
-            },
-            type: 'measure',
             update: true
         }
     ]
@@ -204,8 +225,8 @@
     //     formData.value = itemsNull
     // }
 
-    // async function ajoutComponentCasEmplois(){
-    //     // const form = document.getElementById('addComponentCasEmplois')
+    // async function ajoutComponentEvenementQualite(){
+    //     // const form = document.getElementById('addComponentEvenementQualite')
     //     // const formData1 = new FormData(form)
 
     //     // if (typeof formData.value.families !== 'undefined') {
@@ -222,7 +243,7 @@
     //         dateLivraison: formData.value.dateLivraison,
     //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
     //     }
-    //     violations = await storeComponentListCasEmplois.addComponentCasEmplois(itemsAddData)
+    //     violations = await storeComponentListEvenementQualite.addComponentEvenementQualite(itemsAddData)
 
     //     if (violations.length > 0){
     //         isPopupVisible.value = true
@@ -230,7 +251,7 @@
     //         AddForm.value = false
     //         updated.value = false
     //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeComponentListCasEmplois.itemsComponentCasEmplois]
+    //         itemsTable.value = [...storeComponentListEvenementQualite.itemsComponentEvenementQualite]
     //     }
     // }
     // function annule(){
@@ -253,74 +274,61 @@
         updated.value = true
         AddForm.value = true
         const itemsData = {
+            creeLe: item.creeLe,
+            detectePar: item.detectePar,
             ref: item.ref,
-            etat: item.etat,
-            client: item.client,
-            volumeAnnuel: item.volumeAnnuel,
-            name: item.name,
-            quantiteProduit: item.quantiteProduit,
-            volumeAnnuelComposant: item.volumeAnnuelComposant
-
+            description: item.description,
+            responsable: item.responsable,
+            localisation: item.localisationa,
+            societe: item.societe,
+            progression: item.progression,
+            statut: item.statut
         }
         formData.value = itemsData
     }
 
     async function deleted(id){
-        await storeComponentListCasEmplois.deleted(id)
-        itemsTable.value = [...storeComponentListCasEmplois.itemsComponentCasEmplois]
+        await storeComponentListEvenementQualite.deleted(id)
+        itemsTable.value = [...storeComponentListEvenementQualite.itemsComponentEvenementQualite]
     }
     async function getPage(nPage){
-        await storeComponentListCasEmplois.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
-        itemsTable.value = [...storeComponentListCasEmplois.itemsComponentCasEmplois]
+        await storeComponentListEvenementQualite.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        itemsTable.value = [...storeComponentListEvenementQualite.itemsComponentEvenementQualite]
     }
     async function trierAlphabet(payload) {
-        await storeComponentListCasEmplois.sortableItems(payload, filterBy, filter)
+        await storeComponentListEvenementQualite.sortableItems(payload, filterBy, filter)
         sortable.value = true
         trierAlpha = computed(() => payload)
     }
+
     async function search(inputValues) {
-        // let comp = ''
-        // if (typeof inputValues.composant !== 'undefined'){
-        //     comp = inputValues.composant
-        // }
-
-        // let prod = ''
-        // if (typeof inputValues.produit !== 'undefined'){
-        //     prod = inputValues.produit
-        // }
-
         const payload = {
+            creeLe: inputValues.creeLe ?? '',
+            detectePar: inputValues.detectePar ?? '',
             ref: inputValues.ref ?? '',
-            etat: inputValues.etat ?? '',
-            client: inputValues.client ?? '',
-            volumeAnnuel: inputValues.volumeAnnuel ?? '',
-            name: inputValues.name ?? '',
-            quantiteProduit: inputValues.quantiteProduit ?? '',
-            volumeAnnuelComposant: inputValues.volumeAnnuelComposant ?? ''
+            description: inputValues.description ?? '',
+            responsable: inputValues.responsable ?? '',
+            localisation: inputValues.localisation ?? '',
+            societe: inputValues.societe ?? '',
+            progression: inputValues.progression ?? '',
+            statut: inputValues.statut ?? ''
         }
 
-        if (typeof payload.volumeAnnuel.value === 'undefined' && payload.volumeAnnuel !== '') {
-            payload.volumeAnnuel.value = ''
+        if (typeof payload.progression.value === 'undefined' && payload.progression !== '') {
+            payload.progression.value = ''
         }
-        if (typeof payload.volumeAnnuel.code === 'undefined' && payload.volumeAnnuel !== '') {
-            payload.volumeAnnuel.code = ''
+        if (typeof payload.progression.code === 'undefined' && payload.progression !== '') {
+            payload.progression.code = ''
         }
 
-        // if (typeof payload.volumeAnnuelComposant.value === 'undefined' && payload.volumeAnnuelComposant !== '') {
-        //     payload.volumeAnnuelComposant.value = ''
-        // }
-        // if (typeof payload.volumeAnnuelComposant.code === 'undefined' && payload.volumeAnnuelComposant !== '') {
-        //     payload.volumeAnnuelComposant.code = ''
-        // }
-
-        await storeComponentListCasEmplois.filterBy(payload)
-        itemsTable.value = [...storeComponentListCasEmplois.itemsComponentCasEmplois]
+        await storeComponentListEvenementQualite.filterBy(payload)
+        itemsTable.value = [...storeComponentListEvenementQualite.itemsComponentEvenementQualite]
         filter.value = true
         filterBy = computed(() => payload)
     }
     async function cancelSearch() {
         filter.value = true
-        storeComponentListCasEmplois.fetch()
+        storeComponentListEvenementQualite.fetch()
     }
 </script>
 
@@ -335,17 +343,17 @@
         <AppRow>
             <AppCol>
                 <AppCardableTable
-                    :current-page="storeComponentListCasEmplois.currentPage"
+                    :current-page="storeComponentListEvenementQualite.currentPage"
                     :fields="tabFields"
-                    :first-page="storeComponentListCasEmplois.firstPage"
+                    :first-page="storeComponentListEvenementQualite.firstPage"
                     :items="itemsTable"
-                    :last-page="storeComponentListCasEmplois.lastPage"
+                    :last-page="storeComponentListEvenementQualite.lastPage"
                     :min="AddForm"
-                    :next-page="storeComponentListCasEmplois.nextPage"
-                    :pag="storeComponentListCasEmplois.pagination"
-                    :previous-page="storeComponentListCasEmplois.previousPage"
+                    :next-page="storeComponentListEvenementQualite.nextPage"
+                    :pag="storeComponentListEvenementQualite.pagination"
+                    :previous-page="storeComponentListEvenementQualite.previousPage"
                     :user="roleuser"
-                    form="formComponentCasEmploisCardableTable"
+                    form="formComponentEvenementQualiteCardableTable"
                     @update="update"
                     @deleted="deleted"
                     @get-page="getPage"
@@ -364,14 +372,14 @@
                         </h4>
                     </AppRow>
                     <br/>
-                    <AppFormCardable id="addComponentCasEmplois" :fields="fieldsForm" :model-value="formData" label-cols/>
+                    <AppFormCardable id="addComponentEvenementQualite" :fields="fieldsForm" :model-value="formData" label-cols/>
                     <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
                         <div v-for="violation in violations" :key="violation">
                             <li>{{ violation.message }}</li>
                         </div>
                     </div>
                     <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutComponentCasEmplois">
+                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutComponentEvenementQualite">
                             <Fa icon="plus"/> Ajouter
                         </AppBtn>
                     </AppCol>
