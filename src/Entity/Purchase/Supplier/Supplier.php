@@ -235,7 +235,7 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
         ORM\Column,
-        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'read:supplier:receipt', 'write:supplier', 'write:supplier:admin'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'read:supplier:receipt', 'write:supplier', 'write:supplier:admin',  'read:supplier-company'])
     ]
     private ?string $name = null;
 

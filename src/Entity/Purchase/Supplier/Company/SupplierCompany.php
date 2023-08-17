@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['company'=>'exact', 'supplier'=>'exact']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['company'=>'exact', 'supplier'=>'exact', 'supplier.name' => 'partial']),
     ApiResource(
         description: 'SupplierCompany',
         collectionOperations: [
@@ -53,7 +53,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class SupplierCompany extends Entity
 {
     #[
-        ApiProperty(description: 'Fournisseur', example: '/api/suppliers/1'),
+        ApiProperty(description: 'Fournisseur'),
         ORM\ManyToOne(targetEntity: Supplier::class, inversedBy: 'supplierCompanies'),
         Groups(['write:supplier-company', 'read:supplier-company'])
     ]
