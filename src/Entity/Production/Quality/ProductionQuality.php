@@ -11,6 +11,9 @@ use App\Entity\Production\Manufacturing\Operation;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use DateTimeImmutable;
+
+use App\Controller\Production\Quality\ItemProductionQualityComponentController;
 
 #[
     ApiResource(
@@ -27,6 +30,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Ajoute un Contrôle Qualité de production',
                     'summary' => 'Ajoute un Contrôle Qualité de production'
                 ]
+            ], 
+            'filtreComponent' => [
+                'controller' => ItemProductionQualityComponentController::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer par composant',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par composant'
+                ],
+                'path' => '/production-quality/componentFilter/{api}',
+                'read' => false,
+                'write' => false
             ]
         ],
         itemOperations: [
@@ -76,7 +97,7 @@ class ProductionQuality extends Entity
     private $numberOfControl;
 
      #[
-         ApiProperty(description: 'Opération de production associée', example: '/api/manufacturing-operations/1'),
+         ApiProperty(description: 'Opération de production associée'),
          ManyToOne(targetEntity: Operation::class),
          Serializer\Groups(['read:production-quality', 'write:production-quality'])
      ]
@@ -84,10 +105,10 @@ class ProductionQuality extends Entity
 
      #[
          ApiProperty(description: 'Date du contrôle', example: '2023-05-2022'),
-         Column(nullable: true, type: 'datetime'),
+         ORM\Column(type: 'date_immutable', nullable: true),
          Serializer\Groups(['read:production-quality', 'write:production-quality'])
      ]
-    private $recordDate;
+     private ?DateTimeImmutable $recordDate = null;
 
      #[
         ApiProperty(description: 'Type de résultat', example: '1'), //TODO: faire Enum
@@ -108,11 +129,11 @@ class ProductionQuality extends Entity
         return $this->numberOfControl;
     }
 
-    public function getProductionOperation(): ?ProductionOperation {
+    public function getProductionOperation(): ?Operation {
         return $this->productionOperation;
     }
 
-    public function getRecordDate(): ?DateTimeInterface {
+    public function getRecordDate(): ?DateTimeImmutable {
         return $this->recordDate;
     }
 
@@ -148,7 +169,7 @@ class ProductionQuality extends Entity
         return $this;
     }
 
-    public function setRecordDate(?DateTimeInterface $recordDate): self {
+    public function setRecordDate(?DateTimeImmutable $recordDate): self {
         $this->recordDate = $recordDate;
         return $this;
     }
