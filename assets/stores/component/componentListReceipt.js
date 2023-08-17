@@ -1,7 +1,7 @@
 import api from '../../api'
 import {defineStore} from 'pinia'
 
-export const useComponentListOFStore = defineStore('componentListOF', {
+export const useComponentListReceiptStore = defineStore('componentListReceipt', {
     actions: {
         setIdComponent(id){
             this.componentID = id
@@ -10,14 +10,14 @@ export const useComponentListOFStore = defineStore('componentListOF', {
             const uniqueCodesSet = new Set()
             if (response && response['hydra:member']) {
                 response['hydra:member'].forEach(item => {
-                    if (item.product.product && item.productOF) {
-                        uniqueCodesSet.add(item.productOF)
+                    if (item.product.product && item.productReceipt) {
+                        uniqueCodesSet.add(item.productReceipt)
                     }
                 })
             }
             return Array.from(uniqueCodesSet)
         },
-        // async addOFOF(payload){
+        // async addReceiptReceipt(payload){
         //     const violations = []
         //     try {
         //         if (payload.quantite.value !== ''){
@@ -39,22 +39,22 @@ export const useComponentListOFStore = defineStore('componentListOF', {
         // },
         async deleted(payload) {
             await api(`/api/manufacturing-orders/${payload}`, 'DELETE')
-            this.componentOF = this.componentOF.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
+            this.componentReceipt = this.componentReceipt.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
             const response = await api(`/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}`, 'GET')
-            this.componentOF = await this.updatePagination(response)
+            this.componentReceipt = await this.updatePagination(response)
         },
         async filterBy(payload) {
-            let url = `/api/manufacturing-orders/componentFilter/${this.componentID}?`
+            let url = `/api/manufacturing-orders/componentFilter/${this.componentID}&`
             if (payload === ''){
                 await this.fetch()
             } else {
                 if (payload.of !== '') {
-                    url += `productOF=${payload.of}&`
+                    url += `productReceipt=${payload.of}&`
                 }
                 if (payload.produit !== '') {
                     url += `name=${payload.produit}&`
@@ -73,19 +73,19 @@ export const useComponentListOFStore = defineStore('componentListOF', {
                 url += 'page=1'
                 this.currentPage = 1
                 const response = await api(url, 'GET')
-                this.componentOF = await this.updatePagination(response)
+                this.componentReceipt = await this.updatePagination(response)
             }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}&page=${nPage}`, 'GET')
-            this.componentOF = await this.updatePagination(response)
+            this.componentReceipt = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
                 let url = `/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}&`
                 if (payload.filterBy.value.of !== '') {
-                    url += `productOF=${payload.filterBy.value.of}&`
+                    url += `productReceipt=${payload.filterBy.value.of}&`
                 }
                 if (payload.filterBy.value.produit !== '') {
                     url += `name=${payload.filterBy.value.produit}&`
@@ -103,11 +103,11 @@ export const useComponentListOFStore = defineStore('componentListOF', {
                 }
 
                 response = await api(url, 'GET')
-                this.componentOF = await this.updatePagination(response)
+                this.componentReceipt = await this.updatePagination(response)
             } else if (payload.filter.value === true){
                 let url = `/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}&`
                 if (payload.filterBy.value.of !== '') {
-                    url += `productOF=${payload.filterBy.value.of}&`
+                    url += `productReceipt=${payload.filterBy.value.of}&`
                 }
                 if (payload.filterBy.value.produit !== '') {
                     url += `name=${payload.filterBy.value.produit}&`
@@ -126,17 +126,17 @@ export const useComponentListOFStore = defineStore('componentListOF', {
 
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
-                this.componentOF = await this.updatePagination(response)
+                this.componentReceipt = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
                 response = await api(`/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}&page=${payload.nPage}`, 'GET')
-                this.componentOF = await this.updatePagination(response)
+                this.componentReceipt = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'component') {
                     response = await api(`/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
                     response = await api(`/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
-                this.componentOF = await this.updatePagination(response)
+                this.componentReceipt = await this.updatePagination(response)
             }
         },
 
@@ -144,7 +144,7 @@ export const useComponentListOFStore = defineStore('componentListOF', {
             let response = {}
             if (filter.value === true){
                 if (filterBy.value.of !== '') {
-                    url += `productOF=${filterBy.value.of}&`
+                    url += `productReceipt=${filterBy.value.of}&`
                 }
                 if (payload.filterBy.value.produit !== '') {
                     url += `name=${filterBy.value.produit}&`
@@ -162,14 +162,14 @@ export const useComponentListOFStore = defineStore('componentListOF', {
                 }
                 url += `page=${this.currentPage}`
                 response = await api(url, 'GET')
-                this.componentOF = await this.updatePagination(response)
+                this.componentReceipt = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'component') {
                     response = await api(`/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
                     response = await api(`/api/manufacturing-orders/componentFilter/${this.componentID}?page=${this.currentPage}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
-                this.componentOF = await this.updatePagination(response)
+                this.componentReceipt = await this.updatePagination(response)
             }
         },
         async updatePagination(response) {
@@ -205,7 +205,7 @@ export const useComponentListOFStore = defineStore('componentListOF', {
         // }
     },
     getters: {
-        itemsComponentOF: state => state.componentOF.map(item => {
+        itemsComponentReceipt: state => state.componentReceipt.map(item => {
             const newObject = {
                 '@id': item['@id'],
                 of: item.ref,
@@ -223,7 +223,7 @@ export const useComponentListOFStore = defineStore('componentListOF', {
         nextPage: '',
         pagination: false,
         previousPage: '',
-        componentOF: [],
+        componentReceipt: [],
         componentID: 0
     })
 })
