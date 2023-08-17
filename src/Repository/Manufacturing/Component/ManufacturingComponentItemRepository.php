@@ -111,9 +111,10 @@ final class ManufacturingComponentItemRepository extends ItemRepository {
         $rsmCount = new ResultSetMapping();
         $rsmCount->addScalarResult('count', 'count');
 
-        $sql =  'SELECT component.id as componentID, product.code as ref, product.forecast_volume_code as forecastVolumeCode, product.forecast_volume_value as forecastVolumeValue, mo.delivery_date as date, product.name as name '; 
+        $sql =  'SELECT mo.id as id, component.id as componentID, product.code as ref, product.forecast_volume_code as forecastVolumeCode, product.forecast_volume_value as forecastVolumeValue, mo.delivery_date as date, product.name as name '; 
 
         $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('id', 'id');
         $rsm->addScalarResult('componentID', 'componentID');
         $rsm->addScalarResult('ref', 'ref');
         $rsm->addScalarResult('name', 'name');
@@ -165,7 +166,7 @@ final class ManufacturingComponentItemRepository extends ItemRepository {
         foreach( $results as &$element){
             $element['@context'] = '/api/contexts/ManufacturingOrderItemComponent';
             $element['@type'] = 'ManufacturingOrderItemComponent';
-            $element['@id'] =  '/api/manufacturing-order-components/' . $element['componentID'];
+            $element['@id'] =  '/api/manufacturing-order-components/' . $element['id'];
         };
         $list = [];
         if($countElement > $max){
