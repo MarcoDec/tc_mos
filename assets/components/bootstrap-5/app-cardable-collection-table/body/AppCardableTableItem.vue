@@ -4,7 +4,8 @@
     const props = defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
-        indice: {required: true, type: Number}
+        indice: {required: true, type: Number},
+        shouldDelete: {required: false, default: true}
     })
 
     const emit = defineEmits(['deleted', 'update'])
@@ -22,9 +23,11 @@
         <button class="btn btn-icon btn-secondary btn-sm mx-2" @click="update">
             <Fa icon="eye"/>
         </button>
-        <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted">
-            <Fa icon="trash"/>
-        </button>
+        <template v-if="shouldDelete">
+            <button class="btn btn-danger btn-icon btn-sm mx-2" @click="deleted">
+                <Fa icon="trash"/>
+            </button>
+        </template>
     </td>
     <AppTableItemField v-for="field in fields" :key="field.name" :field="field" :item="item" :row="indice + field.name"/>
 </template>

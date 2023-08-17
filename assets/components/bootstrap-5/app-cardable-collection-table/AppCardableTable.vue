@@ -15,7 +15,8 @@
         nextPage: {required: true, type: String},
         pag: {required: true, type: Boolean},
         previousPage: {required: true, type: String},
-        user: {required: true, type: String}
+        user: {required: true, type: String},
+        shouldDelete: {required: false, default: true}
     })
     const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref('')
@@ -49,7 +50,7 @@
             <tr class="bg-dark">
                 <td colspan="10"/>
             </tr>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" :current-page="currentPage" :pagine="pag" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" :current-page="currentPage" :pagine="pag" :should-delete="shouldDelete" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">

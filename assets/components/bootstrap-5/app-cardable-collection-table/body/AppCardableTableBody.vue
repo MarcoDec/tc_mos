@@ -4,7 +4,8 @@
     defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
-        indice: {required: true, type: Number}
+        indice: {required: true, type: Number},
+        shouldDelete: {required: false, default: true}
     })
 
     const emit = defineEmits(['deleted', 'update'])
@@ -17,5 +18,5 @@
 </script>
 
 <template>
-    <AppCardableTableItem :fields="fields" :item="item" :indice="indice" @update="update" @deleted="deleted"/>
+    <AppCardableTableItem :fields="fields" :item="item" :indice="indice" :should-delete="shouldDelete" @update="update" @deleted="deleted"/>
 </template>
