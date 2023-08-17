@@ -27,7 +27,7 @@ export const useCompanyListEventStore = defineStore('equipementListEvent', {
         //     return violations
         // },
         async deleted(payload) {
-            await api(`/api/engine-events/${payload}`, 'DELETE')
+            await api(`/api/engine-events/delete/${payload}`, 'DELETE')
             this.equipementEvent = this.equipementEvent.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {

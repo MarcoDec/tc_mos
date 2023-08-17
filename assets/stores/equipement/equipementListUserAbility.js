@@ -27,7 +27,7 @@ export const useCompanyListUserAbilityStore = defineStore('equipementListUserAbi
         //     return violations
         // },
         async deleted(payload) {
-            await api(`/api/engine-events/${payload}`, 'DELETE')
+            await api(`/api/engine-events/delete/${payload}`, 'DELETE')
             this.equipementUserAbility = this.equipementUserAbility.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
