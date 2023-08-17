@@ -14,6 +14,8 @@ use App\Filter\RelationFilter;
 use App\Repository\Logistics\Stock\ComponentStockRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Controller\Logistics\Stock\ItemComponentStockQuantiteSumController;
+
 
 /**
  * @template-extends Stock<Component>
@@ -45,6 +47,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'path' => '/component-stocks/receipt',
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
+            ], 
+            'filtreComponentTotalQuantite' => [
+                'controller' => ItemComponentStockQuantiteSumController::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer les stocks de composants et fait une somme des quantites',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par composant'
+                ],
+                'path' => '/component-stocks/filtreComponentTotalQuantite/{api}',
+                'read' => false,
+                'write' => false
             ],
             'post' => [
                 'openapi_context' => [

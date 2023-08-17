@@ -27,12 +27,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @template T of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
+ *     ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse.name' => 'partial', 'jail' => 'partial', 'quantity.value' => 'partial', 'quantity.code' => 'partial']),
+
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company']),
+
     ApiResource(
         description: 'Stock',
         collectionOperations: [
@@ -41,7 +45,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'description' => 'Récupère les stocks',
                     'summary' => 'Récupère les stocks'
                 ]
-            ]
+                ],
+
         ],
         itemOperations: [
             'delete' => [
