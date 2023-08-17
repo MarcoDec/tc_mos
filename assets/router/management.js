@@ -2,6 +2,7 @@ import AppSocietyList from '../components/pages/Management/Society/bottom/AppSoc
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import MonthCalendar from '../router/pages/company/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
+import AppShowGuiCompany from '../components/pages/Management/Company/AppShowGuiCompany.vue'
 
 export default [
     {
@@ -143,5 +144,11 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Définition des équipes'
         }
+    },
+    {
+        component: AppShowGuiCompany,
+        meta: {container: false, title: 'Entreprise — T-Concept GPAO'},
+        name: 'company',
+        path: '/company/:id_company'
     }
 ]
