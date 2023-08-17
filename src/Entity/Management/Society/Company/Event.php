@@ -9,8 +9,11 @@ use App\Entity\Event as AbstractEvent;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
-#[
+#[  
+    ApiFilter(filterClass: SearchFilter::class, properties: ['company' => 'exact', 'name' => 'partial', 'date' => 'partial', 'done' => 'partial', 'kind' => 'partial']),
     ApiResource(
         description: 'Événement sur une compagnie',
         collectionOperations: [
