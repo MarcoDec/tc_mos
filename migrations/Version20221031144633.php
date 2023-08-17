@@ -786,8 +786,14 @@ SELECT
     `component_controle_reception`.`id`,
     `component_controle_reception`.`libelle`,
     `component_controle_reception`.`nb`,
-    `component_controle_reception`.`value`,
-    `component_controle_reception`.`value_2`,
+    CASE
+        WHEN `component_controle_reception`.`value` is null THEN 0.0
+        ELSE`component_controle_reception`.`value`
+    END,
+    CASE
+        WHEN `component_controle_reception`.`value_2` is null THEN 0.0
+        ELSE`component_controle_reception`.`value_2`
+    END,
     CASE
         WHEN `component_controle_reception`.`id_type_controle` = 1 THEN 'Documentaire'
         WHEN `component_controle_reception`.`id_type_controle` = 2 THEN 'Dimensionnel'

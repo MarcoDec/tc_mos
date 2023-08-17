@@ -262,6 +262,23 @@ final class OpenApiFactory implements OpenApiFactoryInterface {
                 ],
                 'type' => 'object'
             ]),
+            'Measure-generic' => new ArrayObject([
+                'description' => 'Mesure générique',
+                'properties' => [
+                    'code' => [
+                        'default' => 's',
+                        'description' => 'Code (example donné pour les secondes)',
+                        'example' => 's',
+                        'type' => 'string'
+                    ],
+                    'value' => [
+                        'description' => 'Valeur',
+                        'example' => 1,
+                        'type' => 'number'
+                    ]
+                ],
+                'type' => 'object'
+            ]),
             'Measure-duration' => new ArrayObject([
                 'description' => 'Temps',
                 'properties' => [

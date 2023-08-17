@@ -106,13 +106,13 @@ abstract class Reference extends Entity implements MeasuredInterface {
     private ?int $sampleQuantity;
 
     #[
-        ApiProperty(description: 'Valeur Minimale'/*, openapiContext: ['$ref' => '#/components/schemas/Measure-length']*/),
+        ApiProperty(description: 'Valeur Minimale', openapiContext: ['$ref' => '#/components/schemas/Measure-generic']),
         ORM\Embedded,
         Serializer\Groups(['read:reference', 'write:reference'])
     ]
     private Measure $minValue;
     #[
-        ApiProperty(description: 'Valeur Maximale'/*, openapiContext: ['$ref' => '#/components/schemas/Measure-length']*/),
+        ApiProperty(description: 'Valeur Maximale', openapiContext: ['$ref' => '#/components/schemas/Measure-generic']),
         ORM\Embedded,
         Serializer\Groups(['read:reference', 'write:reference'])
     ]
