@@ -23,7 +23,7 @@ use App\Filter\DiscriminatorFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Production\Engine\ItemEventEquipementEmployeeController;
 use App\Controller\Production\Engine\ItemEventEquipementTypeController;
-
+use App\Controller\Production\Engine\ItemEventEngineDeleteController;
 
 #[
     ApiFilter(DiscriminatorFilter::class),
@@ -73,16 +73,27 @@ use App\Controller\Production\Engine\ItemEventEquipementTypeController;
                 'path' => '/engine-events/filtreEvent/{api}',
                 'read' => false,
                 'write' => false
-            ]
+            ],
+            'delete' => [
+                'controller' => ItemEventEngineDeleteController::class,
+                'method' => 'DELETE',
+                'openapi_context' => [
+                    'description' => 'Supprimer engine event',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Supprimer engine event'
+                ],
+                'path' => '/engine-events/delete/{api}',
+                'read' => false,
+                'write' => false
+            ],
         ],
         itemOperations: [
-            'delete' => [
-                'openapi_context' => [
-                    'description' => 'Supprime un événement',
-                    'summary' => 'Supprime un événement',
-                ],
-                'security' => 'is_granted(\''.Roles::ROLE_MAINTENANCE_ADMIN.'\')'
-            ],
             'get' => NO_ITEM_GET_OPERATION,
             'patch' => [
                 'openapi_context' => [
