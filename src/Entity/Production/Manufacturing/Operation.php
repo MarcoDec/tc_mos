@@ -167,7 +167,7 @@ class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Commande'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
+        Serializer\Groups(['read:production-quality', 'read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?Order $order = null;
 
