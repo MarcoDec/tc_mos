@@ -14,9 +14,13 @@ use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'product']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial', 'company' => 'exact']),
+
     ApiResource(
         description: 'Fourniture',
         collectionOperations: [

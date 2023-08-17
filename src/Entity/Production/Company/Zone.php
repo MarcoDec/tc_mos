@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company' => 'exact']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Zone',
@@ -71,8 +71,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Zone extends Entity implements CompanyInterface {
     #[
+        ApiProperty(description: 'Company', example: 'T-Concept'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne
+        ORM\ManyToOne,
+        Serializer\Groups(['read:zone', 'write:zone'])
     ]
     private ?Company $company = null;
 
