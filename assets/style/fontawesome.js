@@ -78,6 +78,7 @@ import {
     faTruckField,
     faUserCircle,
     faUserGraduate,
+    faUsers,
     faUserTag,
     faWarehouse,
     faWrench
@@ -123,6 +124,7 @@ library.add(faIndustry)
 library.add(faLaptop)
 library.add(faLayerGroup)
 library.add(faListSquares)
+library.add(faLocationDot)
 library.add(faMagnet)
 library.add(faMale)
 library.add(faMapMarked)
@@ -154,6 +156,7 @@ library.add(faTrash)
 library.add(faTruckField)
 library.add(faUserCircle)
 library.add(faUserGraduate)
+library.add(faUsers)
 library.add(faUserTag)
 library.add(faWrench)
 library.add(faLocationDot)
