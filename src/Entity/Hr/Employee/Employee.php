@@ -42,7 +42,7 @@ use App\Entity\Production\Manufacturing\OperationEmployee;
     ApiFilter(filterClass: NumericFilter::class, properties: ['id']),
     ApiFilter(
         filterClass: SearchFilter::class,
-        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial', 'company'=>'exact']
+        properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial', 'company'=>'exact', 'notes' => 'partial', 'entryDate' => 'partial']
     ),
     ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
     ApiResource(
@@ -228,8 +228,9 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
         ORM\Column(type: 'date_immutable', nullable: true),
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr'])
+        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:hr', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr'])
     ]
+
     private ?DateTimeImmutable $entryDate = null;
 
     #[
@@ -264,7 +265,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Prénom', required: true, example: 'Super'),
         ORM\Column(length: 30),
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
+        Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
     ]
     private ?string $name = null;
 
@@ -306,7 +307,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
     #[
         ApiProperty(description: 'Nom', example: 'Roosevelt'),
         ORM\Column,
-        Serializer\Groups(['create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
+        Serializer\Groups(['read:production-quality', 'create:employee', 'read:employee', 'read:employee:collection', 'read:user', 'write:employee', 'write:employee:hr', 'read:manufacturing-operation', 'read:skill'])
     ]
     private ?string $surname = null;
 
