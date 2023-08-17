@@ -22,6 +22,8 @@ use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 //use App\Filter\SetFilter;
+// ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
+
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -30,7 +32,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['code']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone']),
-    //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',
         collectionOperations: [
