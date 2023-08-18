@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useSocietyListCompanyStore} from '../../../../../stores/societies/societyListCompany'
+    import {useSocietyListCompanyStore} from '../../../../../stores/management/societies/societyListCompany'
     import {useRoute} from 'vue-router'
     // import useField from '../../../stores/field/field'
 
