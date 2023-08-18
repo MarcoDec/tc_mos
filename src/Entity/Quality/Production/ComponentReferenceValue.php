@@ -16,10 +16,12 @@ use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['component.id']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['component']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['height.value.value' => 'partial', 'height.value.code' => 'partial', 'section.code' => 'partial', 'section.value' => 'partial', 'tensile.value.code' => 'partial', 'tensile.value.value' => 'partial', 'width.value.code' => 'partial', 'width.value.value' => 'partial']),
     ApiResource(
         description: 'Valeur de référence du composant',
         collectionOperations: [

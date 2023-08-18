@@ -2,7 +2,7 @@
     import {computed, ref} from 'vue'
     import {useProductListCompositionStore} from '../../../../../stores/product/productListComposition'
     import {useRoute} from 'vue-router'
-    import useField from '../../../stores/field/field'
+    import useField from '../../../../../stores/field/field'
 
     const roleuser = ref('reader')
     // let violations = []

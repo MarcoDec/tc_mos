@@ -1,5 +1,5 @@
 <script setup>
-    // import AppProductListComposition from './AppProductListComposition.vue'
+    import AppProductListComposition from './AppProductListComposition.vue'
     import AppProductListCommande from './AppProductListCommande.vue'
     // const fieldsComposition = [
     //     {
@@ -155,7 +155,7 @@
     <AppTabs id="gui-start-bottom" class="gui-start-content-bottom" format-nav="block">
         <AppTab id="gui-start-compositions" active title="Compositions" icon="sitemap" tabs="gui-start-bottom">
             <AppSuspense>
-                <!-- <AppProductListComposition/> -->
+                <AppProductListComposition/>
             </AppSuspense>
         </AppTab>
         <AppTab id="gui-start-commandes" title="Commandes" icon="shopping-cart" tabs="gui-start-bottom">

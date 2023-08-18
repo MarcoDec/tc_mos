@@ -3,6 +3,7 @@
     import AppComponentListOF from './bottom/AppComponentListOF.vue'
     import AppComponentListBesoinEnregistre from './bottom/AppComponentListBesoinEnregistre.vue'
     import AppComponentListStock from './bottom/AppComponentListStock.vue'
+    import AppComponentListReferenceValue from './bottom/AppComponentListReferenceValue.vue'
     import AppComponentListReceipt from './bottom/AppComponentListReceipt.vue'
     import AppComponentListEvenementQualite from './bottom/AppComponentListEvenementQualite.vue'
 </script>
@@ -28,6 +29,11 @@
             <AppTab id="gui-start-stocks" title="Stocks" icon="shopping-cart" tabs="gui-start-bottom">
                 <AppSuspense>
                     <AppComponentListStock/>
+                </AppSuspense>
+            </AppTab>
+            <AppTab id="gui-start-evenement-reference_value" title="Valeur de Référence" icon="gear" tabs="gui-start-bottom">
+                <AppSuspense>
+                    <AppComponentListReferenceValue/>
                 </AppSuspense>
             </AppTab>
             <AppTab id="gui-start-controle-reception" title="Contrôle réception" icon="receipt" tabs="gui-start-bottom">

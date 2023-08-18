@@ -16,6 +16,7 @@
     const codeName = computed(() => `${props.field.name}-code`)
 
     function codeValue(code) {
+        console.log(code)
         emit('update:modelValue', {...props.modelValue, code})
     }
 
