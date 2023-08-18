@@ -2,12 +2,10 @@
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import {useRoute} from 'vue-router'
     import AppProductShowInlist from './bottom/AppProductShowInlist.vue'
-
-    const route = useRoute()
     import AppProductFormShow from './AppProductFormShow.vue'
     import useOptions from '../../../../stores/option/options'
     import {useProductStore} from '../../../../stores/project/product/products'
-    import {useRoute} from 'vue-router'
+    const route = useRoute()
 
     const idProduct = Number(route.params.id_product)
     const fetchUnits = useOptions('units')

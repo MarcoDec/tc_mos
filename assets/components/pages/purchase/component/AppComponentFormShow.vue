@@ -18,13 +18,13 @@
             tabs="gui-start">
             <AppSuspense><AppShowComponentTabGeneral/></AppSuspense>
         </AppTab>
-        <!-- <AppTab
+        <AppTab
             id="gui-start-attribut"
             title="Attribut"
             icon="sitemap"
             tabs="gui-start">
             <AppSuspense><AppShowComponentTabAttributes/></AppSuspense>
-        </AppTab> -->
+        </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"

@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useComponentListReceiptStore} from '../../../../../stores/component/componentListReceipt'
+    import {useComponentListReceiptStore} from '../../../../../stores/purchase/component/componentListReceipt'
     import {useRoute} from 'vue-router'
     // import useField from '../../../../../stores/field/field'
 

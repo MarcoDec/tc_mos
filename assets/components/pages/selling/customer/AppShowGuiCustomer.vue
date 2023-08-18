@@ -1,7 +1,7 @@
 <script setup>
     import AppCustomerFormShow from './AppCustomerFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
-    import {useCustomerStore} from '../../../../stores/customers/customers'
+    import {useCustomerStore} from '../../../../stores/selling/customers/customers'
     import AppCustomerShowInlist from './bottom/AppCustomerShowInlist.vue'
     import {useRoute} from 'vue-router'
 
@@ -19,7 +19,7 @@
             </div>
         </template>
         <template #gui-left>
-            <!-- <AppSuspense><AppCustomerFormShow v-if="fetchCustomerStore.isLoaded"/></AppSuspense> -->
+            <AppSuspense><AppCustomerFormShow v-if="fetchCustomerStore.isLoaded"/></AppSuspense>
         </template>
         <template #gui-bottom>
             <AppSuspense><AppCustomerShowInlist/></AppSuspense>

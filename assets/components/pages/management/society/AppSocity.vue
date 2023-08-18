@@ -1,4 +1,3 @@
-
 <script setup>
     import AppSocityListTable from './AppSocityListTable.vue'
     import AppSuspense from '../../../AppSuspense.vue'

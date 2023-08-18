@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useCustomerListCommandeStore} from '../../../../../stores/customers/customerListCommande'
+    import {useCustomerListCommandeStore} from '../../../../../stores/selling/customers/customerListCommande'
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
 

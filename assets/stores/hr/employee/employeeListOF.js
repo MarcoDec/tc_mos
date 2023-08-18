@@ -1,4 +1,4 @@
-import api from '../../api'
+import api from '../../../api'
 import {defineStore} from 'pinia'
 
 export const useEmployeeListOFStore = defineStore('employeeListOF', {

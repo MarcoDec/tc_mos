@@ -1,13 +1,13 @@
 <script setup>
-    import AppShowEmployeeContact from './AppShowEmployeeContact.vue'
-    import AppShowEmployeeTabAccess from './AppShowEmployeeTabAccess.vue'
-    import AppShowEmployeeTabDroits from './AppShowEmployeeTabDroits.vue'
-    import AppShowEmployeeTabGeneral from './AppShowEmployeeTabGeneral.vue'
-    import AppShowEmployeeTabInfos from './AppShowEmployeeTabInfos.vue'
-    import AppShowEmployeeTabProduction from './AppShowEmployeeTabProduction.vue'
+    import AppShowEmployeeContact from './tabs/AppShowEmployeeTabContact.vue'
+    import AppShowEmployeeTabAccess from './tabs/AppShowEmployeeTabAccess.vue'
+    import AppShowEmployeeTabDroits from './tabs/AppShowEmployeeTabDroits.vue'
+    import AppShowEmployeeTabGeneral from './tabs/AppShowEmployeeTabGeneral.vue'
+    import AppShowEmployeeTabInfos from './tabs/AppShowEmployeeTabInfos.vue'
+    import AppShowEmployeeTabProduction from './tabs/AppShowEmployeeTabProduction.vue'
     import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
-    import {useEmployeeAttachmentStore} from '../../../../stores/employee/employeeAttachements'
-    import {useEmployeeStore} from '../../../../stores/employee/employees'
+    import {useEmployeeAttachmentStore} from '../../../../stores/hr/employee/employeeAttachements'
+    import {useEmployeeStore} from '../../../../stores/hr/employee/employees'
     import {useRoute} from 'vue-router'
     const route = useRoute()
     const employeeId = route.params.id_employee

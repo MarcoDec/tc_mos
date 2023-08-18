@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useComponentListEvenementQualiteStore} from '../../../../../stores/component/componentListEvenementQualite'
+    import {useComponentListEvenementQualiteStore} from '../../../../../stores/purchase/component/componentListEvenementQualite'
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
 

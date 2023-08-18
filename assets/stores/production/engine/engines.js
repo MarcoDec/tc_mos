@@ -13,7 +13,7 @@ export const useEngineStore = defineStore('engines', {
             this.engines = data['hydra:member']
             this.totalItems = data['hydra:totalItems']
             this.view = data['hydra:view']
-        },
+        }
     },
     getters: {
         currentPage: state => {

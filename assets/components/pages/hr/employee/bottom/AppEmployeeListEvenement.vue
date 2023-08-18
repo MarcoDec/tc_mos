@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useEmployeeListEvenementStore} from '../../../../../stores/employee/employeeListEvenement'
+    import {useEmployeeListEvenementStore} from '../../../../../stores/hr/employee/employeeListEvenement'
     import {useRoute} from 'vue-router'
     // import useField from '../../../stores/field/field'
 

@@ -4,10 +4,8 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Entity;
 use App\Entity\Production\Engine\Attachment\ManufacturerEngineAttachment;
-use App\Entity\Production\Engine\Attachment\ManufacturerEngineAttachment;
 use App\Entity\Production\Engine\Engine as Equipment;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
@@ -24,7 +22,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
     ApiFilter(RelationFilter::class, properties: ['manufacturer']),
     ApiResource(
         description: 'Équipement : fiche fabricant',
-        collectionOperations: ['get', 'post''get', 'post'],
+        collectionOperations: ['get', 'post'],
         itemOperations: [
             'get',
             'get',
@@ -33,10 +31,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
                     'description' => 'Modifie une fiche fabricant',
                     'summary' => 'Modifie une fiche fabricant',
                     'tags' => ['ManufacturerEngine']
-                    'tags' => ['ManufacturerEngine']
                 ]
-            ],
-            'delete'
             ],
             'delete'
         ],
@@ -56,8 +51,6 @@ use ApiPlatform\Core\Annotation\ApiFilter;
     ORM\Table(name: 'manufacturer_engine')
 ]
 class Engine extends Entity {
-    #[ORM\OneToMany(mappedBy: 'engine', targetEntity: ManufacturerEngineAttachment::class)]
-    private Collection $attachments;
     #[ORM\OneToMany(mappedBy: 'engine', targetEntity: ManufacturerEngineAttachment::class)]
     private Collection $attachments;
 
@@ -85,12 +78,7 @@ class Engine extends Entity {
         Serializer\Groups(['read:engine-engine', 'write:engine-engine'])
     ]
     protected ?string $name = null;
-    #[
-        ApiProperty(description: 'Nom', example: 'Machine'),
-        ORM\Column,
-        Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
-    ]
-    protected ?string $name = null;
+
     #[
         ApiProperty(description: 'Numéro d\'article', example: '54544244474432'),
         ORM\Column(nullable: true),
@@ -137,10 +125,6 @@ class Engine extends Entity {
         return $this;
     }
 
-    final public function setPartNumber(?string $partNumber): self {
-        $this->partNumber = $partNumber;
-        return $this;
-    }
 
     /**
      * @return Collection
@@ -175,38 +159,6 @@ class Engine extends Entity {
     public function setName(?string $name): Engine
     {
         $this->name = $name;
-    /**
-     * @return Collection
-     */
-    public function getAttachments(): Collection
-    {
-        return $this->attachments;
-    }
-    /**
-     * @param Collection $attachments
-     * @return Engine
-     */
-    public function setAttachments(Collection $attachments): Engine
-    {
-        $this->attachments = $attachments;
-        return $this;
-    }
-    /**
-     * @return string|null
-     */
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-    /**
-     * @param string|null $name
-     * @return Engine
-     */
-    public function setName(?string $name): Engine
-    {
-        $this->name = $name;
-        return $this;
     }
     
-
 }

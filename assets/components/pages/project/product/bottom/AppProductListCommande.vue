@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useProductListCommandeStore} from '../../../../../stores/product/productListCommande'
+    import {useProductListCommandeStore} from '../../../../../stores/project/product/productListCommande'
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
     const roleuser = ref('reader')

@@ -1,7 +1,6 @@
-
 <script setup>
     import {computed, ref} from 'vue'
-    import {useSocietyListStore} from '../../../../../stores/societies/societyList'
+    import {useSocietyListStore} from '../../../../../stores/management/societies/societyList'
 
     defineProps({
         icon: {required: true, type: String},

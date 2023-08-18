@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useSupplierListRetardStore} from '../../../../../stores/supplier/supplierListRetard'
+    import {useSupplierListRetardStore} from '../../../../../stores/purchase/supplier/supplierListRetard'
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
 
