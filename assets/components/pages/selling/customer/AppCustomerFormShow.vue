@@ -1,19 +1,18 @@
 <script setup>
-    // import AppShowCustomerTabAccounting
-    //     from '../../../components/pages/selling/customer/AppShowCustomerTabAccounting.vue'
-    // import AppShowCustomerTabAddress from '../../../components/pages/selling/customer/AppShowCustomerTabAddress.vue'
-    // import AppShowCustomerTabContact from '../../../components/pages/selling/customer/AppShowCustomerTabContact.vue'
-    import AppShowCustomerTabGeneral from './AppShowCustomerTabGeneral.vue'
-    import AppShowCustomerTabLogistic from './AppShowCustomerTabLogistic.vue'
-    import AppShowCustomerTabQuality from './AppShowCustomerTabQuality.vue'
+    import AppShowCustomerTabAccounting from './tabs/AppShowCustomerTabAccounting.vue'
+    import AppShowCustomerTabAddress from './tabs/AppShowCustomerTabAddress.vue'
+    import AppShowCustomerTabContact from './tabs/AppShowCustomerTabContact.vue'
+    import AppShowCustomerTabGeneral from './tabs/AppShowCustomerTabGeneral.vue'
+    import AppShowCustomerTabLogistic from './tabs/AppShowCustomerTabLogistic.vue'
+    import AppShowCustomerTabQuality from './tabs/AppShowCustomerTabQuality.vue'
     import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
-    // import {computed} from 'vue'*
-    import {useCustomerAttachmentStore} from '../../../../stores/customers/customerAttachment'
-    import {useCustomerContactsStore} from '../../../../stores/customers/customerContacts'
-    import {useCustomerStore} from '../../../../stores/customers/customers'
+    import {computed} from 'vue'
+    import {useCustomerAttachmentStore} from '../../../../stores/selling/customers/customerAttachment'
+    import {useCustomerContactsStore} from '../../../../stores/selling/customers/customerContacts'
+    import {useCustomerStore} from '../../../../stores/selling/customers/customers'
     import useOptions from '../../../../stores/option/options'
     import {useRoute} from 'vue-router'
-    import {useSocietyStore} from '../../../../stores/societies/societies'
+    import {useSocietyStore} from '../../../../stores/management/societies/societies'
 
     const route = useRoute()
     const idCustomer = route.params.id_customer
@@ -32,16 +31,13 @@
     await fecthCustomerContactsStore.fetchBySociety(societyId)
     fetchSocietyStore.society.orderMin.code = 'EUR'
     fetchCustomerStore.customer.outstandingMax.code = 'EUR'
-    // const dataSuppliers = computed(() =>
-    //     Object.assign(fetchSuppliersStore.suppliers, fetchSocietyStore.society))
 
-    // const optionsCountries = computed(() =>
-    //     fecthOptions.options.map(op => {
-    //         const text = op.text
-    //         const value = op.id
-    //         const optionList = {text, value}
-    //         return optionList
-    //     }))
+    const optionsCountries = computed(() =>
+        fecthOptions.options.map(op => {
+            const text = op.text
+            const value = op.id
+            return {text, value}
+        }))
 </script>
 
 <template>
@@ -94,12 +90,16 @@
                     :data-society="fetchSocietyStore.society"/>
             </Suspense>
         </AppTab>
-        <!--        <AppTab
+        <AppTab
             id="gui-start-accounting"
             title="Comptabilité"
             icon="industry"
             tabs="gui-start">
-            <Suspense><AppShowCustomerTabAccounting/></Suspense>
+            <Suspense>
+                <AppShowCustomerTabAccounting
+                    :data-customers="fetchCustomerStore.customer"
+                    :data-society="fetchSocietyStore.society"/>
+            </Suspense>
         </AppTab>
         <AppTab
             id="gui-start-addresses"
@@ -120,7 +120,7 @@
                 <AppShowCustomerTabContact
                     :options-countries="optionsCountries"/>
             </Suspense>
-        </AppTab>-->
+        </AppTab>
     </AppTabs>
 </template>
 

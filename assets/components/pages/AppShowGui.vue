@@ -2,7 +2,7 @@
     import {computed, ref} from 'vue'
     import AppTab from '../tab/AppTab.vue'
     import AppTabs from '../tab/AppTabs.vue'
-    import AppToolFormShow from '../../router/pages/equipment/AppToolFormShow.vue'
+    import AppToolFormShow from './production/equipment/tool/AppToolFormShow.vue'
     import {useRoute} from 'vue-router'
 
     const guiRatio = ref(0.5)

@@ -29,6 +29,7 @@
     const elementAttachments = computed(() =>
         props.elementAttachmentStore.elementAttachments.map(attachment => ({
             category: attachment.category,
+            color: '#43abd7',
             icon: 'file-contract',
             id: attachment['@id'],
             label: attachment.url.split('/').pop(), // get the filename from the URL
@@ -63,7 +64,7 @@
         await props.elementAttachmentStore.fetchByElement(props.elementId)
         fichiersFields.value = [
             {label: 'Catégorie', name: 'category', options: {options: folderList}, type: 'select'},
-            {label: 'Fichier', name: 'file', type: 'file'}
+            {label: 'Fichier', multiple: true, name: 'file', type: 'file'}
         ]
         //Etape 1 - nodes = noeuds de type fichier
         files.value = elementAttachments.value
@@ -75,15 +76,18 @@
             })
         })
         //Etape 2 - nodes = noeuds de type dossier
-        folders.value = foldersId.value.map(folder =>
-            ({
-                category: folder,
-                children: [],
-                icon: 'folder',
-                id: folder,
-                label: folder.split('/')[folder.split('/').length - 1],
-                level: folder.split('/').length
-            }))
+        folders.value = foldersId.value
+            .filter(folder => folder !== '')
+            .map(folder =>
+                ({
+                    category: folder,
+                    children: [],
+                    color: '#ffc107',
+                    icon: 'folder',
+                    id: folder,
+                    label: folder.split('/')[folder.split('/').length - 1],
+                    level: folder.split('/').length
+                }))
         //Etape 3 - nodes création de l'arborescence sur base folders
         //region recupération de la profondeur maximale
         const maxLevel = ref(0)
@@ -95,6 +99,7 @@
         rootFolder.value = {
             category: '',
             children: [],
+            color: '#ffc107',
             icon: 'folder',
             id: 1,
             label: `Pièces jointes (${elementAttachments.value.length})`,
@@ -114,25 +119,37 @@
         })
     }
     async function updateFichiers() {
-        const form = document.getElementById('addFichiers')
-        const formData = new FormData(form)
-        const data = {
-            category: formData.get('category'),
-            //element: `/api/elements/${idElement}`,
-            file: formData.get('file')
-        }
-        data[props.attachmentElementLabel] = props.elementApiUrl
-        try {
-            await props.elementAttachmentStore.ajout(data)
-            isError.value = false
-        } catch (error) {
-            const err = {
-                message: error
+        const ins = document.getElementById('addFichiers-file').files.length
+        violations.value = []
+        const results = []
+        for (let x = 0; x < ins; x++) {
+            const form = document.getElementById('addFichiers')
+            const formData = new FormData(form)
+            const data = {
+                category: formData.get('category'),
+                file: document.getElementById('addFichiers-file').files[x]
             }
-            violations.value.push(err)
-            isError.value = true
+            //console.log(`updateFichiers fichier ${x + 1}/${ins}`, data)
+            data[props.attachmentElementLabel] = props.elementApiUrl
+            results.push(props.elementAttachmentStore.ajout(data))
         }
-        await initializeData()
+        isError.value = false
+        Promise.allSettled(await results)
+            .then(resultats => {
+                // eslint-disable-next-line array-callback-return
+                resultats.forEach(result => {
+                    if (result.status === 'fulfilled') console.log(`Fichier bien chargé ${result.value.url}`)
+                    else {
+                        //console.log('Erreur chargement', result.reason)
+                        isError.value = true
+                        const err = {
+                            message: result.reason
+                        }
+                        violations.value.push(err)
+                    }
+                })
+                initializeData()
+            })
     }
     //endregion
     //region Chargement des données / Variables
@@ -144,12 +161,13 @@
 
 <template>
     <div>
+        <MyTree :node="rootFolder"/>
         <AppCardShow
             id="addFichiers"
             :fields="fichiersFields"
             :component-attribute="currentElementData"
             title="Ajouter un nouveau Fichier"
-            @update="updateFichiers(useFetchElementStore.component)"/>
+            @update="updateFichiers"/>
         <div v-if="isError" class="alert alert-danger" role="alert">
             <ul>
                 <li v-for="violation in violations" :key="violation">
@@ -157,7 +175,6 @@
                 </li>
             </ul>
         </div>
-        <MyTree :node="rootFolder"/>
     </div>
 </template>
 

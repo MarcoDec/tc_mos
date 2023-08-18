@@ -7,12 +7,15 @@ export default defineStore('attributes', {
         dispose() {
             for (const attribute of this.attributes)
                 attribute.dispose()
+            this.attributes = []
+            this.isLoaded = false
             this.$dispose()
         },
         async fetch() {
             const response = await api(this.url)
             for (const attribute of response['hydra:member'])
                 this.attributes.push(useAttribute(attribute, this))
+            this.isLoaded = true
         },
         removeAttribute(removed) {
             this.attributes = this.attributes.filter(attribute => attribute['@id'] !== removed['@id'])
@@ -34,5 +37,8 @@ export default defineStore('attributes', {
             return `/api/${this.$id}?pagination=false`
         }
     },
-    state: () => ({attributes: []})
+    state: () => ({
+        attributes: [],
+        isLoaded: false
+    })
 })

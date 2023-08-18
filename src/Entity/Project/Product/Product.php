@@ -292,7 +292,7 @@ class Product extends Entity implements BarCodeInterface, MeasuredInterface {
     #[
         ApiProperty(description: 'Gestion cuivre', required: false, example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:product'])
+        Serializer\Groups(['read:product', 'write:product', 'write:product:main'])
     ]
     private bool $managedCopper = false;
 

@@ -1,3 +1,8 @@
+import AppEngineList from '../components/pages/production/equipment/engine-list/AppEngineList.vue'
+import AppManufacturerEngine from '../components/pages/production/equipment/manufacturer-engine/AppManufacturerEngine.vue'
+import AppShowGuiTestCounterPart from '../components/pages/production/equipment/test-counter-part/AppShowGuiTestCounterPart.vue'
+import AppShowGuiTool from '../components/pages/production/equipment/tool/AppShowGuiTool.vue'
+import AppShowGuiWorkstation from '../components/pages/production/equipment/workstation/AppShowGuiWorkstation.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
@@ -40,7 +45,7 @@ export default [
     },
     {
         component: AppTablePageSuspense,
-        meta: {title: 'Fabricants — T-Concept GPAO'},
+        meta: {title: 'Fabricants Equipement — T-Concept GPAO'},
         name: 'manufacturers',
         path: '/manufacturers',
         props: {
@@ -57,7 +62,7 @@ export default [
             ],
             icon: 'oil-well',
             sort: readonly({label: 'Nom', name: 'name'}),
-            title: 'Fabricants'
+            title: 'Fabricants Equipement'
         }
     },
     {
@@ -93,5 +98,43 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }
+    },
+    {
+        component: AppManufacturerEngine,
+        meta: {title: 'Références Equipement — T-Concept GPAO'},
+        name: 'manufacturer-engines',
+        path: '/manufacturer-engines',
+        props: {
+            icon: 'city',
+            title: 'Références Equipement'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Equipement — T-Concept GPAO'},
+        name: 'engines',
+        path: '/engines',
+        props: {
+            icon: 'city',
+            title: 'Equipement'
+        }
+    },
+    {
+        component: AppShowGuiTestCounterPart,
+        meta: {container: false, title: 'Test Counter Part — T-Concept GPAO'},
+        name: 'counterPartShow',
+        path: '/counter-part/:id_engine'
+    },
+    { // <a target="_blank" href="https://icons8.com/icon/EIHtuCnFqwku/wiring">wiring</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+        component: AppShowGuiWorkstation,
+        meta: {container: false, title: 'Workstation — T-Concept GPAO'},
+        name: 'workstationShow',
+        path: '/workstation/:id_engine'
+    },
+    { //screwdriver-wrench
+        component: AppShowGuiTool,
+        meta: {container: false, title: 'Tool — T-Concept GPAO'},
+        name: 'toolShow',
+        path: '/tool/:id_engine'
     }
 ]

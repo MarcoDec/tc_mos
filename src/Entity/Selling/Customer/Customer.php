@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
@@ -215,7 +216,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Portail logistique'),
         ORM\Embedded,
-        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistic'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private WebPortal $logisticPortal;
 
@@ -236,6 +237,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Nombre de bons de livraison mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
+        Assert\LessThanOrEqual(value: 254),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private int $nbDeliveries = 10;
@@ -243,6 +245,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Nombre de factures mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
+        Assert\LessThanOrEqual(value: 254),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private int $nbInvoices = 10;

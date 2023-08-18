@@ -1,5 +1,5 @@
 <script setup>
-    // import AppCustomerFormShow from './AppCustomerFormShow.vue'
+    import AppCustomerFormShow from './AppCustomerFormShow.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import {useCustomerStore} from '../../../../stores/customers/customers'
     import AppCustomerShowInlist from './bottom/AppCustomerShowInlist.vue'

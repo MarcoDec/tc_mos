@@ -96,7 +96,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ],
         normalizationContext: [
             'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:society'],
-            'openapi_definition_name' => 'Society-read'
+            'openapi_definition_name' => 'Society-read',
+            "skip_null_values" => false
         ],
     ),
     ORM\Entity

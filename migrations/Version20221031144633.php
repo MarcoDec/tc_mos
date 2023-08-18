@@ -769,15 +769,31 @@ CREATE TABLE `reference` (
     `old_id` INT UNSIGNED NOT NULL,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `name` VARCHAR(100) NOT NULL,
+    `sample_quantity` INT UNSIGNED DEFAULT 1,
+    `min_value_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `min_value_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `min_value_value` DOUBLE PRECISION DEFAULT 0,
+    `max_value_code` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `max_value_denominator` VARCHAR(6) DEFAULT NULL COLLATE `utf8mb3_bin`,
+    `max_value_value` DOUBLE PRECISION DEFAULT 0,
     `kind` ENUM('Dimensionnel', 'Documentaire', 'GO/NOGO', 'Quantitatif', 'Visuel') DEFAULT 'Quantitatif' NOT NULL COMMENT '(DC2Type:check_kind)',
     `type` ENUM('component', 'component_family', 'product', 'product_family', 'supplier') NOT NULL COMMENT '(DC2Type:check)'
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `reference` (`old_id`, `name`, `kind`, `type`)
+INSERT INTO `reference` (`old_id`, `name`, `sample_quantity`, `min_value_value`, `max_value_value`, `kind`, `type`)
 SELECT
     `component_controle_reception`.`id`,
     `component_controle_reception`.`libelle`,
+    `component_controle_reception`.`nb`,
+    CASE
+        WHEN `component_controle_reception`.`value` is null THEN 0.0
+        ELSE`component_controle_reception`.`value`
+    END,
+    CASE
+        WHEN `component_controle_reception`.`value_2` is null THEN 0.0
+        ELSE`component_controle_reception`.`value_2`
+    END,
     CASE
         WHEN `component_controle_reception`.`id_type_controle` = 1 THEN 'Documentaire'
         WHEN `component_controle_reception`.`id_type_controle` = 2 THEN 'Dimensionnel'

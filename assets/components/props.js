@@ -6,7 +6,7 @@ export function fieldValidator(field) {
         return false
     }
     if (typeof field.label !== 'string' || typeof field.name !== 'string') {
-        console.error('field.label and field.name must be defined and a string')
+        console.error('field.label and field.name must be defined and a string', field)
         return false
     }
     if (typeof field.type !== 'undefined') {

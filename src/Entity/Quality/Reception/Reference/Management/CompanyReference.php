@@ -27,7 +27,14 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'security' => 'is_granted(\''.Roles::ROLE_QUALITY_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: [
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère un contrôle réception pour une compagnie',
+                    'summary' => 'Récupère un contrôle réception pour une compagnie',
+                    'tags' => ['Reference']
+                ],
+            ]],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],

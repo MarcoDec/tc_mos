@@ -1,3 +1,4 @@
+
 <script setup>
     import {computed, ref} from 'vue'
     import {useSocietyListStore} from '../../../../../stores/societies/societyList'

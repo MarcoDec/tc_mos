@@ -15,8 +15,9 @@ class Measure {
         Serializer\Groups(['read:measure',
         'write:measure', 'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
         'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project', 'read:operation-employee:collection',
-        'read:product-customer',
-        'read:production-quality-value', 'write:production-quality-value'])
+        'read:product-customer', 'read:reference', 'write:reference'
+        'read:production-quality-value', 'write:production-quality-value'
+        ])
     ]
     private ?string $code = null;
 
@@ -26,7 +27,8 @@ class Measure {
         'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
         'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project',
         'read:production-quality-value', 'write:production-quality-value', 'read:operation-employee:collection',
-        'read:product-customer'])
+        'read:product-customer', 'read:reference', 'write:reference'
+        ])
     ]
     private ?string $denominator = null;
 
@@ -39,7 +41,7 @@ class Measure {
         'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
         'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project',
         'read:production-quality-value', 'write:production-quality-value','read:operation-employee:collection',
-        'read:product-customer'])
+        'read:product-customer', 'read:reference', 'write:reference'])
     ]
     private float $value = 0;
 

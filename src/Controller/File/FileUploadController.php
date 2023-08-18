@@ -63,7 +63,10 @@ class FileUploadController {
        }
        $this->entityManager->persist($this->entity);
        $this->entityManager->flush(); // pour récupération id utilisé par default dans getBaseFolder
-       $saveFolder = $this->entity->getBaseFolder().'/'.$this->entity->getCategory();
+       $saveFolder = $this->entity->getBaseFolder();
+       if ($this->entity->getCategory() !== 'null') {
+           $saveFolder .= '/' . $this->entity->getCategory();
+       } else $this->entity->setCategory('');
        $this->fileManager->persistFile($saveFolder, $file);
        $this->entity->setUrl($host.'/uploads'.$saveFolder.'/'.str_replace(' ', '_', $file->getClientOriginalName()));
        $this->entityManager->flush(); // pour persist du chemin vers le fichier

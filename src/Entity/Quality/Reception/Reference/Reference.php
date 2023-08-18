@@ -7,7 +7,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Quality\Reception\Check\CheckType;
 use App\Doctrine\DBAL\Types\Quality\Reception\Check\KindType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Quality\Reception\Reference\Management\CompanyReference;
 use App\Entity\Quality\Reception\Reference\Purchase\ComponentReference;
 use App\Entity\Quality\Reception\Reference\Purchase\FamilyReference as ComponentFamilyReference;
@@ -68,7 +71,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\Entity,
     ORM\InheritanceType('SINGLE_TABLE')
 ]
-abstract class Reference extends Entity {
+abstract class Reference extends Entity implements MeasuredInterface {
     final public const TYPES = [
         CheckType::TYPE_COMPANY => CompanyReference::class,
         CheckType::TYPE_COMPONENT => ComponentReference::class,
@@ -95,8 +98,29 @@ abstract class Reference extends Entity {
     ]
     private ?string $name = null;
 
+    #[
+        ApiProperty(description: 'Nombre d\'échantillon', example: '3'),
+        ORM\Column(type: 'integer', nullable: true),
+        Serializer\Groups(['read:reference', 'write:reference'])
+    ]
+    private ?int $sampleQuantity;
+
+    #[
+        ApiProperty(description: 'Valeur Minimale', openapiContext: ['$ref' => '#/components/schemas/Measure-generic']),
+        ORM\Embedded,
+        Serializer\Groups(['read:reference', 'write:reference'])
+    ]
+    private Measure $minValue;
+    #[
+        ApiProperty(description: 'Valeur Maximale', openapiContext: ['$ref' => '#/components/schemas/Measure-generic']),
+        ORM\Embedded,
+        Serializer\Groups(['read:reference', 'write:reference'])
+    ]
+    private Measure $maxValue;
     public function __construct() {
         $this->items = new ArrayCollection();
+        $this->minValue = new Measure();
+        $this->maxValue = new Measure();
     }
 
     /**
@@ -152,5 +176,69 @@ abstract class Reference extends Entity {
     final public function setName(?string $name): self {
         $this->name = $name;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSampleQuantity(): ?int
+    {
+        return $this->sampleQuantity;
+    }
+
+    /**
+     * @param ?int $sampleQuantity
+     * @return Reference
+     */
+    public function setSampleQuantity(?int $sampleQuantity): Reference
+    {
+        $this->sampleQuantity = $sampleQuantity;
+        return $this;
+    }
+
+    /**
+     * @return Measure
+     */
+    public function getMinValue(): Measure
+    {
+        return $this->minValue;
+    }
+
+    /**
+     * @param Measure $minValue
+     * @return Reference
+     */
+    public function setMinValue(Measure $minValue): Reference
+    {
+        $this->minValue = $minValue;
+        return $this;
+    }
+
+    /**
+     * @return Measure
+     */
+    public function getMaxValue(): Measure
+    {
+        return $this->maxValue;
+    }
+
+    /**
+     * @param Measure $maxValue
+     * @return Reference
+     */
+    public function setMaxValue(Measure $maxValue): Reference
+    {
+        $this->maxValue = $maxValue;
+        return $this;
+    }
+
+    public function getMeasures(): array
+    {
+        return [$this->minValue, $this->maxValue];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return null;
     }
 }
