@@ -1,8 +1,8 @@
 <script setup>
-    import {useEngineStore} from '../../../../../stores/production/engine/engines'
+    import {useToolsStore} from '../../../../../stores/production/engine/tool/tools'
 
-    const fecthEngineStore = useEngineStore()
-    await fecthEngineStore.fetch()
+    const fetchEngineStore = useToolsStore()
+    //await fecthEngineStore.fetch()
 
     const options = [
         {text: 'aaaaa', value: 'aaaaa'},
@@ -16,7 +16,7 @@
         {label: 'Code postal', name: 'CodePostal', type: 'text'},
         {label: 'entryDate', name: 'entryDate', type: 'date'}
     ]
-    const Qualitéfields = [
+    const qualityFields = [
         {label: 'Hauteur de sertissage (mm)', name: 'HauteurSertissage', type: 'text'},
         {label: 'Largeur de sertissage (mm)', name: 'LargeurSertissage', type: 'text'},
         {label: 'Paramètre de mesure', name: 'ParamètreMesure', type: 'text'}
@@ -26,16 +26,16 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
-            <AppCardShow id="addGeneralites"/>
+            <AppCardShow id="addGeneralites" :component-attribute="fetchEngineStore.engine"/>
         </AppTab>
         <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">
-            <AppCardShow id="addQualite" :fields="Qualitéfields"/>
+            <AppCardShow id="addQualite" :fields="qualityFields" :component-attribute="fetchEngineStore.engine"/>
         </AppTab>
         <AppTab id="gui-start-purchase-logistics" title="Logistique" icon="pallet" tabs="gui-start">
-            <AppCardShow id="addLogistique"/>
+            <AppCardShow id="addLogistique" :component-attribute="fetchEngineStore.engine"/>
         </AppTab>
         <AppTab id="gui-start-addresses" title="Adresses\Contacts" icon="file-contract" tabs="gui-start">
-            <AppCardShow id="addContacts" :fields="Contactsfields"/>
+            <AppCardShow id="addContacts" :fields="Contactsfields" :component-attribute="fetchEngineStore.engine"/>
         </AppTab>
     </AppTabs>
 </template>

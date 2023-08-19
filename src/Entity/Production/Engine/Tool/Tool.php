@@ -16,20 +16,18 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère les outils',
-                    'summary' => 'Récupère les outils',
-                    'tags' => ['Engine']
+                    'summary' => 'Récupère les outils'
                 ]
             ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer un outil',
-                    'summary' => 'Créer un outil',
-                    'tags' => ['Engine']
+                    'summary' => 'Créer un outil'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ],
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get', 'delete'],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],

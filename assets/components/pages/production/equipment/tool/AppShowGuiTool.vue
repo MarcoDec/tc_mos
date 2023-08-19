@@ -1,27 +1,27 @@
 <script setup>
-    import AppProductFormShow from '../../../project/product/AppProductFormShow.vue'
     import AppShowGuiGen from '../../../AppShowGuiGen.vue'
+    import AppToolFormShow from './AppToolFormShow.vue'
     import useOptions from '../../../../../stores/option/options'
-    import {useProductStore} from '../../../../../stores/project/product/products'
     import {useRoute} from 'vue-router'
+    import {useToolsStore} from '../../../../../stores/production/engine/tool/tools'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
     const fetchUnits = useOptions('units')
-    const useFetchProductStore = useProductStore()
+    const useFetchToolsStore = useToolsStore()
     fetchUnits.fetchOp()
-    useFetchProductStore.fetchOne(idEngine)
+    useFetchToolsStore.fetchOne(idEngine)
 </script>
 
 <template>
     <AppShowGuiGen>
         <template #gui-header>
-            <div v-if="useFetchProductStore.isLoaded" class="bg-white border-1 border-dark">
-                <b>{{ useFetchProductStore.product.code }}</b>: {{ useFetchProductStore.product.name }}
+            <div v-if="useFetchToolsStore.isLoaded" class="bg-white border-1 border-dark">
+                <b>{{ useFetchToolsStore.engine.code }}</b>: {{ useFetchToolsStore.engine.name }}
             </div>
         </template>
         <template #gui-left>
-            <AppSuspense><AppProductFormShow v-if="useFetchProductStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
+            <AppSuspense><AppToolFormShow v-if="useFetchToolsStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
         </template>
         <template #gui-bottom>
             <!--            <AppTabs id="gui-bottom">-->

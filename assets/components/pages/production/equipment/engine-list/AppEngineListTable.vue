@@ -1,37 +1,41 @@
 <script setup>
-    import {computed, ref} from 'vue'
-    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
-    import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
+    import {/*computed,*/ ref} from 'vue'
+    import router from '../../../../../router'
+    //import AppFormCardable from '../../../../form-cardable/AppFormCardable'
+    //import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
     import {
         useEngineStore
     } from '../../../../../stores/production/engine/engines'
+    import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import useOptions from '../../../../../stores/option/options'
+    //import useOptions from '../../../../../stores/option/options'
 
     defineProps({
         title: {required: true, type: String}
     })
-
-    const fetchManufacturerOptions = useOptions('manufacturers')
-    fetchManufacturerOptions.fetchable = true
-    await fetchManufacturerOptions.fetch()
-    const optionsManufacturer = computed(() =>
-        fetchManufacturerOptions.options.map(op => {
-            const text = op.text
-            const value = op['@id']
-            return {text, value}
-        }))
-    const key = ref(0)
+    const fetchEngineTypes = useEngineTypeStore()
+    const optionsEngineTypes = fetchEngineTypes.engineTypes
+    console.log(optionsEngineTypes)
+    // const fetchManufacturerOptions = useOptions('manufacturers')
+    // fetchManufacturerOptions.fetchable = true
+    // await fetchManufacturerOptions.fetch()
+    // const optionsManufacturer = computed(() =>
+    //     fetchManufacturerOptions.options.map(op => {
+    //         const text = op.text
+    //         const value = op['@id']
+    //         return {text, value}
+    //     }))
+    // const key = ref(0)
     const tableCriteria = useFetchCriteria('manufacturerEngines')
     const roleuser = ref('reader')
     const AddForm = ref(false)
-    const updated = ref(false)
+    // const updated = ref(false)
     const storeEngines = useEngineStore()
     await storeEngines.fetchAll()
-    const formData = new FormData()
-    const violations = ref([])
-    const itemId = ref(null)
-    const isPopupVisible = ref(false)
+    // const formData = new FormData()
+    // const violations = ref([])
+    // const itemId = ref(null)
+    // const isPopupVisible = ref(false)
     const tabFields = [
         // {
         //     label: 'Fabriquant',
@@ -47,26 +51,42 @@
         //     trie: false,
         //     type: 'select'
         // },
-        {label: 'Type', min: true, name: '@type', trie: true, type: 'text'},
+        {
+            label: 'Type',
+            min: true,
+            name: '@type',
+            options: {
+                label: value =>
+                    optionsEngineTypes.find(option => option.value === value)?.text
+                    ?? null,
+                options: optionsEngineTypes
+            },
+            trie: false,
+            type: 'select'
+        },
+        {label: 'Marque', min: false, name: 'brand', trie: true, type: 'text'},
+        {label: 'Groupe', min: false, name: 'group', trie: true, type: 'text'},
+        {label: 'Zone', min: false, name: 'zone', trie: true, type: 'text'},
         {label: 'Code', min: false, name: 'code', trie: true, type: 'text'},
-        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'}
+        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
+        {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'}
     ]
     //const addFormfields = tabFields
     async function refreshList() {
         const criteria = tableCriteria.getFetchCriteria
         await storeEngines.fetchAll(criteria)
     }
-    // function showAddForm(){
-    //     // On vide le formulaire avant de l'afficher
-    //     formData.value = {
-    //         code: null,
-    //         manufacturer: null,
-    //         name: null,
-    //         partNumber: null
-    //     }
-    //     AddForm.value = true
-    //     updated.value = false
-    // }
+    function showAddForm(){
+        // // On vide le formulaire avant de l'afficher
+        // formData.value = {
+        //     code: null,
+        //     manufacturer: null,
+        //     name: null,
+        //     partNumber: null
+        // }
+        // AddForm.value = true
+        // updated.value = false
+    }
     // async function addNewItem(){
     //     const form = document.getElementById('add-new-engine')
     //     const formData1 = new FormData(form)
@@ -86,6 +106,25 @@
     //     // isPopupVisible.value = false
     // }
     async function showUpdateForm(item) {
+        console.log('showUpdateForm', item)
+        const idEngine = Number(item.id)
+        switch (item['@type']) {
+            case 'Tool':
+                console.log('tool')
+                // eslint-disable-next-line camelcase
+                await router.push({name: 'toolShow', params: {id_engine: idEngine}})
+                break
+            case 'Workstation':
+                console.log('workstation')
+                // eslint-disable-next-line camelcase
+                await router.push({name: 'workstationShow', params: {id_engine: idEngine}})
+                break
+            case 'CounterPart':
+                console.log('counter-part')
+                // eslint-disable-next-line camelcase
+                await router.push({name: 'counterpartShow', params: {id_engine: idEngine}})
+                break
+        }
         // itemId.value = Number(item['@id'].match(/\d+/)[0])
         // await storeEngines.fetchOne(itemId.value)
         // const engine = storeEngines.engine
@@ -120,6 +159,7 @@
     //     }
     // }
     async function deleted(id){
+        console.log(`deleted ${id}`)
         //await storeEngines.remove(id)
         //await refreshList()
     }
