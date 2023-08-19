@@ -29,17 +29,18 @@
         </button>
     </td>
     <td v-for="field in fields" :key="field.name">
-        <template v-if="field.type === 'select'">
-            <span v-if="field.options.label(item[field.name]) !== null">
-                {{ field.options.label(item[field.name]) }}
-            </span>
-            <span v-else>
-                {{ item[field.name] }}
-            </span>
-        </template>
-        <template v-else>
-            <span v-if="isObject(item[field.name])">{{ field.name }} isObject- {{ item[field.name].name }}</span>
-            <span v-else>{{ item[field.name] }}</span>
+        <template v-if="item[field.name] !== null">
+            <template v-if="field.type === 'select'">
+                <span v-if="field.options.label(item[field.name]) !== null">{{ field.options.label(item[field.name]) }}
+                </span>
+                <span v-else>
+                    {{ item[field.name] }}
+                </span>
+            </template>
+            <template v-else>
+                <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>
+                <span v-else>{{ item[field.name] }}</span>
+            </template>
         </template>
     </td>
 </template>

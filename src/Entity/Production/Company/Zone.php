@@ -69,10 +69,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Zone extends Entity implements CompanyInterface {
+class Zone extends Entity {
     #[
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne
+        ORM\ManyToOne,
+        Serializer\Groups(['read:zone', 'write:zone','read:engine-maintenance-event'])
     ]
     private ?Company $company = null;
 

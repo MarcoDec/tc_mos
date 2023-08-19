@@ -2,24 +2,26 @@
     import {/*computed,*/ ref} from 'vue'
     import router from '../../../../../router'
     //import AppFormCardable from '../../../../form-cardable/AppFormCardable'
-    //import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
     import useEngineGroups from '../../../../../stores/production/engine/groups/engineGroups'
     import {
         useEngineStore
     } from '../../../../../stores/production/engine/engines'
     import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    //import useOptions from '../../../../../stores/option/options'
-
     defineProps({
         title: {required: true, type: String}
     })
+    import useZonesStore from '../../../../../stores/production/company/zones'
     const fetchEngineTypes = useEngineTypeStore()
     const optionsEngineTypes = fetchEngineTypes.engineTypes
     //console.log(optionsEngineTypes)
     const fetchEngineGroups = useEngineGroups()
     await fetchEngineGroups.fetchAllEngineGroups()
     const optionsEngineGroups = fetchEngineGroups.engineGroups.map(item => ({id: item['@id'], text: `${item.code}-${item.name}`, value: item['@id']}))
+    const fetchZones = useZonesStore()
+    await fetchZones.fetchAll()
+    const optionsZones = fetchZones.zones.map(item => ({id: item['@id'], text: `<${item.company.name}> ${item.name}`, value: item['@id']}))
+    //console.log(optionsZones)
     //console.log('optionsEngineGroups', optionsEngineGroups)
     // const fetchManufacturerOptions = useOptions('manufacturers')
     // fetchManufacturerOptions.fetchable = true
@@ -68,7 +70,18 @@
             trie: false,
             type: 'select'
         },
-        {label: 'Zone', min: false, name: 'zone', trie: true, type: 'text'},
+        {
+            label: 'Zone',
+            min: true,
+            name: 'zone',
+            options: {
+                label: value => optionsZones.find(item => item.value === value)?.text
+                    ?? null,
+                options: optionsZones
+            },
+            trie: false,
+            type: 'select'
+        },
         {label: 'Code', min: false, name: 'code', trie: true, type: 'text'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
         {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'}

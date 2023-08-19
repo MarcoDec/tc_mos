@@ -178,7 +178,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
     }
 
     #[
-        ApiProperty(description: 'Zone'),
+        ApiProperty(description: 'Zone', readableLink: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
