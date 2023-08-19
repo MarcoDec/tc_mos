@@ -3,7 +3,6 @@
         fields: {required: true, type: Array},
         item: {required: true, type: Object}
     })
-
     const emit = defineEmits(['deleted', 'update'])
     function update(){
         emit('update', props.item)
@@ -30,7 +29,17 @@
         </button>
     </td>
     <td v-for="field in fields" :key="field.name">
-        <span v-if="isObject(item[field.name])">{{ item[field.name].name }}</span>
-        <span v-else>{{ item[field.name] }}</span>
+        <template v-if="field.type === 'select'">
+            <span v-if="field.options.label(item[field.name]) !== null">
+                {{ field.options.label(item[field.name]) }}
+            </span>
+            <span v-else>
+                {{ item[field.name] }}
+            </span>
+        </template>
+        <template v-else>
+            <span v-if="isObject(item[field.name])">{{ field.name }} isObject- {{ item[field.name].name }}</span>
+            <span v-else>{{ item[field.name] }}</span>
+        </template>
     </td>
 </template>

@@ -3,6 +3,7 @@
     import router from '../../../../../router'
     //import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     //import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
+    import useEngineGroups from '../../../../../stores/production/engine/groups/engineGroups'
     import {
         useEngineStore
     } from '../../../../../stores/production/engine/engines'
@@ -15,7 +16,11 @@
     })
     const fetchEngineTypes = useEngineTypeStore()
     const optionsEngineTypes = fetchEngineTypes.engineTypes
-    console.log(optionsEngineTypes)
+    //console.log(optionsEngineTypes)
+    const fetchEngineGroups = useEngineGroups()
+    await fetchEngineGroups.fetchAllEngineGroups()
+    const optionsEngineGroups = fetchEngineGroups.engineGroups.map(item => ({id: item['@id'], text: `${item.code}-${item.name}`, value: item['@id']}))
+    //console.log('optionsEngineGroups', optionsEngineGroups)
     // const fetchManufacturerOptions = useOptions('manufacturers')
     // fetchManufacturerOptions.fetchable = true
     // await fetchManufacturerOptions.fetch()
@@ -37,20 +42,6 @@
     // const itemId = ref(null)
     // const isPopupVisible = ref(false)
     const tabFields = [
-        // {
-        //     label: 'Fabriquant',
-        //     min: true,
-        //     name: 'manufacturer',
-        //     options: {
-        //         label: value =>
-        //             optionsManufacturer.value.find(option => option.type === value)?.text
-        //             ?? null,
-        //         options: optionsManufacturer.value
-        //     },
-        //     sortName: 'manufacturer',
-        //     trie: false,
-        //     type: 'select'
-        // },
         {
             label: 'Type',
             min: true,
@@ -65,7 +56,18 @@
             type: 'select'
         },
         {label: 'Marque', min: false, name: 'brand', trie: true, type: 'text'},
-        {label: 'Groupe', min: false, name: 'group', trie: true, type: 'text'},
+        {
+            label: 'Groupe',
+            min: true,
+            name: 'group',
+            options: {
+                label: value => optionsEngineGroups.find(item => item.value === value)?.text
+                    ?? null,
+                options: optionsEngineGroups
+            },
+            trie: false,
+            type: 'select'
+        },
         {label: 'Zone', min: false, name: 'zone', trie: true, type: 'text'},
         {label: 'Code', min: false, name: 'code', trie: true, type: 'text'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
