@@ -17,11 +17,13 @@ export default function useZonesStore() {
                     items.push(item)
                 return items
             },
-            async fetchAll() {
+            async fetchAll(currentCompany = null) {
+                let url = '/api/zones'
+                if (currentCompany !== null) url = String(url).concat('?company=', currentCompany)
                 this.isLoaded = false
                 this.isLoading = true
                 this.zones = []
-                this.zones = await this.fetch('/api/zones')
+                this.zones = await this.fetch(url)
                 this.isLoading = false
                 this.isLoaded = true
             }

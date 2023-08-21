@@ -33,8 +33,7 @@
             <template v-if="field.type === 'select'">
                 <span v-if="field.options.label(item[field.name]) !== null">{{ field.options.label(item[field.name]) }}
                 </span>
-                <span v-else>
-                    {{ item[field.name] }}
+                <span v-else>{{ item[field.name] }}
                 </span>
             </template>
             <template v-else>

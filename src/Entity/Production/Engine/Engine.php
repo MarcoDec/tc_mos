@@ -13,6 +13,7 @@ use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
+use App\Entity\Management\Society\Company\Company;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Attachment\EngineAttachment;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
@@ -28,7 +29,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code'=> 'partial', 'zone.company']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
@@ -178,8 +179,8 @@ abstract class Engine extends Entity implements BarCodeInterface {
     }
 
     #[
-        ApiProperty(description: 'Zone', readableLink: false),
-        ORM\ManyToOne,
+        ApiProperty(description: 'Zone', readableLink: true),
+        ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?Zone $zone = null;

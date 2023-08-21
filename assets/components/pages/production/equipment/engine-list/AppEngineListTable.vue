@@ -11,7 +11,11 @@
     defineProps({
         title: {required: true, type: String}
     })
+    import useUser from '../../../../../stores/security'
     import useZonesStore from '../../../../../stores/production/company/zones'
+
+    const currentCompany = useUser().company
+    //console.log(currentCompany)
     const fetchEngineTypes = useEngineTypeStore()
     const optionsEngineTypes = fetchEngineTypes.engineTypes
     //console.log(optionsEngineTypes)
@@ -19,8 +23,8 @@
     await fetchEngineGroups.fetchAllEngineGroups()
     const optionsEngineGroups = fetchEngineGroups.engineGroups.map(item => ({id: item['@id'], text: `${item.code}-${item.name}`, value: item['@id']}))
     const fetchZones = useZonesStore()
-    await fetchZones.fetchAll()
-    const optionsZones = fetchZones.zones.map(item => ({id: item['@id'], text: `<${item.company.name}> ${item.name}`, value: item['@id']}))
+    await fetchZones.fetchAll(currentCompany)
+    const optionsZones = fetchZones.zones.map(item => ({id: item['@id'], text: item.name, value: item['@id']}))
     //console.log(optionsZones)
     //console.log('optionsEngineGroups', optionsEngineGroups)
     // const fetchManufacturerOptions = useOptions('manufacturers')
@@ -33,16 +37,19 @@
     //         return {text, value}
     //     }))
     // const key = ref(0)
-    const tableCriteria = useFetchCriteria('manufacturerEngines')
+    const tableCriteria = useFetchCriteria('Engines')
+    tableCriteria.addFilter('zone.company', currentCompany)
     const roleuser = ref('reader')
     const AddForm = ref(false)
     // const updated = ref(false)
     const storeEngines = useEngineStore()
-    await storeEngines.fetchAll()
+    //currentCompany
+    await storeEngines.fetchAll(tableCriteria.getFetchCriteria)
     // const formData = new FormData()
     // const violations = ref([])
     // const itemId = ref(null)
     // const isPopupVisible = ref(false)
+
     const tabFields = [
         {
             label: 'Type',
@@ -75,7 +82,7 @@
             min: true,
             name: 'zone',
             options: {
-                label: value => optionsZones.find(item => item.value === value)?.text
+                label: value => optionsZones.find(item => item.value === value['@id'])?.text
                     ?? null,
                 options: optionsZones
             },
@@ -88,6 +95,7 @@
     ]
     //const addFormfields = tabFields
     async function refreshList() {
+        tableCriteria.addFilter('company', 1)
         const criteria = tableCriteria.getFetchCriteria
         await storeEngines.fetchAll(criteria)
     }
