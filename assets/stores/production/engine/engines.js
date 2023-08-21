@@ -9,6 +9,9 @@ export const useEngineStore = defineStore('engines', {
             this.setCollectionData(response)
             this.isLoaded = true
         },
+        async remove(id){
+            await api(`${baseApi}/${id}`, 'DELETE')
+        },
         setCollectionData(data) {
             this.engines = data['hydra:member']
             this.totalItems = data['hydra:totalItems']

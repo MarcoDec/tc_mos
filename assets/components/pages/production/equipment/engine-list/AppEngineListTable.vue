@@ -25,18 +25,6 @@
     const fetchZones = useZonesStore()
     await fetchZones.fetchAll(currentCompany)
     const optionsZones = fetchZones.zones.map(item => ({id: item['@id'], text: item.name, value: item['@id']}))
-    //console.log(optionsZones)
-    //console.log('optionsEngineGroups', optionsEngineGroups)
-    // const fetchManufacturerOptions = useOptions('manufacturers')
-    // fetchManufacturerOptions.fetchable = true
-    // await fetchManufacturerOptions.fetch()
-    // const optionsManufacturer = computed(() =>
-    //     fetchManufacturerOptions.options.map(op => {
-    //         const text = op.text
-    //         const value = op['@id']
-    //         return {text, value}
-    //     }))
-    // const key = ref(0)
     const tableCriteria = useFetchCriteria('Engines')
     tableCriteria.addFilter('zone.company', currentCompany)
     const roleuser = ref('reader')
@@ -61,6 +49,7 @@
                     ?? null,
                 options: optionsEngineTypes
             },
+            searchDisabled: true,
             trie: false,
             type: 'select'
         },
@@ -183,9 +172,16 @@
     //     }
     // }
     async function deleted(id){
-        console.log(`deleted ${id}`)
-        //await storeEngines.remove(id)
-        //await refreshList()
+        const elementToRemove = storeEngines.engines.find(item => item.id === id)
+        const userResponse = confirm(`Are you sure you want to remove "${elementToRemove.name}" (SN => ${elementToRemove.serialNumber}) ?`)
+        console.log(userResponse)
+        if (userResponse) {
+            await storeEngines.remove(id)
+            console.log(`deleted ${id}`)
+            await refreshList()
+        }
+        //
+        //
     }
 
     //region ## fonctions Recherche, Tri et pagination

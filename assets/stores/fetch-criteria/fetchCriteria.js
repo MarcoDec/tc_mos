@@ -6,14 +6,12 @@ export default function useFetchCriteria(id) {
             addFilter(field, value) {
                 const filteredFilters = this.filters.filter(element => element.field === field)
                 if (filteredFilters.length > 0) {
-                    console.log('addFilter', filteredFilters)
                     filteredFilters[0].value = value
                 } else {
                     this.filters.push({field, value})
                 }
             },
             addSort(field, direction) {
-                console.log('addSort', field, direction)
                 const filteredSorts = this.sorts.filter(element => element.field === field)
                 const fieldIndex = this.sorts.findIndex(item => item.field === field)
                 if (filteredSorts.length > 0) {
@@ -22,7 +20,6 @@ export default function useFetchCriteria(id) {
                 } else {
                     this.sorts.push({direction, field})
                 }
-                console.log(this.sorts)
             },
             gotoPage(pageStr) {
                 const result = /page=(\d+)/.exec(pageStr)
@@ -61,10 +58,8 @@ export default function useFetchCriteria(id) {
                     })
                     filterStr = filterStr.substring(0, filterStr.length - 1) // Suppression du dernier '&'
                     fetchCriteria += filterStr
-                    console.log(filterStr, fetchCriteria)
                 }
                 if (state.sorts.length > 0) {
-                    console.log(state.sorts, state.sorts.length)
                     state.sorts.forEach(sortElement => {
                         sortStr += `order[${sortElement.field}]=${sortElement.direction}&`
                     })
