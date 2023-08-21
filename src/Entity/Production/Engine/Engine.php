@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Blocker;
@@ -29,8 +30,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code'=> 'partial', 'zone.company']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['zone']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'name', 'serialNumber']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',
@@ -147,7 +149,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
      */
     protected $group;
     #[
-        ApiProperty(description: 'Nom', example: 'Machine'),
+        ApiProperty(description: 'Nom', example: 'Compresseur d\'air'),
         ORM\Column,
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]

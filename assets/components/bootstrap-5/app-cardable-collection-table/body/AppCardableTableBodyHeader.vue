@@ -41,7 +41,7 @@
         </td>
 
         <td v-for="field in tabFields" :key="field.name">
-            <AppInputGuesser :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" :update:model-value="modelValue"/>
+            <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" :update:model-value="modelValue"/>
         </td>
     </tr>
 </template>

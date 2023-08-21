@@ -74,6 +74,7 @@
                     ?? null,
                 options: optionsEngineGroups
             },
+            searchDisabled: true, //désactivation de la fonction filtre car Group est une classe abstraite...
             trie: false,
             type: 'select'
         },
@@ -95,7 +96,7 @@
     ]
     //const addFormfields = tabFields
     async function refreshList() {
-        tableCriteria.addFilter('company', 1)
+        tableCriteria.addFilter('zone.company', currentCompany)
         const criteria = tableCriteria.getFetchCriteria
         await storeEngines.fetchAll(criteria)
     }
