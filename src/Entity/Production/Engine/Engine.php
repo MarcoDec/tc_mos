@@ -200,10 +200,11 @@ abstract class Engine extends Entity implements BarCodeInterface {
     private EmployeeEngineState $embState;
 
     #[
-        ORM\ManyToOne(targetEntity: ManufacturerEngine::class),
+        ORM\ManyToOne(targetEntity: ManufacturerEngine::class, cascade: ['persist']),
+        ORM\JoinColumn(onDelete: 'SET NULL'),
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
     ]
-    private ManufacturerEngine $manufacturerEngine;
+    private ?ManufacturerEngine $manufacturerEngine;
 
     #[
         ApiProperty(description: 'Opérateur maximum ', example: 1),
@@ -222,7 +223,6 @@ abstract class Engine extends Entity implements BarCodeInterface {
     public function __construct() {
         $this->embBlocker = new Blocker();
         $this->embState = new EmployeeEngineState();
-        $this->manufacturerEngine = new ManufacturerEngine($this);
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -257,7 +257,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this->group;
     }
 
-    final public function getManufacturerEngine(): ManufacturerEngine {
+    final public function getManufacturerEngine(): ?ManufacturerEngine {
         return $this->manufacturerEngine;
     }
 
@@ -316,8 +316,8 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    final public function setManufacturerEngine(ManufacturerEngine $manufacturerEngine): self {
-        $this->manufacturerEngine = $manufacturerEngine->setEngine($this);
+    final public function setManufacturerEngine(?ManufacturerEngine $manufacturerEngine): self {
+        $this->manufacturerEngine = $manufacturerEngine;
         return $this;
     }
 

@@ -4,6 +4,15 @@ import {defineStore} from 'pinia'
 const baseApi = '/api/engines'
 export const useEngineStore = defineStore('engines', {
     actions: {
+        async createCounterPart(data) {
+            await api('/api/counter-parts', 'POST', data)
+        },
+        async createTool(data) {
+            await api('/api/tools', 'POST', data)
+        },
+        async createWorkstation(data) {
+            await api('/api/workstations', 'POST', data)
+        },
         async fetchAll(fetchCriteria = '') {
             const response = await api(baseApi + fetchCriteria, 'GET')
             this.setCollectionData(response)

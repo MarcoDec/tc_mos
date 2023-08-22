@@ -1,7 +1,7 @@
 <script setup>
-    import {/*computed,*/ ref} from 'vue'
+    import {computed, ref} from 'vue'
+    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import router from '../../../../../router'
-    //import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import useEngineGroups from '../../../../../stores/production/engine/groups/engineGroups'
     import {
         useEngineStore
@@ -15,10 +15,8 @@
     import useZonesStore from '../../../../../stores/production/company/zones'
 
     const currentCompany = useUser().company
-    //console.log(currentCompany)
     const fetchEngineTypes = useEngineTypeStore()
     const optionsEngineTypes = fetchEngineTypes.engineTypes
-    //console.log(optionsEngineTypes)
     const fetchEngineGroups = useEngineGroups()
     await fetchEngineGroups.fetchAllEngineGroups()
     const optionsEngineGroups = fetchEngineGroups.engineGroups.map(item => ({id: item['@id'], text: `${item.code}-${item.name}`, value: item['@id']}))
@@ -33,10 +31,66 @@
     const storeEngines = useEngineStore()
     //currentCompany
     await storeEngines.fetchAll(tableCriteria.getFetchCriteria)
-    // const formData = new FormData()
+    const formData = ref({})
     // const violations = ref([])
     // const itemId = ref(null)
     // const isPopupVisible = ref(false)
+    let key = 0
+    function filterEngineGroups(type) {
+        return {
+            label: value => optionsEngineGroups.find(item => item.value === value)?.text
+                ?? null,
+            options: optionsEngineGroups.filter(item => item.value.includes(type))
+        }
+    }
+    function getGroups(typeValue) {
+        if (typeof typeValue !== 'undefined' && typeValue !== null) return filterEngineGroups(typeValue)
+        return {
+            label: value => optionsEngineGroups.find(item => item.value === value)?.text
+                ?? null,
+            options: optionsEngineGroups
+        }
+    }
+    const addFormFields = computed(() => [
+        {
+            label: 'Type',
+            min: true,
+            name: '@type',
+            options: {
+                label: value =>
+                    optionsEngineTypes.find(option => option.value === value)?.text
+                    ?? null,
+                options: optionsEngineTypes
+            },
+            searchDisabled: true,
+            trie: false,
+            type: 'select'
+        },
+        {label: 'Marque', min: false, name: 'brand', trie: true, type: 'text'},
+        {
+            label: 'Groupe',
+            min: false,
+            name: 'group',
+            options: getGroups(formData.value['@type']),
+            searchDisabled: true, //désactivation de la fonction filtre car Group est une classe abstraite...
+            trie: false,
+            type: 'select'
+        },
+        {
+            label: 'Zone',
+            min: true,
+            name: 'zone',
+            options: {
+                label: value => optionsZones.find(item => item.value === value['@id'])?.text
+                    ?? null,
+                options: optionsZones
+            },
+            trie: false,
+            type: 'select'
+        },
+        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
+        {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'}
+    ])
 
     const tabFields = [
         {
@@ -56,7 +110,7 @@
         {label: 'Marque', min: false, name: 'brand', trie: true, type: 'text'},
         {
             label: 'Groupe',
-            min: true,
+            min: false,
             name: 'group',
             options: {
                 label: value => optionsEngineGroups.find(item => item.value === value)?.text
@@ -79,11 +133,10 @@
             trie: false,
             type: 'select'
         },
-        {label: 'Code', min: false, name: 'code', trie: true, type: 'text'},
+        {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
         {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'}
     ]
-    //const addFormfields = tabFields
     async function refreshList() {
         tableCriteria.addFilter('zone.company', currentCompany)
         const criteria = tableCriteria.getFetchCriteria
@@ -91,97 +144,69 @@
     }
     function showAddForm(){
         // // On vide le formulaire avant de l'afficher
-        // formData.value = {
-        //     code: null,
-        //     manufacturer: null,
-        //     name: null,
-        //     partNumber: null
-        // }
-        // AddForm.value = true
-        // updated.value = false
+        formData.value = {
+            '@type': null,
+            brand: 'coucou',
+            code: null,
+            group: null,
+            name: null,
+            serialNumber: null,
+            zone: null
+        }
+        AddForm.value = true
     }
-    // async function addNewItem(){
-    //     const form = document.getElementById('add-new-engine')
-    //     const formData1 = new FormData(form)
-    //     const itemsAddData = {
-    //         code: formData1.get('code'),
-    //         manufacturer: formData1.get('manufacturer'),
-    //         name: formData1.get('name'),
-    //         partNumber: formData1.get('partNumber')
-    //     }
-    //     await storeEngines.create(itemsAddData)
-    //     AddForm.value = false
-    //     updated.value = false
-    // }
-    // function hideForm(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     // isPopupVisible.value = false
-    // }
+    async function addNewItem(){
+        const form = document.getElementById('add-new-engine')
+        const formData1 = new FormData(form)
+        const itemsAddData = {
+            //'@type': formData1.get('@type'),
+            brand: formData1.get('brand'),
+            code: formData1.get('code'),
+            group: formData1.get('group'),
+            name: formData1.get('name'),
+            serialNumber: formData1.get('serialNumber'),
+            zone: formData1.get('zone')
+        }
+        switch (formData1.get('@type')) {
+            case 'tool':
+                await storeEngines.createTool(itemsAddData)
+                break
+            case 'workstation':
+                await storeEngines.createWorkstation(itemsAddData)
+                break
+            case 'counter-part':
+                await storeEngines.createCounterPart(itemsAddData)
+                break
+        }
+        AddForm.value = false
+    }
+    function hideForm(){
+        AddForm.value = false
+    }
     async function showUpdateForm(item) {
-        console.log('showUpdateForm', item)
         const idEngine = Number(item.id)
         switch (item['@type']) {
             case 'Tool':
-                console.log('tool')
                 // eslint-disable-next-line camelcase
                 await router.push({name: 'toolShow', params: {id_engine: idEngine}})
                 break
             case 'Workstation':
-                console.log('workstation')
                 // eslint-disable-next-line camelcase
                 await router.push({name: 'workstationShow', params: {id_engine: idEngine}})
                 break
             case 'CounterPart':
-                console.log('counter-part')
                 // eslint-disable-next-line camelcase
                 await router.push({name: 'counterpartShow', params: {id_engine: idEngine}})
                 break
         }
-        // itemId.value = Number(item['@id'].match(/\d+/)[0])
-        // await storeEngines.fetchOne(itemId.value)
-        // const engine = storeEngines.engine
-        // formData.value = {
-        //     code: engine.code,
-        //     manufacturer: engine.manufacturer ? engine.manufacturer['@id'] : null,
-        //     name: engine.name,
-        //     partNumber: engine.partNumber
-        // }
-        // key.value++
-        // updated.value = true
-        // AddForm.value = true
     }
-    // async function updateItem(){
-    //     try {
-    //         const form = document.getElementById('update-engine')
-    //         const formData2 = new FormData(form)
-    //         const itemsUpdateData = {
-    //             code: formData2.get('code'),
-    //             manufacturer: formData2.get('manufacturer'),
-    //             name: formData2.get('name'),
-    //             partNumber: formData2.get('partNumber')
-    //         }
-    //         await storeEngines.update(itemsUpdateData)
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         await refreshList()
-    //     } catch (error) {
-    //         violations.value = error
-    //         isPopupVisible.value = true
-    //     }
-    // }
     async function deleted(id){
         const elementToRemove = storeEngines.engines.find(item => item.id === id)
         const userResponse = confirm(`Are you sure you want to remove "${elementToRemove.name}" (SN => ${elementToRemove.serialNumber}) ?`)
-        console.log(userResponse)
         if (userResponse) {
             await storeEngines.remove(id)
-            console.log(`deleted ${id}`)
             await refreshList()
         }
-        //
-        //
     }
 
     //region ## fonctions Recherche, Tri et pagination
@@ -205,6 +230,13 @@
         await refreshList()
     }
     //endregion
+    function onAddFormDataChange(data) {
+        if (formData.value['@type'] !== data['@type']) {
+            formData.value = data
+            key++
+        }
+        formData.value = data
+    }
 </script>
 
 <template>
@@ -234,7 +266,7 @@
                     :pag="storeEngines.pagination"
                     :previous-page="storeEngines.view['hydra:previous']"
                     :user="roleuser"
-                    form="formSocietyCardableTable"
+                    form="formEnginesCardableTable"
                     @cancel-search="cancelSearch"
                     @deleted="deleted"
                     @get-page="getPage"
@@ -242,61 +274,25 @@
                     @trier-alphabet="trier"
                     @update="showUpdateForm"/>
             </div>
-            <!--            <div v-if="AddForm && !updated" class="col">-->
-            <!--                <AppCard class="bg-blue col" title="">-->
-            <!--                    <div class="row">-->
-            <!--                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">-->
-            <!--                            <Fa icon="angle-double-left"/>-->
-            <!--                        </button>-->
-            <!--                        <h4 class="col">-->
-            <!--                            <Fa icon="plus"/> Ajout-->
-            <!--                        </h4>-->
-            <!--                    </div>-->
-            <!--                    <br/>-->
-            <!--                    <AppFormCardable id="add-new-engine" :fields="addFormfields" :model-value="formData" label-cols/>-->
-            <!--                    &lt;!&ndash; On ne permet pas l'ajout de pièce jointe lors du formulaire de création afin de simplifier le traitement &ndash;&gt;-->
-            <!--                    <div class="col">-->
-            <!--                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="addNewItem">-->
-            <!--                            &lt;!&ndash; &ndash;&gt;-->
-            <!--                            <Fa icon="plus"/> Ajouter-->
-            <!--                        </AppBtn>-->
-            <!--                    </div>-->
-            <!--                </AppCard>-->
-            <!--            </div>-->
-            <!--            <div v-else-if="AddForm && updated" class="col">-->
-            <!--                <AppCard class="bg-blue col" title="">-->
-            <!--                    <div class="col">-->
-            <!--                        <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">-->
-            <!--                            <Fa icon="angle-double-left"/>-->
-            <!--                        </button>-->
-            <!--                        <h4 class="col">-->
-            <!--                            <Fa icon="pencil-alt"/> Modification-->
-            <!--                        </h4>-->
-            <!--                    </div>-->
-            <!--                    <br/>-->
-            <!--                    <AppFormCardable id="update-engine" :key="key" :fields="addFormfields" :model-value="formData.value" :violations="violations"/>-->
-            <!--                    <Suspense>-->
-            <!--                        <AppTabFichiers-->
-            <!--                            :key="`attachment_${key}`"-->
-            <!--                            attachment-element-label="engine"-->
-            <!--                            :element-api-url="`/api/manufacturer-engines/${storeEngines.engine.id}`"-->
-            <!--                            :element-attachment-store="fetchManufacturerAttachmentStore"-->
-            <!--                            :element-id="storeEngines.engine.id"-->
-            <!--                            element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"-->
-            <!--                            :element-store="useManufacturerEngineStore"/>-->
-            <!--                    </Suspense>-->
-            <!--                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">-->
-            <!--                        <div v-for="violation in violations" :key="violation">-->
-            <!--                            <li>{{ violation.message }}</li>-->
-            <!--                        </div>-->
-            <!--                    </div>-->
-            <!--                    <div class="col">-->
-            <!--                        <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateItem">-->
-            <!--                            <Fa icon="pencil-alt"/> Modifier-->
-            <!--                        </AppBtn>-->
-            <!--                    </div>-->
-            <!--                </AppCard>-->
-            <!--            </div>-->
+            <div v-if="AddForm" class="col">
+                <AppCard class="bg-blue col" title="">
+                    <div class="row">
+                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
+                            <Fa icon="angle-double-left"/>
+                        </button>
+                        <h4 class="col">
+                            <Fa icon="plus"/> Ajout
+                        </h4>
+                    </div>
+                    <br/>
+                    <AppFormCardable id="add-new-engine" :key="key" :fields="addFormFields" :model-value="formData" label-cols @update:model-value="onAddFormDataChange"/>
+                    <div class="col">
+                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="addNewItem">
+                            <Fa icon="plus"/> Ajouter
+                        </AppBtn>
+                    </div>
+                </AppCard>
+            </div>
         </div>
     </div>
 </template>
