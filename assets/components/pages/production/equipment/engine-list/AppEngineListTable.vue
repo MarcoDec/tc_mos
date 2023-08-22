@@ -196,7 +196,7 @@
                 break
             case 'CounterPart':
                 // eslint-disable-next-line camelcase
-                await router.push({name: 'counterpartShow', params: {id_engine: idEngine}})
+                await router.push({name: 'counterPartShow', params: {id_engine: idEngine}})
                 break
         }
     }
