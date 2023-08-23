@@ -3,7 +3,6 @@
     import AppSupplierFormShow from './AppSupplierFormShow.vue'
     import AppSupplierShowInlist from './bottom/AppSupplierShowInlist.vue'
     // import {useRoute} from 'vue-router'
-    //
     // const route = useRoute()
 </script>
 

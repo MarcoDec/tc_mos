@@ -83,6 +83,7 @@
     const parentQtyHauteur = {
         $id: 'componentReferenceValueQtyHauteur'
     }
+
     const storeUnitReferenceValueQtyHauteur = useField(fieldsForm[0], parentQtyHauteur)
     await storeUnitReferenceValueQtyHauteur.fetch()
 
@@ -109,7 +110,7 @@
         $id: 'componentReferenceValueQtyLargeur'
     }
     const storeUnitReferenceValueQtyLargeur = useField(fieldsForm[3], parentQtyLargeur)
-
+    console.log(storeUnitReferenceValueQtyHauteur.measure.code.optionsList)
     fieldsForm[3].measure.code = storeUnitReferenceValueQtyLargeur.measure.code
     fieldsForm[3].measure.value = storeUnitReferenceValueQtyLargeur.measure.value
     const tabFields = [
