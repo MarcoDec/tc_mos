@@ -30,8 +30,7 @@ use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['deliveryDate' => 'DESC']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code'=> 'partial', 'embState.state','embBlocker.state', 'product.customer.id' => 'exact', 'product.product.name' => 'partial', 'deliveryDate' => 'partial', 'ref' => 'partial', 'product.product.index' => 'partial', 'quantityRequested.value' => 'partial', 'quantityRequested.code' => 'partial', 'product.product.price.code' => 'partial', 'product.product.price.value' => 'partial']),
-    ApiFilter(filterClass: SetFilter::class, properties:['product.product.code' => 'exact']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code'=> 'exact', 'embState.state','embBlocker.state', 'product.customer.id' => 'exact', 'product.product.name' => 'partial', 'deliveryDate' => 'partial', 'ref' => 'partial', 'product.product.index' => 'partial', 'quantityRequested.value' => 'partial', 'quantityRequested.code' => 'partial', 'product.product.price.code' => 'exact', 'product.product.price.value' => 'partial']),
     
     ApiResource(
         description: 'OF',

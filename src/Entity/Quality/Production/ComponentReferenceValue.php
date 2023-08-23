@@ -21,7 +21,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['component.id']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['component']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['height.value.value' => 'partial', 'height.value.code' => 'partial', 'section.code' => 'partial', 'section.value' => 'partial', 'tensile.value.code' => 'partial', 'tensile.value.value' => 'partial', 'width.value.code' => 'partial', 'width.value.value' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['height.value.value' => 'partial', 'height.value.code' => 'partial', 'section.code' => 'exact', 'section.value' => 'partial', 'tensile.value.code' => 'exact', 'tensile.value.value' => 'partial', 'width.value.code' => 'exact', 'width.value.value' => 'partial']),
     ApiResource(
         description: 'Valeur de référence du composant',
         collectionOperations: [
