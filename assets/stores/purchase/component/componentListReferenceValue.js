@@ -27,7 +27,7 @@ export const useComponentListReferenceValueStore = defineStore('componentListRef
         //     return violations
         // },
         async deleted(payload) {
-            await api(`/api/manufacturing-orders/${payload}`, 'DELETE')
+            await api(`/api/references/${payload}`, 'DELETE')
             this.componentReferenceValue = this.componentReferenceValue.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
