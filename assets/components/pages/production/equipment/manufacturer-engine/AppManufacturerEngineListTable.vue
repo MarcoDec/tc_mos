@@ -2,6 +2,7 @@
     import {computed, ref} from 'vue'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
+    import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {
         useManufacturerEngineAttachmentStore
@@ -16,6 +17,10 @@
     })
 
     const key = ref(0)
+    //region récupération des types de machine
+    const fetchEngineTypes = useEngineTypeStore()
+    const optionsEngineTypes = fetchEngineTypes.engineTypes
+    //endregion
     const fetchManufacturerOptions = useOptions('manufacturers')
     fetchManufacturerOptions.fetchable = true
     await fetchManufacturerOptions.fetch()
@@ -44,7 +49,20 @@
     }
     const tabFields = [
         {label: 'Code', min: true, name: 'code', searchDisabled: true, trie: false, type: 'text'},
-        {label: 'Type', min: false, name: 'type', trie: true, type: 'text'},
+        {
+            label: 'Type',
+            min: true,
+            name: 'type',
+            options: {
+                label: value =>
+                    optionsEngineTypes.find(option => option.value === value)?.text
+                    ?? null,
+                options: optionsEngineTypes
+            },
+            searchDisabled: true,
+            trie: false,
+            type: 'select'
+        },
         {
             label: 'Fabriquant',
             min: true,
@@ -58,7 +76,20 @@
         {label: 'Nom', min: false, name: 'name', trie: true, type: 'text'}
     ]
     const addFormfields = [
-        {label: 'Type', min: false, name: 'type', trie: true, type: 'text'},
+        {
+            label: 'Type',
+            min: true,
+            name: 'type',
+            options: {
+                label: value =>
+                    optionsEngineTypes.find(option => option.value === value)?.text
+                    ?? null,
+                options: optionsEngineTypes
+            },
+            searchDisabled: true,
+            trie: false,
+            type: 'select'
+        },
         {
             label: 'Fabriquant',
             min: true,
@@ -81,7 +112,8 @@
             code: null,
             manufacturer: null,
             name: null,
-            partNumber: null
+            partNumber: null,
+            type: null
         }
         AddForm.value = true
         updated.value = false
@@ -93,7 +125,8 @@
             code: formData1.get('code'),
             manufacturer: formData1.get('manufacturer'),
             name: formData1.get('name'),
-            partNumber: formData1.get('partNumber')
+            partNumber: formData1.get('partNumber'),
+            type: formData1.get('type')
         }
         await storeManufacturerEnginers.create(itemsAddData)
         AddForm.value = false
@@ -112,7 +145,8 @@
             code: engine.code,
             manufacturer: engine.manufacturer ? engine.manufacturer['@id'] : null,
             name: engine.name,
-            partNumber: engine.partNumber
+            partNumber: engine.partNumber,
+            type: engine.type
         }
         key.value++
         updated.value = true
@@ -126,7 +160,8 @@
                 code: formData2.get('code'),
                 manufacturer: formData2.get('manufacturer'),
                 name: formData2.get('name'),
-                partNumber: formData2.get('partNumber')
+                partNumber: formData2.get('partNumber'),
+                type: formData2.get('type')
             }
             await storeManufacturerEnginers.update(itemsUpdateData)
             AddForm.value = false
