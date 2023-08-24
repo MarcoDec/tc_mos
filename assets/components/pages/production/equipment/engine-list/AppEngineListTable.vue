@@ -167,7 +167,7 @@
             type: 'select'
         },
         {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
-        {label: 'Date entrée', min: false, name: 'entryDate', trie: false, type: 'date'},
+        {label: 'Date entrée', min: false, name: 'entryDate', trie: true, type: 'date'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
         {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'},
         {
@@ -178,7 +178,7 @@
                 label: labelManufacturerEngine,
                 options: optionsManufacturerEngines
             },
-            trie: false,
+            trie: true,
             type: 'select'
         }
     ]
@@ -267,7 +267,9 @@
         await refreshList()
     }
     async function trier(payload) {
-        tableCriteria.addSort(payload.name, payload.direction)
+        if (payload.name === 'manufacturerEngine') tableCriteria.addSort('manufacturerEngine.name', payload.direction)
+        else
+            tableCriteria.addSort(payload.name, payload.direction)
         await refreshList()
     }
     async function search(inputValues) {

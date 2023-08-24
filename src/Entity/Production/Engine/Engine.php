@@ -33,7 +33,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
     ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['zone', 'manufacturerEngine']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'name', 'serialNumber']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',
