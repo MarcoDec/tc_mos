@@ -51,7 +51,7 @@
             name: 'manufacturer',
             options: manufacturerOptions,
             sortName: 'manufacturer',
-            trie: false,
+            trie: true,
             type: 'select'
         },
         {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
@@ -149,7 +149,8 @@
         await refreshList()
     }
     async function trier(payload) {
-        tableCriteria.addSort(payload.name, payload.direction)
+        if (payload.name === 'manufacturer') tableCriteria.addSort('manufacturer.name', payload.direction)
+        else tableCriteria.addSort(payload.name, payload.direction)
         await refreshList()
     }
     async function search(inputValues) {
