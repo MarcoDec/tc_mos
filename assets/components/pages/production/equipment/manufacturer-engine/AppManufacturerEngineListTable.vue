@@ -43,7 +43,7 @@
         options: optionsManufacturer.value
     }
     const tabFields = [
-        {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
+        {label: 'Code', min: true, name: 'code', searchDisabled: true, trie: false, type: 'text'},
         {label: 'Type', min: false, name: 'type', trie: true, type: 'text'},
         {
             label: 'Fabriquant',
