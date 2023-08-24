@@ -15,6 +15,7 @@
         title: {required: true, type: String}
     })
 
+    const key = ref(0)
     const fetchManufacturerOptions = useOptions('manufacturers')
     fetchManufacturerOptions.fetchable = true
     await fetchManufacturerOptions.fetch()

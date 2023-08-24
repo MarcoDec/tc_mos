@@ -5,7 +5,14 @@ export default function useFetchCriteria(id) {
         actions: {
             addFilter(field, value, dateType = '') {
                 console.log(field, dateType)
-                if (dateType !== '') {
+                if (dateType === '') {
+                    const filteredFilters = this.filters.filter(element => element.field === field)
+                    if (filteredFilters.length > 0) {
+                        filteredFilters[0].value = value
+                    } else {
+                        this.filters.push({field, value})
+                    }
+                } else {
                     const filteredFiltersAfter = this.filters.filter(element => element.field === `${field}[after]`)
                     const filteredFiltersBefore = this.filters.filter(element => element.field === `${field}[before]`)
                     if (filteredFiltersAfter.length > 0) {
@@ -22,13 +29,6 @@ export default function useFetchCriteria(id) {
                     } else {
                         const filterName = `${field}[before]`
                         this.filters.push({field: filterName, value: nextDay.toISOString().substring(0, 10)})
-                    }
-                } else {
-                    const filteredFilters = this.filters.filter(element => element.field === field)
-                    if (filteredFilters.length > 0) {
-                        filteredFilters[0].value = value
-                    } else {
-                        this.filters.push({field, value})
                     }
                 }
                 //console.log(this.filters)
