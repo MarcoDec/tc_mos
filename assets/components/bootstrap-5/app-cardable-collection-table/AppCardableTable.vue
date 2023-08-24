@@ -47,7 +47,7 @@
         <tbody>
             <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch"/>
             <tr class="bg-dark">
-                <td colspan="10"/>
+                <td colspan="20"/>
             </tr>
             <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" @update="update" @deleted="deleted"/>
         </tbody>

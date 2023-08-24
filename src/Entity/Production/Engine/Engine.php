@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -14,7 +15,6 @@ use App\Entity\Embeddable\EmployeeEngineState;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
-use App\Entity\Management\Society\Company\Company;
 use App\Entity\Production\Company\Zone;
 use App\Entity\Production\Engine\Attachment\EngineAttachment;
 use App\Entity\Production\Engine\CounterPart\CounterPart;
@@ -31,7 +31,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['zone']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['zone', 'manufacturerEngine']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'name', 'serialNumber']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
@@ -200,6 +201,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
     private EmployeeEngineState $embState;
 
     #[
+        ApiProperty(description: 'Modele de machine', readableLink: false,example: '/api/manufacturer-engines/15'),
         ORM\ManyToOne(targetEntity: ManufacturerEngine::class, cascade: ['persist']),
         ORM\JoinColumn(onDelete: 'SET NULL'),
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])

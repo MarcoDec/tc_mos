@@ -8,34 +8,28 @@
     } from '../../../../../stores/production/engine/engines'
     import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import {
+        useManufacturerEngineStore
+    } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
     defineProps({
         title: {required: true, type: String}
     })
     import useUser from '../../../../../stores/security'
     import useZonesStore from '../../../../../stores/production/company/zones'
-
+    const roleuser = ref('reader')
+    const AddForm = ref(false)
+    const formData = ref({})
+    let key = 0
     const currentCompany = useUser().company
+    //region Initialisation des champs et listes associées
+    //region récupération des types de machine
     const fetchEngineTypes = useEngineTypeStore()
     const optionsEngineTypes = fetchEngineTypes.engineTypes
+    //endregion
+    //region récupération des groupes de machines
     const fetchEngineGroups = useEngineGroups()
     await fetchEngineGroups.fetchAllEngineGroups()
     const optionsEngineGroups = fetchEngineGroups.engineGroups.map(item => ({id: item['@id'], text: `${item.code}-${item.name}`, value: item['@id']}))
-    const fetchZones = useZonesStore()
-    await fetchZones.fetchAll(currentCompany)
-    const optionsZones = fetchZones.zones.map(item => ({id: item['@id'], text: item.name, value: item['@id']}))
-    const tableCriteria = useFetchCriteria('Engines')
-    tableCriteria.addFilter('zone.company', currentCompany)
-    const roleuser = ref('reader')
-    const AddForm = ref(false)
-    // const updated = ref(false)
-    const storeEngines = useEngineStore()
-    //currentCompany
-    await storeEngines.fetchAll(tableCriteria.getFetchCriteria)
-    const formData = ref({})
-    // const violations = ref([])
-    // const itemId = ref(null)
-    // const isPopupVisible = ref(false)
-    let key = 0
     function filterEngineGroups(type) {
         return {
             label: value => optionsEngineGroups.find(item => item.value === value)?.text
@@ -51,6 +45,34 @@
             options: optionsEngineGroups
         }
     }
+    //endregion
+    //region récupération des zones
+    const fetchZones = useZonesStore()
+    await fetchZones.fetchAll(currentCompany)
+    const optionsZones = fetchZones.zones.map(item => ({id: item['@id'], text: item.name, value: item['@id']}))
+    function labelZoneOption(value) {
+        return optionsZones.find(item => item.id === value)?.text
+            ?? null
+    }
+    //endregion
+    //region récupération des Machines de référence (modèles)
+    const fetchManufacturerEngines = useManufacturerEngineStore()
+    const tableCriteriaME = useFetchCriteria('ManufacturerEngines')
+    tableCriteriaME.addFilter('pagination', 'false')
+    await fetchManufacturerEngines.fetchAll(tableCriteriaME.getFetchCriteria)
+    const optionsManufacturerEngines = fetchManufacturerEngines.engines.map(item => ({id: item['@id'], text: item.name, value: item['@id']}))
+    function labelManufacturerEngine(value) {
+        return optionsManufacturerEngines.find(item => item.id === value)?.text
+            ?? null
+    }
+    //endregion
+    //region récupération des Machines
+    const tableCriteria = useFetchCriteria('Engines')
+    tableCriteria.addFilter('zone.company', currentCompany)
+    const storeEngines = useEngineStore()
+    await storeEngines.fetchAll(tableCriteria.getFetchCriteria)
+    //endregion
+    //region Définition de la liste des champs pour le formulaire de création
     const addFormFields = computed(() => [
         {
             label: 'Type',
@@ -81,17 +103,29 @@
             min: true,
             name: 'zone',
             options: {
-                label: value => optionsZones.find(item => item.value === value['@id'])?.text
-                    ?? null,
+                label: labelZoneOption,
                 options: optionsZones
             },
             trie: false,
             type: 'select'
         },
+        {label: 'Date entrée', min: false, name: 'entryDate', trie: false, type: 'date'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
-        {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'}
+        {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'},
+        {
+            label: 'Machine de référence (modèle)',
+            min: true,
+            name: 'manufacturerEngine',
+            options: {
+                label: labelManufacturerEngine,
+                options: optionsManufacturerEngines
+            },
+            trie: false,
+            type: 'select'
+        }
     ])
-
+    //endregion
+    //region Définition de la liste des champs pour l'affichage de la liste
     const tabFields = [
         {
             label: 'Type',
@@ -126,17 +160,30 @@
             min: true,
             name: 'zone',
             options: {
-                label: value => optionsZones.find(item => item.value === value['@id'])?.text
-                    ?? null,
+                label: labelZoneOption,
                 options: optionsZones
             },
             trie: false,
             type: 'select'
         },
         {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
+        {label: 'Date entrée', min: false, name: 'entryDate', trie: false, type: 'date'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
-        {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'}
+        {label: 'Numero de série', min: true, name: 'serialNumber', trie: true, type: 'text'},
+        {
+            label: 'Machine de référence (modèle)',
+            min: true,
+            name: 'manufacturerEngine',
+            options: {
+                label: labelManufacturerEngine,
+                options: optionsManufacturerEngines
+            },
+            trie: false,
+            type: 'select'
+        }
     ]
+    //endregion
+    //endregion
     async function refreshList() {
         tableCriteria.addFilter('zone.company', currentCompany)
         const criteria = tableCriteria.getFetchCriteria
@@ -146,9 +193,11 @@
         // // On vide le formulaire avant de l'afficher
         formData.value = {
             '@type': null,
-            brand: 'coucou',
+            brand: null,
             code: null,
+            entryDate: null,
             group: null,
+            manufacturerEngine: null,
             name: null,
             serialNumber: null,
             zone: null
@@ -162,7 +211,9 @@
             //'@type': formData1.get('@type'),
             brand: formData1.get('brand'),
             code: formData1.get('code'),
+            entryDate: formData1.get('entryDate'),
             group: formData1.get('group'),
+            manufacturerEngine: formData1.get('manufacturerEngine'),
             name: formData1.get('name'),
             serialNumber: formData1.get('serialNumber'),
             zone: formData1.get('zone')
@@ -179,6 +230,7 @@
                 break
         }
         AddForm.value = false
+        await refreshList()
     }
     function hideForm(){
         AddForm.value = false
@@ -221,7 +273,8 @@
     async function search(inputValues) {
         const result = Object.keys(inputValues).map(cle => ({field: cle, value: inputValues[cle]}))
         result.forEach(filter => {
-            tableCriteria.addFilter(filter.field, filter.value)
+            if (filter.field === 'entryDate') tableCriteria.addFilter(filter.field, filter.value, 'dateExact')
+            else tableCriteria.addFilter(filter.field, filter.value)
         })
         await refreshList()
     }
@@ -243,7 +296,7 @@
     <div class="container">
         <div class="row">
             <h1 class="col">
-                <img src="img/production/icons8-usine-48.png"/>
+                <img src="img/production/icons8-usine-48.png" alt="icône Machine type perceuse"/>
                 {{ title }}
             </h1>
             <span class="col">

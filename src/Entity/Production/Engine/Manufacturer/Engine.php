@@ -16,8 +16,8 @@ use App\Filter\RelationFilter;
 use ApiPlatform\Core\Annotation\ApiFilter;
 
 #[
-    ApiFilter(OrderFilter::class, properties: ['code', 'manufacturer.name', 'name', 'partNumber']),
-    ApiFilter(SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'partNumber' => 'partial']),
+    ApiFilter(OrderFilter::class, properties: ['code', 'manufacturer.name', 'name', 'partNumber', 'type']),
+    ApiFilter(SearchFilter::class, properties: ['code' => 'partial', 'name' => 'partial', 'partNumber' => 'partial', 'type' => 'partial']),
     ApiFilter(RelationFilter::class, properties: ['manufacturer']),
     ApiResource(
         description: 'Équipement : fiche fabricant',
@@ -43,12 +43,13 @@ use ApiPlatform\Core\Annotation\ApiFilter;
             'groups' => ['read:manufacturer-engine', 'read:id'],
             'openapi_definition_name' => 'ManufacturerEngine-read',
             'skip_null_values' => false
-        ]
+        ], paginationClientEnabled: true
     ),
     ORM\Entity,
     ORM\Table(name: 'manufacturer_engine')
 ]
 class Engine extends Entity {
+    public const PREFIX = 'MOD-';
     #[ORM\OneToMany(mappedBy: 'engine', targetEntity: ManufacturerEngineAttachment::class)]
     private Collection $attachments;
 
@@ -57,7 +58,7 @@ class Engine extends Entity {
         ORM\Column(nullable: true),
         Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
-    private ?string $code = null;
+    private ?string $code;
 
     #[
         ApiProperty(description: 'Date d\'arrivée', example: '2021-01-12'),
@@ -65,6 +66,7 @@ class Engine extends Entity {
         Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     private ?DateTimeImmutable $date = null;
+
 
     #[
         ApiProperty(description: 'Fabricant', readableLink: true, example: '/api/manufacturers/1'),
@@ -85,9 +87,20 @@ class Engine extends Entity {
         Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     private ?string $partNumber = null;
+    #[
+        ApiProperty(description: 'Type de modèle', example: 'tool'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
+    ]
+    private ?string $type;
 
+    function __construct() {
+        // Initialisation du code si cela n'est pas déjà le cas
+        $this->code = self::PREFIX.$this->getId();
+    }
 
     final public function getCode(): ?string {
+        $this->code = self::PREFIX.$this->getId();
         return $this->code;
     }
 
@@ -105,11 +118,6 @@ class Engine extends Entity {
 
     final public function getPartNumber(): ?string {
         return $this->partNumber;
-    }
-
-    final public function setCode(?string $code): self {
-        $this->code = $code;
-        return $this;
     }
 
     final public function setDate(?DateTimeImmutable $date): self {
@@ -165,6 +173,24 @@ class Engine extends Entity {
     public function setName(?string $name): Engine
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string|null $type
+     * @return Engine
+     */
+    public function setType(?string $type): Engine
+    {
+        $this->type = $type;
         return $this;
     }
 

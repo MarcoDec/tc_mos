@@ -3,13 +3,35 @@ import {defineStore} from 'pinia'
 export default function useFetchCriteria(id) {
     return defineStore(`fetchCriteria_${id}`, {
         actions: {
-            addFilter(field, value) {
-                const filteredFilters = this.filters.filter(element => element.field === field)
-                if (filteredFilters.length > 0) {
-                    filteredFilters[0].value = value
+            addFilter(field, value, dateType = '') {
+                console.log(field, dateType)
+                if (dateType !== '') {
+                    const filteredFiltersAfter = this.filters.filter(element => element.field === `${field}[after]`)
+                    const filteredFiltersBefore = this.filters.filter(element => element.field === `${field}[before]`)
+                    if (filteredFiltersAfter.length > 0) {
+                        filteredFiltersAfter[0].value = value
+                    } else {
+                        const filterName = `${field}[after]`
+                        this.filters.push({field: filterName, value})
+                    }
+                    const initialDate = new Date(value)
+                    const nextDay = new Date()
+                    nextDay.setDate(initialDate.getDate() + 1)
+                    if (filteredFiltersBefore.length > 0) {
+                        filteredFiltersBefore[0].value = nextDay.toISOString().substring(0, 10)
+                    } else {
+                        const filterName = `${field}[before]`
+                        this.filters.push({field: filterName, value: nextDay.toISOString().substring(0, 10)})
+                    }
                 } else {
-                    this.filters.push({field, value})
+                    const filteredFilters = this.filters.filter(element => element.field === field)
+                    if (filteredFilters.length > 0) {
+                        filteredFilters[0].value = value
+                    } else {
+                        this.filters.push({field, value})
+                    }
                 }
+                //console.log(this.filters)
             },
             addSort(field, direction) {
                 const filteredSorts = this.sorts.filter(element => element.field === field)

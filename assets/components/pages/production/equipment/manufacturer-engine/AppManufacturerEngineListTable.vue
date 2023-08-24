@@ -25,7 +25,6 @@
             const value = op['@id']
             return {text, value}
         }))
-    const key = ref(0)
     const tableCriteria = useFetchCriteria('manufacturerEngines')
     const roleuser = ref('reader')
     const AddForm = ref(false)
@@ -36,26 +35,41 @@
     const violations = ref([])
     const itemId = ref(null)
     const isPopupVisible = ref(false)
+    const manufacturerOptions = {
+        label: value =>
+            optionsManufacturer.value.find(option => option.value === value)?.text
+            ?? null,
+        options: optionsManufacturer.value
+    }
     const tabFields = [
+        {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
+        {label: 'Type', min: false, name: 'type', trie: true, type: 'text'},
         {
             label: 'Fabriquant',
             min: true,
             name: 'manufacturer',
-            options: {
-                label: value =>
-                    optionsManufacturer.value.find(option => option.type === value)?.text
-                    ?? null,
-                options: optionsManufacturer.value
-            },
+            options: manufacturerOptions,
             sortName: 'manufacturer',
             trie: false,
             type: 'select'
         },
         {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
-        {label: 'Code', min: false, name: 'code', trie: true, type: 'text'},
+        {label: 'Nom', min: false, name: 'name', trie: true, type: 'text'}
+    ]
+    const addFormfields = [
+        {label: 'Type', min: false, name: 'type', trie: true, type: 'text'},
+        {
+            label: 'Fabriquant',
+            min: true,
+            name: 'manufacturer',
+            options: manufacturerOptions,
+            sortName: 'manufacturer',
+            trie: false,
+            type: 'select'
+        },
+        {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
         {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'}
     ]
-    const addFormfields = tabFields
     async function refreshList() {
         const criteria = tableCriteria.getFetchCriteria
         await storeManufacturerEnginers.fetchAll(criteria)
