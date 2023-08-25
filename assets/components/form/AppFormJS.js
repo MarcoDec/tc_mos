@@ -40,12 +40,12 @@ function AppFormJS(props, context) {
                 for (const child of field.children) {
                     groups.push(h(AppFormField, {
                         disabled: props.disabled,
-                        newField: field,
                         field: child,
                         form: props.id,
                         key: child.name,
                         labelCols: props.labelCols,
                         modelValue: props.modelValue[child.name],
+                        newField: field,
                         'onUpdate:modelValue': value => context.emit('update:modelValue', {
                             ...props.modelValue,
                             [child.name]: value

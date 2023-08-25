@@ -8,11 +8,11 @@
 
     const emit = defineEmits(['update:modelValue'])
 
-    const props = defineProps({
+    defineProps({
         field: {required: true, type: Object},
-        newField: {required: true, type: Object},
         form: {required: true, type: String},
-        modelValue: {default: null}
+        modelValue: {default: null},
+        newField: {required: true, type: Object}
     })
     function input(value) {
         emit('update:modelValue', value)

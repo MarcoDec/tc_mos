@@ -3,11 +3,10 @@
     import AppFormField from './AppFormField.vue'
 
     const emit = defineEmits(['update:modelValue', 'click'])
-    const props = defineProps({
+    defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
-        modelValue: {default: null},
-        newField: {required: true, type: Object}
+        modelValue: {default: null}
     })
     function input(value) {
         emit('update:modelValue', value)

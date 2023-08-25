@@ -3,7 +3,7 @@ import {defineStore} from 'pinia'
 
 export default defineStore('units', {
     actions: {
-      
+
         async getUnits() {
             const response = await api('/api/units?pagination=false', 'GET')
             // console.log('responseListUnits', response)
@@ -25,7 +25,7 @@ export default defineStore('units', {
                 value: unit['@id']
             }
             return opt
-        }),
+        })
     },
     state: () => ({
         listUnits: []

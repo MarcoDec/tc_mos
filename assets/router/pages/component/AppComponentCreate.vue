@@ -1,20 +1,17 @@
 <script setup>
+    import AppAttributeCreate from './AppAttributeCreate.vue'
     import AppFormJS from '../../../components/form/AppFormJS.js'
+    import AppSuspense from '../../../components/AppSuspense.vue'
     import AppTab from '../../../components/tab/AppTab.vue'
     import AppTabs from '../../../components/tab/AppTabs.vue'
     import {computed} from 'vue-demi'
-    import AppAttributeCreate from './AppAttributeCreate.vue'
-    import AppSuspense from '../../../components/AppSuspense.vue'
     import useComponentFamilyStore from '../../../stores/component/componentFamily'
     import useUnitsStore from '../../../stores/unit/units'
 
-    const props = defineProps({
-        fieldsAttributs: {required: true, type:Array},
-        myBooleanFamily: {required: true, type:Boolean}
+    defineProps({
+        fieldsAttributs: {required: true, type: Array},
+        myBooleanFamily: {required: true, type: Boolean}
     })
-    console.log('mena',computed(() => props.fieldsAttributs));
-    console.log('myBooleanFamily===>', props.myBooleanFamily);
-
 
     const emit = defineEmits(['update:modelValue', 'dataAttribute'])
     const storeComponentFamilly = useComponentFamilyStore()
@@ -25,6 +22,8 @@
     const listFamilies = storeComponentFamilly.familiesOption
     const listUnits = storeUnits.unitsOption
     const listUnitSelect = storeUnits.unitsSelect
+    let changed = 0
+
     const fields = computed(() => [
         {
             active: true,
@@ -46,7 +45,7 @@
                             name: 'unit',
                             options: {
                                 label: value =>
-                                listUnitSelect.find(option => option.type === value)?.text ?? null,
+                                    listUnitSelect.find(option => option.type === value)?.text ?? null,
                                 options: listUnitSelect
                             },
                             type: 'select'
@@ -56,8 +55,8 @@
                             name: 'weight',
                             options: {
                                 label: value =>
-                                listUnits.find(option => option.type === value)?.text ?? null,
-                                    options: listUnits
+                                    listUnits.find(option => option.type === value)?.text ?? null,
+                                options: listUnits
                             },
                             type: 'measureSelect'
                         }
@@ -121,49 +120,49 @@
             name: 'attributs'
         }
     ])
-    let formInput = {}
+    const formInput = {}
     function input(value) {
-        const key = Object.keys(value)[0]  
+        const key = Object.keys(value)[0]
         if (formInput.hasOwnProperty(key)) {
             if (typeof value[key] === 'object') {
-            if (value[key].value !== undefined) { 
-                const inputValue = parseFloat(value[key].value)
-                formInput[key] = { ...formInput[key], value: inputValue }
-            }
-            if (value[key].code !== undefined) { 
-                const inputCode = value[key].code
-                formInput[key] = { ...formInput[key], code: inputCode }
-            }
-            }else{
+                if (value[key].value !== undefined) {
+                    const inputValue = parseFloat(value[key].value)
+                    formInput[key] = {...formInput[key], value: inputValue}
+                }
+                if (value[key].code !== undefined) {
+                    const inputCode = value[key].code
+                    formInput[key] = {...formInput[key], code: inputCode}
+                }
+            } else {
                 formInput[key] = value[key]
             }
         } else {
-            formInput[key] = value[key];
+            formInput[key] = value[key]
         }
         emit('update:modelValue', formInput)
+        changed++
     }
     function inputAttribute(data) {
         emit('dataAttribute', data)
     }
-    
 </script>
 
 <template>
     <AppSuspense>
-    <div class="gui-card">
-        <AppTabs id="gui-form-create" style="display: block !important;">
-            <AppTab v-for="field in fields" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
-                <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children" @update:model-value="input"/>
-                <p v-else-if="field.name === 'attributs'">
-                    <AppSuspense>
-                        <AppAttributeCreate :fieldsAttributs="fieldsAttributs" :myBooleanFamily="myBooleanFamily" @dataAttribute="inputAttribute"/> 
-                    </AppSuspense>
-                </p>
-                <p v-else>
-                    {{ field.label }} à définir
-                </p>
-            </AppTab>
-        </AppTabs>
-    </div>
+        <div class="gui-card">
+            <AppTabs id="gui-form-create" style="display: block !important;">
+                <AppTab v-for="field in fields" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
+                    <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children" @update:model-value="input"/>
+                    <p v-else-if="field.name === 'attributs'">
+                        <AppSuspense>
+                            <AppAttributeCreate :key="changed" :fields-attributs="fieldsAttributs" :my-boolean-family="myBooleanFamily" @dataAttribute="inputAttribute"/>
+                        </AppSuspense>
+                    </p>
+                    <p v-else>
+                        {{ field.label }} à définir
+                    </p>
+                </AppTab>
+            </AppTabs>
+        </div>
     </AppSuspense>
 </template>

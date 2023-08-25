@@ -38,5 +38,5 @@ export default defineStore('attributes', {
             return `/api/${this.$id}?pagination=false`
         }
     },
-    state: () => ({attributes: [],listAttributes: []})
+    state: () => ({attributes: [], listAttributes: []})
 })

@@ -1,14 +1,15 @@
 <script setup>
-    import {ref} from 'vue'
+    import {computed, ref} from 'vue'
     import AppComponentCreate from './AppComponentCreate.vue'
     import AppSuspense from '../../../components/AppSuspense.vue'
     import AppTablePage from '../AppTablePage'
-    import {computed} from 'vue-demi'
-    import useComponentsStore from '../../../stores/component/components'
-    import useComponentAttributesStore from '../../../stores/component/componentAttribute'
     import useAttributesStore from '../../../stores/attribute/attributes'
-    import useUnitsStore from '../../../stores/unit/units'
+    import useColorsStore from '../../../stores/color/colors'
+    import useComponentAttributesStore from '../../../stores/component/componentAttribute'
+    import useComponentsStore from '../../../stores/component/components'
     import {useTableMachine} from '../../../machine'
+    import useUnitsStore from '../../../stores/unit/units'
+
     const title = 'Créer un Composant'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
@@ -17,8 +18,8 @@
     const StoreComponentAttributes = useComponentAttributesStore()
     const storeAttributes = useAttributesStore()
     const storeUnits = useUnitsStore()
+    const storeColors = useColorsStore()
 
-    
     const fields = [
         {
             create: false,
@@ -81,77 +82,73 @@
             label: 'Etat',
             name: 'etat',
             sort: false,
-            update: true,
-            type: 'trafficLight'
+            type: 'trafficLight',
+            update: true
         }
     ]
     let fInput = {}
-    const family = ref('') 
-    const myBooleanFamily = ref(false);
+    const family = ref('')
+    const myBooleanFamily = ref(false)
     const fieldsAttributs = ref([])
     const attributesFiltered = ref([])
     const inputAttributes = ref({})
-    
-
 
     async function input(formInput) {
         fInput = computed(() => formInput)
-        console.log('fInput', fInput);
-        const oldFamily = family.value;
-        console.log('oldFamily', oldFamily);
+        const oldFamily = family.value
         family.value = fInput.value.family
         if (oldFamily === family.value) {
-            myBooleanFamily.value = false 
-            console.log('myBooleanFamily', myBooleanFamily);
-        }else{
-            myBooleanFamily.value = true 
-            console.log('myBooleanFamily', myBooleanFamily);
+            myBooleanFamily.value = false
+        } else {
+            myBooleanFamily.value = true
         }
-
-        console.log('family', family);
-        if (family!== undefined) {
-            inputAttributes.value= {}
-            console.log('===>', inputAttributes.value);
+        if (family.value !== undefined) {
+            inputAttributes.value = {}
             await storeAttributes.getAttributes()
-            console.log('Attributes', storeAttributes.listAttributes)
             await storeUnits.getUnits()
             const listUnits = storeUnits.unitsOption
+            await storeColors.getListColors()
+            const listColors = storeColors.colorsOption
 
             attributesFiltered.value = storeAttributes.listAttributes.filter(attribute => attribute.families.includes(family.value))
-            console.log('attributesFiltered', attributesFiltered.value)
             const newFields = attributesFiltered.value.map(attribute => {
-                console.log('attribute',attribute);
-                if (attribute.type === 'measureSelect') {
-                    return {
-                    name: attribute.name,
-                    label: attribute.name,
-                    options: {
-                        label: value =>
-                        listUnits.find(option => option.type === value)?.text ?? null,
-                            options: listUnits
-                    },
-                    type: attribute.type
-                    }
-                } else {
+                if (attribute.type === 'color') {
                     return {
                         name: attribute.name,
                         label: attribute.name,
+                        options: {
+                            label: value =>
+                                listColors.find(option => option.type === value)?.text ?? null,
+                            options: listColors
+                        },
+                        type: 'select'
+                    }
+                } if (attribute.type === 'measureSelect') {
+                    return {
+                        name: attribute.name,
+                        label: attribute.name,
+                        options: {
+                            label: value =>
+                                listUnits.find(option => option.type === value)?.text ?? null,
+                            options: listUnits
+                        },
                         type: attribute.type
                     }
+                }
+                return {
+                    name: attribute.name,
+                    label: attribute.name,
+                    type: attribute.type
+                }
+            })
+            fieldsAttributs.value = newFields
         }
-        })
-        fieldsAttributs.value = newFields
-        console.log('fieldsAttributs',fieldsAttributs.value);
     }
-    }
-    
+
     function inputAttribute(data) {
-        // inputAttributes.value= {}
-        console.log('data',data);
-        inputAttributes.value= data
-        console.log('inputAttributes', inputAttributes);
+        inputAttributes.value = data
     }
-    let tabInput = [];
+    let tabInput = []
     async function Componentcreate() {
         const componentInput = {
             family: fInput.value.family,
@@ -164,32 +161,31 @@
         await StoreComponents.addComponent(componentInput)
         const newComponent = await StoreComponents.component
         tabInput = []
-        for (let key in inputAttributes.formInput) {
-            if (typeof inputAttributes.formInput[key] === 'object') {
-                const attribute = inputAttributes.attribute.find(item => item.name === key);
+        for (const key in inputAttributes.value.formInput) {
+            if (typeof inputAttributes.value.formInput[key] === 'object') {
+                const attribute = attributesFiltered.value.find(item => item.name === key)
                 tabInput.push({
                     attribute: attribute['@id'],
-                    measure: inputAttributes.formInput[key],
-                    component: newComponent['@id'],
-                });
-            }else if (key === 'couleur') {
-                const attribute = inputAttributes.attribute.find(item => item.name === key);
+                    measure: inputAttributes.value.formInput[key],
+                    component: newComponent['@id']
+                })
+            } else if (key === 'couleur') {
+                const attribute = attributesFiltered.value.find(item => item.name === key)
                 tabInput.push({
                     attribute: attribute['@id'],
-                    color: inputAttributes.formInput[key],
-                    component: newComponent['@id'],
-                });
-            }else{
-                const attribute = inputAttributes.attribute.find(item => item.name === key);
+                    color: inputAttributes.value.formInput[key],
+                    component: newComponent['@id']
+                })
+            } else {
+                const attribute = attributesFiltered.value.find(item => item.name === key)
                 tabInput.push({
                     attribute: attribute['@id'],
-                    value: inputAttributes.formInput[key],
-                    component: newComponent['@id'],
-                });
+                    value: inputAttributes.value.formInput[key],
+                    component: newComponent['@id']
+                })
             }
         }
-        console.log('tabInput', tabInput);
-        for(let key in tabInput){
+        for (const key in tabInput){
             await StoreComponentAttributes.addComponentAttributes(tabInput[key])
         }
     }
@@ -199,7 +195,7 @@
     <div class="row">
         <AppModal :id="modalId" class="four" :title="title" size="xl">
             <AppSuspense>
-                <AppComponentCreate :fieldsAttributs="fieldsAttributs" :myBooleanFamily="myBooleanFamily" @update:model-value="input" @dataAttribute="inputAttribute"/>
+                <AppComponentCreate :fields-attributs="fieldsAttributs" :my-boolean-family="myBooleanFamily" @update:model-value="input" @dataAttribute="inputAttribute"/>
             </AppSuspense>
             <template #buttons>
                 <AppBtn
