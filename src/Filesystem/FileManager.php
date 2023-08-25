@@ -75,7 +75,7 @@ final class FileManager {
         }
         $family->setFile($file->move($dir, "{$family->getId()}.{$extension}"));
         $familySubFolder = $family instanceof \App\Entity\Project\Product\Family ? 'product-families' : 'component-families';
-        $family->setFilePath($host.'/uploads/'.$familySubFolder.'/'.$family->getId().'.png');
+        $family->setFilePath($host.'/uploads/'.$familySubFolder.'/'.$family->getId().'.'.$extension);
     }
 
     private function checkFolderAndCreateIfNeeded(string $folder): void {
