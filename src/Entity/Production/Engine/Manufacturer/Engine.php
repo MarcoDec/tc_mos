@@ -77,7 +77,7 @@ class Engine extends Entity {
 
     #[
         ApiProperty(description: 'Nom', example: 'Machine'),
-        ORM\Column,
+        ORM\Column(nullable: true),
         Serializer\Groups(['read:manufacturer-engine', 'write:manufacturer-engine'])
     ]
     protected ?string $name = null;
