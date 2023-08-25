@@ -64,7 +64,6 @@
         serialNumber: fetchEngineStore.engine.serialNumber,
         zone: fetchEngineStore.engine.zone['@id']
     }
-    //console.log('localData', localData.value)
     //endregion
     //region définition des champs du formulaire
     const generalFields = [
@@ -116,18 +115,9 @@
             serialNumber: data.serialNumber,
             zone: data.zone
         }
-        //console.log('updated localData', localData.value)
     }
-    async function updateGeneral(value) {
-        console.log('updateGeneral', value)
+    async function updateGeneral() {
         await fetchEngineStore.update(localData.value)
-        // const form = document.getElementById('addGeneralites')
-        // const formData = new FormData(form)
-        // const data = {
-        //     notes: formData.get('notes') ? formData.get('notes') : null
-        // }
-        // const item = generateEmployee(value)
-        // await item.update(data)
     }
 </script>
 
