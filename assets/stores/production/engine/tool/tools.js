@@ -1,7 +1,7 @@
 import api from '../../../../api'
 import {defineStore} from 'pinia'
 
-export const useToolsStore = defineStore('counter-parts', {
+export const useToolsStore = defineStore('tools', {
     actions: {
         async create(data) {
             const response = await api('/api/tools', 'POST', data)

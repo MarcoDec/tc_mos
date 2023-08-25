@@ -24,7 +24,7 @@ export const useCounterPartStore = defineStore('counter-parts', {
             this.isLoaded = true
         },
         async update(data) {
-            const response = await api(`/api/counter-parts/${id}`, 'PATCH', data)
+            const response = await api(`/api/counter-parts/${this.engine.id}`, 'PATCH', data)
             this.engine = await response
         }
     },

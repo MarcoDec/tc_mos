@@ -3,13 +3,13 @@ import {defineStore} from 'pinia'
 
 const baseUrl = '/api/engine-attachments'
 const linkedEntity = 'engine'
-export const useEngineAttachmentStore = defineStore('toolAttachment', {
+export const useEngineAttachmentStore = defineStore('counterPartAttachment', {
     actions: {
         async ajout(data) {
             const form = new FormData()
             form.append('file', data.file)
             form.append('category', data.category)
-            form.append(linkedEntity, data.tool)
+            form.append(linkedEntity, data['counter-part'])
             await api(baseUrl, 'POST', form)
             this.fetchByElement(this.id)
         },
