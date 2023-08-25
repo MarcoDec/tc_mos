@@ -138,7 +138,7 @@
             .then(resultats => {
                 // eslint-disable-next-line array-callback-return
                 resultats.forEach(result => {
-                    if (result.status === 'fulfilled') console.log(`Fichier bien chargé ${result.value.url}`)
+                    if (result.status === 'fulfilled') console.log('Fichier bien chargé')
                     else {
                         //console.log('Erreur chargement', result.reason)
                         isError.value = true
@@ -166,7 +166,7 @@
             id="addFichiers"
             :fields="fichiersFields"
             :component-attribute="currentElementData"
-            title="Ajouter un nouveau Fichier"
+            title="Ajouter des nouveaux Fichiers"
             @update="updateFichiers"/>
         <div v-if="isError" class="alert alert-danger" role="alert">
             <ul>
