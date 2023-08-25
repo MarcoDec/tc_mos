@@ -1,16 +1,20 @@
 <script setup>
     import AppShowGuiGen from '../../../AppShowGuiGen.vue'
     import AppToolFormShow from './AppToolFormShow.vue'
-    import useOptions from '../../../../../stores/option/options'
+    //import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
     import {useToolsStore} from '../../../../../stores/production/engine/tool/tools'
 
     const route = useRoute()
     const idEngine = Number(route.params.id_engine)
-    const fetchUnits = useOptions('units')
+    //region récupération information Outils
     const useFetchToolsStore = useToolsStore()
-    fetchUnits.fetchOp()
     useFetchToolsStore.fetchOne(idEngine)
+    //endregion
+    // //region récupéation information unité ??
+    // const fetchUnits = useOptions('units')
+    // fetchUnits.fetchOp()
+    // //endregion
 </script>
 
 <template>
@@ -21,7 +25,7 @@
             </div>
         </template>
         <template #gui-left>
-            <AppSuspense><AppToolFormShow v-if="useFetchToolsStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
+            <AppSuspense><AppToolFormShow v-if="useFetchToolsStore.isLoaded"/></AppSuspense>
         </template>
         <template #gui-bottom>
             <!--            <AppTabs id="gui-bottom">-->

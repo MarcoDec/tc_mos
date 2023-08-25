@@ -24,7 +24,7 @@ export const useToolsStore = defineStore('counter-parts', {
             this.isLoaded = true
         },
         async update(data) {
-            const response = await api(`/api/tools/${id}`, 'PATCH', data)
+            const response = await api(`/api/tools/${this.engine.id}`, 'PATCH', data)
             this.engine = await response
         }
     },

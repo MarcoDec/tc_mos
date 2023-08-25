@@ -1,42 +1,37 @@
 <script setup>
+    import AppShowToolTabGeneral from './tabs/AppShowToolTabGeneral.vue'
     import {useToolsStore} from '../../../../../stores/production/engine/tool/tools'
-
+    import useUser from '../../../../../stores/security'
+    import useZonesStore from '../../../../../stores/production/company/zones'
+    const currentCompany = useUser().company
     const fetchEngineStore = useToolsStore()
-    //await fecthEngineStore.fetch()
-
-    const options = [
-        {text: 'aaaaa', value: 'aaaaa'},
-        {text: 'bbbb', value: 'bbbb'}
-    ]
-    const Contactsfields = [
-        {label: 'supplierRef', name: 'supplierRef', type: 'text'},
-        {label: 'serialNumber', name: 'serialNumber', type: 'text'},
-        {label: 'manufacturingDate', name: 'manufacturingDate', type: 'date'},
-        {label: 'manufacturer', name: 'manufacturer', options: {label: value => options.find(option => option.type === value)?.text ?? null, options}, type: 'select'},
-        {label: 'Code postal', name: 'CodePostal', type: 'text'},
-        {label: 'entryDate', name: 'entryDate', type: 'date'}
-    ]
-    const qualityFields = [
-        {label: 'Hauteur de sertissage (mm)', name: 'HauteurSertissage', type: 'text'},
-        {label: 'Largeur de sertissage (mm)', name: 'LargeurSertissage', type: 'text'},
-        {label: 'Paramètre de mesure', name: 'ParamètreMesure', type: 'text'}
-    ]
+    const fetchZones = useZonesStore()
+    await fetchZones.fetchAll(currentCompany)
 </script>
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
-            <AppCardShow id="addGeneralites" :component-attribute="fetchEngineStore.engine"/>
+            <Suspense><AppShowToolTabGeneral v-if="fetchEngineStore.isLoaded"/></Suspense>
         </AppTab>
-        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">
-            <AppCardShow id="addQualite" :fields="qualityFields" :component-attribute="fetchEngineStore.engine"/>
-        </AppTab>
-        <AppTab id="gui-start-purchase-logistics" title="Logistique" icon="pallet" tabs="gui-start">
-            <AppCardShow id="addLogistique" :component-attribute="fetchEngineStore.engine"/>
-        </AppTab>
-        <AppTab id="gui-start-addresses" title="Adresses\Contacts" icon="file-contract" tabs="gui-start">
-            <AppCardShow id="addContacts" :fields="Contactsfields" :component-attribute="fetchEngineStore.engine"/>
-        </AppTab>
+        <!--        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">-->
+        <!--            <AppCardShow id="addQualite" :fields="qualityFields" :component-attribute="fetchEngineStore.engine"/>-->
+        <!--        </AppTab>-->
+        <!--        <AppTab id="gui-start-purchase-logistics" title="Logistique" icon="pallet" tabs="gui-start">-->
+        <!--            <AppCardShow id="addLogistique" :component-attribute="fetchEngineStore.engine"/>-->
+        <!--        </AppTab>-->
+        <!--        <AppTab id="gui-start-addresses" title="Adresses\Contacts" icon="file-contract" tabs="gui-start">-->
+        <!--            <AppCardShow id="addContacts" :fields="Contactsfields" :component-attribute="fetchEngineStore.engine"/>-->
+        <!--        </AppTab>-->
     </AppTabs>
 </template>
 
+<style scoped>
+div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+.gui-start-content {
+    font-size: 14px;
+}
+#gui-start-production, #gui-start-droits {
+    padding-bottom: 150px;
+}
+</style>
