@@ -75,6 +75,7 @@ export default [
             apiBaseRoute: 'zones',
             fields: [{label: 'Nom', name: 'name'}],
             icon: 'map-marked',
+            isCompanyFiltered: true,
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Zones'
         }

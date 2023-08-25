@@ -26,7 +26,11 @@
     const lowerLabel = computed(() => props.label.toLowerCase())
 
     function input(v) {
-        emit('update:modelValue', v)
+        if (props.store.isCompanyFiltered) {
+            const newV = {...v, company: props.store.company}
+            console.log('input => update:modelValue', v, props.store.isCompanyFiltered, newV)
+            emit('update:modelValue', newV)
+        } else emit('update:modelValue', v)
     }
     function reverse() {
         props.send(props.reverseMode)
