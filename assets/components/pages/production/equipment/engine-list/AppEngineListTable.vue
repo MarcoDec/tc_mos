@@ -298,7 +298,7 @@
     <div class="container">
         <div class="row">
             <h1 class="col">
-                <img src="img/production/icons8-usine-48.png" alt="icône Machine type perceuse"/>
+                <img src="/public/img/production/icons8-usine-48.png" alt="icône Machine type perceuse"/>
                 {{ title }}
             </h1>
             <span class="col">

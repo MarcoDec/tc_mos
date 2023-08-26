@@ -206,7 +206,7 @@
     <div class="container">
         <div class="row">
             <h1 class="col">
-                <img src="img/production/icons8-usine-48.png"/>
+                <img src="/public/img/production/icons8-usine-48.png"/>
                 {{ title }}
             </h1>
             <span class="col">
