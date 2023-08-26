@@ -87,7 +87,7 @@ class ProductionQuality extends Entity
          Column(nullable: true, type: 'datetime'),
          Serializer\Groups(['read:production-quality', 'write:production-quality'])
      ]
-    private $recordDate;
+    private \DateTime $recordDate;
 
      #[
         ApiProperty(description: 'Type de résultat', example: '1'), //TODO: faire Enum
@@ -108,11 +108,11 @@ class ProductionQuality extends Entity
         return $this->numberOfControl;
     }
 
-    public function getProductionOperation(): ?ProductionOperation {
+    public function getProductionOperation(): ?Operation {
         return $this->productionOperation;
     }
 
-    public function getRecordDate(): ?DateTimeInterface {
+    public function getRecordDate(): ?\DateTime {
         return $this->recordDate;
     }
 
@@ -143,12 +143,12 @@ class ProductionQuality extends Entity
         return $this;
     }
 
-    public function setProductionOperation(?ProductionOperation $productionOperation): self {
+    public function setProductionOperation(?Operation $productionOperation): self {
         $this->productionOperation = $productionOperation;
         return $this;
     }
 
-    public function setRecordDate(?DateTimeInterface $recordDate): self {
+    public function setRecordDate(?\DateTime $recordDate): self {
         $this->recordDate = $recordDate;
         return $this;
     }
