@@ -66,7 +66,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:invoice-time-due', 'read:id'],
             'openapi_definition_name' => 'InvoiceTimeDue-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationEnabled: false
     ),
     ORM\Entity,
     UniqueEntity(['days', 'daysAfterEndOfMonth', 'endOfMonth']),

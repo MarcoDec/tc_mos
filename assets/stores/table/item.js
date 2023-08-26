@@ -9,12 +9,12 @@ export default function generateItem(iriType, item, root) {
                 this.$dispose()
             },
             async remove() {
-                await api().fetch(this.iri, 'DELETE')
+                await api().fetchOne(this.iri, 'DELETE')
                 this.root.remove(this['@id'])
                 this.dispose()
             },
             async update(fields, data) {
-                const response = await api(fields).fetch(this.iri, 'PATCH', data)
+                const response = await api(fields).fetchOne(this.iri, 'PATCH', data)
                 this.$state = {iriType: this.iriType, root: this.root, ...response}
             }
         },

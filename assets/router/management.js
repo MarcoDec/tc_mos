@@ -1,6 +1,6 @@
-import AppSocity from './pages/direction/AppSocity.vue'
+import AppSocity from '../components/pages/management/society/AppSocity.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
-import MonthCalendar from '../router/pages/company/agenda/agendaMonth/MonthCalendar.vue'
+import MonthCalendar from '../components/pages/management/company/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
 
 export default [
@@ -80,6 +80,22 @@ export default [
             icon: 'ruler-horizontal',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Unités'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Supp — T-Concept GPAO'},
+        name: 'supplier-contacts',
+        path: '/supplier-contacts',
+        props: {
+            apiBaseRoute: 'supplier-contacts',
+            fields: [
+                {label: 'Nom', name: 'name'}
+
+            ],
+            icon: 'ruler-horizontal',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Supp'
         }
     },
     {

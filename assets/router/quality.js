@@ -17,13 +17,13 @@ export default [
                     sortName: 'component.id',
                     type: 'select'
                 },
-                {label: 'Hauteur', name: 'height.value', search: false, sort: false, type: 'measure'},
-                {label: 'Tolérance hauteur', name: 'height.tolerance', search: false, sort: false, type: 'measure'},
-                {label: 'Largeur', name: 'width.value', search: false, sort: false, type: 'measure'},
-                {label: 'Tolérance largeur', name: 'width.tolerance', search: false, sort: false, type: 'measure'},
-                {label: 'Section', name: 'section', search: false, sort: false, type: 'measure'},
-                {label: 'Tension', name: 'tensile.value', search: false, sort: false, type: 'measure'},
-                {label: 'Tolérance tension', name: 'tensile.tolerance', search: false, sort: false, type: 'measure'}
+                {label: 'Hauteur', measure: {code: 'm', value: 'valeur'}, name: 'height.value', search: false, sort: false, type: 'measure'},
+                {label: 'Tolérance hauteur', measure: {code: 'm', value: 'valeur'}, name: 'height.tolerance', search: false, sort: false, type: 'measure'},
+                {label: 'Largeur', measure: {code: 'm', value: 'valeur'}, name: 'width.value', search: false, sort: false, type: 'measure'},
+                {label: 'Tolérance largeur', measure: {code: 'm', value: 'valeur'}, name: 'width.tolerance', search: false, sort: false, type: 'measure'},
+                {label: 'Section', measure: {code: 'mm²', value: 'valeur'}, name: 'section', search: false, sort: false, type: 'measure'},
+                {label: 'Tension', measure: {code: 'N', value: 'valeur'}, name: 'tensile.value', search: false, sort: false, type: 'measure'},
+                {label: 'Tolérance tension', measure: {code: 'N', value: 'valeur'}, name: 'tensile.tolerance', search: false, sort: false, type: 'measure'}
             ],
             icon: 'check-circle',
             sort: readonly({label: 'Nom', name: 'name'}),

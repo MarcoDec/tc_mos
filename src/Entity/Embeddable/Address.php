@@ -31,7 +31,7 @@ class Address {
             example: '5 rue Alfred Nobel',
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/streetAddress'], 'format' => 'streetAddress']
         ),
-        Assert\Length(min: 10, max: 160),
+        Assert\Length(max: 160),
         ORM\Column(length: 160, nullable: true),
         Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
@@ -55,7 +55,7 @@ class Address {
             example: 'Rioz',
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/addressLocality'], 'format' => 'addressLocality']
         ),
-        Assert\Length(min: 3, max: 50),
+        Assert\Length(max: 50),
         ORM\Column(length: 50, nullable: true),
         Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
@@ -68,7 +68,7 @@ class Address {
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/addressLocality'], 'format' => 'addressLocality']
         ),
         Assert\Country,
-        Assert\Length(exactly: 2),
+        //Assert\Length(exactly: 2),
         ORM\Column(type: 'char', length: 2, nullable: true),
         Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
@@ -77,7 +77,7 @@ class Address {
     #[
         ApiProperty(description: 'E-mail', example: 'sales@tconcept.fr', openapiContext: ['format' => 'email']),
         Assert\Email,
-        Assert\Length(min: 5, max: 80),
+        Assert\Length(max: 80),
         ORM\Column(length: 80, nullable: true),
         Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]
@@ -103,7 +103,7 @@ class Address {
             openapiContext: ['externalDocs' => ['url' => 'http://schema.org/postalCode'], 'format' => 'postalCode']
         ),
         AppAssert\ZipCode,
-        Assert\Length(min: 2, max: 10),
+        Assert\Length(max: 10),
         ORM\Column(length: 10, nullable: true),
         Serializer\Groups(['read:address', 'write:address', 'read:society:collection', 'write:customer', 'write:customer:main'])
     ]

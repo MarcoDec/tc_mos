@@ -33,7 +33,8 @@
     }
 
     function input(v) {
-        emit('update:modelValue', set(cloneDeep(props.modelValue), props.field.name, v))
+        const cloned = set(cloneDeep(props.modelValue), props.field.name, v)
+        emit('update:modelValue', cloned)
     }
 
     function instantiate() {

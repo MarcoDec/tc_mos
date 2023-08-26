@@ -1,14 +1,14 @@
 <script setup>
     /* eslint-disable vue/no-unused-properties */
+    import AppInput from './AppInput.vue'
     import AppInputMeasure from './AppInputMeasure.vue'
     import AppInputNumber from './AppInputNumber.vue'
-    import AppSelect from './select/AppSelect.vue'
     import AppMultiselect from './select/AppMultiselect.vue'
+    import AppSelect from './select/AppSelect.vue'
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
-    import AppTextArea from './AppTextArea.vue'
 
-    const emit = defineEmits(['update:model-value'])
+    const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -16,8 +16,7 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
-
-    const type = computed(() => {
+    const kind = computed(() => {
         switch (props.field.type) {
             case 'boolean':
                 return AppSwitch
@@ -29,18 +28,16 @@
                 return AppMultiselect
             case 'select':
                 return AppSelect
-            case 'textarea':
-                return AppTextArea
             default:
-                return 'AppInput'
+                return AppInput
         }
     })
 
     function input(v) {
-        emit('update:model-value', v)
+        emit('update:modelValue', v)
     }
 </script>
 
 <template>
-    <component :is="type" v-bind="$props" @update:model-value="input"/>
+    <component :is="kind" v-bind="$props" @update:model-value="input"/>
 </template>

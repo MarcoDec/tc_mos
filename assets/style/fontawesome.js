@@ -1,11 +1,13 @@
 import {
     faAddressCard,
     faAngleDoubleLeft,
+    faArrowRightToBracket,
     faAtom,
     faBars,
     faBell,
     faBoxes,
     faCalendar,
+    faCalendarDay,
     faCalendarWeek,
     faCaretDown,
     faCaretUp,
@@ -14,7 +16,10 @@ import {
     faCheckCircle,
     faChevronDown,
     faChevronUp,
+    faCircleDollarToSlot,
+    faCircleInfo,
     faCity,
+    faClipboardCheck,
     faClock,
     faCommentsDollar,
     faCubesStacked,
@@ -31,12 +36,15 @@ import {
     faIndustry,
     faLaptop,
     faLayerGroup,
+    faLocationDot,
     faMagnet,
     faMale,
     faMapMarked,
     faMapMarkedAlt,
     faOilWell,
     faPalette,
+    faPallet,
+    faPencil,
     faPencilAlt,
     faPeopleGroup,
     faPlus,
@@ -48,12 +56,13 @@ import {
     faRulerHorizontal,
     faRulerVertical,
     faSearch,
-    faSignal,
     faShoppingBag,
     faShoppingCart,
     faShuttleVan,
     faSignOutAlt,
+    faSignal,
     faSitemap,
+    faStar,
     faTimes,
     faTrash,
     faUserCircle,
@@ -71,6 +80,7 @@ library.add(faAngleDoubleLeft)
 library.add(faBars)
 library.add(faBell)
 library.add(faBoxes)
+library.add(faCalendarDay)
 library.add(faCaretDown)
 library.add(faCaretUp)
 library.add(faCertificate)
@@ -103,6 +113,7 @@ library.add(faOilWell)
 library.add(faPalette)
 library.add(faPencilAlt)
 library.add(faPeopleGroup)
+library.add(faPencil)
 library.add(faPlus)
 library.add(faPlusCircle)
 library.add(faPrint)
@@ -123,8 +134,15 @@ library.add(faUserCircle)
 library.add(faUserGraduate)
 library.add(faUserTag)
 library.add(faWrench)
+library.add(faLocationDot)
+library.add(faPallet)
+library.add(faCircleDollarToSlot)
+library.add(faArrowRightToBracket)
+library.add(faClipboardCheck)
+library.add(faCircleInfo)
 library.add(faCalendar)
 library.add(faCalendarWeek)
 library.add(faWarehouse)
 library.add(faCubesStacked)
 library.add(faRulerVertical)
+library.add(faStar)

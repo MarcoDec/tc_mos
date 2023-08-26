@@ -27,6 +27,7 @@ final class FileDataPersister implements DataPersisterInterface {
         if ($data instanceof Family) {
             $this->fm->uploadFamilyIcon($data);
         }
+        $this->em->flush();
         return $data;
     }
 

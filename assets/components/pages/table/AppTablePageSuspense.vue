@@ -4,11 +4,19 @@
 
     const props = defineProps({
         apiBaseRoute: {default: '', required: true, type: String},
+        apiTypedRoutes: {
+            default: () => {
+                const obj = {}
+                return obj
+            },
+            type: Object
+        },
         brands: {type: Boolean},
         disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
+        isCompanyFiltered: {required: false, type: Boolean},
         readFilter: {default: '', required: false, type: String},
         sort: {required: true, type: Object},
         title: {required: true, type: String}
@@ -20,11 +28,13 @@
     <AppSuspense>
         <AppTablePage
             :api-base-route="apiBaseRoute"
+            :api-typed-routes="apiTypedRoutes"
             :brands="brands"
             :disable-add="disableAdd"
             :disable-remove="disableRemove"
             :fields="fields"
             :icon="icon"
+            :is-company-filtered="isCompanyFiltered"
             :read-filter="readFilter"
             :sort="sort"
             :title="title">

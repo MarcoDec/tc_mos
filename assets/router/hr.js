@@ -1,3 +1,4 @@
+import AppShowGuiEmployee from '../components/pages/hr/employee/AppShowGuiEmployee.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 
@@ -12,15 +13,13 @@ export default [
             brands: true,
             fields: [
                 {label: 'Nom', name: 'name'},
-                {label: 'Vers Le statut', name: 'toStatus'}
-                //,
-                // {
-                //     label: 'Vers le statut',
-                //     name: 'toStatus',
-                //     options: {base: 'event-types', value: 'id'},
-                //     sort: false,
-                //     type: 'select'
-                // }
+                {
+                    label: 'Vers le statut',
+                    name: 'toStatus',
+                    options: {base: 'event-types', value: 'code'},
+                    sort: false,
+                    type: 'select'
+                }
             ],
             icon: 'elementor',
             sort: readonly({label: 'Nom', name: 'name'}),
@@ -68,6 +67,12 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Plages horaires'
         }
+    },
+    {
+        component: AppShowGuiEmployee,
+        meta: {container: false, title: 'Employee — T-Concept GPAO'},
+        name: 'employee',
+        path: '/employee/:id_employee'
     },
     {
         component: AppTablePageSuspense,

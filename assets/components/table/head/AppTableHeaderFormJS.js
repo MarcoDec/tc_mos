@@ -34,6 +34,7 @@ function AppTableHeaderFormJS(props, context) {
                     disabled,
                     form,
                     icon: props.icon,
+                    label: 'submitLabel',
                     title: submitLabel,
                     type,
                     variant: props.submitVariant
@@ -52,6 +53,7 @@ function AppTableHeaderFormJS(props, context) {
             h(resolveComponent('Fa'), {icon: props.icon}),
             h(resolveComponent('AppBtnJS'), {
                 icon: props.reverseIcon,
+                label: `Basculer en mode ${props.reverseLabel}`,
                 onClick: () => props.machine.send(props.reverseMode),
                 title: `Basculer en mode ${props.reverseLabel}`,
                 variant: 'primary'
@@ -68,6 +70,7 @@ function AppTableHeaderFormJS(props, context) {
             machine: props.machine,
             modelValue: props.modelValue[field.name],
             'onUpdate:modelValue': value => context.emit('inputValue', {field, value}),
+            store: props.store,
             violation: props.violations.find(violation => violation.propertyPath === field.name)
         }, typeof slot === 'function' ? args => slot(args) : null))
     }

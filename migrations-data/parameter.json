@@ -38,7 +38,7 @@
     "name": "COMPONENT_ATTACHMENT_CATEGORIES",
     "description": "Liste représentant les choix possibles des catégories de pièces jointes accepté par Component\nFormat de name : ATTACHMENT_CATEGORY_{nom de l'entité au format UPPERCASE}\nFormat de value : choix séparé par une virgule",
     "process": "purchase",
-    "value": "doc_a_date,qualité,technique",
+    "value": "doc_a_date,qualité,technique,rohs,reach",
     "type": "ARRAY"
   },
   {

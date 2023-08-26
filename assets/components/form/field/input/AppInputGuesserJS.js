@@ -1,23 +1,35 @@
 import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
-import AppInputNumberJS from './AppInputNumberJS'
+import AppInputMeasure from './AppInputMeasure.vue'
+import AppInputMeasureSelect from './AppInputMeasureSelect.vue'
+import AppInputNumber from './AppInputNumber.vue'
 import AppMultiselect from './select/AppMultiselect.vue'
-import AppSelectJS from './select/AppSelectJS'
+import AppRating from './AppRating.vue'
+import AppSelect from './select/AppSelect.vue'
 import AppSwitch from './AppSwitch.vue'
+import AppTextArea from './AppTextArea'
 import {generateField} from '../../../props'
 
 function getType(field) {
     switch (field.type) {
     case 'boolean':
         return AppSwitch
+    case 'number':
+        return AppInputNumber
     case 'file':
         return AppInputFile
-    case 'number':
-        return AppInputNumberJS
     case 'select':
-        return AppSelectJS
+        return AppSelect
     case 'multiselect':
         return AppMultiselect
+    case 'measure':
+        return AppInputMeasure
+    case 'measureSelect':
+        return AppInputMeasureSelect
+    case 'rating':
+        return AppRating
+    case 'textarea':
+        return AppTextArea
     default:
         return resolveComponent('AppInputJS')
     }

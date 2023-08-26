@@ -1,4 +1,4 @@
-const types = ['boolean', 'color', 'file', 'multiselect', 'number', 'password', 'select', 'text', 'time', 'date', 'grpbutton', 'textarea', 'measure']
+const types = ['boolean', 'color', 'file', 'multiselect', 'number', 'password', 'select', 'text', 'textarea', 'time', 'measure', 'address', 'date', 'rating', 'measureSelect', 'grpbutton']
 
 export function fieldValidator(field) {
     if (typeof field !== 'object' || field === null || Array.isArray(field)) {
@@ -6,7 +6,7 @@ export function fieldValidator(field) {
         return false
     }
     if (typeof field.label !== 'string' || typeof field.name !== 'string') {
-        console.error('field.label and field.name must be defined and a string')
+        console.error('field.label and field.name must be defined and a string', field)
         return false
     }
     if (typeof field.type !== 'undefined') {
@@ -15,7 +15,6 @@ export function fieldValidator(field) {
             return false
         }
         if (!types.includes(field.type)) {
-            console.log(field)
             console.error(`field.type must be on of [${types.join(', ')}]`)
             return false
         }
@@ -28,10 +27,9 @@ export function fieldValidator(field) {
                 console.error('field.options.options must be defined and an array')
                 return false
             }
-
             for (const option of field.options.options)
                 if (typeof option.text === 'undefined' || option.text === null || typeof option.value === 'undefined') {
-                    console.error('field.options', 'field.text and field.value must be defined')
+                    console.error('field.options', 'field.text and field.value must be defined', field)
                     return false
                 }
         }

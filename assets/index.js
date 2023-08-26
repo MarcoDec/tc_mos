@@ -9,11 +9,13 @@ import AppCardJS from './components/AppCardJS'
 import AppCardShow from './components/AppCardShow.vue'
 import AppCardableTable from './components/bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
 import AppCol from './components/layout/AppCol'
+import AppCollectionTable from './components/bootstrap-5/app-collection-table/AppCollectionTable.vue'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppDropdownItemJS from './components/nav/dropdown/AppDropdownItemJS'
 import AppForm from './components/form/AppForm.vue'
 import AppFormCardable from './components/form-cardable/AppFormCardable'
+import AppFormFieldset from './components/form/field/AppFormFieldset.vue'
 import AppFormGenerator from './components/form/AppFormGenerator.vue'
 import AppFormGroup from './components/form/field/AppFormGroup.vue'
 import AppFormGroupJS from './components/form/field/AppFormGroupJS'
@@ -27,12 +29,11 @@ import AppLabelJS from './components/form/field/AppLabelJS'
 import AppModal from './components/modal/AppModal.vue'
 import AppMultiselect from './components/form/field/input/select/AppMultiselect.vue'
 import AppOptions from './components/form/field/input/select/AppOptions.vue'
-//import AppOverlay from './components/AppOverlay'
 import AppOverlayJS from './components/AppOverlayJS'
 import AppPaginationItem from './components/table/pagination/AppPaginationItem'
 import AppRouterLink from './components/nav/link/AppRouterLink.vue'
 import AppRouterLinkJS from './components/nav/link/AppRouterLinkJS'
-import AppRow from './components/layout/AppRow'
+import AppRow from './components/AppRow'
 import AppShowGuiCard from './components/gui/AppShowGuiCard.vue'
 import AppSuspense from './components/AppSuspense.vue'
 import AppTab from './components/tab/AppTab.vue'
@@ -74,6 +75,8 @@ import useUser from './stores/security'
 const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppBtnJS', AppBtnJS)
+    .component('AppCollectionTable', AppCollectionTable)
+    .component('AppCardableTable', AppCardableTable)
     .component('AppCard', AppCard)
     .component('AppCardJS', AppCardJS)
     .component('AppCardShow', AppCardShow)
@@ -85,6 +88,8 @@ const app = createApp(App)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppDropdownItemJS', AppDropdownItemJS)
     .component('AppForm', AppForm)
+    .component('AppFormCardable', AppFormCardable)
+    .component('AppFormFieldset', AppFormFieldset)
     .component('AppFormJS', AppFormJS)
     .component('AppFormCardable', AppFormCardable)
     .component('AppFormGenerator', AppFormGenerator)

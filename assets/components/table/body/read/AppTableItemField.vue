@@ -1,5 +1,4 @@
 <script setup>
-    import AppInputGuesserJS from '../../../form/field/input/AppInputGuesserJS'
     import {computed} from 'vue'
     import {get} from 'lodash'
 
@@ -14,33 +13,33 @@
             if (typeof res === 'undefined') return thevalue.value
             return res.text
         }
-        //TODO: gérer Multiselect et measures
-
         if (props.field.type === 'measure'){
             if (thevalue.value.value === 'undefined' || thevalue.value.code === 'undefined') return thevalue.value
             return `${thevalue.value.value} ${thevalue.value.code}`
         }
-
+        if (typeof props.field.labelValue === 'function') {
+            return props.field.labelValue(value.value)
+        }
         return thevalue.value
     }
     const bool = computed(() => props.field.type === 'boolean')
     const color = computed(() => props.field.type === 'color')
     const id = computed(() => `${props.row}-${props.field.name}`)
     const value = computed(() => get(props.item, props.field.name))
-    const label = computed(() => labelValue(value)) //computed(() => props.field.label) labelValue(value.value)
+    const label = computed(() => labelValue(value))
     const input = computed(() => `${id.value}-input`)
     const array = computed(() => Array.isArray(label.value))
 </script>
 
 <template>
     <td :id="id">
-        <AppInputGuesserJS v-if="bool" :id="input" :field="field" :model-value="label" disabled form="none"/>
+        <AppInputGuesser v-if="bool" :id="input" :field="field" :model-value="label" disabled form="none"/>
         <div v-else-if="color" class="row">
             <div v-if="!field.hideLabelValue" class="col-2">
                 {{ label }}
             </div>
             <div class="col">
-                <AppInputGuesserJS :id="input" :field="field" :model-value="label" disabled form="none"/>
+                <AppInputGuesser :id="input" :field="field" :model-value="label" disabled form="none"/>
             </div>
         </div>
         <ul v-else-if="array">

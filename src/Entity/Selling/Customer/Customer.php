@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
@@ -77,7 +78,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['accounting', 'admin', 'logistics', 'main'],
+                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality'],
                             'type' => 'string'
                         ]
                     ]],
@@ -236,6 +237,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Nombre de bons de livraison mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
+        Assert\LessThanOrEqual(value: 254),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private int $nbDeliveries = 10;
@@ -243,6 +245,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Nombre de factures mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
+        Assert\LessThanOrEqual(value: 254),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private int $nbInvoices = 10;
@@ -268,7 +271,48 @@ class Customer extends Entity {
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private ?InvoiceTimeDue $paymentTerms = null;
+    #[
+        ApiProperty(description: 'Portail de gestion Qualité'),
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:quality'])
+    ]
+    private WebPortal $qualityPortal;
 
+    /**
+     * @return Collection
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Collection $attachments
+     * @return Customer
+     */
+    public function setAttachments(Collection $attachments): Customer
+    {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
+    /**
+     * @return WebPortal
+     */
+    public function getQualityPortal(): WebPortal
+    {
+        return $this->qualityPortal;
+    }
+
+    /**
+     * @param WebPortal $qualityPortal
+     * @return Customer
+     */
+    public function setQualityPortal(WebPortal $qualityPortal): Customer
+    {
+        $this->qualityPortal = $qualityPortal;
+        return $this;
+    }
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         ORM\JoinColumn(nullable: false),

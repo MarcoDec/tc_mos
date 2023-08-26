@@ -12,11 +12,12 @@ function AppForm(props, context) {
         })
     }
     const groups = []
+    let currentValue = props.modelValue
     if (props.noContent) {
         if (typeof context.slots['default'] === 'function')
             groups.push(generateSlot())
     } else {
-        for (const field of props.fields){
+        for (const field of props.fields) {
             groups.push(h(AppFormGroup, {
                 disabled: props.disabled,
                 field,
@@ -24,11 +25,10 @@ function AppForm(props, context) {
                 key: field.name,
                 labelCols: props.labelCols,
                 modelValue: props.modelValue[field.name],
+                // eslint-disable-next-line no-loop-func
                 'onUpdate:modelValue': value => {
-                    context.emit('update:modelValue', {
-                        ...props.modelValue,
-                        [field.name]: value
-                    })
+                    currentValue = {...currentValue, [field.name]: value}
+                    context.emit('update:modelValue', currentValue)
                 },
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
@@ -52,7 +52,6 @@ function AppForm(props, context) {
             ))
         }
     }
-
     const attrs = {
         autocomplete: 'off',
         enctype: 'multipart/form-data',
@@ -74,15 +73,12 @@ function AppForm(props, context) {
             context.emit('submit', data)
         }
     }
-
-    if (props.inline){
+    if (props.inline)
         attrs['class'] = 'd-inline m-0 p-0'
-    }
     return h('form', attrs, groups)
 }
 
 AppForm.emits = ['submit', 'update:modelValue']
-
 AppForm.props = {
     disabled: {type: Boolean},
     fields: {

@@ -122,6 +122,13 @@ class Family extends AbstractFamily {
     protected DoctrineCollection $children;
 
     #[
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:product-family'])
+    ]
+    protected ?string $filePath = null;
+
+    #[
         ApiProperty(description: 'Nom', required: true, example: 'Câbles'),
         Assert\Length(min: 3, max: 40),
         Assert\NotBlank,
