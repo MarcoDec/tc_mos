@@ -1,5 +1,6 @@
 <script setup>
     import AppShowWorkstationTabGeneral from './tabs/AppShowWorkstationTabGeneral.vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
     import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
     import {useEngineAttachmentStore} from '../../../../../stores/production/engine/workstation/engineAttachment'
     import {useRoute} from 'vue-router'
@@ -23,14 +24,14 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
-            <Suspense><AppShowWorkstationTabGeneral v-if="fetchEngineStore.isLoaded"/></Suspense>
+            <AppSuspense><AppShowWorkstationTabGeneral v-if="fetchEngineStore.isLoaded"/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppTabFichiers
                     attachment-element-label="engine"
                     :element-api-url="`/api/workstations/${fetchEngineStore.engine.id}`"
@@ -38,7 +39,7 @@
                     :element-id="fetchEngineStore.engine.id"
                     element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
                     :element-store="useWorkstationsStore"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <!--        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">-->
         <!--            <AppCardShow id="addQualite" :fields="qualityFields" :component-attribute="fetchEngineStore.engine"/>-->

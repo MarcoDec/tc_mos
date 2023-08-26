@@ -1,5 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import AppSuspense from '../../../AppSuspense.vue'
     import {useSocietyListStore} from '../../../../stores/management/societyList'
 
     defineProps({
@@ -207,67 +208,73 @@
     </AppCol>
     <AppRow>
         <AppCol>
-            <AppCardableTable
-                :current-page="storeSocietyList.currentPage"
-                :fields="tabFields"
-                :first-page="storeSocietyList.firstPage"
-                :items="itemsTable"
-                :last-page="storeSocietyList.lastPage"
-                :min="AddForm"
-                :next-page="storeSocietyList.nextPage"
-                :pag="storeSocietyList.pagination"
-                :previous-page="storeSocietyList.previousPage"
-                :user="roleuser"
-                form="formSocietyCardableTable"
-                @update="update"
-                @deleted="deleted"
-                @get-page="getPage"
-                @trier-alphabet="trierAlphabet"
-                @search="search"
-                @cancel-search="cancelSearch"/>
+            <AppSuspense>
+                <AppCardableTable
+                    :current-page="storeSocietyList.currentPage"
+                    :fields="tabFields"
+                    :first-page="storeSocietyList.firstPage"
+                    :items="itemsTable"
+                    :last-page="storeSocietyList.lastPage"
+                    :min="AddForm"
+                    :next-page="storeSocietyList.nextPage"
+                    :pag="storeSocietyList.pagination"
+                    :previous-page="storeSocietyList.previousPage"
+                    :user="roleuser"
+                    form="formSocietyCardableTable"
+                    @update="update"
+                    @deleted="deleted"
+                    @get-page="getPage"
+                    @trier-alphabet="trierAlphabet"
+                    @search="search"
+                    @cancel-search="cancelSearch"/>
+            </AppSuspense>
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">
-            <AppCard class="bg-blue col" title="">
-                <AppRow>
-                    <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                        <Fa icon="angle-double-left"/>
-                    </button>
-                    <h4 class="col">
-                        <Fa icon="plus"/> Ajout
-                    </h4>
-                </AppRow>
-                <br/>
-                <AppFormCardable id="addSociety" :fields="fieldsForm" :model-value="formData" label-cols/>
-                <AppCol class="btnright">
-                    <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutSociety">
-                        <Fa icon="plus"/> Ajouter
-                    </AppBtn>
-                </AppCol>
-            </AppCard>
+            <AppSuspense>
+                <AppCard class="bg-blue col" title="">
+                    <AppRow>
+                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                            <Fa icon="angle-double-left"/>
+                        </button>
+                        <h4 class="col">
+                            <Fa icon="plus"/> Ajout
+                        </h4>
+                    </AppRow>
+                    <br/>
+                    <AppFormCardable id="addSociety" :fields="fieldsForm" :model-value="formData" label-cols/>
+                    <AppCol class="btnright">
+                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutSociety">
+                            <Fa icon="plus"/> Ajouter
+                        </AppBtn>
+                    </AppCol>
+                </AppCard>
+            </AppSuspense>
         </AppCol>
         <AppCol v-else-if="AddForm && updated" class="col-7">
-            <AppCard class="bg-blue col" title="">
-                <AppRow>
-                    <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                        <Fa icon="angle-double-left"/>
-                    </button>
-                    <h4 class="col">
-                        <Fa icon="pencil-alt"/> Modification
-                    </h4>
-                </AppRow>
-                <br/>
-                <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData" :violations="violations"/>
-                <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                    <div v-for="violation in violations" :key="violation">
-                        <li>{{ violation.message }}</li>
+            <AppSuspense>
+                <AppCard class="bg-blue col" title="">
+                    <AppRow>
+                        <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                            <Fa icon="angle-double-left"/>
+                        </button>
+                        <h4 class="col">
+                            <Fa icon="pencil-alt"/> Modification
+                        </h4>
+                    </AppRow>
+                    <br/>
+                    <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData" :violations="violations"/>
+                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                        <div v-for="violation in violations" :key="violation">
+                            <li>{{ violation.message }}</li>
+                        </div>
                     </div>
-                </div>
-                <AppCol class="btnright">
-                    <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">
-                        <Fa icon="pencil-alt"/> Modifier
-                    </AppBtn>
-                </AppCol>
-            </AppCard>
+                    <AppCol class="btnright">
+                        <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">
+                            <Fa icon="pencil-alt"/> Modifier
+                        </AppBtn>
+                    </AppCol>
+                </AppCard>
+            </AppSuspense>
         </AppCol>
     </AppRow>
 </template>

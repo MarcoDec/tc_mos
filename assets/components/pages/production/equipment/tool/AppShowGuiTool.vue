@@ -1,5 +1,6 @@
 <script setup>
     import AppShowGuiGen from '../../../AppShowGuiGen.vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
     import AppToolFormShow from './AppToolFormShow.vue'
     //import useOptions from '../../../../../stores/option/options'
     import {useRoute} from 'vue-router'
@@ -18,26 +19,28 @@
 </script>
 
 <template>
-    <AppShowGuiGen>
-        <template #gui-header>
-            <div v-if="useFetchToolsStore.isLoaded" class="bg-white border-1 border-dark">
-                <b>{{ useFetchToolsStore.engine.code }}</b>: {{ useFetchToolsStore.engine.name }}
-            </div>
-        </template>
-        <template #gui-left>
-            <AppSuspense><AppToolFormShow v-if="useFetchToolsStore.isLoaded"/></AppSuspense>
-        </template>
-        <template #gui-bottom>
-            <!--            <AppTabs id="gui-bottom">-->
-            <!--                <AppTab id="gui-bottom-components" active icon="puzzle-piece" tabs="gui-bottom" title="Fournitures"/>-->
-            <!--                <AppTab id="gui-bottom-receipts" icon="receipt" tabs="gui-bottom" title="Réceptions"/>-->
-            <!--                <AppTab id="gui-bottom-orders" icon="shopping-cart" tabs="gui-bottom" title="Commandes"/>-->
-            <!--            </AppTabs>-->
-        </template>
-        <template #gui-right>
-            <!--            {{ route.params.id_product }}-->
-        </template>
-    </AppShowGuiGen>
+    <AppSuspense>
+        <AppShowGuiGen>
+            <template #gui-header>
+                <div v-if="useFetchToolsStore.isLoaded" class="bg-white border-1 border-dark">
+                    <b>{{ useFetchToolsStore.engine.code }}</b>: {{ useFetchToolsStore.engine.name }}
+                </div>
+            </template>
+            <template #gui-left>
+                <AppSuspense><AppToolFormShow v-if="useFetchToolsStore.isLoaded"/></AppSuspense>
+            </template>
+            <template #gui-bottom>
+                <!--            <AppTabs id="gui-bottom">-->
+                <!--                <AppTab id="gui-bottom-components" active icon="puzzle-piece" tabs="gui-bottom" title="Fournitures"/>-->
+                <!--                <AppTab id="gui-bottom-receipts" icon="receipt" tabs="gui-bottom" title="Réceptions"/>-->
+                <!--                <AppTab id="gui-bottom-orders" icon="shopping-cart" tabs="gui-bottom" title="Commandes"/>-->
+                <!--            </AppTabs>-->
+            </template>
+            <template #gui-right>
+                <!--            {{ route.params.id_product }}-->
+            </template>
+        </AppShowGuiGen>
+    </AppSuspense>
 </template>
 
 <style>

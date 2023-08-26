@@ -1,6 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
+    import AppSuspense from '../../../../AppSuspense.vue'
     import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
     import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
@@ -218,79 +219,85 @@
         </div>
         <div class="row">
             <div class="col">
-                <AppCardableTable
-                    :current-page="storeManufacturerEnginers.currentPage"
-                    :fields="tabFields"
-                    :first-page="storeManufacturerEnginers.view['hydra:first']"
-                    :items="storeManufacturerEnginers.engines"
-                    :last-page="storeManufacturerEnginers.view['hydra:last']"
-                    :min="AddForm"
-                    :next-page="storeManufacturerEnginers.view['hydra:next']"
-                    :pag="storeManufacturerEnginers.pagination"
-                    :previous-page="storeManufacturerEnginers.view['hydra:previous']"
-                    :user="roleuser"
-                    form="formSocietyCardableTable"
-                    @cancel-search="cancelSearch"
-                    @deleted="deleted"
-                    @get-page="getPage"
-                    @search="search"
-                    @trier-alphabet="trier"
-                    @update="showUpdateForm"/>
+                <AppSuspense>
+                    <AppCardableTable
+                        :current-page="storeManufacturerEnginers.currentPage"
+                        :fields="tabFields"
+                        :first-page="storeManufacturerEnginers.view['hydra:first']"
+                        :items="storeManufacturerEnginers.engines"
+                        :last-page="storeManufacturerEnginers.view['hydra:last']"
+                        :min="AddForm"
+                        :next-page="storeManufacturerEnginers.view['hydra:next']"
+                        :pag="storeManufacturerEnginers.pagination"
+                        :previous-page="storeManufacturerEnginers.view['hydra:previous']"
+                        :user="roleuser"
+                        form="formSocietyCardableTable"
+                        @cancel-search="cancelSearch"
+                        @deleted="deleted"
+                        @get-page="getPage"
+                        @search="search"
+                        @trier-alphabet="trier"
+                        @update="showUpdateForm"/>
+                </AppSuspense>
             </div>
             <div v-if="AddForm && !updated" class="col">
-                <AppCard class="bg-blue col" title="">
-                    <div class="row">
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </div>
-                    <br/>
-                    <AppFormCardable id="add-new-engine" :fields="addFormfields" :model-value="formData" label-cols/>
-                    <!-- On ne permet pas l'ajout de pièce jointe lors du formulaire de création afin de simplifier le traitement -->
-                    <div class="col">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="addNewItem">
-                            <!-- -->
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </div>
-                </AppCard>
+                <AppSuspense>
+                    <AppCard class="bg-blue col" title="">
+                        <div class="row">
+                            <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
+                                <Fa icon="angle-double-left"/>
+                            </button>
+                            <h4 class="col">
+                                <Fa icon="plus"/> Ajout
+                            </h4>
+                        </div>
+                        <br/>
+                        <AppFormCardable id="add-new-engine" :fields="addFormfields" :model-value="formData" label-cols/>
+                        <!-- On ne permet pas l'ajout de pièce jointe lors du formulaire de création afin de simplifier le traitement -->
+                        <div class="col">
+                            <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="addNewItem">
+                                <!-- -->
+                                <Fa icon="plus"/> Ajouter
+                            </AppBtn>
+                        </div>
+                    </AppCard>
+                </AppSuspense>
             </div>
             <div v-else-if="AddForm && updated" class="col">
-                <AppCard class="bg-blue col" title="">
-                    <div class="col">
-                        <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="pencil-alt"/> Modification
-                        </h4>
-                    </div>
-                    <br/>
-                    <AppFormCardable id="update-engine" :key="key" :fields="addFormfields" :model-value="formData.value" :violations="violations"/>
-                    <Suspense>
-                        <AppTabFichiers
-                            :key="`attachment_${key}`"
-                            attachment-element-label="engine"
-                            :element-api-url="`/api/manufacturer-engines/${storeManufacturerEnginers.engine.id}`"
-                            :element-attachment-store="fetchManufacturerAttachmentStore"
-                            :element-id="storeManufacturerEnginers.engine.id"
-                            element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
-                            :element-store="useManufacturerEngineStore"/>
-                    </Suspense>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
+                <AppSuspense>
+                    <AppCard class="bg-blue col" title="">
+                        <div class="col">
+                            <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
+                                <Fa icon="angle-double-left"/>
+                            </button>
+                            <h4 class="col">
+                                <Fa icon="pencil-alt"/> Modification
+                            </h4>
                         </div>
-                    </div>
-                    <div class="col">
-                        <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateItem">
-                            <Fa icon="pencil-alt"/> Modifier
-                        </AppBtn>
-                    </div>
-                </AppCard>
+                        <br/>
+                        <AppFormCardable id="update-engine" :key="key" :fields="addFormfields" :model-value="formData.value" :violations="violations"/>
+                        <AppSuspense>
+                            <AppTabFichiers
+                                :key="`attachment_${key}`"
+                                attachment-element-label="engine"
+                                :element-api-url="`/api/manufacturer-engines/${storeManufacturerEnginers.engine.id}`"
+                                :element-attachment-store="fetchManufacturerAttachmentStore"
+                                :element-id="storeManufacturerEnginers.engine.id"
+                                element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
+                                :element-store="useManufacturerEngineStore"/>
+                        </AppSuspense>
+                        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                            <div v-for="violation in violations" :key="violation">
+                                <li>{{ violation.message }}</li>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateItem">
+                                <Fa icon="pencil-alt"/> Modifier
+                            </AppBtn>
+                        </div>
+                    </AppCard>
+                </AppSuspense>
             </div>
         </div>
     </div>

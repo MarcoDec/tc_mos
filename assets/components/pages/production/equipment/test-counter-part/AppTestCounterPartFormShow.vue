@@ -1,5 +1,6 @@
 <script setup>
     import AppShowCounterPartTabGeneral from './tabs/AppShowCounterPartTabGeneral.vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
     import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
     import {useCounterPartStore} from '../../../../../stores/production/engine/test-counter-part/testCounterPart'
     import {useEngineAttachmentStore} from '../../../../../stores/production/engine/test-counter-part/engineAttachment'
@@ -19,14 +20,14 @@
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
-            <Suspense><AppShowCounterPartTabGeneral v-if="fetchEngineStore.isLoaded"/></Suspense>
+            <AppSuspense><AppShowCounterPartTabGeneral v-if="fetchEngineStore.isLoaded"/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppTabFichiers
                     attachment-element-label="counter-part"
                     :element-api-url="`/api/counter-parts/${fetchEngineStore.engine.id}`"
@@ -34,7 +35,7 @@
                     :element-id="fetchEngineStore.engine.id"
                     element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
                     :element-store="useCounterPartStore"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <!--        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">-->
         <!--            <AppCardShow id="addQualite" :fields="qualityFields" :component-attribute="fetchEngineStore.engine"/>-->

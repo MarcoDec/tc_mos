@@ -1,6 +1,7 @@
 <script setup>
     import {computed, ref} from 'vue'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
+    import AppSuspense from '../../../../AppSuspense.vue'
     import router from '../../../../../router'
     import useEngineGroups from '../../../../../stores/production/engine/groups/engineGroups'
     import {
@@ -310,43 +311,47 @@
         </div>
         <div class="row">
             <div class="col">
-                <AppCardableTable
-                    :current-page="storeEngines.currentPage"
-                    :fields="tabFields"
-                    :first-page="storeEngines.view['hydra:first']"
-                    :items="storeEngines.engines"
-                    :last-page="storeEngines.view['hydra:last']"
-                    :min="AddForm"
-                    :next-page="storeEngines.view['hydra:next']"
-                    :pag="storeEngines.pagination"
-                    :previous-page="storeEngines.view['hydra:previous']"
-                    :user="roleuser"
-                    form="formEnginesCardableTable"
-                    @cancel-search="cancelSearch"
-                    @deleted="deleted"
-                    @get-page="getPage"
-                    @search="search"
-                    @trier-alphabet="trier"
-                    @update="showUpdateForm"/>
+                <AppSuspense>
+                    <AppCardableTable
+                        :current-page="storeEngines.currentPage"
+                        :fields="tabFields"
+                        :first-page="storeEngines.view['hydra:first']"
+                        :items="storeEngines.engines"
+                        :last-page="storeEngines.view['hydra:last']"
+                        :min="AddForm"
+                        :next-page="storeEngines.view['hydra:next']"
+                        :pag="storeEngines.pagination"
+                        :previous-page="storeEngines.view['hydra:previous']"
+                        :user="roleuser"
+                        form="formEnginesCardableTable"
+                        @cancel-search="cancelSearch"
+                        @deleted="deleted"
+                        @get-page="getPage"
+                        @search="search"
+                        @trier-alphabet="trier"
+                        @update="showUpdateForm"/>
+                </AppSuspense>
             </div>
             <div v-if="AddForm" class="col">
-                <AppCard class="bg-blue col" title="">
-                    <div class="row">
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </div>
-                    <br/>
-                    <AppFormCardable id="add-new-engine" :key="key" :fields="addFormFields" :model-value="formData" label-cols @update:model-value="onAddFormDataChange"/>
-                    <div class="col">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="addNewItem">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </div>
-                </AppCard>
+                <AppSuspense>
+                    <AppCard class="bg-blue col" title="">
+                        <div class="row">
+                            <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
+                                <Fa icon="angle-double-left"/>
+                            </button>
+                            <h4 class="col">
+                                <Fa icon="plus"/> Ajout
+                            </h4>
+                        </div>
+                        <br/>
+                        <AppFormCardable id="add-new-engine" :key="key" :fields="addFormFields" :model-value="formData" label-cols @update:model-value="onAddFormDataChange"/>
+                        <div class="col">
+                            <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="addNewItem">
+                                <Fa icon="plus"/> Ajouter
+                            </AppBtn>
+                        </div>
+                    </AppCard>
+                </AppSuspense>
             </div>
         </div>
     </div>
