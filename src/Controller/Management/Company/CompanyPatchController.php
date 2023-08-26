@@ -13,9 +13,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\Management\Company\CompanyRepository;
 use DateTimeImmutable;
 use App\Entity\Management\Society\Company\Company;
-use App\Entity\Embeddable\Hr\Employee\Roles;
-use App\Entity\Country;
-use Symfony\Component\Intl\Countries;
 use App\Entity\Management\Currency;
 
 class CompanyPatchController
@@ -25,7 +22,7 @@ class CompanyPatchController
 
    /**
     * @param Request $request
-    * @return Component
+    * @return Company
     * @throws \ReflectionException
     */
    public function __invoke(Request $request): Company {
@@ -62,7 +59,7 @@ class CompanyPatchController
                         $refProps->setValue($sourceItem,$newAddress);
                         break;
                     case DateTimeImmutable::class:
-                        dump(['DateTimeImmutable','key'=>$key, 'value'=>$value]);
+                        //dump(['DateTimeImmutable','key'=>$key, 'value'=>$value]);
                         $newDate = DateTimeImmutable::createFromFormat('Y-m-d',$value);
                         $refProps->setValue($sourceItem,$newDate);
                         break;
@@ -120,7 +117,7 @@ class CompanyPatchController
                         }
                   }
                } else {
-                  dump('Je suis ici => '.$key);
+                  //dump('Je suis ici => '.$key);
                   if ($refProps->getValue($sourceItem)===null||in_array(getType($refProps->getValue($sourceItem)) ,["boolean", 'integer', 'double', 'string'])) {
                      $refProps->setValue($sourceItem, $value);
                   } else {

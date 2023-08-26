@@ -10,6 +10,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
@@ -68,7 +70,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class Nomenclature extends Entity {
+class Nomenclature extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
         ORM\JoinColumn(nullable: false),
@@ -137,5 +139,15 @@ class Nomenclature extends Entity {
     final public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
         return $this;
+    }
+
+    public function getMeasures(): array
+    {
+        return [$this->quantity];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return $this->component ? $this->component->getUnit() : ($this->product ? $this->product->getUnit() : null);
     }
 }

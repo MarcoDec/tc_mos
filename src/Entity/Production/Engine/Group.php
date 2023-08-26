@@ -61,7 +61,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:engine-group', 'read:id'],
             'openapi_definition_name' => 'EngineGroup-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationEnabled: false
     ),
     ORM\DiscriminatorColumn(name: 'type', type: 'engine'),
     ORM\DiscriminatorMap(self::TYPES),
@@ -99,6 +100,23 @@ abstract class Group extends Entity {
         Serializer\Groups(['read:engine-group', 'write:engine-group'])
     ]
     private bool $safetyDevice = false;
+
+    #[
+        Serializer\Groups(['read:engine-group'])
+    ]
+    public function getType(): string {
+        switch (get_class($this)) {
+            case CounterPartGroup::class:
+                return EngineType::TYPE_COUNTER_PART;
+            case ToolGroup::class:
+                return EngineType::TYPE_TOOL;
+            case WorkstationGroup::class:
+                return EngineType::TYPE_WORKSTATION;
+            default:
+                return '';
+        }
+    }
+
 
     final public function getCode(): ?string {
         return $this->code;

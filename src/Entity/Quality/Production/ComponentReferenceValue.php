@@ -10,6 +10,8 @@ use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Embeddable\Quality\Production\ComponentReferenceField;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
@@ -67,7 +69,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ),
     ORM\Entity
 ]
-class ComponentReferenceValue extends Entity {
+class ComponentReferenceValue extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/2'),
         ORM\ManyToOne,
@@ -153,5 +155,15 @@ class ComponentReferenceValue extends Entity {
     final public function setWidth(ComponentReferenceField $width): self {
         $this->width = $width;
         return $this;
+    }
+
+    public function getMeasures(): array
+    {
+        return [$this->section];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return null;
     }
 }

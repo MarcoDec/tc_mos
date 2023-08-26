@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineEmits, defineProps, ref} from 'vue'
+    import {computed, ref} from 'vue'
     import AppCardableTableBodyHeader from './body/AppCardableTableBodyHeader.vue'
     import AppCardableTableBodyItem from './body/AppCardableTableBodyItem.vue'
     import AppCardableTableHeader from './head/AppCardableTableHeader.vue'
@@ -17,7 +17,7 @@
         previousPage: {required: true, type: String},
         user: {required: true, type: String}
     })
-    const displayedFileds = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
+    const displayedFields = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref('')
     const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'search', 'cancelSearch'])
     function update(item){
@@ -43,30 +43,30 @@
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCardableTableHeader :fields="displayedFileds" @trier-alphabet="trierAlphabet"/>
+        <AppCardableTableHeader :fields="displayedFields" @trier-alphabet="trierAlphabet"/>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :fields="displayedFileds" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch"/>
+            <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch"/>
             <tr class="bg-dark">
-                <td colspan="10"/>
+                <td colspan="20"/>
             </tr>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFileds" :current-page="currentPage" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">
         <ul class="pagination">
-            <li class="page-item">
+            <li v-if="firstPage" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(firstPage)">Début</a>
             </li>
-            <li class="page-item">
+            <li v-if="previousPage" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(previousPage)">Préc.</a>
             </li>
             <li class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(currentPage)">{{ currentPage }}</a>
             </li>
-            <li class="page-item">
+            <li v-if="nextPage" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(nextPage)">Suiv.</a>
             </li>
-            <li class="page-item">
+            <li v-if="lastPage" class="page-item">
                 <a class="page-link" href="#" @click.prevent="getPage(lastPage)">Fin</a>
             </li>
         </ul>

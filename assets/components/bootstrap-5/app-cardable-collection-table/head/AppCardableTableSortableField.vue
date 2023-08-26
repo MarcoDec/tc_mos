@@ -1,5 +1,5 @@
 <script setup>
-    import {defineEmits, defineProps, ref} from 'vue'
+    import {ref} from 'vue'
     const emit = defineEmits(['trierAlphabet'])
     defineProps({
         field: {required: true, type: Object}
@@ -8,14 +8,12 @@
     function trierAlphabet(name) {
         if (trier.value === 'both'){
             trier.value = 'asc'
-            emit('trierAlphabet', {name, trier})
         } else if (trier.value === 'asc'){
             trier.value = 'desc'
-            emit('trierAlphabet', {name, trier})
         } else {
             trier.value = 'both'
-            emit('trierAlphabet', {name, trier})
         }
+        emit('trierAlphabet', {direction: trier.value, name, trier})
     }
 </script>
 

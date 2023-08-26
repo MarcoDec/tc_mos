@@ -1,3 +1,8 @@
+import AppEngineList from '../components/pages/production/equipment/engine-list/AppEngineList.vue'
+import AppManufacturerEngine from '../components/pages/production/equipment/manufacturer-engine/AppManufacturerEngine.vue'
+import AppShowGuiTestCounterPart from '../components/pages/production/equipment/test-counter-part/AppShowGuiTestCounterPart.vue'
+import AppShowGuiTool from '../components/pages/production/equipment/tool/AppShowGuiTool.vue'
+import AppShowGuiWorkstation from '../components/pages/production/equipment/workstation/AppShowGuiWorkstation.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTablePageType from '../components/pages/table/AppTablePageType.vue'
 import {readonly} from 'vue'
@@ -9,18 +14,25 @@ export default [
         name: 'engine-groups',
         path: '/engine-groups',
         props: {
-            apiBaseRoute: 'manufacturers',
+            apiBaseRoute: 'engine-groups',
+            apiTypedRoutes: {
+                field: 'type',
+                routes: [
+                    {url: '/api/counter-part-groups', valeur: 'counter-part'},
+                    {url: '/api/workstation-groups', valeur: 'workstation'},
+                    {url: '/api/tool-groups', valeur: 'tool'}
+                ]
+            },
             fields: [
                 {label: 'Code', name: 'code'},
                 {label: 'Nom', name: 'name'},
                 {
                     label: 'Type',
-                    name: '@type',
+                    name: 'type',
                     options: [
-                        {iri: 'engine-groups', text: '', value: null},
-                        {iri: 'counter-part-groups', text: 'Contrepartie de test', value: 'CounterPartGroup'},
-                        {iri: 'workstation-groups', text: 'Poste de travail', value: 'WorkstationGroup'},
-                        {iri: 'tool-groups', text: 'Outil', value: 'ToolGroup'}
+                        {iri: 'counter-part', text: 'Contrepartie de test', value: 'counter-part'},
+                        {iri: 'workstation', text: 'Poste de travail', value: 'workstation'},
+                        {iri: 'tool', text: 'Outil', value: 'tool'}
                     ],
                     sort: false,
                     type: 'select',
@@ -34,7 +46,7 @@ export default [
     },
     {
         component: AppTablePageSuspense,
-        meta: {title: 'Fabricants — T-Concept GPAO'},
+        meta: {title: 'Fabricants Equipement — T-Concept GPAO'},
         name: 'manufacturers',
         path: '/manufacturers',
         props: {
@@ -51,7 +63,7 @@ export default [
             ],
             icon: 'oil-well',
             sort: readonly({label: 'Nom', name: 'name'}),
-            title: 'Fabricants'
+            title: 'Fabricants Equipement'
         }
     },
     {
@@ -63,6 +75,7 @@ export default [
             apiBaseRoute: 'zones',
             fields: [{label: 'Nom', name: 'name'}],
             icon: 'map-marked',
+            isCompanyFiltered: true,
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Zones'
         }
@@ -87,5 +100,43 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }
+    },
+    {
+        component: AppManufacturerEngine,
+        meta: {title: 'Références Equipement — T-Concept GPAO'},
+        name: 'manufacturer-engines',
+        path: '/manufacturer-engines',
+        props: {
+            icon: 'city',
+            title: 'Références Equipement'
+        }
+    },
+    {
+        component: AppEngineList,
+        meta: {title: 'Equipement — T-Concept GPAO'},
+        name: 'engines',
+        path: '/engines',
+        props: {
+            icon: 'city',
+            title: 'Equipement'
+        }
+    },
+    {
+        component: AppShowGuiTestCounterPart,
+        meta: {container: false, title: 'Test Counter Part — T-Concept GPAO'},
+        name: 'counterPartShow',
+        path: '/counter-part/:id_engine'
+    },
+    { // <a target="_blank" href="https://icons8.com/icon/EIHtuCnFqwku/wiring">wiring</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+        component: AppShowGuiWorkstation,
+        meta: {container: false, title: 'Workstation — T-Concept GPAO'},
+        name: 'workstationShow',
+        path: '/workstation/:id_engine'
+    },
+    { //screwdriver-wrench
+        component: AppShowGuiTool,
+        meta: {container: false, title: 'Tool — T-Concept GPAO'},
+        name: 'toolShow',
+        path: '/tool/:id_engine'
     }
 ]

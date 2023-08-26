@@ -22,9 +22,12 @@
                 <AppDropdownItem disabled variant="success">
                     Lecteur
                 </AppDropdownItem>
-                <AppNavbarLink icon="user-tag" to="supplier" variant="success">
-                    Fournisseur
-                </AppNavbarLink>
+                <p>Fournisseur</p>
+                <p>Composant</p>
+                <p>Employee</p>
+                <p>Customer</p>
+                <p>Production</p>
+                <p>Equipement</p>
                 <template v-if="user.isPurchaseAdmin">
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
@@ -35,7 +38,7 @@
                     <AppNavbarLink icon="layer-group" to="component-families" variant="warning">
                         Familles de composants
                     </AppNavbarLink>
-                    <AppNavbarLink icon="gear" to="purchase-parameters" variant="warning">
+                    <AppNavbarLink icon="gear" to="purchase parameters" variant="warning">
                         Paramètres
                     </AppNavbarLink>
                 </template>
@@ -57,9 +60,7 @@
                     <AppNavbarLink icon="palette" to="colors" variant="warning">
                         Couleurs
                     </AppNavbarLink>
-                    <AppNavbarLink icon="euro-sign" to="currencies" variant="warning">
-                        Devises
-                    </AppNavbarLink>
+                    <p>Devises</p>
                     <AppNavbarLink icon="hourglass-half" to="invoice-time-dues" variant="warning">
                         Délais de paiement des factures
                     </AppNavbarLink>
@@ -104,14 +105,17 @@
                     <AppNavbarLink icon="file-contract" to="incoterms" variant="warning">
                         Incoterms
                     </AppNavbarLink>
+                    <AppNavbarLink icon="warehouse" to="warehouse-list" variant="warning">
+                        Entrepots
+                    </AppNavbarLink>
                 </template>
             </AppNavbarItem>
             <AppNavbarItem v-if="user.isProductionReader" id="production" icon="industry" title="Production">
                 <AppDropdownItem disabled variant="success">
                     Lecteur
                 </AppDropdownItem>
-                <AppNavbarLink icon="oil-well" to="manufacturers" variant="success">
-                    Fabricants
+                <AppNavbarLink icon="oil-well" to="engines" variant="success">
+                    Equipements
                 </AppNavbarLink>
                 <AppNavbarLink icon="map-marked" to="zones" variant="success">
                     Zones
@@ -120,13 +124,17 @@
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
                     </AppDropdownItem>
-                    <AppNavbarLink disabled icon="calendar-day" to="engine-events" variant="danger">
-                        Catégories d'événements des équipements
+                    <AppNavbarLink icon="oil-well" to="manufacturers" variant="warning">
+                        Fabricants Equipement
                     </AppNavbarLink>
+                    <AppNavbarLink icon="oil-well" to="manufacturer-engines" variant="warning">
+                        Equipements de référence
+                    </AppNavbarLink>
+                    <p>Catégories d'événements des équipements (engine-events)</p>
                     <AppNavbarLink icon="wrench" to="engine-groups" variant="warning">
                         Groupes d'équipements
                     </AppNavbarLink>
-                    <AppNavbarLink icon="gear" to="production-parameters" variant="warning">
+                    <AppNavbarLink icon="gear" to="production parameters" variant="warning">
                         Paramètres
                     </AppNavbarLink>
                 </template>
@@ -148,7 +156,7 @@
                     <AppNavbarLink brands icon="elementor" to="operation-types" variant="warning">
                         Types d'opérations
                     </AppNavbarLink>
-                    <AppNavbarLink icon="gear" to="project-parameters" variant="warning">
+                    <AppNavbarLink icon="gear" to="project parameters" variant="warning">
                         Paramètres
                     </AppNavbarLink>
                 </template>
@@ -189,7 +197,7 @@
                     <AppNavbarLink icon="clock" to="time-slots" variant="warning">
                         Plages horaires
                     </AppNavbarLink>
-                    <AppNavbarLink icon="gear" to="hr-parameters" variant="warning">
+                    <AppNavbarLink icon="gear" to="hr parameters" variant="warning">
                         Paramètres
                     </AppNavbarLink>
                     <AppNavbarLink icon="signal" to="skill-types" variant="warning">
@@ -208,7 +216,7 @@
                     <AppDropdownItem disabled variant="warning">
                         Administrateur
                     </AppDropdownItem>
-                    <AppNavbarLink icon="gear" to="selling-parameters" variant="warning">
+                    <AppNavbarLink icon="gear" to="selling parameters" variant="warning">
                         Paramètres
                     </AppNavbarLink>
                 </template>

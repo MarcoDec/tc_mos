@@ -26,6 +26,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @template T of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
@@ -142,7 +143,9 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     #[
         ApiProperty(description: 'Enfermé ?', example: false),
-        ORM\Column(options: ['default' => false]),
+        ORM\Column(options: ['default' => false], type: 'boolean'),
+        Assert\LessThan(2),
+        Assert\GreaterThanOrEqual(0),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
     protected bool $jail = false;

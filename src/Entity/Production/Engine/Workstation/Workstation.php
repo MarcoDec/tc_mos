@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get', 'patch', 'delete'],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
         ],

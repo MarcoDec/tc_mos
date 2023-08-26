@@ -73,7 +73,7 @@ class ProductionQualityValue extends Entity implements MeasuredInterface
          Column(nullable: true, type: 'datetime'),
          Groups(['read:production-quality-value', 'write:production-quality-value'])
      ]
-    private $dateQuality;
+    private \DateTime $dateQuality;
 
      #[
          ApiProperty(description: 'Hauteur mesurée', openapiContext: ['$ref' => '#/components/schemas/Measure-length']),
@@ -128,7 +128,7 @@ class ProductionQualityValue extends Entity implements MeasuredInterface
         return $this->component;
     }
 
-    public function getDateQuality(): ?DateTimeInterface {
+    public function getDateQuality(): ?\DateTime {
         return $this->dateQuality;
     }
 
@@ -136,11 +136,7 @@ class ProductionQualityValue extends Entity implements MeasuredInterface
         return $this->matriculeQualite;
     }
 
-    public function getOperation(): ?ProductionOperation {
-        return $this->productionOperation;
-    }
-
-    public function getProductionOperation(): ?ProductionOperation {
+    public function getProductionOperation(): ?Operation {
         return $this->productionOperation;
     }
 
@@ -153,7 +149,7 @@ class ProductionQualityValue extends Entity implements MeasuredInterface
         return $this;
     }
 
-    public function setDateQuality(DateTimeInterface $dateQuality): self {
+    public function setDateQuality(\DateTime $dateQuality): self {
         $this->dateQuality = $dateQuality;
         return $this;
     }
@@ -163,7 +159,7 @@ class ProductionQualityValue extends Entity implements MeasuredInterface
         return $this;
     }
 
-    public function setProductionOperation(ProductionOperation $productionOperation): self {
+    public function setProductionOperation(Operation $productionOperation): self {
         $this->productionOperation = $productionOperation;
         return $this;
     }

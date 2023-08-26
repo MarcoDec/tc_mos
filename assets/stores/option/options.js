@@ -20,10 +20,19 @@ export default function useOptions(base, valueProp = '@id') {
                 if (!this.fetchable)
                     return
                 const response = await api(this.url)
+                this.resetItems()
                 for (const option of response['hydra:member'])
                     this.options.push(useOption(option, this))
                 this.options.sort(sort)
                 this.fetchable = false
+            },
+            async fetchOp() {
+                const response = await api(this.url)
+                this.resetItems()
+                for (const option of response['hydra:member'])
+                    this.options.push(useOption(option, this))
+                this.isLoaded = true
+                this.options.sort(sort)
             },
             resetItems() {
                 const options = [...this.options]
@@ -56,6 +65,6 @@ export default function useOptions(base, valueProp = '@id') {
             },
             url: state => `/api/${state.base}/options`
         },
-        state: () => ({base, fetchable: false, id, options: [], valueProp})
+        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp})
     })()
 }

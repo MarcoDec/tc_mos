@@ -6,6 +6,8 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Blocker;
@@ -28,8 +30,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['zone', 'manufacturerEngine']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber']),
     //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',
@@ -145,17 +149,41 @@ abstract class Engine extends Entity implements BarCodeInterface {
      * @var Group|null
      */
     protected $group;
-
     #[
-        ApiProperty(description: 'Nom', example: 'Machine'),
+        ApiProperty(description: 'Nom', example: 'Compresseur d\'air'),
         ORM\Column,
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?string $name = null;
 
     #[
-        ApiProperty(description: 'Zone'),
-        ORM\ManyToOne,
+        ApiProperty(description: 'Numéro de série', example: '10021'),
+        ORM\Column(nullable: true),
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
+    ]
+    protected ?string $serialNumber = null;
+
+    /**
+     * @return string|null
+     */
+    public function getSerialNumber(): ?string
+    {
+        return $this->serialNumber;
+    }
+
+    /**
+     * @param string|null $serialNumber
+     * @return Engine
+     */
+    public function setSerialNumber(?string $serialNumber): Engine
+    {
+        $this->serialNumber = $serialNumber;
+        return $this;
+    }
+
+    #[
+        ApiProperty(description: 'Zone', readableLink: true),
+        ORM\ManyToOne(fetch: 'EAGER'),
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?Zone $zone = null;
@@ -173,11 +201,12 @@ abstract class Engine extends Entity implements BarCodeInterface {
     private EmployeeEngineState $embState;
 
     #[
-        ORM\OneToOne(mappedBy: 'engine', cascade: ['remove', 'persist']),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation']),
-        Serializer\MaxDepth(1)
+        ApiProperty(description: 'Modele de machine', readableLink: false, example: '/api/manufacturer-engines/15'),
+        ORM\ManyToOne(targetEntity: ManufacturerEngine::class, cascade: ['persist']),
+        ORM\JoinColumn(onDelete: 'SET NULL'),
+        Serializer\Groups(['read:engine', 'write:engine', 'read:manufacturing-operation'])
     ]
-    private ManufacturerEngine $manufacturerEngine;
+    private ?ManufacturerEngine $manufacturerEngine;
 
     #[
         ApiProperty(description: 'Opérateur maximum ', example: 1),
@@ -196,7 +225,6 @@ abstract class Engine extends Entity implements BarCodeInterface {
     public function __construct() {
         $this->embBlocker = new Blocker();
         $this->embState = new EmployeeEngineState();
-        $this->manufacturerEngine = new ManufacturerEngine($this);
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -231,7 +259,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this->group;
     }
 
-    final public function getManufacturerEngine(): ManufacturerEngine {
+    final public function getManufacturerEngine(): ?ManufacturerEngine {
         return $this->manufacturerEngine;
     }
 
@@ -290,8 +318,8 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    final public function setManufacturerEngine(ManufacturerEngine $manufacturerEngine): self {
-        $this->manufacturerEngine = $manufacturerEngine->setEngine($this);
+    final public function setManufacturerEngine(?ManufacturerEngine $manufacturerEngine): self {
+        $this->manufacturerEngine = $manufacturerEngine;
         return $this;
     }
 
