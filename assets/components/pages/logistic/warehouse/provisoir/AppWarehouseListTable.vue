@@ -1,8 +1,11 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
+    import Fa from '../../../../Fa'
     import {useWarehouseListStore} from './warehouseList'
     import {useRouter} from 'vue-router'
-    import {useWarehouseShowStore} from '../../../../stores/logistic/warehouses/warehouseShow.js'
+    import {useWarehouseShowStore} from '../../../../../stores/logistic/warehouses/warehouseShow'
 
     defineProps({
         icon: {required: true, type: String},
@@ -225,62 +228,71 @@
 </script>
 
 <template>
-    <AppCol class="d-flex justify-content-between mb-2">
-        <h1>
-            <Fa :icon="icon"/>
-            {{ title }}
-        </h1>
-        <AppBtn variant="success" label="Ajout" @click="ajoute">
-            <Fa icon="plus"/>
-            Ajouter
-        </AppBtn>
-    </AppCol>
-    <AppRow>
-        <AppCol>
-            <AppCardableTable
-                :current-page="storeWarehouseList.currentPage"
-                :fields="tabFields"
-                :first-page="storeWarehouseList.firstPage"
-                :items="itemsTable"
-                :last-page="storeWarehouseList.lastPage"
-                :min="AddForm"
-                :next-page="storeWarehouseList.nextPage"
-                :pag="storeWarehouseList.pagination"
-                :previous-page="storeWarehouseList.previousPage"
-                :user="roleuser"
-                form="formWarehouseCardableTable"
-                @update="update"
-                @deleted="deleted"
-                @get-page="getPage"
-                @trier-alphabet="trierAlphabet"
-                @search="search"
-                @cancel-search="cancelSearch"/>
-        </AppCol>
-        <AppCol v-if="AddForm && !updated" class="col-7">
-            <AppCard class="bg-blue col" title="">
-                <AppRow>
-                    <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                        <Fa icon="angle-double-left"/>
-                    </button>
-                    <h4 class="col">
-                        <Fa icon="plus"/> Ajout
-                    </h4>
-                </AppRow>
-                <br/>
-                <AppFormCardable id="addWarehouse" :fields="fieldsForm" label-cols @update:model-value="input"/>
-                <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                    <div v-for="violation in violations" :key="violation">
-                        <li>{{ violation.message }}</li>
-                    </div>
-                </div>
-                <AppCol class="btnright">
-                    <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutWarehouse">
-                        <Fa icon="plus"/> Ajouter
-                    </AppBtn>
-                </AppCol>
-            </AppCard>
-        </AppCol>
-    </AppRow>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h1>
+                    <Fa :icon="icon"/>
+                    {{ title }}
+                    <span class="btn-float-right">
+                        <AppBtn variant="success" label="Ajout" @click="ajoute">
+                            <Fa icon="plus"/>
+                            Ajouter
+                        </AppBtn>
+                    </span>
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <AppSuspense>
+                    <AppCardableTable
+                        :current-page="storeWarehouseList.currentPage"
+                        :fields="tabFields"
+                        :first-page="storeWarehouseList.firstPage"
+                        :items="itemsTable"
+                        :last-page="storeWarehouseList.lastPage"
+                        :min="AddForm"
+                        :next-page="storeWarehouseList.nextPage"
+                        :pag="storeWarehouseList.pagination"
+                        :previous-page="storeWarehouseList.previousPage"
+                        :user="roleuser"
+                        form="formWarehouseCardableTable"
+                        @update="update"
+                        @deleted="deleted"
+                        @get-page="getPage"
+                        @trier-alphabet="trierAlphabet"
+                        @search="search"
+                        @cancel-search="cancelSearch"/>
+                </AppSuspense>
+            </div>
+            <div v-show="AddForm" class="col-7">
+                <AppSuspense>
+                    <AppCard class="bg-blue col" title="">
+                        <div class="row">
+                            <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                                <Fa icon="angle-double-left"/>
+                            </button>
+                            <h4 class="col">
+                                <Fa icon="plus"/> Ajout d'un nouvel entrepôt
+                            </h4>
+                        </div>
+                        <AppSuspense><AppFormCardable id="addWarehouse" :fields="fieldsForm" label-cols @update:model-value="input"/></AppSuspense>
+                        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                            <div v-for="violation in violations" :key="violation">
+                                <li>{{ violation.message }}</li>
+                            </div>
+                        </div>
+                        <div class="btnright row">
+                            <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutWarehouse">
+                                <Fa icon="plus"/> Enregister
+                            </AppBtn>
+                        </div>
+                    </AppCard>
+                </AppSuspense>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>

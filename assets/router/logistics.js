@@ -1,4 +1,4 @@
-import AppShowGuiWarehouse from '../components/pages/AppShowGuiWarehouse.vue'
+import AppShowGuiWarehouse from '../components/pages/logistic/warehouse/AppShowGuiWarehouse.vue'
 
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
@@ -40,7 +40,7 @@ export default [
         }
     },
     {
-        component: async () => import('./pages/logistic/AppWarehouseList.vue'),
+        component: async () => import('../components/pages/logistic/warehouse/AppWarehouseList.vue'),
         meta: {requiresAuth: true},
         name: 'warehouse-list',
         path: '/warehouse-list',

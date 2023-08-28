@@ -1,6 +1,6 @@
 <script setup>
     import AppWarehouseListTable from './provisoir/AppWarehouseListTable.vue'
-    import AppSuspense from '../../../components/AppSuspense.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
 
     defineProps({
         icon: {required: true, type: String},
