@@ -1,10 +1,9 @@
 <script setup>
-    import {computed} from 'vue'
+    import {computed, ref} from 'vue'
     import AppSuspense from '../../../AppSuspense.vue'
     import {
         useWarehouseShowStore as warehouseStore
     } from '../../../../stores/logistic/warehouses/warehouseShow'
-    import {useSocietyListStore} from '../../../../stores/management/societyList'
     import {useRoute} from 'vue-router'
     import useOptions from '../../../../stores/option/options'
     import {useWarehouseAttachmentStore} from '../../../../stores/logistic/warehouses/warehouseAttachements'
@@ -16,7 +15,17 @@
     store.setCurrentId(warehouseId)
     const probl = await store.fetch()
     if (probl) maRoute.push({name: 'warehouse-list'}) //{props.item.id}\`
-
+    const localData = ref({})
+    function initializeLocalData() {
+        localData.value = {
+            name: store.items.name,
+            company: store.items.company,
+            families: store.items.families,
+            destination: store.items.destination
+        }
+    }
+    initializeLocalData()
+    let key = 0
     //region chargement des pièces jointes
     const warehouseAttachmentStore = useWarehouseAttachmentStore()
     warehouseAttachmentStore.fetchByElement(warehouseId)
@@ -118,17 +127,16 @@
     )
 
     function localDataChange(value) {
-        console.log('localDataChange', value)
         if (value.families.includes('camion')) {
             //on doit s'assurer que les fields ont bien destination, sinon on ajoute
-            if (Generalitesfields.find(item => item.name !== 'destination')) {
+            if (typeof Generalitesfields.find(item => item.name === 'destination') === 'undefined') {
                 Generalitesfields.push(
                     {
                         label: 'Destination',
                         name: 'destination',
                         options: {
-                            label: value =>
-                                optionsDestination.value.find(option => option.type === value)?.text
+                            label: valeur =>
+                                optionsDestination.value.find(option => option.type === valeur)?.text
                                 ?? null,
                             options: optionsDestination.value
                         },
@@ -138,6 +146,7 @@
             }
         } else if (typeof Generalitesfields.find(item => item.name === 'destination') !== 'undefined') {
             Generalitesfields.pop()
+            localData.value.destination = null
         }
     }
     async function updateGeneral() {
@@ -151,6 +160,10 @@
 
         await store.update()
         await store.fetch()
+    }
+    async function cancel() {
+        initializeLocalData()
+        key++
     }
 </script>
 
@@ -166,8 +179,10 @@
                 <AppSuspense>
                     <AppCardShow
                         id="addGeneralites"
+                        :key="key"
                         :fields="Generalitesfields"
-                        :component-attribute="store.items"
+                        :component-attribute="localData"
+                        @cancel="cancel"
                         @update="updateGeneral"
                         @update:model-value="localDataChange"/>
                 </AppSuspense>

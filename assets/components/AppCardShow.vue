@@ -9,7 +9,7 @@
         id: {required: true, type: String},
         title: {default: '', type: String}
     })
-    const emit = defineEmits(['update', 'update:modelValue'])
+    const emit = defineEmits(['cancel', 'update', 'update:modelValue'])
     const updated = ref(false)
     const disable = ref(true)
     const localData = ref(props.componentAttribute)
@@ -25,6 +25,7 @@
     function annule() {
         updated.value = false
         disable.value = true
+        emit('cancel')
     }
     function input(value) {
         localData.value = value

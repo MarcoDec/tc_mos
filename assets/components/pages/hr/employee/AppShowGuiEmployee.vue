@@ -17,7 +17,7 @@
     <AppSuspense>
         <AppShowGuiGen>
             <template #gui-header>
-                <div class="bg-white border-1 border-dark">
+                <div class="bg-white">
                     <b>Employee ({{ fetchEmployeeStore.employee.id }})</b>: {{ fetchEmployeeStore.employee.name }}
                 </div>
             </template>
@@ -37,10 +37,3 @@
         </AppShowGuiGen>
     </AppSuspense>
 </template>
-
-<style>
-.border-dark {
-    border-bottom: 1px solid grey;
-}
-</style>
-
