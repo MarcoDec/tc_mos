@@ -14,12 +14,11 @@ export const useWarehouseListStore = defineStore('warehouseList', {
             return violations
         },
 
-        async delated(payload){
-            await api(`/api/warehouses/${payload}`, 'DELETE')
-            this.warehouses = this.warehouses.filter(warehouse => Number(warehouse['@id'].match(/\d+/)[0]) !== payload)
+        async remove(id){
+            await api(`/api/warehouses/${id}`, 'DELETE')
         },
-        async fetch() {
-            const response = await api('/api/warehouses', 'GET')
+        async fetch(criteria = '') {
+            const response = await api(`/api/warehouses${criteria}`, 'GET')
             this.warehouses = await this.updatePagination(response)
         },
         async filterBy(payload){

@@ -1,7 +1,6 @@
 <script setup>
     import AppBtnJS from '../../AppBtnJS'
     import AppTableItemField from './read/AppTableItemField.vue'
-    import {defineProps} from 'vue'
     import {generateTableFields} from '../../props'
     import {useRouter} from 'vue-router'
     import {useWarehouseShowStore} from '../../../stores/logistic/warehouses/warehouseShow.js'

@@ -1,230 +1,228 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import AppSuspense from '../../../../AppSuspense.vue'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import Fa from '../../../../Fa'
     import {useWarehouseListStore} from './warehouseList'
     import {useRouter} from 'vue-router'
-    import {useWarehouseShowStore} from '../../../../../stores/logistic/warehouses/warehouseShow'
+    import useUser from '../../../../../stores/security'
+    import {useCompanyStore} from '../../../../../stores/management/companies/companies'
 
     defineProps({
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
-    const roleuser = ref('reader')
-    let violations = []
-    const updated = ref(false)
-    const AddForm = ref(false)
-    const isPopupVisible = ref(false)
-    const sortable = ref(false)
-    const filter = ref(false)
-    let trierAlpha = {}
-    let filterBy = {}
-
     const router = useRouter()
-    const storeWarehouseShow = useWarehouseShowStore()
-
+    //region récupération des données utilisateur
+    const fetchUser = useUser()
+    const currentCompany = fetchUser.company
+    const isLogisticWriterOrAdmin = fetchUser.isLogisticsWriter || fetchUser.isLogisticsAdmin
+    const roleuser = ref(isLogisticWriterOrAdmin ? 'writer' : 'reader')
+    //endregion
+    //region récupération de la liste des companies
+    const fetchCompanies = useCompanyStore()
+    await fetchCompanies.fetch()
+    console.log(fetchCompanies.companies)
+    const optionsCompanies = fetchCompanies.companies.map(item => ({
+        label: item.name, text: item.name, value: item['@id']
+    })).filter(item => item.value !== currentCompany)
+    //endregion
+    //region Chargement de la liste des entrepôts liés à la compagnie de l'utilisateur
     const storeWarehouseList = useWarehouseListStore()
-    await storeWarehouseList.fetch()
-    const itemsTable = ref(storeWarehouseList.itemsWarehouses)
+    const warehouseListCriteria = useFetchCriteria('warehouse-list-criteria')
+    warehouseListCriteria.addFilter('company', currentCompany)
+    async function refreshTable() {
+        await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)
+    }
+    await refreshTable()
+    const itemsTable = computed(() => storeWarehouseList.itemsWarehouses)
+    //endregion
+
+    //region initialisation des éléments pour le formulaire de création d'un nouvel entrepot
+    const AddForm = ref(false)
+    let addFormKey = 0
     const formData = ref({
-        families: null, name: null
+        company: currentCompany, families: null, name: null, destination: null
     })
-    const fieldsForm = [
+    const baseAddFormFields = [
         {label: 'Nom *', name: 'name', type: 'text'},
         {
             label: 'Famille ',
             name: 'families',
-            options: [
-                {
-                    disabled: false,
-                    label: 'Prison',
-                    value: 'prison'
-                },
-                {
-                    disabled: false,
-                    label: 'Production',
-                    value: 'production'
-                },
-                {
-                    disabled: false,
-                    label: 'Réception',
-                    value: 'réception'
-                },
-                {
-                    disabled: false,
-                    label: 'Magasin pièces finies',
-                    value: 'magasin pièces finies'
-                },
-                {
-                    disabled: false,
-                    label: 'Expédition',
-                    value: 'expédition'
-                },
-                {
-                    disabled: false,
-                    label: 'Magasin matières premières',
-                    value: 'magasin matières premières'
-                },
-                {
-                    disabled: false,
-                    label: 'Camion',
-                    value: 'camion'
-                }
-            ],
-            optionsList: {
-                camion: 'camion',
-                expédition: 'expédition',
-                'magasin matières premières': 'magasin matières premières',
-                'magasin pièces finies': 'magasin pièces finies',
-                prison: 'prison',
-                production: 'production',
-                réception: 'réception'
+            options: {
+                options: [
+                    {
+                        text: 'Prison',
+                        value: 'prison'
+                    },
+                    {
+                        text: 'Production',
+                        value: 'production'
+                    },
+                    {
+                        text: 'Réception',
+                        value: 'réception'
+                    },
+                    {
+                        text: 'Magasin pièces finies',
+                        value: 'magasin pièces finies'
+                    },
+                    {
+                        text: 'Expédition',
+                        value: 'expédition'
+                    },
+                    {
+                        text: 'Magasin matières premières',
+                        value: 'magasin matières premières'
+                    },
+                    {
+                        text: 'Camion',
+                        value: 'camion'
+                    }
+                ]
             },
             type: 'multiselect'
         }
     ]
-
-    const tabFields = [
-        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
-        {
-            label: 'Famille',
-            min: true,
-            name: 'families',
-            options: [
-                {
-                    disabled: false,
-                    label: 'Prison',
-                    value: 'prison'
-                },
-                {
-                    disabled: false,
-                    label: 'Production',
-                    value: 'production'
-                },
-                {
-                    disabled: false,
-                    label: 'Réception',
-                    value: 'réception'
-                },
-                {
-                    disabled: false,
-                    label: 'Magasin pièces finies',
-                    value: 'magasin pièces finies'
-                },
-                {
-                    disabled: false,
-                    label: 'Expédition',
-                    value: 'expédition'
-                },
-                {
-                    disabled: false,
-                    label: 'Magasin matières premières',
-                    value: 'magasin matières premières'
-                },
-                {
-                    disabled: false,
-                    label: 'Camion',
-                    value: 'camion'
-                }
-            ],
-            optionsList: {
-                camion: 'camion',
-                expédition: 'expédition',
-                'magasin matières premières': 'magasin matières premières',
-                'magasin pièces finies': 'magasin pièces finies',
-                prison: 'prison',
-                production: 'production',
-                réception: 'réception'
-            },
-            type: 'multiselect'
-        }
-    ]
-    function ajoute(){
+    const destinationField = {
+        label: 'Destination',
+        name: 'destination',
+        options: {
+            options: optionsCompanies,
+            label: 'test'
+        },
+        type: 'select'
+    }
+    const fieldsForm = baseAddFormFields
+    let violations = []
+    //region Fonctions relatives au formulaire d'ajout
+    function showAddForm(){
         AddForm.value = true
-        updated.value = false
-        const itemsNull = {
-            families: null
+    }
+    function input(v){
+        formData.value = v
+        if (v.families && v.families.includes('camion')) {
+            //on s'assure que fieldsForm contient la définition du champ destination
+            if (typeof fieldsForm.find(item => item.name === 'destination') === 'undefined') {
+                fieldsForm.push(destinationField)
+                addFormKey++
+            }
+        } else if (typeof fieldsForm.find(item => item.name === 'destination') !== 'undefined') {
+            fieldsForm.pop()
+            formData.value.destination = null
+            addFormKey++
         }
-        formData.value = itemsNull
     }
     async function ajoutWarehouse(){
-        const form = document.getElementById('addWarehouse')
-        const formData1 = new FormData(form)
-
-        if (typeof formData.value.families !== 'undefined') {
-            formData.value.families = JSON.parse(JSON.stringify(formData.value.families))
-        }
-
-        const itemsAddData = {
-            name: formData1.get('name'),
-            families: formData.value.families
-        }
-
-        violations = await storeWarehouseList.addWarehouse(itemsAddData)
-
+        violations = await storeWarehouseList.addWarehouse(formData.value)
         if (violations.length > 0){
             isPopupVisible.value = true
         } else {
             AddForm.value = false
-            updated.value = false
             isPopupVisible.value = false
-            itemsTable.value = [...storeWarehouseList.itemsWarehouses]
+            await refreshTable() //On recharge les données
         }
     }
     function annule(){
         AddForm.value = false
-        updated.value = false
         const itemsNull = {
             families: null
         }
         formData.value = itemsNull
         isPopupVisible.value = false
     }
+    //endregion
+    //endregion
+    //region initialisation des éléments pour le tableau de liste
+    const isPopupVisible = ref(false)
+    const optionsFamilies = [
+        {
+            text: 'Prison',
+            value: 'prison'
+        },
+        {
+            text: 'Production',
+            value: 'production'
+        },
+        {
+            text: 'Réception',
+            value: 'réception'
+        },
+        {
+            text: 'Magasin pièces finies',
+            value: 'magasin pièces finies'
+        },
+        {
+            text: 'Expédition',
+            value: 'expédition'
+        },
+        {
+            text: 'Magasin matières premières',
+            value: 'magasin matières premières'
+        },
+        {
+            text: 'Camion',
+            value: 'camion'
+        }
+    ]
+    const tabFields = [
+        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'},
+        {
+            label: 'Famille ',
+            name: 'families',
+            options: {
+                label: itemValue => itemValue,
+                options: optionsFamilies
+            },
+            type: 'select'
+        },
+        {
+            label: 'Destination',
+            name: 'destination',
+            options: {
+                options: optionsCompanies,
+                label: itemValue => optionsCompanies.find(item => item.value === itemValue).text
+            },
+            type: 'select'
+        }
+    ]
+    //endregion
 
+    //region Fonctions relatives à la liste
     function update(item) {
-        storeWarehouseShow.setCurrentId(item.id)
-        // updated.value = true
-        // AddForm.value = true
-        // const itemsData = {
-        //     families: item.families
-        // }
-        // formData.value = itemsData
         router.push(`warehouse/${item.id}`)
     }
-
-    async function deleted(id){
-        await storeWarehouseList.delated(id)
-        itemsTable.value = [...storeWarehouseList.itemsWarehouses]
-    }
-    async function getPage(nPage){
-        console.log(nPage)
-        await storeWarehouseList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
-        itemsTable.value = [...storeWarehouseList.itemsWarehouses]
-    }
-    async function trierAlphabet(payload) {
-        await storeWarehouseList.sortableItems(payload, filterBy, filter)
-        sortable.value = true
-        trierAlpha = computed(() => payload)
+    async function deleteWarehouse(id) {
+        await storeWarehouseList.remove(id)
+        await refreshTable()
     }
     async function search(inputValues) {
-        const payload = {
-            families: inputValues.families ?? '',
-            name: inputValues.name ?? ''
-        }
-        await storeWarehouseList.filterBy(payload)
-        itemsTable.value = [...storeWarehouseList.itemsWarehouses]
-        filter.value = true
-        filterBy = computed(() => payload)
+        warehouseListCriteria.resetAllFilter()
+        warehouseListCriteria.addFilter('company', currentCompany)
+        if (inputValues.name) warehouseListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.families) warehouseListCriteria.addFilter('families[]', inputValues.families)
+        if (inputValues.destination) warehouseListCriteria.addFilter('destination', inputValues.destination)
+        await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)
     }
     async function cancelSearch() {
-        filter.value = false
-        await storeWarehouseList.fetch()
+        warehouseListCriteria.resetAllFilter()
+        warehouseListCriteria.addFilter('company', currentCompany)
+        await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)
     }
 
-    function input(v){
-        formData.value.families = v.families
+    async function getPage(nPage){
+        warehouseListCriteria.gotoPage(nPage)
+        await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)
+        //await storeWarehouseList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        //itemsTable.value = [...storeWarehouseList.itemsWarehouses]
     }
+    async function trierAlphabet(payload) {
+        console.log('tri', payload)
+        warehouseListCriteria.addSort(payload.name, payload.direction)
+        await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)
+    }
+    //endregion
 </script>
 
 <template>
@@ -234,8 +232,8 @@
                 <h1>
                     <Fa :icon="icon"/>
                     {{ title }}
-                    <span class="btn-float-right">
-                        <AppBtn variant="success" label="Ajout" @click="ajoute">
+                    <span v-if="isLogisticWriterOrAdmin" class="btn-float-right">
+                        <AppBtn variant="success" label="Ajout" @click="showAddForm">
                             <Fa icon="plus"/>
                             Ajouter
                         </AppBtn>
@@ -259,14 +257,14 @@
                         :user="roleuser"
                         form="formWarehouseCardableTable"
                         @update="update"
-                        @deleted="deleted"
+                        @deleted="deleteWarehouse"
                         @get-page="getPage"
                         @trier-alphabet="trierAlphabet"
                         @search="search"
                         @cancel-search="cancelSearch"/>
                 </AppSuspense>
             </div>
-            <div v-show="AddForm" class="col-7">
+            <div v-show="AddForm" :key="addFormKey" class="col-7">
                 <AppSuspense>
                     <AppCard class="bg-blue col" title="">
                         <div class="row">
@@ -274,10 +272,12 @@
                                 <Fa icon="angle-double-left"/>
                             </button>
                             <h4 class="col">
-                                <Fa icon="plus"/> Ajout d'un nouvel entrepôt
+                                <Fa icon="plus"/> Ajout d'un nouvel entrepôt {{ addFormKey }}
                             </h4>
                         </div>
-                        <AppSuspense><AppFormCardable id="addWarehouse" :fields="fieldsForm" label-cols @update:model-value="input"/></AppSuspense>
+                        <AppSuspense>
+                            <AppFormCardable id="addWarehouse" :model-value="formData" :fields="fieldsForm" label-cols @update:model-value="input"/>
+                        </AppSuspense>
                         <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
                             <div v-for="violation in violations" :key="violation">
                                 <li>{{ violation.message }}</li>

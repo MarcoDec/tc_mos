@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company', 'destination']),
     ApiFilter(filterClass: SetFilter::class, properties: ['families' => 'partial']),
     ApiResource(
         description: 'Entrepôt',
@@ -90,7 +90,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity(repositoryClass: WarehouseRepository::class)
 ]
-class Warehouse extends Entity implements CompanyInterface {
+class Warehouse extends Entity {
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,

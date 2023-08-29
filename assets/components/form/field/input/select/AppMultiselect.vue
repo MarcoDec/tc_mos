@@ -31,7 +31,7 @@
         :value-prop="field.options && field.options.valueProp "
         class="text-dark"
         label="text"
-        searchable
+        :searchable="true"
         @update:model-value="input">
         <template #afterlist>
             <input :name="field.name" :value="modelValue" type="hidden"/>
