@@ -25,9 +25,7 @@
                     <input :id="icon" v-model="iconMode" class="form-check-input" type="checkbox"/>
                 </div>
             </li>
-            <div>
-                <AppTabLink v-for="tab in tabs.tabs" :key="tab.id" :tab="tab"/>
-            </div>
+            <AppTabLink v-for="tab in tabs.tabs" :key="tab.id" :tab="tab"/>
         </ul>
         <div class="bg-white tab-content">
             <slot/>

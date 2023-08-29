@@ -1,22 +1,25 @@
 <script setup>
-    import {computed, ref} from 'vue'
-    import {useWarehouseShowStore as warehouseStore} from '../../../stores/logistic/warehouses/warehouseShow.js'
-    import {useSocietyListStore} from '../../../stores/direction/societyList.js'
+    import {computed} from 'vue'
+    import AppSuspense from '../../../AppSuspense.vue'
+    import {
+        useWarehouseShowStore,
+        useWarehouseShowStore as warehouseStore
+    } from '../../../../stores/logistic/warehouses/warehouseShow'
+    import {useSocietyListStore} from '../../../../stores/management/societyList'
     import {useRoute} from 'vue-router'
-    //import {useComponentListStore} from '../../../stores/component/components'
-    //import {useComponentShowStore} from '../../../stores/component/componentAttributesList'
-    import useOptions from '../../../stores/option/options'
+    import useOptions from '../../../../stores/option/options'
+    import {useWarehouseAttachmentStore} from '../../../../stores/logistic/warehouses/warehouseAttachements'
+    import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
 
-    const guiRatio = ref(0.5)
-    const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
-
+    const maRoute = useRoute()
+    const warehouseId = maRoute.params.id_warehouse
+    const warehouseAttachmentStore = useWarehouseAttachmentStore()
+    warehouseAttachmentStore.fetchByElement(warehouseId)
     const fecthCompanyOptions = useOptions('companies')
     if (fecthCompanyOptions.hasOptions === false){
         await fecthCompanyOptions.fetchOp()
     }
 
-    const maRoute = useRoute()
-    const warehouseId = maRoute.params.id_warehouse
 
     const store = warehouseStore()
     const storeCompanyAll = useSocietyListStore()
@@ -96,51 +99,37 @@
             {
                 label: 'Famille ',
                 name: 'families',
-                options: [
-                    {
-                        disabled: false,
-                        label: 'Prison',
-                        value: 'prison'
-                    },
-                    {
-                        disabled: false,
-                        label: 'Production',
-                        value: 'production'
-                    },
-                    {
-                        disabled: false,
-                        label: 'Réception',
-                        value: 'réception'
-                    },
-                    {
-                        disabled: false,
-                        label: 'Magasin pièces finies',
-                        value: 'magasin pièces finies'
-                    },
-                    {
-                        disabled: false,
-                        label: 'Expédition',
-                        value: 'expédition'
-                    },
-                    {
-                        disabled: false,
-                        label: 'Magasin matières premières',
-                        value: 'magasin matières premières'
-                    },
-                    {
-                        disabled: false,
-                        label: 'Camion',
-                        value: 'camion'
-                    }
-                ],
-                optionsList: {
-                    camion: 'camion',
-                    expédition: 'expédition',
-                    'magasin matières premières': 'magasin matières premières',
-                    'magasin pièces finies': 'magasin pièces finies',
-                    prison: 'prison',
-                    production: 'production',
-                    réception: 'réception'
+                options: {
+                    options: [
+                        {
+                            text: 'Prison',
+                            value: 'prison'
+                        },
+                        {
+                            text: 'Production',
+                            value: 'production'
+                        },
+                        {
+                            text: 'Réception',
+                            value: 'réception'
+                        },
+                        {
+                            text: 'Magasin pièces finies',
+                            value: 'magasin pièces finies'
+                        },
+                        {
+                            text: 'Expédition',
+                            value: 'expédition'
+                        },
+                        {
+                            text: 'Magasin matières premières',
+                            value: 'magasin matières premières'
+                        },
+                        {
+                            text: 'Camion',
+                            value: 'camion'
+                        }
+                    ]
                 },
                 type: 'multiselect'
             }
@@ -161,44 +150,42 @@
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
-        <AppTab
-            id="gui-start-main"
-            active
-            title="Généralité"
-            icon="pencil"
-            tabs="gui-start">
-            <AppCardShow
-                id="addGeneralites"
-                :fields="Generalitesfields"
-                :component-attribute="store.items"
-                @update="updateGeneral"/>
-        </AppTab>
-        <AppTab id="gui-start-files" title="Fichier" icon="folder" tabs="gui-start">
-            <div class="container-fluid">
-                <AppRow>
-                    <AppCol class="col-1">
-                        <AppBtnJS variant="primary">
-                            CSV
-                        </AppBtnJS>
-                    </AppCol>
-                    <AppCol>
-                        <div class="input-group mb-3">
-                            <input id="inputGroupFile02" type="file" class="form-control"/>
-                            <label class="input-group-text" for="inputGroupFile02">Rechercher</label>
-                            <AppBtnJS variant="success">
-                                Upload
-                            </AppBtnJS>
-                        </div>
-                        <p> Format supporté : .csv ( séparé par des points virgules ) </p>
-                    </AppCol>
-                </AppRow>
-            </div>
-        </AppTab>
+        <AppSuspense>
+            <AppTab
+                id="gui-start-main"
+                active
+                title="Généralité"
+                icon="pencil"
+                tabs="gui-start">
+                <AppSuspense>
+                    <AppCardShow
+                        id="addGeneralites"
+                        :fields="Generalitesfields"
+                        :component-attribute="store.items"
+                        @update="updateGeneral"/>
+                </AppSuspense>
+            </AppTab>
+            <AppTab id="gui-start-files" title="Fichier" icon="folder" tabs="gui-start">
+                <AppSuspense>
+                    <AppTabFichiers
+                        attachment-element-label="warehouse"
+                        :element-api-url="`/api/warehouses/${warehouseId}`"
+                        element-attachment-store="warehouseAttachmentStore"
+                        :element-id="warehouseId"
+                        element-parameter-name="WAREHOUSE_ATTACHMENT_CATEGORIES"
+                        :element-store="warehouseAttachmentStore"/>
+                </AppSuspense>
+            </AppTab>
+        </AppSuspense>
     </AppTabs>
 </template>
 
 <style scoped>
-    .gui {
-        --gui-ratio: v-bind(guiRatioPercent);
+    div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+    .gui-start-content {
+        font-size: 14px;
+    }
+    #gui-start-main {
+        padding-bottom: 150px;
     }
 </style>

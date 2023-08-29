@@ -21,6 +21,10 @@ export const useWarehouseListStore = defineStore('warehouseList', {
             const response = await api(`/api/warehouses${criteria}`, 'GET')
             this.warehouses = await this.updatePagination(response)
         },
+        async fetchOne(id) {
+            const response = await api(`/api/warehouses/${id}`, 'GET')
+            this.warehouse = response
+        },
         async filterBy(payload){
             let url = '/api/warehouses?'
             if (payload.name !== '') {
@@ -173,6 +177,7 @@ export const useWarehouseListStore = defineStore('warehouseList', {
         pagination: false,
         previousPage: '',
         warehouses: [],
+        warehouse: {},
         families: []
     })
 })

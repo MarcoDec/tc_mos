@@ -15,7 +15,7 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Order\Receipt;
-use App\Entity\Logistics\Warehouse;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Management\Unit;
 use App\Entity\Production\Manufacturing\Operation;
 use App\Entity\Purchase\Order\Item;

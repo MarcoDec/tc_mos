@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useWarehouseStocksItemsStore} from '../../../stores/production/warehouseStocksItems'
+    import {useWarehouseStocksItemsStore} from '../../../../stores/production/warehouseStocksItems'
     import AppWarehouseListStockTable from './provisoir/AppWarehouseListStockTable.vue'
     import AppWarehouseListVolumeTable from './provisoir/AppWarehouseListVolumeTable.vue'
     const guiRatio = ref(0.5)

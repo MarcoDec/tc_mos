@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Logistics;
+namespace App\Entity\Logistics\Warehouse;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -8,10 +8,11 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Doctrine\Common\Collections\Collection;
 use App\Doctrine\DBAL\Types\Logistics\FamilyType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
-use App\Entity\Interfaces\CompanyInterface;
+use App\Entity\Logistics\Warehouse\Attachment\WarehouseAttachment;
 use App\Entity\Management\Society\Company\Company;
 use App\Filter\SetFilter;
 use App\Repository\Logistics\WarehouseRepository;
@@ -91,6 +92,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity(repositoryClass: WarehouseRepository::class)
 ]
 class Warehouse extends Entity {
+    #[ORM\OneToMany(mappedBy: 'warehouse', targetEntity: WarehouseAttachment::class)]
+    private Collection $attachments;
     #[
         ApiProperty(description: 'Compagnie', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
@@ -170,4 +173,23 @@ class Warehouse extends Entity {
         $this->name = $name;
         return $this;
     }
+
+    /**
+     * @return Collection
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Collection $attachments
+     * @return Warehouse
+     */
+    public function setAttachments(Collection $attachments): Warehouse
+    {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
 }

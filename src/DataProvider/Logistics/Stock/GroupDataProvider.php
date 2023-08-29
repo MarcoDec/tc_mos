@@ -6,7 +6,7 @@ use ApiPlatform\Core\Api\IriConverterInterface;
 use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use App\Entity\Logistics\Stock\Group;
-use App\Entity\Logistics\Warehouse;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Paginator;
 use App\Repository\Logistics\Stock\GroupRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
