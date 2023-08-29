@@ -7,9 +7,8 @@ export const useWarehouseAttachmentStore = defineStore('warehouseAttachment', {
             const form = new FormData()
             form.append('file', data.file)
             form.append('category', data.category)
-            form.append('employee', data.employee)
+            form.append('warehouse', data.warehouse)
             await api('/api/warehouse-attachments', 'POST', form)
-            this.fetchByElement(this.id)
         },
         async fetchByElement(id) {
             const response = await api(`/api/warehouse-attachments?pagination=false&warehouse=/api/warehouses/${id}`, 'GET')

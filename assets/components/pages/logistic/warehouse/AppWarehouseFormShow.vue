@@ -2,7 +2,6 @@
     import {computed} from 'vue'
     import AppSuspense from '../../../AppSuspense.vue'
     import {
-        useWarehouseShowStore,
         useWarehouseShowStore as warehouseStore
     } from '../../../../stores/logistic/warehouses/warehouseShow'
     import {useSocietyListStore} from '../../../../stores/management/societyList'
@@ -170,10 +169,10 @@
                     <AppTabFichiers
                         attachment-element-label="warehouse"
                         :element-api-url="`/api/warehouses/${warehouseId}`"
-                        element-attachment-store="warehouseAttachmentStore"
+                        :element-attachment-store="warehouseAttachmentStore"
                         :element-id="warehouseId"
                         element-parameter-name="WAREHOUSE_ATTACHMENT_CATEGORIES"
-                        :element-store="warehouseAttachmentStore"/>
+                        :element-store="warehouseStore"/>
                 </AppSuspense>
             </AppTab>
         </AppSuspense>
