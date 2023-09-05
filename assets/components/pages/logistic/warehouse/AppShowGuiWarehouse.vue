@@ -4,7 +4,7 @@
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import AppWarehouseFormShow from './AppWarehouseFormShow.vue'
     import {useWarehouseListStore} from './provisoir/warehouseList'
-    //import AppWarehouseListShow from 'AppWarehouseListShow.vue'
+    import AppWarehouseListShow from './AppWarehouseListShow.vue'
 
     defineProps({
         icon: {required: true, type: String},

@@ -1,11 +1,8 @@
 <script setup>
-    import {computed, ref} from 'vue'
     import {useWarehouseStocksItemsStore} from '../../../../stores/production/warehouseStocksItems'
-    import AppWarehouseListStockTable from './provisoir/AppWarehouseListStockTable.vue'
-    import AppWarehouseListVolumeTable from './provisoir/AppWarehouseListVolumeTable.vue'
-    const guiRatio = ref(0.5)
-    const guiRatioPercent = computed(() => `${guiRatio.value * 100}%`)
-
+    //import AppWarehouseListStockTable from './provisoir/AppWarehouseListStockTable.vue'
+    import AppWarehouseListStockTable from './tabs/AppWarehouseListStockTable.vue'
+    //import AppWarehouseListVolumeTable from './provisoir/AppWarehouseListVolumeTable.vue'
     const storeWarehouseStocksItems = useWarehouseStocksItemsStore()
     storeWarehouseStocksItems.fetchItems()
 </script>
@@ -19,14 +16,13 @@
         </AppTab>
         <AppTab id="gui-start-volume" title="Volume" icon="ruler-vertical" tabs="gui-start-bottom">
             <AppSuspense>
-                <AppWarehouseListVolumeTable/>
+                <div>DE LU</div>
+<!--                <AppWarehouseListVolumeTable/>-->
             </AppSuspense>
         </AppTab>
     </AppTabs>
 </template>
 
 <style scoped>
-    .gui {
-        --gui-ratio: v-bind(guiRatioPercent);
-    }
+    .active { position: relative; z-index: 0; overflow: scroll; max-height: 100%; min-width: 100vw; padding-bottom: 100px}
 </style>

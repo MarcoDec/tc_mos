@@ -1,8 +1,9 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useWarehouseStockListStore} from './warehouseStockList'
+    import Multiselect from '@vueform/multiselect'
+    import {useWarehouseStockListStore} from '../provisoir/warehouseStockList'
     import {useRoute} from 'vue-router'
-    import useField from '../../../../stores/field/field'
+    import useField from '../../../../../stores/field/field'
 
     const roleuser = ref('reader')
     let violations = []
@@ -273,16 +274,64 @@
         filter.value = true
         storeWarehouseStockList.fetch()
     }
+    const allCountries = ref([])
+    allCountries.value = [
+        {1756: 'CAB-1756'},
+        {1759: 'CON-1759'},
+        {1780: 'FIX-1780'}
+    ]
+    const isLoading = ref(false)
+    const countries = ref([])
+    const selectedCountries = ref([])
+    function asyncFind(query) {
+        isLoading.value = true
+        const result = allCountries.value.filter(item => {
+            const values = Object.values(item)
+            return values[0].includes(query)
+        })
+        console.log('countries', result)
+        isLoading.value = false
+        console.log(query, selectedCountries.value)
+    }
+    // function limitText(count) {
+    //     return `and ${count} other countries`
+    // }
 </script>
 
 <template>
     <AppCol class="d-flex justify-content-between mb-2">
-        <AppBtn variant="success" label="Ajout" @click="ajoute">
-            <Fa icon="plus"/>
-            Ajouter
-        </AppBtn>
+        <span>
+            <AppBtn variant="success" label="Ajout" @click="ajoute">
+                <Fa icon="plus"/>
+                Créer un nouveau stock
+            </AppBtn>
+        </span>
+        <span>
+            <Multiselect
+                v-model="selectedCountries"
+                track-by="name"
+                placeholder="type to search"
+                open-direction="bottom"
+                :options="countries"
+                :multiple="false"
+                :searchable="true"
+                :loading="isLoading"
+                :internal-search="false"
+                :clear-on-select="false"
+                :close-on-select="true"
+                :max-height="600"
+                :show-no-result="true"
+                :hide-selected="false"
+                @search-change="asyncFind">
+                <template #selection="{values, isOpen}">
+                    {{ values }} / {{ isOpen }} / TOOO
+                </template>
+            </Multiselect>
+            <br/>
+            <div>{{ selectedCountries }}</div>
+        </span>
     </AppCol>
-    <AppRow>
+    <AppRow v-if="false">
         <AppCol>
             <AppCardableTable
                 :current-page="storeWarehouseStockList.currentPage"

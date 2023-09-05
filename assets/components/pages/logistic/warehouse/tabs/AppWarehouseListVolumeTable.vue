@@ -1,6 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import {useWarehouseVolumeListStore} from './warehouseVolumeList'
+    import {useWarehouseVolumeListStore} from '../provisoir/warehouseVolumeList'
     import {useRoute} from 'vue-router'
     import useField from '../../../../stores/field/field'
 
