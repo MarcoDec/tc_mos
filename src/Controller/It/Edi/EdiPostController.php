@@ -11,6 +11,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use App\Entity\It\SFTPConnection;
 
 
 class EdiPostController extends AbstractController
@@ -19,8 +20,7 @@ class EdiPostController extends AbstractController
        private readonly EntityManagerInterface $em,
        private readonly EmployeeRepository     $repository,
        private readOnly FileManager $fm,
-       private readonly LoggerInterface        $logger,
-       //private UserPasswordHasherInterface $passwordHasher
+       private readonly LoggerInterface        $logger
    ) {
    }
 
@@ -42,6 +42,7 @@ class EdiPostController extends AbstractController
        $employeeAccount = $this->repository->findOneBy([
            'username' => $username
        ]);
+       $this->logger->info("EDI: Requête de création", [$ediType, $inputRef, $ediMode, $username, $employeeAccount, $inputJson]);
        //endregion
        //region initialisation et persit EDI
        $newEdi = new Edi();
@@ -62,9 +63,9 @@ class EdiPostController extends AbstractController
        if (!is_dir($basePath.'/Edi')) mkdir($basePath.'/Edi', 0755);
        $path = $basePath.'/Edi/'.$id.'/';
         if (!is_dir($path)) mkdir($path, 0755);
-       $dateStr = date('YmdHisv');
-       $filename = $ediType."_".$inputRef ."_".$dateStr.".json";
+       $filename = $inputRef.".json";
        $pathfile = $path.$filename;
+       $newEdi->setFilePath('/Edi/'.$id.'/'.$filename);
        try {
            file_put_contents($pathfile, $inputJson);
        } catch (Exception $e) {
@@ -72,35 +73,20 @@ class EdiPostController extends AbstractController
        }
        //endregion
        //region connexion et envoi du fichier JSON sur SFTP
-       dump('EDI: connexion SFTP en cours');
-       if (!$connection = ssh2_connect('van.tx2.fr', 2022)) {
-           dump('EDI: CANNOT CONNEXT TO SERVER');
-       } else {
-           dump('EDI: CONNECTED TO THE SERVER');
-           if (!ssh2_auth_password($connection, 'TCONCEPT', 'Fg@B7?Q?`kq\DESzr,')) {
-               dump('EDI: AUTHENTICATION FAILED...');
-           } else {
-               dump('EDI: Jusque là tout va bien...');
-               $sftp=ssh2_sftp($connection);
-               $connection_string = 'ssh2.sftp://' . intval($sftp);
-               dump('EDI: connection_string',$connection_string);
-               $handle = opendir($connection_string."/");
-               dump( "Directory handle: $handle");
-               dump("Entries:");
-               while (false != ($entry = readdir($handle))){
-                   dump("$entry");
-               }
-               //$r = new \RecursiveIteratorIterator($i);
-//               dump('EDI: Récupération Dossiers distants');
-//               foreach ($r as $f) {
-//                   dump($f->getPathname());
-//               }
-               $connection = null; unset($connection);
-               dump('EDI: Déconnection SFTP OK');
-           }
+        $directory = $ediMode === 'TEST'?'/test/':'/prod';
+        $directory = $ediType === 'ORDERS'?$directory.'orders/':$directory;
+        $filePathNameFinal = $directory.$inputRef.'.json';
+        $filePathNameTMP = $filePathNameFinal.'.tmp';
+       try {
+            $sftp = new SFTPConnection('van.tx2.fr', 2022);
+            $sftp->login('TCONCEPT', 'Fg@B7?Q?`kq\DESzr,');
+            $sftp->uploadFile($pathfile, $filePathNameTMP);
+            $sftp->renameFile($filePathNameTMP,$filePathNameFinal);
+       } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), [$e]);
        }
+       $this->em->flush(); // Pour sauvegarde chemin fichier JSON envoyé
        //endregion
-      //$this->logger->debug('api EDI $request->getContent()', [$ediType, $inputJson, $object, $username, $employeeAccount]);
       return $newEdi;
    }
 }
