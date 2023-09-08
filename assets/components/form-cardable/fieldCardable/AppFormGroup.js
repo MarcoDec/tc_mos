@@ -12,12 +12,14 @@ function AppFormGroup(props, context) {
         modelValue: props.modelValue,
         'onUpdate:modelValue': value => {
             context.emit('update:modelValue', value)
+        },
+        onSearchChange: value => {
+            context.emit('searchChange', value)
         }
     }
     const children = []
     if (props.violation) {
         attrs['class'] = 'is-invalid'
-        children.push(h(resolveComponent('AppInputGuesser'), attrs))
         children.push(h('div', {class: 'invalid-feedback'}, props.violation.message))
     } else
         children.push(h(resolveComponent('AppInputGuesser'), attrs))
@@ -27,7 +29,7 @@ function AppFormGroup(props, context) {
     ])
 }
 
-AppFormGroup.emits = ['update:modelValue']
+AppFormGroup.emits = ['update:modelValue', 'searchChange']
 
 AppFormGroup.props = {
     disabled: {type: Boolean},

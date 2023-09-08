@@ -2,7 +2,7 @@
     import Multiselect from '@vueform/multiselect'
     import {readonly} from 'vue'
 
-    /*const props = */defineProps({
+    const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
@@ -10,11 +10,14 @@
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
     })
-    const emit = defineEmits(['update:modelValue'])
+    const emit = defineEmits(['update:modelValue', 'searchChange'])
     const css = readonly({search: 'form-control form-control-sm'})
-    //console.log(props.mode, props.modelValue)
+    console.log(props.mode, props.modelValue)
     function input(value) {
         emit('update:modelValue', value)
+    }
+    function updateSearch(data) {
+        emit('searchChange', data)
     }
 </script>
 
@@ -32,6 +35,7 @@
         class="text-dark"
         label="text"
         :searchable="true"
+        @search-change="updateSearch"
         @update:model-value="input">
         <template #afterlist>
             <input :name="field.name" :value="modelValue" type="hidden"/>
