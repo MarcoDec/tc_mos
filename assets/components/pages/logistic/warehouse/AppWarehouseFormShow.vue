@@ -187,7 +187,7 @@
                         @update:model-value="localDataChange"/>
                 </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-files" title="Fichier" icon="folder" tabs="gui-start">
+            <AppTab id="gui-start-files" title="Fichiers" icon="folder" tabs="gui-start">
                 <AppSuspense>
                     <AppTabFichiers
                         attachment-element-label="warehouse"
