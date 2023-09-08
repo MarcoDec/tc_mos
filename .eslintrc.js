@@ -203,7 +203,7 @@ module.exports = {
         'rest-spread-spacing': 'error',
         semi: ['error', 'never'],
         //'sort-imports': 'error',
-        'sort-keys': 'error',
+        //'sort-keys': 'error',
         'sort-vars': 'error',
         'space-before-function-paren': ['error', {
             anonymous: 'always', asyncArrow: 'always', named: 'never'
@@ -368,7 +368,7 @@ module.exports = {
         'vue/script-indent': ['error', 4, {baseIndent: 1, switchCase: 1}],
         'vue/script-setup-uses-vars': 'error',
         'vue/singleline-html-element-content-newline': 'error',
-        'vue/sort-keys': 'error',
+        //'vue/sort-keys': 'error',
         'vue/space-in-parens': 'error',
         'vue/space-infix-ops': 'error',
         'vue/space-unary-ops': 'error',
