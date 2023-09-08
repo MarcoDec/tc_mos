@@ -6,6 +6,7 @@
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
     import {useComponentListStore} from '../../../../../stores/purchase/component/components'
+    import {useProductStore} from '../../../../../stores/project/product/products'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
 
     const roleuser = ref('reader')
@@ -18,8 +19,12 @@
     let trierAlpha = {}
     let filterBy = {}
 
+    //region récupération des informations de route
     const maRoute = useRoute()
     const warehouseId = maRoute.params.id_warehouse
+    //endregion
+    //region initialisation des champs pour le formulaire d'ajout d'un stock
+    //region champ multi-select composant
     const addStockFormComponentSearchCriteria = useFetchCriteria('addStockFormComponent')
     const fetchComponentStore = useComponentListStore()
     async function updateComponents() {
@@ -27,26 +32,23 @@
         return fetchComponentStore.components
     }
     await updateComponents()
-    async function componentOptions(query) {
-        console.log(query)
-        await updateComponents()
-        return fetchComponentStore.components.map(item => {
-            return {text: `${item.code} - ${item.name}`, value: item['@id']}
-        })
-    }
     const optionComposant = computed(() => fetchComponentStore.components.map(item => {
         return {text: `${item.code}`, value: item['@id']}
     }))
-    const storeWarehouseStockList = useWarehouseStockListStore()
-    storeWarehouseStockList.setIdWarehouse(warehouseId)
-    await storeWarehouseStockList.fetch()
-    const itemsTable = ref(storeWarehouseStockList.itemsWarehousesStock)
-    const formData = ref({
-        composant: null, produit: null, numeroDeSerie: null, localisation: null, quantite: null, prison: null
-    })
-
-    //const optionComposant = await storeWarehouseStockList.getOptionComposant
-    const optionProduit = await storeWarehouseStockList.getOptionProduit
+    //endregion
+    //region champ multi-select produit
+    const addStockFormProductSearchCriteria = useFetchCriteria('addStockFormProduct')
+    const fetchProductStore = useProductStore()
+    async function updateProducts() {
+        await fetchProductStore.fetchAll(addStockFormProductSearchCriteria.getFetchCriteria)
+        return fetchProductStore.products
+    }
+    await updateProducts()
+    const optionProduit = computed(() => fetchProductStore.products.map(item => {
+        return {text: `${item.code}`, value: item['@id']}
+    }))
+    //endregion
+    //region établissement de fieldsForm
 
     const fieldsForm = computed(()=>[
         {
@@ -57,17 +59,18 @@
             options: {label: value => optionComposant.value.find(option => option.value === value)?.text ?? null, options: optionComposant.value},
             type: 'multiselect',
             update: true
-        }//,
-        // {
-        //     create: true,
-        //     filter: true,
-        //     label: 'Produit',
-        //     name: 'produit',
-        //     options: {label: value => optionProduit.find(option => option.value === value)?.text.code ?? null, options: optionProduit},
-        //     sort: true,
-        //     type: 'select',
-        //     update: true
-        // },
+        }
+        ,
+        {
+            create: true,
+            filter: true,
+            label: 'Produit',
+            name: 'produit',
+            options: {label: value => optionProduit.value.find(option => option.value === value)?.text ?? null, options: optionProduit.value},
+            type: 'multiselect',
+            update: true
+        }
+        // ,
         // {
         //     create: true,
         //     filter: true,
@@ -109,6 +112,18 @@
         //     update: true
         // }
     ])
+    //endregion
+    //endregion
+    //region initalisation des champs pour le tableau de liste des stocks
+    const storeWarehouseStockList = useWarehouseStockListStore()
+    storeWarehouseStockList.setIdWarehouse(warehouseId)
+    await storeWarehouseStockList.fetch()
+    const itemsTable = ref(storeWarehouseStockList.itemsWarehousesStock)
+    const formData = ref({
+        composant: null, produit: null, numeroDeSerie: null, localisation: null, quantite: null, prison: null
+    })
+    //endregion
+
 
     // const parent = {
     //     $id: `${warehouseId}Stock`

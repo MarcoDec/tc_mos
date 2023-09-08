@@ -10,6 +10,12 @@ export const useProductStore = defineStore('products', {
             this.product = item
             this.isLoaded = true
         },
+        async fetchAll(filter='') {
+            this.isLoading = true
+            this.products = (await api(`/api/products${filter}`, 'GET'))['hydra:member']
+            this.isLoading = false
+            this.isLoaded = true
+        },
         async fetchProductFamily() {
             const response = await api('/api/product-families', 'GET')
             this.productsFamily = response['hydra:member']
@@ -18,6 +24,7 @@ export const useProductStore = defineStore('products', {
     getters: {},
     state: () => ({
         isLoaded: false,
+        isLoading: false,
         product: {},
         products: {},
         productsFamily: []
