@@ -14,12 +14,12 @@
                 <AppWarehouseListStockTable/>
             </AppSuspense>
         </AppTab>
-        <AppTab id="gui-start-volume" title="Volume" icon="ruler-vertical" tabs="gui-start-bottom">
-            <AppSuspense>
-                <div>DE LU</div>
-<!--                <AppWarehouseListVolumeTable/>-->
-            </AppSuspense>
-        </AppTab>
+<!--        <AppTab id="gui-start-volume" title="Volume" icon="ruler-vertical" tabs="gui-start-bottom">-->
+<!--            <AppSuspense>-->
+<!--                <div>DE LU</div>-->
+<!--                &lt;!&ndash;                <AppWarehouseListVolumeTable/>&ndash;&gt;-->
+<!--            </AppSuspense>-->
+<!--        </AppTab>-->
     </AppTabs>
 </template>
 
