@@ -30,7 +30,7 @@
         }
     ])
 </script>
-
+ 
 <template>
     <div class="row">
         <AppModal :id="modalId" class="four" :title="title">

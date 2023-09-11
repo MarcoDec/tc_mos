@@ -1,62 +1,102 @@
 <script setup>
-    import {computed, onMounted} from 'vue-demi'
+    import {computed, onMounted, ref} from 'vue-demi'
     import AppSupplierCreate from './AppSupplierCreate.vue'
-    import AppTablePage from '../AppTablePage'
-    import useCountries from '../../../stores/countries/countries'
+    import AppSuspense from '../../../components/AppSuspense.vue'
+    // import useCountries from '../../../stores/countries/countries'
     import useSuppliers from '../../../stores/supplier/suppliers'
-    import {useTableMachine} from '../../../machine'
+    import { faUserTag } from '@fortawesome/free-solid-svg-icons'
     const title = 'Créer un Fournisseur'
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
-    const machineSupplier = useTableMachine('machine-supplier')
-    const suppliers = useSuppliers()
-    const countries = useCountries()
+
+    const storeSuppliersList = useSuppliers()
+    const suppliersList = ref([]);
+    const AddForm = ref(false)
+
     onMounted(async () => {
-        await countries.fetch()
-    })
+      await storeSuppliersList.fetch();
+      console.log('storeSuppliersList.suppliers', storeSuppliersList);
+      suppliersList.value = storeSuppliersList.suppliers.map(supplier => ({
+        '@id': supplier['@id'],
+        name: supplier.name,
+        state: supplier.embState.state 
+      }));
+      console.log('suppliersList.value ', suppliersList.value );
+    });
+    async function deleted(id){
+        await storeSuppliersList.delated(id)
+    }
 
     const fields = computed(() => [
         {
             create: false,
             label: 'Nom',
-            name: 'nom',
+            name: 'name',
             sort: false,
             update: true
         },
         {
             create: false,
             label: 'Etat',
-            name: 'etat',
+            name: 'state',
             sort: false,
             update: true
         }
     ])
+    async function getPage(nPage){
+        await storeSuppliersList.itemsPagination(nPage)
+    }
+
 </script>
 
 <template>
+    <AppCol class="d-flex justify-content-between mb-2">
+        <h1>
+            <Fa :icon="faUserTag"/>
+            {{ title }}
+        </h1>
+        <AppBtn
+            variant="success"
+            label="Créer"
+            data-bs-toggle="modal"
+            :data-bs-target="target">
+            Créer
+        </AppBtn>
+    </AppCol>
     <div class="row">
-        <AppModal :id="modalId" class="four" :title="title">
+        <AppModal  :id="modalId" class="four" :title="title">
             <AppSupplierCreate/>
+            <template #buttons>
+                <AppBtn
+                    variant="success"
+                    label="Créer"
+                    data-bs-toggle="modal"
+                    :data-bs-target="target"
+                    @click="supplierFormCreate">
+                    Créer
+                </AppBtn>
+            </template>
         </AppModal>
         <div class="col">
-            <AppTablePage
-                :fields="fields"
-                icon="user-tag"
-                :machine="machineSupplier"
-                :store="suppliers"
-                title="La liste de fournisseurs">
-                <template #cell(etat)>
-                    <AppTrafficLight/>
-                </template>
-                <template #btn>
-                    <AppBtn
-                        variant="success"
-                        data-bs-toggle="modal"
-                        :data-bs-target="target">
-                        Créer
-                    </AppBtn>
-                </template>
-            </AppTablePage>
+            <AppSuspense>
+                <AppCardableTable 
+                    :current-page="storeSuppliersList.currentPage"
+                    :fields="fields"
+                    :first-page="storeSuppliersList.firstPage"
+                    :items="suppliersList"
+                    :last-page="storeSuppliersList.lastPage"
+                    :next-page="storeSuppliersList.nextPage"
+                    :pag="storeSuppliersList.pagination"
+                    :previous-page="storeSuppliersList.previousPage"
+                    user="roleuser"
+                    form="formSupplierCardableTable"
+                    @update="update"
+                    @deleted="deleted"
+                    @get-page="getPage"
+                    @trier-alphabet="trierAlphabet"
+                    @search="search"
+                    @cancel-search="cancelSearch"/>
+            </AppSuspense>
         </div>
     </div>
 </template>

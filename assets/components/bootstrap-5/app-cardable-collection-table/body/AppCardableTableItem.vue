@@ -11,6 +11,7 @@
     }
     function deleted(){
         const id = Number(props.item['@id'].match(/\d+/)[0])
+        console.log('id', props.item['@id'].match(/\d+/)[0]);
         emit('deleted', id)
     }
 </script>

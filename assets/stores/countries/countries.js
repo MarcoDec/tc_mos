@@ -9,6 +9,10 @@ export default defineStore('countries', {
             const response = await api('/api/countries')
             for (const country of response.content['hydra:member'])
                 this.items.push(generateCountry(country, this))
+        },
+        async countryOption() {
+            const response = await api('/api/countries/options', 'GET')
+            this.countries = response['hydra:member']
         }
     },
     getters: {
@@ -22,8 +26,17 @@ export default defineStore('countries', {
                 this.options
                     .map(country => country.value)
                     .find(value => value === code) ?? null
-        }
-
+        },
+        countriesOption: state => state.countries.map(country => {
+            const opt = {
+                text: country.text,
+                value: country.code
+            }
+            return opt
+        })
     },
-    state: () => ({items: []})
+    state: () => ({
+        items: [],
+        countries: []
+    })
 })
