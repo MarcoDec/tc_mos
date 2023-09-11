@@ -1,7 +1,7 @@
 <script setup>
     import {useWarehouseStocksItemsStore} from '../../../../stores/production/warehouseStocksItems'
     //import AppWarehouseListStockTable from './provisoir/AppWarehouseListStockTable.vue'
-    import AppWarehouseListStockTable from './tabs/AppWarehouseListStockTable.vue'
+    import AppWarehouseListStockTable from './tabs/WarehouseStocks/AppWarehouseListStockTable.vue'
     //import AppWarehouseListVolumeTable from './provisoir/AppWarehouseListVolumeTable.vue'
     const storeWarehouseStocksItems = useWarehouseStocksItemsStore()
     storeWarehouseStocksItems.fetchItems()
