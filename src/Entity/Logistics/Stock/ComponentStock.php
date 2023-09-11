@@ -9,6 +9,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use App\Repository\Logistics\Stock\ComponentStockRepository;
@@ -84,5 +85,9 @@ class ComponentStock extends Stock {
 
     final protected function getType(): string {
         return ItemType::TYPE_COMPONENT;
+    }
+
+    public function getUnit(): ?Unit {
+        return $this->item?->getUnit();
     }
 }

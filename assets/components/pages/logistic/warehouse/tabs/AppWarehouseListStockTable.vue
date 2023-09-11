@@ -1,26 +1,39 @@
 <script setup>
     import {computed, ref} from 'vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import {useWarehouseStockListStore} from '../provisoir/warehouseStockList'
+    //import {useWarehouseStockListStore} from '../provisoir/warehouseStockList'
+    import {useStockListStore} from '../../../../../stores/logistic/stocks/stocks'
     import {useRoute} from 'vue-router'
     import {useComponentListStore} from '../../../../../stores/purchase/component/components'
     import {useProductStore} from '../../../../../stores/project/product/products'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
+    import useOptions from '../../../../../stores/option/options'
 
-    const roleuser = ref('reader')
+    // const roleuser = ref('reader')
     let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
     const isPopupVisible = ref(false)
-    const sortable = ref(false)
-    const filter = ref(false)
-    let trierAlpha = {}
-    let filterBy = {}
+    const itemsAddData = ref({})
+    // const sortable = ref(false)
+    // const filter = ref(false)
+    // let trierAlpha = {}
+    // let filterBy = {}
+    let addFormKey = 0
 
     //region récupération des informations de route
     const maRoute = useRoute()
     const warehouseId = maRoute.params.id_warehouse
     //endregion
+    const fetchUnits = useOptions('units')
+    await fetchUnits.fetchOp()
+    const optionsUnit = fetchUnits.options.map(op => {
+        const text = op.text
+        const value = op.value
+        return {text, value}
+    })
+    //console.log('optionsUnit', optionsUnit)
+    const fetchStocks = useStockListStore()
     //region initialisation des champs pour le formulaire d'ajout d'un stock
     //region champ multi-select composant
     const addStockFormComponentSearchCriteria = useFetchCriteria('addStockFormComponent')
@@ -83,7 +96,8 @@
             label: 'Composant',
             name: 'component',
             options: {label: value => optionComposant.value.find(option => option.value === value)?.text ?? null, options: optionComposant.value},
-            type: 'multiselect'
+            type: 'multiselect',
+            max: 1
         },
         {
             label: 'Quantité ',
@@ -92,7 +106,12 @@
                 code: { //récupérer l'unité du composant sélectionné
                     label: 'Unité',
                     name: 'code',
-                    type: 'text'
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit
+                    },
+                    type: 'select'
                 },
                 value: {
                     label: 'Valeur',
@@ -108,16 +127,18 @@
             label: 'Produit',
             name: 'product',
             options: {label: value => optionProduit.value.find(option => option.value === value)?.text ?? null, options: optionProduit.value},
-            type: 'multiselect'
+            type: 'multiselect',
+            max: 1
         },
         {
             label: 'Quantité ',
-            name: 'quantite',
+            name: 'quantity',
             measure: {
                 code: { // Mettre U en permanence par défault
                     label: 'Unité',
                     name: 'code',
-                    type: 'text'
+                    type: 'text',
+                    readonly: true
                 },
                 value: {
                     label: 'Valeur',
@@ -143,26 +164,85 @@
     function addFormChange(data) {
         //survient la plupart du temps lorsqu'on modifie les valeurs d'un input sans besoin de valider le formulaire ou de sortir du champ
         //Attention ne fonctionne pas pour les MultiSelect => Voir updatedSearch
-        console.log('addFormChange', data)
-        localAddFormData.value = data
+        console.log('addFormChange', localAddFormData.value, data)
+        if (data.itemType === !localAddFormData.value.itemType) {
+            switch (data.itemType) {
+                case true:
+                    localAddFormData.value.quantity = {code: 'U', value: data.quantity.value}
+                    localAddFormData.value.component = null
+                    localAddFormData.value.itemType = true
+                    break
+                default:
+                    localAddFormData.value.quantity = {code: '', value: data.quantity.value}
+                    localAddFormData.value.product = null
+                    localAddFormData.value.itemType = false
+            }
+            //console.log('changement type d\'item', localAddFormData.value)
+            addFormKey++
+        } else {
+            localAddFormData.value = data
+        }
     }
     async function updatedSearch(data) {
-        console.log('updatedSearch', data)
+        //console.log('updatedSearch', data)
         //inputValue.value[data.field.name]=data.data
         switch (data.field.name) {
             case 'component':
                 addStockFormComponentSearchCriteria.addFilter('code', data.data)
-                console.log(addStockFormComponentSearchCriteria.getFetchCriteria)
+                //console.log(addStockFormComponentSearchCriteria.getFetchCriteria)
                 await updateComponents()
                 break
             case 'product':
                 addStockFormProductSearchCriteria.addFilter('code', data.data)
-                console.log(addStockFormProductSearchCriteria.getFetchCriteria)
+                //console.log(addStockFormProductSearchCriteria.getFetchCriteria)
                 await updateProducts()
                 break
             default:
             //nothing
         }
+    }
+
+    async function ajoutWarehouseStock(){
+        console.log(localAddFormData.value)
+        itemsAddData.value = {
+            batchNumber: localAddFormData.value.batchNumber,
+            location: localAddFormData.value.location,
+            quantity: {code: localAddFormData.value.quantity.code, value: localAddFormData.value.quantity.value},
+            jail: localAddFormData.value.jail
+        }
+        switch (localAddFormData.value.itemType) {
+            case false:
+                //Ajout d'un stock composant en base
+                console.log('composant', fetchUnits.options)
+                itemsAddData.value.item = localAddFormData.value.component[0] ?? null
+                itemsAddData.value.product = null
+                itemsAddData.value.quantity = {
+                    code: fetchUnits.find(localAddFormData.value.quantity.code).code,
+                    value: localAddFormData.value.quantity.value
+                }
+                break
+            default:
+                console.log('product')
+                //Ajout d'un stock produit en base
+                itemsAddData.value.component = null
+                itemsAddData.value.item = localAddFormData.value.product[0] ?? null
+                itemsAddData.value.quantity = {
+                    code: localAddFormData.value.quantity.code,
+                    value: localAddFormData.value.quantity.value
+                }
+        }
+        itemsAddData.value.warehouse = `/api/warehouses/${warehouseId}`
+        console.log('data to send', itemsAddData.value)
+        try {
+            await fetchStocks.addStock(itemsAddData.value)
+            AddForm.value = false
+        } catch (e) {
+            alert(e.message)
+            // violations = await storeWarehouseStockList.addWarehouseStock(itemsAddData)
+        }
+    }
+    function annuleAddStock(){
+        AddForm.value = false
     }
     //endregion
     //endregion
@@ -246,44 +326,6 @@
     //         update: true
     //     }
     // ]
-
-    // async function ajoutWarehouseStock(){
-    //     const form = document.getElementById('addWarehouseStock')
-    //     const formData1 = new FormData(form)
-    //
-    //     const itemsAddData = {
-    //         composant: formData1.get('composant'),
-    //         produit: formData1.get('produit'),
-    //         numeroDeSerie: formData1.get('numeroDeSerie'),
-    //         localisation: formData1.get('localisation'),
-    //         quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         prison: formData1.get('prison')
-    //     }
-    //     violations = await storeWarehouseStockList.addWarehouseStock(itemsAddData)
-    //
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
-    //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         composant: null,
-    //         produit: null,
-    //         numeroDeSerie: null,
-    //         localisation: null,
-    //         quantite: null,
-    //         prison: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
     //
     // function update(item) {
     //     updated.value = true
@@ -371,36 +413,38 @@
 
 <template>
     <AppCol class="d-flex justify-content-between mb-2">
-        <AppBtn variant="success" label="Ajout" @click="ajoute">
-            <Fa icon="plus"/>
-            Créer un nouveau stock
-        </AppBtn>
+        <span>
+            <AppBtn variant="success" label="Ajout" @click="ajoute">
+                <Fa icon="plus"/>
+                Créer un nouveau stock
+            </AppBtn>
+        </span>
     </AppCol>
     <AppRow>
         <AppCol>
-<!--            <AppCardableTable-->
-<!--                :current-page="storeWarehouseStockList.currentPage"-->
-<!--                :fields="tabFields"-->
-<!--                :first-page="storeWarehouseStockList.firstPage"-->
-<!--                :items="itemsTable"-->
-<!--                :last-page="storeWarehouseStockList.lastPage"-->
-<!--                :min="AddForm"-->
-<!--                :next-page="storeWarehouseStockList.nextPage"-->
-<!--                :pag="storeWarehouseStockList.pagination"-->
-<!--                :previous-page="storeWarehouseStockList.previousPage"-->
-<!--                :user="roleuser"-->
-<!--                form="formWarehouseCardableTable"-->
-<!--                @update="update"-->
-<!--                @deleted="deleted"-->
-<!--                @get-page="getPage"-->
-<!--                @trier-alphabet="trierAlphabet"-->
-<!--                @search="search"-->
-<!--                @cancel-search="cancelSearch"/>-->
+        <!--            <AppCardableTable-->
+        <!--                :current-page="storeWarehouseStockList.currentPage"-->
+        <!--                :fields="tabFields"-->
+        <!--                :first-page="storeWarehouseStockList.firstPage"-->
+        <!--                :items="itemsTable"-->
+        <!--                :last-page="storeWarehouseStockList.lastPage"-->
+        <!--                :min="AddForm"-->
+        <!--                :next-page="storeWarehouseStockList.nextPage"-->
+        <!--                :pag="storeWarehouseStockList.pagination"-->
+        <!--                :previous-page="storeWarehouseStockList.previousPage"-->
+        <!--                :user="roleuser"-->
+        <!--                form="formWarehouseCardableTable"-->
+        <!--                @update="update"-->
+        <!--                @deleted="deleted"-->
+        <!--                @get-page="getPage"-->
+        <!--                @trier-alphabet="trierAlphabet"-->
+        <!--                @search="search"-->
+        <!--                @cancel-search="cancelSearch"/>-->
         </AppCol>
         <AppCol v-if="AddForm && !updated" class="col-7">
             <AppCard class="bg-blue col" title="">
                 <AppRow>
-                    <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                    <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annuleAddStock">
                         <Fa icon="angle-double-left"/>
                     </button>
                     <h4 class="col">
@@ -410,13 +454,12 @@
                 <br/>
                 <AppFormCardable
                     id="addWarehouseStock"
+                    :key="addFormKey"
                     :fields="fieldsForm"
                     :model-value="localAddFormData"
                     label-cols
-                    @update:modelValue="addFormChange"
-                    @search-change="updatedSearch"
-                    @input="addFormInput"
-                />
+                    @update:model-value="addFormChange"
+                    @search-change="updatedSearch"/>
                 <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
                     <div v-for="violation in violations" :key="violation">
                         <li>{{ violation.message }}</li>

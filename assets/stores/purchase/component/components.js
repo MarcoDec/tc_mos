@@ -9,7 +9,7 @@ export const useComponentListStore = defineStore('component', {
             this.isLoading = false
             this.isLoaded = true
         },
-        async fetchAll(filter='') {
+        async fetchAll(filter = '') {
             this.isLoading = true
             this.components = (await api(`/api/components${filter}`, 'GET'))['hydra:member']
             this.isLoading = false

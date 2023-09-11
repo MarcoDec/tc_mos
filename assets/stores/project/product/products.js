@@ -10,7 +10,7 @@ export const useProductStore = defineStore('products', {
             this.product = item
             this.isLoaded = true
         },
-        async fetchAll(filter='') {
+        async fetchAll(filter = '') {
             this.isLoading = true
             this.products = (await api(`/api/products${filter}`, 'GET'))['hydra:member']
             this.isLoading = false
