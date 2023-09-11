@@ -26,7 +26,7 @@ export const useProductStore = defineStore('products', {
         isLoaded: false,
         isLoading: false,
         product: {},
-        products: {},
+        products: [],
         productsFamily: []
     })
 })

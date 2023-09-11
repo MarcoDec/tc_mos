@@ -1,10 +1,8 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import Multiselect from '@vueform/multiselect'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {useWarehouseStockListStore} from '../provisoir/warehouseStockList'
     import {useRoute} from 'vue-router'
-    import useField from '../../../../../stores/field/field'
     import {useComponentListStore} from '../../../../../stores/purchase/component/components'
     import {useProductStore} from '../../../../../stores/project/product/products'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
@@ -32,9 +30,7 @@
         return fetchComponentStore.components
     }
     await updateComponents()
-    const optionComposant = computed(() => fetchComponentStore.components.map(item => {
-        return {text: `${item.code}`, value: item['@id']}
-    }))
+    const optionComposant = computed(() => fetchComponentStore.components.map(item => ({text: `${item.code}`, value: item['@id']})))
     //endregion
     //region champ multi-select produit
     const addStockFormProductSearchCriteria = useFetchCriteria('addStockFormProduct')
@@ -44,87 +40,141 @@
         return fetchProductStore.products
     }
     await updateProducts()
-    const optionProduit = computed(() => fetchProductStore.products.map(item => {
-        return {text: `${item.code}`, value: item['@id']}
-    }))
+    const optionProduit = computed(() => fetchProductStore.products.map(item => ({text: `${item.code}`, value: item['@id']})))
     //endregion
+    const itemsNull = {
+        itemType: false,
+        batchNumber: null,
+        jail: false,
+        location: null,
+        component: null,
+        product: null,
+        quantity: {
+            code: 'U',
+            value: 0
+        }
+    }
+    const localAddFormData = ref(itemsNull)
     //region établissement de fieldsForm
-
-    const fieldsForm = computed(()=>[
+    const commonAddFormFields = [
         {
-            create: true,
-            filter: true,
+            label: 'Composant(0)/Produit(1)',
+            name: 'itemType',
+            type: 'boolean'
+        },
+        {
+            label: 'Numéro de série',
+            name: 'batchNumber',
+            type: 'text'
+        },
+        {
+            label: 'Localisation',
+            name: 'location',
+            type: 'text'
+        },
+        {
+            label: 'Prison',
+            name: 'jail',
+            type: 'boolean'
+        }
+    ]
+    const specificComponentAddFormFields = computed(() => [
+        {
             label: 'Composant',
-            name: 'composant',
+            name: 'component',
             options: {label: value => optionComposant.value.find(option => option.value === value)?.text ?? null, options: optionComposant.value},
-            type: 'multiselect',
-            update: true
-        }
-        ,
+            type: 'multiselect'
+        },
         {
-            create: true,
-            filter: true,
-            label: 'Produit',
-            name: 'produit',
-            options: {label: value => optionProduit.value.find(option => option.value === value)?.text ?? null, options: optionProduit.value},
-            type: 'multiselect',
-            update: true
+            label: 'Quantité ',
+            name: 'quantity',
+            measure: {
+                code: { //récupérer l'unité du composant sélectionné
+                    label: 'Unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'value',
+                    type: 'number'
+                }
+            },
+            type: 'measure'
         }
-        // ,
-        // {
-        //     create: true,
-        //     filter: true,
-        //     label: 'Numéro de série',
-        //     name: 'numeroDeSerie',
-        //     sort: true,
-        //     type: 'text',
-        //     update: true
-        // },
-        // {
-        //     create: true,
-        //     filter: true,
-        //     label: 'Localisation',
-        //     name: 'localisation',
-        //     sort: true,
-        //     type: 'text',
-        //     update: true
-        // },
-        // {
-        //     create: true,
-        //     filter: true,
-        //     label: 'Quantité ',
-        //     name: 'quantite',
-        //     measure: {
-        //         code: null,
-        //         value: null
-        //     },
-        //     sort: true,
-        //     type: 'measure',
-        //     update: true
-        // },
-        // {
-        //     create: true,
-        //     filter: true,
-        //     label: 'Prison',
-        //     name: 'prison',
-        //     sort: true,
-        //     type: 'boolean',
-        //     update: true
-        // }
     ])
+    const specificProductAddFormFields = computed(() => [
+        {
+            label: 'Produit',
+            name: 'product',
+            options: {label: value => optionProduit.value.find(option => option.value === value)?.text ?? null, options: optionProduit.value},
+            type: 'multiselect'
+        },
+        {
+            label: 'Quantité ',
+            name: 'quantite',
+            measure: {
+                code: { // Mettre U en permanence par défault
+                    label: 'Unité',
+                    name: 'code',
+                    type: 'text'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'value',
+                    type: 'number'
+                }
+            },
+            type: 'measure'
+        }
+    ])
+    const fieldsForm = computed(() => {
+        if (localAddFormData.value.itemType === true) return [...commonAddFormFields, ...specificProductAddFormFields.value]
+        return [...commonAddFormFields, ...specificComponentAddFormFields.value]
+    })
+    //endregion
+    //region définition des fonctions associées au formulaire d'ajout d'un stock
+
+    function ajoute(){
+        AddForm.value = true
+        updated.value = false
+        localAddFormData.value = itemsNull
+    }
+    function addFormChange(data) {
+        //survient la plupart du temps lorsqu'on modifie les valeurs d'un input sans besoin de valider le formulaire ou de sortir du champ
+        //Attention ne fonctionne pas pour les MultiSelect => Voir updatedSearch
+        console.log('addFormChange', data)
+        localAddFormData.value = data
+    }
+    async function updatedSearch(data) {
+        console.log('updatedSearch', data)
+        //inputValue.value[data.field.name]=data.data
+        switch (data.field.name) {
+            case 'component':
+                addStockFormComponentSearchCriteria.addFilter('code', data.data)
+                console.log(addStockFormComponentSearchCriteria.getFetchCriteria)
+                await updateComponents()
+                break
+            case 'product':
+                addStockFormProductSearchCriteria.addFilter('code', data.data)
+                console.log(addStockFormProductSearchCriteria.getFetchCriteria)
+                await updateProducts()
+                break
+            default:
+            //nothing
+        }
+    }
     //endregion
     //endregion
     //region initalisation des champs pour le tableau de liste des stocks
-    const storeWarehouseStockList = useWarehouseStockListStore()
-    storeWarehouseStockList.setIdWarehouse(warehouseId)
-    await storeWarehouseStockList.fetch()
-    const itemsTable = ref(storeWarehouseStockList.itemsWarehousesStock)
-    const formData = ref({
-        composant: null, produit: null, numeroDeSerie: null, localisation: null, quantite: null, prison: null
-    })
+    // const storeWarehouseStockList = useWarehouseStockListStore()
+    // storeWarehouseStockList.setIdWarehouse(warehouseId)
+    // await storeWarehouseStockList.fetch()
+    // const itemsTable = ref(storeWarehouseStockList.itemsWarehousesStock)
+    // const formData = ref({
+    //     composant: null, produit: null, numeroDeSerie: null, localisation: null, quantite: null, prison: null
+    // })
     //endregion
-
-
     // const parent = {
     //     $id: `${warehouseId}Stock`
     // }
@@ -197,17 +247,6 @@
     //     }
     // ]
 
-    function ajoute(){
-        AddForm.value = true
-        updated.value = false
-        const itemsNull = {
-            numeroDeSerie: null,
-            localisation: null,
-            quantite: null,
-            prison: null
-        }
-        formData.value = itemsNull
-    }
     // async function ajoutWarehouseStock(){
     //     const form = document.getElementById('addWarehouseStock')
     //     const formData1 = new FormData(form)
@@ -328,41 +367,14 @@
     // function limitText(count) {
     //     return `and ${count} other countries`
     // }
-    function addFormChange(data) {
-        console.log('addFormChange', data)
-    }
-    const inputValue = ref({
-        composant: ''
-    })
-    async function updatedSearch(data) {
-        inputValue.value[data.field.name]=data.data
-        if (data.field.name === 'composant') {
-            addStockFormComponentSearchCriteria.addFilter('code', data.data)
-        }
-        await updateComponents()
-        console.log(fetchComponentStore.components)
-    }
 </script>
 
 <template>
     <AppCol class="d-flex justify-content-between mb-2">
-        <span>
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Créer un nouveau stock
-            </AppBtn>
-        </span>
-        <!--        <span>-->
-        <!--            <div>Selected Countries => {{ selectedCountries }}</div>-->
-        <!--            <br/>-->
-        <!--            <Multiselect-->
-        <!--                v-model="selectedCountries"-->
-        <!--                mode="tags"-->
-        <!--                id="ajax"-->
-        <!--                label="text"-->
-        <!--                track-by="value"-->
-        <!--                :options="allCountries"/>-->
-        <!--        </span>-->
+        <AppBtn variant="success" label="Ajout" @click="ajoute">
+            <Fa icon="plus"/>
+            Créer un nouveau stock
+        </AppBtn>
     </AppCol>
     <AppRow>
         <AppCol>
@@ -399,7 +411,7 @@
                 <AppFormCardable
                     id="addWarehouseStock"
                     :fields="fieldsForm"
-                    :model-value="formData"
+                    :model-value="localAddFormData"
                     label-cols
                     @update:modelValue="addFormChange"
                     @search-change="updatedSearch"
