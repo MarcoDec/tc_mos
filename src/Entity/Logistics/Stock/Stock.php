@@ -146,9 +146,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     #[
         ApiProperty(description: 'Enfermé ?', example: false),
-        ORM\Column(options: ['default' => false], type: 'boolean'),
-        Assert\LessThan(2),
-        Assert\GreaterThanOrEqual(0),
+        ORM\Column(type: 'boolean', options: ['default' => false]),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
     protected bool $jail = false;

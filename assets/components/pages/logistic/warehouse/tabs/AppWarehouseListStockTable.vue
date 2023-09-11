@@ -217,7 +217,7 @@
                 itemsAddData.value.item = localAddFormData.value.component[0] ?? null
                 itemsAddData.value.product = null
                 itemsAddData.value.quantity = {
-                    code: fetchUnits.find(localAddFormData.value.quantity.code).code,
+                    code: fetchUnits.find(localAddFormData.value.quantity.code)?.code,
                     value: localAddFormData.value.quantity.value
                 }
                 break
@@ -238,11 +238,15 @@
             AddForm.value = false
         } catch (e) {
             alert(e.message)
-            // violations = await storeWarehouseStockList.addWarehouseStock(itemsAddData)
+            violations = fetchStocks.violations
+            isPopupVisible.value = true
         }
     }
     function annuleAddStock(){
         AddForm.value = false
+        violations = []
+        isPopupVisible.value = false
+        localAddFormData.value = itemsNull
     }
     //endregion
     //endregion

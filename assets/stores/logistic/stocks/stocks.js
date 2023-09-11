@@ -8,9 +8,11 @@ export const useStockListStore = defineStore('stockList', {
             this.violations = []
             try {
                 await api('/api/component-stocks', 'POST', payload)
-                console.log('création componentStock OK ?')
-            } catch (error) {
-                this.violations.push({message: error})
+            } catch (errors) {
+                errors.forEach(error => {
+                    this.violations.push({message: error.message})
+                })
+                throw new Error('Impossible d\'ajouter le stock composant')
             }
         },
         async addProductStock(payload) {
@@ -19,16 +21,16 @@ export const useStockListStore = defineStore('stockList', {
             try {
                 await api('/api/product-stocks', 'POST', payload)
                 console.log('création productStock OK ?')
-            } catch (error) {
-                this.violations.push({message: error})
+            } catch (errors) {
+                // eslint-disable-next-line array-callback-return
+                errors.forEach(error => this.violations.push({message: error.message}))
+                throw new Error('Impossible d\'ajouter le stock produit')
             }
         },
         async addStock(payload) {
             console.log('addStock')
-            if (payload.component !== null && payload.product !== null) throw new Error('Il est interdit de créer un stock composant et produit à la fois')
-            if (payload.component === null && payload.product === null) throw new Error('Un stock doit obligatoirement être associé à un composant ou à un produit')
-            if (payload.component !== null) await this.addComponentStock(payload)
-            if (payload.product !== null) await this.addProductStock(payload)
+            if (payload.item !== null && payload.item.includes('components')) await this.addComponentStock(payload)
+            if (payload.item !== null && payload.item.includes('products')) await this.addProductStock(payload)
         },
         async deleted(idStock) {
             await api(`/api/stocks/${idStock}`, 'DELETE')
