@@ -269,7 +269,3 @@
         </AppCol>
     </AppCard>
 </template>
-
-<style scoped>
-
-</style>

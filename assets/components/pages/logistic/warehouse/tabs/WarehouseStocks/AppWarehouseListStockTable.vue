@@ -1,228 +1,266 @@
 <script setup>
     import {computed, ref} from 'vue'
     import useFetchCriteria from '../../../../../../stores/fetch-criteria/fetchCriteria'
-    //import {useWarehouseStockListStore} from '../provisoir/warehouseStockList'
-    import {useStockListStore} from '../../../../../../stores/logistic/stocks/stocks'
-    import {useRoute} from 'vue-router'
+    import useOptions from '../../../../../../stores/option/options'
     import {useComponentListStore} from '../../../../../../stores/purchase/component/components'
     import {useProductStore} from '../../../../../../stores/project/product/products'
+    import {useRoute} from 'vue-router'
+    import {useStockListStore} from '../../../../../../stores/logistic/stocks/stocks'
     import AppSuspense from '../../../../../AppSuspense.vue'
-    import AppFormCardable from '../../../../../form-cardable/AppFormCardable'
-    import useOptions from '../../../../../../stores/option/options'
     import WarehouseStockAddForm from './WarehouseStockAddForm.vue'
+    import WarehouseStockUpdateForm from './WarehouseStockUpdateForm.vue'
 
-    // const roleuser = ref('reader')
+    //region récupération des informations de route
+    const maRoute = useRoute()
+    const warehouseId = maRoute.params.id_warehouse
+    //endregion
+    const roleuser = ref('reader')
     const updated = ref(false)
     const AddForm = ref(false)
-    // const sortable = ref(false)
-    // const filter = ref(false)
-    // let trierAlpha = {}
-    // let filterBy = {}
+    const filterBy = computed(() => null)
+    const filter = ref(false)
+    const trierAlpha = computed(() => null)
+    const sortable = ref(true)
+    let updateKey = 0
+    //region champ multi-select composant
+    const listStockComponentSearchCriteria = useFetchCriteria('listStockComponent')
+    const fetchComponentStore = useComponentListStore()
+    async function updateComponents() {
+        await fetchComponentStore.fetchAll(listStockComponentSearchCriteria.getFetchCriteria)
+        return fetchComponentStore.components
+    }
+    await updateComponents()
+    const optionComponentFilter = computed(() => fetchComponentStore.components.map(item => ({text: `${item.code}`, value: item['@id']})))
+    //endregion
+    //region champ multi-select produit
+    const listStockProductSearchCriteria = useFetchCriteria('listStockProduct')
+    const fetchProductStore = useProductStore()
+    async function updateProducts() {
+        await fetchProductStore.fetchAll(listStockProductSearchCriteria.getFetchCriteria)
+        return fetchProductStore.products
+    }
+    await updateProducts()
+    const optionProductSearchFilter = computed(() => fetchProductStore.products.map(item => ({text: `${item.code}`, value: item['@id']})))
+    //endregion
+    //region champ quantity.code chargement des units
+    const fetchUnits = useOptions('units')
+    await fetchUnits.fetchOp()
+    const optionsUnit = fetchUnits.options.map(op => {
+        const text = op.text
+        const value = op.value
+        return {text, value}
+    })
+    //endregion
 
-
+    //region récupération des stocks liés à l'entrepot
+    const fetchStocks = useStockListStore()
+    const fetchCriteria = useFetchCriteria('warehouseStockList')
+    fetchStocks.warehouseID = warehouseId
+    fetchCriteria.addFilter('warehouse', `/api/warehouses/${warehouseId}`)
+    await fetchStocks.fetch(fetchCriteria.getFetchCriteria)
+    //endregion
+    //region définition des champs tableau et des variables locales de liste et de vecteur de recherche
+    const itemsTable = ref([])
+    itemsTable.value = fetchStocks.itemsWarehousesStock
+    const formData = ref({
+        component: null, product: null, batchNumber: null, location: null, quantity: null, jail: null
+    })
+    const tabFields = [
+        {
+            create: true,
+            filter: true,
+            label: 'Composant',
+            name: 'component',
+            options: {label: value => optionComponentFilter.value.find(option => option.value === value)?.text ?? null, options: optionComponentFilter.value},
+            sort: true,
+            type: 'select',
+            update: true
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'Produit',
+            name: 'product',
+            options: {label: value => optionProductSearchFilter.value.find(option => option.value === value)?.text ?? null, options: optionProductSearchFilter.value},
+            sort: true,
+            type: 'select',
+            update: true
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'Numéro de série',
+            name: 'batchNumber',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'Localisation',
+            name: 'location',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            label: 'Quantité ',
+            name: 'quantity',
+            measure: {
+                code: { //récupérer l'unité du composant sélectionné
+                    label: 'Unité',
+                    name: 'code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'value',
+                    type: 'number'
+                }
+            },
+            type: 'measure'
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'Prison',
+            name: 'jail',
+            sort: true,
+            type: 'boolean',
+            update: true
+        }
+    ]
+    //endregion
+    //region fonctions de gestion de la liste des stocks
     function ajoute(){
         AddForm.value = true
         updated.value = false
     }
-    //endregion
-    //region initalisation des champs pour le tableau de liste des stocks
-    // const storeWarehouseStockList = useWarehouseStockListStore()
-    // storeWarehouseStockList.setIdWarehouse(warehouseId)
-    // await storeWarehouseStockList.fetch()
-    // const itemsTable = ref(storeWarehouseStockList.itemsWarehousesStock)
-    // const formData = ref({
-    //     composant: null, produit: null, numeroDeSerie: null, localisation: null, quantite: null, prison: null
-    // })
-    //endregion
-    // const parent = {
-    //     $id: `${warehouseId}Stock`
-    // }
-    // const storeUnit = useField(fieldsForm[4], parent)
-    // storeUnit.fetch()
-    //
-    // fieldsForm[4].measure.code = storeUnit.measure.code
-    // fieldsForm[4].measure.value = storeUnit.measure.value
+    function update(item) {
+        console.log('update', item)
+        formData.value = {
+            component: item.component ? item.component['@id'] : null,
+            product: item.product ? item.product['@id'] : null,
+            batchNumber: item.batchNumber,
+            location: item.location,
+            quantity: {
+                codeLabel: item.quantity.code,
+                value: item.quantity.value,
+                code: fetchUnits.options.filter(element => element.text === item.quantity.code)[0]['@id']
+            },
+            jail: item.jail
+        }
+        if (updated.value === false) {
+            updated.value = true
+            AddForm.value = false
+        } else {
+            updateKey++
+        }
+    }
+    async function deleted(id){
+        await fetchStocks.deleted(id)
+        itemsTable.value = [...fetchStocks.itemsWarehousesStock]
+    }
+    async function getPage(nPage){
+        await fetchStocks.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
+        itemsTable.value = [...fetchStocks.itemsWarehousesStock]
+    }
+    async function trierAlphabet(payload) {
+        await fetchStocks.sortableItems(payload, filterBy, filter)
+        sortable.value = true
+        trierAlpha.value = payload
+    }
+    async function search(inputValues) {
+        console.log('search', inputValues)
+        let comp = ''
+        if (typeof inputValues.component !== 'undefined'){
+            comp = inputValues.component
+        }
 
-    // const tabFields = [
-    //     {
-    //         create: true,
-    //         filter: true,
-    //         label: 'Composant',
-    //         name: 'composant',
-    //         options: {label: value => optionComposant.find(option => option.value === value)?.text ?? null, options: optionComposant},
-    //         sort: true,
-    //         type: 'select',
-    //         update: true
-    //     },
-    //     {
-    //         create: true,
-    //         filter: true,
-    //         label: 'Produit',
-    //         name: 'produit',
-    //         options: {label: value => optionProduit.find(option => option.value === value)?.text ?? null, options: optionProduit},
-    //         sort: true,
-    //         type: 'select',
-    //         update: true
-    //     },
-    //     {
-    //         create: true,
-    //         filter: true,
-    //         label: 'Numéro de série',
-    //         name: 'numeroDeSerie',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: true,
-    //         filter: true,
-    //         label: 'Localisation',
-    //         name: 'localisation',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: true,
-    //         filter: true,
-    //         label: 'Quantité ',
-    //         name: 'quantite',
-    //         measure: {
-    //             code: storeUnit.measure.code,
-    //             value: storeUnit.measure.value
-    //         },
-    //         sort: true,
-    //         type: 'measure',
-    //         update: true
-    //     },
-    //     {
-    //         create: true,
-    //         filter: true,
-    //         label: 'Prison',
-    //         name: 'prison',
-    //         sort: true,
-    //         type: 'boolean',
-    //         update: true
-    //     }
-    // ]
-    //
-    // function update(item) {
-    //     updated.value = true
-    //     AddForm.value = true
-    //     const itemsData = {
-    //         composant: item.composant,
-    //         produit: item.produit,
-    //         numeroDeSerie: item.numeroDeSerie,
-    //         localisation: item.localisation,
-    //         quantite: item.quantite,
-    //         prison: item.prison
-    //     }
-    //     formData.value = itemsData
-    // }
-    //
-    // async function deleted(id){
-    //     await storeWarehouseStockList.deleted(id)
-    //     itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
-    // }
-    // async function getPage(nPage){
-    //     await storeWarehouseStockList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
-    //     itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
-    // }
-    // async function trierAlphabet(payload) {
-    //     await storeWarehouseStockList.sortableItems(payload, filterBy, filter)
-    //     sortable.value = true
-    //     trierAlpha = computed(() => payload)
-    // }
-    // async function search(inputValues) {
-    //     let comp = ''
-    //     if (typeof inputValues.composant !== 'undefined'){
-    //         comp = inputValues.composant
-    //     }
-    //
-    //     let prod = ''
-    //     if (typeof inputValues.produit !== 'undefined'){
-    //         prod = inputValues.produit
-    //     }
-    //
-    //     const payload = {
-    //         composant: comp,
-    //         produit: prod,
-    //         numeroDeSerie: inputValues.numeroDeSerie ?? '',
-    //         localisation: inputValues.localisation ?? '',
-    //         quantite: inputValues.quantite ?? '',
-    //         prison: inputValues.prison ?? ''
-    //     }
-    //
-    //     if (typeof payload.quantite.value === 'undefined' && payload.quantite !== '') {
-    //         payload.quantite.value = ''
-    //     }
-    //     if (typeof payload.quantite.code === 'undefined' && payload.quantite !== '') {
-    //         payload.quantite.code = ''
-    //     }
-    //     await storeWarehouseStockList.filterBy(payload)
-    //     itemsTable.value = [...storeWarehouseStockList.itemsWarehousesStock]
-    //     filter.value = true
-    //     filterBy = computed(() => payload)
-    // }
-    // async function cancelSearch() {
-    //     filter.value = true
-    //     storeWarehouseStockList.fetch()
-    // }
-    // const allCountries = ref([])
-    // allCountries.value = [
-    //     { value: 'FR', text: 'France'},
-    //     { value: 'TN', text: 'Tunisie'},
-    //     { value: 'MD', text: 'Moldavie'}
-    // ]
-    // const isLoading = ref(false)
-    // const countries = ref([])
-    // const selectedCountries = ref([])
-    // function asyncFind(query) {
-    //     isLoading.value = true
-    //     const result = allCountries.value.filter(item => {
-    //         return item.text.toLowerCase().includes(query.toLowerCase())
-    //     })
-    //     countries.value = result
-    //     isLoading.value = false
-    // }
-    // function limitText(count) {
-    //     return `and ${count} other countries`
-    // }
+        let prod = ''
+        if (typeof inputValues.product !== 'undefined'){
+            prod = inputValues.product
+        }
+
+        const payload = {
+            component: comp,
+            product: prod,
+            batchNumber: inputValues.batchNumber ?? '',
+            location: inputValues.location ?? '',
+            quantity: inputValues.quantity ?? '',
+            jail: inputValues.jail ?? ''
+        }
+
+        if (typeof payload.quantity.value === 'undefined' && payload.quantity !== '') {
+            payload.quantity.value = ''
+        }
+        if (typeof payload.quantity.code === 'undefined' && payload.quantity !== '') {
+            payload.quantity.code = ''
+        }
+        console.log('lancement filterBy', payload)
+        await fetchStocks.filterBy(payload)
+        // itemsTable.value = [...fetchStocks.itemsWarehousesStock]
+        console.log('update itemsTable', fetchStocks.itemsWarehousesStock)
+        itemsTable.value = fetchStocks.itemsWarehousesStock
+        filter.value = true
+        filterBy.value = payload
+    }
+    async function cancelSearch() {
+        filter.value = true
+        await fetchStocks.fetch(fetchCriteria.getFetchCriteria)
+        itemsTable.value = fetchStocks.itemsWarehousesStock
+    }
+    //endregion
 </script>
 
 <template>
-    <AppCol class="d-flex justify-content-between mb-2">
-        <span>
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Créer un nouveau stock
-            </AppBtn>
-        </span>
-    </AppCol>
+    <AppRow>
+        <AppCol class="d-flex justify-content-between mb-2">
+            <span>
+                <AppBtn variant="success" label="Ajout" @click="ajoute">
+                    <Fa icon="plus"/>
+                    Créer un nouveau stock
+                </AppBtn>
+            </span>
+        </AppCol>
+    </AppRow>
     <AppRow>
         <AppCol>
-            <AppCardableTable
-                :current-page="storeWarehouseStockList.currentPage"
-                :fields="tabFields"
-                :first-page="storeWarehouseStockList.firstPage"
-                :items="itemsTable"
-                :last-page="storeWarehouseStockList.lastPage"
-                :min="AddForm"
-                :next-page="storeWarehouseStockList.nextPage"
-                :pag="storeWarehouseStockList.pagination"
-                :previous-page="storeWarehouseStockList.previousPage"
-                :user="roleuser"
-                form="formWarehouseCardableTable"
-                @update="update"
-                @deleted="deleted"
-                @get-page="getPage"
-                @trier-alphabet="trierAlphabet"
-                @search="search"
-                @cancel-search="cancelSearch"/>
+            <AppSuspense>
+                <AppCardableTable
+                    :current-page="fetchStocks.currentPage"
+                    :fields="tabFields"
+                    :first-page="fetchStocks.firstPage"
+                    :items="itemsTable"
+                    :last-page="fetchStocks.lastPage"
+                    :min="AddForm"
+                    :next-page="fetchStocks.nextPage"
+                    :pag="fetchStocks.pagination"
+                    :previous-page="fetchStocks.previousPage"
+                    :user="roleuser"
+                    form="formWarehouseStockTable"
+                    @update="update"
+                    @deleted="deleted"
+                    @get-page="getPage"
+                    @trier-alphabet="trierAlphabet"
+                    @search="search"
+                    @cancel-search="cancelSearch"/>
+            </AppSuspense>
         </AppCol>
-        <AppCol v-show="AddForm && !updated" class="col-7">
+        <AppCol v-if="AddForm">
             <AppSuspense>
                 <WarehouseStockAddForm @cancel="AddForm = false" @saved="AddForm = false"/>
+            </AppSuspense>
+        </AppCol>
+        <AppCol v-if="updated">
+            <AppSuspense>
+                <WarehouseStockUpdateForm :key="`update_${updateKey}`" :item="formData" @cancel="updated = false" @saved="updated = false"/>
             </AppSuspense>
         </AppCol>
     </AppRow>

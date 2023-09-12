@@ -44,37 +44,37 @@ export const useStockListStore = defineStore('stockList', {
             if (payload === ''){
                 await this.fetch()
             } else {
-                if (payload.composant !== '') {
-                    url += `component-stocks?warehouse=${this.warehouseID}&item=${payload.composant}&`
+                if (payload.component !== '') {
+                    url += `component-stocks?warehouse=${this.warehouseID}&item=${payload.component}&`
                 }
-                if (payload.produit !== '') {
-                    url += `product-stocks?warehouse=${this.warehouseID}&item=${payload.produit}&`
+                if (payload.product !== '') {
+                    url += `product-stocks?warehouse=${this.warehouseID}&item=${payload.product}&`
                 }
 
-                if (payload.composant === '' && payload.produit === ''){
+                if (payload.component === '' && payload.product === ''){
                     url += `stocks?warehouse=${this.warehouseID}&`
                 }
 
-                if (payload.numeroDeSerie !== '') {
-                    url += `batchNumber=${payload.numeroDeSerie}&`
+                if (payload.batchNumber !== '') {
+                    url += `batchNumber=${payload.batchNumber}&`
                 }
-                if (payload.localisation !== '') {
-                    url += `location=${payload.localisation}&`
+                if (payload.location !== '') {
+                    url += `location=${payload.location}&`
                 }
-                if (payload.prison !== '') {
-                    if (payload.prison === true){
+                if (payload.jail !== '') {
+                    if (payload.jail === true){
                         url += 'jail=1&'
                     } else {
                         url += 'jail=0&'
                     }
                 }
 
-                if (payload.quantite !== ''){
-                    if (payload.quantite.value !== '') {
-                        url += `quantity.value=${payload.quantite.value}&`
+                if (payload.quantity !== ''){
+                    if (payload.quantity.value !== '') {
+                        url += `quantity.value=${payload.quantity.value}&`
                     }
-                    if (payload.quantite.code !== '') {
-                        url += `quantity.code=${payload.quantite.code}&`
+                    if (payload.quantity.code !== '') {
+                        url += `quantity.code=${payload.quantity.code}&`
                     }
                 }
                 url += 'page=1'
@@ -92,34 +92,34 @@ export const useStockListStore = defineStore('stockList', {
             if (payload.filter.value === true && payload.sortable.value === true){
                 if (payload.trierAlpha.value.component === 'component') {
                     let url = '/api/'
-                    if (payload.filterBy.value.composant !== '') {
-                        url += `component-stocks?warehouse=${this.warehouseID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&item=${payload.filterBy.value.composant}&`
+                    if (payload.filterBy.value.component !== '') {
+                        url += `component-stocks?warehouse=${this.warehouseID}&order%5B${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&item=${payload.filterBy.value.component}&`
                     }
-                    if (payload.filterBy.value.produit !== '') {
-                        url += `product-stocks?warehouse=${this.warehouseID}&order%5B${payload.trierAlpha.value.produit}%5D=${payload.trierAlpha.value.trier.value}&item=${payload.filterBy.value.produit}&`
+                    if (payload.filterBy.value.product !== '') {
+                        url += `product-stocks?warehouse=${this.warehouseID}&order%5B${payload.trierAlpha.value.product}%5D=${payload.trierAlpha.value.trier.value}&item=${payload.filterBy.value.product}&`
                     }
-                    if (payload.filterBy.value.composant === '' && payload.filterBy.value.produit === ''){
+                    if (payload.filterBy.value.component === '' && payload.filterBy.value.product === ''){
                         url += `stocks?warehouse=${this.warehouseID}&order%5B${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&`
                     }
-                    if (payload.filterBy.value.numeroDeSerie !== '') {
-                        url += `batchNumber=${payload.filterBy.value.numeroDeSerie}&`
+                    if (payload.filterBy.value.batchNumber !== '') {
+                        url += `batchNumber=${payload.filterBy.value.batchNumber}&`
                     }
-                    if (payload.filterBy.value.localisation !== '') {
-                        url += `location=${payload.filterBy.value.localisation}&`
+                    if (payload.filterBy.value.location !== '') {
+                        url += `location=${payload.filterBy.value.location}&`
                     }
-                    if (payload.filterBy.value.prison !== '') {
-                        if (payload.filterBy.value.prison === true){
+                    if (payload.filterBy.value.jail !== '') {
+                        if (payload.filterBy.value.jail === true){
                             url += 'jail=1&'
                         } else {
                             url += 'jail=0&'
                         }
                     }
-                    if (payload.filterBy.value.quantite !== ''){
-                        if (payload.filterBy.value.quantite.value !== '') {
-                            url += `quantity.value=${payload.filterBy.value.quantite.value}&`
+                    if (payload.filterBy.value.quantity !== ''){
+                        if (payload.filterBy.value.quantity.value !== '') {
+                            url += `quantity.value=${payload.filterBy.value.quantity.value}&`
                         }
-                        if (payload.filterBy.value.quantite.code !== '') {
-                            url += `quantity.code=${payload.filterBy.value.quantite.code}&`
+                        if (payload.filterBy.value.quantity.code !== '') {
+                            url += `quantity.code=${payload.filterBy.value.quantity.code}&`
                         }
                     }
                     url += `page=${payload.nPage}`
@@ -127,7 +127,7 @@ export const useStockListStore = defineStore('stockList', {
                     this.warehousesStock = await this.updatePagination(response)
                 } else {
                     let url = '/api/'
-                    if (payload.filterBy.value.composant !== '') {
+                    if (payload.filterBy.value.component !== '') {
                         url += `component-stocks?warehouse=${this.warehouseID}&order%5Baddress.${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&item=${payload.filterBy.value.composant}&`
                     }
                     if (payload.filterBy.value.produit !== '') {
@@ -136,25 +136,25 @@ export const useStockListStore = defineStore('stockList', {
                     if (payload.filterBy.value.composant === '' && payload.filterBy.value.produit === ''){
                         url += `stocks?warehouse=${this.warehouseID}&order%5Baddress.${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&`
                     }
-                    if (payload.filterBy.value.numeroDeSerie !== '') {
-                        url += `batchNumber=${payload.filterBy.value.numeroDeSerie}&`
+                    if (payload.filterBy.value.batchNumber !== '') {
+                        url += `batchNumber=${payload.filterBy.value.batchNumber}&`
                     }
-                    if (payload.filterBy.value.localisation !== '') {
-                        url += `location=${payload.filterBy.value.localisation}&`
+                    if (payload.filterBy.value.location !== '') {
+                        url += `location=${payload.filterBy.value.location}&`
                     }
-                    if (payload.filterBy.value.prison !== '') {
-                        if (payload.filterBy.value.prison === true){
+                    if (payload.filterBy.value.jail !== '') {
+                        if (payload.filterBy.value.jail === true){
                             url += 'jail=1&'
                         } else {
                             url += 'jail=0&'
                         }
                     }
-                    if (payload.filterBy.value.quantite !== ''){
-                        if (payload.filterBy.value.quantite.value !== '') {
-                            url += `quantity.value=${payload.filterBy.value.quantite.value}&`
+                    if (payload.filterBy.value.quantity !== ''){
+                        if (payload.filterBy.value.quantity.value !== '') {
+                            url += `quantity.value=${payload.filterBy.value.quantity.value}&`
                         }
-                        if (payload.filterBy.value.quantite.code !== '') {
-                            url += `quantity.code=${payload.filterBy.value.quantite.code}&`
+                        if (payload.filterBy.value.quantity.code !== '') {
+                            url += `quantity.code=${payload.filterBy.value.quantity.code}&`
                         }
                     }
                     response = await api(url, 'GET')
@@ -162,34 +162,34 @@ export const useStockListStore = defineStore('stockList', {
                 }
             } else if (payload.filter.value === true){
                 let url = '/api/'
-                if (payload.filterBy.value.composant !== '') {
-                    url += `component-stocks?warehouse=${this.warehouseID}&item=${payload.filterBy.value.composant}&`
+                if (payload.filterBy.value.component !== '') {
+                    url += `component-stocks?warehouse=${this.warehouseID}&item=${payload.filterBy.value.component}&`
                 }
-                if (payload.filterBy.value.produit !== '') {
-                    url += `product-stocks?warehouse=${this.warehouseID}&item=${payload.filterBy.value.produit}&`
+                if (payload.filterBy.value.product !== '') {
+                    url += `product-stocks?warehouse=${this.warehouseID}&item=${payload.filterBy.value.product}&`
                 }
-                if (payload.filterBy.value.composant === '' && payload.filterBy.value.produit === ''){
+                if (payload.filterBy.value.component === '' && payload.filterBy.value.product === ''){
                     url += `stocks?warehouse=${this.warehouseID}&`
                 }
-                if (payload.filterBy.value.numeroDeSerie !== '') {
-                    url += `batchNumber=${payload.filterBy.value.numeroDeSerie}&`
+                if (payload.filterBy.value.batchNumber !== '') {
+                    url += `batchNumber=${payload.filterBy.value.batchNumber}&`
                 }
-                if (payload.filterBy.value.localisation !== '') {
-                    url += `location=${payload.filterBy.value.localisation}&`
+                if (payload.filterBy.value.location !== '') {
+                    url += `location=${payload.filterBy.value.location}&`
                 }
-                if (payload.filterBy.value.prison !== '') {
-                    if (payload.filterBy.value.prison === true){
+                if (payload.filterBy.value.jail !== '') {
+                    if (payload.filterBy.value.jail === true){
                         url += 'jail=1&'
                     } else {
                         url += 'jail=0&'
                     }
                 }
-                if (payload.filterBy.value.quantite !== ''){
-                    if (payload.filterBy.value.quantite.value !== '') {
-                        url += `quantity.value=${payload.filterBy.value.quantite.value}&`
+                if (payload.filterBy.value.quantity !== ''){
+                    if (payload.filterBy.value.quantity.value !== '') {
+                        url += `quantity.value=${payload.filterBy.value.quantity.value}&`
                     }
-                    if (payload.filterBy.value.quantite.code !== '') {
-                        url += `quantity.code=${payload.filterBy.value.quantite.code}&`
+                    if (payload.filterBy.value.quantity.code !== '') {
+                        url += `quantity.code=${payload.filterBy.value.quantity.code}&`
                     }
                 }
                 url += `page=${payload.nPage}`
@@ -199,10 +199,10 @@ export const useStockListStore = defineStore('stockList', {
                 response = await api(`/api/stocks?warehouse=${this.warehouseID}&page=${payload.nPage}`, 'GET')
                 this.warehousesStock = await this.updatePagination(response)
             } else {
-                if (payload.trierAlpha.value.composant === 'component') {
-                    response = await api(`/api/stocks?warehouse=${this.warehouseID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                if (payload.trierAlpha.value.component === 'component') {
+                    response = await api(`/api/stocks?warehouse=${this.warehouseID}&order%5B${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
-                    response = await api(`/api/stocks?warehouse=${this.warehouseID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/stocks?warehouse=${this.warehouseID}&order%5Baddress.${payload.trierAlpha.value.component}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
                 this.warehousesStock = await this.updatePagination(response)
             }
@@ -211,70 +211,70 @@ export const useStockListStore = defineStore('stockList', {
         async sortableItems(payload, filterBy, filter) {
             let response = {}
             if (filter.value === true){
-                if (payload.composant === 'component') {
+                if (payload.component === 'component') {
                     let url = '/api/'
-                    if (filterBy.value.composant !== '') {
-                        url += `component-stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.composant}%5D=${payload.trier.value}&item=${filterBy.value.composant}&`
+                    if (filterBy.value.component !== '') {
+                        url += `component-stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.component}%5D=${payload.trier.value}&item=${filterBy.value.component}&`
                     }
-                    if (filterBy.value.produit !== '') {
-                        url += `product-stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.produit}%5D=${payload.trier.value}&item=${filterBy.value.produit}&`
+                    if (filterBy.value.product !== '') {
+                        url += `product-stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.product}%5D=${payload.trier.value}&item=${filterBy.value.product}&`
                     }
-                    if (filterBy.value.composant === '' && filterBy.value.produit === ''){
-                        url += `stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.composant}%5D=${payload.trier.value}&`
+                    if (filterBy.value.component === '' && filterBy.value.product === ''){
+                        url += `stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.component}%5D=${payload.trier.value}&`
                     }
-                    if (filterBy.value.numeroDeSerie !== '') {
-                        url += `batchNumber=${filterBy.value.numeroDeSerie}&`
+                    if (filterBy.value.batchNumber !== '') {
+                        url += `batchNumber=${filterBy.value.batchNumber}&`
                     }
-                    if (filterBy.value.localisation !== '') {
-                        url += `location=${filterBy.value.localisation}&`
+                    if (filterBy.value.location !== '') {
+                        url += `location=${filterBy.value.location}&`
                     }
-                    if (filterBy.value.prison !== '') {
-                        if (filterBy.value.prison === true){
+                    if (filterBy.value.jail !== '') {
+                        if (filterBy.value.jail === true){
                             url += 'jail=1&'
                         } else {
                             url += 'jail=0&'
                         }
                     }
-                    if (filterBy.value.quantite !== ''){
-                        if (filterBy.value.quantite.value !== '') {
-                            url += `quantity.value=${filterBy.value.quantite.value}&`
+                    if (filterBy.value.quantity !== ''){
+                        if (filterBy.value.quantity.value !== '') {
+                            url += `quantity.value=${filterBy.value.quantity.value}&`
                         }
-                        if (filterBy.value.quantite.code !== '') {
-                            url += `quantity.code=${filterBy.value.quantite.code}&`
+                        if (filterBy.value.quantity.code !== '') {
+                            url += `quantity.code=${filterBy.value.quantity.code}&`
                         }
                     }
                     url += `page=${this.currentPage}`
                     response = await api(url, 'GET')
                 } else {
                     let url = '/api/'
-                    if (filterBy.value.composant !== '') {
-                        url += `component-stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.composant}%5D=${payload.trier.value}&item=${filterBy.value.composant}&`
+                    if (filterBy.value.component !== '') {
+                        url += `component-stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.component}%5D=${payload.trier.value}&item=${filterBy.value.component}&`
                     }
-                    if (filterBy.value.produit !== '') {
-                        url += `product-stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.produit}%5D=${payload.trier.value}&item=${filterBy.value.produit}&`
+                    if (filterBy.value.product !== '') {
+                        url += `product-stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.product}%5D=${payload.trier.value}&item=${filterBy.value.product}&`
                     }
-                    if (filterBy.value.composant === '' && filterBy.value.produit === ''){
-                        url += `stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.composant}%5D=${payload.trier.value}&`
+                    if (filterBy.value.component === '' && filterBy.value.product === ''){
+                        url += `stocks?warehouse=${this.warehouseID}&order%5B${filterBy.value.component}%5D=${payload.trier.value}&`
                     }
-                    if (filterBy.value.numeroDeSerie !== '') {
-                        url += `batchNumber=${filterBy.value.numeroDeSerie}&`
+                    if (filterBy.value.batchNumber !== '') {
+                        url += `batchNumber=${filterBy.value.batchNumber}&`
                     }
-                    if (filterBy.value.localisation !== '') {
-                        url += `location=${filterBy.value.localisation}&`
+                    if (filterBy.value.location !== '') {
+                        url += `location=${filterBy.value.location}&`
                     }
-                    if (filterBy.value.prison !== '') {
-                        if (filterBy.value.prison === true){
+                    if (filterBy.value.jail !== '') {
+                        if (filterBy.value.jail === true){
                             url += 'jail=1&'
                         } else {
                             url += 'jail=0&'
                         }
                     }
-                    if (filterBy.value.quantite !== ''){
-                        if (filterBy.value.quantite.value !== '') {
-                            url += `quantity.value=${filterBy.value.quantite.value}&`
+                    if (filterBy.value.quantity !== ''){
+                        if (filterBy.value.quantity.value !== '') {
+                            url += `quantity.value=${filterBy.value.quantity.value}&`
                         }
-                        if (filterBy.value.quantite.code !== '') {
-                            url += `quantity.code=${filterBy.value.quantite.code}&`
+                        if (filterBy.value.quantity.code !== '') {
+                            url += `quantity.code=${filterBy.value.quantity.code}&`
                         }
                     }
                     url += `page=${this.currentPage}`
@@ -282,10 +282,10 @@ export const useStockListStore = defineStore('stockList', {
                 }
                 this.warehousesStock = await this.updatePagination(response)
             } else {
-                if (payload.composant === 'component') {
-                    response = await api(`/api/stocks?warehouse=${this.warehouseID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                if (payload.component === 'component') {
+                    response = await api(`/api/stocks?warehouse=${this.warehouseID}&order%5B${payload.component}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
-                    response = await api(`/api/stocks?warehouse=${this.warehouseID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/stocks?warehouse=${this.warehouseID}&order%5B${payload.product}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
                 this.warehousesStock = await this.updatePagination(response)
             }
@@ -313,11 +313,11 @@ export const useStockListStore = defineStore('stockList', {
         async updateWarehouseStock(payload){
             await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
             if (payload.sortable.value === true || payload.filter.value === true) {
-                this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
+                await this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
             } else {
-                this.itemsPagination(this.currentPage)
+                await this.itemsPagination(this.currentPage)
             }
-            this.fetch()
+            await this.fetch()
         }
     },
     getters: {
@@ -335,12 +335,12 @@ export const useStockListStore = defineStore('stockList', {
             const pris = item.jail
             const newObject = {
                 ...item,
-                composant: comp,
-                produit: prod,
-                numeroDeSerie: numSerie,
-                localisation: loc,
-                quantite: quant,
-                prison: pris
+                component: comp,
+                product: prod,
+                batchNumber: numSerie,
+                location: loc,
+                quantity: quant,
+                jail: pris
             }
             return newObject
         }),

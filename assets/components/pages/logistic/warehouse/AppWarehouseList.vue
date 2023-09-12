@@ -1,5 +1,5 @@
 <script setup>
-    import AppWarehouseListTable from './provisoir/AppWarehouseListTable.vue'
+    import AppWarehouseListTable from './AppWarehouseListTable.vue'
     import AppSuspense from '../../../AppSuspense.vue'
 
     defineProps({

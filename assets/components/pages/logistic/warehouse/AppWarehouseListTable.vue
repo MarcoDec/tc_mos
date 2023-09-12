@@ -1,13 +1,13 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import AppSuspense from '../../../../AppSuspense.vue'
-    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
-    import Fa from '../../../../Fa'
-    import {useWarehouseListStore} from './warehouseList'
+    import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
+    import AppSuspense from '../../../AppSuspense.vue'
+    import AppFormCardable from '../../../form-cardable/AppFormCardable'
+    import Fa from '../../../Fa'
+    import {useWarehouseListStore} from './provisoir/warehouseList'
     import {useRouter} from 'vue-router'
-    import useUser from '../../../../../stores/security'
-    import {useCompanyStore} from '../../../../../stores/management/companies/companies'
+    import useUser from '../../../../stores/security'
+    import {useCompanyStore} from '../../../../stores/management/companies/companies'
 
     defineProps({
         icon: {required: true, type: String},
