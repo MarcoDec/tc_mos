@@ -74,7 +74,8 @@
             options: {label: value => optionComponentFilter.value.find(option => option.value === value)?.text ?? null, options: optionComponentFilter.value},
             sort: true,
             type: 'select',
-            update: true
+            update: true,
+            min: true
         },
         {
             create: true,
@@ -84,7 +85,8 @@
             options: {label: value => optionProductSearchFilter.value.find(option => option.value === value)?.text ?? null, options: optionProductSearchFilter.value},
             sort: true,
             type: 'select',
-            update: true
+            update: true,
+            min: true
         },
         {
             create: true,
@@ -93,7 +95,8 @@
             name: 'batchNumber',
             sort: true,
             type: 'text',
-            update: true
+            update: true,
+            min: false
         },
         {
             create: true,
@@ -102,7 +105,8 @@
             name: 'location',
             sort: true,
             type: 'text',
-            update: true
+            update: true,
+            min: false
         },
         {
             label: 'Quantité ',
@@ -124,7 +128,8 @@
                     type: 'number'
                 }
             },
-            type: 'measure'
+            type: 'measure',
+            min: false
         },
         {
             create: true,
@@ -133,7 +138,8 @@
             name: 'jail',
             sort: true,
             type: 'boolean',
-            update: true
+            update: true,
+            min: false
         }
     ]
     //endregion
@@ -239,7 +245,7 @@
                     :first-page="fetchStocks.firstPage"
                     :items="itemsTable"
                     :last-page="fetchStocks.lastPage"
-                    :min="AddForm"
+                    :min="AddForm || updated"
                     :next-page="fetchStocks.nextPage"
                     :pag="fetchStocks.pagination"
                     :previous-page="fetchStocks.previousPage"
@@ -259,9 +265,7 @@
             </AppSuspense>
         </AppCol>
         <AppCol v-if="updated">
-            <AppSuspense>
-                <WarehouseStockUpdateForm :key="`update_${updateKey}`" :item="formData" @cancel="updated = false" @saved="updated = false"/>
-            </AppSuspense>
+            <WarehouseStockUpdateForm :key="`update_${updateKey}`" :item="formData" @cancel="updated = false" @saved="updated = false"/>
         </AppCol>
     </AppRow>
 </template>

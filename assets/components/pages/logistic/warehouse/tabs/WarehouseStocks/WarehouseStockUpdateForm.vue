@@ -4,6 +4,7 @@
     import {useRoute} from 'vue-router'
     import {useStockListStore} from '../../../../../../stores/logistic/stocks/stocks'
     import AppFormCardable from '../../../../../form-cardable/AppFormCardable'
+    import AppSuspense from '../../../../../AppSuspense.vue'
 
     const emit = defineEmits(['cancel', 'saved'])
     const props = defineProps({
@@ -158,32 +159,34 @@
 </script>
 
 <template>
-    <AppCard class="bg-blue col" title="">
-        <AppRow>
-            <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annuleUpdateStock">
-                <Fa icon="angle-double-left"/>
-            </button>
-            <h4 class="col">
-                <Fa icon="plus"/> Modification d'un stock
-            </h4>
-        </AppRow>
-        <br/>
-        <AppFormCardable
-            id="updateWarehouseStock"
-            :key="formKey"
-            :fields="fieldsForm"
-            :model-value="localFormData"
-            label-cols
-            @update:model-value="updateFormChange"/>
-        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-            <div v-for="violation in violations" :key="violation">
-                <li>{{ violation.message }}</li>
+    <AppSuspense>
+        <AppCard class="bg-blue col" title="">
+            <AppRow>
+                <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annuleUpdateStock">
+                    <Fa icon="angle-double-left"/>
+                </button>
+                <h4 class="col">
+                    <Fa icon="pencil"/> Modification d'un stock
+                </h4>
+            </AppRow>
+            <br/>
+            <AppFormCardable
+                id="updateWarehouseStock"
+                :key="formKey"
+                :fields="fieldsForm"
+                :model-value="localFormData"
+                label-cols
+                @update:model-value="updateFormChange"/>
+            <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                <div v-for="violation in violations" :key="violation">
+                    <li>{{ violation.message }}</li>
+                </div>
             </div>
-        </div>
-        <AppCol class="btnright">
-            <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="updatedWarehouseStock">
-                <Fa icon="plus"/> Enregistrer
-            </AppBtn>
-        </AppCol>
-    </AppCard>
+            <AppCol class="btnright">
+                <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="updatedWarehouseStock">
+                    <Fa icon="plus"/> Enregistrer
+                </AppBtn>
+            </AppCol>
+        </AppCard>
+    </AppSuspense>
 </template>
