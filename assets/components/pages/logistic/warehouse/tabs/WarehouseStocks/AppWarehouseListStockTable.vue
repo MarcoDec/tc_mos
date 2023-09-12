@@ -89,26 +89,6 @@
             min: true
         },
         {
-            create: true,
-            filter: true,
-            label: 'Numéro de série',
-            name: 'batchNumber',
-            sort: true,
-            type: 'text',
-            update: true,
-            min: false
-        },
-        {
-            create: true,
-            filter: true,
-            label: 'Localisation',
-            name: 'location',
-            sort: true,
-            type: 'text',
-            update: true,
-            min: false
-        },
-        {
             label: 'Quantité ',
             name: 'quantity',
             measure: {
@@ -129,7 +109,7 @@
                 }
             },
             type: 'measure',
-            min: false
+            min: true
         },
         {
             create: true,
@@ -140,6 +120,26 @@
             type: 'boolean',
             update: true,
             min: false
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'Numéro de série',
+            name: 'batchNumber',
+            sort: true,
+            type: 'text',
+            update: true,
+            min: false
+        },
+        {
+            create: true,
+            filter: true,
+            label: 'Localisation',
+            name: 'location',
+            sort: true,
+            type: 'text',
+            update: true,
+            min: false
         }
     ]
     //endregion
@@ -148,19 +148,20 @@
         AddForm.value = true
         updated.value = false
     }
-    function update(item) {
-        console.log('update', item)
+    function update(data) {
+        console.log('update data = ', data)
         formData.value = {
-            component: item.component ? item.component['@id'] : null,
-            product: item.product ? item.product['@id'] : null,
-            batchNumber: item.batchNumber,
-            location: item.location,
+            id: data['@id'],
+            component: data.item['@type'] === 'Component' ? data.item : null,
+            product: data.item['@type'] === 'Product' ? data.item : null,
+            batchNumber: data.batchNumber,
+            location: data.location,
             quantity: {
-                codeLabel: item.quantity.code,
-                value: item.quantity.value,
-                code: fetchUnits.options.filter(element => element.text === item.quantity.code)[0]['@id']
+                codeLabel: data.quantity.code,
+                value: data.quantity.value,
+                code: fetchUnits.options.filter(element => element.text === data.quantity.code)[0]['@id']
             },
-            jail: item.jail
+            jail: data.jail
         }
         if (updated.value === false) {
             updated.value = true
@@ -169,9 +170,13 @@
             updateKey++
         }
     }
+    async function updateListe() {
+        await fetchStocks.fetch(fetchCriteria.getFetchCriteria)
+        itemsTable.value = fetchStocks.itemsWarehousesStock
+    }
     async function deleted(id){
         await fetchStocks.deleted(id)
-        itemsTable.value = [...fetchStocks.itemsWarehousesStock]
+        updateListe()
     }
     async function getPage(nPage){
         await fetchStocks.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
@@ -223,6 +228,14 @@
         itemsTable.value = fetchStocks.itemsWarehousesStock
     }
     //endregion
+    async function afterCreation() {
+        AddForm.value = false
+        updateListe()
+    }
+    async function afterUpdate() {
+        updated.value = false
+        updateListe()
+    }
 </script>
 
 <template>
@@ -261,11 +274,11 @@
         </AppCol>
         <AppCol v-if="AddForm">
             <AppSuspense>
-                <WarehouseStockAddForm @cancel="AddForm = false" @saved="AddForm = false"/>
+                <WarehouseStockAddForm @cancel="AddForm = false" @saved="afterCreation"/>
             </AppSuspense>
         </AppCol>
         <AppCol v-if="updated">
-            <WarehouseStockUpdateForm :key="`update_${updateKey}`" :item="formData" @cancel="updated = false" @saved="updated = false"/>
+            <WarehouseStockUpdateForm :key="`update_${updateKey}`" :item="formData" @cancel="updated = false" @saved="afterUpdate"/>
         </AppCol>
     </AppRow>
 </template>

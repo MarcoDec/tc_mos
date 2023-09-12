@@ -56,7 +56,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION, 'patch'],
         shortName: 'ComponentStock',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'

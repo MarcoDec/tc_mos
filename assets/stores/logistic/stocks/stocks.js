@@ -207,7 +207,17 @@ export const useStockListStore = defineStore('stockList', {
                 this.warehousesStock = await this.updatePagination(response)
             }
         },
-
+        async updateStock(iri, data) {
+            this.violations = []
+            try {
+                await api(iri, 'PATCH', data)
+            } catch (errors) {
+                errors.forEach(error => {
+                    this.violations.push({message: error.message})
+                })
+                throw new Error('Impossible de modifier le stock')
+            }
+        },
         async sortableItems(payload, filterBy, filter) {
             let response = {}
             if (filter.value === true){

@@ -10,7 +10,7 @@
     const props = defineProps({
         item: {type: Object, required: true}
     })
-    console.log('WarehouseStockUpdateForm', props, props.item)
+    //console.log('WarehouseStockUpdateForm', props, props.item)
     //region récupération des informations de route
     const maRoute = useRoute()
     const warehouseId = maRoute.params.id_warehouse
@@ -131,18 +131,23 @@
     }
 
     async function updatedWarehouseStock(){
-        // console.log(localFormData.value)
+        //console.log('updatedWarehouseStock', localFormData.value)
         itemsUpdateData.value = {
             batchNumber: localFormData.value.batchNumber,
             location: localFormData.value.location,
-            quantity: {code: localFormData.value.quantity.code, value: localFormData.value.quantity.value},
+            quantity: {code: localFormData.value.quantity.codeLabel, value: localFormData.value.quantity.value},
             jail: localFormData.value.jail
         }
         itemsUpdateData.value.warehouse = `/api/warehouses/${warehouseId}`
-        itemsUpdateData.value.item = props.item.component ?? props.item.product
-        console.log('data to send', itemsAddData.value)
+        if (localFormData.value.component) {
+            itemsUpdateData.value.item = localFormData.value.component['@id']
+        } else {
+            itemsUpdateData.value.item = localFormData.value.product['@id']
+        }
+        //console.log(props.item.id)
+        //console.log('data to update', itemsUpdateData.value)
         try {
-            await fetchStocks.updateStock(itemsUpdateData.value) // TODO
+            await fetchStocks.updateStock(props.item.id, itemsUpdateData.value)
             emit('saved')
         } catch (e) {
             alert(e.message)
@@ -166,7 +171,9 @@
                     <Fa icon="angle-double-left"/>
                 </button>
                 <h4 class="col">
-                    <Fa icon="pencil"/> Modification d'un stock
+                    <Fa icon="pencil"/> Modification du
+                    <span v-if="item.component" :title="`Stock n° ${item.batchNumber}`">stock composant <span class="title-form">{{ item.component.code }} - {{ item.component.name }}</span></span>
+                    <span v-else :title="`Stock n° ${item.batchNumber}`">stock produit <span class="title-form">{{ item.product.code }} - {{ item.product.name }}</span></span>
                 </h4>
             </AppRow>
             <br/>
@@ -190,3 +197,9 @@
         </AppCard>
     </AppSuspense>
 </template>
+
+<style scoped>
+   .title-form {
+       border-bottom: 2px solid black;
+   }
+</style>
