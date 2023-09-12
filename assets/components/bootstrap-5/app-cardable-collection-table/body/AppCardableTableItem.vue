@@ -42,15 +42,20 @@
                 </template>
             </template>
             <template v-else>
-                <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>
-                <span v-else>
-                    <template v-if="field.type === 'date'">
-                        {{ item[field.name].substring(0, 10) }}
-                    </template>
-                    <template v-else>
-                        {{ item[field.name] }}
-                    </template>
-                </span>
+                <template v-if="field.type === 'measure'">
+                    <div class="text-center">{{ item[field.name].value }} {{ item[field.name].code }}</div>
+                </template>
+                <template v-else>
+                    <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>
+                    <span v-else>
+                        <template v-if="field.type === 'date'">
+                            {{ item[field.name].substring(0, 10) }}
+                        </template>
+                        <template v-else>
+                            {{ item[field.name] }}
+                        </template>
+                    </span>
+                </template>
             </template>
         </template>
     </td>
