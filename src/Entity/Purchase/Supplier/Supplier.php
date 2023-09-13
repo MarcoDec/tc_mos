@@ -179,7 +179,7 @@ class Supplier extends Entity {
 
     #[
         ApiProperty(description: 'SupplierCompany associés', readableLink: false, example: ['/api/supplier-companies/1','/api/supplier-companies/2']),
-        ORM\OneToMany(targetEntity: SupplierCompany::class, mappedBy: 'supplier', cascade: ['persist', 'remove'])
+        ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierCompany::class, cascade: ['persist', 'remove'])
     ]
     private DoctrineCollection $supplierCompanies;
 
