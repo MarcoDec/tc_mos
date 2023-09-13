@@ -64,7 +64,6 @@
     async function input(value) {
         localData.value = value
         emit('update:modelValue', localData.value)
-        console.log('input', localData.value)
     }
     async function updateQuality() {
         const form = document.getElementById('addQualite')
@@ -74,7 +73,6 @@
             reach: localData.value.reach,
             rohs: localData.value.rohs
         }
-        //console.log('rohsAttachment', formData.get('rohsAttachment'))
         if (localData.value.rohs && formData.get('rohsAttachment').size > 0) {
             const dataFichierRohs = {
                 category: 'rohs',
@@ -94,7 +92,6 @@
                 isError2.value = true
             }
         }
-        //console.log('reachAttachment', formData.get('reachAttachment'))
         if (reachValue.value && formData.get('reachAttachment').size > 0) {
             const dataFichierReach = {
                 category: 'reach',

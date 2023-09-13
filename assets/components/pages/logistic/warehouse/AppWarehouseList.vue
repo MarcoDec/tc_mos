@@ -1,56 +1,17 @@
 <script setup>
-    import {useRoute, useRouter} from 'vue-router'
-    import AppBtnJS from '../../../AppBtnJS'
-    import AppFormJS from '../../../form/AppFormJS'
-    import AppModal from '../../../modal/AppModal.vue'
-    import AppTableJS from '../../../table/AppTableJS'
-    import Fa from '../../../Fa'
-    import {useTableMachine} from '../../../../machine'
-    import {useWarehouseListItemsStore} from '../../../../stores/logistic/warehouses/warehouseListItems'
+    import AppWarehouseListTable from './AppWarehouseListTable.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
 
     defineProps({
-        fields: {default: () => [], type: Array},
         icon: {required: true, type: String},
         title: {required: true, type: String}
     })
-    const route = useRoute()
-    const router = useRouter()
-
-    const formfields = [
-        {label: 'Nom *', name: 'name', type: 'text'},
-        {label: 'Famille ', name: 'getFamilies()', type: 'text'}
-    ]
-    const emit = defineEmits(['update'])
-    async function update(item) {
-        emit('update', item)
-        await router.push({name: 'warehouse-show'})
-    }
-    const machine = useTableMachine(route.name)
-    const storeWarehouseListItems = useWarehouseListItemsStore()
-    storeWarehouseListItems.fetchOne()
 </script>
 
 <template>
-    <h1>
-        <Fa :icon="icon"/>
-        {{ title }}
-        <AppBtnJS variant="success" class="btnRight" data-bs-toggle="modal" data-bs-target="#split">
-            créer
-        </AppBtnJS>
-        <AppBtnJS variant="secondary" class="btnRight">
-            Flux d'entrepôts
-        </AppBtnJS>
-    </h1>
-    <AppModal id="split" title="Créer un entrepot">
-        <AppFormJS id="addEntrepots" :fields="formfields"/>
-        <template #buttons>
-            <AppBtnJS class="float-end" variant="success">
-                créer
-            </AppBtnJS>
-        </template>
-    </AppModal>
-    <AppTableJS
-        :id="route.name" :fields="fields" :store="storeWarehouseListItems" :machine="machine" @update="update"/>
+    <AppSuspense>
+        <AppWarehouseListTable :icon="icon" :title="title"/>
+    </AppSuspense>
 </template>
 
 <style scoped>

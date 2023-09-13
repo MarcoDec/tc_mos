@@ -49,7 +49,6 @@
         }
     }
     async function deleted(id) {
-        console.log(id)
         await fetchEmployeeContactsStore.deleted(id)
     }
     async function updateContact(inputValues) {

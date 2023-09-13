@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
 use App\Entity\Embeddable\Address;
@@ -24,20 +25,20 @@ use App\Entity\Purchase\Supplier\Attachment\SupplierAttachment;
 use App\Entity\Purchase\Supplier\Company\SupplierCompany;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
+use App\Filter\SetFilter;
 use App\Repository\Purchase\Supplier\SupplierRepository;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\InverseJoinColumn;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Purchase\Supplier\SupplierPatchController;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Fournisseur',
         collectionOperations: [
@@ -178,7 +179,7 @@ class Supplier extends Entity {
 
     #[
         ApiProperty(description: 'SupplierCompany associés', readableLink: false, example: ['/api/supplier-companies/1','/api/supplier-companies/2']),
-        ORM\OneToMany(targetEntity: SupplierCompany::class, mappedBy: 'supplier', cascade: ['persist', 'remove'])
+        ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierCompany::class, cascade: ['persist', 'remove'])
     ]
     private DoctrineCollection $supplierCompanies;
 

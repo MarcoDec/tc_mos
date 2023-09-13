@@ -30,6 +30,9 @@ function AppForm(props, context) {
                     currentValue = {...currentValue, [field.name]: value}
                     context.emit('update:modelValue', currentValue)
                 },
+                onSearchChange: value => {
+                    context.emit('searchChange', value)
+                },
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
         }
@@ -78,7 +81,7 @@ function AppForm(props, context) {
     return h('form', attrs, groups)
 }
 
-AppForm.emits = ['submit', 'update:modelValue']
+AppForm.emits = ['submit', 'update:modelValue', 'searchChange']
 AppForm.props = {
     disabled: {type: Boolean},
     fields: {

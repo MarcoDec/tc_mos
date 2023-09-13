@@ -10,11 +10,13 @@
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
     })
-    const emit = defineEmits(['update:modelValue'])
+    const emit = defineEmits(['update:modelValue', 'searchChange'])
     const css = readonly({search: 'form-control form-control-sm'})
-    //console.log(props.mode, props.modelValue)
     function input(value) {
         emit('update:modelValue', value)
+    }
+    function updateSearch(data) {
+        emit('searchChange', data)
     }
 </script>
 
@@ -25,13 +27,15 @@
         :data-mode="mode"
         :disabled="disabled"
         :form="form"
+        :max="field.max ?? -1"
         :mode="mode"
         :model-value="modelValue"
         :options="field.options && field.options.options "
         :value-prop="field.options && field.options.valueProp "
         class="text-dark"
         label="text"
-        searchable
+        :searchable="true"
+        @search-change="updateSearch"
         @update:model-value="input">
         <template #afterlist>
             <input :name="field.name" :value="modelValue" type="hidden"/>

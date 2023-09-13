@@ -1,3 +1,5 @@
+import AppShowGuiWarehouse from '../components/pages/logistic/warehouse/AppShowGuiWarehouse.vue'
+
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 
@@ -69,13 +71,43 @@ export default [
         }
     },
     {
-        component: async () => import('../components/pages/logistic/warehouse/AppWarehouseShow.vue'),
-        meta: {requiresAuth: true},
+        component: AppShowGuiWarehouse,
+        meta: {container: false, title: 'Entrepot — T-Concept GPAO'},
         name: 'warehouse-show',
-        path: '/warehouse-show',
+        path: '/warehouse/:id_warehouse',
         props: {
             icon: 'warehouse',
-            title: 'Entrepot'
+            title: 'Entrepot',
+            brands: true,
+            fields: [
+                {label: 'Name', name: 'name'},
+                {
+                    label: 'Company',
+                    name: 'company',
+                    options: {base: 'company'},
+                    search: false,
+                    sort: false,
+                    type: 'select'
+                },
+                {
+                    label: 'Destination',
+                    name: 'destination'
+                },
+                {
+                    label: 'Familles',
+                    name: 'families',
+                    options: {base: 'warehouses'},
+                    type: 'multiselect'
+
+                },
+                {
+                    label: 'Qualite',
+                    name: 'qualite',
+                    search: false,
+                    sort: false,
+                    type: 'measure'
+                }
+            ]
         }
     }
 ]

@@ -9,6 +9,7 @@ use App\Entity\Purchase\Parameter as PurchaseParam;
 use App\Entity\Production\Parameter as ProductionParam;
 use App\Entity\Project\Parameter as ProjectParam;
 use App\Entity\Selling\Parameter as SellingParam;
+use App\Entity\Logistics\Parameter as LogisticParam;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Annotation\ApiProperty;
@@ -27,29 +28,29 @@ use App\Filter\DiscriminatorFilter;
    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'description', 'kind', 'value']),
    ApiResource(
     description: 'Paramètre de processus Metier',
-    collectionOperations: [
-        'get' => [
-            'openapi_context' => [
-                'description' => 'Récupère les paramètres de processus Metier',
-                'summary' => 'Récupère les paramètres de processus Metier',
-                'parameters' => [
-                    [
-                        'in' => 'query',
-                        'name' => 'type',
-                        'required' => false,
-                        'schema' => ['enum' => ['hr', 'purchase', 'production', 'project', 'selling'], 'type' => 'string']
-                    ]
-                ],
-            ]
-        ]
-    ],
-    itemOperations: [
-        'get',
-        'patch'
-    ],
-    shortName: 'Parameter',
-    paginationItemsPerPage: 15,
-    paginationClientEnabled: true
+       collectionOperations: [
+           'get' => [
+               'openapi_context' => [
+                   'description' => 'Récupère les paramètres de processus Metier',
+                   'summary' => 'Récupère les paramètres de processus Metier',
+                   'parameters' => [
+                       [
+                           'in' => 'query',
+                           'name' => 'type',
+                           'required' => false,
+                           'schema' => ['enum' => ['hr', 'purchase', 'production', 'project', 'selling'], 'type' => 'string']
+                       ]
+                   ],
+               ]
+           ]
+       ],
+       itemOperations: [
+           'get',
+           'patch'
+       ],
+       shortName: 'Parameter',
+       paginationClientEnabled: true,
+       paginationItemsPerPage: 15
     ),
    ORM\MappedSuperclass,
    ORM\DiscriminatorColumn('type', 'string'),
@@ -73,6 +74,7 @@ class Parameter extends Entity {
 
     public const PROCESSES = [
         'hr' => HrParam::class,
+        'logistic' => LogisticParam::class,
         'management' => self::class,
         'purchase' => PurchaseParam::class,
         'production' => ProductionParam::class,

@@ -36,7 +36,7 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'index', 'name']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['index' => 'partial', 'name' => 'partial', 'code' => 'partial']),
     ApiResource(
         description: 'Composant',
         collectionOperations: [
@@ -386,6 +386,13 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
     ]
     private Measure $weight;
 
+    #[
+        ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
+        ORM\Column,
+        Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
+    ]
+    private ?string $code;
+
     public function __construct() {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
@@ -396,6 +403,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->references = new ArrayCollection();
         $this->supplierComponents = new ArrayCollection();
         $this->weight = new Measure();
+        $this->code = $this->getCode();
     }
 
     public function __clone() {
@@ -453,15 +461,9 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $checks;
     }
 
-    #[
-        ApiProperty(description: 'Référence interne', required: true, example: 'FIX-1'),
-        Serializer\Groups(['read:component', 'read:component:collection', 'read:stock', 'read:item', 'read:component-preparation'])
-    ]
+
     final public function getCode(): ?string {
-        if ($this->family) {
-            return $this->family->getCode()."-{$this->getId()}";
-        }
-        return "{XXXX-{$this->getId()}";
+        return $this->code;
     }
 
     final public function getCopperWeight(): Measure {
@@ -579,6 +581,10 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->getCode();
     }
 
+    final public function setCode($code) {
+        $this->code = $code;
+    }
+
     public function getSupplierComponents()
     {
         return $this->supplierComponents;
@@ -650,6 +656,8 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
 
     final public function setFamily(?Family $family): self {
         $this->family = $family;
+        if ($this->family) $this->code = $this->family->getCode()."-{$this->getId()}";
+        else $this->code = "XXX-{$this->getId()}";
         return $this;
     }
 

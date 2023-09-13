@@ -13,15 +13,7 @@ export default function generateWarehouse(warehouse) {
             }
         },
         getters: {
-            getFamilies: state => state.families.toString(),
-            row: state => ({
-                delete: false,
-                famille: state.family,
-                id: 1,
-                name: state.name,
-                update: false,
-                update2: true
-            })
+            getFamilies: state => state.families.toString()
         },
         state: () => ({...warehouse})
     })()

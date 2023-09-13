@@ -17,7 +17,7 @@ function AppTableHeaderFormJS(props, context) {
                 variant: props.submitVariant
             })
             : h(
-                resolveComponent('AppForm'),
+                resolveComponent('AppFormJS'),
                 {
                     fields: props.fields,
                     id: formId,
@@ -30,7 +30,7 @@ function AppTableHeaderFormJS(props, context) {
                     },
                     submitLabel: props.label
                 },
-                ({disabled, form, submitLabel, type}) => h(resolveComponent('AppBtn'), {
+                ({disabled, form, submitLabel, type}) => h(resolveComponent('AppBtnJS'), {
                     disabled,
                     form,
                     icon: props.icon,
@@ -43,10 +43,15 @@ function AppTableHeaderFormJS(props, context) {
     ]
     if (typeof context.slots['default'] === 'function')
         formTd.push(context.slots['default']())
-    const children = [
+    const children = props.btnbasculesearch ? [
+        h('td', [
+            h(resolveComponent('Fa'), {icon: props.icon})
+        ]),
+        h('td', formTd)
+    ] : [
         h('td', [
             h(resolveComponent('Fa'), {icon: props.icon}),
-            h(resolveComponent('AppBtn'), {
+            h(resolveComponent('AppBtnJS'), {
                 icon: props.reverseIcon,
                 label: `Basculer en mode ${props.reverseLabel}`,
                 onClick: () => props.machine.send(props.reverseMode),
@@ -56,7 +61,6 @@ function AppTableHeaderFormJS(props, context) {
         ]),
         h('td', formTd)
     ]
-
     function generateField(field) {
         const slot = context.slots[`${props.type}(${field.name})`]
         children.push(h(resolveComponent('AppTableFormField'), {
@@ -76,6 +80,7 @@ function AppTableHeaderFormJS(props, context) {
 }
 
 AppTableHeaderFormJS.props = {
+    btnbasculesearch: {default: false, type: Boolean},
     fields: generateTableFields(),
     icon: {required: true, type: String},
     id: {required: true, type: String},

@@ -2,7 +2,7 @@
     import AppLabel from './AppLabel.vue'
     import {computed} from 'vue'
 
-    const emit = defineEmits(['input', 'update:modelValue'])
+    const emit = defineEmits(['input', 'update:model-value'])
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -18,7 +18,7 @@
 
     function input(v) {
         emit('input', props.field, v)
-        emit('update:modelValue', {...props.modelValue, [props.field.name]: v})
+        emit('update:model-value', {...props.modelValue, [props.field.name]: v})
     }
 </script>
 

@@ -32,7 +32,6 @@
         text: country.name,
         value: country.code
     }))
-    //console.log(fetchOptions)
     const fetchSuppliersStore = useSuppliersStore()
     const fetchIncotermStore = useIncotermStore()
     const fetchSocietyStore = useSocietyStore()

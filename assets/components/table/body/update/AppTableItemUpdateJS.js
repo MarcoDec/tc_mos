@@ -1,5 +1,5 @@
 import {h, resolveComponent} from 'vue'
-import AppTableItemUpdateFieldJS from './AppTableItemUpdateFieldJS'
+import AppTableItemUpdateField from './AppTableItemUpdateField.vue'
 import {generateTableFields} from '../../../props'
 
 function AppTableItemUpdateJS(props, context) {
@@ -45,7 +45,7 @@ function AppTableItemUpdateJS(props, context) {
         props.fields.map(field => {
             const slot = context.slots[`form(${field.name})`]
             return h(
-                field.update ? AppTableItemUpdateFieldJS : resolveComponent('AppTableItemField'),
+                field.update ? AppTableItemUpdateField : resolveComponent('AppTableItemField'),
                 {
                     field,
                     form: formId,

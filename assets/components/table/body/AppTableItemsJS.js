@@ -1,4 +1,5 @@
-import AppTableItemJS from './AppTableItemJS'
+//import AppTableItemJS from './AppTableItemJS'
+import AppTableItemJSinVue from './AppTableItemJSinVue.vue'
 import AppTableItemUpdateJS from './update/AppTableItemUpdateJS'
 import {generateTableFields} from '../../props'
 import {h} from 'vue'
@@ -17,8 +18,8 @@ function AppTableItemsJS(props, context) {
     return h('tbody', {id: props.id}, props.items.map((item, index) => h(
         props.machine.state.value.matches('update') && props.machine.state.value.context.updated === item['@id']
             ? AppTableItemUpdateJS
-            : AppTableItemJS,
-        {fields: props.fields, id: `${props.id}-${item.id}`, index, item, key: item['@id'], machine: props.machine},
+            : AppTableItemJSinVue,
+        {fields: props.fields, id: `${props.id}-${item.id}`, index, item, key: item['@id'], machine: props.machine, options: props.options},
         children
     )))
 }
@@ -27,7 +28,8 @@ AppTableItemsJS.props = {
     fields: generateTableFields(),
     id: {required: true, type: String},
     items: {required: true, type: Object},
-    machine: {required: true, type: Object}
+    machine: {required: true, type: Object},
+    options: {default: () => ({delete: true, modify: true, show: false}), required: false, type: Object}
 }
 
 export default AppTableItemsJS

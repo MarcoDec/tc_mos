@@ -90,7 +90,6 @@
     async function updateModelValue(value) {
         localData.value = value
         emit('update:modelValue', value)
-        console.log(localData.value)
     }
     async function updateComptabilite() {
         const societyId = fetchSocietyStore.society.id

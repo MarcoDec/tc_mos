@@ -28,7 +28,7 @@
     <div :id="id" class="input-group">
         <AppInputGuesserJS
             :id="valueId"
-            :disabled="disabled"
+            :disabled="disabled || field.measure.value.disabled"
             :field="field.measure.value"
             :form="form"
             :name="valueName"
@@ -36,7 +36,7 @@
             @update:model-value="inputValue"/>
         <AppInputGuesserJS
             :id="codeId"
-            :disabled="disabled"
+            :disabled="disabled || field.measure.code.disabled"
             :field="field.measure.code"
             :form="form"
             :name="codeName"
