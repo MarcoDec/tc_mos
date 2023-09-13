@@ -6,6 +6,8 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Blocker;
@@ -22,16 +24,17 @@ use App\Entity\Production\Engine\Workstation\Workstation;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
 //use App\Filter\SetFilter;
-// ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
-
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['brand'=>'partial', 'code'=> 'partial', 'name' => 'partial', 'serialNumber' => 'partial', 'zone.company']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['entryDate']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['group', 'zone', 'manufacturerEngine']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['brand', 'code', 'entryDate', 'manufacturerEngine.name', 'name', 'serialNumber']),
+    //ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Équipement',
         collectionOperations: [
@@ -147,7 +150,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
      */
     protected $group;
     #[
-        ApiProperty(description: 'Nom', example: 'Machine'),
+        ApiProperty(description: 'Nom', example: 'Compresseur d\'air'),
         ORM\Column,
         Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:skill', 'read:operation-employee:collection'])
     ]
@@ -179,9 +182,9 @@ abstract class Engine extends Entity implements BarCodeInterface {
     }
 
     #[
-        ApiProperty(description: 'Zone'),
-        ORM\ManyToOne,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:operation-employee:collection'])
+        ApiProperty(description: 'Zone', readableLink: true),
+        ORM\ManyToOne(fetch: 'EAGER'),
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event'])
     ]
     protected ?Zone $zone = null;
 
@@ -198,10 +201,12 @@ abstract class Engine extends Entity implements BarCodeInterface {
     private EmployeeEngineState $embState;
 
     #[
-        ORM\ManyToOne(targetEntity: ManufacturerEngine::class),
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation', 'read:operation-employee:collection'])
+        ApiProperty(description: 'Modele de machine', readableLink: false, example: '/api/manufacturer-engines/15'),
+        ORM\ManyToOne(targetEntity: ManufacturerEngine::class, cascade: ['persist']),
+        ORM\JoinColumn(onDelete: 'SET NULL'),
+        Serializer\Groups(['read:engine', 'write:engine', 'read:manufacturing-operation'])
     ]
-    private ManufacturerEngine $manufacturerEngine;
+    private ?ManufacturerEngine $manufacturerEngine;
 
     #[
         ApiProperty(description: 'Opérateur maximum ', example: 1),
@@ -255,7 +260,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this->group;
     }
 
-    final public function getManufacturerEngine(): ManufacturerEngine {
+    final public function getManufacturerEngine(): ?ManufacturerEngine {
         return $this->manufacturerEngine;
     }
 
@@ -314,8 +319,8 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    final public function setManufacturerEngine(ManufacturerEngine $manufacturerEngine): self {
-        $this->manufacturerEngine = $manufacturerEngine->setEngine($this);
+    final public function setManufacturerEngine(?ManufacturerEngine $manufacturerEngine): self {
+        $this->manufacturerEngine = $manufacturerEngine;
         return $this;
     }
 

@@ -1,27 +1,25 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
-    import AppTableItemField from '../../../table/body/read/AppTableItemField.vue'
+    import AppSwitch from '../../../form-cardable/fieldCardable/input/AppSwitch.vue'
     const props = defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
         indice: {required: true, type: Number},
         shouldDelete: {required: false, default: true}
     })
-
+    const id = Number(props.item['@id'].match(/\d+/)[0])
     const emit = defineEmits(['deleted', 'update'])
     function update(){
         emit('update', props.item)
     }
     function deleted(){
-        const id = Number(props.item['@id'].match(/\d+/)[0])
         emit('deleted', id)
     }
-    // function isObject(val) {
-    //     if (val === null) {
-    //         return false
-    //     }
-    //     return typeof val === 'function' || typeof val === 'object'
-    // }
+    function isObject(val) {
+        if (val === null) {
+            return false
+        }
+        return typeof val === 'function' || typeof val === 'object'
+    }
 </script>
 
 <template>
@@ -35,5 +33,33 @@
             </button>
         </template>
     </td>
-    <AppTableItemField v-for="field in fields" :key="field.name" :field="field" :item="item" :row="indice + field.name"/>
+    <td v-for="field in fields" :key="field.name">
+        <template v-if="item[field.name] !== null">
+            <div v-if="field.type === 'select'">
+                <template v-if="isObject(item[field.name])">
+                    <span v-if="field.options.label(item[field.name]['@id']) !== null">{{ field.options.label(item[field.name]['@id']) }}</span>
+                    <span v-else>{{ item[field.name] }}</span>
+                </template>
+                <template v-else>
+                    <span v-if="field.options.label(item[field.name]) !== null">{{ field.options.label(item[field.name]) }}</span>
+                    <span v-else>{{ item[field.name] }}</span>
+                </template>
+            </div>
+            <div v-else-if="field.type === 'measure'">
+                <div class="text-center">
+                    {{ item[field.name].value }} {{ item[field.name].code }}
+                </div>
+            </div>
+            <div v-else-if="field.type === 'date'">
+                {{ item[field.name].substring(0, 10) }}
+            </div>
+            <div v-else-if="field.type === 'boolean'">
+                <AppSwitch :id="`${field.name}_${id}`" :disabled="true" :field="field" form="" :model-value="item[field.name]"/>
+            </div>
+            <div v-else>
+                <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>
+                <span v-else>{{ item[field.name] }}</span>
+            </div>
+        </template>
+    </td>
 </template>

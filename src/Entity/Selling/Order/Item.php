@@ -26,7 +26,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  */
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
-
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -121,10 +120,9 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item'])
     ]
     protected State $embState;
-    
-    /*, 'read:expedition'*/
+
     #[
-        ApiProperty(description: 'Commande'),
+        ApiProperty(description: 'Commande', readableLink: false, example: '/api/selling-orders/1'),
         ORM\ManyToOne(targetEntity: Order::class, fetch: "EAGER"),
         Serializer\Groups(['read:item', 'write:item'])
     ]

@@ -1,42 +1,60 @@
 <script setup>
-    import {useEngineStore} from '../../../../../stores/production/engine/engines'
-
-    const fecthEngineStore = useEngineStore()
-    await fecthEngineStore.fetch()
-
-    const options = [
-        {text: 'aaaaa', value: 'aaaaa'},
-        {text: 'bbbb', value: 'bbbb'}
-    ]
-    const Contactsfields = [
-        {label: 'supplierRef', name: 'supplierRef', type: 'text'},
-        {label: 'serialNumber', name: 'serialNumber', type: 'text'},
-        {label: 'manufacturingDate', name: 'manufacturingDate', type: 'date'},
-        {label: 'manufacturer', name: 'manufacturer', options: {label: value => options.find(option => option.type === value)?.text ?? null, options}, type: 'select'},
-        {label: 'Code postal', name: 'CodePostal', type: 'text'},
-        {label: 'entryDate', name: 'entryDate', type: 'date'}
-    ]
-    const Qualitéfields = [
-        {label: 'Hauteur de sertissage (mm)', name: 'HauteurSertissage', type: 'text'},
-        {label: 'Largeur de sertissage (mm)', name: 'LargeurSertissage', type: 'text'},
-        {label: 'Paramètre de mesure', name: 'ParamètreMesure', type: 'text'}
-    ]
+    import AppShowToolTabGeneral from './tabs/AppShowToolTabGeneral.vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
+    import {useEngineAttachmentStore} from '../../../../../stores/production/engine/tool/engineAttachment'
+    import {useRoute} from 'vue-router'
+    import {useToolsStore} from '../../../../../stores/production/engine/tool/tools'
+    import useUser from '../../../../../stores/security'
+    import useZonesStore from '../../../../../stores/production/company/zones'
+    const currentCompany = useUser().company
+    const route = useRoute()
+    const idEngine = Number(route.params.id_engine)
+    const fetchEngineAttachmentStore = useEngineAttachmentStore()
+    await fetchEngineAttachmentStore.fetchByElement(idEngine)
+    const fetchEngineStore = useToolsStore()
+    const fetchZones = useZonesStore()
+    await fetchZones.fetchAll(currentCompany)
 </script>
 
 <template>
     <AppTabs id="gui-start" class="gui-start-content">
         <AppTab id="gui-start-main" active title="Généralités" icon="pencil" tabs="gui-start">
-            <AppCardShow id="addGeneralites"/>
+            <AppSuspense><AppShowToolTabGeneral v-if="fetchEngineStore.isLoaded"/></AppSuspense>
         </AppTab>
-        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">
-            <AppCardShow id="addQualite" :fields="Qualitéfields"/>
+        <AppTab
+            id="gui-start-files"
+            title="Fichiers"
+            icon="laptop"
+            tabs="gui-start">
+            <AppSuspense>
+                <AppTabFichiers
+                    attachment-element-label="tool"
+                    :element-api-url="`/api/tools/${fetchEngineStore.engine.id}`"
+                    :element-attachment-store="fetchEngineAttachmentStore"
+                    :element-id="fetchEngineStore.engine.id"
+                    element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
+                    :element-store="useToolsStore"/>
+            </AppSuspense>
         </AppTab>
-        <AppTab id="gui-start-purchase-logistics" title="Logistique" icon="pallet" tabs="gui-start">
-            <AppCardShow id="addLogistique"/>
-        </AppTab>
-        <AppTab id="gui-start-addresses" title="Adresses\Contacts" icon="file-contract" tabs="gui-start">
-            <AppCardShow id="addContacts" :fields="Contactsfields"/>
-        </AppTab>
+        <!--        <AppTab id="gui-start-quality" title="Qualité" icon="certificate" tabs="gui-start">-->
+        <!--            <AppCardShow id="addQualite" :fields="qualityFields" :component-attribute="fetchEngineStore.engine"/>-->
+        <!--        </AppTab>-->
+        <!--        <AppTab id="gui-start-purchase-logistics" title="Logistique" icon="pallet" tabs="gui-start">-->
+        <!--            <AppCardShow id="addLogistique" :component-attribute="fetchEngineStore.engine"/>-->
+        <!--        </AppTab>-->
+        <!--        <AppTab id="gui-start-addresses" title="Adresses\Contacts" icon="file-contract" tabs="gui-start">-->
+        <!--            <AppCardShow id="addContacts" :fields="Contactsfields" :component-attribute="fetchEngineStore.engine"/>-->
+        <!--        </AppTab>-->
     </AppTabs>
 </template>
 
+<style scoped>
+div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+.gui-start-content {
+    font-size: 14px;
+}
+#gui-start-production, #gui-start-droits {
+    padding-bottom: 150px;
+}
+</style>

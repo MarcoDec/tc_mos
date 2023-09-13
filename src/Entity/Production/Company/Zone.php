@@ -69,12 +69,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     ),
     ORM\Entity
 ]
-class Zone extends Entity implements CompanyInterface {
+class Zone extends Entity {
     #[
-        ApiProperty(description: 'Company', example: 'T-Concept'),
+        ApiProperty(description: 'Compagnie', readableLink: false),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:zone', 'write:zone'])
+        Serializer\Groups(['read:zone', 'read:engine', 'write:zone','read:engine-maintenance-event'])
     ]
     private ?Company $company = null;
 
@@ -82,7 +82,7 @@ class Zone extends Entity implements CompanyInterface {
         ApiProperty(description: 'Nom', example: 'Zone sertissage'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:zone', 'write:zone','read:engine-maintenance-event'])
+        Serializer\Groups(['read:zone', 'read:engine', 'write:zone','read:engine-maintenance-event'])
     ]
     private ?string $name = null;
 

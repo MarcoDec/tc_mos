@@ -26,7 +26,7 @@ function AppTableFormFieldJS(props, context) {
         function inputSlot(inputAttrs) {
             return typeof context.slots['default'] === 'function'
                 ? context.slots['default'](inputAttrs)
-                : h(resolveComponent('AppInputGuesser'), inputAttrs)
+                : h(resolveComponent('AppInputGuesserJS'), inputAttrs)
         }
         const children = []
         if (props.violation) {

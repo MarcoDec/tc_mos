@@ -5,6 +5,7 @@
     import AppShowProductTabPrice from './tabs/AppShowProductTabPrice.vue'
     import AppShowProductTabProduction from './tabs/AppShowProductTabProduction.vue'
     import AppShowProductTabProject from './tabs/AppShowProductTabProject.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
     import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
     import {useProductAttachmentStore} from '../../../../stores/project/product/productAttachement'
     import {useProductStore} from '../../../../stores/project/product/products'
@@ -24,42 +25,42 @@
             title="Généralités"
             icon="pencil"
             tabs="gui-start">
-            <Suspense><AppShowProductTabGeneral/></Suspense>
+            <AppSuspense><AppShowProductTabGeneral/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-project"
             title="Project"
             icon="pencil"
             tabs="gui-start">
-            <Suspense><AppShowProductTabProject/></Suspense>
+            <AppSuspense><AppShowProductTabProject/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-production"
             title="Production"
             icon="pencil"
             tabs="gui-start">
-            <Suspense><AppShowProductTabProduction/></Suspense>
+            <AppSuspense><AppShowProductTabProduction/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-purchase-logistics"
             title="Logistique"
             icon="pallet"
             tabs="gui-start">
-            <Suspense><AppShowProductTabLogistic/></Suspense>
+            <AppSuspense><AppShowProductTabLogistic/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-purchase-admin"
             title="Admin"
             icon="pallet"
             tabs="gui-start">
-            <Suspense><AppShowProductTabAdmin/></Suspense>
+            <AppSuspense><AppShowProductTabAdmin/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppTabFichiers
                     attachment-element-label="product"
                     :element-api-url="`/api/products/${idProduct}`"
@@ -67,14 +68,14 @@
                     :element-id="idProduct"
                     element-parameter-name="PRODUCT_ATTACHMENT_CATEGORIES"
                     :element-store="useProductStore"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-Prix"
             title="Prix"
             icon="circle-dollar-to-slot"
             tabs="gui-start">
-            <Suspense><AppShowProductTabPrice/></Suspense>
+            <AppSuspense><AppShowProductTabPrice/></AppSuspense>
         </AppTab>
     </AppTabs>
 </template>

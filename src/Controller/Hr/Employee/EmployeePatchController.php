@@ -158,7 +158,7 @@ class EmployeePatchController
             $team = $this->em->getRepository(Employee::class)->find($id);
             $refProps->setValue($sourceItem, $team);
          } else {
-            $this->logger->warning('#1.manager Impossible de modifier '.$key.' IRI attendue et non recue '.$value);
+            $this->logger->warning('#1.manager Impossible de modifier '.$refProps.' IRI attendue et non recue '.$value);
          } 
    }
    
@@ -173,7 +173,7 @@ class EmployeePatchController
       } elseif (is_null($value)) {
          $refProps->setValue($sourceItem, null);
       } else {
-         $this->logger->warning('#1.team Impossible de modifier '.$key.' IRI attendue et non recue '.$value);
+         $this->logger->warning('#1.team Impossible de modifier '.$refProps.' IRI attendue et non recue '.$value);
       } 
    }
 }

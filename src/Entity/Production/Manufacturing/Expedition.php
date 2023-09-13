@@ -104,7 +104,7 @@ class Expedition extends Entity {
     private ?string $location = null;
 
     #[
-        ApiProperty(description: 'Note de livraison'),
+        ApiProperty(description: 'Note de livraison', readableLink: false, example: '/api/delivery-notes/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:expedition', 'write:expedition'])
     ]

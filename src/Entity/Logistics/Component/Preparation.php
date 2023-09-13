@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Hr\Employee\Employee;
-use App\Entity\Logistics\Warehouse;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Production\Manufacturing\Order;
 use App\Entity\Purchase\Component\Component;
 use Doctrine\ORM\Mapping\Column;

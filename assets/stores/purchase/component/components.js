@@ -9,6 +9,12 @@ export const useComponentListStore = defineStore('component', {
             this.isLoading = false
             this.isLoaded = true
         },
+        async fetchAll(filter = '') {
+            this.isLoading = true
+            this.components = (await api(`/api/components${filter}`, 'GET'))['hydra:member']
+            this.isLoading = false
+            this.isLoaded = true
+        },
         async update(data, id) {
             await api(`/api/components/${id}/logistics`, 'PATCH', data)
             await this.fetchOne(id)
@@ -38,6 +44,7 @@ export const useComponentListStore = defineStore('component', {
     },
     state: () => ({
         component: {},
+        components: [],
         isLoaded: false,
         isLoading: false
     })

@@ -9,7 +9,7 @@
     import {computed} from 'vue'
     import AppTextArea from './AppTextArea.vue'
 
-    const emit = defineEmits(['update:model-value'])
+    const emit = defineEmits(['update:modelValue', 'searchChange'])
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -37,10 +37,13 @@
     })
 
     function input(v) {
-        emit('update:model-value', v)
+        emit('update:modelValue', v)
+    }
+    function searchChange(data) {
+        emit('searchChange', {field: props.field, data})
     }
 </script>
 
 <template>
-    <component :is="kind" v-bind="$props" @update:model-value="input"/>
+    <component :is="kind" v-bind="$props" @update:model-value="input" @search-change="searchChange"/>
 </template>

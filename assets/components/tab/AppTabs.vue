@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineProps, onUnmounted, ref, onMounted} from 'vue'
+    import {computed, onUnmounted, ref, onMounted} from 'vue'
     import AppTabLink from './AppTabLink.vue'
     import useTabs from '../../stores/tab/tabs'
 

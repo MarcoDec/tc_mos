@@ -13,7 +13,7 @@ function AppTableItemUpdateFieldJS(props, context) {
     return () => {
         const slot = context.slots['default']
         return h(
-            resolveComponent('AppTableFormField'),
+            resolveComponent('AppTableFormFieldJS'),
             {
                 field: props.field,
                 form: props.form,

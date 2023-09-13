@@ -83,11 +83,11 @@ class ProductionQualityReject extends Entity implements MeasuredInterface
         $this->quantity = new Measure();
     }
 
-    public function getProductionOperation(): ?ProductionOperation {
+    public function getProductionOperation(): ?Operation {
         return $this->productionOperation;
     }
 
-    public function getRejectType(): ?ProductionRejectList {
+    public function getRejectType(): ?Type {
         return $this->rejectType;
     }
 
@@ -95,7 +95,7 @@ class ProductionQualityReject extends Entity implements MeasuredInterface
         return $this->qualityControl;
     }
 
-    public function getQuantity(): ?int {
+    public function getQuantity(): ?Measure {
         return $this->quantity;
     }
 
@@ -103,12 +103,12 @@ class ProductionQualityReject extends Entity implements MeasuredInterface
         return 'ProductionQualityReject'.$this->getId();
     }
 
-    public function setProductionOperation(ProductionOperation $productionOperation): self {
+    public function setProductionOperation(Operation $productionOperation): self {
         $this->productionOperation = $productionOperation;
         return $this;
     }
 
-    public function setRejectType(ProductionRejectList $rejectType): self {
+    public function setRejectType(Type $rejectType): self {
         $this->rejectType = $rejectType;
         return $this;
     }
@@ -118,7 +118,7 @@ class ProductionQualityReject extends Entity implements MeasuredInterface
         return $this;
     }
 
-    public function setQuantity(int $quantity): self {
+    public function setQuantity(Measure $quantity): self {
         $this->quantity = $quantity;
         return $this;
     }

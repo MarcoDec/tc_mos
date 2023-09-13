@@ -6,8 +6,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Hr\Employee\Roles;
-// use App\Entity\Project\Product\Product;
-use App\Entity\Selling\Customer\Product;
+use App\Entity\Project\Product\Product;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ProductItemRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -66,5 +65,4 @@ class ProductItem extends Item {
         Serializer\Groups(['read:item', 'write:item', 'read:expedition'])
     ]
     protected $item;
-
 }

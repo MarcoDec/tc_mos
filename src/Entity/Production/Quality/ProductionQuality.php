@@ -97,7 +97,7 @@ class ProductionQuality extends Entity
     private $numberOfControl;
 
      #[
-         ApiProperty(description: 'Opération de production associée'),
+         ApiProperty(description: 'Opération de production associée', example: '/api/manufacturing-operations/1'),
          ManyToOne(targetEntity: Operation::class),
          Serializer\Groups(['read:production-quality', 'write:production-quality'])
      ]
@@ -105,10 +105,10 @@ class ProductionQuality extends Entity
 
      #[
          ApiProperty(description: 'Date du contrôle', example: '2023-05-2022'),
-         ORM\Column(type: 'date_immutable', nullable: true),
+         Column(nullable: true, type: 'datetime'),
          Serializer\Groups(['read:production-quality', 'write:production-quality'])
      ]
-     private ?DateTimeImmutable $recordDate = null;
+    private \DateTime $recordDate;
 
      #[
         ApiProperty(description: 'Type de résultat', example: '1'), //TODO: faire Enum
@@ -133,7 +133,7 @@ class ProductionQuality extends Entity
         return $this->productionOperation;
     }
 
-    public function getRecordDate(): ?DateTimeImmutable {
+    public function getRecordDate(): ?\DateTime {
         return $this->recordDate;
     }
 
@@ -169,7 +169,7 @@ class ProductionQuality extends Entity
         return $this;
     }
 
-    public function setRecordDate(?DateTimeImmutable $recordDate): self {
+    public function setRecordDate(?\DateTime $recordDate): self {
         $this->recordDate = $recordDate;
         return $this;
     }

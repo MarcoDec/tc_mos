@@ -1,20 +1,19 @@
 <script setup>
-    /* eslint-disable vue/no-setup-props-destructure */
     import {tableLoading, useTableMachine} from '../../../composable/xstate'
     import AppTable from '../../table/AppTable.vue'
     import {onUnmounted} from 'vue'
+    /* eslint-disable vue/no-setup-props-destructure */
     import useFields from '../../../stores/field/fields'
     import {useRoute} from 'vue-router'
     import {useSlots} from '../../../composable/table'
     import useTable from '../../../stores/table/table'
+    import useUser from '../../../stores/security'
 
     const props = defineProps({
         apiBaseRoute: {default: '', type: String},
         apiTypedRoutes: {
-            default: () => {
-                const obj = {}
-                return obj
-            },
+            // eslint-disable-next-line no-empty-function
+            default: () => {},
             type: Object
         },
         brands: {type: Boolean},
@@ -22,17 +21,23 @@
         disableRemove: {type: Boolean},
         fields: {required: true, type: Array},
         icon: {required: true, type: String},
+        isCompanyFiltered: {required: false, type: Boolean},
         readFilter: {default: '', required: false, type: String},
         sort: {required: true, type: Object},
         title: {required: true, type: String}
     })
+    const currentCompany = useUser().company
     const route = useRoute()
     const machine = useTableMachine(route.name)
     const {slots} = useSlots(props.fields)
     const store = useTable(route.name)
     store.sorted = props.sort.name
     store.sortName = props.sort.sortName ?? props.sort.name
-    store.readFilter = props.readFilter
+    if (props.isCompanyFiltered) {
+        store.readFilter = `?company=${currentCompany}${props.readFilter}`
+        store.isCompanyFiltered = true
+        store.company = currentCompany
+    } else store.readFilter = props.readFilter
     store.apiBaseRoute = props.apiBaseRoute
     store.apiTypedRoutes = props.apiTypedRoutes
     await store.fetch()

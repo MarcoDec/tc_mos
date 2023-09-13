@@ -34,6 +34,7 @@ export default [
                     label: 'Type',
                     name: 'type',
                     options: myOptions,
+                    sort: false,
                     type: 'select',
                     update: false
                 }
@@ -74,6 +75,7 @@ export default [
             apiBaseRoute: 'zones',
             fields: [{label: 'Nom', name: 'name'}],
             icon: 'map-marked',
+            isCompanyFiltered: true,
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Zones'
         }

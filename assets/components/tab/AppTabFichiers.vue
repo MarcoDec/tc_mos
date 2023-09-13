@@ -129,7 +129,6 @@
                 category: formData.get('category'),
                 file: document.getElementById('addFichiers-file').files[x]
             }
-            //console.log(`updateFichiers fichier ${x + 1}/${ins}`, data)
             data[props.attachmentElementLabel] = props.elementApiUrl
             results.push(props.elementAttachmentStore.ajout(data))
         }
@@ -140,7 +139,6 @@
                 resultats.forEach(result => {
                     if (result.status === 'fulfilled') console.log(`Fichier bien chargé ${result.value.url}`)
                     else {
-                        //console.log('Erreur chargement', result.reason)
                         isError.value = true
                         const err = {
                             message: result.reason
@@ -166,7 +164,7 @@
             id="addFichiers"
             :fields="fichiersFields"
             :component-attribute="currentElementData"
-            title="Ajouter un nouveau Fichier"
+            title="Ajouter des nouveaux Fichiers"
             @update="updateFichiers"/>
         <div v-if="isError" class="alert alert-danger" role="alert">
             <ul>

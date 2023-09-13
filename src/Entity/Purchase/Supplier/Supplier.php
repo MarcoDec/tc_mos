@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
 use App\Entity\Embeddable\Address;
@@ -24,6 +25,7 @@ use App\Entity\Purchase\Supplier\Attachment\SupplierAttachment;
 use App\Entity\Purchase\Supplier\Company\SupplierCompany;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Purchase\SupplierReference;
+use App\Filter\SetFilter;
 use App\Repository\Purchase\Supplier\SupplierRepository;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -38,6 +40,8 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Fournisseur',
         collectionOperations: [

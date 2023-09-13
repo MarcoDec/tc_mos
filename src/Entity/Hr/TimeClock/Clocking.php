@@ -6,6 +6,7 @@ namespace App\Entity\Hr\TimeClock;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\Hr\Employee\ClockingController;
 use App\Entity\AbstractAttachment;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -15,7 +16,6 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use App\Filter\RelationFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /*   
@@ -91,7 +91,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
          'security' => 'is_granted(\''.Roles::ROLE_HR_WRITER.'\')'
       ],
       paginationItemsPerPage: 15
-   ),
+   )
 ]
 class Clocking extends AbstractAttachment {
    use AttachmentTrait;

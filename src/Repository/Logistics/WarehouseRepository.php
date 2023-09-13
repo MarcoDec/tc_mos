@@ -3,7 +3,7 @@
 namespace App\Repository\Logistics;
 
 use App\Doctrine\DBAL\Types\Logistics\FamilyType;
-use App\Entity\Logistics\Warehouse;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Security\SecurityTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

@@ -16,7 +16,6 @@
     const codeName = computed(() => `${props.field.name}-code`)
 
     function codeValue(code) {
-        console.log(code)
         emit('update:modelValue', {...props.modelValue, code})
     }
 
@@ -29,7 +28,7 @@
     <div :id="id" class="input-group">
         <AppInputGuesserJS
             :id="valueId"
-            :disabled="disabled"
+            :disabled="disabled || field.measure.value.disabled"
             :field="field.measure.value"
             :form="form"
             :name="valueName"

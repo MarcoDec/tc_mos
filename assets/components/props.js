@@ -24,12 +24,12 @@ export function fieldValidator(field) {
                 return false
             }
             if (!Array.isArray(field.options.options)) {
-                console.error('field.options.options must be defined and an array')
+                console.error('field.options.options must be defined and an array', field.options)
                 return false
             }
             for (const option of field.options.options)
                 if (typeof option.text === 'undefined' || option.text === null || typeof option.value === 'undefined') {
-                    console.error('field.options', 'field.text and field.value must be defined')
+                    console.error('field.options', 'field.text and field.value must be defined', field)
                     return false
                 }
         }

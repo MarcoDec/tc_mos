@@ -29,6 +29,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use OperationEmployee;
 
 #[
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['pic.id'=> 'partial', 'embState.state' => 'partial', 'embBlocker.state' => 'partial', 'order.ref' => 'partial', 'workstation.name' => 'partial', 'startedDate' => 'partial', 'duration' => 'partial', 'actualQuantity.code' => 'partial', 'actualQuantity.value' => 'partial', 'quantityProduced.code' => 'partial', 'quantityProduced.value', 'quantityProduced.value' => 'partial', 'operation.cadence.value' => 'partial', 'operation.cadence.code' => 'partial', 'operationEmployees' => 'partial']),
     ApiFilter(filterClass: DateFilter::class, properties: ['startedDate' => '>']),
     ApiResource(
@@ -139,7 +140,7 @@ class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['write:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?string $notes = null;
 
@@ -150,14 +151,13 @@ class Operation extends Entity implements MeasuredInterface {
     ]
     private ?PrimaryOperation $operation = null;
 
-    // /** @var Collection<int, Employee> */
-    // #[
-    //     ApiProperty(description: 'Opérateurs'),
-    //     ORM\OneToMany(targetEntity: OperationEmployee::class, mappedBy: "operation"),
-    //     Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'readOperationEmployee'])
-    // ]
+    /** @var Collection<int, Employee> */
+    #[
+        ApiProperty(description: 'Opérateurs'),
+        ORM\ManyToMany(targetEntity: Employee::class),
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
+    ]
     private Collection $operators;
-    
     #[
         ApiProperty(description: 'Opérateurs'),
         ORM\OneToMany(targetEntity: OperationEmployee::class, mappedBy: "operation"),
@@ -202,7 +202,7 @@ class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Zone', readableLink: false, example: '/api/zones/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['write:manufacturing-operation'])
+        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
     ]
     private ?Zone $zone = null;
 
@@ -247,7 +247,7 @@ class Operation extends Entity implements MeasuredInterface {
     }
 
     /**
-     * @return Collection<int, OperationEmployee>
+     * @return Collection<int, Employee>
      */
     final public function getOperators(): Collection {
         return $this->operators;

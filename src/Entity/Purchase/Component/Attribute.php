@@ -20,10 +20,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-//
-// ApiFilter(filterClass: RelationFilter::class, properties: ['unit']),
-// ApiFilter(filterClass: SearchFilter::class, properties: ['description' => 'partial', 'name' => 'partial']),
-// ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'type', 'unit.code']),
+
 #[
     ApiFilter(filterClass: EnumFilter::class, properties: ['type']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['unit']),

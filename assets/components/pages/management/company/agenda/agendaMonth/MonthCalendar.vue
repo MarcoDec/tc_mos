@@ -1,6 +1,7 @@
 <script setup>
     import {computed, onMounted, reactive, ref} from 'vue'
     import AppModalEvent from './AppModalEvent.vue'
+    import AppSuspense from '../../../../../AppSuspense.vue'
     import FullCalendar from '@fullcalendar/vue3'
     import dayGridPlugin from '@fullcalendar/daygrid'
     import interactionPlugin from '@fullcalendar/interaction'
@@ -71,13 +72,15 @@
 </script>
 
 <template>
-    <FullCalendar :options="{...calendarOptions, events}"/>
-    <AppModalEvent
-        v-show="show"
-        :id="selected"
-        :date="date"
-        :name="name"
-        :relation="relation"
-        :relation-id="relationId"
-        @close="closeModal"/>
+    <AppSuspense>
+        <FullCalendar :options="{...calendarOptions, events}"/>
+        <AppModalEvent
+            v-show="show"
+            :id="selected"
+            :date="date"
+            :name="name"
+            :relation="relation"
+            :relation-id="relationId"
+            @close="closeModal"/>
+    </AppSuspense>
 </template>

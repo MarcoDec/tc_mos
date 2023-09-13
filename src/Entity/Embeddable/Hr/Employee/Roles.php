@@ -23,7 +23,9 @@ class Roles {
         self::ROLE_HR_WRITER => self::ROLE_HR_READER,
         self::ROLE_HR_ADMIN => self::ROLE_HR_WRITER,
         // Informatique
-        self::ROLE_IT_ADMIN => self::ROLE_USER,
+        self::ROLE_IT_READER => self::ROLE_USER,
+        self::ROLE_IT_WRITER => self::ROLE_IT_READER,
+        self::ROLE_IT_ADMIN => self::ROLE_IT_WRITER,
         // Niveaux
         self::ROLE_LEVEL_OPERATOR => self::ROLE_USER,
         self::ROLE_LEVEL_ANIMATOR => self::ROLE_LEVEL_OPERATOR,
@@ -70,6 +72,8 @@ class Roles {
 
     // Informatique
     final public const ROLE_IT_ADMIN = 'ROLE_IT_ADMIN';
+    final public const ROLE_IT_READER = 'ROLE_IT_READER';
+    final public const ROLE_IT_WRITER = 'ROLE_IT_WRITER';
 
     // Niveaux
     final public const ROLE_LEVEL_ANIMATOR = 'ROLE_LEVEL_ANIMATOR';

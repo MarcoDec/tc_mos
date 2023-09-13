@@ -1,295 +1,306 @@
 <script setup>
-    console.log()
-    // // import {computed, ref} from 'vue'
-    // import {/*computed,*/ ref} from 'vue'
-    // import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    // import {useManufacturerEngineStore} from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
-    // defineProps({
-    //     title: {required: true, type: String}
-    // })
-    // const tableCriteria = useFetchCriteria('manufacturerEngines')
-    // const roleuser = ref('reader')
-    // const AddForm = ref(false)
-    // const storeManufacturerEnginers = useManufacturerEngineStore()
-    // await storeManufacturerEnginers.fetchAll()
-    // console.log(storeManufacturerEnginers)
-    // // const formData = new FormData()
-    // // let violations = []
-    // // const updated = ref(false)
-    // // let itemId = ''
-    // // const isPopupVisible = ref(false)
-    // // const sortable = ref(false)
-    // // const filter = ref(false)
-    // // let trierAlpha = {}
-    // // let filterBy = {}
-    // // const itemsTable = computed(() => storeManufacturerEnginers.engines.reduce((acc, curr) => acc.concat(curr), []))
-    // // console.log(itemsTable.value, storeManufacturerEnginers.engines)
-    // //const itemsTable = computed(() => storeManufacturerEnginers.engines.reduce((acc, curr) => acc.concat(curr), []))
-    // //console.log(itemsTable.value, storeManufacturerEnginers.engines)
-    // //
-    // // const fieldsForm = [
-    // //     {label: 'Nom*', name: 'name', type: 'text'}
-    // // ]
-    // //
-    // const tabFields = [
-    //     {label: 'Fabriquant', min: true, name: 'manufacturer.name', trie: true, type: 'text'},
-    //     {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
-    //     {label: 'Code', min: true, name: 'code', trie: true, type: 'text'},
-    //     {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'}
-    // ]
-    // // function ajoute(){
-    // //     AddForm.value = true
-    // //     updated.value = false
-    // //     const itemsNull = {
-    // //         address: null,
-    // //         address2: null,
-    // //         city: null,
-    // //         country: null,
-    // //         email: null,
-    // //         name: null,
-    // //         phoneNumber: null,
-    // //         zipCode: null
-    // //     }
-    // //     formData.value = itemsNull
-    // // }
-    // // async function ajoutSociety(){
-    // //     const form = document.getElementById('addSociety')
-    // //     const formData1 = new FormData(form)
-    // //     const itemsAddData = {
-    // //         address: {
-    // //             address: formData1.get('address'),
-    // //             address2: formData1.get('address2'),
-    // //             city: formData1.get('city'),
-    // //             country: formData1.get('country'),
-    // //             email: formData1.get('email'),
-    // //             phoneNumber: formData1.get('phoneNumber'),
-    // //             zipCode: formData1.get('zipCode')
-    // //         },
-    // //         name: formData1.get('name')
-    // //     }
-    // //     await storeManufacturerEnginers.addSociety(itemsAddData)
-    // //     AddForm.value = false
-    // //     updated.value = false
-    // // }
-    // // function annule(){
-    // //     AddForm.value = false
-    // //     updated.value = false
-    // //     const itemsNull = {
-    // //         address: null,
-    // //         address2: null,
-    // //         city: null,
-    // //         country: null,
-    // //         email: null,
-    // //         name: null,
-    // //         phoneNumber: null,
-    // //         zipCode: null
-    // //     }
-    // //     formData.value = itemsNull
-    // //     isPopupVisible.value = false
-    // // }
-    // // function update(item) {
-    // //     updated.value = true
-    // //     AddForm.value = true
-    // //     itemId = Number(item['@id'].match(/\d+/)[0])
-    // //     const itemsData = {
-    // //         address: item.address,
-    // //         address2: item.address2,
-    // //         city: item.city,
-    // //         country: item.country,
-    // //         email: item.email,
-    // //         name: item.name,
-    // //         phoneNumber: item.phoneNumber,
-    // //         zipCode: item.zipCode
-    // //     }
-    // //     formData.value = itemsData
-    // // }
-    // // async function updateSociety(){
-    // //     try {
-    // //         const form = document.getElementById('updateSociety')
-    // //         const formData2 = new FormData(form)
-    // //         const itemsUpdateData = {
-    // //             address: {
-    // //                 address: formData2.get('address'),
-    // //                 address2: formData2.get('address2'),
-    // //                 city: formData2.get('city'),
-    // //                 country: formData2.get('country'),
-    // //                 email: formData2.get('email'),
-    // //                 phoneNumber: formData2.get('phoneNumber'),
-    // //                 zipCode: formData2.get('zipCode')
-    // //             },
-    // //             name: formData2.get('name')
-    // //         }
-    // //         const payload = {
-    // //             filter,
-    // //             filterBy,
-    // //             id: itemId,
-    // //             itemsUpdateData,
-    // //             sortable,
-    // //             trierAlpha
-    // //         }
-    // //         await storeManufacturerEnginers.updateSociety(payload)
-    // //         AddForm.value = false
-    // //         updated.value = false
-    // //         isPopupVisible.value = false
-    // //     } catch (error) {
-    // //         violations = error
-    // //         isPopupVisible.value = true
-    // //     }
-    // // }
-    // // async function deleted(id){
-    // //     await storeManufacturerEnginers.delated(id)
-    // // }
-    // async function getPage(nPage){
-    //     tableCriteria.gotoPage(nPage)
-    //     const criteria = tableCriteria.getFetchCriteria
-    //     await storeManufacturerEnginers.fetchAll(criteria)
-    // }
-    // // async function trierAlphabet(payload) {
-    // //     await storeManufacturerEnginers.sortableItems(payload, filterBy, filter)
-    // //     sortable.value = true
-    // //     trierAlpha = computed(() => payload)
-    // // }
-    // async function trier(payload) {
-    //     //console.log('trier', payload)
-    //     tableCriteria.addSort(payload.name, payload.direction)
-    //     const criteria = tableCriteria.getFetchCriteria
-    //     // console.log('trier', criteria)
-    //     await storeManufacturerEnginers.fetchAll(criteria)
-    //     //await storeManufacturerEnginers.sortableItems(payload, filterBy, filter)
-    //     //sortable.value = true
-    //     //trierAlpha = computed(() => payload)
-    // }
-    // //region ## fonctions Recherche
-    // async function search(inputValues) {
-    //     // console.log(inputValues)
-    //     //console.log(inputValues)
-    //     const result = Object.keys(inputValues).map(key => ({field: key, value: inputValues[key]}))
-    //     // console.log(result)
-    //     //console.log(result)
-    //     result.forEach(filter => {
-    //         tableCriteria.addFilter(filter.field, filter.value)
-    //     })
-    //     const criteria = tableCriteria.getFetchCriteria
-    //     // console.log('search', criteria)
-    //     //console.log('search', criteria)
-    //     await storeManufacturerEnginers.fetchAll(criteria)
-    // }
-    // async function cancelSearch() {
-    //     tableCriteria.resetAllFilter()
-    //     const criteria = tableCriteria.getFetchCriteria
-    //     // console.log('search', criteria)
-    //     //console.log('search', criteria)
-    //     await storeManufacturerEnginers.fetchAll(criteria)
-    // }
-    // //endregion
+    import {computed, ref} from 'vue'
+    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import AppTabFichiers from '../../../../tab/AppTabFichiers.vue'
+    import {useEngineTypeStore} from '../../../../../stores/production/engine/type/engineTypes'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import {
+        useManufacturerEngineAttachmentStore
+    } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngineAttachements'
+    import {
+        useManufacturerEngineStore
+    } from '../../../../../stores/production/engine/manufacturer-engine/manufacturerEngines'
+    import useOptions from '../../../../../stores/option/options'
+
+    defineProps({
+        title: {required: true, type: String}
+    })
+
+    const key = ref(0)
+    //region récupération des types de machine
+    const fetchEngineTypes = useEngineTypeStore()
+    const optionsEngineTypes = fetchEngineTypes.engineTypes
+    //endregion
+    const fetchManufacturerOptions = useOptions('manufacturers')
+    fetchManufacturerOptions.fetchable = true
+    await fetchManufacturerOptions.fetch()
+    const fetchManufacturerAttachmentStore = useManufacturerEngineAttachmentStore()
+    const optionsManufacturer = computed(() =>
+        fetchManufacturerOptions.options.map(op => {
+            const text = op.text
+            const value = op['@id']
+            return {text, value}
+        }))
+    const tableCriteria = useFetchCriteria('manufacturerEngines')
+    const roleuser = ref('reader')
+    const AddForm = ref(false)
+    const updated = ref(false)
+    const storeManufacturerEnginers = useManufacturerEngineStore()
+    await storeManufacturerEnginers.fetchAll()
+    const formData = new FormData()
+    const violations = ref([])
+    const itemId = ref(null)
+    const isPopupVisible = ref(false)
+    const manufacturerOptions = {
+        label: value =>
+            optionsManufacturer.value.find(option => option.value === value)?.text
+            ?? null,
+        options: optionsManufacturer.value
+    }
+    const tabFields = [
+        {label: 'Code', min: true, name: 'code', searchDisabled: true, trie: false, type: 'text'},
+        {
+            label: 'Type',
+            min: true,
+            name: 'type',
+            options: {
+                label: value =>
+                    optionsEngineTypes.find(option => option.value === value)?.text
+                    ?? null,
+                options: optionsEngineTypes
+            },
+            searchDisabled: true,
+            trie: false,
+            type: 'select'
+        },
+        {
+            label: 'Fabriquant',
+            min: true,
+            name: 'manufacturer',
+            options: manufacturerOptions,
+            sortName: 'manufacturer',
+            trie: true,
+            type: 'select'
+        },
+        {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
+        {label: 'Nom', min: false, name: 'name', trie: true, type: 'text'}
+    ]
+    const addFormfields = [
+        {
+            label: 'Type',
+            min: true,
+            name: 'type',
+            options: {
+                label: value =>
+                    optionsEngineTypes.find(option => option.value === value)?.text
+                    ?? null,
+                options: optionsEngineTypes
+            },
+            searchDisabled: true,
+            trie: false,
+            type: 'select'
+        },
+        {
+            label: 'Fabriquant',
+            min: true,
+            name: 'manufacturer',
+            options: manufacturerOptions,
+            sortName: 'manufacturer',
+            trie: false,
+            type: 'select'
+        },
+        {label: 'Référence Produit', min: true, name: 'partNumber', trie: true, type: 'text'},
+        {label: 'Nom', min: true, name: 'name', trie: true, type: 'text'}
+    ]
+    async function refreshList() {
+        const criteria = tableCriteria.getFetchCriteria
+        await storeManufacturerEnginers.fetchAll(criteria)
+    }
+    function showAddForm(){
+        // On vide le formulaire avant de l'afficher
+        formData.value = {
+            code: null,
+            manufacturer: null,
+            name: null,
+            partNumber: null,
+            type: null
+        }
+        AddForm.value = true
+        updated.value = false
+    }
+    async function addNewItem(){
+        const form = document.getElementById('add-new-engine')
+        const formData1 = new FormData(form)
+        const itemsAddData = {
+            code: formData1.get('code'),
+            manufacturer: formData1.get('manufacturer'),
+            name: formData1.get('name'),
+            partNumber: formData1.get('partNumber'),
+            type: formData1.get('type')
+        }
+        await storeManufacturerEnginers.create(itemsAddData)
+        AddForm.value = false
+        updated.value = false
+    }
+    function hideForm(){
+        AddForm.value = false
+        updated.value = false
+        // isPopupVisible.value = false
+    }
+    async function showUpdateForm(item) {
+        itemId.value = Number(item['@id'].match(/\d+/)[0])
+        await storeManufacturerEnginers.fetchOne(itemId.value)
+        const engine = storeManufacturerEnginers.engine
+        formData.value = {
+            code: engine.code,
+            manufacturer: engine.manufacturer ? engine.manufacturer['@id'] : null,
+            name: engine.name,
+            partNumber: engine.partNumber,
+            type: engine.type
+        }
+        key.value++
+        updated.value = true
+        AddForm.value = true
+    }
+    async function updateItem(){
+        try {
+            const form = document.getElementById('update-engine')
+            const formData2 = new FormData(form)
+            const itemsUpdateData = {
+                code: formData2.get('code'),
+                manufacturer: formData2.get('manufacturer'),
+                name: formData2.get('name'),
+                partNumber: formData2.get('partNumber'),
+                type: formData2.get('type')
+            }
+            await storeManufacturerEnginers.update(itemsUpdateData)
+            AddForm.value = false
+            updated.value = false
+            isPopupVisible.value = false
+            await refreshList()
+        } catch (error) {
+            violations.value = error
+            isPopupVisible.value = true
+        }
+    }
+    async function deleted(id){
+        await storeManufacturerEnginers.remove(id)
+        await refreshList()
+    }
+
+    //region ## fonctions Recherche, Tri et pagination
+    async function getPage(nPage){
+        tableCriteria.gotoPage(nPage)
+        await refreshList()
+    }
+    async function trier(payload) {
+        if (payload.name === 'manufacturer') tableCriteria.addSort('manufacturer.name', payload.direction)
+        else tableCriteria.addSort(payload.name, payload.direction)
+        await refreshList()
+    }
+    async function search(inputValues) {
+        const result = Object.keys(inputValues).map(cle => ({field: cle, value: inputValues[cle]}))
+        result.forEach(filter => {
+            tableCriteria.addFilter(filter.field, filter.value)
+        })
+        await refreshList()
+    }
+    async function cancelSearch() {
+        tableCriteria.resetAllFilter()
+        await refreshList()
+    }
+    //endregion
 </script>
 
 <template>
-    cc
-    <!-- <div class="container">
+    <div class="container">
         <div class="row">
             <h1 class="col">
-                <img src="img/production/icons8-usine-48.png"/>
+                <img src="/public/img/production/icons8-usine-48.png"/>
                 {{ title }}
             </h1>
             <span class="col">
-                <AppBtn variant="success" label="Ajout" class="btn-float-right"> -->
-    <!--@click="ajoute"-->
-    <!-- <Fa icon="plus"/>
+                <AppBtn variant="success" label="Ajout" class="btn-float-right" @click="showAddForm">
+                    <Fa icon="plus"/>
                     Ajouter
                 </AppBtn>
             </span>
         </div>
         <div class="row">
             <div class="col">
-                <AppCardableTable
-                    :current-page="storeManufacturerEnginers.currentPage"
-                    :fields="tabFields"
-                    :first-page="storeManufacturerEnginers.view['hydra:first']"
-                    :items="storeManufacturerEnginers.engines"
-                    :last-page="storeManufacturerEnginers.view['hydra:last']"
-                    :min="AddForm"
-                    :next-page="storeManufacturerEnginers.view['hydra:next']"
-                    :pag="storeManufacturerEnginers.pagination"
-                    :previous-page="storeManufacturerEnginers.view['hydra:previous']"
-                    :user="roleuser"
-                    form="formSocietyCardableTable"
-                    @cancel-search="cancelSearch"
-                    @get-page="getPage"
-                    @search="search"
-                    @trier-alphabet="trier"/> -->
-    <!--                    @update="update"-->
-    <!--                    @deleted="deleted"-->
-    <!--                    @trier-alphabet="trierAlphabet"-->
-    <!--                    -->
-    <!-- </div>
-        </div> -->
-    <!--        <AppRow>-->
-    <!--            <AppCol>-->
-    <!--                <AppCardableTable-->
-    <!--                    :current-page="storeManufacturerEnginers.currentPage"-->
-    <!--                    :fields="tabFields"-->
-    <!--                    :first-page="storeManufacturerEnginers.firstPage"-->
-    <!--                    :items="itemsTable"-->
-    <!--                    :last-page="storeManufacturerEnginers.lastPage"-->
-    <!--                    :min="AddForm"-->
-    <!--                    :next-page="storeManufacturerEnginers.nextPage"-->
-    <!--                    :pag="storeManufacturerEnginers.pagination"-->
-    <!--                    :previous-page="storeManufacturerEnginers.previousPage"-->
-    <!--                    :user="roleuser"-->
-    <!--                    form="formSocietyCardableTable"-->
-    <!--                    @update="update"-->
-    <!--                    @deleted="deleted"-->
-    <!--                    @get-page="getPage"-->
-    <!--                    @trier-alphabet="trierAlphabet"-->
-    <!--                    @search="search"-->
-    <!--                    @cancel-search="cancelSearch"/>-->
-    <!--            </AppCol>-->
-    <!--            <AppCol v-if="AddForm && !updated" class="col-7">-->
-    <!--                <AppCard class="bg-blue col" title="">-->
-    <!--                    <AppRow>-->
-    <!--                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">-->
-    <!--                            <Fa icon="angle-double-left"/>-->
-    <!--                        </button>-->
-    <!--                        <h4 class="col">-->
-    <!--                            <Fa icon="plus"/> Ajout-->
-    <!--                        </h4>-->
-    <!--                    </AppRow>-->
-    <!--                    <br/>-->
-    <!--                    <AppFormCardable id="addSociety" :fields="fieldsForm" :model-value="formData" label-cols/>-->
-    <!--                    <AppCol class="btnright">-->
-    <!--                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutSociety">-->
-    <!--                            <Fa icon="plus"/> Ajouter-->
-    <!--                        </AppBtn>-->
-    <!--                    </AppCol>-->
-    <!--                </AppCard>-->
-    <!--            </AppCol>-->
-    <!--            <AppCol v-else-if="AddForm && updated" class="col-7">-->
-    <!--                <AppCard class="bg-blue col" title="">-->
-    <!--                    <AppRow>-->
-    <!--                        <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">-->
-    <!--                            <Fa icon="angle-double-left"/>-->
-    <!--                        </button>-->
-    <!--                        <h4 class="col">-->
-    <!--                            <Fa icon="pencil-alt"/> Modification-->
-    <!--                        </h4>-->
-    <!--                    </AppRow>-->
-    <!--                    <br/>-->
-    <!--                    <AppFormCardable id="updateSociety" :fields="fieldsForm" :model-value="formData" :violations="violations"/>-->
-    <!--                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">-->
-    <!--                        <div v-for="violation in violations" :key="violation">-->
-    <!--                            <li>{{ violation.message }}</li>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                    <AppCol class="btnright">-->
-    <!--                        <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateSociety">-->
-    <!--                            <Fa icon="pencil-alt"/> Modifier-->
-    <!--                        </AppBtn>-->
-    <!--                    </AppCol>-->
-    <!--                </AppCard>-->
-    <!--            </AppCol>-->
-    <!--        </AppRow>-->
-    <!-- </div> -->
+                <AppSuspense>
+                    <AppCardableTable
+                        :current-page="storeManufacturerEnginers.currentPage"
+                        :fields="tabFields"
+                        :first-page="storeManufacturerEnginers.view['hydra:first']"
+                        :items="storeManufacturerEnginers.engines"
+                        :last-page="storeManufacturerEnginers.view['hydra:last']"
+                        :min="AddForm"
+                        :next-page="storeManufacturerEnginers.view['hydra:next']"
+                        :pag="storeManufacturerEnginers.pagination"
+                        :previous-page="storeManufacturerEnginers.view['hydra:previous']"
+                        :user="roleuser"
+                        form="formSocietyCardableTable"
+                        @cancel-search="cancelSearch"
+                        @deleted="deleted"
+                        @get-page="getPage"
+                        @search="search"
+                        @trier-alphabet="trier"
+                        @update="showUpdateForm"/>
+                </AppSuspense>
+            </div>
+            <div v-if="AddForm && !updated" class="col">
+                <AppSuspense>
+                    <AppCard class="bg-blue col" title="">
+                        <div class="row">
+                            <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
+                                <Fa icon="angle-double-left"/>
+                            </button>
+                            <h4 class="col">
+                                <Fa icon="plus"/> Ajout
+                            </h4>
+                        </div>
+                        <br/>
+                        <AppFormCardable id="add-new-engine" :fields="addFormfields" :model-value="formData" label-cols/>
+                        <!-- On ne permet pas l'ajout de pièce jointe lors du formulaire de création afin de simplifier le traitement -->
+                        <div class="col">
+                            <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="addNewItem">
+                                <!-- -->
+                                <Fa icon="plus"/> Ajouter
+                            </AppBtn>
+                        </div>
+                    </AppCard>
+                </AppSuspense>
+            </div>
+            <div v-else-if="AddForm && updated" class="col">
+                <AppSuspense>
+                    <AppCard class="bg-blue col" title="">
+                        <div class="col">
+                            <button id="btnRetour2" class="btn btn-danger btn-icon btn-sm col-1" @click="hideForm">
+                                <Fa icon="angle-double-left"/>
+                            </button>
+                            <h4 class="col">
+                                <Fa icon="pencil-alt"/> Modification
+                            </h4>
+                        </div>
+                        <br/>
+                        <AppFormCardable id="update-engine" :key="key" :fields="addFormfields" :model-value="formData.value" :violations="violations"/>
+                        <AppSuspense>
+                            <AppTabFichiers
+                                :key="`attachment_${key}`"
+                                attachment-element-label="engine"
+                                :element-api-url="`/api/manufacturer-engines/${storeManufacturerEnginers.engine.id}`"
+                                :element-attachment-store="fetchManufacturerAttachmentStore"
+                                :element-id="storeManufacturerEnginers.engine.id"
+                                element-parameter-name="ENGINE_ATTACHMENT_CATEGORIES"
+                                :element-store="useManufacturerEngineStore"/>
+                        </AppSuspense>
+                        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                            <div v-for="violation in violations" :key="violation">
+                                <li>{{ violation.message }}</li>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <AppBtn class="btn-float-right" label="retour" variant="success" size="sm" @click="updateItem">
+                                <Fa icon="pencil-alt"/> Modifier
+                            </AppBtn>
+                        </div>
+                    </AppCard>
+                </AppSuspense>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>

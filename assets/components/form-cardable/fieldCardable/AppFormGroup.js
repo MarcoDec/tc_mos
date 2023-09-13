@@ -10,7 +10,12 @@ function AppFormGroup(props, context) {
         form: props.form,
         id,
         modelValue: props.modelValue,
-        'onUpdate:modelValue': value => context.emit('update:modelValue', value)
+        'onUpdate:modelValue': value => {
+            context.emit('update:modelValue', value)
+        },
+        onSearchChange: value => {
+            context.emit('searchChange', value)
+        }
     }
     const children = []
     if (props.violation) {

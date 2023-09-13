@@ -58,7 +58,6 @@ final class ComponentRepository extends ServiceEntityRepository {
             ->where('c.deleted = FALSE')
             ->orderBy('c.id')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 }

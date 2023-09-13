@@ -7,6 +7,7 @@
     import AppSupplierShowTabGeneral from './tabs/AppSupplierShowTabGeneral.vue'
     import AppSupplierShowTabPurchase from './tabs/AppSupplierShowTabPurchase.vue'
     import AppSupplierShowTabQuality from './tabs/AppSupplierShowTabQuality.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
     import AppTab from '../../../tab/AppTab.vue'
     import api from '../../../../api'
     import {useIncotermStore} from '../../../../stores/logistic/incoterm/incoterm'
@@ -31,7 +32,6 @@
         text: country.name,
         value: country.code
     }))
-    //console.log(fetchOptions)
     const fetchSuppliersStore = useSuppliersStore()
     const fetchIncotermStore = useIncotermStore()
     const fetchSocietyStore = useSocietyStore()
@@ -82,7 +82,9 @@
                 icon="pencil"
                 tabs="gui-start">
                 <div class="app-tab-content">
-                    <AppSupplierShowTabGeneral/>
+                    <AppSuspense>
+                        <AppSupplierShowTabGeneral/>
+                    </AppSuspense>
                 </div>
             </AppTab>
             <AppTab
@@ -90,42 +92,42 @@
                 title="Fichiers"
                 icon="laptop"
                 tabs="gui-start">
-                <AppSupplierShowTabFichiers/>
+                <AppSuspense><AppSupplierShowTabFichiers/></AppSuspense>
             </AppTab>
             <AppTab
                 id="gui-start-quality"
                 title="Qualité"
                 icon="certificate"
                 tabs="gui-start">
-                <AppSupplierShowTabQuality :component-attribute="listSuppliers"/>
+                <AppSuspense><AppSupplierShowTabQuality :component-attribute="listSuppliers"/></AppSuspense>
             </AppTab>
             <AppTab
                 id="gui-start-purchase-logistics"
                 title="Achat/Logistique"
                 icon="bag-shopping"
                 tabs="gui-start">
-                <AppSupplierShowTabPurchase/>
+                <AppSuspense><AppSupplierShowTabPurchase/></AppSuspense>
             </AppTab>
             <AppTab
                 id="gui-start-accounting"
                 title="Comptabilité"
                 icon="industry"
                 tabs="gui-start">
-                <AppSupplierShowTabAccounting :component-attribute="listSuppliers"/>
+                <AppSuspense><AppSupplierShowTabAccounting :component-attribute="listSuppliers"/></AppSuspense>
             </AppTab>
             <AppTab
                 id="gui-start-addresses"
                 title="Adresse"
                 icon="location-dot"
                 tabs="gui-start">
-                <AppSupplierShowTabAddresses :options-countries="optionsCountries"/>
+                <AppSuspense><AppSupplierShowTabAddresses :options-countries="optionsCountries"/></AppSuspense>
             </AppTab>
             <AppTab
                 id="gui-start-contacts"
                 title="Contacts"
                 icon="file-contract"
                 tabs="gui-start">
-                <AppSupplierShowTabContacts :options-countries="optionsCountries" @error="manageErrors"/>
+                <AppSuspense><AppSupplierShowTabContacts :options-countries="optionsCountries" @error="manageErrors"/></AppSuspense>
             </AppTab>
         </AppTabs>
     </div>

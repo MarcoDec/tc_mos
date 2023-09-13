@@ -13,7 +13,7 @@ use App\Entity\Embeddable\Production\Manufacturing\Order\State;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
-use App\Entity\Selling\Customer\Product;
+use App\Entity\Project\Product\Product;
 use App\Entity\Selling\Order\Order as SellingOrder;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
@@ -30,6 +30,7 @@ use App\Controller\Manufacturing\Component\ItemManufacturingComponentController;
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['deliveryDate' => 'DESC']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['company']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code'=> 'exact', 'embState.state','embBlocker.state', 'product.customer.id' => 'exact', 'product.product.name' => 'partial', 'deliveryDate' => 'partial', 'ref' => 'partial', 'product.product.index' => 'partial', 'quantityRequested.value' => 'partial', 'quantityRequested.code' => 'partial', 'product.product.price.code' => 'exact', 'product.product.price.value' => 'partial']),
     
     ApiResource(
@@ -199,7 +200,7 @@ class Order extends Entity implements BarCodeInterface {
     private ?SellingOrder $order = null;
 
     #[
-        ApiProperty(description: 'Produit'),
+        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:manufacturing-order', 'write:manufacturing-order', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]

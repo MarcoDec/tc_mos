@@ -117,8 +117,6 @@ class Order extends Entity {
     ]
     private ?Company $company;
 
-    /*, 'read:expedition'*/
-
     #[
         ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/8'),
         ORM\ManyToOne,

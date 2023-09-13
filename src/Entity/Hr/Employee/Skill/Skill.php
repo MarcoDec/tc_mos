@@ -87,7 +87,7 @@ class Skill extends Entity {
     private ?DateTimeImmutable $endedDate = null;
 
     #[
-        ApiProperty(description: 'Employé'),
+        ApiProperty(description: 'Employé', readableLink: false, example: '/api/engines/3'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
@@ -101,7 +101,7 @@ class Skill extends Entity {
     private ?Group $family = null;
 
     #[
-        ApiProperty(description: 'Formateur interne'),
+        ApiProperty(description: 'Formateur interne', readableLink: false, example: '/api/employees/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
@@ -115,7 +115,7 @@ class Skill extends Entity {
     private int $level = 0;
 
     #[
-        ApiProperty(description: 'Formateur extérieur'),
+        ApiProperty(description: 'Formateur extérieur', readableLink: false, example: '/api/out-trainers/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
@@ -157,7 +157,7 @@ class Skill extends Entity {
     private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Type'),
+        ApiProperty(description: 'Type', readableLink: false, example: '/api/skill-types/4'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]

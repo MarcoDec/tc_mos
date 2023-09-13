@@ -15,20 +15,22 @@
 </script>
 
 <template>
-    <AppShowGuiGen>
-        <template #gui-header>
-            <div v-if="useFetchComponentStore.isLoaded" class="bg-white border-1 border-dark">
-                <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
-            </div>
-        </template>
-        <template #gui-left>
-            <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
-        </template>
-        <template #gui-bottom>
-            <AppSuspense><AppComponentShowInlist/></AppSuspense>
-        </template>
-        <template #gui-right/>
-    </AppShowGuiGen>
+    <AppSuspense>
+        <AppShowGuiGen>
+            <template #gui-header>
+                <div v-if="useFetchComponentStore.isLoaded" class="bg-white border-1 border-dark">
+                    <b>{{ useFetchComponentStore.component.code }}</b>: {{ useFetchComponentStore.component.name }}
+                </div>
+            </template>
+            <template #gui-left>
+                <AppSuspense><AppComponentFormShow v-if="useFetchComponentStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
+            </template>
+            <template #gui-bottom>
+                <AppSuspense><AppComponentShowInlist/></AppSuspense>
+            </template>
+            <template #gui-right/>
+        </AppShowGuiGen>
+    </AppSuspense>
 </template>
 
 <style>

@@ -12,6 +12,7 @@ function AppForm(props, context) {
         })
     }
     const groups = []
+    let currentValue = props.modelValue
     if (props.noContent) {
         if (typeof context.slots['default'] === 'function')
             groups.push(generateSlot())
@@ -24,10 +25,14 @@ function AppForm(props, context) {
                 key: field.name,
                 labelCols: props.labelCols,
                 modelValue: props.modelValue[field.name],
-                'onUpdate:modelValue': value => context.emit('update:modelValue', {
-                    ...props.modelValue,
-                    [field.name]: value
-                }),
+                // eslint-disable-next-line no-loop-func
+                'onUpdate:modelValue': value => {
+                    currentValue = {...currentValue, [field.name]: value}
+                    context.emit('update:modelValue', currentValue)
+                },
+                onSearchChange: value => {
+                    context.emit('searchChange', value)
+                },
                 violation: props.violations.find(violation => violation.propertyPath === field.name)
             }))
         }
@@ -76,7 +81,7 @@ function AppForm(props, context) {
     return h('form', attrs, groups)
 }
 
-AppForm.emits = ['submit', 'update:modelValue']
+AppForm.emits = ['submit', 'update:modelValue', 'searchChange']
 AppForm.props = {
     disabled: {type: Boolean},
     fields: {

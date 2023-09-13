@@ -76,7 +76,7 @@ class Event extends AbstractEvent {
     private ?Employee $employee = null;
 
     #[
-        ApiProperty(description: 'Type'),
+        ApiProperty(description: 'Type', readableLink: false, example: '/api/event-types/16'),
         ORM\ManyToOne,
         Serializer\Groups(['read:event', 'write:event'])
     ]

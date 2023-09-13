@@ -3,17 +3,35 @@ import {defineStore} from 'pinia'
 export default function useFetchCriteria(id) {
     return defineStore(`fetchCriteria_${id}`, {
         actions: {
-            addFilter(field, value) {
-                const filteredFilters = this.filters.filter(element => element.field === field)
-                if (filteredFilters.length > 0) {
-                    console.log('addFilter', filteredFilters)
-                    filteredFilters[0].value = value
-                } else {
-                    this.filters.push({field, value})
+            addFilter(field, value, dateType = '') {
+                if (dateType === '') { //Si le champ à filtrer n'est pas une date
+                    const filteredFilters = this.filters.filter(element => element.field === field)
+                    if (filteredFilters.length > 0) { // Si l'élément fait déjà parti des filtres existant on mets juste la valeur à jour
+                        filteredFilters[0].value = value
+                    } else { // Sinon on l'ajoute
+                        this.filters.push({field, value})
+                    }
+                } else { //Si le champ à filtrer est une date, il faut envoyer un double filtre
+                    const filteredFiltersAfter = this.filters.filter(element => element.field === `${field}[after]`)
+                    const filteredFiltersBefore = this.filters.filter(element => element.field === `${field}[before]`)
+                    if (filteredFiltersAfter.length > 0) {
+                        filteredFiltersAfter[0].value = value
+                    } else {
+                        const filterName = `${field}[after]`
+                        this.filters.push({field: filterName, value})
+                    }
+                    const initialDate = new Date(value)
+                    const nextDay = new Date()
+                    nextDay.setDate(initialDate.getDate() + 1)
+                    if (filteredFiltersBefore.length > 0) {
+                        filteredFiltersBefore[0].value = nextDay.toISOString().substring(0, 10)
+                    } else {
+                        const filterName = `${field}[before]`
+                        this.filters.push({field: filterName, value: nextDay.toISOString().substring(0, 10)})
+                    }
                 }
             },
             addSort(field, direction) {
-                console.log('addSort', field, direction)
                 const filteredSorts = this.sorts.filter(element => element.field === field)
                 const fieldIndex = this.sorts.findIndex(item => item.field === field)
                 if (filteredSorts.length > 0) {
@@ -22,7 +40,6 @@ export default function useFetchCriteria(id) {
                 } else {
                     this.sorts.push({direction, field})
                 }
-                console.log(this.sorts)
             },
             gotoPage(pageStr) {
                 const result = /page=(\d+)/.exec(pageStr)
@@ -61,10 +78,8 @@ export default function useFetchCriteria(id) {
                     })
                     filterStr = filterStr.substring(0, filterStr.length - 1) // Suppression du dernier '&'
                     fetchCriteria += filterStr
-                    console.log(filterStr, fetchCriteria)
                 }
                 if (state.sorts.length > 0) {
-                    console.log(state.sorts, state.sorts.length)
                     state.sorts.forEach(sortElement => {
                         sortStr += `order[${sortElement.field}]=${sortElement.direction}&`
                     })

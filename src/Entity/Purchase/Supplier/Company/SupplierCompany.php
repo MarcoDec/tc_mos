@@ -53,7 +53,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class SupplierCompany extends Entity
 {
     #[
-        ApiProperty(description: 'Fournisseur'),
+        ApiProperty(description: 'Fournisseur', example: '/api/suppliers/1'),
         ORM\ManyToOne(targetEntity: Supplier::class, inversedBy: 'supplierCompanies'),
         Groups(['write:supplier-company', 'read:supplier-company'])
     ]

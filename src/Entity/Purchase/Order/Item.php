@@ -44,7 +44,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['order']),
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state']),
-
     ApiResource(
         description: 'Ligne de commande',
         collectionOperations: [
@@ -138,7 +137,6 @@ use Symfony\Component\Serializer\Annotation as Serializer;
     ORM\InheritanceType('SINGLE_TABLE'),
     ORM\Table(name: 'purchase_order_item')
 ]
-
 abstract class Item extends BaseItem {
     final public const TYPES = [ItemType::TYPE_COMPONENT => ComponentItem::class, ItemType::TYPE_PRODUCT => ProductItem::class];
 
@@ -165,7 +163,7 @@ abstract class Item extends BaseItem {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:item']),
+        Serializer\Groups(['read:item'])
     ]
     protected State $embState;
 
@@ -182,7 +180,6 @@ abstract class Item extends BaseItem {
         Serializer\Groups(['read:item', 'write:item'])
     ]
     protected ?Company $targetCompany = null;
-
 
     /** @var DoctrineCollection<int, Receipt<I>> */
     #[ORM\OneToMany(mappedBy: 'item', targetEntity: Receipt::class)]

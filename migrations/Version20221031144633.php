@@ -2614,27 +2614,33 @@ CREATE TABLE `manufacturer_engine` (
     `id` INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `deleted` BOOLEAN DEFAULT FALSE NOT NULL,
     `code` VARCHAR(255) DEFAULT NULL,
+    `name` VARCHAR(255) DEFAULT NULL,
+    `group_id` INT UNSIGNED DEFAULT NULL,
     `date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `engine_id` INT UNSIGNED DEFAULT NULL,
     `manufacturer_id` INT UNSIGNED DEFAULT NULL,
     `serial_number` VARCHAR(255) DEFAULT NULL,
+    `type` ENUM('counter-part','tool','workstation') NOT NULL COMMENT '(DC2Type:engine)',
+    CONSTRAINT `IDX_E8A81A8DFE54D948` FOREIGN KEY (`group_id`) REFERENCES `engine_group` (`id`),
     CONSTRAINT `IDX_F514547DE78C9C0A` FOREIGN KEY (`engine_id`) REFERENCES `engine` (`id`),
     CONSTRAINT `IDX_F514547DA23B42D` FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturer` (`id`),
     UNIQUE KEY `UNIQ_F514547DE78C9C0A` (`engine_id`)
 )
 SQL);
         $this->addQuery(<<<'SQL'
-INSERT INTO `manufacturer_engine` (`code`, `date`, `engine_id`, `manufacturer_id`, `serial_number`)
+INSERT INTO `manufacturer_engine` (`name`, `date`, `engine_id`, `manufacturer_id`, `serial_number`, `group_id`, `type`)
 SELECT
     `old_engine`.`reffourn`,
     `old_engine`.`date_fabrication`,
     `engine`.`id`,
     `manufacturer`.`id`,
-    `old_engine`.`numero_serie`
+    `old_engine`.`numero_serie`,
+    `engine_group`.`id`,
+    `engine_group`.`type`
 FROM `old_engine`
+INNER JOIN `engine_group` ON `old_engine`.`id_engine_group` = `engine_group`.`old_id`
 INNER JOIN `engine` ON `old_engine`.`id` = `engine`.`old_id`
-LEFT JOIN `society` ON `old_engine`.`id_fabricant` = `society`.`old_id`
-LEFT JOIN `manufacturer` ON `society`.`id` = `manufacturer`.`society_id`
+LEFT JOIN `manufacturer` ON `old_engine`.`id_fabricant` = `manufacturer`.`id`
 SQL);
         $this->addQuery('DROP TABLE `old_engine`');
     }

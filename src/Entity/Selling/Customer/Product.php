@@ -78,7 +78,7 @@ class Product extends Entity {
     private Collection $administeredBy;
 
     #[
-        ApiProperty(description: 'Client', readableLink: true, example: '/api/customers/8'),
+        ApiProperty(description: 'Client', readableLink: true),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order', 'read:expedition', 'read:nomenclature'])
@@ -86,7 +86,7 @@ class Product extends Entity {
     private ?Customer $customer;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/45'),
+        ApiProperty(description: 'Produit', readableLink: true),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order','read:nomenclature'])

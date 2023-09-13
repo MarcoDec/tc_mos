@@ -672,6 +672,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     final public function setRoles(array $embRoles): self {
         $this->embRoles = $embRoles;
+        return $this;
     }
 
     final public function setSituation(?string $situation): self {
