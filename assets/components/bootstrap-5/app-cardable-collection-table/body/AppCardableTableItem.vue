@@ -5,7 +5,6 @@
         item: {required: true, type: Object}
     })
     const id = Number(props.item['@id'].match(/\d+/)[0])
-    //console.log(props.fields)
     const emit = defineEmits(['deleted', 'update'])
     function update(){
         emit('update', props.item)

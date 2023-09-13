@@ -4,7 +4,6 @@ import {defineStore} from 'pinia'
 export const useStockListStore = defineStore('stockList', {
     actions: {
         async addComponentStock(payload) {
-            // console.log('addComponentStock')
             this.violations = []
             try {
                 await api('/api/component-stocks', 'POST', payload)
@@ -16,11 +15,9 @@ export const useStockListStore = defineStore('stockList', {
             }
         },
         async addProductStock(payload) {
-            // console.log('addProductStock')
             this.violations = []
             try {
                 await api('/api/product-stocks', 'POST', payload)
-                // console.log('création productStock OK ?')
             } catch (errors) {
                 // eslint-disable-next-line array-callback-return
                 errors.forEach(error => this.violations.push({message: error.message}))
@@ -28,7 +25,6 @@ export const useStockListStore = defineStore('stockList', {
             }
         },
         async addStock(payload) {
-            // console.log('addStock')
             if (payload.item !== null && payload.item.includes('components')) await this.addComponentStock(payload)
             if (payload.item !== null && payload.item.includes('products')) await this.addProductStock(payload)
         },

@@ -4,7 +4,6 @@ import {defineStore} from 'pinia'
 export const useSocietyListStore = defineStore('societyList', {
     actions: {
         async addSociety(payload){
-            console.log(payload)
             await api('/api/societies', 'POST', payload)
             this.itemsPagination(this.lastPage)
         },

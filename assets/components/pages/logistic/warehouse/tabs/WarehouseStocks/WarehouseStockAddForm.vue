@@ -24,7 +24,6 @@
         const value = op.value
         return {text, value}
     })
-    //console.log('optionsUnit', optionsUnit)
     const fetchStocks = useStockListStore()
     //region initialisation des champs pour le formulaire d'ajout d'un stock
     //region champ multi-select composant
@@ -151,7 +150,6 @@
     function addFormChange(data) {
         //survient la plupart du temps lorsqu'on modifie les valeurs d'un input sans besoin de valider le formulaire ou de sortir du champ
         //Attention ne fonctionne pas pour les MultiSelect => Voir updatedSearch
-        // console.log('addFormChange', localAddFormData.value, data)
         if (data.itemType === !localAddFormData.value.itemType) {
             switch (data.itemType) {
                 case true:
@@ -164,24 +162,20 @@
                     localAddFormData.value.product = null
                     localAddFormData.value.itemType = false
             }
-            //console.log('changement type d\'item', localAddFormData.value)
             addFormKey++
         } else {
             localAddFormData.value = data
         }
     }
     async function updatedSearch(data) {
-        //console.log('updatedSearch', data)
         //inputValue.value[data.field.name]=data.data
         switch (data.field.name) {
             case 'component':
                 addStockFormComponentSearchCriteria.addFilter('code', data.data)
-                //console.log(addStockFormComponentSearchCriteria.getFetchCriteria)
                 await updateComponents()
                 break
             case 'product':
                 addStockFormProductSearchCriteria.addFilter('code', data.data)
-                //console.log(addStockFormProductSearchCriteria.getFetchCriteria)
                 await updateProducts()
                 break
             default:
@@ -190,7 +184,6 @@
     }
 
     async function ajoutWarehouseStock(){
-        // console.log(localAddFormData.value)
         itemsAddData.value = {
             batchNumber: localAddFormData.value.batchNumber,
             location: localAddFormData.value.location,
@@ -200,7 +193,6 @@
         switch (localAddFormData.value.itemType) {
             case false:
                 //Ajout d'un stock composant en base
-                console.log('composant', fetchUnits.options)
                 itemsAddData.value.item = localAddFormData.value.component[0] ?? null
                 itemsAddData.value.product = null
                 itemsAddData.value.quantity = {
@@ -209,7 +201,6 @@
                 }
                 break
             default:
-                console.log('product')
                 //Ajout d'un stock produit en base
                 itemsAddData.value.component = null
                 itemsAddData.value.item = localAddFormData.value.product[0] ?? null
@@ -219,7 +210,6 @@
                 }
         }
         itemsAddData.value.warehouse = `/api/warehouses/${warehouseId}`
-        // console.log('data to send', itemsAddData.value)
         try {
             await fetchStocks.addStock(itemsAddData.value)
             emit('saved')

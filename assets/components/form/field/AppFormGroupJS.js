@@ -18,7 +18,6 @@ function AppFormGroupJS(props, context) {
         children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
         children.push(h('div', {class: 'invalid-feedback'}, props.violation.message))
     } else {
-        //console.log('appform group', props)
         children.push(h(resolveComponent('AppInputGuesserJS'), attrs))
     }
     return h('div', {class: 'row mb-3'}, [

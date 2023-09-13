@@ -10,7 +10,6 @@
     const props = defineProps({
         item: {type: Object, required: true}
     })
-    //console.log('WarehouseStockUpdateForm', props, props.item)
     //region récupération des informations de route
     const maRoute = useRoute()
     const warehouseId = maRoute.params.id_warehouse
@@ -110,7 +109,6 @@
     function updateFormChange(data) {
         //survient la plupart du temps lorsqu'on modifie les valeurs d'un input sans besoin de valider le formulaire ou de sortir du champ
         //Attention ne fonctionne pas pour les MultiSelect => Voir updatedSearch
-        // console.log('updateFormChange', localFormData.value, data)
         if (data.itemType === !localFormData.value.itemType) {
             switch (data.itemType) {
                 case true:
@@ -123,7 +121,6 @@
                     localFormData.value.product = null
                     localFormData.value.itemType = false
             }
-            //console.log('changement type d\'item', localFormData.value)
             formKey++
         } else {
             localFormData.value = data
@@ -131,7 +128,6 @@
     }
 
     async function updatedWarehouseStock(){
-        //console.log('updatedWarehouseStock', localFormData.value)
         itemsUpdateData.value = {
             batchNumber: localFormData.value.batchNumber,
             location: localFormData.value.location,
@@ -144,8 +140,6 @@
         } else {
             itemsUpdateData.value.item = localFormData.value.product['@id']
         }
-        //console.log(props.item.id)
-        //console.log('data to update', itemsUpdateData.value)
         try {
             await fetchStocks.updateStock(props.item.id, itemsUpdateData.value)
             emit('saved')

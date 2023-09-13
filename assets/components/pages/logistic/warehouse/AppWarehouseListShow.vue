@@ -1,6 +1,5 @@
 <script setup>
     import {useWarehouseStocksItemsStore} from '../../../../stores/production/warehouseStocksItems'
-    //import AppWarehouseListStockTable from './provisoir/AppWarehouseListStockTable.vue'
     import AppWarehouseListStockTable from './tabs/WarehouseStocks/AppWarehouseListStockTable.vue'
     //import AppWarehouseListVolumeTable from './provisoir/AppWarehouseListVolumeTable.vue'
     const storeWarehouseStocksItems = useWarehouseStocksItemsStore()
@@ -16,8 +15,7 @@
         </AppTab>
         <!--        <AppTab id="gui-start-volume" title="Volume" icon="ruler-vertical" tabs="gui-start-bottom">-->
         <!--            <AppSuspense>-->
-        <!--                <div>DE LU</div>-->
-        <!--                &lt;!&ndash;                <AppWarehouseListVolumeTable/>&ndash;&gt;-->
+        <!--                <AppWarehouseListVolumeTable/>-->
         <!--            </AppSuspense>-->
         <!--        </AppTab>-->
     </AppTabs>

@@ -23,7 +23,6 @@
     //region récupération de la liste des companies
     const fetchCompanies = useCompanyStore()
     await fetchCompanies.fetch()
-    console.log(fetchCompanies.companies)
     const optionsCompanies = fetchCompanies.companies.map(item => ({
         label: item.name, text: item.name, value: item['@id']
     })).filter(item => item.value !== currentCompany)
@@ -218,7 +217,6 @@
         //itemsTable.value = [...storeWarehouseList.itemsWarehouses]
     }
     async function trierAlphabet(payload) {
-        console.log('tri', payload)
         warehouseListCriteria.addSort(payload.name, payload.direction)
         await storeWarehouseList.fetch(warehouseListCriteria.getFetchCriteria)
     }

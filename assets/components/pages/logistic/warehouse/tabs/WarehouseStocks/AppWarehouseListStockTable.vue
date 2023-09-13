@@ -149,7 +149,6 @@
         updated.value = false
     }
     function update(data) {
-        console.log('update data = ', data)
         formData.value = {
             id: data['@id'],
             component: data.item['@type'] === 'Component' ? data.item : null,
@@ -188,7 +187,6 @@
         trierAlpha.value = payload
     }
     async function search(inputValues) {
-        console.log('search', inputValues)
         let comp = ''
         if (typeof inputValues.component !== 'undefined'){
             comp = inputValues.component
@@ -214,10 +212,8 @@
         if (typeof payload.quantity.code === 'undefined' && payload.quantity !== '') {
             payload.quantity.code = ''
         }
-        console.log('lancement filterBy', payload)
         await fetchStocks.filterBy(payload)
         // itemsTable.value = [...fetchStocks.itemsWarehousesStock]
-        console.log('update itemsTable', fetchStocks.itemsWarehousesStock)
         itemsTable.value = fetchStocks.itemsWarehousesStock
         filter.value = true
         filterBy.value = payload

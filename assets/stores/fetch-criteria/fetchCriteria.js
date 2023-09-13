@@ -4,7 +4,6 @@ export default function useFetchCriteria(id) {
     return defineStore(`fetchCriteria_${id}`, {
         actions: {
             addFilter(field, value, dateType = '') {
-                //console.log(field, dateType)
                 if (dateType === '') { //Si le champ à filtrer n'est pas une date
                     const filteredFilters = this.filters.filter(element => element.field === field)
                     if (filteredFilters.length > 0) { // Si l'élément fait déjà parti des filtres existant on mets juste la valeur à jour
@@ -31,7 +30,6 @@ export default function useFetchCriteria(id) {
                         this.filters.push({field: filterName, value: nextDay.toISOString().substring(0, 10)})
                     }
                 }
-                //console.log(this.filters)
             },
             addSort(field, direction) {
                 const filteredSorts = this.sorts.filter(element => element.field === field)

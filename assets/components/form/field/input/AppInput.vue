@@ -21,7 +21,6 @@
     function input(e) {
         emit('update:modelValue', e.target.value)
     }
-    //console.log('AppInput', props.field)
 </script>
 
 <template>

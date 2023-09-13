@@ -28,7 +28,6 @@
     function input(v) {
         if (props.store.isCompanyFiltered) {
             const newV = {...v, company: props.store.company}
-            console.log('input => update:modelValue', v, props.store.isCompanyFiltered, newV)
             emit('update:modelValue', newV)
         } else emit('update:modelValue', v)
     }

@@ -163,7 +163,6 @@
         itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
     }
     async function getPage(nPage){
-        console.log(filterBy)
         await storeWarehouseVolumeList.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
         itemsTable.value = [...storeWarehouseVolumeList.itemsWarehousesVolume]
     }

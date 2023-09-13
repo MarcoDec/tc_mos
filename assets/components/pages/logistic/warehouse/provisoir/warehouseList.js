@@ -44,7 +44,6 @@ export const useWarehouseListStore = defineStore('warehouseList', {
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
-                console.log('je suis ici')
                 if (payload.trierAlpha.value.name === 'name') {
                     let url = `/api/warehouses?order%5B${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&`
                     if (payload.filterBy.value.name !== '') {
@@ -69,7 +68,6 @@ export const useWarehouseListStore = defineStore('warehouseList', {
                     this.warehouses = await this.updatePagination(response)
                 }
             } else if (payload.filter.value === true){
-                console.log('je suis ici')
                 let url = '/api/warehouses?'
                 if (payload.filterBy.value.name !== '') {
                     url += `name=${payload.filterBy.value.name}&`
@@ -81,11 +79,8 @@ export const useWarehouseListStore = defineStore('warehouseList', {
                 response = await api(url, 'GET')
                 this.warehouses = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
-                console.log('je suis ici')
                 response = await api(`/api/warehouses?page=${payload.nPage}`, 'GET')
-                console.log(response)
                 this.warehouses = await this.updatePagination(response)
-                console.log(this.warehouses)
             } else {
                 if (payload.trierAlpha.value.name === 'name') {
                     response = await api(`/api/warehouses?order%5B${payload.trierAlpha.value.name}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')

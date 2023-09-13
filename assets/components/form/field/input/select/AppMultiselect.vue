@@ -12,7 +12,6 @@
     })
     const emit = defineEmits(['update:modelValue', 'searchChange'])
     const css = readonly({search: 'form-control form-control-sm'})
-    // console.log(props.mode, props.modelValue)
     function input(value) {
         emit('update:modelValue', value)
     }
