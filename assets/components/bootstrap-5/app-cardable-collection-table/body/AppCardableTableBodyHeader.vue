@@ -5,7 +5,8 @@
     const emit = defineEmits(['cancelSearch', 'search'])
     const props = defineProps({
         fields: {required: true, type: Array},
-        form: {required: true, type: String}
+        form: {required: true, type: String},
+        modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
     const inputValues = ref([])
     const tabFields = computed(() => props.fields.map(element => {
@@ -41,11 +42,7 @@
 
         <td v-for="field in tabFields" :key="field.name">
             <template v-if="field.filter !== false">
-                <AppInputGuesser
-                    :id="field.name"
-                    v-model="inputValues[field.name]"
-                    :form="form"
-                    :field="field"/>
+                <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" :update:model-value="modelValue"/>
             </template>
             <template v-else>
                 {{ inputValues[field.name] }}

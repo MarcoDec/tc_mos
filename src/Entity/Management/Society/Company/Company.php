@@ -186,7 +186,7 @@ class Company extends Entity {
         ApiProperty(description: 'Nom', example: 'Kaporingol'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:company', 'read:company:collection', 'read:printer', 'write:company', 'write:company:admin'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'read:printer', 'read:zone', 'write:company', 'write:company:admin'])
     ]
     private ?string $name = null;
 

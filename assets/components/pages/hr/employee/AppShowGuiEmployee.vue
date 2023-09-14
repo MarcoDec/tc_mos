@@ -36,10 +36,3 @@
         </AppShowGuiGen>
     </AppSuspense>
 </template>
-
-<style>
-.border-dark {
-    border-bottom: 1px solid grey;
-}
-</style>
-

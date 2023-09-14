@@ -102,7 +102,7 @@ class Warehouse extends Entity {
     private ?Company $company = null;
 
     #[
-        ApiProperty(description: 'Destination', readableLink: false, example: '/api/destination/1'),
+        ApiProperty(description: 'Destination', readableLink: false, example: '/api/companies/1'),
         ORM\ManyToOne,
     Serializer\Groups(['write:warehouse', 'read:warehouse'])
     ]

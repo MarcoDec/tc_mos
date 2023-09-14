@@ -6,7 +6,7 @@
         fields: {required: true, type: Array},
         items: {required: true, type: Array},
         shouldDelete: {required: false, default: true},
-        pagine: {required: true, type: Boolean
+        pagine: {required: true, type: Boolean}
     })
     const emit = defineEmits(['deleted', 'update'])
     function update(item) {

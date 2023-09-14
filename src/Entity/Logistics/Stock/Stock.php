@@ -139,7 +139,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     /** @var null|T */
     #[
-        ApiProperty(description: 'Élément', example: '/api/components/1'),
+        ApiProperty(description: 'Élément', readableLink: false,  example: '/api/components/1'),
         Serializer\Groups(['read:stock'])
     ]
     protected $item;

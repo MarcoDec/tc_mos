@@ -5,6 +5,7 @@
     import AppShowCustomerTabGeneral from './tabs/AppShowCustomerTabGeneral.vue'
     import AppShowCustomerTabLogistic from './tabs/AppShowCustomerTabLogistic.vue'
     import AppShowCustomerTabQuality from './tabs/AppShowCustomerTabQuality.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
     import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
     import {computed} from 'vue'
     import {useCustomerAttachmentStore} from '../../../../stores/selling/customers/customerAttachment'
@@ -48,17 +49,17 @@
             title="Généralités"
             icon="pencil"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppShowCustomerTabGeneral
                     :data-customers="fetchCustomerStore.customer"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppTabFichiers
                     attachment-element-label="customer"
                     :element-api-url="`/api/customers/${customerId}`"
@@ -66,60 +67,60 @@
                     :element-id="customerId"
                     element-parameter-name="CUSTOMER_ATTACHMENT_CATEGORIES"
                     :element-store="useCustomerStore"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-quality"
             title="Qualité"
             icon="certificate"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppShowCustomerTabQuality
                     :data-customers="fetchCustomerStore.customer"
                     :data-society="fetchSocietyStore.society"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-purchase-logistics"
             title="Logistique"
             icon="pallet"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppShowCustomerTabLogistic
                     :data-customers="fetchCustomerStore.customer"
                     :data-society="fetchSocietyStore.society"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-accounting"
             title="Comptabilité"
             icon="industry"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppShowCustomerTabAccounting
                     :data-customers="fetchCustomerStore.customer"
                     :data-society="fetchSocietyStore.society"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-addresses"
             title="Adresse"
             icon="location-dot"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppShowCustomerTabAddress
                     :options-countries="optionsCountries"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-contacts"
             title="Contacts"
             icon="file-contract"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppShowCustomerTabContact
                     :options-countries="optionsCountries"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
     </AppTabs>
 </template>

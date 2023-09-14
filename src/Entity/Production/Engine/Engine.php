@@ -152,7 +152,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
     #[
         ApiProperty(description: 'Nom', example: 'Compresseur d\'air'),
         ORM\Column,
-        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:skill', 'read:operation-employee:collection'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation','read:engine-maintenance-event', 'read:operation-employee:collection'])
     ]
     protected ?string $name = null;
 
@@ -225,7 +225,6 @@ abstract class Engine extends Entity implements BarCodeInterface {
     public function __construct() {
         $this->embBlocker = new Blocker();
         $this->embState = new EmployeeEngineState();
-        $this->manufacturerEngine = new ManufacturerEngine($this);
     }
 
     public static function getBarCodeTableNumber(): string {

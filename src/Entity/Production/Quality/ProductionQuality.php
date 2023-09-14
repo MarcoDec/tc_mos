@@ -164,7 +164,7 @@ class ProductionQuality extends Entity
         return $this;
     }
 
-    public function setProductionOperation(?ProductionOperation $productionOperation): self {
+    public function setProductionOperation(?Operation $productionOperation): self {
         $this->productionOperation = $productionOperation;
         return $this;
     }

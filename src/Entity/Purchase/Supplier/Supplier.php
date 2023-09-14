@@ -31,9 +31,6 @@ use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\InverseJoinColumn;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\Purchase\Supplier\SupplierPatchController;
@@ -182,7 +179,7 @@ class Supplier extends Entity {
 
     #[
         ApiProperty(description: 'SupplierCompany associés', readableLink: false, example: ['/api/supplier-companies/1','/api/supplier-companies/2']),
-        ORM\OneToMany(targetEntity: SupplierCompany::class, mappedBy: 'supplier', cascade: ['persist', 'remove'])
+        ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierCompany::class, cascade: ['persist', 'remove'])
     ]
     private DoctrineCollection $supplierCompanies;
 

@@ -137,7 +137,7 @@
             .then(resultats => {
                 // eslint-disable-next-line array-callback-return
                 resultats.forEach(result => {
-                    if (result.status === 'fulfilled') console.log(`Fichier bien chargé ${result.value.url}`)
+                    if (result.status === 'fulfilled') console.log('Fichier bien chargé')
                     else {
                         isError.value = true
                         const err = {

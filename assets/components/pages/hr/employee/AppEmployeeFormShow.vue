@@ -5,6 +5,7 @@
     import AppShowEmployeeTabGeneral from './tabs/AppShowEmployeeTabGeneral.vue'
     import AppShowEmployeeTabInfos from './tabs/AppShowEmployeeTabInfos.vue'
     import AppShowEmployeeTabProduction from './tabs/AppShowEmployeeTabProduction.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
     import AppTabFichiers from '../../../tab/AppTabFichiers.vue'
     import {useEmployeeAttachmentStore} from '../../../../stores/hr/employee/employeeAttachements'
     import {useEmployeeStore} from '../../../../stores/hr/employee/employees'
@@ -23,42 +24,42 @@
             title="Généralités"
             icon="pencil"
             tabs="gui-start">
-            <Suspense><AppShowEmployeeTabGeneral/></Suspense>
+            <AppSuspense><AppShowEmployeeTabGeneral/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-Informations"
             title="Informations personelles"
             icon="circle-info"
             tabs="gui-start">
-            <Suspense><AppShowEmployeeTabInfos/></Suspense>
+            <AppSuspense><AppShowEmployeeTabInfos/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-contacts"
             title="Contacts"
             icon="file-contract"
             tabs="gui-start">
-            <Suspense><AppShowEmployeeContact/></Suspense>
+            <AppSuspense><AppShowEmployeeContact/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-droits"
             title="Droits"
             icon="clipboard-check"
             tabs="gui-start">
-            <Suspense><AppShowEmployeeTabDroits/></Suspense>
+            <AppSuspense><AppShowEmployeeTabDroits/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-accés"
             title="Accés"
             icon="arrow-right-to-bracket"
             tabs="gui-start">
-            <Suspense><AppShowEmployeeTabAccess/></Suspense>
+            <AppSuspense><AppShowEmployeeTabAccess/></AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-files"
             title="Fichiers"
             icon="laptop"
             tabs="gui-start">
-            <Suspense>
+            <AppSuspense>
                 <AppTabFichiers
                     attachment-element-label="employee"
                     :element-api-url="`/api/employees/${employeeId}`"
@@ -66,14 +67,14 @@
                     :element-id="employeeId"
                     element-parameter-name="EMPLOYEE_ATTACHMENT_CATEGORIES"
                     :element-store="useEmployeeStore"/>
-            </Suspense>
+            </AppSuspense>
         </AppTab>
         <AppTab
             id="gui-start-production"
             title="Production"
             icon="industry"
             tabs="gui-start">
-            <Suspense><AppShowEmployeeTabProduction/></Suspense>
+            <AppSuspense><AppShowEmployeeTabProduction/></AppSuspense>
         </AppTab>
     </AppTabs>
 </template>
