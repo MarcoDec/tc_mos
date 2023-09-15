@@ -1,9 +1,9 @@
-import AppCompanyList from '../components/pages/Management/Company/AppCompanyList.vue'
-import AppSocietyList from '../components/pages/Management/Society/bottom/AppSocietyList.vue'
+import AppCompanyList from '../components/pages/management/company/AppCompanyList.vue'
+import AppSocietyList from '../components/pages/management/society/bottom/AppSocietyList.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
-import MonthCalendar from '../components/pages/management/company/agenda/agendaMonth/MonthCalendar.vue'
+import MonthCalendar from '../components/pages/management/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
-import AppShowGuiCompany from '../components/pages/Management/Company/AppShowGuiCompany.vue'
+import AppShowGuiCompany from '../components/pages/management/company/AppShowGuiCompany.vue'
 
 export default [
     {
