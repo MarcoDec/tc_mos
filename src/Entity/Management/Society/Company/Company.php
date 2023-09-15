@@ -5,6 +5,7 @@ namespace App\Entity\Management\Society\Company;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Collection;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -29,8 +30,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'deliveryTime' => 'partial',
         'deliveryTimeOpenDays' => 'partial', 'engineHourRate' => 'partial', 'generalMargin' => 'partial', 'handlingHourRate' => 'partial',
-        'managementFees' => 'partial', 'numberOfTeamPerDay' => 'partial'
+        'managementFees' => 'partial', 'numberOfTeamPerDay' => 'partial', 'workTimetable' => 'partial', 'currency.id' => 'exact'
     ]),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'workTimetable']),
     ApiResource(
         description: 'Compagnie',
         collectionOperations: [

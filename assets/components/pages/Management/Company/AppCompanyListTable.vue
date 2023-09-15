@@ -52,6 +52,7 @@
         const getId = /.*?\/(\d+)/
         const itemId = item['@id'].match(getId)[1]
         console.log(item, itemId)
+        // eslint-disable-next-line quote-props
         router.push({name: 'company', params: {'id_company': itemId}})
     }
     async function deleteTableItem(id) {
