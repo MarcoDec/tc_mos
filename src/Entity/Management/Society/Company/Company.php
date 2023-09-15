@@ -119,7 +119,7 @@ class Company extends Entity {
     #[
         ApiProperty(description: 'Monnaie', readableLink: true, example: '/api/currencies/2'),
         ORM\ManyToOne(targetEntity: Currency::class, fetch: "EAGER"),
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
     ]
     private ?Currency $currency;
 
@@ -216,14 +216,14 @@ class Company extends Entity {
     #[
         ApiProperty(description: 'Société'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:admin', 'write:company:main'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:admin', 'write:company:main'])
     ]
     private ?Society $society = null;
 
     #[
         ApiProperty(description: 'Calendrier de travail', example: '2 jours'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:company', 'write:company', 'write:company:main'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:main'])
     ]
     private ?string $workTimetable;
 

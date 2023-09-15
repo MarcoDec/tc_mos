@@ -1,3 +1,4 @@
+import AppCompanyList from '../components/pages/Management/Company/AppCompanyList.vue'
 import AppSocietyList from '../components/pages/Management/Society/bottom/AppSocietyList.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import MonthCalendar from '../components/pages/management/company/agenda/agendaMonth/MonthCalendar.vue'
@@ -126,6 +127,16 @@ export default [
         props: {
             icon: 'city',
             title: 'Société'
+        }
+    },
+    {
+        component: AppCompanyList,
+        meta: {title: 'Listes des compagnies  — T-Concept GPAO'},
+        name: 'company-list',
+        path: '/company-list',
+        props: {
+            icon: 'city',
+            title: 'Compagnies'
         }
     },
     {

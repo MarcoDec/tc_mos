@@ -3,9 +3,9 @@ import {defineStore} from 'pinia'
 
 export const useCompanyStore = defineStore('companies', {
     actions: {
-        async fetch() {
+        async fetch(criteria = '?pagination=false') {
             this.societies = []
-            const response = await api('/api/companies?pagination=false', 'GET')
+            const response = await api(`/api/companies${criteria}`, 'GET')
             this.companies = response['hydra:member']
         },
         async fetchById(id) {
@@ -20,6 +20,12 @@ export const useCompanyStore = defineStore('companies', {
     getters: {
     },
     state: () => ({
+        currentPage: '',
+        firstPage: '',
+        lastPage: '',
+        nextPage: '',
+        pagination: false,
+        previousPage: '',
         companies: [],
         company: {}
     })
