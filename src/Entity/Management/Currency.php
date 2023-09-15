@@ -24,9 +24,10 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             ],
             'options' => [
                 'controller' => PlaceholderAction::class,
+                'filters' => [],
                 'method' => 'GET',
                 'normalization_context' => [
-                    'groups' => ['read:id', 'read:unit:option'],
+                    'groups' => ['read:id', 'read:currency:option'],
                     'openapi_definition_name' => 'Currency-options',
                     'skip_null_values' => false
                 ],
@@ -35,6 +36,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'summary' => 'Récupère les devises pour les select',
                 ],
                 'order' => ['code' => 'asc'],
+                'pagination_enabled' => false,
                 'path' => '/currencies/options'
             ]
         ],
@@ -72,7 +74,7 @@ class Currency extends AbstractUnit {
     #[
         ApiProperty(description: 'Code ', required: true, example: 'EUR'),
         ORM\Column(type: 'char', length: 3),
-        Serializer\Groups(['read:currency', 'read:unit', 'read:unit:option', 'write:unit'])
+        Serializer\Groups(['read:currency', 'read:unit', 'write:unit'])
     ]
     protected ?string $code = null;
 
@@ -108,9 +110,9 @@ class Currency extends AbstractUnit {
         return !empty($this->getCode()) ? Currencies::getSymbol($this->getCode()) : null;
     }
 
-    #[Serializer\Groups(['read:unit:option'])]
+    #[Serializer\Groups(['read:currency:option'])]
     final public function getText(): ?string {
-        return $this->getSymbol();
+        return $this->getSymbol()??$this->getCode();
     }
 
     final public function isActive(): bool {

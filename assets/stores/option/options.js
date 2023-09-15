@@ -29,8 +29,10 @@ export default function useOptions(base, valueProp = '@id') {
             async fetchOp() {
                 const response = await api(this.url)
                 this.resetItems()
-                for (const option of response['hydra:member'])
+                for (const option of response['hydra:member']) {
+                    //console.log('option', option)
                     this.options.push(useOption(option, this))
+                }
                 this.isLoaded = true
                 this.options.sort(sort)
             },

@@ -15,6 +15,9 @@ export const useCompanyStore = defineStore('companies', {
         async update(data, id) {
             await api(`/api/companies/${id}`, 'PATCH', data)
             this.fetchById(id)
+        },
+        async remove(id) {
+            await api(`/api/companies/${id}`, 'DELETE')
         }
     },
     getters: {

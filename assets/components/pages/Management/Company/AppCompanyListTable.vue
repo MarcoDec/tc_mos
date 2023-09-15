@@ -3,6 +3,7 @@
     import useFetchCriteria from '../../../../stores/fetch-criteria/fetchCriteria'
     import AppSuspense from '../../../AppSuspense.vue'
     import Fa from '../../../Fa'
+    import useOptions from '../../../../stores/option/options'
     import {useRouter} from 'vue-router'
     import useUser from '../../../../stores/security'
     import {useCompanyStore} from '../../../../stores/management/companies/companies'
@@ -14,7 +15,6 @@
     const router = useRouter()
     //region récupération des données utilisateur
     const fetchUser = useUser()
-    const currentCompany = fetchUser.company
     const isWriterOrAdmin = fetchUser.isManagementWriter || fetchUser.isManagementAdmin
     const roleuser = ref(isWriterOrAdmin ? 'writer' : 'reader')
     //endregion
@@ -22,13 +22,27 @@
     const fetchCompanies = useCompanyStore()
     const companyListCriteria = useFetchCriteria('company-list-criteria')
     await fetchCompanies.fetch(companyListCriteria.getFetchCriteria)
-    const optionsCompanies = fetchCompanies.companies.map(item => ({
-        label: item.name, text: item.name, value: item['@id']
-    })).filter(item => item.value !== currentCompany)
     async function refreshTable() {
         await fetchCompanies.fetch(companyListCriteria.getFetchCriteria)
     }
     const itemsTable = computed(() => fetchCompanies.companies)
+    //endregion
+    //region recupération de la liste des options societés
+    const fetchSocieties = useOptions('societies')
+    await fetchSocieties.fetchOp()
+    const optionsSocieties = fetchSocieties.options.map(item => ({
+        label: item.text, text: item.text, value: item['@id']
+    }))
+    console.log(optionsSocieties)
+    //endregion
+    //region recupération de la liste des options devises
+    const fetchCurrencies = useOptions('currencies')
+    await fetchCurrencies.fetchOp()
+    console.log(fetchCurrencies.options)
+    const optionsCurrencies = fetchCurrencies.options.map(item => ({
+        label: item.text, text: item.text, value: item['@id']
+    }))
+    console.log(optionsCurrencies)
     //endregion
     //region initialisation des éléments pour le tableau de liste
     const tabFields = [
@@ -36,20 +50,34 @@
             label: 'Nom', name: 'name', trie: true, type: 'text'
         },
         {
-            label: 'Societe', name: 'society', trie: true, type: 'text'
+            label: 'Societe',
+            name: 'society',
+            trie: false,
+            options: {
+                options: optionsSocieties,
+                label: itemValue => optionsSocieties.find(item => item.value === itemValue).text
+            },
+            type: 'select'
         },
         {
-            label: 'Devise', name: 'currency', trie: true, type: 'text'
+            label: 'Devise',
+            name: 'currency',
+            trie: false,
+            options: {
+                options: optionsCurrencies,
+                label: itemValue => optionsCurrencies.find(item => item.value === itemValue).text
+            },
+            type: 'select'
         },
         {
             label: 'Horaires de travail', name: 'workTimeTable', trie: true, type: 'text'
         }
     ]
     //endregion
+    const getId = /.*?\/(\d+)/
 
     //region Fonctions relatives à la liste
     function update(item) {
-        const getId = /.*?\/(\d+)/
         const itemId = item['@id'].match(getId)[1]
         console.log(item, itemId)
         // eslint-disable-next-line quote-props
@@ -60,11 +88,13 @@
         await refreshTable()
     }
     async function search(inputValues) {
+        console.log(inputValues)
         companyListCriteria.resetAllFilter()
         if (inputValues.name) companyListCriteria.addFilter('name', inputValues.name)
-        if (inputValues.society) companyListCriteria.addFilter('society', inputValues.society)
-        if (inputValues.currency) companyListCriteria.addFilter('currency', inputValues.currency)
+        if (inputValues.society) companyListCriteria.addFilter('society.id', inputValues.society.match(getId)[1])
+        if (inputValues.currency) companyListCriteria.addFilter('currency.id', inputValues.currency.match(getId)[1])
         if (inputValues.workTimeTable) companyListCriteria.addFilter('workTimeTable', inputValues.workTimeTable)
+        console.log(companyListCriteria.getFetchCriteria)
         await fetchCompanies.fetch(companyListCriteria.getFetchCriteria)
     }
     async function cancelSearch() {
