@@ -15,7 +15,10 @@
             role="tab"
             type="button">
             <Fa :icon="tab.icon" class="me-1"/>
-            <span class="nav-link-text">{{ tab.title }}</span>
+            <div class="nav-link-text">
+                {{ tab.title }}
+            </div>
         </button>
     </li>
 </template>
+

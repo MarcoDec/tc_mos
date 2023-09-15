@@ -2,9 +2,10 @@ import {h, resolveComponent} from 'vue'
 import AppInputFile from './AppInputFile'
 import AppInputMeasure from './AppInputMeasure.vue'
 import AppInputMeasureSelect from './AppInputMeasureSelect.vue'
-import AppInputNumberJS from './AppInputNumberJS'
+import AppInputNumber from './AppInputNumber.vue'
 import AppMultiselect from './select/AppMultiselect.vue'
-import AppSelectJS from './select/AppSelectJS'
+import AppRating from './AppRating.vue'
+import AppSelect from './select/AppSelect.vue'
 import AppSwitch from './AppSwitch.vue'
 import AppTrafficLight from './AppTrafficLight.vue'
 import AppTextArea from './AppTextArea'
@@ -15,17 +16,21 @@ function getType(field) {
     case 'boolean':
         return AppSwitch
     case 'number':
-        return AppInputNumberJS
+        return AppInputNumber
+    case 'file':
+        return AppInputFile
     case 'select':
-        return AppSelectJS
+        return AppSelect
     case 'multiselect':
         return AppMultiselect
     case 'measure':
         return AppInputMeasure
     case 'measureSelect':
         return AppInputMeasureSelect
-    case 'trafficLight':
-        return AppTrafficLight
+    case 'rating':
+        return AppRating
+    case 'textarea':
+        return AppTextArea
     default:
         return resolveComponent('AppInputJS')
         return resolveComponent('AppInputJS')

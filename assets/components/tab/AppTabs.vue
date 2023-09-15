@@ -32,3 +32,9 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+    .tab-content{
+        width: 100%;
+    }
+</style>

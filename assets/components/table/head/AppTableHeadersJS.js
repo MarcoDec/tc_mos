@@ -22,7 +22,7 @@ function AppTableHeadersJS(props, context) {
         props.fields.forEach(generateSlot)
         return h(
             tag,
-            {fields: props.fields, id: `${props.id}-${type}`, machine: props.machine, store: props.store},
+            {btnbasculesearch: props.btnbasculesearch, fields: props.fields, id: `${props.id}-${type}`, machine: props.machine, store: props.store},
             children
         )
     }
@@ -36,6 +36,7 @@ function AppTableHeadersJS(props, context) {
 }
 
 AppTableHeadersJS.props = {
+    btnbasculesearch: {default: false, type: Boolean},
     fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},

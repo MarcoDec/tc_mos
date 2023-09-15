@@ -20,6 +20,7 @@ function AppTableSearchJS(props, context) {
     return h(
         resolveComponent('AppTableHeaderFormJS'),
         {
+            btnbasculesearch: props.btnbasculesearch,
             fields: props.fields,
             icon: 'search',
             id: props.id,
@@ -47,6 +48,7 @@ function AppTableSearchJS(props, context) {
 }
 
 AppTableSearchJS.props = {
+    btnbasculesearch: {default: false, type: Boolean},
     fields: generateTableFields(),
     id: {required: true, type: String},
     machine: {required: true, type: Object},

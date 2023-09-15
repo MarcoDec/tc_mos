@@ -5,11 +5,10 @@ import generateSupplierCompany from './supplierCompany'
 export const useSupplierCompaniesStore = defineStore('supplier-companies', {
     actions: {
         async addCompany(companyIRI) {
-            const response = await api('/api/supplier-companies', 'POST', {
+            await api('/api/supplier-companies', 'POST', {
                 company: companyIRI,
                 supplier: `/api/suppliers/${this.supplier.id}`
             })
-            console.log(response)
             this.fetchBySupplier(this.supplier)
         },
         async fetchBySupplier(supplier) {

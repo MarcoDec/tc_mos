@@ -26,15 +26,16 @@
 <template>
     <input
         :id="id"
-        :disabled="disabled"
+        :disabled="disabled || field.disabled"
         :form="form"
         :name="field.name"
         :multiple="multiple"
         :placeholder="field.label"
+        :readonly="field.readonly"
         :type="type"
         :value="theValue"
         autocomplete="off"
-        step="0.01"
+        step=".01"
         class="form-control form-control-sm"
         @input="input"/>
 </template>

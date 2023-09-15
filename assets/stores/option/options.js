@@ -63,7 +63,10 @@ export default function useOptions(base, valueProp = '@id') {
             label() {
                 return value => this.find(value)?.text ?? null
             },
-            url: state => `/api/${state.base}/options`
+            url: state => `/api/${state.base}/options`,
+            hasOptions(state){
+                return state.options.length > 0
+            }
         },
         state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp})
     })()

@@ -41,9 +41,14 @@ function AppTableHeaderFormJS(props, context) {
                 })
             )
     ]
-    if (typeof context.slots.default === 'function')
-        formTd.push(context.slots.default())
-    const children = [
+    if (typeof context.slots['default'] === 'function')
+        formTd.push(context.slots['default']())
+    const children = props.btnbasculesearch ? [
+        h('td', [
+            h(resolveComponent('Fa'), {icon: props.icon})
+        ]),
+        h('td', formTd)
+    ] : [
         h('td', [
             h(resolveComponent('Fa'), {icon: props.icon}),
             h(resolveComponent('AppBtnJS'), {
@@ -56,7 +61,6 @@ function AppTableHeaderFormJS(props, context) {
         ]),
         h('td', formTd)
     ]
-
     function generateField(field) {
         const slot = context.slots[`${props.type}(${field.name})`]
         children.push(h(resolveComponent('AppTableFormField'), {
@@ -76,6 +80,7 @@ function AppTableHeaderFormJS(props, context) {
 }
 
 AppTableHeaderFormJS.props = {
+    btnbasculesearch: {default: false, type: Boolean},
     fields: generateTableFields(),
     icon: {required: true, type: String},
     id: {required: true, type: String},

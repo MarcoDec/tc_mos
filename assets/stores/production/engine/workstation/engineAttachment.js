@@ -6,7 +6,6 @@ const linkedEntity = 'engine'
 export const useEngineAttachmentStore = defineStore('workstationAttachment', {
     actions: {
         async ajout(data) {
-            console.log(data)
             const form = new FormData()
             form.append('file', data.file)
             form.append('category', data.category)

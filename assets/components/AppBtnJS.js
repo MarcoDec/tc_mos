@@ -19,7 +19,7 @@ function AppBtnJS(props, context) {
 }
 
 AppBtnJS.props = {
-    disabled: {type: Boolean},
+    disabled: {default: false, type: Boolean},
     icon: {default: null, type: String},
     type: {default: 'button', type: String},
     variant: generateVariant('primary')

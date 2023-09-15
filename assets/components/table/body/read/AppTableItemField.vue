@@ -7,16 +7,26 @@
         item: {required: true, type: Object},
         row: {required: true, type: String}
     })
+    function labelValue(thevalue) {
+        if (props.field.type === 'select') {
+            const res = props.field.options.options.find(e => e.value === thevalue.value)
+            if (typeof res === 'undefined') return thevalue.value
+            return res.text
+        }
+        if (props.field.type === 'measure'){
+            if (thevalue.value.value === 'undefined' || thevalue.value.code === 'undefined') return thevalue.value
+            return `${thevalue.value.value} ${thevalue.value.code}`
+        }
+        if (typeof props.field.labelValue === 'function') {
+            return props.field.labelValue(value.value)
+        }
+        return thevalue.value
+    }
     const bool = computed(() => props.field.type === 'boolean')
     const color = computed(() => props.field.type === 'color')
     const id = computed(() => `${props.row}-${props.field.name}`)
     const value = computed(() => get(props.item, props.field.name))
-    const label = computed(() => {
-        if (typeof props.field.labelValue === 'function') {
-            return props.field.labelValue(value.value)
-        }
-        return value.value
-    })
+    const label = computed(() => labelValue(value))
     const input = computed(() => `${id.value}-input`)
     const array = computed(() => Array.isArray(label.value))
 </script>

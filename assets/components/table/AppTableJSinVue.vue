@@ -4,6 +4,7 @@
     import {generateTableFields} from '../props'
 
     defineProps({
+        btnbasculesearch: {type: Boolean},
         fields: generateTableFields(),
         id: {required: true, type: String},
         items: {default: 'items', type: String},
@@ -19,6 +20,7 @@
             <table class="col table table-bordered table-hover table-responsive table-sm table-striped">
                 <AppTableHeadersJS
                     :id="`${id}-headers`"
+                    :btnbasculesearch="btnbasculesearch"
                     :fields="fields"
                     :machine="machine"
                     :store="store">

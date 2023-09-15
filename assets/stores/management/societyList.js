@@ -182,6 +182,7 @@ export const useSocietyListStore = defineStore('societyList', {
                 this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
                 this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
                 this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.pagination = true
                 return responseData
             }
             this.pagination = false
