@@ -17,3 +17,10 @@
         <slot/>
     </div>
 </template>
+
+<style scoped>
+div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+.gui-start-content {
+    font-size: 14px;
+}
+</style>

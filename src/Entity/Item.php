@@ -99,7 +99,7 @@ abstract class Item extends Entity implements MeasuredInterface {
     /**
      * @return I|null
      */
-    final public function getItem() {
+    public function getItem() {
         return $this->item;
     }
 

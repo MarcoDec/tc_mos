@@ -1,5 +1,4 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
     import AppCardableTableBody from './AppCardableTableBody.vue'
 
     defineProps({

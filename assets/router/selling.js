@@ -1,7 +1,14 @@
+import AppShowGuiCustomer from '../components/pages/selling/customer/AppShowGuiCustomer.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 
 export default [
+    {
+        component: AppShowGuiCustomer,
+        meta: {container: false, title: 'Client — T-Concept GPAO'},
+        name: 'customer',
+        path: '/customer/:id_customer'
+    },
     {
         component: AppTablePageSuspense,
         meta: {title: 'Paramètres Ventes — T-Concept GPAO'},

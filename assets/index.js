@@ -9,12 +9,13 @@ import AppCardJS from './components/AppCardJS'
 import AppCardShow from './components/AppCardShow.vue'
 import AppCardableTable from './components/bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
 import AppCol from './components/layout/AppCol'
+import AppCollectionTable from './components/bootstrap-5/app-collection-table/AppCollectionTable.vue'
 import AppContainer from './components/AppContainer'
 import AppDropdownItem from './components/nav/dropdown/AppDropdownItem.vue'
 import AppDropdownItemJS from './components/nav/dropdown/AppDropdownItemJS'
 import AppForm from './components/form/AppForm.vue'
 import AppFormCardable from './components/form-cardable/AppFormCardable'
-import AppFormFieldSet from './components/form/field/AppFormFieldset.vue'
+import AppFormFieldset from './components/form/field/AppFormFieldset.vue'
 import AppFormGenerator from './components/form/AppFormGenerator.vue'
 import AppFormGroup from './components/form/field/AppFormGroup'
 import AppFormGroupJS from './components/form/field/AppFormGroupJS'
@@ -70,7 +71,7 @@ import AppTreeForm from './components/tree/card/form/AppTreeForm.vue'
 import AppTreeLabel from './components/tree/node/AppTreeLabel.vue'
 import AppTreeNodes from './components/tree/node/AppTreeNodes.vue'
 import AppTreePage from './components/pages/tree/AppTreePage.vue'
-import CountryFlag from 'vue-country-flag-next'
+// import CountryFlag from 'vue-country-flag-next'
 import Fa from './components/Fa'
 import {createApp} from 'vue'
 import pinia from './stores'
@@ -80,19 +81,22 @@ import useUser from './stores/security'
 const app = createApp(App)
     .component('AppBtn', AppBtn)
     .component('AppBtnJS', AppBtnJS)
+    .component('AppCollectionTable', AppCollectionTable)
+    .component('AppCardableTable', AppCardableTable)
     .component('AppCard', AppCard)
     .component('AppCol', AppCol)
     .component('AppContainer', AppContainer)
     .component('AppCardJS', AppCardJS)
     .component('AppCardShow', AppCardShow)
+    .component('AppRow', AppRow)
     .component('AppShowGuiCard', AppShowGuiCard)
-    .component('AppCardableTable', AppCardableTable)
     .component('AppDropdownItem', AppDropdownItem)
     .component('AppDropdownItemJS', AppDropdownItemJS)
     .component('AppForm', AppForm)
     .component('AppFormJS', AppFormJS)
     .component('AppFormCardable', AppFormCardable)
-    .component('AppFormFieldSet', AppFormFieldSet)
+    // .component('AppFormFieldSet', AppFormFieldSet)
+    .component('AppFormFieldset', AppFormFieldset)
     .component('AppFormGenerator', AppFormGenerator)
     .component('AppFormTabs', AppFormTabs)
     .component('AppFormGroup', AppFormGroup)
@@ -112,7 +116,6 @@ const app = createApp(App)
     .component('AppRadio', AppRadio)
     .component('AppRouterLink', AppRouterLink)
     .component('AppRouterLinkJS', AppRouterLinkJS)
-    .component('AppRow', AppRow)
     .component('AppSuspense', AppSuspense)
     .component('AppTab', AppTab)
     .component('AppTableFormField', AppTableFormField)
@@ -145,7 +148,7 @@ const app = createApp(App)
     .component('AppTreeLabel', AppTreeLabel)
     .component('AppTreeNodes', AppTreeNodes)
     .component('AppTreePage', AppTreePage)
-    .component('CountryFlag', CountryFlag)
+    // .component('CountryFlag', CountryFlag)
     .component('Fa', Fa)
     .use(pinia)
 useUser().fetch().then(() => app.use(router).mount('#vue'))

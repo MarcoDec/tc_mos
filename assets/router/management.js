@@ -1,6 +1,6 @@
-import AppSocity from './pages/direction/AppSocity.vue'
+import AppSocity from '../components/pages/management/society/AppSocity.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
-import MonthCalendar from '../router/pages/company/agenda/agendaMonth/MonthCalendar.vue'
+import MonthCalendar from '../components/pages/management/company/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
 
 export default [
@@ -84,6 +84,22 @@ export default [
     },
     {
         component: AppTablePageSuspense,
+        meta: {title: 'Supp — T-Concept GPAO'},
+        name: 'supplier-contacts',
+        path: '/supplier-contacts',
+        props: {
+            apiBaseRoute: 'supplier-contacts',
+            fields: [
+                {label: 'Nom', name: 'name'}
+
+            ],
+            icon: 'ruler-horizontal',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Supp'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
         meta: {title: 'Messages TVA — T-Concept GPAO'},
         name: 'vat-messages',
         path: '/vat-messages',
@@ -109,6 +125,23 @@ export default [
         props: {
             icon: 'city',
             title: 'Société'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Définition des Equipes — T-Concept GPAO'},
+        name: 'teams',
+        path: '/teams',
+        props: {
+            apiBaseRoute: 'teams',
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {label: 'Compagnie', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
+                {label: 'Créneaux horaires', name: 'timeSlot', options: {base: 'time-slots'}, sort: false, /* sortName: 'timeSlot.name', */ type: 'select'}
+            ],
+            icon: 'people-group',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Définition des équipes'
         }
     }
 ]

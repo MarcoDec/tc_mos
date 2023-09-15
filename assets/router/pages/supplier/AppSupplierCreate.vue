@@ -77,6 +77,4 @@
 .cardOrderSupplier {
   border: 6px solid #1d583d;
 }
-div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
-
 </style>

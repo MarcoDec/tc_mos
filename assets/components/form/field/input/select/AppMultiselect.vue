@@ -2,7 +2,7 @@
     import Multiselect from '@vueform/multiselect'
     import {readonly} from 'vue'
 
-    defineProps({
+    /*const props = */defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
@@ -12,7 +12,7 @@
     })
     const emit = defineEmits(['update:modelValue'])
     const css = readonly({search: 'form-control form-control-sm'})
-
+    //console.log(props.mode, props.modelValue)
     function input(value) {
         emit('update:modelValue', value)
     }
@@ -27,8 +27,8 @@
         :form="form"
         :mode="mode"
         :model-value="modelValue"
-        :options="field.optionsList"
-        :value-prop="field.options.valueProp"
+        :options="field.options && field.options.options "
+        :value-prop="field.options && field.options.valueProp "
         class="text-dark"
         label="text"
         searchable

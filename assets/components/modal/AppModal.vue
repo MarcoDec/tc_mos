@@ -1,5 +1,5 @@
 <script setup>
-    import {defineProps, onMounted, onUnmounted, ref} from 'vue'
+    import {onMounted, onUnmounted, ref} from 'vue'
     import {Modal} from 'bootstrap'
 
     const props = defineProps({

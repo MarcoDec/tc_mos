@@ -1,5 +1,4 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
     import AppFormField from './AppFormField.vue'
 
     const emit = defineEmits(['update:modelValue', 'click'])
@@ -23,7 +22,9 @@
             :key="child"
             :form="form"
             :field="child"
+            :name="child.name"
             :model-value="modelValue"
+            :values="modelValue"
             @update:model-value="input"/>
     </fieldset>
 </template>

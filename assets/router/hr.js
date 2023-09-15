@@ -1,3 +1,4 @@
+import AppShowGuiEmployee from '../components/pages/hr/employee/AppShowGuiEmployee.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import {readonly} from 'vue'
 
@@ -12,15 +13,13 @@ export default [
             brands: true,
             fields: [
                 {label: 'Nom', name: 'name'},
-                {label: 'Vers Le statut', name: 'toStatus'}
-                //,
-                // {
-                //     label: 'Vers le statut',
-                //     name: 'toStatus',
-                //     options: {base: 'event-types', value: 'id'},
-                //     sort: false,
-                //     type: 'select'
-                // }
+                {
+                    label: 'Vers le statut',
+                    name: 'toStatus',
+                    options: {base: 'event-types', value: 'code'},
+                    sort: false,
+                    type: 'select'
+                }
             ],
             icon: 'elementor',
             sort: readonly({label: 'Nom', name: 'name'}),
@@ -70,6 +69,12 @@ export default [
         }
     },
     {
+        component: AppShowGuiEmployee,
+        meta: {container: false, title: 'Employee — T-Concept GPAO'},
+        name: 'employee',
+        path: '/employee/:id_employee'
+    },
+    {
         component: AppTablePageSuspense,
         meta: {title: 'Paramètres RH — T-Concept GPAO'},
         name: 'hr parameters',
@@ -88,6 +93,21 @@ export default [
             readFilter: '?page=1&pagination=false&type=hr',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Définition des Types de compétence — T-Concept GPAO'},
+        name: 'skill-types',
+        path: '/skill-types',
+        props: {
+            apiBaseRoute: 'skill-types',
+            fields: [
+                {label: 'Nom', name: 'name'}
+            ],
+            icon: 'signal',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Définition des Types de compétence'
         }
     },
     {

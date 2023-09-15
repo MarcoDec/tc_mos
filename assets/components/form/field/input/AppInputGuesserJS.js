@@ -7,14 +7,13 @@ import AppMultiselect from './select/AppMultiselect.vue'
 import AppSelectJS from './select/AppSelectJS'
 import AppSwitch from './AppSwitch.vue'
 import AppTrafficLight from './AppTrafficLight.vue'
+import AppTextArea from './AppTextArea'
 import {generateField} from '../../../props'
 
 function getType(field) {
     switch (field.type) {
     case 'boolean':
         return AppSwitch
-    case 'file':
-        return AppInputFile
     case 'number':
         return AppInputNumberJS
     case 'select':
@@ -28,6 +27,7 @@ function getType(field) {
     case 'trafficLight':
         return AppTrafficLight
     default:
+        return resolveComponent('AppInputJS')
         return resolveComponent('AppInputJS')
     }
 }

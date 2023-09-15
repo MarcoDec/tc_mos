@@ -48,23 +48,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
          ]
       ],
-      itemOperations: [
-         'get' => [
-            'openapi_context' => [
-               'description' => 'Récupère un fichier associé à un employé',
-               'summary' => 'Récupère un fichier associé à un employé'
-            ],
-            'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
-         ],
-         'delete' => [
-            'openapi_context' => [
-               'description' => 'Supprime un fichier',
-               'summary' => 'Supprime un fichier'
-            ]
-         ]
-      ],
-      paginationItemsPerPage: 2,
-      paginationClientEnabled: true
+       itemOperations: [
+          'get' => [
+             'openapi_context' => [
+                'description' => 'Récupère un fichier associé à un employé',
+                'summary' => 'Récupère un fichier associé à un employé'
+             ],
+             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
+          ],
+          'delete' => [
+             'openapi_context' => [
+                'description' => 'Supprime un fichier',
+                'summary' => 'Supprime un fichier'
+             ]
+          ]
+       ],
+       paginationClientEnabled: true,
+       paginationItemsPerPage: 2
    ),
    ApiFilter(SearchFilter::class, properties: ['product' => 'exact', 'category' => 'partial'])
 ]

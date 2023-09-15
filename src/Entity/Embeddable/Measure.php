@@ -12,9 +12,12 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 class Measure {
     #[
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
-        Serializer\Groups(['read:measure', 
-        'write:measure', 'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
-        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project', 'read:component-attribute', 'write:component-attribute'])
+        Serializer\Groups(['read:measure',
+            'write:measure', 'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics',
+            'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project',
+            'read:production-quality-value', 'write:production-quality-value',
+            'read:reference', 'write:reference'
+        ])
     ]
     private ?string $code = null;
 
@@ -22,7 +25,7 @@ class Measure {
         ORM\Column(length: AbstractUnit::UNIT_CODE_MAX_LENGTH, nullable: true, options: ['collation' => 'utf8mb3_bin']),
         Serializer\Groups(['read:measure', 'write:measure', 
         'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
-        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project','read:component-attribute', 'write:component-attribute'])
+        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project'])
     ]
     private ?string $denominator = null;
 
@@ -33,7 +36,7 @@ class Measure {
         ORM\Column(options: ['default' => 0]),
         Serializer\Groups(['read:measure', 'write:measure', 
         'write:customer', 'write:customer:accounting', 'write:customer', 'write:customer:logistics', 
-        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project', 'read:component-attribute', 'write:component-attribute'])
+        'write:product', 'write:product:logistics', 'write:product:production', 'write:product:project'])
     ]
     private float $value = 0;
 

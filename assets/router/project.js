@@ -1,3 +1,4 @@
+import AppShowGuiProduct from '../components/pages/project/product/AppShowGuiProduct.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
 import {readonly} from 'vue'
@@ -30,9 +31,9 @@ export default [
                 {label: 'Nom', name: 'name'},
                 {label: 'Auto', name: 'auto', sort: false, type: 'boolean'},
                 {label: 'Limite', name: 'boundary', sort: false},
-                {label: 'Cadence', name: 'cadence', search: false, sort: false, type: 'measure'},
+                {label: 'Cadence', measure: {code: 'U/jr', value: 'valeur'}, name: 'cadence', search: false, sort: false, type: 'measure'},
                 {label: 'Prix', name: 'price', search: false, sort: false, type: 'price'},
-                {label: 'Durée', name: 'time', search: false, sort: false, type: 'measure'},
+                {label: 'Durée', measure: {code: 'h', value: 'valeur'}, name: 'time', search: false, sort: false, type: 'measure'},
                 {label: 'Type', name: 'type', options: {base: 'operation-types'}, sortName: 'type.name', type: 'select'}
             ],
             icon: 'atom',
@@ -64,6 +65,12 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Types d\'opérations'
         }
+    },
+    {
+        component: AppShowGuiProduct,
+        meta: {container: false, title: 'Produit — T-Concept GPAO'},
+        name: 'product',
+        path: '/product/:id_product'
     },
     {
         component: AppTablePageSuspense,

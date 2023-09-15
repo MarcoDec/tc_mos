@@ -11,6 +11,7 @@ use Symfony\Component\Filesystem\Exception\InvalidArgumentException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 final class FileManager {
     private readonly string $uploadsDir;
@@ -19,7 +20,8 @@ final class FileManager {
         private readonly ResourceMetadataFactoryInterface $apiMetadatas,
         private readonly DashPathSegmentNameGenerator $dashGenerator,
         private readonly string $dir,
-        private readonly Filesystem $fs
+        private readonly Filesystem $fs,
+        private readonly RequestStack $requestStack
     ) {
         $this->uploadsDir = "$this->dir/uploads";
     }
@@ -32,12 +34,10 @@ final class FileManager {
         if (empty($dashedName = $this->getDashedName($family))) {
             return;
         }
-
         $dir = $this->scandir($dashedName);
         if (empty($icon = $dir->firstStartsWith("{$family->getId()}."))) {
             return;
         }
-
         $family->setFile(new File($icon));
     }
 
@@ -56,6 +56,7 @@ final class FileManager {
     }
 
     public function uploadFamilyIcon(Family $family): void {
+        $host = $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost();
         if (
             empty($file = $family->getFile())
             || !($file instanceof UploadedFile)
@@ -63,7 +64,6 @@ final class FileManager {
         ) {
             return;
         }
-
         $dir = $this->scandir($dashedName);
         if (!empty($first = $dir->firstStartsWith("{$family->getId()}."))) {
             $this->fs->remove($first);
@@ -73,6 +73,8 @@ final class FileManager {
             throw new InvalidArgumentException("Cannot guess extension of {$file->getClientOriginalName()}.");
         }
         $family->setFile($file->move($dir, "{$family->getId()}.{$extension}"));
+        $familySubFolder = $family instanceof \App\Entity\Project\Product\Family ? 'product-families' : 'component-families';
+        $family->setFilePath($host.'/uploads/'.$familySubFolder.'/'.$family->getId().'.'.$extension);
     }
 
     private function checkFolderAndCreateIfNeeded(string $folder): void {

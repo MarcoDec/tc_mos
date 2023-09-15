@@ -1,5 +1,4 @@
 <script setup>
-    import {defineEmits, defineProps} from 'vue'
     import AppCardableTableSortableField from './AppCardableTableSortableField.vue'
     const emit = defineEmits(['trierAlphabet'])
     defineProps({

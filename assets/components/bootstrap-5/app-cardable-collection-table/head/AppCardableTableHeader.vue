@@ -1,6 +1,5 @@
 <script setup>
     import AppCardableTableHeaderfieleds from './AppCardableTableHeaderfieleds.vue'
-    import {defineProps} from 'vue'
 
     const emit = defineEmits(['trierAlphabet'])
 

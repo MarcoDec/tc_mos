@@ -1,4 +1,6 @@
 import AppShowGui from '../components/pages/AppShowGui.vue'
+import AppShowGuiComponent from '../components/pages/purchase/component/AppShowGuiComponent.vue'
+import AppShowGuiSupplier from '../components/pages/purchase/supplier/AppShowGuiSupplier.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageAttribute from '../components/pages/tree/AppTreePageAttribute.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
@@ -24,7 +26,8 @@ export default [
                         {text: 'Entier', value: 'int'},
                         {text: 'Pourcentage', value: 'percent'},
                         {text: 'Texte', value: 'text'},
-                        {text: 'Unité', value: 'unit'}
+                        {text: 'Mesure', value: 'measure'},
+                        {text: 'MesureSelect', value: 'measureSelect'}
                     ],
                     type: 'select',
                     update: false
@@ -56,10 +59,22 @@ export default [
         }
     },
     {
-        component: AppShowGui,
+        component: AppShowGuiSupplier,
         meta: {container: false, title: 'Fournisseur — T-Concept GPAO'},
         name: 'supplier',
-        path: '/supplier'
+        path: '/supplier/:id_supplier'
+    },
+    {
+        component: AppShowGuiComponent,
+        meta: {container: false, title: 'Composant — T-Concept GPAO'},
+        name: 'component',
+        path: '/component/:id_component'
+    },
+    {
+        component: AppShowGui,
+        meta: {container: false, title: 'Equipement — T-Concept GPAO'},
+        name: 'equipment',
+        path: '/equipment'
     },
     {
         component: AppTablePageSuspense,
@@ -77,7 +92,7 @@ export default [
                 {label: 'Valeur', name: 'value', type: 'text'}
             ],
             icon: 'gear',
-            readFilter: '?page=1&pagination=false&type=purchase',
+            readFilter: '?pagination=false&type=purchase',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Paramètres'
         }

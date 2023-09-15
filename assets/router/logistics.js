@@ -38,7 +38,7 @@ export default [
         }
     },
     {
-        component: async () => import('./pages/logistic/AppWarehouseList.vue'),
+        component: async () => import('../components/pages/logistic/warehouse/AppWarehouseList.vue'),
         meta: {requiresAuth: true},
         name: 'warehouse-list',
         path: '/warehouse-list',
@@ -69,7 +69,7 @@ export default [
         }
     },
     {
-        component: async () => import('./pages/logistic/AppWarehouseShow.vue'),
+        component: async () => import('../components/pages/logistic/warehouse/AppWarehouseShow.vue'),
         meta: {requiresAuth: true},
         name: 'warehouse-show',
         path: '/warehouse-show',

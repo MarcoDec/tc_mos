@@ -34,14 +34,7 @@ export default defineStore('suppliers', {
             const response = await api('/api/suppliers', 'GET')
             console.log('response', response);
             this.suppliers = await this.updatePagination(response)
-            console.log('this.suppliers', this.suppliers);
-            // const paginationView = response['hydra:view']
-            // this.pagination = true
-            // this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
-            // this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-            // this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-            // this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
-            // this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]     
+            console.log('this.suppliers', this.suppliers);  
         },
         async delated(payload){
             await api(`/api/suppliers/${payload}`, 'DELETE')

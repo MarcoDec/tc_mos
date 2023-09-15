@@ -16,20 +16,38 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'get' => [
                 'openapi_context' => [
                     'description' => 'Récupère les contreparties de test',
-                    'summary' => 'Récupère les contreparties de test',
-                    'tags' => ['Engine']
+                    'summary' => 'Récupère les contreparties de test'
                 ]
             ],
             'post' => [
                 'openapi_context' => [
                     'description' => 'Créer une contrepartie de test',
-                    'summary' => 'Créer une contrepartie de test',
-                    'tags' => ['Engine']
+                    'summary' => 'Créer une contrepartie de test'
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
             ],
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: [
+            'delete' => [
+                'openapi_context' => [
+                    'description' => 'Supprime une contrepartie de test',
+                    'summary' => 'Supprime une contrepartie de test',
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_ADMIN.'\')'
+            ],
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une contrepartie de test',
+                    'summary' => 'Récupère uns contrepartie de test',
+                ]
+            ],
+            'patch' => [
+                'openapi_context' => [
+                    'description' => 'Modifie une contrepartie de test',
+                    'summary' => 'Modifie une contrepartie de test',
+                ]
+            ]
+        ],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_READER.'\')'
         ],

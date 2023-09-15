@@ -2,6 +2,7 @@
 
 namespace App\Entity\Hr;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -33,6 +34,23 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Créer une plage horaire',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_HR_ADMIN.'\')'
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:time-slot:option'],
+                    'openapi_definition_name' => 'TimeSlot-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les créneaux horaires pour les select',
+                    'summary' => 'Récupère les créneaux horaires pour les select',
+                ],
+                'order' => ['name' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/time-slots/options'
             ]
         ],
         itemOperations: [
@@ -90,7 +108,7 @@ class TimeSlot extends Entity {
         Assert\Length(min: 3, max: 10),
         Assert\NotBlank,
         ORM\Column(length: 10),
-        Serializer\Groups(['read:time-slot', 'write:time-slot'])
+        Serializer\Groups(['read:time-slot', 'write:time-slot', 'read:time-slot:option'])
     ]
     private ?string $name = null;
 
@@ -131,6 +149,11 @@ class TimeSlot extends Entity {
         return $this->startBreak;
     }
 
+    #[Serializer\Groups(['read:time-slot:option'])]
+    final public function getText(): ?string {
+        return $this->getName();
+    }
+    
     final public function setEnd(?DateTimeImmutable $end): self {
         $this->end = $end;
         return $this;
