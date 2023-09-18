@@ -1,34 +1,54 @@
 <script setup>
-    // import AppCompanyFormShow from './AppCompanyFormShow.vue'
+    import api from '../../../../api'
+    import {ref} from 'vue'
+    // import AppCompanyShowInlist from './AppCompanyShowInlist.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
-    // import {useCompanyListStore} from '../../../../stores/company/companys'
-    import useOptions from '../../../../stores/option/options'
-    // import {useRoute} from 'vue-router'
-    import AppCompanyShowInlist from './AppCompanyShowInlist.vue'
+    import AppSuspense from '../../../AppSuspense.vue'
+    import Fa from '../../../Fa'
+    // import {onMounted, onUnmounted} from 'vue'
+    // import {useCompanyStore} from '../../../../stores/management/companies/companies'
+    import {useRoute} from 'vue-router'
 
-    // const route = useRoute()
-    // const idCompany = Number(route.params.id_company)
-    const fetchUnits = useOptions('units')
-    // const useFetchCompanyStore = useCompanyListStore()
-    fetchUnits.fetchOp()
-    // useFetchCompanyStore.fetchOne(idCompany)
+    defineProps({
+        icon: {required: true, type: String},
+        title: {required: true, type: String}
+    })
+    // const emits = defineEmits(['unMounted', 'mounted', 'vnode_unmounted'])
+    const route = useRoute()
+    const idCompany = Number(route.params.id_company)
+    const companyData = ref({})
+    const company = api(`/api/companies/${idCompany}, 'GET`)
+    company.then(item => {
+        companyData.value = item
+    })
 </script>
 
 <template>
-    <AppShowGuiGen>
-        <template #gui-header>
-            <!-- <div v-if="useFetchCompanyStore.isLoaded" class="bg-white border-1 border-dark">
-                <b>{{ useFetchCompanyStore.company.code }}</b>: {{ useFetchCompanyStore.company.name }}
-            </div> -->
-        </template>
-        <template #gui-left>
-            <!-- <AppSuspense><AppCompanyFormShow v-if="useFetchCompanyStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense> -->
-        </template>
-        <template #gui-bottom>
-            <AppSuspense><AppCompanyShowInlist/></AppSuspense>
-        </template>
-        <template #gui-right/>
-    </AppShowGuiGen>
+    <AppSuspense>
+        <AppShowGuiGen>
+            <template #gui-header>
+                <AppSuspense>
+                    <div class="bg-white">
+                        <h1>
+                            <button class="text-dark">
+                                <Fa :icon="icon"/>
+                            </button>
+                            {{ title }}: {{ companyData.name }}
+                        </h1>
+                    </div>
+                </AppSuspense>
+            </template>
+            <template #gui-left>
+                <AppSuspense>LEFT</AppSuspense>
+            </template>
+            <template #gui-right>
+                <AppSuspense>RIGHT</AppSuspense>
+            </template>
+            <template #gui-bottom>
+                <AppSuspense>BOTTOM<!--<AppCompanyShowInlist/>--></AppSuspense>
+            </template>
+        </AppShowGuiGen>
+    </AppSuspense>
 </template>
 
 <style>
