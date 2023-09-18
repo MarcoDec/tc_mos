@@ -11,7 +11,6 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
             this.employees = this.employees.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch(criteria = '?page=1') {
-            console.log('criteria', criteria)
             if (this.currentPage < 1){
                 this.currentPage = 1
             }

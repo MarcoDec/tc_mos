@@ -238,7 +238,6 @@ export const useComponentListReferenceStore = defineStore('componentListReferenc
     },
     getters: {
         itemsComponentReference: state => state.componentReference.map(item => {
-            console.log(item)
             const newObject = {
                 '@id': item['@id'],
                 name: item.name,

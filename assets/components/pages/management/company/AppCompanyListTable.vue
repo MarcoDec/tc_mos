@@ -33,7 +33,6 @@
     const optionsSocieties = fetchSocieties.options.map(item => ({
         label: item.text, text: item.text, value: item['@id']
     }))
-    console.log(optionsSocieties)
     //endregion
     //region recupération de la liste des options devises
     const fetchCurrencies = useOptions('currencies')
@@ -42,7 +41,6 @@
     const optionsCurrencies = fetchCurrencies.options.map(item => ({
         label: item.text, text: item.text, value: item['@id']
     }))
-    console.log(optionsCurrencies)
     //endregion
     //region initialisation des éléments pour le tableau de liste
     const tabFields = [
@@ -88,7 +86,6 @@
         await refreshTable()
     }
     async function search(inputValues) {
-        console.log(inputValues)
         companyListCriteria.resetAllFilter()
         if (inputValues.name) companyListCriteria.addFilter('name', inputValues.name)
         if (inputValues.society) companyListCriteria.addFilter('society.id', inputValues.society.match(getId)[1])

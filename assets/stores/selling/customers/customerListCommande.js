@@ -267,7 +267,6 @@ export const useCustomerListCommandeStore = defineStore('customerListCommande', 
     },
     getters: {
         itemsCustomerCommande: state => state.customerCommande.map(item => {
-            // console.log(item)
             const newObject = {
                 '@id': item['@id'],
                 ref: item.order.ref,

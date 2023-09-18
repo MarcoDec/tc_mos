@@ -3,8 +3,8 @@
     import {useCompanyListEmployeStore} from '../../../../../stores/company/companyListEmploye'
     import {useRoute, useRouter} from 'vue-router'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import AppRow from '../../../../AppRow'
-    import AppCol from '../../../../AppCol'
+    //import AppRow from '../../../../AppRow'
+    //import AppCol from '../../../../AppCol'
 
     const roleuser = ref('reader')
     const sortable = ref(false)
@@ -23,7 +23,6 @@
     employeeListFetchCriteria.addFilter('company', `/api/companies/${companyId}`)
     //storeCompanyListEmploye.setIdCompany(companyId)
     await storeCompanyListEmploye.fetch(employeeListFetchCriteria.getFetchCriteria)
-    console.log(storeCompanyListEmploye.employees)
     const itemsTable = ref(storeCompanyListEmploye.employees)
     const getId = /.*?\/(\d+)/
 
@@ -85,10 +84,10 @@
     ]
 
     function update(item) {
-        console.log('update', item)
         //Ouverture de la fiche employée
         const itemId = item['@id'].match(getId)[1]
-        const routeData = router.resolve({name: 'employee', params: {'id_employee': itemId}})
+        // eslint-disable-next-line camelcase
+        const routeData = router.resolve({name: 'employee', params: {id_employee: itemId}})
         window.open(routeData.href, '_blank')
     }
 

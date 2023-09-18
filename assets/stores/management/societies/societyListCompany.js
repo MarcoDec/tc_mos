@@ -249,7 +249,6 @@ export const useSocietyListCompanyStore = defineStore('societyListCompany', {
     },
     getters: {
         itemsSocietyCompany: state => state.societyCompany.map(item => {
-            console.log(item)
             const newObject = {
                 '@id': item['@id'],
                 name: item.name,

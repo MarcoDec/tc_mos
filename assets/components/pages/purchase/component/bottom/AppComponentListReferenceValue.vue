@@ -110,7 +110,6 @@
         $id: 'componentReferenceValueQtyLargeur'
     }
     const storeUnitReferenceValueQtyLargeur = useField(fieldsForm[3], parentQtyLargeur)
-    console.log(storeUnitReferenceValueQtyHauteur.measure.code.optionsList)
     fieldsForm[3].measure.code = storeUnitReferenceValueQtyLargeur.measure.code
     fieldsForm[3].measure.value = storeUnitReferenceValueQtyLargeur.measure.value
     const tabFields = [
