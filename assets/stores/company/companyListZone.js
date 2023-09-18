@@ -28,14 +28,14 @@ export const useCompanyListZoneStore = defineStore('companyListZone', {
         // },
         async deleted(payload) {
             await api(`/api/zones/${payload}`, 'DELETE')
-            this.companyZone = this.companyZone.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
+            this.zones = this.zones.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
-        async fetch() {
+        async fetch(criteria = '?page=1') {
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
-            const response = await api(`/api/zones?company=/api/companies/${this.companyID}`, 'GET')
-            this.companyZone = await this.updatePagination(response)
+            const response = await api(`/api/zones${criteria}`, 'GET')
+            this.zones = await this.updatePagination(response)
         },
         async filterBy(payload) {
             let url = `/api/zones?company=/api/companies/${this.companyID}&`
@@ -48,12 +48,12 @@ export const useCompanyListZoneStore = defineStore('companyListZone', {
                 url += 'page=1'
                 this.currentPage = 1
                 const response = await api(url, 'GET')
-                this.companyZone = await this.updatePagination(response)
+                this.zones = await this.updatePagination(response)
             }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/zones?company=/api/companies/${this.companyID}&page=${nPage}`, 'GET')
-            this.companyZone = await this.updatePagination(response)
+            this.zones = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
@@ -63,7 +63,7 @@ export const useCompanyListZoneStore = defineStore('companyListZone', {
                     url += `name=${payload.filterBy.value.name}&`
                 }
                 response = await api(url, 'GET')
-                this.companyZone = await this.updatePagination(response)
+                this.zones = await this.updatePagination(response)
             } else if (payload.filter.value === true){
                 let url = `/api/zones?company=/api/companies/${this.companyID}&`
                 if (payload.filterBy.value.name !== '') {
@@ -71,17 +71,17 @@ export const useCompanyListZoneStore = defineStore('companyListZone', {
                 }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
-                this.companyZone = await this.updatePagination(response)
+                this.zones = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
                 response = await api(`/api/zones?company=/api/companies/${this.companyID}&page=${payload.nPage}`, 'GET')
-                this.companyZone = await this.updatePagination(response)
+                this.zones = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'company') {
                     response = await api(`/api/zones?company=/api/companies/${this.companyID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
                     response = await api(`/api/zones?company=/api/companies/${this.companyID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
-                this.companyZone = await this.updatePagination(response)
+                this.zones = await this.updatePagination(response)
             }
         },
 
@@ -93,14 +93,14 @@ export const useCompanyListZoneStore = defineStore('companyListZone', {
                 }
                 url += `page=${this.currentPage}`
                 response = await api(url, 'GET')
-                this.companyZone = await this.updatePagination(response)
+                this.zones = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'company') {
                     response = await api(`/api/zones?company=/api/companies/${this.companyID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
                     response = await api(`/api/zones?company=/api/companies/${this.companyID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
-                this.companyZone = await this.updatePagination(response)
+                this.zones = await this.updatePagination(response)
             }
         },
         async updatePagination(response) {
@@ -134,7 +134,7 @@ export const useCompanyListZoneStore = defineStore('companyListZone', {
         // }
     },
     getters: {
-        itemsCompanyZone: state => state.companyZone.map(item => {
+        itemsCompanyZone: state => state.zones.map(item => {
             const newObject = {
                 '@id': `${item['@id']}`,
                 name: item.name
@@ -149,7 +149,7 @@ export const useCompanyListZoneStore = defineStore('companyListZone', {
         nextPage: '',
         pagination: false,
         previousPage: '',
-        companyZone: [],
+        zones: [],
         companyID: 0
     })
 })

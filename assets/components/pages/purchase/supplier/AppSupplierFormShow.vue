@@ -63,7 +63,7 @@
         ...fetchSocietyStore.incotermsValue
     }))
     function manageErrors(e) {
-        console.log(e)
+        console.error(e)
     }
 </script>
 

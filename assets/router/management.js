@@ -160,6 +160,10 @@ export default [
         component: AppShowGuiCompany,
         meta: {container: false, title: 'Entreprise — T-Concept GPAO'},
         name: 'company',
-        path: '/company/:id_company'
+        path: '/company/:id_company',
+        props: {
+            icon: 'city',
+            title: 'Compagnie'
+        }
     }
 ]
