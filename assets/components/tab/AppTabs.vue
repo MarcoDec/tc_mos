@@ -42,7 +42,7 @@
 
 <style scoped>
     #gui-start-bottom {
-        flex-direction: row;
+        flex-direction: column;
         width: 100vw;
     }
 

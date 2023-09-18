@@ -6,36 +6,17 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
         setIdCompany(id){
             this.companyID = id
         },
-        // async addEmployeEmploye(payload){
-        //     const violations = []
-        //     try {
-        //         if (payload.quantite.value !== ''){
-        //             payload.quantite.value = parseInt(payload.quantite.value)
-        //         }
-        //         const element = {
-        //             company: payload.composant,
-        //             refFournisseur: payload.refFournisseur,
-        //             prix: payload.prix,
-        //             quantity: payload.quantite,
-        //             texte: payload.texte
-        //         }
-        //         await api('/api/company-stocks', 'POST', element)
-        //         this.fetch()
-        //     } catch (error) {
-        //         violations.push({message: error})
-        //     }
-        //     return violations
-        // },
         async deleted(payload) {
             await api(`/api/employees/${payload}`, 'DELETE')
-            this.companyEmploye = this.companyEmploye.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
+            this.employees = this.employees.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
-        async fetch() {
+        async fetch(criteria = '?page=1') {
+            console.log('criteria', criteria)
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
-            const response = await api(`/api/employees?company=/api/companies/${this.companyID}`, 'GET')
-            this.companyEmploye = await this.updatePagination(response)
+            const response = await api(`/api/employees${criteria}`, 'GET')
+            this.employees = await this.updatePagination(response)
         },
         async filterBy(payload) {
             let url = `/api/employees?company=/api/companies/${this.companyID}&`
@@ -54,15 +35,21 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
                 if (payload.entryDate !== '') {
                     url += `entryDate=${payload.entryDate}&`
                 }
+                if (payload.initials !== '') {
+                    url += `initials=${payload.initials}&`
+                }
+                if (payload.username !== '') {
+                    url += `username=${payload.username}&`
+                }
                 url += 'page=1'
                 this.currentPage = 1
                 const response = await api(url, 'GET')
-                this.companyEmploye = await this.updatePagination(response)
+                this.employees = await this.updatePagination(response)
             }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/employees?company=/api/companies/${this.companyID}&page=${nPage}`, 'GET')
-            this.companyEmploye = await this.updatePagination(response)
+            this.employees = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
@@ -80,8 +67,14 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
                 if (payload.filterBy.value.entryDate !== '') {
                     url += `entryDate=${payload.filterBy.value.entryDate}&`
                 }
+                if (payload.filterBy.value.username !== '') {
+                    url += `username=${payload.filterBy.value.username}&`
+                }
+                if (payload.filterBy.value.initials !== '') {
+                    url += `initials=${payload.filterBy.value.initials}&`
+                }
                 response = await api(url, 'GET')
-                this.companyEmploye = await this.updatePagination(response)
+                this.employees = await this.updatePagination(response)
             } else if (payload.filter.value === true){
                 let url = `/api/employees?company=/api/companies/${this.companyID}&`
                 if (payload.filterBy.value.name !== '') {
@@ -96,19 +89,25 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
                 if (payload.filterBy.value.entryDate !== '') {
                     url += `entryDate=${payload.filterBy.value.entryDate}&`
                 }
+                if (payload.filterBy.value.username !== '') {
+                    url += `username=${payload.filterBy.value.username}&`
+                }
+                if (payload.filterBy.value.initials !== '') {
+                    url += `initials=${payload.filterBy.value.initials}&`
+                }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
-                this.companyEmploye = await this.updatePagination(response)
+                this.employees = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
                 response = await api(`/api/employees?company=/api/companies/${this.companyID}&page=${payload.nPage}`, 'GET')
-                this.companyEmploye = await this.updatePagination(response)
+                this.employees = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'company') {
                     response = await api(`/api/employees?company=/api/companies/${this.companyID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
                     response = await api(`/api/employees?company=/api/companies/${this.companyID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
-                this.companyEmploye = await this.updatePagination(response)
+                this.employees = await this.updatePagination(response)
             }
         },
 
@@ -127,16 +126,22 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
                 if (filterBy.value.entryDate !== '') {
                     url += `entryDate=${filterBy.value.entryDate}&`
                 }
+                if (filterBy.value.username !== '') {
+                    url += `username=${filterBy.value.username}&`
+                }
+                if (filterBy.value.initials !== '') {
+                    url += `initials=${filterBy.value.initials}&`
+                }
                 url += `page=${this.currentPage}`
                 response = await api(url, 'GET')
-                this.companyEmploye = await this.updatePagination(response)
+                this.employees = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'company') {
                     response = await api(`/api/employees?company=/api/companies/${this.companyID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
                     response = await api(`/api/employees?company=/api/companies/${this.companyID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
-                this.companyEmploye = await this.updatePagination(response)
+                this.employees = await this.updatePagination(response)
             }
         },
         async updatePagination(response) {
@@ -159,18 +164,9 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
             this.pagination = false
             return responseData
         }
-        // async updateWarehouseStock(payload){
-        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-        //     if (payload.sortable.value === true || payload.filter.value === true) {
-        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-        //     } else {
-        //         this.itemsPagination(this.currentPage)
-        //     }
-        //     this.fetch()
-        // }
     },
     getters: {
-        itemsCompanyEmploye: state => state.companyEmploye.map(item => {
+        itemsCompanyEmploye: state => state.employees.map(item => {
             let dt = ''
             if (item.entryDate !== null){
                 dt = item.entryDate.split('T')[0]
@@ -180,7 +176,9 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
                 name: item.name,
                 surname: item.surname,
                 entryDate: dt,
-                notes: item.notes
+                notes: item.notes,
+                username: item.username,
+                initials: item.initials
             }
             return newObject
         })
@@ -192,7 +190,7 @@ export const useCompanyListEmployeStore = defineStore('companyListEmploye', {
         nextPage: '',
         pagination: false,
         previousPage: '',
-        companyEmploye: [],
+        employees: [],
         companyID: 0
     })
 })

@@ -6,7 +6,7 @@
         indice: {required: true, type: Number},
         shouldDelete: {required: false, default: true}
     })
-    console.log('utilisation indice à confirmer', props.indice)
+    // TODO : utilisation indice à confirmer'
     const id = Number(props.item['@id'].match(/\d+/)[0])
     const emit = defineEmits(['deleted', 'update'])
     function update(){

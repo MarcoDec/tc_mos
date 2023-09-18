@@ -1,70 +1,51 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useCompanyListEmployeStore} from '../../../../../stores/company/companyListEmploye'
-    import {useRoute} from 'vue-router'
-    // import useField from '../../../../stores/field/field'
+    import {useRoute, useRouter} from 'vue-router'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import AppRow from '../../../../AppRow'
+    import AppCol from '../../../../AppCol'
 
     const roleuser = ref('reader')
-    // let violations = []
-    const updated = ref(false)
-    const AddForm = ref(false)
-    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
-    let filterBy = {}
+    const filterBy = {}
 
+    const router = useRouter()
+    //region récupération données d'entrée
     const maRoute = useRoute()
     const companyId = maRoute.params.id_company
-
+    //endregion
+    //region récupération initiale de la liste des employées associés à la compagnie
     const storeCompanyListEmploye = useCompanyListEmployeStore()
-    storeCompanyListEmploye.setIdCompany(companyId)
-    await storeCompanyListEmploye.fetch()
-    const itemsTable = ref(storeCompanyListEmploye.itemsCompanyEmploye)
-    const formData = ref({
-        name: null, surname: null, notes: null, entryDate: null
-    })
-
-    // const fieldsForm = [
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Nom',
-    //         name: 'name',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date',
-    //         name: 'date',
-    //         sort: true,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Type',
-    //         name: 'type',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Fini',
-    //         name: 'fini',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     }
-    // ]
+    const employeeListFetchCriteria = useFetchCriteria('companyEmployeeInListFetchCriteria')
+    employeeListFetchCriteria.addFilter('company', `/api/companies/${companyId}`)
+    //storeCompanyListEmploye.setIdCompany(companyId)
+    await storeCompanyListEmploye.fetch(employeeListFetchCriteria.getFetchCriteria)
+    console.log(storeCompanyListEmploye.employees)
+    const itemsTable = ref(storeCompanyListEmploye.employees)
+    const getId = /.*?\/(\d+)/
 
     const tabFields = [
+        {
+            create: false,
+            filter: true,
+            label: 'Login',
+            name: 'username',
+            sort: true,
+            type: 'text',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
+            label: 'Initiales',
+            name: 'initials',
+            sort: true,
+            type: 'text',
+            update: true
+        },
         {
             create: false,
             filter: true,
@@ -103,77 +84,12 @@
         }
     ]
 
-    // function ajoute(){
-    //     AddForm.value = true
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    // }
-
-    // async function ajoutCompanyEvenementQualite(){
-    //     // const form = document.getElementById('addCompanyEvenementQualite')
-    //     // const formData1 = new FormData(form)
-
-    //     // if (typeof formData.value.families !== 'undefined') {
-    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-    //     // }
-
-    //     const itemsAddData = {
-    //         client: formData.value.client,
-    //         reference: formData.value.reference,
-    //         quantiteConfirmee: formData.value.quantiteConfirmee,
-    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffectuee: formData.value.quantiteEffectuee,
-    //         dateLivraison: formData.value.dateLivraison,
-    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-    //     }
-    //     violations = await storeCompanyListEmploye.addCompanyEvenementQualite(itemsAddData)
-
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeCompanyListEmploye.itemsCompanyEmploye]
-    //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
-
     function update(item) {
-        updated.value = true
-        AddForm.value = true
-
-        const itemsData = {
-            name: item.name,
-            surname: item.surname,
-            entryDate: item.entryDate,
-            notes: item.notes
-        }
-        formData.value = itemsData
+        console.log('update', item)
+        //Ouverture de la fiche employée
+        const itemId = item['@id'].match(getId)[1]
+        const routeData = router.resolve({name: 'employee', params: {'id_employee': itemId}})
+        window.open(routeData.href, '_blank')
     }
 
     async function deleted(id){
@@ -191,45 +107,41 @@
     }
 
     async function search(inputValues) {
-        const payload = {
-            name: inputValues.name ?? '',
-            surname: inputValues.surname ?? '',
-            entryDate: inputValues.entryDate ?? '',
-            notes: inputValues.notes ?? ''
-        }
-
-        await storeCompanyListEmploye.filterBy(payload)
-        itemsTable.value = [...storeCompanyListEmploye.itemsCompanyEmploye]
-        filter.value = true
-        filterBy = computed(() => payload)
+        employeeListFetchCriteria.resetAllFilter()
+        employeeListFetchCriteria.addFilter('company', `/api/companies/${companyId}`)
+        if (inputValues.name) employeeListFetchCriteria.addFilter('name', inputValues.name)
+        if (inputValues.surname) employeeListFetchCriteria.addFilter('surname', inputValues.surname)
+        if (inputValues.entryDate) employeeListFetchCriteria.addFilter('entryDate', inputValues.entryDate, 'datetime')
+        if (inputValues.notes) employeeListFetchCriteria.addFilter('notes', inputValues.notes)
+        if (inputValues.username) employeeListFetchCriteria.addFilter('username', inputValues.username)
+        if (inputValues.initials) employeeListFetchCriteria.addFilter('initials', inputValues.initials)
+        await storeCompanyListEmploye.fetch(employeeListFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeCompanyListEmploye.employees
     }
     async function cancelSearch() {
         filter.value = true
-        storeCompanyListEmploye.fetch()
+        employeeListFetchCriteria.resetAllFilter()
+        employeeListFetchCriteria.addFilter('company', `/api/companies/${companyId}`)
+        await storeCompanyListEmploye.fetch(employeeListFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeCompanyListEmploye.employees
     }
 </script>
 
 <template>
     <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Ajouter
-            </AppBtn>
-        </AppCol> -->
         <AppRow>
-            <AppCol>
+            <AppCol class="p-3">
                 <AppCardableTable
                     :current-page="storeCompanyListEmploye.currentPage"
                     :fields="tabFields"
                     :first-page="storeCompanyListEmploye.firstPage"
                     :items="itemsTable"
                     :last-page="storeCompanyListEmploye.lastPage"
-                    :min="AddForm"
                     :next-page="storeCompanyListEmploye.nextPage"
                     :pag="storeCompanyListEmploye.pagination"
                     :previous-page="storeCompanyListEmploye.previousPage"
                     :user="roleuser"
+                    :should-delete="false"
                     form="formCompanyEmployeCardableTable"
                     @update="update"
                     @deleted="deleted"
@@ -238,38 +150,11 @@
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
-                <AppCard class="bg-blue col" title="">
-                    <AppRow>
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </AppRow>
-                    <br/>
-                    <AppFormCardable id="addCompanyEvenementQualite" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
-                    <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutCompanyEvenementQualite">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </AppCol>
-                </AppCard>
-            </AppCol> -->
         </AppRow>
     </div>
 </template>
 
 <style scoped>
-    .btn-float-right{
-        float: right;
-    }
     .gui-bottom {
         overflow: hidden;
     }

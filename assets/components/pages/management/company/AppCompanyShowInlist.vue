@@ -12,7 +12,7 @@
 
 <template>
     <div>
-        <AppTabs id="gui-start-bottom" class="gui-start-content-bottom" format-nav="block">
+        <AppTabs id="gui-start-bottom" class="gui-start-content-bottom" format-nav="flex">
             <AppTab id="gui-start-company-employe" active title="Employés" icon="user-circle" tabs="gui-start-bottom">
                 <AppSuspense>
                     <AppCompanyListEmploye/>

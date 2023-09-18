@@ -50,6 +50,9 @@
                 <AppNavbarLink icon="city" to="society-list" variant="success">
                     Sociétés
                 </AppNavbarLink>
+                <AppNavbarLink icon="city" to="company-list" variant="success">
+                    Compagnies
+                </AppNavbarLink>
                 <AppNavbarLink icon="calendar" to="agenda" variant="success">
                     Agenda
                 </AppNavbarLink>
