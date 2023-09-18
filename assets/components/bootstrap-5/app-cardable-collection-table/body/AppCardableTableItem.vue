@@ -3,10 +3,9 @@
     const props = defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
-        indice: {required: true, type: Number},
-        shouldDelete: {required: false, default: true}
+        shouldDelete: {required: false, default: true},
+        shouldSee: {required: false, default: true}
     })
-    // TODO : utilisation indice à confirmer'
     const id = Number(props.item['@id'].match(/\d+/)[0])
     const emit = defineEmits(['deleted', 'update'])
     function update(){
@@ -25,7 +24,7 @@
 
 <template>
     <td>
-        <button class="btn btn-icon btn-secondary btn-sm mx-2" @click="update">
+        <button v-if="shouldSee" class="btn btn-icon btn-secondary btn-sm mx-2" @click="update">
             <Fa icon="eye"/>
         </button>
         <template v-if="shouldDelete">
