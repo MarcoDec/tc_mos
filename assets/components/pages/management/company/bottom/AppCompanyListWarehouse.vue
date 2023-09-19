@@ -1,12 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue'
     import {useCompanyListWarehouseStore} from '../../../../../stores/company/companyListWarehouse'
-    import {useRoute} from 'vue-router'
-    // import useField from '../../../../stores/field/field'
+    import {useRoute, useRouter} from 'vue-router'
 
     const roleuser = ref('reader')
     // let violations = []
-    const updated = ref(false)
     const AddForm = ref(false)
     // const isPopupVisible = ref(false)
     const sortable = ref(false)
@@ -16,53 +14,12 @@
 
     const maRoute = useRoute()
     const companyId = maRoute.params.id_company
+    const router = useRouter()
 
     const storeCompanyListWarehouse = useCompanyListWarehouseStore()
     storeCompanyListWarehouse.setIdCompany(companyId)
     await storeCompanyListWarehouse.fetch()
     const itemsTable = ref(storeCompanyListWarehouse.itemsCompanyWarehouse)
-    const formData = ref({
-        name: null
-    })
-
-    // const fieldsForm = [
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Nom',
-    //         name: 'name',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date',
-    //         name: 'date',
-    //         sort: true,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Type',
-    //         name: 'type',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Fini',
-    //         name: 'fini',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     }
-    // ]
 
     const tabFields = [
         {
@@ -75,80 +32,13 @@
             update: true
         }
     ]
-
-    // function ajoute(){
-    //     AddForm.value = true
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    // }
-
-    // async function ajoutCompanyEvenementQualite(){
-    //     // const form = document.getElementById('addCompanyEvenementQualite')
-    //     // const formData1 = new FormData(form)
-
-    //     // if (typeof formData.value.families !== 'undefined') {
-    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-    //     // }
-
-    //     const itemsAddData = {
-    //         client: formData.value.client,
-    //         reference: formData.value.reference,
-    //         quantiteConfirmee: formData.value.quantiteConfirmee,
-    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffectuee: formData.value.quantiteEffectuee,
-    //         dateLivraison: formData.value.dateLivraison,
-    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-    //     }
-    //     violations = await storeCompanyListWarehouse.addCompanyEvenementQualite(itemsAddData)
-
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeCompanyListWarehouse.itemsCompanyWarehouse]
-    //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
+    const getId = /.*?\/(\d+)/
 
     function update(item) {
-        updated.value = true
-        AddForm.value = true
-
-        const itemsData = {
-            name: item.name
-        }
-        formData.value = itemsData
-    }
-
-    async function deleted(id){
-        await storeCompanyListWarehouse.deleted(id)
-        itemsTable.value = [...storeCompanyListWarehouse.itemsCompanyWarehouse]
+        const itemId = item['@id'].match(getId)[1]
+        // eslint-disable-next-line camelcase
+        const routeData = router.resolve({name: 'warehouse-show', params: {id_warehouse: itemId}})
+        window.open(routeData.href, '_blank')
     }
     async function getPage(nPage){
         await storeCompanyListWarehouse.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
@@ -172,18 +62,13 @@
     }
     async function cancelSearch() {
         filter.value = true
-        storeCompanyListWarehouse.fetch()
+        await storeCompanyListWarehouse.fetch()
+        itemsTable.value = storeCompanyListWarehouse.itemsCompanyWarehouse
     }
 </script>
 
 <template>
     <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Ajouter
-            </AppBtn>
-        </AppCol> -->
         <AppRow>
             <AppCol>
                 <AppCardableTable
@@ -197,38 +82,15 @@
                     :pag="storeCompanyListWarehouse.pagination"
                     :previous-page="storeCompanyListWarehouse.previousPage"
                     :user="roleuser"
+                    :should-see="true"
+                    :should-delete="false"
                     form="formCompanyWarehouseCardableTable"
                     @update="update"
-                    @deleted="deleted"
                     @get-page="getPage"
                     @trier-alphabet="trierAlphabet"
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
-                <AppCard class="bg-blue col" title="">
-                    <AppRow>
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </AppRow>
-                    <br/>
-                    <AppFormCardable id="addCompanyEvenementQualite" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
-                    <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutCompanyEvenementQualite">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </AppCol>
-                </AppCard>
-            </AppCol> -->
         </AppRow>
     </div>
 </template>
