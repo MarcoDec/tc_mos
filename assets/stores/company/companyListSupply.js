@@ -6,36 +6,16 @@ export const useCompanyListSupplyStore = defineStore('companyListSupply', {
         setIdCompany(id){
             this.companyID = id
         },
-        // async addSupplySupply(payload){
-        //     const violations = []
-        //     try {
-        //         if (payload.quantite.value !== ''){
-        //             payload.quantite.value = parseInt(payload.quantite.value)
-        //         }
-        //         const element = {
-        //             company: payload.composant,
-        //             refFournisseur: payload.refFournisseur,
-        //             prix: payload.prix,
-        //             quantity: payload.quantite,
-        //             texte: payload.texte
-        //         }
-        //         await api('/api/company-stocks', 'POST', element)
-        //         this.fetch()
-        //     } catch (error) {
-        //         violations.push({message: error})
-        //     }
-        //     return violations
-        // },
         async deleted(payload) {
             await api(`/api/supplies/${payload}`, 'DELETE')
-            this.companySupply = this.companySupply.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
+            this.companySupplies = this.companySupplies.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
-        async fetch() {
+        async fetch(criteria = '?page=1') {
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
-            const response = await api(`/api/supplies?company=/api/companies/${this.companyID}`, 'GET')
-            this.companySupply = await this.updatePagination(response)
+            const response = await api(`/api/supplies${criteria}`, 'GET')
+            this.companySupplies = await this.updatePagination(response)
         },
         async filterBy(payload) {
             let url = `/api/supplies?company=/api/companies/${this.companyID}&`
@@ -48,12 +28,12 @@ export const useCompanyListSupplyStore = defineStore('companyListSupply', {
                 url += 'page=1'
                 this.currentPage = 1
                 const response = await api(url, 'GET')
-                this.companySupply = await this.updatePagination(response)
+                this.companySupplies = await this.updatePagination(response)
             }
         },
         async itemsPagination(nPage) {
             const response = await api(`/api/supplies?company=/api/companies/${this.companyID}&page=${nPage}`, 'GET')
-            this.companySupply = await this.updatePagination(response)
+            this.companySupplies = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
@@ -63,7 +43,7 @@ export const useCompanyListSupplyStore = defineStore('companyListSupply', {
                     url += `ref=${payload.filterBy.value.ref}&`
                 }
                 response = await api(url, 'GET')
-                this.companySupply = await this.updatePagination(response)
+                this.companySupplies = await this.updatePagination(response)
             } else if (payload.filter.value === true){
                 let url = `/api/supplies?company=/api/companies/${this.companyID}&`
                 if (payload.filterBy.value.ref !== '') {
@@ -71,17 +51,17 @@ export const useCompanyListSupplyStore = defineStore('companyListSupply', {
                 }
                 url += `page=${payload.nPage}`
                 response = await api(url, 'GET')
-                this.companySupply = await this.updatePagination(response)
+                this.companySupplies = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
                 response = await api(`/api/supplies?company=/api/companies/${this.companyID}&page=${payload.nPage}`, 'GET')
-                this.companySupply = await this.updatePagination(response)
+                this.companySupplies = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'company') {
                     response = await api(`/api/supplies?company=/api/companies/${this.companyID}&order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
                     response = await api(`/api/supplies?company=/api/companies/${this.companyID}&order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
-                this.companySupply = await this.updatePagination(response)
+                this.companySupplies = await this.updatePagination(response)
             }
         },
 
@@ -93,14 +73,14 @@ export const useCompanyListSupplyStore = defineStore('companyListSupply', {
                 }
                 url += `page=${this.currentPage}`
                 response = await api(url, 'GET')
-                this.companySupply = await this.updatePagination(response)
+                this.companySupplies = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'company') {
                     response = await api(`/api/supplies?company=/api/companies/${this.companyID}&order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
                     response = await api(`/api/supplies?company=/api/companies/${this.companyID}&order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
-                this.companySupply = await this.updatePagination(response)
+                this.companySupplies = await this.updatePagination(response)
             }
         },
         async updatePagination(response) {
@@ -123,21 +103,18 @@ export const useCompanyListSupplyStore = defineStore('companyListSupply', {
             this.pagination = false
             return responseData
         }
-        // async updateWarehouseStock(payload){
-        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-        //     if (payload.sortable.value === true || payload.filter.value === true) {
-        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-        //     } else {
-        //         this.itemsPagination(this.currentPage)
-        //     }
-        //     this.fetch()
-        // }
     },
     getters: {
-        itemsCompanySupply: state => state.companySupply.map(item => {
+        itemsCompanySupply: state => state.companySupplies.map(item => {
             const newObject = {
                 '@id': `${item['@id']}`,
-                ref: item.ref
+                ref: item.ref,
+                proportion: item.proportion,
+                'product.code': item.product.code,
+                'product.index': item.product.index,
+                'product.name': item.product.name,
+                'product.kind': item.product.kind,
+                'product.@id': item.product['@id']
             }
             return newObject
         })
@@ -149,7 +126,7 @@ export const useCompanyListSupplyStore = defineStore('companyListSupply', {
         nextPage: '',
         pagination: false,
         previousPage: '',
-        companySupply: [],
+        companySupplies: [],
         companyID: 0
     })
 })

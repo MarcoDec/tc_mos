@@ -19,7 +19,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['company', 'product']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial', 'company' => 'exact']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['ref' => 'partial', 'proportion' => 'partial', 'company' => 'exact', 'product.code' => 'partial', 'product.index' => 'partial', 'product.name' => 'partial', 'product.kind' => 'partial']),
 
     ApiResource(
         description: 'Fourniture',
@@ -67,7 +67,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'openapi_definition_name' => 'Supply-read',
             'skip_null_values' => false
         ],
-        paginationEnabled: false
+        paginationClientEnabled: true
     ),
     ORM\Entity
 ]
@@ -90,7 +90,7 @@ class Supply extends Entity {
     private ?Incoterms $incoterms = null;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/4'),
+        ApiProperty(description: 'Produit', readableLink: true, example: '/api/products/4'),
         Assert\NotBlank,
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
