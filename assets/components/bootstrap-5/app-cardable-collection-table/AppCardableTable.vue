@@ -78,5 +78,6 @@
 <style scoped>
     .pagination{
         float: right;
+        margin-right:20px;
     }
 </style>

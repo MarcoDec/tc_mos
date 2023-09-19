@@ -1,7 +1,7 @@
 <script setup>
     import api from '../../../../api'
     import {ref} from 'vue'
-    // import AppCompanyShowInlist from './AppCompanyShowInlist.vue'
+    import AppCompanyShowInlist from './AppCompanyShowInlist.vue'
     import AppShowGuiGen from '../../AppShowGuiGen.vue'
     import AppSuspense from '../../../AppSuspense.vue'
     import Fa from '../../../Fa'
@@ -45,7 +45,7 @@
                 <AppSuspense>RIGHT</AppSuspense>
             </template>
             <template #gui-bottom>
-                <AppSuspense>BOTTOM<!--<AppCompanyShowInlist/>--></AppSuspense>
+                <AppSuspense><AppCompanyShowInlist/></AppSuspense>
             </template>
         </AppShowGuiGen>
     </AppSuspense>

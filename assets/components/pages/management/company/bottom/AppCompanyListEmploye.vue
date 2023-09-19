@@ -7,10 +7,7 @@
     //import AppCol from '../../../../AppCol'
 
     const roleuser = ref('reader')
-    const sortable = ref(false)
     const filter = ref(false)
-    let trierAlpha = {}
-    const filterBy = {}
 
     const router = useRouter()
     //region récupération données d'entrée
@@ -66,6 +63,15 @@
         {
             create: false,
             filter: true,
+            label: 'Actif/Inactif',
+            name: 'userEnabled',
+            sort: true,
+            type: 'boolean',
+            update: true
+        },
+        {
+            create: false,
+            filter: true,
             label: 'Notes',
             name: 'notes',
             sort: true,
@@ -96,13 +102,15 @@
         itemsTable.value = [...storeCompanyListEmploye.itemsCompanyEmploye]
     }
     async function getPage(nPage){
-        await storeCompanyListEmploye.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
-        itemsTable.value = [...storeCompanyListEmploye.itemsCompanyEmploye]
+        console.log('page demandée', nPage)
+        employeeListFetchCriteria.page = nPage
+        await storeCompanyListEmploye.fetch(employeeListFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeCompanyListEmploye.employees
     }
     async function trierAlphabet(payload) {
-        await storeCompanyListEmploye.sortableItems(payload, filterBy, filter)
-        sortable.value = true
-        trierAlpha = computed(() => payload)
+        storeCompanyListEmploye.addSort(payload.name, payload.direction)
+        await storeCompanyListEmploye.fetch(employeeListFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeCompanyListEmploye.employees
     }
 
     async function search(inputValues) {
@@ -131,7 +139,7 @@
         <AppRow>
             <AppCol class="p-3">
                 <AppCardableTable
-                    :current-page="storeCompanyListEmploye.currentPage"
+                    :current-page="employeeListFetchCriteria.page"
                     :fields="tabFields"
                     :first-page="storeCompanyListEmploye.firstPage"
                     :items="itemsTable"

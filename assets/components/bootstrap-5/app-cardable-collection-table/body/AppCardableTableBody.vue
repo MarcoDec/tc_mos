@@ -4,7 +4,6 @@
     defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
-        indice: {required: true, type: Number},
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true}
     })
@@ -19,5 +18,5 @@
 </script>
 
 <template>
-    <AppCardableTableItem :fields="fields" :item="item" :indice="indice" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
+    <AppCardableTableItem :fields="fields" :item="item" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
 </template>
