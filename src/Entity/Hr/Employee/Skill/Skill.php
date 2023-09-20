@@ -157,7 +157,7 @@ class Skill extends Entity {
     private ?DateTimeImmutable $startedDate = null;
 
     #[
-        ApiProperty(description: 'Type', readableLink: false, example: '/api/skill-types/4'),
+        ApiProperty(description: 'Type', readableLink: true, example: '/api/skill-types/4'),
         ORM\ManyToOne,
         Serializer\Groups(['read:skill', 'write:skill'])
     ]
