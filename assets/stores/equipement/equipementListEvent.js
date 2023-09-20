@@ -6,26 +6,6 @@ export const useCompanyListEventStore = defineStore('equipementListEvent', {
         setIdCompany(id){
             this.equipementID = id
         },
-        // async addEventEvent(payload){
-        //     const violations = []
-        //     try {
-        //         if (payload.quantite.value !== ''){
-        //             payload.quantite.value = parseInt(payload.quantite.value)
-        //         }
-        //         const element = {
-        //             equipement: payload.composant,
-        //             refFournisseur: payload.refFournisseur,
-        //             prix: payload.prix,
-        //             quantity: payload.quantite,
-        //             texte: payload.texte
-        //         }
-        //         await api('/api/equipement-stocks', 'POST', element)
-        //         this.fetch()
-        //     } catch (error) {
-        //         violations.push({message: error})
-        //     }
-        //     return violations
-        // },
         async deleted(payload) {
             await api(`/api/engine-events/delete/${payload}`, 'DELETE')
             this.equipementEvent = this.equipementEvent.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
@@ -213,15 +193,6 @@ export const useCompanyListEventStore = defineStore('equipementListEvent', {
             this.pagination = false
             return responseData[2]
         }
-        // async updateWarehouseStock(payload){
-        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-        //     if (payload.sortable.value === true || payload.filter.value === true) {
-        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-        //     } else {
-        //         this.itemsPagination(this.currentPage)
-        //     }
-        //     this.fetch()
-        // }
     },
     getters: {
         itemsEquipementEvent: state => state.equipementEvent.map(item => {

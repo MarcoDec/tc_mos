@@ -5,10 +5,8 @@
     import useField from '../../../../stores/field/field'
 
     const roleuser = ref('reader')
-    // let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
-    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
@@ -120,66 +118,6 @@
         }
     ]
 
-    // function ajoute(){
-    //     AddForm.value = true
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    // }
-
-    // async function ajoutCompanyEvenementQualite(){
-    //     // const form = document.getElementById('addCompanyEvenementQualite')
-    //     // const formData1 = new FormData(form)
-
-    //     // if (typeof formData.value.families !== 'undefined') {
-    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-    //     // }
-
-    //     const itemsAddData = {
-    //         client: formData.value.client,
-    //         reference: formData.value.reference,
-    //         quantiteConfirmee: formData.value.quantiteConfirmee,
-    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffectuee: formData.value.quantiteEffectuee,
-    //         dateLivraison: formData.value.dateLivraison,
-    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-    //     }
-    //     violations = await storeEquipementListPrevision.addCompanyEvenementQualite(itemsAddData)
-
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeEquipementListPrevision.itemsEquipementPrevision]
-    //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
-
     function update(item) {
         updated.value = true
         AddForm.value = true
@@ -235,12 +173,6 @@
 
 <template>
     <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Ajouter
-            </AppBtn>
-        </AppCol> -->
         <AppRow>
             <AppCol>
                 <AppCardableTable
@@ -262,30 +194,6 @@
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
-                <AppCard class="bg-blue col" title="">
-                    <AppRow>
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </AppRow>
-                    <br/>
-                    <AppFormCardable id="addCompanyEvenementQualite" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
-                    <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutCompanyEvenementQualite">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </AppCol>
-                </AppCard>
-            </AppCol> -->
         </AppRow>
     </div>
 </template>
