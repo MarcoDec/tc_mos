@@ -2,13 +2,12 @@
     import {computed, ref} from 'vue'
     import {useCompanyListEventStore} from '../../../../../stores/company/companyListEvent'
     import {useRoute} from 'vue-router'
+    import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
     // import useField from '../../../../stores/field/field'
 
     const roleuser = ref('reader')
-    // let violations = []
-    const updated = ref(false)
     const AddForm = ref(false)
-    // const isPopupVisible = ref(false)
+    const UpdateForm = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
@@ -21,49 +20,57 @@
     storeCompanyListEvent.setIdCompany(companyId)
     await storeCompanyListEvent.fetch()
     const itemsTable = ref(storeCompanyListEvent.itemsCompanyEvent)
-    const formData = ref({
-        name: null, date: null, type: null, fini: null
-    })
-
-    // const fieldsForm = [
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Nom',
-    //         name: 'name',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date',
-    //         name: 'date',
-    //         sort: true,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Type',
-    //         name: 'type',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Fini',
-    //         name: 'fini',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     }
-    // ]
-
+    const kindOptions = {
+        label: value => value,
+        options: [{text: 'holiday', value: 'holiday'}]
+    }
+    //region addFormData
+    const addFormData = ref({name: null, date: null, type: null, fini: null, company: `/api/companies/${companyId}`})
+    const addFormFields = [
+        {
+            label: 'Nom',
+            name: 'name',
+            type: 'text'
+        },
+        {
+            label: 'Date',
+            name: 'date',
+            type: 'date'
+        },
+        {
+            label: 'Type',
+            name: 'kind',
+            options: kindOptions,
+            type: 'select'
+        }
+    ]
+    //endregion
+    //region updateFormData
+    const updateFormData = ref({name: null, date: null, type: null, fini: null, company: `/api/companies/${companyId}`})
+    const updateFormFields = [
+        {
+            label: 'Nom',
+            name: 'name',
+            type: 'text'
+        },
+        {
+            label: 'Date',
+            name: 'date',
+            type: 'date'
+        },
+        {
+            label: 'Type',
+            name: 'kind',
+            options: kindOptions,
+            type: 'select'
+        },
+        {
+            label: 'Fini',
+            name: 'done',
+            type: 'boolean'
+        }
+    ]
+    //endregion
     const tabFields = [
         {
             create: false,
@@ -87,96 +94,32 @@
             create: false,
             filter: true,
             label: 'Type',
-            name: 'type',
-            sort: true,
-            type: 'text',
+            options: kindOptions,
+            name: 'kind',
+            sort: false,
+            type: 'select',
             update: true
         },
         {
             create: false,
             filter: true,
             label: 'Fini',
-            name: 'fini',
+            name: 'done',
             sort: true,
             type: 'boolean',
             update: true
         }
     ]
 
-    // function ajoute(){
-    //     AddForm.value = true
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    // }
-
-    // async function ajoutCompanyEvenementQualite(){
-    //     // const form = document.getElementById('addCompanyEvenementQualite')
-    //     // const formData1 = new FormData(form)
-
-    //     // if (typeof formData.value.families !== 'undefined') {
-    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-    //     // }
-
-    //     const itemsAddData = {
-    //         client: formData.value.client,
-    //         reference: formData.value.reference,
-    //         quantiteConfirmee: formData.value.quantiteConfirmee,
-    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffectuee: formData.value.quantiteEffectuee,
-    //         dateLivraison: formData.value.dateLivraison,
-    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-    //     }
-    //     violations = await storeCompanyListEvent.addCompanyEvenementQualite(itemsAddData)
-
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeCompanyListEvent.itemsCompanyEvent]
-    //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
-
     function update(item) {
-        updated.value = true
-        AddForm.value = true
-
-        const itemsData = {
-            name: item.name,
-            date: item.date,
-            type: item.type,
-            fini: item.fini
-        }
-        formData.value = itemsData
+        const itemsData = item
+        itemsData.company = `/api/companies/${companyId}`
+        updateFormData.value = {...itemsData}
+        UpdateForm.value = true
+        AddForm.value = false
     }
 
-    async function deleted(id){
+    async function onDelete(id){
         await storeCompanyListEvent.deleted(id)
         itemsTable.value = [...storeCompanyListEvent.itemsCompanyEvent]
     }
@@ -189,34 +132,54 @@
         sortable.value = true
         trierAlpha = computed(() => payload)
     }
-
-    async function search(inputValues) {
-        const payload = {
-            name: inputValues.name ?? '',
-            date: inputValues.date ?? '',
-            type: inputValues.type ?? '',
-            fini: inputValues.fini ?? ''
-        }
-
-        await storeCompanyListEvent.filterBy(payload)
+    let searchPayload = {}
+    async function search() {
+        await storeCompanyListEvent.filterBy(searchPayload)
         itemsTable.value = [...storeCompanyListEvent.itemsCompanyEvent]
         filter.value = true
         filterBy = computed(() => payload)
     }
     async function cancelSearch() {
+        searchPayload = {}
         filter.value = true
-        storeCompanyListEvent.fetch()
+        await storeCompanyListEvent.fetch()
+        itemsTable.value = [...storeCompanyListEvent.itemsCompanyEvent]
+    }
+    function ajoute() {
+        AddForm.value = true
+    }
+    function onAddCancel() {
+        AddForm.value = false
+    }
+    function onUpdateCancel() {
+        UpdateForm.value = false
+    }
+    async function onAddFormSubmitted() {
+        AddForm.value = false
+        await storeCompanyListEvent.fetch()
+        itemsTable.value = storeCompanyListEvent.itemsCompanyEvent
+    }
+    async function onUpdateFormSubmitted() {
+        UpdateForm.value = false
+        await storeCompanyListEvent.fetch()
+        itemsTable.value = storeCompanyListEvent.itemsCompanyEvent
+    }
+    function onTabModelValueUpdate(data) {
+        console.log('onTabModelValueUpdated', data)
+    }
+    function onUpdateSearchModelValue(data) {
+        searchPayload = data
     }
 </script>
 
 <template>
     <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
+        <AppCol class="d-flex justify-content-between mb-2">
             <AppBtn variant="success" label="Ajout" @click="ajoute">
                 <Fa icon="plus"/>
                 Ajouter
             </AppBtn>
-        </AppCol> -->
+        </AppCol>
         <AppRow>
             <AppCol>
                 <AppCardableTable
@@ -230,38 +193,40 @@
                     :pag="storeCompanyListEvent.pagination"
                     :previous-page="storeCompanyListEvent.previousPage"
                     :user="roleuser"
-                    form="formCompanyEvenementQualiteCardableTable"
+                    form="formCompanyEvenement"
                     @update="update"
-                    @deleted="deleted"
+                    @update:model-value="onTabModelValueUpdate"
+                    @deleted="onDelete"
                     @get-page="getPage"
                     @trier-alphabet="trierAlphabet"
                     @search="search"
+                    @update:search-model-value="onUpdateSearchModelValue"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
-                <AppCard class="bg-blue col" title="">
-                    <AppRow>
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </AppRow>
-                    <br/>
-                    <AppFormCardable id="addCompanyEvenementQualite" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
-                    <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutCompanyEvenementQualite">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </AppCol>
-                </AppCard>
-            </AppCol> -->
+            <AppCol v-if="AddForm" class="col-7">
+                <InlistAddForm
+                    id="addCompanyEvent"
+                    api-method="POST"
+                    api-url="/api/company-events"
+                    card-title="Créer un nouvel évènement"
+                    form="addFormCompanyEvent"
+                    :model-value="addFormData"
+                    :fields="addFormFields"
+                    @submitted="onAddFormSubmitted"
+                    @cancel="onAddCancel"/>
+            </AppCol>
+            <AppCol v-if="UpdateForm" class="col-7">
+                <InlistAddForm
+                    id="updateCompanyEvent"
+                    api-method="PATCH"
+                    api-url="/api/company-events"
+                    card-title="Modifier un évènement"
+                    form="updateFormCompanyEvent"
+                    :model-value="updateFormData"
+                    :fields="updateFormFields"
+                    @submitted="onUpdateFormSubmitted"
+                    @cancel="onUpdateCancel"/>
+            </AppCol>
         </AppRow>
     </div>
 </template>

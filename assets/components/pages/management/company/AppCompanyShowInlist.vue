@@ -13,9 +13,9 @@
 <template>
     <div>
         <AppTabs id="gui-start-bottom" class="gui-start-content-bottom" format-nav="flex">
-            <AppTab id="gui-start-company-employe" active title="Employés" icon="user-circle" tabs="gui-start-bottom">
+            <AppTab id="gui-start-company-entrepot" title="Entrepôt" icon="warehouse" tabs="gui-start-bottom">
                 <AppSuspense>
-                    <AppCompanyListEmploye/>
+                    <AppCompanyListWarehouse/>
                 </AppSuspense>
             </AppTab>
             <AppTab id="gui-start-company-zone" title="Zones" icon="location-dot" tabs="gui-start-bottom">
@@ -23,9 +23,14 @@
                     <AppCompanyListZone/>
                 </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-company-entrepot" title="Entrepôt" icon="warehouse" tabs="gui-start-bottom">
+            <AppTab id="gui-start-company-employe" active title="Employés" icon="user-circle" tabs="gui-start-bottom">
                 <AppSuspense>
-                    <AppCompanyListWarehouse/>
+                    <AppCompanyListEmploye/>
+                </AppSuspense>
+            </AppTab>
+            <AppTab id="gui-start-equipement-user" title="Employés habilités" icon="users" tabs="gui-start-bottom">
+                <AppSuspense>
+                    <AppEquipementListUserAbility/>
                 </AppSuspense>
             </AppTab>
             <AppTab id="gui-start-company-fourniture" title="Fournitures" icon="layer-group" tabs="gui-start-bottom">
@@ -43,12 +48,7 @@
                     <AppCompanyListEvent/>
                 </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-equipement-user" title="Employés habilités" icon="users" tabs="gui-start-bottom">
-                <AppSuspense>
-                    <AppEquipementListUserAbility/>
-                </AppSuspense>
-            </AppTab>
-            <AppTab id="gui-start-equipement-event" title="Evènements" icon="calendar-day" tabs="gui-start-bottom">
+            <AppTab id="gui-start-equipement-event" title="Evènements Machine" icon="calendar-day" tabs="gui-start-bottom">
                 <AppSuspense>
                     <AppEquipementListEvent/>
                 </AppSuspense>

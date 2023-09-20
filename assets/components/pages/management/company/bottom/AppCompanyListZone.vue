@@ -87,9 +87,6 @@
 </template>
 
 <style scoped>
-    .btn-float-right{
-        float: right;
-    }
     .gui-bottom {
         overflow: hidden;
     }

@@ -5,7 +5,6 @@
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
 
     const roleuser = ref('reader')
-    const AddForm = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
 
@@ -79,7 +78,6 @@
     const getId = /.*?\/(\d+)/
 
     function update(item) {
-        console.log(item)
         const itemId = item['product.@id'].match(getId)[1]
         // eslint-disable-next-line camelcase
         const routeData = router.resolve({name: 'product', params: {id_product: itemId}})

@@ -42,21 +42,24 @@ export const useCompanyListEventStore = defineStore('companyListEvent', {
             if (payload === ''){
                 await this.fetch()
             } else {
-                if (payload.name !== '') {
+                if (payload.name) {
                     url += `name=${payload.name}&`
                 }
-                if (payload.entryDate !== '') {
-                    url += `entryDate=${payload.entryDate}&`
+                if (payload.date) {
+                    const payloadDate = new Date(payload.date)
+                    const dateAfter = new Date()
+                    dateAfter.setDate(payloadDate.getDate() + 1)
+                    const dateAfterStr = dateAfter.toISOString().split('T')[0]
+                    url += `date[after]=${payload.date}&date[before]=${dateAfterStr}&`
                 }
-                if (payload.type !== '') {
+                if (payload.kind) {
                     url += `kind=${payload.type}&`
                 }
-                if (payload.fini !== '') {
-                    if (payload.fini === true){
-                        url += 'done=1&'
-                    } else {
-                        url += 'done=0&'
-                    }
+                if (typeof payload.done !== 'undefined' && payload.done === true){
+                    url += 'done=1&'
+                }
+                if (typeof payload.done !== 'undefined' && payload.done === false){
+                    url += 'done=0&'
                 }
                 url += 'page=1'
                 this.currentPage = 1
@@ -75,14 +78,14 @@ export const useCompanyListEventStore = defineStore('companyListEvent', {
                 if (payload.filterBy.value.name !== '') {
                     url += `name=${payload.filterBy.value.name}&`
                 }
-                if (payload.filterBy.value.entryDate !== '') {
-                    url += `entryDate=${payload.filterBy.value.entryDate}&`
+                if (payload.filterBy.value.date !== '') {
+                    url += `date=${payload.filterBy.value.date}&`
                 }
                 if (payload.filterBy.value.type !== '') {
                     url += `kind=${payload.filterBy.value.type}&`
                 }
-                if (payload.filterBy.value.fini !== '') {
-                    if (payload.filterBy.value.fini === true){
+                if (payload.filterBy.value.done !== '') {
+                    if (payload.filterBy.value.done){
                         url += 'done=1&'
                     } else {
                         url += 'done=0&'
@@ -95,14 +98,14 @@ export const useCompanyListEventStore = defineStore('companyListEvent', {
                 if (payload.filterBy.value.name !== '') {
                     url += `name=${payload.filterBy.value.name}&`
                 }
-                if (payload.filterBy.value.entryDate !== '') {
-                    url += `entryDate=${payload.filterBy.value.entryDate}&`
+                if (payload.filterBy.value.date !== '') {
+                    url += `date=${payload.filterBy.value.date}&`
                 }
                 if (payload.filterBy.value.type !== '') {
                     url += `kind=${payload.filterBy.value.type}&`
                 }
-                if (payload.filterBy.value.fini !== '') {
-                    if (payload.filterBy.value.fini === true){
+                if (payload.filterBy.value.done !== '') {
+                    if (payload.filterBy.value.done){
                         url += 'done=1&'
                     } else {
                         url += 'done=0&'
@@ -126,18 +129,19 @@ export const useCompanyListEventStore = defineStore('companyListEvent', {
 
         async sortableItems(payload, filterBy, filter) {
             let response = {}
+            let url = ''
             if (filter.value === true){
                 if (filterBy.value.name !== '') {
                     url += `name=${filterBy.value.name}&`
                 }
-                if (filterBy.value.entryDate !== '') {
-                    url += `entryDate=${filterBy.value.entryDate}&`
+                if (filterBy.value.date !== '') {
+                    url += `date=${filterBy.value.date}&`
                 }
                 if (filterBy.value.type !== '') {
                     url += `kind=${filterBy.value.type}&`
                 }
-                if (filterBy.value.fini !== '') {
-                    if (filterBy.value.fini === true){
+                if (filterBy.value.done !== '') {
+                    if (filterBy.value.done){
                         url += 'done=1&'
                     } else {
                         url += 'done=0&'
@@ -187,13 +191,13 @@ export const useCompanyListEventStore = defineStore('companyListEvent', {
     },
     getters: {
         itemsCompanyEvent: state => state.companyEvent.map(item => {
-            const dt = item.entryDate.split('T')[0]
+            const dt = item.date.split('T')[0]
             const newObject = {
                 '@id': `${item['@id']}`,
                 name: item.name,
-                type: item.kind,
-                entryDate: dt,
-                fini: item.done
+                kind: item.kind,
+                date: dt,
+                done: item.done
             }
             return newObject
         })

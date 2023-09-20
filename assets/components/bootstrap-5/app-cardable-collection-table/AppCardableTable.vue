@@ -20,8 +20,8 @@
         shouldSee: {required: false, default: true}
     })
     const displayedFields = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
-    const input = ref('')
-    const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'search', 'cancelSearch'])
+    const input = ref({})
+    const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'update:searchModelValue', 'search', 'cancelSearch'])
     function update(item){
         emit('update', item)
     }
@@ -41,13 +41,17 @@
         input.value = inputValues
         emit('cancelSearch', inputValues)
     }
+    function onUpdateSearchModelValue(data) {
+        input.value[data.field] = data.event
+        emit('update:searchModelValue', input.value)
+    }
 </script>
 
 <template>
     <table class="table table-bordered table-hover table-striped">
         <AppCardableTableHeader :fields="displayedFields" @trier-alphabet="trierAlphabet"/>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :fields="fields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch"/>
+            <AppCardableTableBodyHeader :form="form" :fields="fields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
             <tr class="bg-dark">
                 <td colspan="20"/>
             </tr>

@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {ref} from 'vue'
     import {useCompanyListEmployeStore} from '../../../../../stores/company/companyListEmploye'
     import {useRoute, useRouter} from 'vue-router'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
@@ -102,7 +102,6 @@
         itemsTable.value = [...storeCompanyListEmploye.itemsCompanyEmploye]
     }
     async function getPage(nPage){
-        console.log('page demandée', nPage)
         employeeListFetchCriteria.page = nPage
         await storeCompanyListEmploye.fetch(employeeListFetchCriteria.getFetchCriteria)
         itemsTable.value = storeCompanyListEmploye.employees

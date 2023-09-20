@@ -37,7 +37,6 @@
     //region recupération de la liste des options devises
     const fetchCurrencies = useOptions('currencies')
     await fetchCurrencies.fetchOp()
-    console.log(fetchCurrencies.options)
     const optionsCurrencies = fetchCurrencies.options.map(item => ({
         label: item.text, text: item.text, value: item['@id']
     }))
@@ -91,7 +90,6 @@
         if (inputValues.society) companyListCriteria.addFilter('society.id', inputValues.society.match(getId)[1])
         if (inputValues.currency) companyListCriteria.addFilter('currency.id', inputValues.currency.match(getId)[1])
         if (inputValues.workTimeTable) companyListCriteria.addFilter('workTimeTable', inputValues.workTimeTable)
-        console.log(companyListCriteria.getFetchCriteria)
         await fetchCompanies.fetch(companyListCriteria.getFetchCriteria)
     }
     async function cancelSearch() {
