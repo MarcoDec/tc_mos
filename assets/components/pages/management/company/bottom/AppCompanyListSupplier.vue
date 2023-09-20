@@ -1,69 +1,41 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import api from '../../../../../api'
     import {useCompanyListSupplierStore} from '../../../../../stores/company/companyListSupplier'
-    import {useRoute} from 'vue-router'
-    // import useField from '../../../../stores/field/field'
+    import {useRoute, useRouter} from 'vue-router'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
+    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
 
     const roleuser = ref('reader')
-    // let violations = []
-    const updated = ref(false)
     const AddForm = ref(false)
-    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
     let filterBy = {}
+    const router = useRouter()
 
+    //region initialisation des données communes tableau et formulaire d'ajout
     const maRoute = useRoute()
     const companyId = maRoute.params.id_company
-
+    //endregion
+    //region gestion données tableau
     const storeCompanyListSupplier = useCompanyListSupplierStore()
     storeCompanyListSupplier.setIdCompany(companyId)
     await storeCompanyListSupplier.fetch()
     const itemsTable = ref(storeCompanyListSupplier.itemsCompanySupplier)
-    const formData = ref({
-        name: null
-    })
+    //endregion
 
-    // const fieldsForm = [
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Nom',
-    //         name: 'name',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date',
-    //         name: 'date',
-    //         sort: true,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Type',
-    //         name: 'type',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Fini',
-    //         name: 'fini',
-    //         sort: true,
-    //         type: 'text',
-    //         update: true
-    //     }
-    // ]
-
+    //region gestion données formulaire d'ajout
+    //region chargement de la liste des fournisseurs
+    const storeSuppliers = useSuppliersStore()
+    const suppliersFetchCriteria = useFetchCriteria('suppliersInList')
+    suppliersFetchCriteria.addFilter('pagination', 'false')
+    await storeSuppliers.fetch(suppliersFetchCriteria.getFetchCriteria)
+    const optionsSuppliers = storeSuppliers.suppliers.map(item => ({
+        value: item['@id'],
+        text: item.name
+    }))
     const tabFields = [
         {
             create: false,
@@ -71,79 +43,45 @@
             label: 'Nom',
             name: 'name',
             sort: true,
-            type: 'text',
-            update: true
+            type: 'text'
         }
     ]
-
-    // function ajoute(){
-    //     AddForm.value = true
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    // }
-
-    // async function ajoutCompanyEvenementQualite(){
-    //     // const form = document.getElementById('addCompanyEvenementQualite')
-    //     // const formData1 = new FormData(form)
-
-    //     // if (typeof formData.value.families !== 'undefined') {
-    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-    //     // }
-
-    //     const itemsAddData = {
-    //         client: formData.value.client,
-    //         reference: formData.value.reference,
-    //         quantiteConfirmee: formData.value.quantiteConfirmee,
-    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffectuee: formData.value.quantiteEffectuee,
-    //         dateLivraison: formData.value.dateLivraison,
-    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-    //     }
-    //     violations = await storeCompanyListSupplier.addCompanyEvenementQualite(itemsAddData)
-
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeCompanyListSupplier.itemsCompanySupplier]
-    //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffectuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
-
-    function update(item) {
-        updated.value = true
-        AddForm.value = true
-
-        const itemsData = {
-            name: item.name
+    //endregion
+    //region initalisation formulaire
+    const formData = ref({
+        supplier: null,
+        companyId: `/api/companies${companyId}`
+    })
+    const fieldsForm = [
+        {
+            label: 'Fournisseur',
+            name: 'supplier',
+            options: {
+                label: value => optionsSuppliers.filter(item => item.value === value)[0].text,
+                options: optionsSuppliers
+            },
+            type: 'select'
         }
-        formData.value = itemsData
+    ]
+    //endregion
+    //endregion
+
+    //region fonctions tableau
+    async function update(item) {
+        //region Ouverture de la fiche fournisseur
+        //region    1. récupération de l'item supplier-companies
+        const supplierCompaniesIri = item['@id']
+        const supplierCompany = await api(supplierCompaniesIri, 'GET')
+        //endregion
+        //region    2. récupération de l'id du supplier
+        const supplierId = supplierCompany.supplier.id
+        //endregion
+        //region    3. ouverture dans un nouvel onglet de la fiche fournisseur
+        // eslint-disable-next-line camelcase
+        const routeData = router.resolve({name: 'supplier', params: {id_supplier: supplierId}})
+        window.open(routeData.href, '_blank')
+        //endregion
+        //endregion
     }
 
     async function deleted(id){
@@ -172,18 +110,45 @@
     }
     async function cancelSearch() {
         filter.value = true
-        storeCompanyListSupplier.fetch()
+        await storeCompanyListSupplier.fetch()
+        itemsTable.value = storeCompanyListSupplier.itemsCompanySupplier
     }
+    //endregion
+    //region fonctions formulaire d'ajout
+    function ajoute(){
+        AddForm.value = true
+        formData.value = {
+            supplier: null,
+            company: `/api/companies/${companyId}`
+        }
+    }
+    async function ajoutSupplierCompany(){
+        await storeCompanyListSupplier.addSupplierCompany(formData.value)
+        AddForm.value = false
+        await storeCompanyListSupplier.fetch()
+        itemsTable.value = storeCompanyListSupplier.itemsCompanySupplier
+    }
+    function annule(){
+        AddForm.value = false
+        formData.value = {
+            supplier: null,
+            company: `/api/companies/${companyId}`
+        }
+    }
+    function addFormDataChanged(item) {
+        formData.value = item
+    }
+    //endregion
 </script>
 
 <template>
     <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
+        <AppCol class="d-flex justify-content-between mb-2">
             <AppBtn variant="success" label="Ajout" @click="ajoute">
                 <Fa icon="plus"/>
                 Ajouter
             </AppBtn>
-        </AppCol> -->
+        </AppCol>
         <AppRow>
             <AppCol>
                 <AppCardableTable
@@ -205,7 +170,7 @@
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
+            <AppCol v-if="AddForm" class="col-7">
                 <AppCard class="bg-blue col" title="">
                     <AppRow>
                         <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
@@ -216,19 +181,14 @@
                         </h4>
                     </AppRow>
                     <br/>
-                    <AppFormCardable id="addCompanyEvenementQualite" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
+                    <AppFormCardable id="addCompanyEvenementQualite" :fields="fieldsForm" :model-value="formData" label-cols @update:model-value="addFormDataChanged"/>
                     <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutCompanyEvenementQualite">
+                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutSupplierCompany">
                             <Fa icon="plus"/> Ajouter
                         </AppBtn>
                     </AppCol>
                 </AppCard>
-            </AppCol> -->
+            </AppCol>
         </AppRow>
     </div>
 </template>

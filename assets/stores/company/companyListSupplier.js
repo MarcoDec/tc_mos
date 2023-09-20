@@ -6,26 +6,19 @@ export const useCompanyListSupplierStore = defineStore('companyListSupplier', {
         setIdCompany(id){
             this.companyID = id
         },
-        // async addSupplierSupplier(payload){
-        //     const violations = []
-        //     try {
-        //         if (payload.quantite.value !== ''){
-        //             payload.quantite.value = parseInt(payload.quantite.value)
-        //         }
-        //         const element = {
-        //             company: payload.composant,
-        //             refFournisseur: payload.refFournisseur,
-        //             prix: payload.prix,
-        //             quantity: payload.quantite,
-        //             texte: payload.texte
-        //         }
-        //         await api('/api/company-stocks', 'POST', element)
-        //         this.fetch()
-        //     } catch (error) {
-        //         violations.push({message: error})
-        //     }
-        //     return violations
-        // },
+        async addSupplierCompany(payload){
+            const violations = []
+            try {
+                const element = {
+                    company: payload.company,
+                    supplier: payload.supplier
+                }
+                await api('/api/supplier-companies', 'POST', element)
+            } catch (error) {
+                violations.push({message: error})
+            }
+            return violations
+        },
         async deleted(payload) {
             await api(`/api/supplier-companies/${payload}`, 'DELETE')
             this.companySupplier = this.companySupplier.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
@@ -87,6 +80,7 @@ export const useCompanyListSupplierStore = defineStore('companyListSupplier', {
 
         async sortableItems(payload, filterBy, filter) {
             let response = {}
+            let url = ''
             if (filter.value === true){
                 if (filterBy.value.name !== '') {
                     url += `supplier.name=${filterBy.value.name}&`
@@ -123,15 +117,6 @@ export const useCompanyListSupplierStore = defineStore('companyListSupplier', {
             this.pagination = false
             return responseData
         }
-        // async updateWarehouseStock(payload){
-        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-        //     if (payload.sortable.value === true || payload.filter.value === true) {
-        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-        //     } else {
-        //         this.itemsPagination(this.currentPage)
-        //     }
-        //     this.fetch()
-        // }
     },
     getters: {
         itemsCompanySupplier: state => state.companySupplier.map(item => {

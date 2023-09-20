@@ -158,7 +158,8 @@ use App\Controller\Purchase\Supplier\SupplierPatchController;
             'groups' => ['read:address', 'read:copper', 'read:id', 'read:measure', 'read:state', 'read:supplier'],
             'openapi_definition_name' => 'Supplier-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: SupplierRepository::class)
 ]

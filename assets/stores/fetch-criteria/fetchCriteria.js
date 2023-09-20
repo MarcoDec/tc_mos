@@ -72,6 +72,7 @@ export default function useFetchCriteria(id) {
                 let fetchCriteria = '?'
                 let filterStr = ''
                 let sortStr = ''
+                //region gestion des filtres
                 if (state.filters.length > 0) {
                     state.filters.forEach(filter => {
                         filterStr += `${filter.field}=${filter.value}&`
@@ -79,6 +80,8 @@ export default function useFetchCriteria(id) {
                     filterStr = filterStr.substring(0, filterStr.length - 1) // Suppression du dernier '&'
                     fetchCriteria += filterStr
                 }
+                //endregion
+                //region gestion des tris
                 if (state.sorts.length > 0) {
                     state.sorts.forEach(sortElement => {
                         sortStr += `order[${sortElement.field}]=${sortElement.direction}&`
@@ -87,14 +90,23 @@ export default function useFetchCriteria(id) {
                     if (filterStr.length > 0) fetchCriteria += '&'
                     fetchCriteria += sortStr
                 }
-                if (filterStr.length > 0 || sortStr.length > 0) return `${fetchCriteria}&page=${state.page}`
-                return `${fetchCriteria}page=${state.page}`
+                //endregion
+                //region gestion de la pagination
+                if (state.paginationEnabled) {
+                    if (filterStr.length > 0 || sortStr.length > 0) {
+                        return `${fetchCriteria}&page=${state.page}`
+                    }
+                    return `${fetchCriteria}page=${state.page}`
+                }
+                //endregion
+                return `${fetchCriteria}`
             }
         },
         state: () => ({
             filters: [],
             page: 1,
-            sorts: []
+            sorts: [],
+            paginationEnabled: true
         })
     })()
 }
