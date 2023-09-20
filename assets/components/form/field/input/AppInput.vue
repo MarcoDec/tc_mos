@@ -35,7 +35,7 @@
         :type="type"
         :value="theValue"
         autocomplete="off"
-        step=".01"
+        :step="field.step ? field.step : .01"
         class="form-control form-control-sm"
         @input="input"/>
 </template>
