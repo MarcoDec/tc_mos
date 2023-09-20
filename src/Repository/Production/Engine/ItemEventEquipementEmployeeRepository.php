@@ -3,25 +3,18 @@
 namespace App\Repository\Production\Engine;
 
 use App\Entity\Purchase\Order\ComponentItem;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Purchase\Order\Order;
-use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\ResultSetMapping;
-use App\Entity\Embeddable\Measure;
-use App\Entity\Embeddable\Copper;
-use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\EventState;
 use App\Repository\Purchase\Order\ItemRepository;
+use App\Entity\Production\Engine\Event\Event;
 /**
- * @extends ItemRepository<ComponentItem>
+ * @extends ItemRepository<Event>
  *
- * @method ComponentItem|null find($id, $lockMode = null, $lockVersion = null)
- * @method ComponentItem|null findOneBy(array $criteria, ?array $orderBy = null)
- * @method ComponentItem[]    findAll()
+ * @method Event|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Event|null findOneBy(array $criteria, ?array $orderBy = null)
+ * @method Event[]    findAll()
  */
 
 
@@ -30,7 +23,7 @@ final class ItemEventEquipementEmployeeRepository extends ItemRepository {
     const ITEMS_PER_PAGE = 15;
 
     public function __construct(ManagerRegistry $registry) {
-        parent::__construct($registry, ComponentItem::class);
+        parent::__construct($registry, Event::class);
     }
 
     public function createByQueryBuilder(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): QueryBuilder {

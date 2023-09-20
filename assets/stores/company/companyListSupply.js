@@ -67,6 +67,7 @@ export const useCompanyListSupplyStore = defineStore('companyListSupply', {
 
         async sortableItems(payload, filterBy, filter) {
             let response = {}
+            let url = ''
             if (filter.value === true){
                 if (filterBy.value.ref !== '') {
                     url += `ref=${filterBy.value.ref}&`

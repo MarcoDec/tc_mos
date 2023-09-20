@@ -28,11 +28,11 @@
                     <AppCompanyListEmploye/>
                 </AppSuspense>
             </AppTab>
-            <AppTab id="gui-start-equipement-user" title="Employés habilités" icon="users" tabs="gui-start-bottom">
-                <AppSuspense>
-                    <AppEquipementListUserAbility/>
-                </AppSuspense>
-            </AppTab>
+            <!--            <AppTab id="gui-start-equipement-user" title="Employés habilités" icon="users" tabs="gui-start-bottom">-->
+            <!--                <AppSuspense>-->
+            <!--                    <AppEquipementListUserAbility/>-->
+            <!--                </AppSuspense>-->
+            <!--            </AppTab>-->
             <AppTab id="gui-start-company-fourniture" title="Fournitures" icon="layer-group" tabs="gui-start-bottom">
                 <AppSuspense>
                     <AppCompanyListSupply/>

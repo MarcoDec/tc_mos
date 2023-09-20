@@ -4,7 +4,7 @@ import {defineStore} from 'pinia'
 export const useCompanyListUserAbilityStore = defineStore('equipementListUserAbility', {
     actions: {
         setIdCompany(id){
-            this.equipementID = id
+            this.companyId = id
         },
         // async addUserAbilityUserAbility(payload){
         //     const violations = []
@@ -34,11 +34,11 @@ export const useCompanyListUserAbilityStore = defineStore('equipementListUserAbi
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
-            const response = await api(`/api/engine-events/filtreEmployee/${this.equipementID}?`, 'GET')
+            const response = await api(`/api/engine-events/filtreEmployee/${this.companyId}?`, 'GET')
             this.equipementUserAbility = await this.updatePagination(response)
         },
         async filterBy(payload) {
-            let url = `/api/engine-events/filtreEmployee/${this.equipementID}?`
+            let url = `/api/engine-events/filtreEmployee/${this.companyId}?`
             if (payload === ''){
                 await this.fetch()
             } else {
@@ -55,13 +55,13 @@ export const useCompanyListUserAbilityStore = defineStore('equipementListUserAbi
             }
         },
         async itemsPagination(nPage) {
-            const response = await api(`/api/engine-events/filtreEmployee/${this.equipementID}?page=${nPage}`, 'GET')
+            const response = await api(`/api/engine-events/filtreEmployee/${this.companyId}?page=${nPage}`, 'GET')
             this.equipementUserAbility = await this.updatePagination(response)
         },
         async paginationSortableOrFilterItems(payload) {
             let response = {}
             if (payload.filter.value === true && payload.sortable.value === true){
-                let url = `/api/engine-events/filtreEmployee/${this.equipementID}?`
+                let url = `/api/engine-events/filtreEmployee/${this.companyId}?`
                 if (payload.filterBy.value.name !== '') {
                     url += `name=${payload.filterBy.value.name}&`
                 }
@@ -71,7 +71,7 @@ export const useCompanyListUserAbilityStore = defineStore('equipementListUserAbi
                 response = await api(url, 'GET')
                 this.equipementUserAbility = await this.updatePagination(response)
             } else if (payload.filter.value === true){
-                let url = `/api/engine-events/filtreEmployee/${this.equipementID}?`
+                let url = `/api/engine-events/filtreEmployee/${this.companyId}?`
                 if (payload.filterBy.value.name !== '') {
                     url += `name=${payload.filterBy.value.name}&`
                 }
@@ -82,13 +82,13 @@ export const useCompanyListUserAbilityStore = defineStore('equipementListUserAbi
                 response = await api(url, 'GET')
                 this.equipementUserAbility = await this.updatePagination(response)
             } else if (payload.sortable.value === false) {
-                response = await api(`/api/engine-events/filtreEmployee/${this.equipementID}?page=${payload.nPage}`, 'GET')
+                response = await api(`/api/engine-events/filtreEmployee/${this.companyId}?page=${payload.nPage}`, 'GET')
                 this.equipementUserAbility = await this.updatePagination(response)
             } else {
                 if (payload.trierAlpha.value.composant === 'equipement') {
-                    response = await api(`/api/engine-events/filtreEmployee/${this.equipementID}?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/engine-events/filtreEmployee/${this.companyId}?order%5B${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 } else {
-                    response = await api(`/api/engine-events/filtreEmployee/${this.equipementID}?order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
+                    response = await api(`/api/engine-events/filtreEmployee/${this.companyId}?order%5Baddress.${payload.trierAlpha.value.composant}%5D=${payload.trierAlpha.value.trier.value}&page=${payload.nPage}`, 'GET')
                 }
                 this.equipementUserAbility = await this.updatePagination(response)
             }
@@ -108,9 +108,9 @@ export const useCompanyListUserAbilityStore = defineStore('equipementListUserAbi
                 this.equipementUserAbility = await this.updatePagination(response)
             } else {
                 if (payload.composant === 'equipement') {
-                    response = await api(`/api/engine-events/filtreEmployee/${this.equipementID}?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/engine-events/filtreEmployee/${this.companyId}?order%5B${payload.composant}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 } else {
-                    response = await api(`/api/engine-events/filtreEmployee/${this.equipementID}?order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
+                    response = await api(`/api/engine-events/filtreEmployee/${this.companyId}?order%5B${payload.produit}%5D=${payload.trier.value}&page=${this.currentPage}`, 'GET')
                 }
                 this.equipementUserAbility = await this.updatePagination(response)
             }
