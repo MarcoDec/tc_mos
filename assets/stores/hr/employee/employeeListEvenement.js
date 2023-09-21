@@ -6,37 +6,17 @@ export const useEmployeeListEvenementStore = defineStore('employeeListEvenement'
         setIdEmployee(id){
             this.employeeID = id
         },
-        // async addEmployeeEvenement(payload){
-        //     const violations = []
-        //     try {
-        //         if (payload.quantite.value !== ''){
-        //             payload.quantite.value = parseInt(payload.quantite.value)
-        //         }
-        //         const element = {
-        //             component: payload.composant,
-        //             refFournisseur: payload.refFournisseur,
-        //             prix: payload.prix,
-        //             quantity: payload.quantite,
-        //             texte: payload.texte
-        //         }
-        //         await api('/api/component-stocks', 'POST', element)
-        //         this.fetch()
-        //     } catch (error) {
-        //         violations.push({message: error})
-        //     }
-        //     return violations
-        // },
         async deleted(payload) {
             await api(`/api/employee-events/${payload}`, 'DELETE')
             this.employeeEvenement = this.employeeEvenement.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
-        async fetch() {
+        async fetch(criteria = '?page=1') {
             // const response = await api(`/api/selling-order-items?employee=${this.employeeID}`, 'GET')
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
             // const response = await api(`/api/selling-order-items/employeeFilter/${this.employeeID}?page=${this.currentPage}`, 'GET')
-            const response = await api(`/api/employee-events?employee=/api/employees/${this.employeeID}`, 'GET')
+            const response = await api(`/api/employee-events${criteria}`, 'GET')
             this.employeeEvenement = await this.updatePagination(response)
         },
         async filterBy(payload) {
@@ -222,8 +202,9 @@ export const useEmployeeListEvenementStore = defineStore('employeeListEvenement'
             const newObject = {
                 '@id': item['@id'],
                 date: dt,
-                motif: item.type.name,
-                description: item.name
+                type: item.type,
+                name: item.name,
+                employee: item.employee
             }
             return newObject
         })

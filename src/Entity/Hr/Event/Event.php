@@ -14,8 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['employee']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['date' => 'partial', 'type.name' => 'partial', 'name' => 'partial',]),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'type']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['date' => 'partial', 'name' => 'partial',]),
     ApiResource(
         description: 'Événement',
         collectionOperations: [
@@ -69,7 +69,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 ]
 class Event extends AbstractEvent {
     #[
-        ApiProperty(description: 'Employé', example: '/api/employees/1'),
+        ApiProperty(description: 'Employé',readableLink: false ,example: '/api/employees/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:event', 'write:event'])
     ]

@@ -6,6 +6,7 @@
     import AppSuspense from '../../../../AppSuspense.vue'
     import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import {getOptions} from '../../../../../utils'
 
     const roleuser = ref('reader')
     // let violations = []
@@ -32,17 +33,6 @@
     itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
     const updateSkillItem = ref({})
     //region chargement des listes pour les selects
-    function getOptions(dataColl, textProperty, valueProperty = '@id') {
-        return {
-            label: value => {
-                const filteredColl = dataColl.find(item => item[valueProperty] === value)
-                if (typeof filteredColl === 'undefined') return '<null>'
-                if (typeof filteredColl[textProperty] === 'undefined') return `Property ${textProperty} not found`
-                return filteredColl[textProperty]
-            },
-            options: dataColl.map(item => ({text: item[textProperty] ?? '', value: item['@id']}))
-        }
-    }
     const isLoaded = ref(false)
     const addFormField = ref([])
     const updateFormField = ref([])

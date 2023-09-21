@@ -1,7 +1,10 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import api from '../../../../../api'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {useEmployeeListEvenementStore} from '../../../../../stores/hr/employee/employeeListEvenement'
     import {useRoute} from 'vue-router'
+    import {getOptions} from '../../../../../utils'
     // import useField from '../../../stores/field/field'
 
     const roleuser = ref('reader')
@@ -17,10 +20,21 @@
     const maRoute = useRoute()
     const employeeId = maRoute.params.id_employee
 
+    const eventTypes = (await api('/api/event-types', 'GET'))['hydra:member']
+    const eventTypesOptions = getOptions(eventTypes, 'name')
+    console.log(eventTypes)
     const storeEmployeeListEvenement = useEmployeeListEvenementStore()
-    storeEmployeeListEvenement.setIdEmployee(employeeId)
-    await storeEmployeeListEvenement.fetch()
-    const itemsTable = ref(storeEmployeeListEvenement.itemsEmployeeEvenement)
+    const employeeEventFetchCriteria = useFetchCriteria('employeeEvents')
+    function resetFilters() {
+        employeeEventFetchCriteria.resetAllFilter()
+        employeeEventFetchCriteria.addFilter('employee', `/api/employees/${employeeId}`)
+    }
+    resetFilters()
+    //storeEmployeeListEvenement.setIdEmployee(employeeId)
+    await storeEmployeeListEvenement.fetch(employeeEventFetchCriteria.getFetchCriteria)
+    const itemsTable = ref([])
+    itemsTable.value = storeEmployeeListEvenement.itemsEmployeeEvenement
+
     const formData = ref({
         date: null, motif: null, description: null
     })
@@ -57,31 +71,29 @@
 
     const tabFields = [
         {
-            create: false,
             filter: true,
             label: 'Date',
             name: 'date',
             sort: false,
             type: 'date',
-            update: true
+            min: true
         },
         {
-            create: false,
             filter: true,
-            label: 'Motif',
-            name: 'motif',
+            label: 'Type Evènement',
+            name: 'type',
             sort: false,
-            type: 'text',
-            update: true
+            type: 'select',
+            options: eventTypesOptions,
+            min: true
         },
         {
-            create: false,
             filter: true,
             label: 'Description',
-            name: 'description',
+            name: 'name',
             sort: false,
             type: 'text',
-            update: true
+            min: true
         }
     ]
 
