@@ -52,11 +52,11 @@
     <table class="table table-bordered table-hover table-striped">
         <AppCardableTableHeader :fields="displayedFields" @trier-alphabet="trierAlphabet"/>
         <tbody>
-            <AppCardableTableBodyHeader :form="form" :fields="fields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
+            <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
             <tr class="bg-dark">
                 <td colspan="20"/>
             </tr>
-            <AppCardableTableBodyItem :items="items" :fields="fields" :current-page="currentPage" :pagine="pag" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" :pagine="pag" :should-delete="shouldDelete" :should-see="shouldSee" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">
