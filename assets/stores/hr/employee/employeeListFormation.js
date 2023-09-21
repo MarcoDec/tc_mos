@@ -6,29 +6,8 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
         setIdEmployee(id){
             this.employeeID = id
         },
-        // async addEmployeeFormation(payload){
-        //     const violations = []
-        //     try {
-        //         if (payload.quantite.value !== ''){
-        //             payload.quantite.value = parseInt(payload.quantite.value)
-        //         }
-        //         const element = {
-        //             component: payload.composant,
-        //             refFournisseur: payload.refFournisseur,
-        //             prix: payload.prix,
-        //             quantity: payload.quantite,
-        //             texte: payload.texte
-        //         }
-        //         await api('/api/component-stocks', 'POST', element)
-        //         this.fetch()
-        //     } catch (error) {
-        //         violations.push({message: error})
-        //     }
-        //     return violations
-        // },
         async deleted(payload) {
             await api(`/api/skills/${payload}`, 'DELETE')
-            this.employeeFormation = this.employeeFormation.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch(criteria = '?page=1') {
             if (this.currentPage < 1){

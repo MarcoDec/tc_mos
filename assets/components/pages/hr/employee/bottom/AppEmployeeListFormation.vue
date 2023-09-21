@@ -15,7 +15,6 @@
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
-    let filterBy = {}
 
     const maRoute = useRoute()
     const employeeId = maRoute.params.id_employee
@@ -31,9 +30,7 @@
     await storeEmployeeListFormation.fetch(employeesListFormationFetchCriteria.getFetchCriteria)
     const itemsTable = ref([])
     itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
-    const formData = ref({
-        date: null, dateCloture: null, rappel: null, competence: null, groupeMachine: null, machine: null, niveau: null, commentaire: null, formateurInt: null, formateurExt: null
-    })
+    const updateSkillItem = ref({})
     //region chargement des listes pour les selects
     function getOptions(dataColl, textProperty, valueProperty = '@id') {
         return {
@@ -48,6 +45,7 @@
     }
     const isLoaded = ref(false)
     const addFormField = ref([])
+    const updateFormField = ref([])
     const tabFields = ref([])
     const engineGroupsOptions = ref({})
     const skillsOptions = ref({})
@@ -159,7 +157,7 @@
                     label: 'Niveau',
                     name: 'level',
                     type: 'number',
-                    step: 0.5
+                    step: 1
                 },
                 {
                     label: 'Groupe de machine',
@@ -192,6 +190,7 @@
                     options: outTrainersOptions.value
                 }
             ]
+            updateFormField.value = addFormField.value
             tabFields.value = [
                 {
                     label: 'Date',
@@ -265,6 +264,10 @@
     })
     //endregion
 
+    const addSkillItem = ref({})
+    addSkillItem.value = {
+        employee: `/api/employees/${employeeId}`
+    }
     function ajoute(){
         AddForm.value = true
         updated.value = false
@@ -311,33 +314,21 @@
     // }
 
     function update(item) {
+        updateSkillItem.value = item
         updated.value = true
-        AddForm.value = true
-        const itemsData = {
-            date: item.date,
-            dateCloture: item.dateCloture,
-            rappel: item.rappel,
-            competence: item.competence,
-            groupeMachine: item.groupeMachine,
-            machine: item.machine,
-            niveau: item.niveau,
-            commentaire: item.commentaire,
-            formateurInt: item.formateurInt,
-            formateurExt: item.formateurExt
-        }
-        formData.value = itemsData
+        AddForm.value = false
     }
 
     async function deleted(id){
         await storeEmployeeListFormation.deleted(id)
-        itemsTable.value = [...storeEmployeeListFormation.itemsEmployeeFormation]
+        await storeEmployeeListFormation.fetch(employeesListFormationFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
     }
     async function getPage(nPage){
         await storeEmployeeListFormation.paginationSortableOrFilterItems({filter, filterBy, nPage, sortable, trierAlpha})
         itemsTable.value = [...storeEmployeeListFormation.itemsEmployeeFormation]
     }
     async function trierAlphabet(payload) {
-
         await storeEmployeeListFormation.sortableItems(payload, filterBy, filter)
         sortable.value = true
         trierAlpha = computed(() => payload)
@@ -366,6 +357,23 @@
     function cancelAddForm() {
         AddForm.value = false
     }
+    function cancelUpdateForm() {
+        updated.value = false
+    }
+    async function onAddSkillSubmit() {
+        AddForm.value = false
+        await storeEmployeeListFormation.fetch(employeesListFormationFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
+    }
+    async function onUpdateSkillSubmit() {
+        updated.value = false
+        await storeEmployeeListFormation.fetch(employeesListFormationFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
+    }
+    const col1 = computed(() => {
+        if (AddForm.value || updated.value) return 5
+        return 12
+    })
 </script>
 
 <template>
@@ -377,7 +385,7 @@
             </AppBtn>
         </AppCol>
         <AppRow>
-            <AppCol>
+            <AppCol :cols="col1">
                 <AppCardableTable
                     v-if="isLoaded"
                     :current-page="storeEmployeeListFormation.currentPage"
@@ -385,7 +393,7 @@
                     :first-page="storeEmployeeListFormation.firstPage"
                     :items="itemsTable"
                     :last-page="storeEmployeeListFormation.lastPage"
-                    :min="AddForm"
+                    :min="AddForm || updated"
                     :next-page="storeEmployeeListFormation.nextPage"
                     :pag="storeEmployeeListFormation.pagination"
                     :previous-page="storeEmployeeListFormation.previousPage"
@@ -398,10 +406,13 @@
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <AppCol v-show="AddForm && !updated" class="col-7">
-                <AppSuspense>
-                    <InlistAddForm v-if="isLoaded" id="addEmployeeSkill" api-method="POST" api-url="" form="addEmployeeSkillForm" :fields="addFormField" @cancel="cancelAddForm"/>
-                </AppSuspense>
+            <AppCol :cols="12 - col1">
+                <AppRow>
+                    <AppSuspense>
+                        <InlistAddForm v-if="isLoaded && AddForm && !updated" id="addEmployeeSkill" api-method="POST" api-url="/api/skills" form="addEmployeeSkillForm" :fields="addFormField" :model-value="addSkillItem" @cancel="cancelAddForm" @submitted="onAddSkillSubmit"/>
+                        <InlistAddForm v-if="isLoaded && updated && !AddForm" id="updateEmployeeSkill" api-method="PATCH" api-url="" card-title="Modifier la compétence" form="updateEmployeeSkillForm" :fields="updateFormField" :model-value="updateSkillItem" @cancel="cancelUpdateForm" @submitted="onUpdateSkillSubmit"/>
+                    </AppSuspense>
+                </AppRow>
             </AppCol>
         </AppRow>
     </div>
