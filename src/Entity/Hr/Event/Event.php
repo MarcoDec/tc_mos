@@ -12,10 +12,12 @@ use App\Filter\RelationFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'type']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['date' => 'partial', 'name' => 'partial',]),
+    ApiFilter(filterClass: DateFilter::class, properties: ['date']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial',]),
     ApiResource(
         description: 'Événement',
         collectionOperations: [

@@ -261,16 +261,6 @@
     function ajoute(){
         AddForm.value = true
         updated.value = false
-        // const itemsNull = {
-        //     client: null,
-        //     reference: null,
-        //     quantiteConfirmee: null,
-        //     quantiteSouhaitee: null,
-        //     quantiteEffetctuee: null,
-        //     dateLivraison: null,
-        //     dateLivraisonSouhaitee: null
-        // }
-        // formData.value = itemsNull
     }
 
     // async function ajoutEmployeeFormation(){
@@ -368,14 +358,16 @@
 
 <template>
     <div class="gui-bottom">
-        <AppCol class="d-flex justify-content-between mb-2">
-            <span style="margin-left: 10px;">
-                <AppBtn variant="success" label="Ajout" @click="ajoute">
-                    <Fa icon="plus"/>
-                    Ajouter
-                </AppBtn>
-            </span>
-        </AppCol>
+        <AppRow>
+            <AppCol class="d-flex justify-content-between mb-2">
+                <span style="margin-left: 10px;">
+                    <AppBtn variant="success" label="Ajout" @click="ajoute">
+                        <Fa icon="plus"/>
+                        Ajouter une nouvelle formation
+                    </AppBtn>
+                </span>
+            </AppCol>
+        </AppRow>
         <AppRow>
             <AppCol :cols="col1">
                 <AppCardableTable
