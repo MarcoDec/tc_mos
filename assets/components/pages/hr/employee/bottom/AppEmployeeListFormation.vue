@@ -5,6 +5,7 @@
     import {useRoute} from 'vue-router'
     import AppSuspense from '../../../../AppSuspense.vue'
     import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
 
     const roleuser = ref('reader')
     // let violations = []
@@ -19,9 +20,11 @@
     const maRoute = useRoute()
     const employeeId = maRoute.params.id_employee
 
+    const employeesListFormationFetchCriteria = useFetchCriteria('employeesListFormation')
+    employeesListFormationFetchCriteria.addFilter('employee', `/api/employees/${employeeId}`)
     const storeEmployeeListFormation = useEmployeeListFormationStore()
-    storeEmployeeListFormation.setIdEmployee(employeeId)
-    await storeEmployeeListFormation.fetch()
+    //storeEmployeeListFormation.setIdEmployee(employeeId)
+    await storeEmployeeListFormation.fetch(employeesListFormationFetchCriteria.getFetchCriteria)
     const itemsTable = ref([])
     itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
     const formData = ref({
@@ -32,9 +35,6 @@
         return {
             label: value => {
                 const filteredColl = dataColl.find(item => item[valueProperty] === value)
-                if (textProperty === 'code') {
-                    console.log('code', value, dataColl, filteredColl)
-                }
                 if (typeof filteredColl === 'undefined') return '<null>'
                 if (typeof filteredColl[textProperty] === 'undefined') return `Property ${textProperty} not found`
                 return filteredColl[textProperty]
@@ -192,17 +192,20 @@
                 {
                     label: 'Date',
                     name: 'startedDate',
-                    type: 'date'
+                    type: 'date',
+                    min: true
                 },
                 {
                     label: 'Date clôture',
                     name: 'endedDate',
-                    type: 'date'
+                    type: 'date',
+                    min: true
                 },
                 {
                     label: 'Date de rappel',
                     name: 'remindedDate',
-                    type: 'date'
+                    type: 'date',
+                    min: false
                 },
                 {
                     label: 'Compétence',
@@ -221,34 +224,38 @@
                     label: 'Groupe de machine',
                     name: 'family',
                     type: 'select',
-                    options: engineGroupsOptions.value
+                    options: engineGroupsOptions.value,
+                    min: false
                 },
                 {
                     label: 'Machine',
                     name: 'engine',
                     type: 'select',
-                    options: manufacturerEnginesOptions.value
+                    options: manufacturerEnginesOptions.value,
+                    min: false
                 },
                 {
                     label: 'Produit',
                     name: 'product',
                     type: 'select',
-                    options: productsOptions.value
+                    options: productsOptions.value,
+                    min: false
                 },
                 {
                     label: 'Formateur Interne',
                     name: 'inTrainer',
                     type: 'select',
-                    options: employeesOptions.value
+                    options: employeesOptions.value,
+                    min: false
                 },
                 {
                     label: 'Formateur Externe',
                     name: 'outTrainer',
                     type: 'select',
-                    options: outTrainersOptions.value
+                    options: outTrainersOptions.value,
+                    min: false
                 }
             ]
-            console.log('productsOptions', productsOptions.value.options)
             isLoaded.value = true
         })
     })
@@ -406,9 +413,10 @@
                 Ajouter
             </AppBtn>
         </AppCol>
-        <AppRow v-if="isLoaded">
+        <AppRow>
             <AppCol>
                 <AppCardableTable
+                    v-if="isLoaded"
                     :current-page="storeEmployeeListFormation.currentPage"
                     :fields="tabFields"
                     :first-page="storeEmployeeListFormation.firstPage"
@@ -427,9 +435,9 @@
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <AppCol v-if="AddForm && !updated" class="col-7">
+            <AppCol v-show="AddForm && !updated" class="col-7">
                 <AppSuspense>
-                    <InlistAddForm id="addEmployeeSkill" api-method="POST" api-url="" form="addEmployeeSkillForm" :fields="addFormField" @cancel="cancelAddForm"/>
+                    <InlistAddForm v-if="isLoaded" id="addEmployeeSkill" api-method="POST" api-url="" form="addEmployeeSkillForm" :fields="addFormField" @cancel="cancelAddForm"/>
                 </AppSuspense>
             </AppCol>
         </AppRow>

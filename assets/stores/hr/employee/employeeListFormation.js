@@ -30,13 +30,13 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
             await api(`/api/skills/${payload}`, 'DELETE')
             this.employeeFormation = this.employeeFormation.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
-        async fetch() {
+        async fetch(criteria = '?page=1') {
             // const response = await api(`/api/selling-order-items?employee=${this.employeeID}`, 'GET')
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
             // const response = await api(`/api/selling-order-items/employeeFilter/${this.employeeID}?page=${this.currentPage}`, 'GET')
-            const response = await api(`/api/skills?employee=/api/employees/${this.employeeID}`, 'GET')
+            const response = await api(`/api/skills${criteria}`, 'GET')
             this.employeeFormation = await this.updatePagination(response)
         },
         async filterBy(payload) {
