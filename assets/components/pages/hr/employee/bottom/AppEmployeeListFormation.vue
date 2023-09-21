@@ -379,10 +379,12 @@
 <template>
     <div class="gui-bottom">
         <AppCol class="d-flex justify-content-between mb-2">
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Ajouter
-            </AppBtn>
+            <span style="margin-left: 10px;">
+                <AppBtn variant="success" label="Ajout" @click="ajoute">
+                    <Fa icon="plus"/>
+                    Ajouter
+                </AppBtn>
+            </span>
         </AppCol>
         <AppRow>
             <AppCol :cols="col1">
@@ -421,6 +423,9 @@
 <style scoped>
     .btn-float-right{
         float: right;
+    }
+    .btn-left {
+
     }
     .gui-bottom {
         overflow: hidden;
