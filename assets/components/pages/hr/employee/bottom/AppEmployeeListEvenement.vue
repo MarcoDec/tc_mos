@@ -38,9 +38,6 @@
     const itemsTable = ref([])
     itemsTable.value = storeEmployeeListEvenement.itemsEmployeeEvenement
 
-    const formData = ref({
-        date: null, motif: null, description: null
-    })
     addFormField.value = [
         {
             filter: true,
@@ -103,55 +100,10 @@
         updated.value = false
     }
 
-    // async function ajoutEmployeeEvenement(){
-    //     // const form = document.getElementById('addEmployeeEvenement')
-    //     // const formData1 = new FormData(form)
-
-    //     // if (typeof formData.value.families !== 'undefined') {
-    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-    //     // }
-
-    //     const itemsAddData = {
-    //         client: formData.value.client,
-    //         reference: formData.value.reference,
-    //         quantiteConfirmee: formData.value.quantiteConfirmee,
-    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffetctuee: formData.value.quantiteEffetctuee,
-    //         dateLivraison: formData.value.dateLivraison,
-    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-    //     }
-    //     violations = await storeEmployeeListEvenement.addEmployeeEvenement(itemsAddData)
-
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeEmployeeListEvenement.itemsEmployeeEvenement]
-    //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffetctuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
-
     function update(item) {
         updateEmployeeEventItem.value = item
         updated.value = true
-        AddForm.value = true
+        AddForm.value = false
     }
 
     async function deleted(id){
@@ -249,9 +201,6 @@
 </template>
 
 <style scoped>
-    .btn-float-right{
-        float: right;
-    }
     .gui-bottom {
         overflow: hidden;
     }
