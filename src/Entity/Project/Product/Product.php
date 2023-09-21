@@ -170,7 +170,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'groups' => ['read:measure', 'read:product', 'read:state'],
             'openapi_definition_name' => 'Product-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ProductRepository::class),
     UniqueEntity(fields: ['code', 'index'], groups: ['Product-admin', 'Product-clone', 'Product-create'])

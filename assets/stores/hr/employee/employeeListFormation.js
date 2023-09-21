@@ -636,16 +636,16 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
             }
             const newObject = {
                 '@id': item['@id'],
-                date: dt,
-                dateCloture: dtCloture,
-                rappel: dtRappel,
-                competence: item.type.name,
-                groupeMachine: '---',
-                machine: mach,
-                niveau: item.level,
-                commentaire: '---',
-                formateurInt: fInt,
-                formateurExt: fExt
+                startedDate: dt,
+                endedDate: dtCloture,
+                remindedDate: dtRappel,
+                type: item.type['@id'],
+                engine: item.engine,
+                family: item.family,
+                level: item.level,
+                inTrainer: item.inTrainer,
+                outTrainer: item.outTrainer,
+                product: item.product
             }
             return newObject
         })

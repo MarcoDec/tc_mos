@@ -19,6 +19,7 @@
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true}
     })
+    //console.log('props.fields', props.fields)
     const displayedFields = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
     const input = ref({})
     const emit = defineEmits(['deleted', 'getPage', 'update', 'trierAlphabet', 'update:modelValue', 'update:searchModelValue', 'search', 'cancelSearch'])

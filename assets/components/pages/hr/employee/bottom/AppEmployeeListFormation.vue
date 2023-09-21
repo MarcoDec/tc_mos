@@ -1,8 +1,10 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {onBeforeMount, computed, ref} from 'vue'
+    import api from '../../../../../api'
     import {useEmployeeListFormationStore} from '../../../../../stores/hr/employee/employeeListFormation'
     import {useRoute} from 'vue-router'
-    // import useField from '../../../stores/field/field'
+    import AppSuspense from '../../../../AppSuspense.vue'
+    import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
 
     const roleuser = ref('reader')
     // let violations = []
@@ -20,210 +22,252 @@
     const storeEmployeeListFormation = useEmployeeListFormationStore()
     storeEmployeeListFormation.setIdEmployee(employeeId)
     await storeEmployeeListFormation.fetch()
-    const itemsTable = ref(storeEmployeeListFormation.itemsEmployeeFormation)
+    const itemsTable = ref([])
+    itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
     const formData = ref({
         date: null, dateCloture: null, rappel: null, competence: null, groupeMachine: null, machine: null, niveau: null, commentaire: null, formateurInt: null, formateurExt: null
     })
-
-    // const fieldsForm = [
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date',
-    //         name: 'date',
-    //         sort: false,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date clôture',
-    //         name: 'dateCloture',
-    //         sort: false,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Date de rappel',
-    //         name: 'rappel',
-    //         sort: false,
-    //         type: 'date',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Compétence',
-    //         name: 'competence',
-    //         sort: false,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Niveau',
-    //         name: 'niveau',
-    //         sort: false,
-    //         type: 'int',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Groupe de machine',
-    //         name: 'groupeMachine',
-    //         sort: false,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Machine',
-    //         name: 'machine',
-    //         sort: false,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Commentaire',
-    //         name: 'commentaire',
-    //         sort: false,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Formateur Interne',
-    //         name: 'formateurInt',
-    //         sort: false,
-    //         type: 'text',
-    //         update: true
-    //     },
-    //     {
-    //         create: false,
-    //         filter: true,
-    //         label: 'Formateur Externe',
-    //         name: 'formateurExt',
-    //         sort: false,
-    //         type: 'text',
-    //         update: true
-    //     }
-    // ]
-    const tabFields = [
-        {
-            create: false,
-            filter: true,
-            label: 'Date',
-            name: 'date',
-            sort: false,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Date clôture',
-            name: 'dateCloture',
-            sort: false,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Date de rappel',
-            name: 'rappel',
-            sort: false,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Compétence',
-            name: 'competence',
-            sort: false,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Niveau',
-            name: 'niveau',
-            sort: false,
-            type: 'int',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Groupe de machine',
-            name: 'groupeMachine',
-            sort: false,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Machine',
-            name: 'machine',
-            sort: false,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Commentaire',
-            name: 'commentaire',
-            sort: false,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Formateur Interne',
-            name: 'formateurInt',
-            sort: false,
-            type: 'text',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Formateur Externe',
-            name: 'formateurExt',
-            sort: false,
-            type: 'text',
-            update: true
+    //region chargement des listes pour les selects
+    function getOptions(dataColl, textProperty, valueProperty = '@id') {
+        return {
+            label: value => {
+                const filteredColl = dataColl.find(item => item[valueProperty] === value)
+                if (textProperty === 'code') {
+                    console.log('code', value, dataColl, filteredColl)
+                }
+                if (typeof filteredColl === 'undefined') return '<null>'
+                if (typeof filteredColl[textProperty] === 'undefined') return `Property ${textProperty} not found`
+                return filteredColl[textProperty]
+            },
+            options: dataColl.map(item => ({text: item[textProperty], value: item['@id']}))
         }
-    ]
+    }
+    const isLoaded = ref(false)
+    const addFormField = ref([])
+    const tabFields = ref([])
+    const engineGroupsOptions = ref({})
+    const skillsOptions = ref({})
+    const manufacturerEnginesOptions = ref({})
+    const employeesOptions = ref({})
+    const outTrainersOptions = ref([])
+    const productsOptions = ref([])
+    onBeforeMount(() => {
+        console.log('Début chargement', new Date())
+        const promiseEngineGroups = new Promise((resolve, reject) => {
+            try {
+                const response = api('/api/engine-groups?pagination=false', 'GET')
+                response.then(result => {
+                    engineGroupsOptions.value = getOptions(result['hydra:member'], 'name')
+                    resolve('promiseEngineGroups ok')
+                })
+            } catch (e) {
+                console.log('error', e)
+                reject(e)
+            }
+        })
+        const promiseSkillTypes = new Promise((resolve, reject) => {
+            try {
+                const response = api('/api/skill-types?pagination=false', 'GET')
+                response.then(result => {
+                    skillsOptions.value = getOptions(result['hydra:member'], 'name')
+                    resolve('promiseSkillTypes ok')
+                })
+            } catch (e) {
+                console.log('error', e)
+                reject(e)
+            }
+        })
+        const promiseManufacturerEngines = new Promise((resolve, reject) => {
+            try {
+                const response = api('/api/manufacturer-engines?pagination=false', 'GET')
+                response.then(result => {
+                    manufacturerEnginesOptions.value = getOptions(result['hydra:member'], 'code')
+                    resolve('promiseManufacturerEngines ok')
+                })
+            } catch (e) {
+                console.log('error', e)
+                reject(e)
+            }
+        })
+        const promiseEmployees = new Promise((resolve, reject) => {
+            try {
+                const response = api('/api/employees?pagination=false', 'GET')
+                response.then(result => {
+                    employeesOptions.value = getOptions(result['hydra:member'], 'username')
+                    resolve('promiseEmployees ok')
+                })
+            } catch (e) {
+                console.log('error', e)
+                reject(e)
+            }
+        })
+        const promiseOutTrainers = new Promise((resolve, reject) => {
+            try {
+                const response = api('/api/out-trainers?pagination=false', 'GET')
+                response.then(result => {
+                    outTrainersOptions.value = getOptions(result['hydra:member'], 'name')
+                    resolve('promiseOutTrainers ok')
+                })
+            } catch (e) {
+                console.log('error', e)
+                reject(e)
+            }
+        })
+        const promiseProducts = new Promise((resolve, reject) => {
+            try {
+                const response = api('/api/products?pagination=false', 'GET')
+                response.then(result => {
+                    productsOptions.value = getOptions(result['hydra:member'], 'code')
+                    resolve('promiseProducts ok')
+                })
+            } catch (e) {
+                console.log('error', e)
+                reject(e)
+            }
+        })
+        const promises = [promiseEngineGroups, promiseSkillTypes, promiseManufacturerEngines, promiseEmployees, promiseOutTrainers, promiseProducts]
+        // eslint-disable-next-line array-callback-return
+        Promise.allSettled(promises).then(results => {
+            console.log('Chargement terminé', new Date(), results)
+            addFormField.value = [
+                {
+                    label: 'Date',
+                    name: 'startedDate',
+                    type: 'date'
+                },
+                {
+                    label: 'Date clôture',
+                    name: 'endedDate',
+                    type: 'date'
+                },
+                {
+                    label: 'Date de rappel',
+                    name: 'remindedDate',
+                    type: 'date'
+                },
+                {
+                    label: 'Compétence',
+                    name: 'type',
+                    options: skillsOptions.value,
+                    type: 'select'
+                },
+                {
+                    label: 'Niveau',
+                    name: 'level',
+                    type: 'number',
+                    step: 0.5
+                },
+                {
+                    label: 'Groupe de machine',
+                    name: 'family',
+                    type: 'select',
+                    options: engineGroupsOptions.value
+                },
+                {
+                    label: 'Machine',
+                    name: 'engine',
+                    type: 'select',
+                    options: manufacturerEnginesOptions.value
+                },
+                {
+                    label: 'Produit',
+                    name: 'product',
+                    type: 'select',
+                    options: productsOptions.value
+                },
+                {
+                    label: 'Formateur Interne',
+                    name: 'inTrainer',
+                    type: 'select',
+                    options: employeesOptions.value
+                },
+                {
+                    label: 'Formateur Externe',
+                    name: 'outTrainer',
+                    type: 'select',
+                    options: outTrainersOptions.value
+                }
+            ]
+            tabFields.value = [
+                {
+                    label: 'Date',
+                    name: 'startedDate',
+                    type: 'date'
+                },
+                {
+                    label: 'Date clôture',
+                    name: 'endedDate',
+                    type: 'date'
+                },
+                {
+                    label: 'Date de rappel',
+                    name: 'remindedDate',
+                    type: 'date'
+                },
+                {
+                    label: 'Compétence',
+                    name: 'type',
+                    type: 'select',
+                    options: skillsOptions.value,
+                    min: true
+                },
+                {
+                    label: 'Niveau',
+                    name: 'level',
+                    type: 'number',
+                    min: true
+                },
+                {
+                    label: 'Groupe de machine',
+                    name: 'family',
+                    type: 'select',
+                    options: engineGroupsOptions.value
+                },
+                {
+                    label: 'Machine',
+                    name: 'engine',
+                    type: 'select',
+                    options: manufacturerEnginesOptions.value
+                },
+                {
+                    label: 'Produit',
+                    name: 'product',
+                    type: 'select',
+                    options: productsOptions.value
+                },
+                {
+                    label: 'Formateur Interne',
+                    name: 'inTrainer',
+                    type: 'select',
+                    options: employeesOptions.value
+                },
+                {
+                    label: 'Formateur Externe',
+                    name: 'outTrainer',
+                    type: 'select',
+                    options: outTrainersOptions.value
+                }
+            ]
+            console.log('productsOptions', productsOptions.value.options)
+            isLoaded.value = true
+        })
+    })
+    //endregion
 
-    // function ajoute(){
-    //     AddForm.value = true
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffetctuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    // }
+    function ajoute(){
+        AddForm.value = true
+        updated.value = false
+        // const itemsNull = {
+        //     client: null,
+        //     reference: null,
+        //     quantiteConfirmee: null,
+        //     quantiteSouhaitee: null,
+        //     quantiteEffetctuee: null,
+        //     dateLivraison: null,
+        //     dateLivraisonSouhaitee: null
+        // }
+        // formData.value = itemsNull
+    }
 
     // async function ajoutEmployeeFormation(){
     //     // const form = document.getElementById('addEmployeeFormation')
@@ -253,21 +297,6 @@
     //         isPopupVisible.value = false
     //         itemsTable.value = [...storeEmployeeListFormation.itemsEmployeeFormation]
     //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffetctuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
     // }
 
     function update(item) {
@@ -364,17 +393,20 @@
         filter.value = true
         storeEmployeeListFormation.fetch()
     }
+    function cancelAddForm() {
+        AddForm.value = false
+    }
 </script>
 
 <template>
     <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
+        <AppCol class="d-flex justify-content-between mb-2">
             <AppBtn variant="success" label="Ajout" @click="ajoute">
                 <Fa icon="plus"/>
                 Ajouter
             </AppBtn>
-        </AppCol> -->
-        <AppRow>
+        </AppCol>
+        <AppRow v-if="isLoaded">
             <AppCol>
                 <AppCardableTable
                     :current-page="storeEmployeeListFormation.currentPage"
@@ -395,30 +427,11 @@
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
-                <AppCard class="bg-blue col" title="">
-                    <AppRow>
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </AppRow>
-                    <br/>
-                    <AppFormCardable id="addEmployeeFormation" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
-                    <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutEmployeeFormation">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </AppCol>
-                </AppCard>
-            </AppCol> -->
+            <AppCol v-if="AddForm && !updated" class="col-7">
+                <AppSuspense>
+                    <InlistAddForm id="addEmployeeSkill" api-method="POST" api-url="" form="addEmployeeSkillForm" :fields="addFormField" @cancel="cancelAddForm"/>
+                </AppSuspense>
+            </AppCol>
         </AppRow>
     </div>
 </template>

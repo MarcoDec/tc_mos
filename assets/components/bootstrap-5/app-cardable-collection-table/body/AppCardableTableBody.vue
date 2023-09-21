@@ -1,13 +1,13 @@
 <script setup>
     import AppCardableTableItem from './AppCardableTableItem.vue'
 
-    defineProps({
+    const props = defineProps({
         fields: {required: true, type: Array},
         item: {required: true, type: Object},
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true}
     })
-
+    //console.log('AppCardableTableBody', props.fields)
     const emit = defineEmits(['deleted', 'update'])
     function update(item){
         emit('update', item)

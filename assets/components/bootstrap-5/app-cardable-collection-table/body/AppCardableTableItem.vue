@@ -6,6 +6,7 @@
         shouldDelete: {required: false, default: true},
         shouldSee: {required: false, default: true}
     })
+    //console.log('AppCardableTableItem', props.item, props.fields)
     const id = Number(props.item['@id'].match(/\d+/)[0])
     const emit = defineEmits(['deleted', 'update'])
     function update(){

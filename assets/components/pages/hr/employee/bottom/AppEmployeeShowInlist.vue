@@ -6,7 +6,7 @@
 </script>
 
 <template>
-    <AppTabs id="gui-start-bottom" class="gui-start-content-bottom" format-nav="block">
+    <AppTabs id="gui-start-bottom" class="gui-start-content-bottom">
         <AppTab id="gui-start-formations" active title="Formations" icon="book" tabs="gui-start-bottom">
             <AppSuspense>
                 <AppEmployeeListFormation/>
@@ -28,9 +28,6 @@
             </AppSuspense>
         </AppTab>
     </AppTabs>
-    <!-- <AppTab id="gui-start-equipments" icon="tools" title="Équipements">
-        <AppTable :id="route.name" :fields="fields  " :store="products" :machine="machine"/>
-    </AppTab> -->
 </template>
 
 <style scoped>

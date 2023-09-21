@@ -9,6 +9,7 @@
         // eslint-disable-next-line vue/no-unused-properties
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
+    //console.log('props.fields', props.fields)
     const inputValues = ref([])
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)

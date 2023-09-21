@@ -26,9 +26,7 @@
                 <AppSuspense><AppEmployeeFormShow v-if="fetchEmployeeStore.isLoaded && fetchEmployeeStore.teamsIsLoaded"/></AppSuspense>
             </template>
             <template #gui-bottom>
-                <AppSuspense>
-                    <AppEmployeeShowInlist/>
-                </AppSuspense>
+                <AppSuspense><AppEmployeeShowInlist/></AppSuspense>
             </template>
             <template #gui-right>
                 <!--            {{ route.params.id_employee }}-->
