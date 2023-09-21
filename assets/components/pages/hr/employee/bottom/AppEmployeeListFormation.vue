@@ -21,7 +21,11 @@
     const employeeId = maRoute.params.id_employee
 
     const employeesListFormationFetchCriteria = useFetchCriteria('employeesListFormation')
-    employeesListFormationFetchCriteria.addFilter('employee', `/api/employees/${employeeId}`)
+    function resetFilter() {
+        employeesListFormationFetchCriteria.resetAllFilter()
+        employeesListFormationFetchCriteria.addFilter('employee', `/api/employees/${employeeId}`)
+    }
+    resetFilter()
     const storeEmployeeListFormation = useEmployeeListFormationStore()
     //storeEmployeeListFormation.setIdEmployee(employeeId)
     await storeEmployeeListFormation.fetch(employeesListFormationFetchCriteria.getFetchCriteria)
@@ -39,7 +43,7 @@
                 if (typeof filteredColl[textProperty] === 'undefined') return `Property ${textProperty} not found`
                 return filteredColl[textProperty]
             },
-            options: dataColl.map(item => ({text: item[textProperty], value: item['@id']}))
+            options: dataColl.map(item => ({text: item[textProperty] ?? '', value: item['@id']}))
         }
     }
     const isLoaded = ref(false)
@@ -333,72 +337,31 @@
         itemsTable.value = [...storeEmployeeListFormation.itemsEmployeeFormation]
     }
     async function trierAlphabet(payload) {
+
         await storeEmployeeListFormation.sortableItems(payload, filterBy, filter)
         sortable.value = true
         trierAlpha = computed(() => payload)
     }
     async function search(inputValues) {
-        let mac = ''
-        if (inputValues.machine) {
-            mac = inputValues.machine.trim().split(' ')
-            if (mac.length === 2){
-                mac = {name: mac[0], surname: mac[1], same: false}
-            }
-            if (mac.length === 1) {
-                mac = {name: mac[0], surname: mac[0], same: true}
-            }
-        }
-        // let gpMachine = inputValues.comptence.trim().split(' ')
-        // if (gpMachine.length === 2){
-        //     gpMachine = {name: gpMachine[0], surname: gpMachine[1]}
-        // }
-        // if (gpMachine.length === 1) {
-        //     gpMachine = {name: gpMachine[0], surname: gpMachine[0]}
-        // }
-
-        let formExt = ''
-        if (inputValues.formateurExt){
-            formExt = inputValues.formateurExt.trim().split(' ')
-            if (formExt.length === 2){
-                formExt = {name: formExt[0], surname: formExt[1], same: false}
-            }
-            if (formExt.length === 1) {
-                formExt = {name: formExt[0], surname: formExt[0], same: true}
-            }
-        }
-
-        let formInt = ''
-        if (inputValues.formateurInt){
-            formInt = inputValues.formateurInt.trim().split(' ')
-            if (formInt.length === 2){
-                formInt = {name: formInt[0], surname: formInt[1], same: false}
-            }
-            if (formInt.length === 1) {
-                formInt = {name: formInt[0], surname: formInt[0], same: true}
-            }
-        }
-
-        const payload = {
-            date: inputValues.date ?? '',
-            dateCloture: inputValues.dateCloture ?? '',
-            rappel: inputValues.rappel ?? '',
-            competence: inputValues.competence ?? '',
-            groupeMachine: inputValues.groupeMachine ?? '',
-            machine: mac,
-            niveau: inputValues.niveau ?? '',
-            commentaire: inputValues.commentaire ?? '',
-            formateurInt: formInt ?? '',
-            formateurExt: formExt ?? ''
-        }
-
-        await storeEmployeeListFormation.filterBy(payload)
-        itemsTable.value = [...storeEmployeeListFormation.itemsEmployeeFormation]
-        filter.value = true
-        filterBy = computed(() => payload)
+        console.log('search', inputValues)
+        resetFilter()
+        if (inputValues.startedDate) employeesListFormationFetchCriteria.addFilter('startedDate', inputValues.startedDate, 'date')
+        if (inputValues.endedDate) employeesListFormationFetchCriteria.addFilter('endedDate', inputValues.endedDate, 'date')
+        if (inputValues.remindedDate) employeesListFormationFetchCriteria.addFilter('remindedDate', inputValues.remindedDate, 'date')
+        if (inputValues.type) employeesListFormationFetchCriteria.addFilter('type', inputValues.type)
+        if (inputValues.level) employeesListFormationFetchCriteria.addFilter('level', inputValues.level)
+        if (inputValues.family) employeesListFormationFetchCriteria.addFilter('family', inputValues.family)
+        if (inputValues.engine) employeesListFormationFetchCriteria.addFilter('engine', inputValues.engine)
+        if (inputValues.product) employeesListFormationFetchCriteria.addFilter('product', inputValues.product)
+        if (inputValues.inTrainer) employeesListFormationFetchCriteria.addFilter('inTrainer', inputValues.inTrainer)
+        if (inputValues.outTrainer) employeesListFormationFetchCriteria.addFilter('outTrainer', inputValues.outTrainer)
+        await storeEmployeeListFormation.fetch(employeesListFormationFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
     }
     async function cancelSearch() {
-        filter.value = true
-        storeEmployeeListFormation.fetch()
+        resetFilter()
+        await storeEmployeeListFormation.fetch(employeesListFormationFetchCriteria.getFetchCriteria)
+        itemsTable.value = storeEmployeeListFormation.itemsEmployeeFormation
     }
     function cancelAddForm() {
         AddForm.value = false

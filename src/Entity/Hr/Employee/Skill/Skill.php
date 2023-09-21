@@ -17,10 +17,12 @@ use App\Filter\RelationFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['employee']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['startedDate' => 'partial', 'endedDate' => 'partial', 'remindedDate' => 'partial', 'type.name' => 'partial', 'family.code' => 'partial', 'family.value' => 'partial', 'engine.name' => 'partial', 'engine.surname' => 'partial', 'level' => 'partial', 'commentaire' => 'partial', 'inTrainer.name' => 'partial', 'inTrainer.surname' => 'partial', 'outTrainer.name' => 'partial', 'outTrainer.surname' => 'partial']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['employee', 'inTrainer', 'type', 'family', 'engine', 'product', 'outTrainer']),
+    ApiFilter(filterClass: DateFilter::class, properties: ['startedDate', 'endedDate', 'remindedDate']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['level' => 'exact']),
 
     ApiResource(
         description: 'Compétence',

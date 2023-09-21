@@ -20,9 +20,8 @@ export default function useFetchCriteria(id) {
                         const filterName = `${field}[after]`
                         this.filters.push({field: filterName, value})
                     }
-                    const initialDate = new Date(value)
-                    const nextDay = new Date()
-                    nextDay.setDate(initialDate.getDate() + 1)
+                    const nextDay = new Date(value)
+                    nextDay.setDate(nextDay.getDate() + 1)
                     if (filteredFiltersBefore.length > 0) {
                         filteredFiltersBefore[0].value = nextDay.toISOString().substring(0, 10)
                     } else {
