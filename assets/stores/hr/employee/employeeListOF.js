@@ -31,7 +31,11 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
             this.employeeOF = this.employeeOF.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
-            // const response = await api(`/api/selling-order-items?employee=${this.employeeID}`, 'GET')
+            /*
+            Cette fonction retourne l'ensemble des opérations de fabrication associé à un employé
+            qu'il en soit un opérateur ou la personne responsable
+            Les opérations envoyées ne datent pas plus d'une semaine
+            */
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
@@ -105,9 +109,9 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
                     url += `startedDate=${payload.startDate}&`
                     urlOE += `operation.startedDate=${payload.startDate}&`
                 }
-                if (payload.endDate !== ''){
-                    url += `duration=${payload.endDate}&`
-                    urlOE += `operation.duration=${payload.endDate}&`
+                if (payload.duration !== ''){
+                    url += `duration=${payload.duration}&`
+                    urlOE += `operation.duration=${payload.duration}&`
                 }
 
                 if (payload.actualQuantity !== ''){
@@ -196,8 +200,8 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
                     if (payload.filterBy.value.startDate !== ''){
                         url += `startedDate=${payload.filterBy.value.startDate}&`
                     }
-                    if (payload.filterBy.value.endDate !== ''){
-                        url += `duration=${payload.filterBy.value.endDate}&`
+                    if (payload.filterBy.value.duration !== ''){
+                        url += `duration=${payload.filterBy.value.duration}&`
                     }
 
                     if (payload.filterBy.value.actualQuantity !== ''){
@@ -250,8 +254,8 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
                     if (payload.filterBy.value.startDate !== ''){
                         url += `startedDate=${payload.filterBy.value.startDate}&`
                     }
-                    if (payload.filterBy.value.endDate !== ''){
-                        url += `duration=${payload.filterBy.value.endDate}&`
+                    if (payload.filterBy.value.duration !== ''){
+                        url += `duration=${payload.filterBy.value.duration}&`
                     }
 
                     if (payload.filterBy.value.actualQuantity !== ''){
@@ -304,8 +308,8 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
                 if (payload.filterBy.value.startDate !== ''){
                     url += `startedDate=${payload.filterBy.value.startDate}&`
                 }
-                if (payload.filterBy.value.endDate !== ''){
-                    url += `duration=${payload.filterBy.value.endDate}&`
+                if (payload.filterBy.value.duration !== ''){
+                    url += `duration=${payload.filterBy.value.duration}&`
                 }
 
                 if (payload.filterBy.value.actualQuantity !== ''){
@@ -376,8 +380,8 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
                         if (filterBy.value.startDate !== ''){
                             url += `startedDate=${filterBy.value.startDate}&`
                         }
-                        if (filterBy.value.endDate !== ''){
-                            url += `duration=${filterBy.value.endDate}&`
+                        if (filterBy.value.duration !== ''){
+                            url += `duration=${filterBy.value.duration}&`
                         }
 
                         if (filterBy.value.actualQuantity !== ''){
@@ -432,8 +436,8 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
                         if (filterBy.value.startDate !== ''){
                             url += `startedDate=${filterBy.value.startDate}&`
                         }
-                        if (filterBy.value.endDate !== ''){
-                            url += `duration=${filterBy.value.endDate}&`
+                        if (filterBy.value.duration !== ''){
+                            url += `duration=${filterBy.value.duration}&`
                         }
 
                         if (filterBy.value.actualQuantity !== ''){
@@ -485,33 +489,9 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
         },
         async updatePagination(response) {
             const responseData = await response['hydra:member']
-            // let paginationView = {}
-            // if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
-            //     paginationView = response['hydra:view']
-            // } else {
-            //     paginationView = responseData
-            // }
-            // if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
-            //     this.pagination = true
-            //     this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
-            //     this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-            //     this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-            //     this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
-            //     this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
-            //     return responseData
-            // }
             this.pagination = false
             return responseData
         }
-        // async updateWarehouseStock(payload){
-        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-        //     if (payload.sortable.value === true || payload.filter.value === true) {
-        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-        //     } else {
-        //         this.itemsPagination(this.currentPage)
-        //     }
-        //     this.fetch()
-        // }
     },
     getters: {
         itemsEmployeeOF: state => state.employeeOF.map(item => {
@@ -530,12 +510,12 @@ export const useEmployeeListOFStore = defineStore('employeeListOF', {
                 of: item.order.ref,
                 poste: post,
                 startDate: stDate,
-                endDate: item.duration ?? '',
                 actualQuantity: item.actualQuantity,
                 quantityProduced: item.quantityProduced,
                 cadence: cad,
                 statut: item.embState.state,
-                cloture: item.embBlocker.state
+                cloture: item.embBlocker.state,
+                duration: item.duration
             }
             return newObject
         })

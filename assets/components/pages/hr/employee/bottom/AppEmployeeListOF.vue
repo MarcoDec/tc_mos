@@ -1,5 +1,6 @@
 <script setup>
     import {computed, ref} from 'vue'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {useEmployeeListOFStore} from '../../../../../stores/hr/employee/employeeListOF'
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
@@ -20,9 +21,10 @@
     const storeEmployeeListOF = useEmployeeListOFStore()
     storeEmployeeListOF.setIdEmployee(employeeId)
     await storeEmployeeListOF.fetch()
+
     const itemsTable = ref(storeEmployeeListOF.itemsEmployeeOF)
     const formData = ref({
-        of: null, poste: null, startDate: null, endDate: null, actualQuantity: null, quantityProduced: null, cadence: null, statut: null, cloture: null
+        of: null, poste: null, startDate: null, duration: null, actualQuantity: null, quantityProduced: null, cadence: null, statut: null, cloture: null
     })
 
     const fieldsForm = [
@@ -57,7 +59,7 @@
             create: false,
             filter: true,
             label: 'Date de fin',
-            name: 'endDate',
+            name: 'duration',
             sort: false,
             type: 'date',
             update: true
@@ -113,7 +115,7 @@
         {
             create: false,
             filter: true,
-            label: 'Clôture',
+            label: 'Etat',
             name: 'cloture',
             sort: false,
             type: 'text',
@@ -135,7 +137,6 @@
         $id: 'employeeOFQtProduit'
     }
     const storeUnitQtProduit = useField(fieldsForm[5], parentQtProduit)
-    // storeUnitQtSouhaitee.fetch()
 
     fieldsForm[5].measure.code = storeUnitQtProduit.measure.code
     fieldsForm[5].measure.value = storeUnitQtProduit.measure.value
@@ -145,7 +146,6 @@
         $id: 'employeeOFQtCandence'
     }
     const storeUnitQtCadence = useField(fieldsForm[6], parentQtCadence)
-    // storeUnitQtSouhaitee.fetch()
 
     fieldsForm[6].measure.code = storeUnitQtCadence.measure.code
     fieldsForm[6].measure.value = storeUnitQtCadence.measure.value
@@ -172,17 +172,8 @@
         {
             create: false,
             filter: true,
-            label: 'Date de début',
+            label: 'Date',
             name: 'startDate',
-            sort: false,
-            type: 'date',
-            update: true
-        },
-        {
-            create: false,
-            filter: true,
-            label: 'Date de fin',
-            name: 'endDate',
             sort: false,
             type: 'date',
             update: true
@@ -203,7 +194,7 @@
         {
             create: false,
             filter: true,
-            label: 'Quantité produit',
+            label: 'Quantité produite',
             name: 'quantityProduced',
             measure: {
                 code: storeUnitQtProduit.measure.code,
@@ -217,13 +208,10 @@
             create: false,
             filter: true,
             label: 'Cadence',
-            name: 'cadence',
-            measure: {
-                code: storeUnitQtCadence.measure.code,
-                value: storeUnitQtCadence.measure.value
-            },
+            name: 'duration',
             sort: false,
-            type: 'measure',
+            type: 'number',
+            step: 0.01,
             update: true
         },
         {
@@ -238,73 +226,13 @@
         {
             create: false,
             filter: true,
-            label: 'Clôture',
+            label: 'Etat',
             name: 'cloture',
             sort: false,
             type: 'text',
             update: true
         }
     ]
-
-    // function ajoute(){
-    //     AddForm.value = true
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffetctuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    // }
-
-    // async function ajoutEmployeeOF(){
-    //     // const form = document.getElementById('addEmployeeOF')
-    //     // const formData1 = new FormData(form)
-
-    //     // if (typeof formData.value.families !== 'undefined') {
-    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-    //     // }
-
-    //     const itemsAddData = {
-    //         client: formData.value.client,
-    //         reference: formData.value.reference,
-    //         quantiteConfirmee: formData.value.quantiteConfirmee,
-    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffetctuee: formData.value.quantiteEffetctuee,
-    //         dateLivraison: formData.value.dateLivraison,
-    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-    //     }
-    //     violations = await storeEmployeeListOF.addEmployeeOF(itemsAddData)
-
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeEmployeeListOF.itemsEmployeeOF]
-    //     }
-    // }
-    // function annule(){
-    //     AddForm.value = false
-    //     updated.value = false
-    //     const itemsNull = {
-    //         client: null,
-    //         reference: null,
-    //         quantiteConfirmee: null,
-    //         quantiteSouhaitee: null,
-    //         quantiteEffetctuee: null,
-    //         dateLivraison: null,
-    //         dateLivraisonSouhaitee: null
-    //     }
-    //     formData.value = itemsNull
-    //     isPopupVisible.value = false
-    // }
 
     function update(item) {
         updated.value = true
@@ -313,12 +241,12 @@
             of: item.of,
             poste: item.poste,
             startDate: item.startDate,
-            endDate: item.endDate,
             actualQuantity: item.actualQuantity,
             quantityProduced: item.quantityProduced,
             cadence: item.cadence,
             statut: item.statut,
-            cloture: item.cloture
+            cloture: item.cloture,
+            duration: item.duration
         }
         formData.value = itemsData
     }
@@ -337,21 +265,11 @@
         trierAlpha = computed(() => payload)
     }
     async function search(inputValues) {
-        // let comp = ''
-        // if (typeof inputValues.composant !== 'undefined'){
-        //     comp = inputValues.composant
-        // }
-
-        // let prod = ''
-        // if (typeof inputValues.produit !== 'undefined'){
-        //     prod = inputValues.produit
-        // }
-
         const payload = {
             of: inputValues.of ?? '',
             poste: inputValues.poste ?? '',
             startDate: inputValues.startDate ?? '',
-            endDate: inputValues.endDate ?? '',
+            duration: inputValues.duration ?? '',
             actualQuantity: inputValues.actualQuantity ?? '',
             quantityProduced: inputValues.quantityProduced ?? '',
             cadence: inputValues.cadence ?? '',
@@ -386,18 +304,21 @@
     }
     async function cancelSearch() {
         filter.value = true
-        storeEmployeeListOF.fetch()
+        await storeEmployeeListOF.fetch()
+        itemsTable.value = storeEmployeeListOF.itemsEmployeeOF
     }
+    console.log(itemsTable)
 </script>
 
 <template>
     <div class="gui-bottom">
-        <!-- <AppCol class="d-flex justify-content-between mb-2">
-            <AppBtn variant="success" label="Ajout" @click="ajoute">
-                <Fa icon="plus"/>
-                Ajouter
-            </AppBtn>
-        </AppCol> -->
+        <AppRow>
+            <AppCol>
+                <p class="text-center text-info bg-light border">
+                    Liste des opérations de fabrication associé à l'utilisateur (pic ou opérateur) de moins d'une semaine
+                </p>
+            </AppCol>
+        </AppRow>
         <AppRow>
             <AppCol>
                 <AppCardableTable
@@ -412,6 +333,8 @@
                     :previous-page="storeEmployeeListOF.previousPage"
                     :user="roleuser"
                     form="formEmployeeOFCardableTable"
+                    :should-see="false"
+                    :should-delete="false"
                     @update="update"
                     @deleted="deleted"
                     @get-page="getPage"
@@ -419,30 +342,6 @@
                     @search="search"
                     @cancel-search="cancelSearch"/>
             </AppCol>
-            <!-- <AppCol v-if="AddForm && !updated" class="col-7">
-                <AppCard class="bg-blue col" title="">
-                    <AppRow>
-                        <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                            <Fa icon="angle-double-left"/>
-                        </button>
-                        <h4 class="col">
-                            <Fa icon="plus"/> Ajout
-                        </h4>
-                    </AppRow>
-                    <br/>
-                    <AppFormCardable id="addEmployeeOF" :fields="fieldsForm" :model-value="formData" label-cols/>
-                    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                        <div v-for="violation in violations" :key="violation">
-                            <li>{{ violation.message }}</li>
-                        </div>
-                    </div>
-                    <AppCol class="btnright">
-                        <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutEmployeeOF">
-                            <Fa icon="plus"/> Ajouter
-                        </AppBtn>
-                    </AppCol>
-                </AppCard>
-            </AppCol> -->
         </AppRow>
     </div>
 </template>
