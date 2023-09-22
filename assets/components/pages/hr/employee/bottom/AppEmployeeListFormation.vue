@@ -263,36 +263,6 @@
         updated.value = false
     }
 
-    // async function ajoutEmployeeFormation(){
-    //     // const form = document.getElementById('addEmployeeFormation')
-    //     // const formData1 = new FormData(form)
-
-    //     // if (typeof formData.value.families !== 'undefined') {
-    //     //     formData.value.famille = JSON.parse(JSON.stringify(formData.value.famille))
-    //     // }
-
-    //     const itemsAddData = {
-    //         client: formData.value.client,
-    //         reference: formData.value.reference,
-    //         quantiteConfirmee: formData.value.quantiteConfirmee,
-    //         //quantite: {code: formData1.get('quantite[code]'), value: formData1.get('quantite[value]')},
-    //         quantiteSouhaitee: formData.value.quantiteSouhaitee,
-    //         quantiteEffetctuee: formData.value.quantiteEffetctuee,
-    //         dateLivraison: formData.value.dateLivraison,
-    //         dateLivraisonSouhaitee: formData.value.dateLivraisonSouhaitee
-    //     }
-    //     violations = await storeEmployeeListFormation.addEmployeeFormation(itemsAddData)
-
-    //     if (violations.length > 0){
-    //         isPopupVisible.value = true
-    //     } else {
-    //         AddForm.value = false
-    //         updated.value = false
-    //         isPopupVisible.value = false
-    //         itemsTable.value = [...storeEmployeeListFormation.itemsEmployeeFormation]
-    //     }
-    // }
-
     function update(item) {
         updateSkillItem.value = item
         updated.value = true
@@ -360,7 +330,7 @@
     <div class="gui-bottom">
         <AppRow>
             <AppCol class="d-flex justify-content-between mb-2">
-                <span style="margin-left: 10px;">
+                <span class="ml-10">
                     <AppBtn variant="success" label="Ajout" @click="ajoute">
                         <Fa icon="plus"/>
                         Ajouter une nouvelle formation
@@ -406,8 +376,8 @@
     .btn-float-right{
         float: right;
     }
-    .btn-left {
-
+    .ml-10 {
+        margin-left: 10px;
     }
     .gui-bottom {
         overflow: hidden;

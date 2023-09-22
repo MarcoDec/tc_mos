@@ -562,15 +562,6 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
             this.pagination = false
             return responseData
         }
-        // async updateWarehouseStock(payload){
-        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-        //     if (payload.sortable.value === true || payload.filter.value === true) {
-        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-        //     } else {
-        //         this.itemsPagination(this.currentPage)
-        //     }
-        //     this.fetch()
-        // }
     },
     getters: {
         itemsEmployeeFormation: state => state.employeeFormation.map(item => {
@@ -588,29 +579,6 @@ export const useEmployeeListFormationStore = defineStore('employeeListFormation'
                 dtRappel = item.remindedDate.split('T')[0]
             }
 
-            let mach = ''
-            if (item.engine?.name) {
-                mach += `${item.engine.name} `
-            }
-            if (item.engine?.surname) {
-                mach += `${item.engine.surname} `
-            }
-
-            let fInt = ''
-            if (item.inTrainer?.name) {
-                fInt += `${item.inTrainer.name} `
-            }
-            if (item.inTrainer?.surname) {
-                fInt += `${item.inTrainer.surname} `
-            }
-
-            let fExt = ''
-            if (item.outTrainer?.name) {
-                fExt += `${item.outTrainer.name} `
-            }
-            if (item.outTrainer?.surname) {
-                fExt += `${item.outTrainer.surname} `
-            }
             const newObject = {
                 '@id': item['@id'],
                 startedDate: dt,

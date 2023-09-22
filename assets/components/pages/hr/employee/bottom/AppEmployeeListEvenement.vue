@@ -159,7 +159,7 @@
     <div class="gui-bottom">
         <AppRow>
             <AppCol class="d-flex justify-content-between mb-2">
-                <span style="margin-left: 10px;">
+                <span class="ml-10">
                     <AppBtn variant="success" label="Ajout" @click="ajoute">
                         <Fa icon="plus"/>
                         Ajouter une nouvel évènement employé
@@ -203,5 +203,8 @@
 <style scoped>
     .gui-bottom {
         overflow: hidden;
+    }
+    .ml-10 {
+        margin-left: 10px;
     }
 </style>

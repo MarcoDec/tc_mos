@@ -5,7 +5,6 @@
     import AppCompanyListSupply from './bottom/AppCompanyListSupply.vue'
     import AppCompanyListSupplier from './bottom/AppCompanyListSupplier.vue'
     import AppCompanyListEvent from './bottom/AppCompanyListEvent.vue'
-    import AppEquipementListUserAbility from '../../equipement/bottom/AppEquipementListUserAbility.vue'
     import AppEquipementListEvent from '../../equipement/bottom/AppEquipementListEvent.vue'
     import AppEquipementListPrevision from '../../equipement/bottom/AppEquipementListPrevision.vue'
 </script>
