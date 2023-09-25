@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Filter\SetFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use OperationEmployee;
+use App\Entity\Production\Manufacturing\OperationEmployee;
 
 #[
     ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
@@ -150,17 +150,9 @@ class Operation extends Entity implements MeasuredInterface {
         Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private ?PrimaryOperation $operation = null;
-
-    /** @var Collection<int, Employee> */
     #[
         ApiProperty(description: 'Opérateurs'),
-        ORM\ManyToMany(targetEntity: Employee::class),
-        Serializer\Groups(['read:manufacturing-operation', 'write:manufacturing-operation'])
-    ]
-    private Collection $operators;
-    #[
-        ApiProperty(description: 'Opérateurs'),
-        ORM\OneToMany(targetEntity: OperationEmployee::class, mappedBy: "operation"),
+        ORM\OneToMany(mappedBy: "operation", targetEntity: OperationEmployee::class),
     ]
     private Collection $operationEmployees;
 
@@ -210,17 +202,10 @@ class Operation extends Entity implements MeasuredInterface {
         $this->actualQuantity = new Measure();
         $this->embBlocker = new Closer();
         $this->embState = new ComponentManufacturingOperationState();
-        $this->operators = new ArrayCollection();
         $this->operationEmployees = new ArrayCollection();
         $this->quantityProduced = new Measure();
     }
 
-    final public function addOperator(Employee $operator): self {
-        if (!$this->operators->contains($operator)) {
-            $this->operators->add($operator);
-        }
-        return $this;
-    }
 
     final public function getActualQuantity(): Measure {
         return $this->actualQuantity;
@@ -244,13 +229,6 @@ class Operation extends Entity implements MeasuredInterface {
 
     final public function getOperation(): ?PrimaryOperation {
         return $this->operation;
-    }
-
-    /**
-     * @return Collection<int, Employee>
-     */
-    final public function getOperators(): Collection {
-        return $this->operators;
     }
 
     final public function getOrder(): ?Order {
@@ -287,13 +265,6 @@ class Operation extends Entity implements MeasuredInterface {
 
     final public function getOperationEmployees(): ?Collection {
         return $this->operationEmployees;
-    }
-
-    final public function removeOperator(Employee $operator): self {
-        if ($this->operators->contains($operator)) {
-            $this->operators->removeElement($operator);
-        }
-        return $this;
     }
 
     final public function setOperationEmployees(Collection $operEmployees): self {
