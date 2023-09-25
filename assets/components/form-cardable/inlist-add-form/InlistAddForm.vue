@@ -18,7 +18,6 @@
     const isPopupVisible = ref(false)
     const localData = ref({})
     let violations = []
-
     onMounted(() => {
         localData.value = props.modelValue
     })

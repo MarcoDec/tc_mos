@@ -54,6 +54,6 @@
     }
 
     li {
-        padding-bottom: 20px;
+        padding-bottom: 0px;
     }
 </style>

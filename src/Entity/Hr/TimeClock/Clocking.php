@@ -47,6 +47,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
             ]
          ],
          'post' => [
+             'method' => 'POST',
+             'path' => '/clockings/add',
+         ],
+         'clocking' => [
             'input_formats' => [
                'multipart' => ['multipart/form-data']
             ],
@@ -80,6 +84,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
             ],
             'normalization_context' => self::API_DEFAULT_NORMALIZATION_CONTEXT
          ],
+         'patch',
          'delete' => [
             'openapi_context' => [
                'description' => 'Supprime un pointage employé',
@@ -117,7 +122,7 @@ class Clocking extends AbstractAttachment {
     private bool $enter;
 
    #[
-      ORM\Column(type: "datetime", nullable: true),
+      ORM\Column(type: "datetime", nullable: true, options :["default" => "CURRENT_TIMESTAMP"]),
       Serializer\Groups(['read:clocking:collection']),
    ]
    private DateTime $creationDate;
@@ -126,7 +131,7 @@ class Clocking extends AbstractAttachment {
       parent::__construct();
       $this->hasParameter = false; // Clocking n'a pas (besoin) de paramètres
       $this->enter = false;
-      $this->creationDate = new DateTime("now");
+      $this->creationDate = new DateTime();
       $this->setExpirationDate(new DateTime("now + 14 day")); // On positionne à 14 jours par défaut la durée de rétention du fichier
    }
 

@@ -6,36 +6,14 @@ export const useEmployeeListClockingStore = defineStore('employeeListClocking', 
         setIdEmployee(id){
             this.employeeID = id
         },
-        // async addEmployeeClocking(payload){
-        //     const violations = []
-        //     try {
-        //         if (payload.quantite.value !== ''){
-        //             payload.quantite.value = parseInt(payload.quantite.value)
-        //         }
-        //         const element = {
-        //             component: payload.composant,
-        //             refFournisseur: payload.refFournisseur,
-        //             prix: payload.prix,
-        //             quantity: payload.quantite,
-        //             texte: payload.texte
-        //         }
-        //         await api('/api/component-stocks', 'POST', element)
-        //         this.fetch()
-        //     } catch (error) {
-        //         violations.push({message: error})
-        //     }
-        //     return violations
-        // },
         async deleted(payload) {
             await api(`/api/clockings/${payload}`, 'DELETE')
             this.employeeClocking = this.employeeClocking.filter(retard => Number(retard['@id'].match(/\d+/)[0]) !== payload)
         },
         async fetch() {
-            // const response = await api(`/api/selling-order-items?employee=${this.employeeID}`, 'GET')
             if (this.currentPage < 1){
                 this.currentPage = 1
             }
-            // const response = await api(`/api/selling-order-items/employeeFilter/${this.employeeID}?page=${this.currentPage}`, 'GET')
             const response = await api(`/api/clockings?employee=/api/employees/${this.employeeID}`, 'GET')
             this.employeeClocking = await this.updatePagination(response)
         },
@@ -228,15 +206,6 @@ export const useEmployeeListClockingStore = defineStore('employeeListClocking', 
             this.pagination = false
             return responseData
         }
-        // async updateWarehouseStock(payload){
-        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-        //     if (payload.sortable.value === true || payload.filter.value === true) {
-        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-        //     } else {
-        //         this.itemsPagination(this.currentPage)
-        //     }
-        //     this.fetch()
-        // }
     },
     getters: {
         itemsEmployeeClocking: state => state.employeeClocking.map(item => {

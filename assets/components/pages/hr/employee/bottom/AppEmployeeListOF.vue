@@ -1,15 +1,12 @@
 <script setup>
     import {computed, ref} from 'vue'
-    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {useEmployeeListOFStore} from '../../../../../stores/hr/employee/employeeListOF'
     import {useRoute} from 'vue-router'
     import useField from '../../../../../stores/field/field'
 
     const roleuser = ref('reader')
-    // let violations = []
     const updated = ref(false)
     const AddForm = ref(false)
-    // const isPopupVisible = ref(false)
     const sortable = ref(false)
     const filter = ref(false)
     let trierAlpha = {}
@@ -123,7 +120,6 @@
         }
     ]
     const parentQtActuelle = {
-        //$id: `${warehouseId}Stock`
         $id: 'employeeOFQtActuelle'
     }
     const storeUnitQtActuelle = useField(fieldsForm[4], parentQtActuelle)
@@ -133,7 +129,6 @@
     fieldsForm[4].measure.value = storeUnitQtActuelle.measure.value
 
     const parentQtProduit = {
-        //$id: `${warehouseId}Stock`
         $id: 'employeeOFQtProduit'
     }
     const storeUnitQtProduit = useField(fieldsForm[5], parentQtProduit)
@@ -142,7 +137,6 @@
     fieldsForm[5].measure.value = storeUnitQtProduit.measure.value
 
     const parentQtCadence = {
-        //$id: `${warehouseId}Stock`
         $id: 'employeeOFQtCandence'
     }
     const storeUnitQtCadence = useField(fieldsForm[6], parentQtCadence)
@@ -307,14 +301,13 @@
         await storeEmployeeListOF.fetch()
         itemsTable.value = storeEmployeeListOF.itemsEmployeeOF
     }
-    console.log(itemsTable)
 </script>
 
 <template>
     <div class="gui-bottom">
         <AppRow>
             <AppCol>
-                <p class="text-center text-info bg-light border">
+                <p class="bg-light border text-center text-info">
                     Liste des opérations de fabrication associé à l'utilisateur (pic ou opérateur) de moins d'une semaine
                 </p>
             </AppCol>
@@ -347,9 +340,6 @@
 </template>
 
 <style scoped>
-    .btn-float-right{
-        float: right;
-    }
     .gui-bottom {
         overflow: hidden;
     }
