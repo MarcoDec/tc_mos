@@ -9,8 +9,8 @@
     const idProduct = Number(route.params.id_product)
     const fetchUnits = useOptions('units')
     const useFetchProductStore = useProductStore()
-    fetchUnits.fetchOp()
-    useFetchProductStore.fetchOne(idProduct)
+    const allFetchs = [useFetchProductStore.fetchOne(idProduct), fetchUnits.fetchOp()]
+    Promise.allSettled(allFetchs)
 </script>
 
 <template>
@@ -24,7 +24,7 @@
             <AppSuspense><AppProductFormShow v-if="useFetchProductStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
         </template>
         <template #gui-bottom>
-            <AppSuspense><AppProductShowInlist/></AppSuspense>
+            <AppSuspense><AppProductShowInlist v-if="useFetchProductStore.isLoaded && fetchUnits.isLoaded"/></AppSuspense>
         </template>
         <template #gui-right>
             <!--            {{ route.params.id_product }}-->

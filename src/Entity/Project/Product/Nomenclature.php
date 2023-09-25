@@ -99,6 +99,14 @@ class Nomenclature extends Entity implements MeasuredInterface {
     private ?Product $product;
 
     #[
+        ApiProperty(description: 'Sous-Produit', readableLink: false, example: '/api/products/1'),
+        ORM\JoinColumn(nullable: false),
+        ORM\ManyToOne,
+        Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
+    ]
+    private ?Product $subProduct;
+
+    #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded(Measure::class),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
@@ -154,4 +162,23 @@ class Nomenclature extends Entity implements MeasuredInterface {
     {
         return $this->component ? $this->component->getUnit() : ($this->product ? $this->product->getUnit() : null);
     }
+
+    /**
+     * @return Product|null
+     */
+    public function getSubProduct(): ?Product
+    {
+        return $this->subProduct;
+    }
+
+    /**
+     * @param Product|null $subProduct
+     * @return Nomenclature
+     */
+    public function setSubProduct(?Product $subProduct): Nomenclature
+    {
+        $this->subProduct = $subProduct;
+        return $this;
+    }
+
 }

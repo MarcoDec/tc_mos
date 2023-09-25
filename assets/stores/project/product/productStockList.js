@@ -1,31 +1,11 @@
 import api from '../../../api'
 import {defineStore} from 'pinia'
 
-export const useProductListCompositionStore = defineStore('productListComposition', {
+export const useProductStocksListStore = defineStore('productListComposition', {
     actions: {
         setIdProduct(id){
             this.productID = id
         },
-        // async addProductComposition(payload){
-        //     const violations = []
-        //     try {
-        //         if (payload.quantite.value !== ''){
-        //             payload.quantite.value = parseInt(payload.quantite.value)
-        //         }
-        //         const element = {
-        //             component: payload.composant,
-        //             refFournisseur: payload.refFournisseur,
-        //             prix: payload.prix,
-        //             quantity: payload.quantite,
-        //             texte: payload.texte
-        //         }
-        //         await api('/api/component-stocks', 'POST', element)
-        //         this.fetch()
-        //     } catch (error) {
-        //         violations.push({message: error})
-        //     }
-        //     return violations
-        // },
         async deleted(payload) {
             await api(`/api/stocks/${payload}`, 'DELETE')
             this.productComposition = this.productComposition.filter(product => Number(product['@id'].match(/\d+/)[0]) !== payload)
@@ -305,15 +285,6 @@ export const useProductListCompositionStore = defineStore('productListCompositio
             this.pagination = false
             return responseData
         }
-        // async updateWarehouseStock(payload){
-        //     await api(`/api/stocks/${payload.id}`, 'PATCH', payload.itemsUpdateData)
-        //     if (payload.sortable.value === true || payload.filter.value === true) {
-        //         this.paginationSortableOrFilterItems({filter: payload.filter, filterBy: payload.filterBy, nPage: this.currentPage, sortable: payload.sortable, trierAlpha: payload.trierAlpha})
-        //     } else {
-        //         this.itemsPagination(this.currentPage)
-        //     }
-        //     this.fetch()
-        // }
     },
     getters: {
         itemsProductComposition: state => state.productComposition.map(item => {
