@@ -186,7 +186,8 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
             'groups' => ['read:component', 'read:measure', 'read:state'],
             'openapi_definition_name' => 'Component-read',
             'skip_null_values' => false
-        ]
+        ],
+        paginationClientEnabled: true
     ),
     ORM\Entity(repositoryClass: ComponentRepository::class)
 ]
