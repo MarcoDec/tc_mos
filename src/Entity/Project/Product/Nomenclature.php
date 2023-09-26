@@ -16,7 +16,7 @@ use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use App\Entity\Selling\Customer\Product;
+use App\Entity\Project\Product\Product;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 
@@ -77,8 +77,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 class Nomenclature extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
-        ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\JoinColumn(nullable: true),
+        ORM\ManyToOne(targetEntity: Component::class),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
     private ?Component $component;
@@ -93,15 +93,15 @@ class Nomenclature extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: Product::class),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
     private ?Product $product;
 
     #[
         ApiProperty(description: 'Sous-Produit', readableLink: false, example: '/api/products/1'),
-        ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\JoinColumn(nullable: true),
+        ORM\ManyToOne(targetEntity: Product::class),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
     private ?Product $subProduct;
