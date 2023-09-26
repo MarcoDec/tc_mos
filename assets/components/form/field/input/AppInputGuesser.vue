@@ -8,6 +8,7 @@
     import AppSwitch from './AppSwitch.vue'
     import {computed} from 'vue'
     import AppTextArea from './AppTextArea.vue'
+    import AppMultiselectFetch from './select/AppMultiselectFetch.vue'
 
     const emit = defineEmits(['update:modelValue', 'searchChange'])
     const props = defineProps({
@@ -27,6 +28,8 @@
                 return AppInputMeasure
             case 'multiselect':
                 return AppMultiselect
+            case 'multiselect-fetch':
+                return AppMultiselectFetch
             case 'select':
                 return AppSelect
             case 'textarea':

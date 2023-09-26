@@ -1,4 +1,4 @@
-const types = ['boolean', 'color', 'file', 'multiselect', 'number', 'password', 'select', 'text', 'textarea', 'time', 'measure', 'address', 'date', 'datetime-local', 'rating', 'measureSelect', 'grpbutton']
+const types = ['boolean', 'color', 'file', 'multiselect', 'multiselect-fetch', 'number', 'password', 'select', 'text', 'textarea', 'time', 'measure', 'address', 'date', 'datetime-local', 'rating', 'measureSelect', 'grpbutton']
 
 export function fieldValidator(field) {
     if (typeof field !== 'object' || field === null || Array.isArray(field)) {
@@ -15,7 +15,7 @@ export function fieldValidator(field) {
             return false
         }
         if (!types.includes(field.type)) {
-            console.error(`field.type must be on of [${types.join(', ')}]`)
+            console.error(`field.type must be on of [${types.join(', ')}]`, field.type)
             return false
         }
         if (field.type === 'select') {
