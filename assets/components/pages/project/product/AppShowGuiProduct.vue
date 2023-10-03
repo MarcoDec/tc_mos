@@ -9,8 +9,12 @@
     const idProduct = Number(route.params.id_product)
     const fetchUnits = useOptions('units')
     const useFetchProductStore = useProductStore()
-    const allFetchs = [useFetchProductStore.fetchOne(idProduct), fetchUnits.fetchOp()]
-    Promise.allSettled(allFetchs)
+    try {
+        const allFetchs = [useFetchProductStore.fetchOne(idProduct), fetchUnits.fetchOp()]
+        Promise.allSettled(allFetchs)
+    } catch (e) {
+        console.error(e)
+    }
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 <script setup>
+    import {onMounted, ref} from 'vue'
     import generateProduct from '../../../../../stores/project/product/product'
     import {useProductStore} from '../../../../../stores/project/product/products'
     import {useRoute} from 'vue-router'
@@ -8,22 +9,29 @@
     const fetchProductStore = useProductStore()
     const projectFields = [
         {label: 'Date Fin', name: 'getEndOfLife', type: 'date'},
-        {label: 'maxProto', measure: {code: 'U', value: 'valeur'}, name: 'maxProto', type: 'measure'}
+        {label: 'maxProto', name: 'maxProto', measure: {code: 'U', value: 'valeur'}}
     ]
-    async function updateProject(value) {
-        const form = document.getElementById('addProject')
-        const formData = new FormData(form)
-
+    const localData = ref({})
+    onMounted(() => {
+        localData.value = fetchProductStore.product
+    })
+    // console.warn(localData.value)
+    async function updateProject() {
+        // console.log(localData.value)
         const data = {
-            endOfLife: formData.get('getEndOfLife'),
+            endOfLife: localData.value.endOfLife,
             maxProto: {
-                code: formData.get('maxProto-code'),
-                value: JSON.parse(formData.get('maxProto-value'))
+                code: localData.value.maxProto.code,
+                value: localData.value.maxProto.value
             }
         }
-        const item = generateProduct(value)
+        const item = generateProduct(localData.value)
         await item.updateProject(data)
         await fetchProductStore.fetchOne(idProduct)
+    }
+    function updateLocalData(item) {
+        // console.warn(item)
+        localData.value = item
     }
 </script>
 
@@ -141,8 +149,9 @@
         <AppCardShow
             id="addProject"
             :fields="projectFields"
-            :component-attribute="fetchProductStore.product"
-            @update="updateProject(fetchProductStore.product)"/>
+            :component-attribute="localData"
+            @update="updateProject"
+            @update:model-value="updateLocalData"/>
     </div>
 </template>
 

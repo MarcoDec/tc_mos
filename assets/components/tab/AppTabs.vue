@@ -6,7 +6,7 @@
     const iconMode = ref(false)
     const props = defineProps({
         id: {required: true, type: String},
-        formatNav: {required: true, type: String, default: 'flex'}
+        formatNav: {required: false, type: String, default: 'flex'}
     })
     const css = computed(() => ({'icon-mode': iconMode.value}))
     const icon = computed(() => `${props.id}-icon`)

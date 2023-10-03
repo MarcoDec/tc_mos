@@ -8,7 +8,7 @@
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
-        modelValue: {default: null, type: Object}
+        modelValue: {default: null}
     })
 
     const componentType = computed(() => {

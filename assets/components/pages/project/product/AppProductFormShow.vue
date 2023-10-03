@@ -14,7 +14,12 @@
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
     const fetchProductAttachmentStore = useProductAttachmentStore()
-    await fetchProductAttachmentStore.fetchByElement(idProduct)
+    try {
+        await fetchProductAttachmentStore.fetchByElement(idProduct)
+    } catch (e) {
+        console.error(e)
+    }
+    const fetchProductStore = useProductStore()
 </script>
 
 <template>
@@ -39,7 +44,7 @@
                     :element-attachment-store="fetchProductAttachmentStore"
                     :element-id="idProduct"
                     element-parameter-name="PRODUCT_ATTACHMENT_CATEGORIES"
-                    :element-store="useProductStore"/>
+                    :element-store="fetchProductStore"/>
             </AppSuspense>
         </AppTab>
         <AppTab
