@@ -1,27 +1,38 @@
 <script setup>
-    import {computed, ref} from 'vue'
-    import {useRoute} from 'vue-router'
-    import AppSuspense from '../../../../AppSuspense.vue'
-    import {getOptions} from '../../../../../utils'
-    import {useProductStore} from '../../../../../stores/project/product/products'
-    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
-    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import {useNomenclatureStore} from '../../../../../stores/project/product/nomenclatures'
-
-    //import AppSuspense from '../../../../AppSuspense.vue'
     import AppCardableTable from '../../../../bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
+    import AppSuspense from '../../../../AppSuspense.vue'
     import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
+    import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
+    import {computed, ref} from 'vue'
+    import {getOptions} from '../../../../../utils'
+    import {useComponentListStore} from '../../../../../stores/purchase/component/components'
+    import {useNomenclatureStore} from '../../../../../stores/project/product/nomenclatures'
+    import {useProductStore} from '../../../../../stores/project/product/products'
+    import {useRoute} from 'vue-router'
+    import useOptions from '../../../../../stores/option/options'
 
     const isLoaded = ref(false)
 
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
 
+    const roleuser = ref('reader')
+    const fetchUnitOptions = useOptions('units')
+    await fetchUnitOptions.fetchOp()
+    const optionsUnit = computed(() =>
+        fetchUnitOptions.options.map(op => {
+            const text = op.text
+            const value = op.value
+            return {text, value}
+        }))
+
+    const tabFields = ref([])
+    const itemsTable = ref([])
     const nomenclatureStore = useNomenclatureStore()
     const nomenclatureFetchCriteria = useFetchCriteria('nomenclatures')
     nomenclatureFetchCriteria.addFilter('product', `/api/products/${idProduct}`)
     await nomenclatureStore.fetchAll(nomenclatureFetchCriteria.getFetchCriteria)
-    console.log('nomenclature', nomenclatureStore.nomenclatures)
+    itemsTable.value = nomenclatureStore.nomenclatures
 
     const productsOptions = ref([])
     const productStore = useProductStore()
@@ -29,35 +40,45 @@
     productFormFetchCriteria.addFilter('pagination', 'false')
     await productStore.fetchAll(productFormFetchCriteria.getFetchCriteria)
     productsOptions.value = getOptions(productStore.products, 'code')
+    const addProductItem = ref({})
 
     const AddProductForm = ref(false)
     const addProductFormField = ref([])
     const ProductUpdateForm = ref(false)
-    const updateProductFormField = ref([])
+    // const updateProductFormField = ref([])
 
     const componentsOptions = ref([])
     const componentStore = useComponentListStore()
     const componentFormFetchCriteria = useFetchCriteria('componentForms')
-    componentFormFetchCriteria.addFilter('pagination', 'false')
     await componentStore.fetchAll(componentFormFetchCriteria.getFetchCriteria)
     componentsOptions.value = getOptions(componentStore.components, 'code')
 
     const AddComponentForm = ref(false)
-    const addComponentFormField = ref([])
+    // const addComponentFormField = ref([])
     const ComponentUpdateForm = ref(false)
-    const updateComponentFormField = ref([])
+    // const updateComponentFormField = ref([])
 
-    addProductFormField.value = [
+    tabFields.value = [
         {
             label: 'Mandat',
             name: 'mandated',
             type: 'boolean'
         },
         {
-            label: 'Produit',
-            name: 'product',
-            options: productsOptions.value,
-            type: 'select'
+            label: 'Sous-Produit',
+            name: 'subProduct',
+            type: 'multiselect-fetch',
+            api: '/api/products',
+            filteredProperty: 'code',
+            max: 1
+        },
+        {
+            label: 'Composant',
+            name: 'component',
+            type: 'multiselect-fetch',
+            api: '/api/components',
+            filteredProperty: 'code',
+            max: 1
         },
         {
             label: 'Quantité',
@@ -66,7 +87,51 @@
                 code: {
                     label: 'Code',
                     name: 'code',
-                    type: 'text'
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'value',
+                    type: 'number'
+                }
+            },
+            type: 'measure'
+        }
+    ]
+
+    addProductFormField.value = [
+        {
+            label: 'Mandat',
+            name: 'mandated',
+            type: 'boolean'
+        },
+        {
+            label: 'Sous-produit',
+            name: 'subProduct',
+            //options: productsOptions.value,
+            type: 'multiselect-fetch',
+            api: '/api/products',
+            filteredProperty: 'code',
+            max: 1
+        },
+        {
+            label: 'Quantité',
+            name: 'quantity',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
                 },
                 value: {
                     label: 'Valeur',
@@ -82,7 +147,8 @@
         return 12
     })
     async function refresh() {
-        console.log('refresh Table')
+        await nomenclatureStore.fetchAll(nomenclatureFetchCriteria.getFetchCriteria)
+        itemsTable.value = nomenclatureStore.nomenclatures
     }
     function ajouteProduit() {
         AddProductForm.value = true
@@ -90,12 +156,12 @@
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
     }
-    function ajouteComposant() {
-        AddComponentForm.value = true
-        AddProductForm.value = false
-        ProductUpdateForm.value = false
-        ComponentUpdateForm.value = false
-    }
+    // function ajouteComposant() {
+    //     AddComponentForm.value = true
+    //     AddProductForm.value = false
+    //     ProductUpdateForm.value = false
+    //     ComponentUpdateForm.value = false
+    // }
     function cancelAddForm() {
         AddComponentForm.value = false
         AddProductForm.value = false
@@ -110,6 +176,34 @@
         await refresh()
     }
     isLoaded.value = true
+    const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value)
+    async function onCancelSearch() {
+        nomenclatureFetchCriteria.resetAllFilter()
+        refresh()
+    }
+    function onSearch(data) {
+        nomenclatureFetchCriteria.resetAllFilter()
+        if (data.subProduct) nomenclatureFetchCriteria.addFilter('subProduct', data.subProduct[0])
+        if (data.component) nomenclatureFetchCriteria.addFilter('component', data.component[0])
+        if (typeof data.mandated !== 'undefined') nomenclatureFetchCriteria.addFilter('mandated', data.mandated)
+        if (data.quantity && data.quantity.code) nomenclatureFetchCriteria.addFilter('quantity.code', optionsUnit.value.label(data.quantity.code))
+        if (data.quantity && data.quantity.value) nomenclatureFetchCriteria.addFilter('quantity.value', data.quantity.value)
+        refresh()
+    }
+    function updateItem(item) {
+        console.log('updateItem', item)
+    }
+    function deleteItem(item) {
+        console.log('deleteItem', item)
+    }
+    function getPage(nPage) {
+        nomenclatureFetchCriteria.gotoPage(Number(nPage))
+        refresh()
+        console.log('getPage', nPage)
+    }
+    function trierAlphabet(data) {
+        console.log('trierAlphabet', data)
+    }
 </script>
 
 <template>
@@ -122,35 +216,35 @@
                         Ajouter un nouveau produit
                     </AppBtn>
                 </span>
-                <span class="ml-10">
-                    <AppBtn variant="success" label="Ajout" @click="ajouteComposant">
-                        <Fa icon="plus"/>
-                        Ajouter un nouveau Composant
-                    </AppBtn>
-                </span>
+                <!--                <span class="ml-10">-->
+                <!--                    <AppBtn variant="success" label="Ajout" @click="ajouteComposant">-->
+                <!--                        <Fa icon="plus"/>-->
+                <!--                        Ajouter un nouveau Composant-->
+                <!--                    </AppBtn>-->
+                <!--                </span>-->
             </AppCol>
         </AppRow>
         <AppRow>
             <AppCol :cols="col1">
                 <AppCardableTable
                     v-if="isLoaded"
-                    :current-page="storeEmployeeListFormation.currentPage"
+                    :current-page="nomenclatureStore.currentPage"
                     :fields="tabFields"
-                    :first-page="storeEmployeeListFormation.firstPage"
+                    :first-page="nomenclatureStore.firstPage"
                     :items="itemsTable"
-                    :last-page="storeEmployeeListFormation.lastPage"
-                    :min="AddForm || updated"
-                    :next-page="storeEmployeeListFormation.nextPage"
-                    :pag="storeEmployeeListFormation.pagination"
-                    :previous-page="storeEmployeeListFormation.previousPage"
+                    :last-page="nomenclatureStore.lastPage"
+                    :min="min"
+                    :next-page="nomenclatureStore.nextPage"
+                    :pag="nomenclatureStore.pagination"
+                    :previous-page="nomenclatureStore.previousPage"
                     :user="roleuser"
                     form="formEmployeeFormationCardableTable"
-                    @update="update"
-                    @deleted="deleted"
+                    @update="updateItem"
+                    @deleted="deleteItem"
                     @get-page="getPage"
                     @trier-alphabet="trierAlphabet"
-                    @search="search"
-                    @cancel-search="cancelSearch"/>
+                    @search="onSearch"
+                    @cancel-search="onCancelSearch"/>
             </AppCol>
             <AppCol :cols="12 - col1">
                 <AppRow>
@@ -165,38 +259,38 @@
                             :model-value="addProductItem"
                             @cancel="cancelAddForm"
                             @submitted="onAddSubmit"/>
-                        <InlistAddForm
-                            v-if="isLoaded && AddComponentForm"
-                            id="addComponent"
-                            api-method="POST"
-                            api-url="/api/nomenclatures"
-                            form="addEmployeeSkillForm"
-                            :fields="addComponentFormField"
-                            :model-value="addComponentItem"
-                            @cancel="cancelAddForm"
-                            @submitted="onAddSubmit"/>
-                        <InlistAddForm
-                            v-if="isLoaded && ProductUpdateForm"
-                            id="updateProduct"
-                            api-method="PATCH"
-                            api-url=""
-                            card-title="Modifier la composition en sous-produit"
-                            form="updateProductForm"
-                            :fields="updateProductFormField"
-                            :model-value="updateProductItem"
-                            @cancel="cancelAddForm"
-                            @submitted="onAddSubmit"/>
-                        <InlistAddForm
-                            v-if="isLoaded && ComponentUpdateForm"
-                            id="updateComponent"
-                            api-method="PATCH"
-                            api-url=""
-                            card-title="Modifier la composition en composant"
-                            form="updateComponentForm"
-                            :fields="updateComponentFormField"
-                            :model-value="updateComponentItem"
-                            @cancel="cancelAddForm"
-                            @submitted="onAddSubmit"/>
+                        <!--                        <InlistAddForm-->
+                        <!--                            v-if="isLoaded && AddComponentForm"-->
+                        <!--                            id="addComponent"-->
+                        <!--                            api-method="POST"-->
+                        <!--                            api-url="/api/nomenclatures"-->
+                        <!--                            form="addEmployeeSkillForm"-->
+                        <!--                            :fields="addComponentFormField"-->
+                        <!--                            :model-value="addComponentItem"-->
+                        <!--                            @cancel="cancelAddForm"-->
+                        <!--                            @submitted="onAddSubmit"/>-->
+                        <!--                        <InlistAddForm-->
+                        <!--                            v-if="isLoaded && ProductUpdateForm"-->
+                        <!--                            id="updateProduct"-->
+                        <!--                            api-method="PATCH"-->
+                        <!--                            api-url=""-->
+                        <!--                            card-title="Modifier la composition en sous-produit"-->
+                        <!--                            form="updateProductForm"-->
+                        <!--                            :fields="updateProductFormField"-->
+                        <!--                            :model-value="updateProductItem"-->
+                        <!--                            @cancel="cancelAddForm"-->
+                        <!--                            @submitted="onAddSubmit"/>-->
+                        <!--                        <InlistAddForm-->
+                        <!--                            v-if="isLoaded && ComponentUpdateForm"-->
+                        <!--                            id="updateComponent"-->
+                        <!--                            api-method="PATCH"-->
+                        <!--                            api-url=""-->
+                        <!--                            card-title="Modifier la composition en composant"-->
+                        <!--                            form="updateComponentForm"-->
+                        <!--                            :fields="updateComponentFormField"-->
+                        <!--                            :model-value="updateComponentItem"-->
+                        <!--                            @cancel="cancelAddForm"-->
+                        <!--                            @submitted="onAddSubmit"/>-->
                     </AppSuspense>
                 </AppRow>
             </AppCol>

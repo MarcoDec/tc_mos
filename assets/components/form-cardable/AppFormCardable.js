@@ -27,7 +27,11 @@ function AppForm(props, context) {
                 modelValue: props.modelValue[field.name],
                 // eslint-disable-next-line no-loop-func
                 'onUpdate:modelValue': value => {
-                    currentValue = {...currentValue, [field.name]: value}
+                    if (field.type === 'multiselect-fetch' && field.max === 1) {
+                        currentValue = {...currentValue, [field.name]: value[0]}
+                    } else {
+                        currentValue = {...currentValue, [field.name]: value}
+                    }
                     context.emit('update:modelValue', currentValue)
                 },
                 onSearchChange: value => {

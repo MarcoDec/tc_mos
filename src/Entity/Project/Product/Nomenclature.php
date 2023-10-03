@@ -16,13 +16,12 @@ use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use App\Entity\Project\Product\Product;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['mandated']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'product']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'product', 'subProduct']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['component.id', 'product.code']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code' => 'partial', 'product.product.name' => 'partial', 'product.product.embState.state' => 'partial', 'product.customer.name' => 'partial', 'product.product.forecastVolume.value' => 'partial', 'product.product.forecastVolume.code' => 'partial', 'product.product.internalIndex' => 'partial']),
     ApiResource(

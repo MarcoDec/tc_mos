@@ -1,4 +1,13 @@
 <script setup>
+    /**
+     * Ce composant permet l'utilisation d'un système d'auto-complétion pour un simple select ou un multiselect à partir
+     * de données chargées depuis une api.
+     *
+     * Les paramètres essentiels pour qu'il faut avoir défini pour un fonctionnement correct sont:
+     * - `props.field.api` : défini la base de l'url de l'api qui sera utilisé
+     * - `props.field.filteredProperty` : défini le nom de la propriété de l'object qui sera utilisé pour le filtre
+     * - `props.field.max` : défini le nombre max d'élément sélectionnable. Si cette valeur vaut 1, alors c'est un simple select.
+     */
     import {computed, ref} from 'vue'
     import api from '../../../../../api'
     import AppMultiselect from './AppMultiselect.vue'
@@ -16,8 +25,12 @@
     const fetchCriteria = useFetchCriteria(`${props.form}FetchCriteria`)
     const items = ref([])
     async function updateItems() {
-        const response = await api(`${props.field.api}${fetchCriteria.getFetchCriteria}`, 'GET')
-        items.value = response['hydra:member']
+        try {
+            const response = await api(`${props.field.api}${fetchCriteria.getFetchCriteria}`, 'GET')
+            items.value = response['hydra:member']
+        } catch (e) {
+            console.debug(e)
+        }
     }
     const options = computed(() => items.value.map(item => ({text: `${item[props.field.filteredProperty]}`, value: item['@id']})))
     const multiselectField = computed(() => ({
@@ -26,12 +39,11 @@
         options: {label: value => options.value.find(option => option.value === value)?.text ?? null, options: options.value}
     }))
     async function onSearchChange(data) {
-        console.log('onSearchChange', data)
-        emit('searchChange', data)
-        if (data === '') fetchCriteria.resetAllFilter()
-        else fetchCriteria.addFilter(props.field.filteredProperty, data)
+        if (data !== '') {
+            emit('searchChange', data)
+            fetchCriteria.addFilter(props.field.filteredProperty, data)
+        }
         await updateItems()
-        console.log('update multiselectField.options', multiselectField.value.options)
     }
     function onUpdateModelValue(value) {
         emit('update:modelValue', value)
@@ -56,7 +68,3 @@
         @search-change="onSearchChange"
         @update:model-value="onUpdateModelValue"/>
 </template>
-
-<style scoped>
-
-</style>

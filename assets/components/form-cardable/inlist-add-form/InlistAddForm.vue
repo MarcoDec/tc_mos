@@ -25,10 +25,18 @@
         isPopupVisible.value = false
         emits('cancel')
     }
+    function normalizeLocalData() {
+        const normalizedLocalData = localData.value
+        props.fields.forEach(field => {
+            console.log(`normalize ${field}`, field)
+        })
+        return normalizedLocalData
+    }
+
     async function onSubmit() {
         if (props.apiMethod === 'POST') {
             try {
-                const result = await api(props.apiUrl, props.apiMethod, localData.value)
+                const result = await api(props.apiUrl, props.apiMethod, normalizeLocalData)
                 emits('submitted', result)
             } catch (e) {
                 violations = e
@@ -37,7 +45,7 @@
         }
         if (props.apiMethod === 'PATCH') {
             try {
-                const result = await api(`${localData.value['@id']}`, props.apiMethod, localData.value)
+                const result = await api(`${localData.value['@id']}`, props.apiMethod, normalizeLocalData)
                 emits('submitted', result)
             } catch (e) {
                 violations = e

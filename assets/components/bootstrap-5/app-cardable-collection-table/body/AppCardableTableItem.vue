@@ -57,6 +57,9 @@
             <div v-else-if="field.type === 'boolean'">
                 <AppSwitch :id="`${field.name}_${id}`" :disabled="true" :field="field" form="" :model-value="item[field.name]"/>
             </div>
+            <div v-else-if="field.type === 'multiselect-fetch'">
+                {{ item[field.name][field.filteredProperty] }}
+            </div>
             <div v-else>
                 <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>
                 <span v-else>{{ item[field.name] }}</span>
