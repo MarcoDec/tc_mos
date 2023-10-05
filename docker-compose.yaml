@@ -5,7 +5,7 @@ services:
       - php
     image: tconcept/tc_apache:latest
     ports:
-      - '8000:80'
+      - '38000:80'
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
@@ -52,7 +52,7 @@ services:
     depends_on:
       - mysql
     ports:
-      - '8001:8001'
+      - '38001:8001'
     restart: always
     volumes:
       - .:/var/www/html/TConcept-GPAO:cached
@@ -72,7 +72,7 @@ services:
     links:
       - mysql:mysql
     ports:
-      - '8080:80'
+      - '38080:80'
     restart: always
     volumes:
       - /sessions
@@ -80,48 +80,48 @@ services:
     container_name: tconcept_gpao_mobile
     build:
       args:
-        API_HOST: http://192.168.2.3:8000
+        API_HOST: ${API_BASE}:${PORT_API}
       context: ./gpao-mobile
       dockerfile: ../docker/mobile/Dockerfile
     ports:
-      - '3000:80'
+      - '38300:80'
   npm_builder_fr:
     container_name: tconcept_gpao_badgeuse_fr
     build:
       args:
-        VUE_APP_API_URL_BASE: http://192.168.2.3:8000/api
+        VUE_APP_API_URL_BASE: ${API_BASE}:${PORT_API}/api
         VUE_APP_COMPANY: 1
         VUE_APP_USER: frbad
         VUE_APP_USER_PASSWORD: frbad
       context: ./TConcept-Clock/vue
       dockerfile: ../../docker/clocking/Dockerfile
     ports:
-      - '3001:80'
+      - '38301:80'
     restart: always
   npm_builder_tn:
     container_name: tconcept_gpao_badgeuse_tn
     build:
       args:
-        VUE_APP_API_URL_BASE: http://192.168.2.3:8000/api
+        VUE_APP_API_URL_BASE: ${API_BASE}:${PORT_API}/api
         VUE_APP_COMPANY: 2
         VUE_APP_USER: tnbad
         VUE_APP_USER_PASSWORD: tnbad
       context: ./TConcept-Clock/vue
       dockerfile: ../../docker/clocking/Dockerfile
     ports:
-      - '3002:80'
+      - '38302:80'
     restart: always
   npm_builder_md:
     container_name: tconcept_gpao_badgeuse_md
     build:
       args:
-        VUE_APP_API_URL_BASE: http://192.168.2.3:8000/api
+        VUE_APP_API_URL_BASE: ${API_BASE}:${PORT_API}/api
         VUE_APP_COMPANY: 3
         VUE_APP_USER: mdbad
         VUE_APP_USER_PASSWORD: mdbad
       context: ./TConcept-Clock/vue
       dockerfile: ../../docker/clocking/Dockerfile
     ports:
-      - '3003:80'
+      - '38303:80'
     restart: always
 version: '3.3'
