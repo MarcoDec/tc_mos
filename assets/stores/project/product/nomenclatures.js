@@ -41,11 +41,19 @@ export const useNomenclatureStore = defineStore('nomenclatures', {
                         this.nomenclatures[index][aData] = result[indexOf].value
                     })
                 })
-                this.firstPage = response['hydra:view']['hydra:first'] ? response['hydra:view']['hydra:first'].match(/page=(\d+)/)[1] : '1'
-                this.lastPage = response['hydra:view']['hydra:last'] ? response['hydra:view']['hydra:last'].match(/page=(\d+)/)[1] : response['hydra:view']['@id'].match(/page=(\d+)/)[1]
-                this.nextPage = response['hydra:view']['hydra:next'] ? response['hydra:view']['hydra:next'].match(/page=(\d+)/)[1] : response['hydra:view']['@id'].match(/page=(\d+)/)[1]
-                this.currentPage = response['hydra:view']['@id'].match(/page=(\d+)/)[1]
-                this.previousPage = response['hydra:view']['hydra:previous'] ? response['hydra:view']['hydra:previous'].match(/page=(\d+)/)[1] : response['hydra:view']['@id'].match(/page=(\d+)/)[1]
+                if (response['hydra:view']['hydra:first']) {
+                    this.firstPage = response['hydra:view']['hydra:first'] ? response['hydra:view']['hydra:first'].match(/page=(\d+)/)[1] : '1'
+                    this.lastPage = response['hydra:view']['hydra:last'] ? response['hydra:view']['hydra:last'].match(/page=(\d+)/)[1] : response['hydra:view']['@id'].match(/page=(\d+)/)[1]
+                    this.nextPage = response['hydra:view']['hydra:next'] ? response['hydra:view']['hydra:next'].match(/page=(\d+)/)[1] : response['hydra:view']['@id'].match(/page=(\d+)/)[1]
+                    this.currentPage = response['hydra:view']['@id'].match(/page=(\d+)/)[1]
+                    this.previousPage = response['hydra:view']['hydra:previous'] ? response['hydra:view']['hydra:previous'].match(/page=(\d+)/)[1] : response['hydra:view']['@id'].match(/page=(\d+)/)[1]
+                } else {
+                    this.firstPage = 1
+                    this.lastPage = 1
+                    this.nextPage = 1
+                    this.currentPage = 1
+                    this.previousPage = 1
+                }
             }
             this.isLoading = false
             this.isLoaded = true

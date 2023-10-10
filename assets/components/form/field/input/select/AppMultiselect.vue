@@ -16,7 +16,9 @@
         emit('update:modelValue', value)
     }
     function updateSearch(data) {
-        emit('searchChange', data)
+        if (data !== '') {
+            emit('searchChange', data)
+        }
     }
 </script>
 

@@ -12,7 +12,7 @@ function AppForm(props, context) {
         })
     }
     const groups = []
-    let currentValue = props.modelValue
+    const currentValue = props.modelValue
     if (props.noContent) {
         if (typeof context.slots['default'] === 'function')
             groups.push(generateSlot())
@@ -27,11 +27,8 @@ function AppForm(props, context) {
                 modelValue: props.modelValue[field.name],
                 // eslint-disable-next-line no-loop-func
                 'onUpdate:modelValue': value => {
-                    if (field.type === 'multiselect-fetch' && field.max === 1) {
-                        currentValue = {...currentValue, [field.name]: value[0]}
-                    } else {
-                        currentValue = {...currentValue, [field.name]: value}
-                    }
+                    // console.log('value', value)
+                    currentValue[field.name] = value
                     context.emit('update:modelValue', currentValue)
                 },
                 onSearchChange: value => {

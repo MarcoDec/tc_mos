@@ -1,7 +1,7 @@
 <script setup>
-    import {onMounted, ref} from 'vue'
-    import AppSuspense from '../../AppSuspense.vue'
+    import {onBeforeMount, ref} from 'vue'
     import api from '../../../api'
+    import AppSuspense from '../../AppSuspense.vue'
     import AppFormCardable from '../AppFormCardable'
 
     const props = defineProps({
@@ -18,7 +18,7 @@
     const isPopupVisible = ref(false)
     const localData = ref({})
     let violations = []
-    onMounted(() => {
+    onBeforeMount(() => {
         localData.value = props.modelValue
     })
     function annule(){
@@ -26,17 +26,25 @@
         emits('cancel')
     }
     function normalizeLocalData() {
-        const normalizedLocalData = localData.value
+        const normalizedData = localData.value
         props.fields.forEach(field => {
-            console.log(`normalize ${field}`, field)
+            // console.log(`field ${field.name}`, field)
+            if (field.type === 'multiselect-fetch' && field.max === 1) normalizedData[field.name] = localData.value[field.name][0]
+            if (field.type === 'measure') {
+                const currentCodeValue = localData.value[field.name].code
+                //console.log('measure', currentCodeValue)
+                const newCodeValue = field.measure.code.options.options.filter(item => item.value === currentCodeValue)[0].text
+                //console.log('measure newCode', newCodeValue)
+                normalizedData[field.name].code = newCodeValue
+            }
         })
-        return normalizedLocalData
+        return normalizedData
     }
 
     async function onSubmit() {
         if (props.apiMethod === 'POST') {
             try {
-                const result = await api(props.apiUrl, props.apiMethod, normalizeLocalData)
+                const result = await api(props.apiUrl, props.apiMethod, normalizeLocalData())
                 emits('submitted', result)
             } catch (e) {
                 violations = e
@@ -45,7 +53,7 @@
         }
         if (props.apiMethod === 'PATCH') {
             try {
-                const result = await api(`${localData.value['@id']}`, props.apiMethod, normalizeLocalData)
+                const result = await api(`${localData.value['@id']}`, props.apiMethod, normalizeLocalData())
                 emits('submitted', result)
             } catch (e) {
                 violations = e
@@ -55,7 +63,8 @@
         isPopupVisible.value = violations.length > 0
     }
     function onUpdateModelValue(data) {
-        localData.value = {...data}
+        localData.value = data
+        // console.log('InListAddForm', data, localData.value)
         emits('update:model-value', data)
     }
 </script>

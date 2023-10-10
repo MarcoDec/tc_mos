@@ -1,5 +1,5 @@
 <script setup>
-    import AppCardableTable from '../../../../bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
+    // import AppCardableTable from '../../../../bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
     import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
@@ -16,7 +16,7 @@
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
 
-    const roleuser = ref('reader')
+    // const roleuser = ref('reader')
     const fetchUnitOptions = useOptions('units')
     await fetchUnitOptions.fetchOp()
     const optionsUnit = computed(() =>
@@ -40,7 +40,15 @@
     productFormFetchCriteria.addFilter('pagination', 'false')
     await productStore.fetchAll(productFormFetchCriteria.getFetchCriteria)
     productsOptions.value = getOptions(productStore.products, 'code')
-    const addProductItem = ref({})
+    const addProductItem = ref({
+        quantity: {
+            code: '/api/units/1',
+            value: 1
+        },
+        subProduct: null,
+        mandated: false,
+        product: `/api/products/${idProduct}`
+    })
 
     const AddProductForm = ref(false)
     const addProductFormField = ref([])
@@ -97,7 +105,8 @@
                 value: {
                     label: 'Valeur',
                     name: 'value',
-                    type: 'number'
+                    type: 'number',
+                    step: 1
                 }
             },
             type: 'measure'
@@ -136,7 +145,8 @@
                 value: {
                     label: 'Valeur',
                     name: 'value',
-                    type: 'number'
+                    type: 'number',
+                    step: 1
                 }
             },
             type: 'measure'
@@ -175,35 +185,38 @@
         ComponentUpdateForm.value = false
         await refresh()
     }
+    function onUpdateModelValue(/*value*/) {
+        // console.log('onUpdateModelValue', value)
+    }
     isLoaded.value = true
-    const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value)
-    async function onCancelSearch() {
-        nomenclatureFetchCriteria.resetAllFilter()
-        refresh()
-    }
-    function onSearch(data) {
-        nomenclatureFetchCriteria.resetAllFilter()
-        if (data.subProduct) nomenclatureFetchCriteria.addFilter('subProduct', data.subProduct[0])
-        if (data.component) nomenclatureFetchCriteria.addFilter('component', data.component[0])
-        if (typeof data.mandated !== 'undefined') nomenclatureFetchCriteria.addFilter('mandated', data.mandated)
-        if (data.quantity && data.quantity.code) nomenclatureFetchCriteria.addFilter('quantity.code', optionsUnit.value.label(data.quantity.code))
-        if (data.quantity && data.quantity.value) nomenclatureFetchCriteria.addFilter('quantity.value', data.quantity.value)
-        refresh()
-    }
-    function updateItem(item) {
-        console.log('updateItem', item)
-    }
-    function deleteItem(item) {
-        console.log('deleteItem', item)
-    }
-    function getPage(nPage) {
-        nomenclatureFetchCriteria.gotoPage(Number(nPage))
-        refresh()
-        console.log('getPage', nPage)
-    }
-    function trierAlphabet(data) {
-        console.log('trierAlphabet', data)
-    }
+    // const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value)
+    // async function onCancelSearch() {
+    //     nomenclatureFetchCriteria.resetAllFilter()
+    //     refresh()
+    // // }
+    // function onSearch(data) {
+    //     nomenclatureFetchCriteria.resetAllFilter()
+    //     if (data.subProduct) nomenclatureFetchCriteria.addFilter('subProduct', data.subProduct[0])
+    //     if (data.component) nomenclatureFetchCriteria.addFilter('component', data.component[0])
+    //     if (typeof data.mandated !== 'undefined') nomenclatureFetchCriteria.addFilter('mandated', data.mandated)
+    //     if (data.quantity && data.quantity.code) nomenclatureFetchCriteria.addFilter('quantity.code', optionsUnit.value.label(data.quantity.code))
+    //     if (data.quantity && data.quantity.value) nomenclatureFetchCriteria.addFilter('quantity.value', data.quantity.value)
+    //     refresh()
+    // }
+    // function updateItem(item) {
+    //     console.log('updateItem', item)
+    // }
+    // function deleteItem(item) {
+    //     console.log('deleteItem', item)
+    // }
+    // function getPage(nPage) {
+    //     nomenclatureFetchCriteria.gotoPage(Number(nPage))
+    //     refresh()
+    //     console.log('getPage', nPage)
+    // }
+    // function trierAlphabet(data) {
+    //     console.log('trierAlphabet', data)
+    // }
 </script>
 
 <template>
@@ -222,30 +235,36 @@
                 <!--                        Ajouter un nouveau Composant-->
                 <!--                    </AppBtn>-->
                 <!--                </span>-->
+                <!--                <span class="ml-10">-->
+                <!--                    <AppBtn variant="success" label="Ajout" @click="ajouteComposant">-->
+                <!--                        <Fa icon="plus"/>-->
+                <!--                        Ajouter un groupe d'équivalence Composant-->
+                <!--                    </AppBtn>-->
+                <!--                </span>-->
             </AppCol>
         </AppRow>
         <AppRow>
-            <AppCol :cols="col1">
-                <AppCardableTable
-                    v-if="isLoaded"
-                    :current-page="nomenclatureStore.currentPage"
-                    :fields="tabFields"
-                    :first-page="nomenclatureStore.firstPage"
-                    :items="itemsTable"
-                    :last-page="nomenclatureStore.lastPage"
-                    :min="min"
-                    :next-page="nomenclatureStore.nextPage"
-                    :pag="nomenclatureStore.pagination"
-                    :previous-page="nomenclatureStore.previousPage"
-                    :user="roleuser"
-                    form="formEmployeeFormationCardableTable"
-                    @update="updateItem"
-                    @deleted="deleteItem"
-                    @get-page="getPage"
-                    @trier-alphabet="trierAlphabet"
-                    @search="onSearch"
-                    @cancel-search="onCancelSearch"/>
-            </AppCol>
+            <!--            <AppCol :cols="col1">-->
+            <!--                <AppCardableTable-->
+            <!--                    v-if="isLoaded"-->
+            <!--                    :current-page="nomenclatureStore.currentPage"-->
+            <!--                    :fields="tabFields"-->
+            <!--                    :first-page="nomenclatureStore.firstPage"-->
+            <!--                    :items="itemsTable"-->
+            <!--                    :last-page="nomenclatureStore.lastPage"-->
+            <!--                    :min="min"-->
+            <!--                    :next-page="nomenclatureStore.nextPage"-->
+            <!--                    :pag="nomenclatureStore.pagination"-->
+            <!--                    :previous-page="nomenclatureStore.previousPage"-->
+            <!--                    :user="roleuser"-->
+            <!--                    form="formEmployeeFormationCardableTable"-->
+            <!--                    @update="updateItem"-->
+            <!--                    @deleted="deleteItem"-->
+            <!--                    @get-page="getPage"-->
+            <!--                    @trier-alphabet="trierAlphabet"-->
+            <!--                    @search="onSearch"-->
+            <!--                    @cancel-search="onCancelSearch"/>-->
+            <!--            </AppCol>-->
             <AppCol :cols="12 - col1">
                 <AppRow>
                     <AppSuspense>
@@ -258,6 +277,7 @@
                             :fields="addProductFormField"
                             :model-value="addProductItem"
                             @cancel="cancelAddForm"
+                            @update:model-value="onUpdateModelValue"
                             @submitted="onAddSubmit"/>
                         <!--                        <InlistAddForm-->
                         <!--                            v-if="isLoaded && AddComponentForm"-->
