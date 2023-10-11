@@ -49,7 +49,15 @@
         mandated: false,
         product: `/api/products/${idProduct}`
     })
-
+    const addComponentItem = ref({
+        quantity: {
+            code: '/api/units/1',
+            value: 1
+        },
+        component: null,
+        mandated: false,
+        product: `/api/products/${idProduct}`
+    })
     const AddProductForm = ref(false)
     const addProductFormField = ref([])
     const ProductUpdateForm = ref(false)
@@ -62,7 +70,7 @@
     componentsOptions.value = getOptions(componentStore.components, 'code')
 
     const AddComponentForm = ref(false)
-    // const addComponentFormField = ref([])
+    const addComponentFormField = ref([])
     const ComponentUpdateForm = ref(false)
     // const updateComponentFormField = ref([])
 
@@ -152,26 +160,65 @@
             type: 'measure'
         }
     ]
+    addComponentFormField.value = [
+        {
+            label: 'Mandat',
+            name: 'mandated',
+            type: 'boolean'
+        },
+        {
+            label: 'Composant',
+            name: 'component',
+            //options: productsOptions.value,
+            type: 'multiselect-fetch',
+            api: '/api/components',
+            filteredProperty: 'code',
+            max: 1
+        },
+        {
+            label: 'Quantité',
+            name: 'quantity',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 1
+                }
+            },
+            type: 'measure'
+        }
+    ]
     const col1 = computed(() => {
         if (AddComponentForm.value || ProductUpdateForm.value || ComponentUpdateForm.value || AddProductForm.value) return 5
         return 12
     })
-    async function refresh() {
-        await nomenclatureStore.fetchAll(nomenclatureFetchCriteria.getFetchCriteria)
-        itemsTable.value = nomenclatureStore.nomenclatures
-    }
+    // async function refresh() {
+    //     await nomenclatureStore.fetchAll(nomenclatureFetchCriteria.getFetchCriteria)
+    //     itemsTable.value = nomenclatureStore.nomenclatures
+    // }
     function ajouteProduit() {
         AddProductForm.value = true
         AddComponentForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
     }
-    // function ajouteComposant() {
-    //     AddComponentForm.value = true
-    //     AddProductForm.value = false
-    //     ProductUpdateForm.value = false
-    //     ComponentUpdateForm.value = false
-    // }
+    function ajouteComposant() {
+        AddComponentForm.value = true
+        AddProductForm.value = false
+        ProductUpdateForm.value = false
+        ComponentUpdateForm.value = false
+    }
     function cancelAddForm() {
         AddComponentForm.value = false
         AddProductForm.value = false
@@ -183,10 +230,7 @@
         AddProductForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
-        await refresh()
-    }
-    function onUpdateModelValue(/*value*/) {
-        // console.log('onUpdateModelValue', value)
+        // await refresh()
     }
     isLoaded.value = true
     // const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value)
@@ -229,12 +273,12 @@
                         Ajouter un nouveau produit
                     </AppBtn>
                 </span>
-                <!--                <span class="ml-10">-->
-                <!--                    <AppBtn variant="success" label="Ajout" @click="ajouteComposant">-->
-                <!--                        <Fa icon="plus"/>-->
-                <!--                        Ajouter un nouveau Composant-->
-                <!--                    </AppBtn>-->
-                <!--                </span>-->
+                <span class="ml-10">
+                    <AppBtn variant="success" label="Ajout" @click="ajouteComposant">
+                        <Fa icon="plus"/>
+                        Ajouter un nouveau Composant
+                    </AppBtn>
+                </span>
                 <!--                <span class="ml-10">-->
                 <!--                    <AppBtn variant="success" label="Ajout" @click="ajouteComposant">-->
                 <!--                        <Fa icon="plus"/>-->
@@ -273,22 +317,21 @@
                             id="addProduct"
                             api-method="POST"
                             api-url="/api/nomenclatures"
-                            form="addEmployeeSkillForm"
+                            form="addProductSubproduct"
                             :fields="addProductFormField"
                             :model-value="addProductItem"
                             @cancel="cancelAddForm"
-                            @update:model-value="onUpdateModelValue"
                             @submitted="onAddSubmit"/>
-                        <!--                        <InlistAddForm-->
-                        <!--                            v-if="isLoaded && AddComponentForm"-->
-                        <!--                            id="addComponent"-->
-                        <!--                            api-method="POST"-->
-                        <!--                            api-url="/api/nomenclatures"-->
-                        <!--                            form="addEmployeeSkillForm"-->
-                        <!--                            :fields="addComponentFormField"-->
-                        <!--                            :model-value="addComponentItem"-->
-                        <!--                            @cancel="cancelAddForm"-->
-                        <!--                            @submitted="onAddSubmit"/>-->
+                        <InlistAddForm
+                            v-if="isLoaded && AddComponentForm"
+                            id="addComponent"
+                            api-method="POST"
+                            api-url="/api/nomenclatures"
+                            form="addProductComponent"
+                            :fields="addComponentFormField"
+                            :model-value="addComponentItem"
+                            @cancel="cancelAddForm"
+                            @submitted="onAddSubmit"/>
                         <!--                        <InlistAddForm-->
                         <!--                            v-if="isLoaded && ProductUpdateForm"-->
                         <!--                            id="updateProduct"-->
