@@ -14,6 +14,7 @@ use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
+use App\Validator\Project\Product\NomenclatureUnitConsistency;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -71,7 +72,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity,
+    NomenclatureUnitConsistency
 ]
 class Nomenclature extends Entity implements MeasuredInterface {
     #[

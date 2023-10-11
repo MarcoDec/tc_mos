@@ -159,3 +159,5 @@ services:
   App\Serializer\ContextBuilderInterface:
     autoconfigure: false
     decorates: api_platform.serializer.context_builder
+
+  Symfony\Component\Validator\Mapping\Factory\MetadataFactoryInterface: '@validator.mapping.class_metadata_factory'
