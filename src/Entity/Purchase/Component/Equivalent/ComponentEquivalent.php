@@ -2,6 +2,7 @@
 
 namespace App\Entity\Purchase\Component\Equivalent;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -27,21 +28,65 @@ use Doctrine\ORM\Mapping as ORM;
         description: 'Groupe d\'équivalence',
         collectionOperations: [
             'get' => [
-                'security' => "is_granted('ROLE_COMPONENT_EQUIVALENT_LIST')"
+                'normalization_context' => [
+                    'groups' => ['read:component-equivalent:collection'],
+                    'openapi_definition_name' => 'ComponentEquivalent-collection',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les groupes d\'équivalence composants',
+                    'summary' => 'Récupère les groupes d\'équivalence composants'
+                ]
+            ],
+            'options' => [
+                'controller' => PlaceholderAction::class,
+                'filters' => [],
+                'method' => 'GET',
+                'normalization_context' => [
+                    'groups' => ['read:id', 'read:component-equivalent:option'],
+                    'openapi_definition_name' => 'ComponentEquivalent-options',
+                    'skip_null_values' => false
+                ],
+                'openapi_context' => [
+                    'description' => 'Récupère les composants pour les select',
+                    'summary' => 'Récupère les groupes d\'équivalence composants pour les select',
+                ],
+                'order' => ['id' => 'asc'],
+                'pagination_enabled' => false,
+                'path' => '/component-equivalents/options'
             ],
             'post' => [
-                'security' => "is_granted('ROLE_COMPONENT_EQUIVALENT_CREATE')"
+                'denormalization_context' => [
+                    'groups' => ['create:component-equivalent'],
+                    'openapi_definition_name' => 'ComponentEquivalent-create'
+                ],
+                'openapi_context' => [
+                    'description' => 'Créer un groupe d\'équivalence composant',
+                    'summary' => 'Créer un groupe d\'équivalence composant'
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_WRITER.'\')',
+                'validation_groups' => ['ComponentEquivalent-create']
             ]
         ],
         itemOperations: [
             'get' => [
-                'security' => "is_granted('ROLE_COMPONENT_EQUIVALENT_SHOW')"
+                'openapi_context' => [
+                    'description' => 'Récupère un groupe d\'équivalence composant',
+                    'summary' => 'Récupère un groupe d\'équivalence composant',
+                ]
             ],
-            'put' => [
-                'security' => "is_granted('ROLE_COMPONENT_EQUIVALENT_UPDATE')"
+            'patch' => [
+                'openapi_context' => [
+                    'description' => 'Modifie un groupe d\'équivalence composant',
+                    'summary' => 'Modifie un groupe d\'équivalence composant',
+                ]
             ],
             'delete' => [
-                'security' => "is_granted('ROLE_COMPONENT_EQUIVALENT_DELETE')"
+                'openapi_context' => [
+                    'description' => 'Supprime un groupe d\'équivalence composant',
+                    'summary' => 'Supprime un groupe d\'équivalence composant'
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_PURCHASE_ADMIN.'\')'
             ]
         ],
         attributes: [
