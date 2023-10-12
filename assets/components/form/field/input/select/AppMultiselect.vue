@@ -1,8 +1,8 @@
 <script setup>
     import Multiselect from '@vueform/multiselect'
-    import {readonly} from 'vue'
+    import {readonly, onErrorCaptured, ref} from 'vue'
 
-    /*const props = */defineProps({
+    const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
@@ -10,6 +10,10 @@
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
     })
+    const localModelValue = ref(props.modelValue)
+    if (typeof localModelValue.value === 'string') {
+        localModelValue.value = [localModelValue.value]
+    }
     const emit = defineEmits(['update:modelValue', 'searchChange'])
     const css = readonly({search: 'form-control form-control-sm'})
     function input(value) {
@@ -20,6 +24,10 @@
             emit('searchChange', data)
         }
     }
+    onErrorCaptured((err, compInst, errorInfo) => {
+        console.log(props, err, compInst, errorInfo)
+        return false
+    })
 </script>
 
 <template>
@@ -31,7 +39,7 @@
         :form="form"
         :max="field.max ?? -1"
         :mode="mode"
-        :model-value="modelValue"
+        :model-value="localModelValue"
         :options="field.options && field.options.options "
         :value-prop="field.options && field.options.valueProp "
         class="text-dark"
@@ -40,7 +48,7 @@
         @search-change="updateSearch"
         @update:model-value="input">
         <template #afterlist>
-            <input :name="field.name" :value="modelValue" type="hidden"/>
+            <input :name="field.name" :value="localModelValue" type="hidden"/>
         </template>
     </Multiselect>
 </template>
