@@ -31,13 +31,10 @@
         options: {label: value => options.value.find(option => option.value === value)?.text ?? null, options: options.value}
     }))
     if (Array.isArray(props.modelValue) && props.modelValue.length > 0) {
-        console.log('modelValue is an array with at least one element', props.modelValue)
         // on charge les données de l'api et on les mets dans items pour qu'options soit mis à jour
         props.modelValue.forEach(value => {
             api(value, 'GET').then(response => items.value.push(response))
         })
-        console.log('items', items.value)
-        console.log('options', options.value)
     }
     async function updateItems() {
         try {

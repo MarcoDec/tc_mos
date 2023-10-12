@@ -305,16 +305,15 @@
     }
     async function updateItem(item) {
         isLoaded.value = false
-        console.log('updateItem', item)
         if (item.component === null) {
             // affichage formulaire update Sous-Produit
             updateProductItem.value = {...updateProductItem.value, ...item}
             updateProductItem.value.subProduct = [item.subProduct['@id']]
-            console.log('updateProductItem', updateProductItem.value)
             ProductUpdateForm.value = true
         } else {
             // affichage formulaire update Composant
-            updateComponentItem.value.component = [item.component]
+            updateComponentItem.value = {...updateComponentItem.value, ...item}
+            updateComponentItem.value.component = [item.component['@id']]
             ComponentUpdateForm.value = true
         }
         await refresh()

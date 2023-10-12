@@ -18,27 +18,33 @@
     const isPopupVisible = ref(false)
     const localData = ref({})
     let violations = []
-    onBeforeMount(() => {
-        localData.value = props.modelValue
-    })
-    function annule(){
-        isPopupVisible.value = false
-        emits('cancel')
-    }
     function normalizeLocalData() {
         const normalizedData = localData.value
         props.fields.forEach(field => {
-            // console.log(`field ${field.name}`, field)
             if (field.type === 'multiselect-fetch' && field.max === 1) normalizedData[field.name] = localData.value[field.name][0]
             if (field.type === 'measure') {
                 const currentCodeValue = localData.value[field.name].code
-                //console.log('measure', currentCodeValue)
                 const newCodeValue = field.measure.code.options.options.filter(item => item.value === currentCodeValue)[0].text
-                //console.log('measure newCode', newCodeValue)
                 normalizedData[field.name].code = newCodeValue
             }
         })
         return normalizedData
+    }
+    onBeforeMount(() => {
+        localData.value = props.modelValue
+        if (props.apiMethod === 'PATCH') {
+            props.fields.forEach(field => {
+                if (field.type === 'measure') {
+                    const currentCodeValue = localData.value[field.name].code
+                    const newCodeValue = field.measure.code.options.options.filter(item => item.text === currentCodeValue)[0].value
+                    localData.value[field.name].code = newCodeValue
+                }
+            })
+        }
+    })
+    function annule(){
+        isPopupVisible.value = false
+        emits('cancel')
     }
 
     async function onSubmit() {
