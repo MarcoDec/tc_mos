@@ -1,15 +1,16 @@
 import {defineStore} from 'pinia'
 import api from '../../../api'
 
+const baseUrl = '/api/nomenclatures'
 export const useNomenclatureStore = defineStore('nomenclatures', {
     actions: {
         async fetchOne(id = 1) {
-            this.nomenclatureItem = await api(`/api/nomenclatures/${id}`, 'GET')
+            this.nomenclatureItem = await api(`${baseUrl}/${id}`, 'GET')
             this.isLoaded = true
         },
         async fetchAll(filter = '') {
             this.isLoading = true
-            const response = await api(`/api/nomenclatures${filter}`, 'GET')
+            const response = await api(`${baseUrl}${filter}`, 'GET')
             this.nomenclatures = response['hydra:member']
             this.pagination = true
             if (response['hydra:totalItems'] > 0) {
@@ -57,6 +58,9 @@ export const useNomenclatureStore = defineStore('nomenclatures', {
             }
             this.isLoading = false
             this.isLoaded = true
+        },
+        async remove(id) {
+            await api(`${baseUrl}/${id}`, 'DELETE')
         }
     },
     state: () => ({

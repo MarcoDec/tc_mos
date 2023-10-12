@@ -45,7 +45,7 @@
             code: '/api/units/1',
             value: 1
         },
-        subProduct: null,
+        subProduct: [],
         mandated: false,
         product: `/api/products/${idProduct}`
     })
@@ -54,7 +54,7 @@
             code: '/api/units/1',
             value: 1
         },
-        component: null,
+        component: [],
         mandated: false,
         product: `/api/products/${idProduct}`
     })
@@ -244,6 +244,7 @@
         await refresh()
     }
     async function onSearch(data) {
+        isLoaded.value = false
         nomenclatureFetchCriteria.resetAllFilter()
         if (data.subProduct) nomenclatureFetchCriteria.addFilter('subProduct', data.subProduct[0])
         if (data.component) nomenclatureFetchCriteria.addFilter('component', data.component[0])
@@ -251,25 +252,37 @@
         if (data.quantity && data.quantity.code) nomenclatureFetchCriteria.addFilter('quantity.code', optionsUnit.value.label(data.quantity.code))
         if (data.quantity && data.quantity.value) nomenclatureFetchCriteria.addFilter('quantity.value', data.quantity.value)
         await refresh()
+        isLoaded.value = true
     }
-    function updateItem(item) {
+    async function updateItem(item) {
+        isLoaded.value = false
         console.log('updateItem', item)
+        // affichage formulaire update
+        // ProductUpdateForm.value = true
+        await refresh()
+        isLoaded.value = true
     }
-    function deleteItem(item) {
-        console.log('deleteItem', item)
+    async function deleteItem(item) {
+        isLoaded.value = false
+        await nomenclatureStore.remove(item)
+        await refresh()
+        isLoaded.value = true
     }
     async function getPage(nPage) {
         nomenclatureFetchCriteria.gotoPage(Number(nPage))
         await refresh()
-        console.log('getPage', nPage)
     }
     function trierAlphabet(data) {
         console.log('trierAlphabet', data)
     }
     const error = ref(null)
+    const addProductKey = ref(0)
+    const addComponentKey = ref(0)
     function errorCaptured(err, instance, info) {
         error.value = err
-        console.error('Une erreur a été capturée:', err, instance, info)
+        console.debug('Une erreur a été capturée:', err, instance, info)
+        addProductKey.value++
+        addComponentKey.value++
         // Vous pouvez gérer l'erreur comme vous le souhaitez ici
         return false // Renvoie false pour éviter que l'erreur ne soit propagée plus haut.
     }
@@ -328,6 +341,7 @@
                         <InlistAddForm
                             v-if="isLoaded && AddProductForm"
                             id="addProduct"
+                            :key="`addProduct${addProductKey}`"
                             api-method="POST"
                             api-url="/api/nomenclatures"
                             form="addProductSubproduct"
@@ -338,6 +352,7 @@
                         <InlistAddForm
                             v-if="isLoaded && AddComponentForm"
                             id="addComponent"
+                            :key="`addComponent${addComponentKey}`"
                             api-method="POST"
                             api-url="/api/nomenclatures"
                             form="addProductComponent"
