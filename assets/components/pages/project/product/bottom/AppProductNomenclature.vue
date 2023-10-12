@@ -1,5 +1,4 @@
 <script setup>
-    // import AppCardableTable from '../../../../bootstrap-5/app-cardable-collection-table/AppCardableTable.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
     import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
@@ -67,6 +66,15 @@
         mandated: false,
         product: `/api/products/${idProduct}`
     })
+    const addEquivalentItem = ref({
+        quantity: {
+            code: '/api/units/1',
+            value: 1
+        },
+        componentEquivalent: [],
+        mandated: false,
+        product: `/api/products/${idProduct}`
+    })
     const updateComponentItem = ref({
         quantity: {
             code: '/api/units/1',
@@ -91,6 +99,9 @@
     const addComponentFormField = ref([])
     const ComponentUpdateForm = ref(false)
     const updateComponentFormField = ref([])
+
+    const AddEquivalentForm = ref(false)
+    const addEquivalentFormField = ref([])
 
     tabFields.value = [
         {
@@ -302,9 +313,48 @@
             type: 'measure'
         }
     ]
-
+    addEquivalentFormField.value = [
+        {
+            label: 'Mandat',
+            name: 'mandated',
+            type: 'boolean'
+        },
+        {
+            label: 'Equivalent',
+            name: 'componentEquivalent',
+            //options: productsOptions.value,
+            type: 'multiselect-fetch',
+            api: '/api/component-equivalents',
+            filteredProperty: 'code',
+            max: 1
+        },
+        {
+            label: 'Quantité',
+            name: 'quantity',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 1
+                }
+            },
+            type: 'measure'
+        }
+    ]
+    const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value || AddEquivalentForm.value)
     const col1 = computed(() => {
-        if (AddComponentForm.value || ProductUpdateForm.value || ComponentUpdateForm.value || AddProductForm.value) return 5
+        if (min.value) return 5
         return 12
     })
     async function refresh() {
@@ -316,9 +366,18 @@
         AddComponentForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
+        AddEquivalentForm.value = false
     }
     function ajouteComposant() {
         AddComponentForm.value = !AddComponentForm.value
+        AddProductForm.value = false
+        ProductUpdateForm.value = false
+        ComponentUpdateForm.value = false
+        AddEquivalentForm.value = false
+    }
+    function ajouteEquivalent() {
+        AddEquivalentForm.value = !AddEquivalentForm.value
+        AddComponentForm.value = false
         AddProductForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
@@ -328,16 +387,18 @@
         AddProductForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
+        AddEquivalentForm.value = false
     }
     async function onAddSubmit() {
         AddComponentForm.value = false
         AddProductForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
+        AddEquivalentForm.value = false
         await refresh()
     }
     isLoaded.value = true
-    const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value)
+
     async function onCancelSearch() {
         nomenclatureFetchCriteria.resetAllFilter()
         await refresh()
@@ -385,6 +446,7 @@
     const error = ref(null)
     const addProductKey = ref(0)
     const addComponentKey = ref(0)
+    const addEquivalentKey = ref(0)
     const updateProductKey = ref(0)
     const updateComponentKey = ref(0)
     function errorCaptured(err, instance, info) {
@@ -392,6 +454,7 @@
         console.debug('Une erreur a été capturée:', err, instance, info)
         addProductKey.value++
         addComponentKey.value++
+        addEquivalentKey.value++
         updateProductKey.value++
         updateComponentKey.value++
         // Vous pouvez gérer l'erreur comme vous le souhaitez ici
@@ -416,12 +479,12 @@
                         Ajouter un nouveau Composant
                     </AppBtn>
                 </span>
-                <!--                <span class="ml-10">-->
-                <!--                    <AppBtn variant="success" label="Ajout" @click="ajouteComposant">-->
-                <!--                        <Fa icon="plus"/>-->
-                <!--                        Ajouter un groupe d'équivalence Composant-->
-                <!--                    </AppBtn>-->
-                <!--                </span>-->
+                <span class="ml-10">
+                    <AppBtn variant="success" label="Ajout" @click="ajouteEquivalent">
+                        <Fa icon="plus"/>
+                        Ajouter un groupe d'équivalence Composant
+                    </AppBtn>
+                </span>
             </AppCol>
         </AppRow>
         <AppRow>
@@ -471,6 +534,19 @@
                             :model-value="addComponentItem"
                             @cancel="cancelAddForm"
                             @submitted="onAddSubmit"/>
+                        <InlistAddForm
+                            v-if="isLoaded && AddEquivalentForm"
+                            id="addEquivalent"
+                            :key="`addEquivalent${addEquivalentKey}`"
+                            api-method="POST"
+                            api-url="/api/component-equivalents"
+                            form="addEquivalentForm"
+                            :fields="addEquivalentFormField"
+                            :model-value="addEquivalentItem"
+                            @cancel="cancelAddForm"
+                            @submitted="onAddSubmit">
+                            InlistAddForm adapté pour les équivalences
+                        </InlistAddForm>
                         <InlistAddForm
                             v-if="isLoaded && ProductUpdateForm"
                             id="updateProduct"
