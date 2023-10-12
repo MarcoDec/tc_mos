@@ -1,6 +1,6 @@
 <script setup>
     //import AppProductListCommande from './AppProductListCommande.vue'
-    import AppProductNomenclature from './AppProductNomenclature.vue'
+    import AppProductNomenclature from './bottom/AppProductNomenclature.vue'
     //import AppProductStockList from './AppProductStockList.vue'
 </script>
 

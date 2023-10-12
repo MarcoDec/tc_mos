@@ -3,7 +3,7 @@
     import AppSuspense from '../../../../AppSuspense.vue'
     import InlistAddForm from '../../../../form-cardable/inlist-add-form/InlistAddForm.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import {computed, ref} from 'vue'
+    import {computed, ref, onErrorCaptured} from 'vue'
     import {getOptions} from '../../../../../utils'
     import {useComponentListStore} from '../../../../../stores/purchase/component/components'
     import {useNomenclatureStore} from '../../../../../stores/project/product/nomenclatures'
@@ -16,7 +16,7 @@
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
 
-    // const roleuser = ref('reader')
+    const roleuser = ref('reader')
     const fetchUnitOptions = useOptions('units')
     await fetchUnitOptions.fetchOp()
     const optionsUnit = computed(() =>
@@ -78,7 +78,8 @@
         {
             label: 'Mandat',
             name: 'mandated',
-            type: 'boolean'
+            type: 'boolean',
+            min: false
         },
         {
             label: 'Sous-Produit',
@@ -86,6 +87,7 @@
             type: 'multiselect-fetch',
             api: '/api/products',
             filteredProperty: 'code',
+            min: true,
             max: 1
         },
         {
@@ -94,11 +96,14 @@
             type: 'multiselect-fetch',
             api: '/api/components',
             filteredProperty: 'code',
+            min: true,
             max: 1
         },
         {
             label: 'Quantité',
             name: 'quantity',
+            filter: false,
+            min: true,
             measure: {
                 code: {
                     label: 'Code',
@@ -114,7 +119,7 @@
                     label: 'Valeur',
                     name: 'value',
                     type: 'number',
-                    step: 1
+                    step: 0.01
                 }
             },
             type: 'measure'
@@ -203,18 +208,18 @@
         if (AddComponentForm.value || ProductUpdateForm.value || ComponentUpdateForm.value || AddProductForm.value) return 5
         return 12
     })
-    // async function refresh() {
-    //     await nomenclatureStore.fetchAll(nomenclatureFetchCriteria.getFetchCriteria)
-    //     itemsTable.value = nomenclatureStore.nomenclatures
-    // }
+    async function refresh() {
+        await nomenclatureStore.fetchAll(nomenclatureFetchCriteria.getFetchCriteria)
+        itemsTable.value = nomenclatureStore.nomenclatures
+    }
     function ajouteProduit() {
-        AddProductForm.value = true
+        AddProductForm.value = !AddProductForm.value
         AddComponentForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
     }
     function ajouteComposant() {
-        AddComponentForm.value = true
+        AddComponentForm.value = !AddComponentForm.value
         AddProductForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
@@ -230,37 +235,45 @@
         AddProductForm.value = false
         ProductUpdateForm.value = false
         ComponentUpdateForm.value = false
-        // await refresh()
+        await refresh()
     }
     isLoaded.value = true
-    // const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value)
-    // async function onCancelSearch() {
-    //     nomenclatureFetchCriteria.resetAllFilter()
-    //     refresh()
-    // // }
-    // function onSearch(data) {
-    //     nomenclatureFetchCriteria.resetAllFilter()
-    //     if (data.subProduct) nomenclatureFetchCriteria.addFilter('subProduct', data.subProduct[0])
-    //     if (data.component) nomenclatureFetchCriteria.addFilter('component', data.component[0])
-    //     if (typeof data.mandated !== 'undefined') nomenclatureFetchCriteria.addFilter('mandated', data.mandated)
-    //     if (data.quantity && data.quantity.code) nomenclatureFetchCriteria.addFilter('quantity.code', optionsUnit.value.label(data.quantity.code))
-    //     if (data.quantity && data.quantity.value) nomenclatureFetchCriteria.addFilter('quantity.value', data.quantity.value)
-    //     refresh()
-    // }
-    // function updateItem(item) {
-    //     console.log('updateItem', item)
-    // }
-    // function deleteItem(item) {
-    //     console.log('deleteItem', item)
-    // }
-    // function getPage(nPage) {
-    //     nomenclatureFetchCriteria.gotoPage(Number(nPage))
-    //     refresh()
-    //     console.log('getPage', nPage)
-    // }
-    // function trierAlphabet(data) {
-    //     console.log('trierAlphabet', data)
-    // }
+    const min = computed(() => AddComponentForm.value || AddProductForm.value || ProductUpdateForm.value || ComponentUpdateForm.value)
+    async function onCancelSearch() {
+        nomenclatureFetchCriteria.resetAllFilter()
+        await refresh()
+    }
+    async function onSearch(data) {
+        nomenclatureFetchCriteria.resetAllFilter()
+        if (data.subProduct) nomenclatureFetchCriteria.addFilter('subProduct', data.subProduct[0])
+        if (data.component) nomenclatureFetchCriteria.addFilter('component', data.component[0])
+        if (typeof data.mandated !== 'undefined') nomenclatureFetchCriteria.addFilter('mandated', data.mandated)
+        if (data.quantity && data.quantity.code) nomenclatureFetchCriteria.addFilter('quantity.code', optionsUnit.value.label(data.quantity.code))
+        if (data.quantity && data.quantity.value) nomenclatureFetchCriteria.addFilter('quantity.value', data.quantity.value)
+        await refresh()
+    }
+    function updateItem(item) {
+        console.log('updateItem', item)
+    }
+    function deleteItem(item) {
+        console.log('deleteItem', item)
+    }
+    async function getPage(nPage) {
+        nomenclatureFetchCriteria.gotoPage(Number(nPage))
+        await refresh()
+        console.log('getPage', nPage)
+    }
+    function trierAlphabet(data) {
+        console.log('trierAlphabet', data)
+    }
+    const error = ref(null)
+    function errorCaptured(err, instance, info) {
+        error.value = err
+        console.error('Une erreur a été capturée:', err, instance, info)
+        // Vous pouvez gérer l'erreur comme vous le souhaitez ici
+        return false // Renvoie false pour éviter que l'erreur ne soit propagée plus haut.
+    }
+    onErrorCaptured((anError, compInst, errorInfo) => errorCaptured(anError, compInst, errorInfo))
 </script>
 
 <template>
@@ -288,27 +301,27 @@
             </AppCol>
         </AppRow>
         <AppRow>
-            <!--            <AppCol :cols="col1">-->
-            <!--                <AppCardableTable-->
-            <!--                    v-if="isLoaded"-->
-            <!--                    :current-page="nomenclatureStore.currentPage"-->
-            <!--                    :fields="tabFields"-->
-            <!--                    :first-page="nomenclatureStore.firstPage"-->
-            <!--                    :items="itemsTable"-->
-            <!--                    :last-page="nomenclatureStore.lastPage"-->
-            <!--                    :min="min"-->
-            <!--                    :next-page="nomenclatureStore.nextPage"-->
-            <!--                    :pag="nomenclatureStore.pagination"-->
-            <!--                    :previous-page="nomenclatureStore.previousPage"-->
-            <!--                    :user="roleuser"-->
-            <!--                    form="formEmployeeFormationCardableTable"-->
-            <!--                    @update="updateItem"-->
-            <!--                    @deleted="deleteItem"-->
-            <!--                    @get-page="getPage"-->
-            <!--                    @trier-alphabet="trierAlphabet"-->
-            <!--                    @search="onSearch"-->
-            <!--                    @cancel-search="onCancelSearch"/>-->
-            <!--            </AppCol>-->
+            <AppCol :cols="col1">
+                <AppCardableTable
+                    v-if="isLoaded"
+                    :current-page="`${nomenclatureStore.currentPage}`"
+                    :fields="tabFields"
+                    :first-page="`${nomenclatureStore.firstPage}`"
+                    :items="itemsTable"
+                    :last-page="`${nomenclatureStore.lastPage}`"
+                    :min="min"
+                    :next-page="`${nomenclatureStore.nextPage}`"
+                    :pag="nomenclatureStore.pagination"
+                    :previous-page="`${nomenclatureStore.previousPage}`"
+                    :user="roleuser"
+                    form="formEmployeeFormationCardableTable"
+                    @update="updateItem"
+                    @deleted="deleteItem"
+                    @get-page="getPage"
+                    @trier-alphabet="trierAlphabet"
+                    @search="onSearch"
+                    @cancel-search="onCancelSearch"/>
+            </AppCol>
             <AppCol :cols="12 - col1">
                 <AppRow>
                     <AppSuspense>

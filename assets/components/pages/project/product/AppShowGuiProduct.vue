@@ -4,7 +4,7 @@
     import useOptions from '../../../../stores/option/options'
     import {useProductStore} from '../../../../stores/project/product/products'
     import {useRoute} from 'vue-router'
-    import AppProductShowInlist from './bottom/AppProductShowInlist.vue'
+    import AppProductShowInlist from './AppProductShowInlist.vue'
     const route = useRoute()
     const idProduct = Number(route.params.id_product)
     const fetchUnits = useOptions('units')

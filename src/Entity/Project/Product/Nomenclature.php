@@ -116,6 +116,8 @@ class Nomenclature extends Entity implements MeasuredInterface {
 
     public function __construct() {
         $this->quantity = new Measure();
+        $this->component = null;
+        $this->product = null;
     }
 
     final public function getComponent(): ?Component {
