@@ -67,6 +67,15 @@
         mandated: false,
         product: `/api/products/${idProduct}`
     })
+    const updateComponentItem = ref({
+        quantity: {
+            code: '/api/units/1',
+            value: 1
+        },
+        component: [],
+        mandated: false,
+        product: `/api/products/${idProduct}`
+    })
     const AddProductForm = ref(false)
     const addProductFormField = ref([])
     const ProductUpdateForm = ref(false)
@@ -81,7 +90,7 @@
     const AddComponentForm = ref(false)
     const addComponentFormField = ref([])
     const ComponentUpdateForm = ref(false)
-    // const updateComponentFormField = ref([])
+    const updateComponentFormField = ref([])
 
     tabFields.value = [
         {
@@ -253,6 +262,47 @@
             type: 'measure'
         }
     ]
+    updateComponentFormField.value = [
+        {
+            label: 'Mandat',
+            name: 'mandated',
+            type: 'boolean'
+        },
+        {
+            label: 'Composant',
+            name: 'component',
+            //options: productsOptions.value,
+            type: 'multiselect-fetch',
+            api: '/api/components',
+            filteredProperty: 'code',
+            max: 1,
+            readonly: true
+        },
+        {
+            label: 'Quantité',
+            name: 'quantity',
+            measure: {
+                code: {
+                    label: 'Code',
+                    name: 'code',
+                    options: {
+                        label: value =>
+                            optionsUnit.value.find(option => option.type === value)?.text ?? null,
+                        options: optionsUnit.value
+                    },
+                    type: 'select'
+                },
+                value: {
+                    label: 'Valeur',
+                    name: 'value',
+                    type: 'number',
+                    step: 1
+                }
+            },
+            type: 'measure'
+        }
+    ]
+
     const col1 = computed(() => {
         if (AddComponentForm.value || ProductUpdateForm.value || ComponentUpdateForm.value || AddProductForm.value) return 5
         return 12
@@ -433,17 +483,17 @@
                             :model-value="updateProductItem"
                             @cancel="cancelAddForm"
                             @submitted="onAddSubmit"/>
-                        <!--                        <InlistAddForm-->
-                        <!--                            v-if="isLoaded && ComponentUpdateForm"-->
-                        <!--                            id="updateComponent"-->
-                        <!--                            api-method="PATCH"-->
-                        <!--                            api-url=""-->
-                        <!--                            card-title="Modifier la composition en composant"-->
-                        <!--                            form="updateComponentForm"-->
-                        <!--                            :fields="updateComponentFormField"-->
-                        <!--                            :model-value="updateComponentItem"-->
-                        <!--                            @cancel="cancelAddForm"-->
-                        <!--                            @submitted="onAddSubmit"/>-->
+                        <InlistAddForm
+                            v-if="isLoaded && ComponentUpdateForm"
+                            id="updateComponent"
+                            api-method="PATCH"
+                            api-url=""
+                            card-title="Modifier la composition en composant"
+                            form="updateComponentForm"
+                            :fields="updateComponentFormField"
+                            :model-value="updateComponentItem"
+                            @cancel="cancelAddForm"
+                            @submitted="onAddSubmit"/>
                     </AppSuspense>
                 </AppRow>
             </AppCol>
