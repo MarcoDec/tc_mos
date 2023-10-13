@@ -321,7 +321,7 @@
         },
         {
             label: 'Equivalent',
-            name: 'componentEquivalent',
+            name: 'equivalent',
             //options: productsOptions.value,
             type: 'multiselect-fetch',
             api: '/api/component-equivalents',

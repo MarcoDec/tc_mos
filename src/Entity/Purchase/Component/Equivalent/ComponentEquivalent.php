@@ -19,6 +19,8 @@ use App\Filter\RelationFilter;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['family', 'name']),
@@ -151,9 +153,17 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
     ]
     private ?string $code = null;
 
+    #[
+        ApiProperty(description: 'Items equivalents', required: true, example: '[`/api/component-equivalent-items/1`, `/api/component-equivalent-items/2`]'),
+        ORM\OneToMany(mappedBy: 'componentEquivalent', targetEntity: ComponentEquivalentItem::class, cascade: ['persist', 'remove'], orphanRemoval: true),
+        Serializer\Groups(['read:component-equivalent', 'read:component-equivalent:collection', 'write:component-equivalent'])
+    ]
+    private Collection $items;
+
     public function __construct()
     {
         $this->code = $this->generateCode();
+        $this->items = new ArrayCollection();
     }
 
     public static function getBarCodeTableNumber(): string
@@ -228,6 +238,17 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
     public function setUnit(?Unit $unit): ComponentEquivalent
     {
         $this->unit = $unit;
+        return $this;
+    }
+
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function setItems(Collection $items): ComponentEquivalent
+    {
+        $this->items = $items;
         return $this;
     }
 
