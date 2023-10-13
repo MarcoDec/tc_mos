@@ -13,6 +13,7 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component;
+use App\Entity\Purchase\Component\Equivalent\ComponentEquivalent;
 use App\Filter\RelationFilter;
 use App\Validator\Project\Product\NomenclatureUnitConsistency;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,9 +23,18 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['mandated']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'product', 'subProduct']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['component.id', 'product.code']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['product.product.code' => 'partial', 'product.product.name' => 'partial', 'product.product.embState.state' => 'partial', 'product.customer.name' => 'partial', 'product.product.forecastVolume.value' => 'partial', 'product.product.forecastVolume.code' => 'partial', 'product.product.internalIndex' => 'partial']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'product', 'subProduct', 'equivalent']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['component.id', 'product.code', 'equivalent.code']),
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'product.product.code' => 'partial',
+        'product.product.name' => 'partial',
+        'product.product.embState.state' => 'partial',
+        'product.customer.name' => 'partial',
+        'product.product.forecastVolume.value' => 'partial',
+        'product.product.forecastVolume.code' => 'partial',
+        'product.product.internalIndex' => 'partial',
+        'equivalent.code' => 'partial',
+    ]),
     ApiResource(
         description: 'Nomenclature',
         collectionOperations: [
@@ -108,6 +118,13 @@ class Nomenclature extends Entity implements MeasuredInterface {
     private ?Product $subProduct;
 
     #[
+        ApiProperty(description: 'Equivalent', readableLink: false, example: '/api/component-equivalents/1'),
+        ORM\JoinColumn(nullable: true),
+        ORM\ManyToOne(targetEntity: ComponentEquivalent::class),
+        Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
+        ]
+    private ?ComponentEquivalent $equivalent;
+    #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded(Measure::class),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
@@ -181,6 +198,17 @@ class Nomenclature extends Entity implements MeasuredInterface {
     public function setSubProduct(?Product $subProduct): Nomenclature
     {
         $this->subProduct = $subProduct;
+        return $this;
+    }
+
+    public function getEquivalent(): ?ComponentEquivalent
+    {
+        return $this->equivalent;
+    }
+
+    public function setEquivalent(?ComponentEquivalent $equivalent): Nomenclature
+    {
+        $this->equivalent = $equivalent;
         return $this;
     }
 
