@@ -31,7 +31,7 @@ use Doctrine\Common\Collections\ArrayCollection;
         collectionOperations: [
             'get' => [
                 'normalization_context' => [
-                    'groups' => ['read:component-equivalent:collection'],
+                    'groups' => ['read:component-equivalent:collection', 'read:id'],
                     'openapi_definition_name' => 'ComponentEquivalent-collection',
                     'skip_null_values' => false
                 ],
@@ -162,7 +162,7 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
 
     public function __construct()
     {
-        $this->code = $this->generateCode();
+        $this->generateCode();
         $this->items = new ArrayCollection();
     }
 
@@ -186,10 +186,9 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
         return $this->unit;
     }
 
-    private function generateCode()
+    public function generateCode()
     {
-        // TODO: generate code
-        return '';
+        $this->code = 'EQ-'.$this->family?->getCode().'-'.$this->getId();
     }
 
     public function getFamily(): ?Family
@@ -251,5 +250,9 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
         $this->items = $items;
         return $this;
     }
-
+    #[Serializer\Groups(['read:component-equivalent', 'read:component-equivalent:collection', 'write:component-equivalent'])]
+    public function getComponents(): Collection
+    {
+        return $this->items->map(fn(ComponentEquivalentItem $item) => $item->getComponent());
+    }
 }

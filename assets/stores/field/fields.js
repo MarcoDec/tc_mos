@@ -29,7 +29,7 @@ export default function useFields(id, initialFields) {
             search: state => state.fields.some(field => field.search),
             update: state => state.fields.some(field => field.update)
         },
-        state: () => ({fields: []})
+        state: () => ({fields: [], initialFields})
     })()
     store.push(initialFields)
     return store

@@ -57,14 +57,14 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
                 'method' => 'GET',
                 'normalization_context' => [
                     'groups' => ['read:id', 'read:component:option'],
-                    'openapi_definition_name' => 'Component-options',
+                    'openapi_definition_name' => 'PurchaseComponent-options',
                     'skip_null_values' => false
                 ],
                 'openapi_context' => [
                     'description' => 'Récupère les composants pour les select',
                     'summary' => 'Récupère les composants pour les select',
                 ],
-                'order' => ['id' => 'asc'],
+                'order' => ['name' => 'asc'],
                 'pagination_enabled' => false,
                 'path' => '/components/options'
             ],
@@ -183,7 +183,7 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
             'openapi_definition_name' => 'Component-write'
         ],
         normalizationContext: [
-            'groups' => ['read:component', 'read:measure', 'read:state'],
+            'groups' => ['read:component', 'read:measure', 'read:state', 'read:id'],
             'openapi_definition_name' => 'Component-read',
             'skip_null_values' => false
         ],
@@ -298,7 +298,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ApiProperty(description: 'Nom', required: true, example: '2702 SCOTCH ADHESIF PVC T2 19MMX33M NOIR'),
         Assert\NotBlank(groups: ['Component-admin', 'Component-create']),
         ORM\Column,
-        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:id', 'read:component-preparation'])
+        Serializer\Groups(['create:component', 'read:component', 'read:component:collection', 'write:component', 'write:component:admin', 'write:component:clone', 'read:stock', 'read:component-preparation'])
     ]
     private ?string $name = null;
 

@@ -8,6 +8,7 @@
     const props = defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
+        initialField: {required: true, type: Object},
         label: {default: 'rechercher', type: String},
         mode: {default: null, type: String},
         modelValue: {default: () => ({}), type: Object},
@@ -25,6 +26,10 @@
     const hasViolation = computed(() => Boolean(violation.value))
     const css = computed(() => ({'is-invalid': hasViolation.value}))
 
+    const localField = ref(props.field)
+    if (props.initialField.type === 'multiselect-fetch') {
+        localField.value = {...localField.value, ...props.initialField}
+    }
     function dispose() {
         if (tooltip.value !== null) {
             tooltip.value.dispose()
@@ -52,12 +57,12 @@
 <template>
     <td>
         <template v-if="hasContent">
-            <slot :id="inputId" :css="css" :field="field" :form="form" :store="store">
+            <slot :id="inputId" :css="css" :field="localField" :form="form" :store="store">
                 <AppInputGuesser
                     :id="inputId"
                     ref="el"
                     :class="css"
-                    :field="field"
+                    :field="localField"
                     :form="form"
                     :model-value="value"
                     :title="tip"
