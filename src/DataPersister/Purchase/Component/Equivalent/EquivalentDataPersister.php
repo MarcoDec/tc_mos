@@ -30,27 +30,33 @@ class EquivalentDataPersister implements ContextAwareDataPersisterInterface
     {
         /** @var Request $request */
         $request = $this->requests->getCurrentRequest();
-        if ($request->getMethod() === 'post') {
+        //dump(['request' => $request->getContent(), 'method' => $request->getMethod()]);
+        if (strtolower($request->getMethod()) === 'post') {
+            //dump(['persist post' => $data]);
             //On récupère le groupe d'équivalence et on le persiste un première fois pour récupérer son id
             $this->em->persist($data);
             $this->em->flush();
         }
         //On regénère le code de l'équivalence si besoin (ex en cas de changement de famille)
         $data->generateCode();
-
-        //On ajoute les composants au groupe d'équivalence
-        $components = json_decode($request->getContent())->components;
-        foreach ($components as $componentIri) {
-            $ids=[];
-            preg_match('/(\d+)/', $componentIri, $ids, PREG_OFFSET_CAPTURE);
-            if (count($ids)>0) {
-                $component = $this->em->getRepository(Component::class)->find($ids[0][0]);
-                $componentEquivalentComponent = new ComponentEquivalentItem();
-                $componentEquivalentComponent->setComponent($component);
-                $componentEquivalentComponent->setComponentEquivalent($data);
-                $this->em->persist($componentEquivalentComponent);
+        $content = json_decode($request->getContent());
+        //dump(['content' => $content]);
+        if (isset($content->components)) {
+            //On ajoute les composants au groupe d'équivalence
+            $components = json_decode($request->getContent())->components;
+            foreach ($components as $componentIri) {
+                $ids=[];
+                preg_match('/(\d+)/', $componentIri, $ids, PREG_OFFSET_CAPTURE);
+                if (count($ids)>0) {
+                    $component = $this->em->getRepository(Component::class)->find($ids[0][0]);
+                    $componentEquivalentComponent = new ComponentEquivalentItem();
+                    $componentEquivalentComponent->setComponent($component);
+                    $componentEquivalentComponent->setComponentEquivalent($data);
+                    $this->em->persist($componentEquivalentComponent);
+                }
             }
         }
+
         //On re-persiste le groupe d'équivalence
         $this->em->flush();
         return $data;

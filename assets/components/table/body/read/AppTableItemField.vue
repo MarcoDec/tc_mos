@@ -24,7 +24,7 @@
         }
         if (props.field.type === 'multiselect-fetch') {
             // On regarde si on a déjà chargé les données
-            console.log('multi select fetch', props.initialField.filteredProperty, thevalue.value)
+            //console.log('multi select fetch', props.initialField.filteredProperty, thevalue.value)
             if (typeof thevalue.value[props.initialField.filteredProperty] === 'undefined') {
                 //on charge l'élément pour récupérer les données
                 thevalue.value.forEach(item => {
