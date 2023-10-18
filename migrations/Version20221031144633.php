@@ -3070,7 +3070,7 @@ CREATE TABLE `manufacturing_order` (
     `company_id` INT UNSIGNED DEFAULT NULL,
     `delivery_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
     `emb_blocker_state` ENUM('blocked', 'closed', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:closer_state)',
-    `emb_state_state` ENUM('agreed', 'asked', 'rejected') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:manufacturing_order_state)',
+    `emb_state_state` ENUM('agreed', 'asked', 'rejected','locked') DEFAULT 'asked' NOT NULL COMMENT '(DC2Type:manufacturing_order_state)',
     `index` TINYINT UNSIGNED DEFAULT 1 NOT NULL COMMENT '(DC2Type:tinyint)',
     `manufacturing_company_id` INT UNSIGNED DEFAULT NULL,
     `manufacturing_date` DATE DEFAULT NULL COMMENT '(DC2Type:date_immutable)',
