@@ -11,6 +11,7 @@ abstract class State {
     final public const TR_BLOCK = 'block';
     final public const TR_BUY = 'buy';
     final public const TR_CLOSE = 'close';
+    final public const TR_LOCK = 'lock';
     final public const TR_CREATE = 'create';
     final public const TR_DELAY = 'delay';
     final public const TR_DELIVER = 'deliver';

@@ -11,6 +11,7 @@ abstract class StateType extends EnumType {
     final public const TYPE_STATE_BLOCKED = 'blocked';
     final public const TYPE_STATE_CART = 'cart';
     final public const TYPE_STATE_CLOSED = 'closed';
+    final public const TYPE_STATE_LOCKED = 'locked';
     final public const TYPE_STATE_DELAYED = 'delayed';
     final public const TYPE_STATE_DELIVERED = 'delivered';
     final public const TYPE_STATE_DISABLED = 'disabled';

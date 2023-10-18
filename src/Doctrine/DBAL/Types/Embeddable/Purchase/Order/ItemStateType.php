@@ -12,7 +12,8 @@ final class ItemStateType extends StateType {
         self::TYPE_STATE_FORECAST,
         self::TYPE_STATE_INITIAL,
         self::TYPE_STATE_MONTHLY,
-        self::TYPE_STATE_PARTIALLY_DELIVERED
+        self::TYPE_STATE_PARTIALLY_DELIVERED,
+        self::TYPE_STATE_LOCKED
     ];
 
     public function getName(): string {

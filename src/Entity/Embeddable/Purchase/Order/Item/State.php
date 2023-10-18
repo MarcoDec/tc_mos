@@ -16,7 +16,8 @@ class State extends AbstractState {
         self::TR_FORECAST,
         self::TR_MONTH,
         self::TR_PARTIALLY_DELIVER,
-        self::TR_VALIDATE
+        self::TR_VALIDATE,
+        self::TR_LOCK
     ];
 
     #[
