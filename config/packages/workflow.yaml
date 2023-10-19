@@ -453,6 +453,7 @@ framework:
         - '%wf_place_draft%'
         - '%wf_place_to_validate%'
         - '%wf_place_warning%'
+        - '%wf_place_closed%'
       supports:
         - App\Entity\Purchase\Supplier\Supplier
       transitions:
@@ -465,4 +466,7 @@ framework:
         '%wf_tr_validate%':
           from: '%wf_place_warning%'
           to: '%wf_place_agreed%'
+        '%wf_tr_close%':
+          from: '%wf_place_agreed%'
+          to: '%wf_place_closed%'
       type: state_machine

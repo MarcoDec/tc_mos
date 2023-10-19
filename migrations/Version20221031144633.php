@@ -4786,7 +4786,7 @@ CREATE TABLE `supplier` (
     `copper_type` ENUM('à la livraison', 'mensuel', 'semestriel') DEFAULT 'mensuel' NOT NULL COMMENT '(DC2Type:copper)',
     `currency_id` INT UNSIGNED NOT NULL,
     `emb_blocker_state` ENUM('blocked', 'disabled', 'enabled') DEFAULT 'enabled' NOT NULL COMMENT '(DC2Type:blocker_state)',
-    `emb_state_state` ENUM('agreed', 'draft', 'to_validate', 'warning') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:supplier_state)',
+    `emb_state_state` ENUM('agreed', 'draft', 'to_validate', 'warning','closed') DEFAULT 'draft' NOT NULL COMMENT '(DC2Type:supplier_state)',
     `language` VARCHAR(255) DEFAULT NULL,
     `managed_production` BOOLEAN DEFAULT FALSE NOT NULL,
     `managed_quality` BOOLEAN DEFAULT FALSE NOT NULL,
