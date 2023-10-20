@@ -7,7 +7,6 @@ import AppMultiselect from './select/AppMultiselect.vue'
 import AppRating from './AppRating.vue'
 import AppSelect from './select/AppSelect.vue'
 import AppSwitch from './AppSwitch.vue'
-import AppTrafficLight from './AppTrafficLight.vue'
 import AppTextArea from './AppTextArea'
 import {generateField} from '../../../props'
 
@@ -32,7 +31,6 @@ function getType(field) {
     case 'textarea':
         return AppTextArea
     default:
-        return resolveComponent('AppInputJS')
         return resolveComponent('AppInputJS')
     }
 }

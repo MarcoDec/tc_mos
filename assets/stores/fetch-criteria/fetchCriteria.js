@@ -42,9 +42,13 @@ export default function useFetchCriteria(id) {
                 }
             },
             gotoPage(pageStr) {
-                const result = /page=(\d+)/.exec(pageStr)
-                if (result === null) this.page = 1
-                this.page = Number(result[0].substring(5))
+                if (typeof pageStr === 'number') {
+                    this.page = pageStr
+                } else {
+                    const result = /page=(\d+)/.exec(pageStr)
+                    if (result === null) this.page = 1
+                    else this.page = Number(result[0].substring(5))
+                }
             },
             resetAllFilter() {
                 this.filters = []

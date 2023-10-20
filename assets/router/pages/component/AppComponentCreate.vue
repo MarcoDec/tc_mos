@@ -123,7 +123,8 @@
     const formInput = {}
     function input(value) {
         const key = Object.keys(value)[0]
-        if (formInput.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(formInput, key)) {
+            // if (formInput.hasOwnProperty(key)) {
             if (typeof value[key] === 'object') {
                 if (value[key].value !== undefined) {
                     const inputValue = parseFloat(value[key].value)
@@ -150,12 +151,12 @@
 <template>
     <AppSuspense>
         <div class="gui-card">
-            <AppTabs id="gui-form-create" style="display: block !important;">
+            <AppTabs id="gui-form-create" class="display-block-important">
                 <AppTab v-for="field in fields" :id="field.name" :key="field.name" :icon="field.icon" tabs="gui-form-create" :title="field.label">
                     <AppFormJS v-if="field.children" :id="`${field.name}_appForm`" :fields="field.children" @update:model-value="input"/>
                     <p v-else-if="field.name === 'attributs'">
                         <AppSuspense>
-                            <AppAttributeCreate :key="changed" :fields-attributs="fieldsAttributs" :my-boolean-family="myBooleanFamily" @dataAttribute="inputAttribute"/>
+                            <AppAttributeCreate :key="changed" :fields-attributs="fieldsAttributs" :my-boolean-family="myBooleanFamily" @data-attribute="inputAttribute"/>
                         </AppSuspense>
                     </p>
                     <p v-else>
@@ -166,3 +167,9 @@
         </div>
     </AppSuspense>
 </template>
+
+<style scoped>
+.display-block-important {
+    display: block !important;
+}
+</style>

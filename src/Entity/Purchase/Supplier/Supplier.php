@@ -173,7 +173,7 @@ class Supplier extends Entity {
     /** @var DoctrineCollection<int, Company> */
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:main'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'write:supplier', 'write:supplier:main'])
     ]
     private DoctrineCollection $administeredBy;
 
@@ -195,7 +195,7 @@ class Supplier extends Entity {
         ApiProperty(description: 'Critère de confiance', example: 0),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:quality', 'write:supplier:purchase-logistics'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'read:supplier:collection', 'write:supplier', 'write:supplier:quality', 'write:supplier:purchase-logistics'])
     ]
     private int $confidenceCriteria = 0;
 
@@ -243,14 +243,14 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Gestion de la production', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
     ]
     private bool $managedProduction = false;
 
     #[
         ApiProperty(description: 'Gestion de la qualité', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:quality'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'write:supplier', 'write:supplier:quality'])
     ]
     private bool $managedQuality = false;
 
@@ -264,7 +264,7 @@ class Supplier extends Entity {
     #[
         ApiProperty(description: 'Activation Commandes Ouvertes', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
+        Serializer\Groups(['create:supplier', 'read:supplier', 'write:supplier', 'write:supplier:purchase-logistics'])
     ]
     private bool $openOrdersEnabled = false;
 

@@ -186,7 +186,7 @@
             }
         }
         for (const key in tabInput){
-            await StoreComponentAttributes.addComponentAttributes(tabInput[key])
+            StoreComponentAttributes.addComponentAttributes(tabInput[key])
         }
     }
 </script>
@@ -195,7 +195,7 @@
     <div class="row">
         <AppModal :id="modalId" class="four" :title="title" size="xl">
             <AppSuspense>
-                <AppComponentCreate :fields-attributs="fieldsAttributs" :my-boolean-family="myBooleanFamily" @update:model-value="input" @dataAttribute="inputAttribute"/>
+                <AppComponentCreate :fields-attributs="fieldsAttributs" :my-boolean-family="myBooleanFamily" @update:model-value="input" @data-attribute="inputAttribute"/>
             </AppSuspense>
             <template #buttons>
                 <AppBtn

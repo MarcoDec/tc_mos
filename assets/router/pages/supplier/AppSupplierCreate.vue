@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, provide, ref} from 'vue-demi'
+    import {computed} from 'vue-demi'
     import useCountries from '../../../stores/countries/countries'
     import AppFormJS from '../../../components/form/AppFormJS.js'
     import AppTab from '../../../components/tabs/AppTab.vue'
@@ -12,8 +12,7 @@
     const storeCountries = useCountries()
     storeCountries.countryOption()
     const listCountry = computed(() => storeCountries.countriesOption)
-    console.log('listCountry', listCountry);
-    
+    console.log('listCountry', listCountry)
 
     const fields = computed(() => [
         {label: 'Groupe', name: 'groupe', type: 'text'},
@@ -22,7 +21,7 @@
         {label: 'complément d\'adresse', name: 'adresse2'},
         {label: 'Code postal', name: 'code', type: 'text'},
         // {label: 'Pays', name: 'pays', options: countries, type: 'select'},
-        {label: 'Pays*', name: 'pays',options: {label: value =>listCountry.value.find(option => option.type === value)?.text ?? null, options: listCountry.value}, type: 'select'},
+        {label: 'Pays*', name: 'pays', options: {label: value => listCountry.value.find(option => option.type === value)?.text ?? null, options: listCountry.value}, type: 'select'},
         {label: 'Téléphone', name: 'tel', type: 'text'},
         {label: 'Email', name: 'email', type: 'text'},
         {label: 'Site web', name: 'site', type: 'text'}
@@ -61,7 +60,7 @@
                 :fields="fields"
                 @input="input"/>
         </AppTab>
-        <AppTab id="gui-start-qte" icon="folder" title="Qualité"> 
+        <AppTab id="gui-start-qte" icon="folder" title="Qualité">
             <AppFormJS id="qte" :fields="fieldsQte"/>
         </AppTab>
         <AppTab id="gui-start-comptabilite" icon="chart-line" title="Comptabilité">
@@ -69,7 +68,7 @@
         </AppTab>
         <AppTab id="gui-start-cuivre" icon="clipboard-list" title="Cuivre">
             <AppFormJS id="cuivre" :fields="fieldsCuivre"/>
-        </AppTab> 
+        </AppTab>
     </AppTabs>
 </template>
 

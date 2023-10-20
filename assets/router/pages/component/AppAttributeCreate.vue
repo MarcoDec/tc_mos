@@ -7,9 +7,9 @@
     const storeAttributes = useAttributesStore()
     await storeAttributes.getAttributes()
 
-    const props = defineProps({
-        fieldsAttributs: {required: true, type: Array},
-        myBooleanFamily: {required: true, type: Boolean}
+    defineProps({
+        fieldsAttributs: {required: true, type: Array}
+        // myBooleanFamily: {required: true, type: Boolean}
     })
 
     const formInput = {}

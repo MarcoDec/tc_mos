@@ -4,14 +4,13 @@
         fields: {required: true, type: Array},
         item: {required: true, type: Object}
     })
-    const id = Number(props.item['@id'].match(/\d+/)[0])
+    const id1 = Number(props.item['@id'].match(/\d+/)[0])
     const emit = defineEmits(['deleted', 'update'])
     function update(){
         emit('update', props.item)
     }
     function deleted(){
         const id = Number(props.item['@id'].match(/\d+/)[0])
-        console.log('id', props.item['@id'].match(/\d+/)[0]);
         emit('deleted', id)
     }
     function isObject(val) {
@@ -52,7 +51,7 @@
                 {{ item[field.name].substring(0, 10) }}
             </div>
             <div v-else-if="field.type === 'boolean'">
-                <AppSwitch :id="`${field.name}_${id}`" :disabled="true" :field="field" form="" :model-value="item[field.name]"/>
+                <AppSwitch :id="`${field.name}_${id1}`" :disabled="true" :field="field" form="" :model-value="item[field.name]"/>
             </div>
             <div v-else>
                 <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>

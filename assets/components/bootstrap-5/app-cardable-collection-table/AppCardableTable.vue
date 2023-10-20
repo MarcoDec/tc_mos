@@ -49,7 +49,7 @@
             <tr class="bg-dark">
                 <td colspan="20"/>
             </tr>
-            <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" @update="update" @deleted="deleted"/>
+            <AppCardableTableBodyItem :items="items" :fields="displayedFields" :current-page="currentPage" :pagine="pag" @update="update" @deleted="deleted"/>
         </tbody>
     </table>
     <nav v-if="pag" aria-label="Page navigation example">

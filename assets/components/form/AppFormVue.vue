@@ -2,7 +2,7 @@
     import AppFormField from './field/AppFormField.vue'
     //import {fieldValidator/*, generateLabelCols*/} from '../props'
     //import AppTabs from '../tab/AppTabs.vue'
-    const emit = defineEmits(['update:modelValue'])
+    const emit = defineEmits(['update:modelValue', 'submit'])
 
     const onSubmit = e => {
         e.preventDefault()

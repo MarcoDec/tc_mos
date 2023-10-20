@@ -12,6 +12,43 @@ export const useSuppliersStore = defineStore('suppliers', {
         async fetchVatMessage() {
             const response = await api('/api/vat-messages', 'GET')
             this.vatMessage = response['hydra:member']
+        },
+        async fetch(criteria = '') {
+            const response = await api(`/api/suppliers${criteria}`, 'GET')
+            this.suppliers = await this.updatePagination(response)
+        },
+        async remove(id){
+            await api(`/api/suppliers/${id}`, 'DELETE')
+            this.suppliers = this.suppliers.filter(supplier => Number(supplier['@id'].match(/\d+/)[0]) !== id)
+        },
+        async itemsPagination(nPage) {
+            const response = await api(`/api/suppliers?page=${nPage}`, 'GET')
+            this.suppliers = await this.updatePagination(response)
+        },
+        async updatePagination(response) {
+            const responseData = await response['hydra:member']
+            let paginationView = {}
+            if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
+                paginationView = response['hydra:view']
+            } else {
+                paginationView = responseData
+            }
+            if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
+                this.pagination = true
+                this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
+                this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
+                this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                return responseData
+            }
+            this.pagination = false
+            return responseData
+        },
+        async addSupplier(payload) {
+            console.log('payload', payload)
+            const response = await api('/api/suppliers', 'POST', payload)
+            console.log('response addSupplier', response)
         }
 
     },
@@ -41,6 +78,14 @@ export const useSuppliersStore = defineStore('suppliers', {
             society: state.supplier.society,
             vat: state.supplier.vat,
             vatMessage: state.supplier.vatMessage
+        }),
+        itemsSuppliers: state => state.suppliers.map(item => {
+            const newObject = {
+                '@id': item['@id'],
+                name: item.name,
+                state: item.embState.state
+            }
+            return newObject
         })
     },
     state: () => ({

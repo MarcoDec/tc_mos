@@ -106,7 +106,17 @@ export default [
     {
         component: () => import('./pages/supplier/AppSupplierPage.vue'),
         meta: {requiresAuth: true},
+        name: 'supplier-listt',
+        path: '/supplier-listt'
+    },
+    {
+        component: () => import('../components/pages/purchase/supplier/AppSupplierListPage.vue'),
+        meta: {requiresAuth: true},
         name: 'supplier-list',
-        path: '/supplier-list'
+        path: '/supplier-list',
+        props: {
+            icon: 'user-tag',
+            title: 'Créer un Fournisseur'
+        }
     }
 ]

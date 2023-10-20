@@ -28,6 +28,6 @@
         <th scope="row" :title="currentPage">
             {{ calculIndice(index, currentPage) }}
         </th>
-        <AppCardableTableBody :item="item" :fields="fields" :indice="index" @update="update" @deleted="deleted"/>
+        <AppCardableTableBody :item="item" :fields="fields" @update="update" @deleted="deleted"/>
     </tr>
 </template>
