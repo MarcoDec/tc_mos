@@ -18,10 +18,10 @@
     const currentCompany = fetchUser.company
     const isPurchaseWriterOrAdmin = fetchUser.isPurchaseWriter || fetchUser.isPurchaseAdmin
     const roleuser = ref(isPurchaseWriterOrAdmin ? 'writer' : 'reader')
-    let violations = []
-    let success = []
-    const isPopupVisible = ref(false)
-    const isCreatedPopupVisible = ref(false)
+    // let violations = []
+    // let success = []
+    // const isPopupVisible = ref(false)
+    // const isCreatedPopupVisible = ref(false)
 
     const storeSuppliersList = useSuppliersStore()
     await storeSuppliersList.fetch()
@@ -84,67 +84,67 @@
         await storeSuppliersList.fetch(supplierListCriteria.getFetchCriteria)
     }
 
-    const generalForm = {}
-    const qualityForm = {}
-    const comptabilityForm = {}
-    const cuivreForm = {}
+    // const generalForm = {}
+    // const qualityForm = {}
+    // const comptabilityForm = {}
+    // const cuivreForm = {}
 
-    async function generalFormInput(generalData) {
-        generalForm.value = computed(() => generalData)
-    }
-    async function qualityFormInput(qualityData) {
-        qualityForm.value = computed(() => qualityData)
-    }
-    async function comptabilityFormInput(comptabilityData) {
-        comptabilityForm.value = computed(() => comptabilityData)
-    }
-    async function cuivreFormInput(cuivreData) {
-        cuivreForm.value = computed(() => cuivreData)
-    }
-    async function supplierFormCreate(){
-        try {
-            const supplier = {
-                address: {
-                    address: generalForm?.value?.value?.address || '',
-                    address2: generalForm?.value?.value?.address2 || '',
-                    city: generalForm?.value?.value?.city || '',
-                    country: 'FR',
-                    // "country":  generalForm?.value?.value?.country || '',
-                    email: generalForm?.value?.value?.email || '',
-                    phoneNumber: generalForm?.value?.value?.phoneNumber || '',
-                    zipCode: generalForm?.value?.value?.zipCode || ''
-                },
-                administeredBy: generalForm?.value?.value?.administeredBy || '',
-                confidenceCriteria: qualityForm?.value?.value?.confidenceCriteria || 0,
-                copper: {
-                    index: {
-                        code: cuivreForm?.value?.value?.copperType || '',
-                        value: cuivreForm?.value?.value?.copperIndex || 0
-                    },
-                    last: cuivreForm?.value?.value?.last || null,
-                    managed: cuivreForm?.value?.value?.managed || false,
-                    next: cuivreForm?.value?.value?.next || null,
-                    type: cuivreForm?.value?.value?.type || ''
-                },
-                currency: comptabilityForm?.value?.value?.currency || '',
-                managedProduction: qualityForm?.value?.value?.managedProduction || false,
-                managedQuality: qualityForm?.value?.value?.managedQuality || false,
-                name: generalForm?.value?.value?.name || '',
-                openOrdersEnabled: comptabilityForm?.value?.value?.openOrdersEnabled || false,
-                society: generalForm?.value?.value?.society || ''
-            }
-            console.log('supplier', supplier)
-            await storeSuppliersList.addSupplier(supplier)
-            isPopupVisible.value = false
-            isCreatedPopupVisible.value = true
-            success = 'Fournisseur crée'
-        } catch (error) {
-            violations = error
-            isPopupVisible.value = true
-            isCreatedPopupVisible.value = false
-            console.log('violations', violations)
-        }
-    }
+    // async function generalFormInput(generalData) {
+    //     generalForm.value = generalData
+    // }
+    // async function qualityFormInput(qualityData) {
+    //     qualityForm.value = qualityData
+    // }
+    // async function comptabilityFormInput(comptabilityData) {
+    //     comptabilityForm.value = comptabilityData
+    // }
+    // async function cuivreFormInput(cuivreData) {
+    //     cuivreForm.value = cuivreData
+    // }
+    // async function supplierFormCreate(){
+    //     try {
+    //         const supplier = {
+    //             address: {
+    //                 address: generalForm?.value?.address || '',
+    //                 address2: generalForm?.value?.address2 || '',
+    //                 city: generalForm?.value?.city || '',
+    //                 country: 'FR',
+    //                 // "country":  generalForm?.value?.value?.country || '',
+    //                 email: generalForm?.value?.email || '',
+    //                 phoneNumber: generalForm?.value?.phoneNumber || '',
+    //                 zipCode: generalForm?.value?.zipCode || ''
+    //             },
+    //             administeredBy: generalForm?.value?.administeredBy || '',
+    //             confidenceCriteria: qualityForm?.value?.confidenceCriteria || 0,
+    //             copper: {
+    //                 index: {
+    //                     code: cuivreForm?.value?.copperType || '',
+    //                     value: cuivreForm?.value?.copperIndex || 0
+    //                 },
+    //                 last: cuivreForm?.value?.last || null,
+    //                 managed: cuivreForm?.value?.managed || false,
+    //                 next: cuivreForm?.value?.next || null,
+    //                 type: cuivreForm?.value?.type || ''
+    //             },
+    //             currency: comptabilityForm?.value?.currency || '',
+    //             managedProduction: qualityForm?.value?.managedProduction || false,
+    //             managedQuality: qualityForm?.value?.managedQuality || false,
+    //             name: generalForm?.value?.name || '',
+    //             openOrdersEnabled: comptabilityForm?.value?.value?.openOrdersEnabled || false,
+    //             society: generalForm?.value?.society || ''
+    //         }
+    //         console.log('supplier', supplier)
+    //         await storeSuppliersList.addSupplier(supplier)
+    //         isPopupVisible.value = false
+    //         isCreatedPopupVisible.value = true
+    //         success = 'Fournisseur crée'
+    //     } catch (error) {
+    //         violations = error
+    //         isPopupVisible.value = true
+    //         isCreatedPopupVisible.value = false
+    //         console.log('violations', violations)
+    //     }
+    // }
 </script>
 
 <template>
@@ -167,7 +167,9 @@
         </div>
     </div>
     <div class="row">
-        <AppModal :id="modalId" class="four" :title="title">
+        <AppSupplierCreate :modal-id="modalId" :title="title" :target="target"/>
+
+        <!-- <AppModal :id="modalId" class="four" :title="title">
             <AppSupplierCreate :success="success" :is-created-popup-visible="isCreatedPopupVisible" :is-popup-visible="isPopupVisible" :violations="violations" @general-data="generalFormInput" @quality-data="qualityFormInput" @comptability-data="comptabilityFormInput" @cuivre-data="cuivreFormInput"/>
             <template #buttons>
                 <AppBtn
@@ -179,7 +181,7 @@
                     Créer
                 </AppBtn>
             </template>
-        </AppModal>
+        </AppModal> -->
         <div class="col">
             <AppSuspense>
                 <AppCardableTable

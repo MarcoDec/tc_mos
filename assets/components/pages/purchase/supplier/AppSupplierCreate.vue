@@ -1,18 +1,22 @@
 <script setup>
-    import {computed} from 'vue-demi'
+    import {computed, ref} from 'vue-demi'
     import AppFormJS from '../../../../components/form/AppFormJS.js'
     import AppTab from '../../../../components/tabs/AppTab.vue'
     import AppTabs from '../../../../components/tabs/AppTabs.vue'
     import useOptions from '../../../../stores/option/options'
+    import {useSuppliersStore} from '../../../../stores/purchase/supplier/suppliers'
 
     defineProps({
-        success: {required: true, type: Array},
-        isCreatedPopupVisible: {required: true, type: Boolean},
-        isPopupVisible: {required: true, type: Boolean},
-        violations: {required: true, type: Array}
+        title: {required: true, type: String},
+        target: {required: true, type: String},
+        modalId: {required: true, type: String}
     })
 
-    const emit = defineEmits(['update:modelValue', 'generalData', 'qualityData', 'comptabilityData', 'cuivreData'])
+    const storeSuppliersList = useSuppliersStore()
+    let violations = []
+    let success = []
+    const isPopupVisible = ref(false)
+    const isCreatedPopupVisible = ref(false)
 
     const fecthOptionsCompanies = useOptions('companies')
     await fecthOptionsCompanies.fetchOp()
@@ -103,7 +107,6 @@
         } else {
             generalData[key] = value[key]
         }
-        emit('generalData', generalData)
     }
     function qualityForm(value) {
         const key = Object.keys(value)[0]
@@ -123,7 +126,6 @@
         } else {
             qualityData[key] = value[key]
         }
-        emit('qualityData', qualityData)
     }
     function comptabilityForm(value) {
         const key = Object.keys(value)[0]
@@ -143,7 +145,6 @@
         } else {
             comptabilityData[key] = value[key]
         }
-        emit('comptabilityData', comptabilityData)
     }
     function cuivreForm(value) {
         const key = Object.keys(value)[0]
@@ -164,34 +165,89 @@
         } else {
             cuivreData[key] = value[key]
         }
-        emit('cuivreData', cuivreData)
+    }
+    async function supplierFormCreate(){
+        try {
+            const supplier = {
+                address: {
+                    address: generalData?.address || '',
+                    address2: generalData?.address2 || '',
+                    city: generalData?.city || '',
+                    country: 'FR',
+                    // "country":  generalForm?.value?.value?.country || '',
+                    email: generalData?.email || '',
+                    phoneNumber: generalData?.phoneNumber || '',
+                    zipCode: generalData?.zipCode || ''
+                },
+                administeredBy: generalData?.administeredBy || [],
+                confidenceCriteria: qualityData?.confidenceCriteria || 0,
+                copper: {
+                    index: {
+                        code: cuivreData?.copperType || '',
+                        value: cuivreData?.copperIndex || 0
+                    },
+                    last: cuivreData?.last || null,
+                    managed: cuivreData?.managed || false,
+                    next: cuivreData?.next || null,
+                    type: cuivreData?.type || ''
+                },
+                currency: comptabilityData?.currency || '#',
+                managedProduction: qualityData?.managedProduction || false,
+                managedQuality: qualityData?.managedQuality || false,
+                name: generalData?.name || '#',
+                openOrdersEnabled: comptabilityData?.openOrdersEnabled || false,
+                society: generalData?.society || '#'
+            }
+            console.log('supplier', supplier)
+            await storeSuppliersList.addSupplier(supplier)
+            isPopupVisible.value = false
+            isCreatedPopupVisible.value = true
+            success = 'Fournisseur crée'
+        } catch (error) {
+            violations = error
+            isPopupVisible.value = true
+            isCreatedPopupVisible.value = false
+            console.log('violations', violations)
+        }
     }
 </script>
 
 <template>
-    <AppTabs id="gui-start" class="gui-start-content">
-        <AppTab id="gui-start-general" active icon="sitemap" title="Général">
-            <AppFormJS
-                id="supplier"
-                :fields="fields"
-                @update:model-value="generalForm"/>
-        </AppTab>
-        <AppTab id="gui-start-qte" icon="folder" title="Qualité">
-            <AppFormJS id="qte" :fields="fieldsQuality" @update:model-value="qualityForm"/>
-        </AppTab>
-        <AppTab id="gui-start-comptabilite" icon="chart-line" title="Comptabilité">
-            <AppFormJS id="comptabilite" :fields="fieldsComp" @update:model-value="comptabilityForm"/>
-        </AppTab>
-        <AppTab id="gui-start-cuivre" icon="clipboard-list" title="Cuivre">
-            <AppFormJS id="cuivre" :fields="fieldsCuivre" @update:model-value="cuivreForm"/>
-        </AppTab>
-    </AppTabs>
-    <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-        <li>{{ violations }}</li>
-    </div>
-    <div v-if="isCreatedPopupVisible" class="alert alert-success" role="alert">
-        <li>{{ success }}</li>
-    </div>
+    <AppModal :id="modalId" class="four" :title="title">
+        <AppTabs id="gui-start" class="gui-start-content">
+            <AppTab id="gui-start-general" active icon="sitemap" title="Général">
+                <AppFormJS
+                    id="supplier"
+                    :fields="fields"
+                    @update:model-value="generalForm"/>
+            </AppTab>
+            <AppTab id="gui-start-qte" icon="folder" title="Qualité">
+                <AppFormJS id="qte" :fields="fieldsQuality" @update:model-value="qualityForm"/>
+            </AppTab>
+            <AppTab id="gui-start-comptabilite" icon="chart-line" title="Comptabilité">
+                <AppFormJS id="comptabilite" :fields="fieldsComp" @update:model-value="comptabilityForm"/>
+            </AppTab>
+            <AppTab id="gui-start-cuivre" icon="clipboard-list" title="Cuivre">
+                <AppFormJS id="cuivre" :fields="fieldsCuivre" @update:model-value="cuivreForm"/>
+            </AppTab>
+        </AppTabs>
+        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+            <li>{{ violations }}</li>
+        </div>
+        <div v-if="isCreatedPopupVisible" class="alert alert-success" role="alert">
+            <li>{{ success }}</li>
+        </div>
+        <template #buttons>
+            <AppBtn
+                variant="success"
+                label="Créer"
+                data-bs-toggle="modal"
+                :data-bs-target="target"
+                @click="supplierFormCreate">
+                Créer
+            </AppBtn>
+        </template>
+    </AppModal>
 </template>
 
 <style>
