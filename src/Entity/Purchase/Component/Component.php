@@ -11,7 +11,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Collection;
 use App\Controller\Purchase\Component\ComponentController;
 use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\ComponentManufacturingOperationState;
+use App\Entity\Embeddable\Purchase\Component\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -143,7 +143,7 @@ use App\Entity\Purchase\Supplier\Component as SupplierComponent;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
@@ -226,7 +226,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:component', 'read:component:collection'])
     ]
-    private ComponentManufacturingOperationState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Date de fin de vie', required: false, example: '2021-11-18'),
@@ -397,7 +397,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         $this->attributes = new ArrayCollection();
         $this->copperWeight = new Measure();
         $this->embBlocker = new Blocker();
-        $this->embState = new ComponentManufacturingOperationState();
+        $this->embState = new State();
         $this->forecastVolume = new Measure();
         $this->minStock = new Measure();
         $this->references = new ArrayCollection();
@@ -410,7 +410,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         parent::__clone();
         $this->attributes = new ArrayCollection();
         $this->embBlocker = new Blocker();
-        $this->embState = new ComponentManufacturingOperationState();
+        $this->embState = new State();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -478,7 +478,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): ComponentManufacturingOperationState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -644,7 +644,7 @@ class Component extends Entity implements BarCodeInterface, MeasuredInterface {
         return $this;
     }
 
-    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }

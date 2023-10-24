@@ -11,7 +11,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Doctrine\DBAL\Types\Production\Engine\EngineType;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Blocker;
-use App\Entity\Embeddable\EmployeeEngineState;
+use App\Entity\Embeddable\Production\Engine\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
@@ -76,13 +76,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...EmployeeEngineState::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Blocker::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['employee_engine', 'blocker'], 'type' => 'string']
+                            'schema' => ['enum' => ['engine', 'blocker'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -198,7 +198,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
         ORM\Embedded,
         Serializer\Groups(['read:engine','read:manufacturing-operation'])
     ]
-    private EmployeeEngineState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Modele de machine', readableLink: false, example: '/api/manufacturer-engines/15'),
@@ -224,7 +224,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
 
     public function __construct() {
         $this->embBlocker = new Blocker();
-        $this->embState = new EmployeeEngineState();
+        $this->embState = new State();
     }
 
     public static function getBarCodeTableNumber(): string {
@@ -247,7 +247,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): EmployeeEngineState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -303,7 +303,7 @@ abstract class Engine extends Entity implements BarCodeInterface {
         return $this;
     }
 
-    final public function setEmbState(EmployeeEngineState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }

@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Embeddable\Closer;
-use App\Entity\Embeddable\ComponentManufacturingOperationState;
+use App\Entity\Embeddable\Manufacturing\Operation\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -70,13 +70,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => [...ComponentManufacturingOperationState::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
+                            'schema' => ['enum' => [...State::TRANSITIONS, ...Closer::TRANSITIONS], 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['component_manufacturing_operation', 'closer'], 'type' => 'string']
+                            'schema' => ['enum' => ['manufacturing_operation', 'closer'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -129,7 +129,7 @@ class Operation extends Entity implements MeasuredInterface {
         ORM\Embedded,
         Serializer\Groups(['read:manufacturing-operation'])
     ]
-    private ComponentManufacturingOperationState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Notes', example: 'Lorem ipsum'),
@@ -198,7 +198,7 @@ class Operation extends Entity implements MeasuredInterface {
     public function __construct() {
         $this->actualQuantity = new Measure();
         $this->embBlocker = new Closer();
-        $this->embState = new ComponentManufacturingOperationState();
+        $this->embState = new State();
         $this->operators = new ArrayCollection();
         $this->quantityProduced = new Measure();
     }
@@ -222,7 +222,7 @@ class Operation extends Entity implements MeasuredInterface {
         return $this->embBlocker;
     }
 
-    final public function getEmbState(): ComponentManufacturingOperationState {
+    final public function getEmbState(): State {
         return $this->embState;
     }
 
@@ -295,7 +295,7 @@ class Operation extends Entity implements MeasuredInterface {
         return $this;
     }
 
-    final public function setEmbState(ComponentManufacturingOperationState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }

@@ -25,5 +25,8 @@ abstract class StateType extends EnumType {
     final public const TYPE_STATE_PARTIALLY_PAID = 'partially_paid';
     final public const TYPE_STATE_REJECTED = 'rejected';
     final public const TYPE_STATE_TO_VALIDATE = 'to_validate';
+    final public const TYPE_STATE_READY_TO_WORK = 'ready_to_work';
     final public const TYPE_STATE_WARNING = 'warning';
+    final public const TYPE_STATE_UNDER_MAINTENANCE = 'under_maintenance';
+
 }
