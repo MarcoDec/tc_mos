@@ -6,7 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Accounting\Bill;
-use App\Entity\Embeddable\EventState;
+use App\Entity\Embeddable\Production\Manufacturing\DeliveryNote\State;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
@@ -65,13 +65,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                             'in' => 'path',
                             'name' => 'transition',
                             'required' => true,
-                            'schema' => ['enum' => EventState::TRANSITIONS, 'type' => 'string']
+                            'schema' => ['enum' => State::TRANSITIONS, 'type' => 'string']
                         ],
                         [
                             'in' => 'path',
                             'name' => 'workflow',
                             'required' => true,
-                            'schema' => ['enum' => ['event'], 'type' => 'string']
+                            'schema' => ['enum' => ['delivery_note'], 'type' => 'string']
                         ]
                     ],
                     'requestBody' => null,
@@ -123,7 +123,7 @@ class DeliveryNote extends Entity {
         ORM\Embedded,
         Serializer\Groups(['read:delivery-note'])
     ]
-    private EventState $embState;
+    private State $embState;
 
     #[
         ApiProperty(description: 'Supplément de transport', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -147,7 +147,7 @@ class DeliveryNote extends Entity {
     private ?string $ref = null;
 
     public function __construct() {
-        $this->embState = new EventState();
+        $this->embState = new State();
         $this->freightSurcharge = new Measure();
     }
 
@@ -163,8 +163,12 @@ class DeliveryNote extends Entity {
         return $this->date;
     }
 
-    final public function getEmbState(): EventState {
+    final public function getEmbState(): State {
         return $this->embState;
+    }
+
+    final public function getState(): string {
+        return $this->embState->getState();
     }
 
     final public function getFreightSurcharge(): Measure {
@@ -173,10 +177,6 @@ class DeliveryNote extends Entity {
 
     final public function getRef(): ?string {
         return $this->ref;
-    }
-
-    final public function getState(): string {
-        return $this->embState->getState();
     }
 
     final public function isNonBillable(): bool {
@@ -198,7 +198,7 @@ class DeliveryNote extends Entity {
         return $this;
     }
 
-    final public function setEmbState(EventState $embState): self {
+    final public function setEmbState(State $embState): self {
         $this->embState = $embState;
         return $this;
     }
@@ -222,4 +222,5 @@ class DeliveryNote extends Entity {
         $this->embState->setState($state);
         return $this;
     }
+
 }

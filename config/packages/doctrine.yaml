@@ -35,6 +35,7 @@ doctrine:
       contact: App\Doctrine\DBAL\Types\Management\Society\ContactType
       customer_address: App\Doctrine\DBAL\Types\Selling\Customer\AddressType
       customer_state: App\Doctrine\DBAL\Types\Embeddable\Selling\Customer\CustomerStateType
+      delivery_note_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\DeliveryNoteStateType
       !php/const Doctrine\DBAL\Types\Types::SIMPLE_ARRAY: App\Doctrine\DBAL\Types\SimpleArrayType
       !php/const Doctrine\DBAL\Types\Types::TEXT: App\Doctrine\DBAL\Types\TextType
       employee_state: App\Doctrine\DBAL\Types\Embeddable\Hr\Employee\EmployeeStateType
@@ -43,6 +44,7 @@ doctrine:
       engine_event: App\Doctrine\DBAL\Types\Production\Engine\EventType
       engine: App\Doctrine\DBAL\Types\Production\Engine\EngineType
       event_state: App\Doctrine\DBAL\Types\Embeddable\EventStateType
+      expedition_state: App\Doctrine\DBAL\Types\Embeddable\Production\Manufacturing\ExpeditionStateType
       gender_place: App\Doctrine\DBAL\Types\Hr\Employee\GenderType
       item: App\Doctrine\DBAL\Types\ItemType
       manufacturing_operation_state: App\Doctrine\DBAL\Types\Embeddable\Manufacturing\OperationStateType
