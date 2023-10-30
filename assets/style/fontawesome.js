@@ -81,7 +81,8 @@ import {
     faUsers,
     faUserTag,
     faWarehouse,
-    faWrench
+    faWrench,
+    faGaugeHigh
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -172,3 +173,4 @@ library.add(faWarehouse)
 library.add(faCubesStacked)
 library.add(faRulerVertical)
 library.add(faStar)
+library.add(faGaugeHigh)

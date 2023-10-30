@@ -165,5 +165,23 @@ export default [
             icon: 'city',
             title: 'Compagnie'
         }
-    }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Suivi des Dépenses et Ventes — T-Concept GPAO'},
+        name: 'suivi_depenses_ventes',
+        path: '/suivi-depenses-ventes',
+        props: {
+            apiBaseRoute: 'invoice-time-dues',
+            fields: [
+                {label: 'Nom', name: 'name'},
+                {label: 'Jours', name: 'days', sort: false, type: 'number'},
+                {label: 'Fin du mois', name: 'endOfMonth', sort: false, type: 'boolean'},
+                {label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth', sort: false, type: 'number'}
+            ],
+            icon: 'hourglass-half',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Délais de paiement des factures'
+        }
+    },
 ]
