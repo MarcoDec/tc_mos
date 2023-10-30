@@ -15,8 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiResource(
         collectionOperations: [
             'get' => [
-                'security' => "is_granted('ROLE_ADMIN')",
-                'path' => '/balance_sheets',
+                'path' => '/balance-sheets',
                 'openapi_context' => [
                     'summary' => 'Obtenir la liste des bilans',
                     'description' => 'Retourne la liste des bilans de l\'entreprise',
@@ -43,8 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'post' => [
-                'security' => "is_granted('ROLE_ADMIN')",
-                'path' => '/balance_sheets',
+                'path' => '/balance-sheets',
                 'openapi_context' => [
                     'summary' => 'Créer un bilan',
                     'description' => 'Créer un bilan pour l\'entreprise',
@@ -65,7 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'patch'
         ]
     ),
-    ORM\Entity('balance_sheet'),
+    ORM\Entity(),
     ORM\Table('balance_sheet')
 ]
 class BalanceSheet extends Entity implements MeasuredInterface

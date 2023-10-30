@@ -172,12 +172,13 @@ export default [
         name: 'suivi_depenses_ventes',
         path: '/suivi-depenses-ventes',
         props: {
-            apiBaseRoute: 'invoice-time-dues',
+            apiBaseRoute: 'balance-sheets',
             fields: [
-                {label: 'Nom', name: 'name'},
-                {label: 'Jours', name: 'days', sort: false, type: 'number'},
-                {label: 'Fin du mois', name: 'endOfMonth', sort: false, type: 'boolean'},
-                {label: 'Jours après la fin du mois', name: 'daysAfterEndOfMonth', sort: false, type: 'number'}
+                {label: 'Mois', name: 'month', type: 'number'},
+                {label: 'Année', name: 'year', type: 'number'},
+                {label: 'Company', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
+                {label: 'Dépenses totales', name: 'totalExpense', sort: false, type: 'measure'},
+                {label: 'Ventes totales', name: 'totalIncome', sort: false, type: 'measure'}
             ],
             icon: 'hourglass-half',
             sort: readonly({label: 'Nom', name: 'name'}),
