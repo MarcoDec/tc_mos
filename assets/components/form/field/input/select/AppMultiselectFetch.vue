@@ -13,6 +13,7 @@
     import AppMultiselect from './AppMultiselect.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
 
+    const key = ref(0)
     const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
@@ -21,6 +22,7 @@
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
     })
+    const localModelValue = ref(props.modelValue)
     const emit = defineEmits(['searchChange', 'update:modelValue'])
     const fetchCriteria = useFetchCriteria(`${props.form}FetchCriteria`)
     const items = ref([])
@@ -30,10 +32,31 @@
         name: props.field.name,
         options: {label: value => options.value.find(option => option.value === value)?.text ?? null, options: options.value}
     }))
-    if (Array.isArray(props.modelValue) && props.modelValue.length > 0) {
-        // on charge les données de l'api et on les mets dans items pour qu'options soit mis à jour
-        props.modelValue.forEach(value => {
-            api(value, 'GET').then(response => items.value.push(response))
+    const newModelValue = ref([])
+    if (Array.isArray(localModelValue.value) && localModelValue.value.length > 0) {
+        // on charge les données de l'api et on les met dans items pour que la variable 'options' soit mise à jour
+        console.log('localModelValue', localModelValue.value)
+        localModelValue.value.forEach(value => {
+            if (value['@id'] === 'undefined') api(value, 'GET').then(response => {
+                items.value.push(response)
+                newModelValue.value.push(response['@id'])
+                // newModelValue.value.push({
+                //     text: `${response[props.field.filteredProperty]}`,
+                //     value: response['@id']
+                // })
+                key.value++
+            })
+            else api(value['@id'], 'GET').then(response => {
+                items.value.push(response)
+                // newModelValue.value.push({
+                //     text: `${response[props.field.filteredProperty]}`,
+                //     value: response['@id']
+                // })
+                newModelValue.value.push(response['@id'])
+                key.value++
+            })
+            //console.log('items', items.value)
+            //console.log(newModelValue.value)
         })
     }
     async function updateItems() {
@@ -51,21 +74,23 @@
         }
         await updateItems()
     }
-    function onUpdateModelValue(value) {
+    async function onUpdateModelValue(value) {
         emit('update:modelValue', value)
+        await updateItems()
     }
 </script>
 
 <template>
     <AppMultiselect
         :id="id"
+        :key="key"
         :form="form"
         :field="multiselectField"
         :data-mode="mode"
         :disabled="disabled"
         :max="field.max ?? -1"
         :mode="mode"
-        :model-value="modelValue"
+        :model-value="newModelValue"
         :options="multiselectField.options && multiselectField.options.options "
         :value-prop="multiselectField.options && multiselectField.options.valueProp "
         class="text-dark"

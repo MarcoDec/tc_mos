@@ -46,12 +46,7 @@
     const bool = computed(() => props.field.type === 'boolean')
     const color = computed(() => props.field.type === 'color')
     const id = computed(() => `${props.row}-${props.field.name}`)
-    const value = computed(() => {
-        //console.log('props.item', props.item)
-        //console.log('props.field.name', props.field.name, props.field.type)
-        //console.log('get(props.item, props.field.name)', get(props.item, props.field.name))
-        return get(props.item, props.field.name)
-    })
+    const value = computed(() => get(props.item, props.field.name))
     const label = computed(() => labelValue(value))
     const input = computed(() => `${id.value}-input`)
     const array = computed(() => Array.isArray(label.value))

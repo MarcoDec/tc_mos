@@ -75,12 +75,21 @@ use Doctrine\Common\Collections\ArrayCollection;
                 'openapi_context' => [
                     'description' => 'Récupère un groupe d\'équivalence composant',
                     'summary' => 'Récupère un groupe d\'équivalence composant',
+                ],
+                'normalization_context' => [
+                    'groups' => ['read:component-equivalent', 'read:id'],
+                    'openapi_definition_name' => 'ComponentEquivalent-read',
+                    'skip_null_values' => false
                 ]
             ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un groupe d\'équivalence composant',
                     'summary' => 'Modifie un groupe d\'équivalence composant',
+                ],
+                'denormalization_context' => [
+                    'groups' => ['write:component-equivalent'],
+                    'openapi_definition_name' => 'ComponentEquivalent-write'
                 ]
             ],
             'delete' => [
@@ -104,7 +113,8 @@ use Doctrine\Common\Collections\ArrayCollection;
         normalizationContext: [
             'groups' => [
                 'read:component-equivalent',
-                'read:component-equivalent:collection'
+                'read:component-equivalent:collection',
+                'read:id'
             ],
             'openapi_definition_name' => 'ComponentEquivalent-read',
             'skip_null_values' => false
@@ -154,8 +164,8 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
     private ?string $code = null;
 
     #[
-        ApiProperty(description: 'Items equivalents', required: true, example: '[`/api/component-equivalent-items/1`, `/api/component-equivalent-items/2`]'),
-        ORM\OneToMany(mappedBy: 'componentEquivalent', targetEntity: ComponentEquivalentItem::class, cascade: ['persist', 'remove'], orphanRemoval: true),
+        ApiProperty(description: 'Items equivalents', readableLink: true, required: true, example: '[`/api/component-equivalent-items/1`, `/api/component-equivalent-items/2`]'),
+        ORM\OneToMany(mappedBy: 'componentEquivalent', targetEntity: ComponentEquivalentItem::class, cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true),
         Serializer\Groups(['read:component-equivalent', 'read:component-equivalent:collection', 'write:component-equivalent'])
     ]
     private Collection $items;
@@ -253,6 +263,14 @@ class ComponentEquivalent extends Entity implements BarCodeInterface, MeasuredIn
     #[Serializer\Groups(['read:component-equivalent', 'read:component-equivalent:collection', 'write:component-equivalent'])]
     public function getComponents(): Collection
     {
-        return $this->items->map(fn(ComponentEquivalentItem $item) => $item->getComponent());
+        $components = new ArrayCollection();
+        foreach ($this->items as $item) {
+            if ($item->isDeleted()) {
+                continue;
+            } else {
+                $components->add($item->getComponent());
+            }
+        }
+        return $components;
     }
 }

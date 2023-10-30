@@ -12,15 +12,21 @@ final class ComponentDataProvider implements ItemDataProviderInterface, Restrict
     }
 
     /**
-     * @param int     $id
-     * @param mixed[] $context
+     * @param string $resourceClass
+     * @param int $id
+     * @param string|null $operationName
+     * @param array $context
+     * @return Component|null
      */
     public function getItem(string $resourceClass, $id, ?string $operationName = null, array $context = []): ?Component {
         return $this->repo->find($id);
     }
 
     /**
-     * @param mixed[] $context
+     * @param string $resourceClass
+     * @param string|null $operationName
+     * @param array $context
+     * @return bool
      */
     public function supports(string $resourceClass, ?string $operationName = null, array $context = []): bool {
         //dump (['$resourceClass'=>$resourceClass, 'operationName' => $operationName, '$context'=> $context, 'test' =>$resourceClass === Component::class && in_array($operationName, ['get', 'patch'])]);
