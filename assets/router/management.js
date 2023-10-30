@@ -183,5 +183,5 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Délais de paiement des factures'
         }
-    },
+    }
 ]
