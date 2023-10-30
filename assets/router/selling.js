@@ -31,9 +31,13 @@ export default [
         }
     },
     {
-        component: () => import('./pages/customer/AppCustomerPage.vue'),
+        component: () => import('./pages/customer/AppCustomerListPage.vue'),
         meta: {requiresAuth: true},
         name: 'customer-list',
-        path: '/customer-list'
+        path: '/customer-list',
+        props: {
+            icon: 'user-tag',
+            title: 'Créer un client'
+        }
     }
 ]

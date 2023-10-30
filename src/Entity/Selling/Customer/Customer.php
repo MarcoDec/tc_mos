@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Address;
 use App\Entity\Embeddable\Blocker;
@@ -20,6 +21,7 @@ use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Filter\SetFilter;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -29,6 +31,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
     ApiResource(
         description: 'Client',
         collectionOperations: [
