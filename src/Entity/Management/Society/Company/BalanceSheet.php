@@ -9,7 +9,6 @@ use App\Entity\Management\Currency;
 use App\Entity\Management\Unit;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Validator as AppAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -36,7 +35,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         ],
         itemOperations: [
             'get',
-            'patch'
+            'patch',
+            'delete'
         ],
         denormalizationContext: [
             'groups' => ['write:measure', 'write:balance-sheet']

@@ -181,8 +181,30 @@ export default [
                 {create: false, label: 'Ventes totales', name: 'totalIncome', sort: false, type: 'price', update: false},
                 {label: 'Devise', name: 'currency', options: {base: 'currencies'}, sort: false, /* sortName: 'currency.name', */ type: 'select'}
             ],
+            enableShow: true,
+            showRouteName: 'suivi_depenses_ventes_show',
             icon: 'hourglass-half',
             sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Délais de paiement des factures'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Détails des Dépenses et Ventes — T-Concept GPAO'},
+        name: 'suivi_depenses_ventes_show',
+        path: '/suivi-depenses-ventes/show/:id',
+        props: {
+            apiBaseRoute: 'balance-sheet-items',
+            fields: [
+                {label: 'Mois', name: 'month', type: 'number'},
+                {label: 'Année', name: 'year', type: 'number'},
+                {label: 'Company', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
+                {create: false, label: 'Dépenses totales', name: 'totalExpense', sort: false, type: 'price', update: false},
+                {create: false, label: 'Ventes totales', name: 'totalIncome', sort: false, type: 'price', update: false},
+                {label: 'Devise', name: 'currency', options: {base: 'currencies'}, sort: false, /* sortName: 'currency.name', */ type: 'select'}
+            ],
+            icon: 'hourglass-half',
+            //sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Délais de paiement des factures'
         }
     }

@@ -7,6 +7,7 @@
     const props = defineProps({
         disableAdd: {type: Boolean},
         disableRemove: {type: Boolean},
+        enableShow: {type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         machine: {required: true, type: Object},
@@ -16,6 +17,10 @@
     const body = computed(() => `${props.id}-body`)
     const headers = computed(() => `${props.id}-headers`)
     const {slots} = useSlots(props.fields.fields)
+    const emits = defineEmits(['show'])
+    function show(data) {
+        emits('show', data)
+    }
 </script>
 
 <template>
@@ -31,9 +36,11 @@
                     :id="body"
                     :action="action"
                     :disable-remove="disableRemove"
+                    :enable-show="enableShow"
                     :fields="fields"
                     :machine="machine"
-                    :store="store"/>
+                    :store="store"
+                @show="show"/>
             </table>
         </div>
     </div>

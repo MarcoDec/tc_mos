@@ -7,6 +7,7 @@
         action: {type: Boolean},
         body: {required: true, type: String},
         disableRemove: {type: Boolean},
+        enableShow: {type: Boolean},
         fields: {required: true, type: Object},
         index: {required: true, type: Number},
         item: {required: true, type: Object},
@@ -15,6 +16,10 @@
     const id = computed(() => `${props.body}-${props.item.id}`)
     const update = computed(() => props.machine.state.value.matches('update')
         && props.machine.state.value.context.updated === props.item['@id'])
+    const emits = defineEmits(['show'])
+    function show(data) {
+        emits('show', data)
+    }
 </script>
 
 <template>
@@ -24,8 +29,10 @@
         :id="id"
         :action="action"
         :disable-remove="disableRemove"
+        :enable-show="enableShow"
         :fields="fields"
         :index="index"
         :item="item"
-        :send="machine.send"/>
+        :send="machine.send"
+        @show="show"/>
 </template>

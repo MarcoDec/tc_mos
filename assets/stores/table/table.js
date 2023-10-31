@@ -92,11 +92,13 @@ export default function useTable(id) {
             asc: true,
             company: '',
             createBody: {},
+            enableShow: false,
             id,
             isCompanyFiltered: false,
             readFilter: '',
             rows: [],
             search: {},
+            showRouteName: null,
             sortName: null,
             sorted: null
         })
