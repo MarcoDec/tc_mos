@@ -5,11 +5,13 @@ namespace App\Entity\Management\Society\Company;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Currency;
 use App\Entity\Management\Unit;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Validator as AppAssert;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation as Serializer;
 
 #[
     ApiResource(
@@ -18,50 +20,31 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'path' => '/balance-sheets',
                 'openapi_context' => [
                     'summary' => 'Obtenir la liste des bilans',
-                    'description' => 'Retourne la liste des bilans de l\'entreprise',
-                    'parameters' => [
-                        [
-                            'in' => 'query',
-                            'name' => 'year',
-                            'schema' => [
-                                'type' => 'integer',
-                                'example' => 2021
-                            ],
-                            'description' => 'Année du bilan'
-                        ],
-                        [
-                            'in' => 'query',
-                            'name' => 'month',
-                            'schema' => [
-                                'type' => 'integer',
-                                'example' => 1
-                            ],
-                            'description' => 'Mois du bilan'
-                        ]
-                    ]
+                    'description' => 'Retourne la liste des bilans de l\'entreprise'
                 ]
             ],
             'post' => [
                 'path' => '/balance-sheets',
+                'denormalization_context' => [
+                    'groups' => ['create:balance-sheet']
+                ],
                 'openapi_context' => [
                     'summary' => 'Créer un bilan',
-                    'description' => 'Créer un bilan pour l\'entreprise',
-                    'requestBody' => [
-                        'content' => [
-                            'application/json' => [
-                                'schema' => [
-                                    '$ref' => '#/components/schemas/BalanceSheet'
-                                ]
-                            ]
-                        ]
-                    ]
+                    'description' => 'Créer un bilan pour l\'entreprise'
                 ]
             ]
         ],
         itemOperations: [
             'get',
             'patch'
-        ]
+        ],
+        denormalizationContext: [
+            'groups' => ['write:measure', 'write:balance-sheet']
+        ],
+        normalizationContext: [
+            'groups' => ['read:id', 'read:measure', 'read:balance-sheet'],
+            'skip_null_values' => false
+        ],
     ),
     ORM\Entity(),
     ORM\Table('balance_sheet')
@@ -69,38 +52,56 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BalanceSheet extends Entity implements MeasuredInterface
 {
     #[
-        AppAssert\Measure,
         ORM\Embedded,
+        Serializer\Groups(['read:balance-sheet', 'write:balance-sheet'])
     ]
     private Measure $totalIncome;
     #[
-        AppAssert\Measure,
         ORM\Embedded,
+        Serializer\Groups(['read:balance-sheet', 'write:balance-sheet'])
     ]
     private Measure $totalExpense;
     #[
         Assert\GreaterThanOrEqual(1),
         Assert\LessThanOrEqual(12),
-        ORM\Column(type: 'integer')
+        ORM\Column(type: 'integer'),
+        Serializer\Groups(['create:balance-sheet', 'read:balance-sheet', 'write:balance-sheet'])
     ]
     private int $month;
     #[
         Assert\GreaterThanOrEqual(2021),
-        ORM\Column(type: 'integer')
+        ORM\Column(type: 'integer'),
+        Serializer\Groups(['create:balance-sheet', 'read:balance-sheet', 'write:balance-sheet'])
     ]
     private int $year;
 
     #[
-        ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'balanceSheets'),
-        ORM\JoinColumn(nullable: false)
+        ORM\ManyToOne(targetEntity: Currency::class),
+        ORM\JoinColumn(nullable: true),
+        Serializer\Groups(['create:balance-sheet', 'read:balance-sheet', 'write:balance-sheet'])
+    ]
+    private ?Currency $currency;
+
+    #[
+        ORM\ManyToOne(targetEntity: Company::class),
+        ORM\JoinColumn(nullable: false),
+        Serializer\Groups(['create:balance-sheet', 'read:balance-sheet', 'write:balance-sheet'])
     ]
     private Company $company;
+
+    #[
+        ORM\ManyToOne(targetEntity: Unit::class),
+        ORM\JoinColumn(nullable: true)
+    ]
+    private ?Unit $unit = null;
 
     public function __construct() {
         $this->totalIncome = new Measure();
         $this->totalExpense = new Measure();
         $this->totalIncome->setValue(0);
         $this->totalExpense->setValue(0);
+        //        $this->unit = new Unit();
+        //        $this->unit->setCode('U');
     }
 
     public function getTotalIncome(): Measure
@@ -149,6 +150,7 @@ class BalanceSheet extends Entity implements MeasuredInterface
 
     public function getCompany(): Company
     {
+        $this->currency = $this->company->getCurrency();
         return $this->company;
     }
 
@@ -158,9 +160,6 @@ class BalanceSheet extends Entity implements MeasuredInterface
         return $this;
     }
 
-
-
-
     public function getMeasures(): array
     {
         return [$this->totalIncome, $this->totalExpense];
@@ -168,6 +167,18 @@ class BalanceSheet extends Entity implements MeasuredInterface
 
     public function getUnit(): ?Unit
     {
-        return $this->company->getUnit();
+        return $this->unit;
     }
+
+    public function getCurrency(): ?Currency
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(?Currency $currency): BalanceSheet
+    {
+        $this->currency = $currency;
+        return $this;
+    }
+
 }

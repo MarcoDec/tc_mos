@@ -18,7 +18,10 @@
             return `${thevalue.value.value} ${thevalue.value.code}`
         }
         if (props.field.type === 'select') {
-            const res = props.field.options.options.find(e => e.value === thevalue.value)
+            let res = null
+            if (thevalue.value !== null && typeof thevalue.value === 'object') {
+                res = props.field.options.options.find(e => e.value === thevalue.value['@id'])
+            } else res = props.field.options.options.find(e => e.value === thevalue.value)
             if (typeof res === 'undefined') return thevalue.value
             return res.text
         }

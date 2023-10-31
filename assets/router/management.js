@@ -177,8 +177,9 @@ export default [
                 {label: 'Mois', name: 'month', type: 'number'},
                 {label: 'Année', name: 'year', type: 'number'},
                 {label: 'Company', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
-                {label: 'Dépenses totales', name: 'totalExpense', sort: false, type: 'measure'},
-                {label: 'Ventes totales', name: 'totalIncome', sort: false, type: 'measure'}
+                {create: false, label: 'Dépenses totales', name: 'totalExpense', sort: false, type: 'price', update: false},
+                {create: false, label: 'Ventes totales', name: 'totalIncome', sort: false, type: 'price', update: false},
+                {label: 'Devise', name: 'currency', options: {base: 'currencies'}, sort: false, /* sortName: 'currency.name', */ type: 'select'}
             ],
             icon: 'hourglass-half',
             sort: readonly({label: 'Nom', name: 'name'}),
