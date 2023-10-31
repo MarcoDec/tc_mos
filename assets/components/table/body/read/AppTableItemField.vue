@@ -17,10 +17,16 @@
             if (thevalue.value.value === 'undefined' || thevalue.value.code === 'undefined') return thevalue.value
             return `${thevalue.value.value} ${thevalue.value.code}`
         }
-        if (props.field.type === 'select') {
+        console.log(props.field)
+        if (['select'].includes(props.field.type)) {
             let res = null
+            console.log(thevalue.value)
             if (thevalue.value !== null && typeof thevalue.value === 'object') {
-                res = props.field.options.options.find(e => e.value === thevalue.value['@id'])
+                res = props.field.options.options.find(e => {
+                    if (typeof e.value !== 'undefined') return e.value === thevalue.value['@id']
+                    return e['@id'] === thevalue.value['@id']
+                })
+                if (typeof res === 'undefined') console.log(props.field.options)
             } else res = props.field.options.options.find(e => e.value === thevalue.value)
             if (typeof res === 'undefined') return thevalue.value
             return res.text
