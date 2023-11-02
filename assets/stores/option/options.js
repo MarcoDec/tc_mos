@@ -19,14 +19,16 @@ export default function useOptions(base, valueProp = '@id') {
                 this.$dispose()
             },
             async fetch() {
-                if (!this.fetchable)
+                if (!this.fetchable || this.isLoaded)
                     return
                 const response = await api(this.url)
                 this.resetItems()
-                for (const option of response['hydra:member'])
+                for (const option of response['hydra:member']) {
                     this.options.push(useOption(option, this))
-                // console.log(this.options)
+                    this.items.push(option)
+                }
                 this.options.sort(sort)
+                this.isLoaded = true
                 this.fetchable = false
             },
             async fetchOp() {
@@ -35,6 +37,7 @@ export default function useOptions(base, valueProp = '@id') {
                     this.resetItems()
                     for (const option of response['hydra:member']) {
                         this.options.push(useOption(option, this))
+                        this.items.push(option)
                     }
                     this.isLoaded = true
                     this.options.sort(sort)
@@ -43,6 +46,7 @@ export default function useOptions(base, valueProp = '@id') {
             resetItems() {
                 const options = [...this.options]
                 this.options = []
+                this.items = []
                 for (const option of options)
                     option.$dispose()
             }
@@ -74,6 +78,6 @@ export default function useOptions(base, valueProp = '@id') {
                 return state.options.length > 0
             }
         },
-        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp})
+        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp, items: []})
     })()
 }

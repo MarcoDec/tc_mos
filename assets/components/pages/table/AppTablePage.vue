@@ -36,11 +36,13 @@
     const store = useTable(route.name)
     store.sorted = props.sort.name
     store.sortName = props.sort.sortName ?? props.sort.name
+    //region Gestion du filtre permanent par compagnie => isCompanyFiltered
     if (props.isCompanyFiltered) {
         store.readFilter = `?company=${currentCompany}${props.readFilter}`
         store.isCompanyFiltered = true
         store.company = currentCompany
     } else store.readFilter = props.readFilter
+    //endregion
     store.apiBaseRoute = props.apiBaseRoute
     store.apiTypedRoutes = props.apiTypedRoutes
     if (props.enableShow) {

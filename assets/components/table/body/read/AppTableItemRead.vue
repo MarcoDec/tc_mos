@@ -34,7 +34,7 @@
 <template>
     <tr :id="id">
         <td v-if="action" class="text-center">
-            <AppBtn v-if="enableShow" icon="eye" label="Voir" @click="show" style="color: green; background-color: transparent; border: 0px"/>
+            <AppBtn v-if="enableShow" class="btnEye" icon="eye" label="Voir" @click="show"/>
             <AppBtn v-if="fields.update" icon="pencil-alt" label="Modifier" @click="update"/>
             <AppBtn v-if="!disableRemove" icon="trash" label="Supprimer" variant="danger" @click="remove"/>
         </td>
@@ -50,3 +50,12 @@
             :row="id"/>
     </tr>
 </template>
+
+<style scoped>
+    .btnEye {
+        color: green;
+        background-color: transparent;
+        border: 0px;
+        cursor: pointer;
+    }
+</style>

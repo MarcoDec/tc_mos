@@ -17,30 +17,24 @@
             if (thevalue.value.value === 'undefined' || thevalue.value.code === 'undefined') return thevalue.value
             return `${thevalue.value.value} ${thevalue.value.code}`
         }
-        console.log(props.field)
         if (['select'].includes(props.field.type)) {
             let res = null
-            console.log(thevalue.value)
             if (thevalue.value !== null && typeof thevalue.value === 'object') {
                 res = props.field.options.options.find(e => {
                     if (typeof e.value !== 'undefined') return e.value === thevalue.value['@id']
                     return e['@id'] === thevalue.value['@id']
                 })
-                if (typeof res === 'undefined') console.log(props.field.options)
             } else res = props.field.options.options.find(e => e.value === thevalue.value)
             if (typeof res === 'undefined') return thevalue.value
             return res.text
         }
         if (props.field.type === 'multiselect-fetch') {
             // On regarde si on a déjà chargé les données
-            //console.log('multi select fetch', props.initialField.filteredProperty, thevalue.value)
             if (typeof thevalue.value[props.initialField.filteredProperty] === 'undefined') {
                 //on charge l'élément pour récupérer les données
                 thevalue.value.forEach(item => {
-                    //console.log('Chargement de l\'élément', item['@id'])
                     api(item['@id'], 'GET').then(res => {
                         itemMultiSelectFetchLoaded.push(res[props.initialField.filteredProperty])
-                        //console.log('Fin de chargement de l\'élément', item['@id'], itemMultiSelectFetchLoaded)
                         keySelect.value++
                     })
                 })

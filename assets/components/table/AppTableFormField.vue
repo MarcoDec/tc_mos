@@ -21,7 +21,25 @@
     const hasTooltip = computed(() => !tooltipIgnore.includes(props.field.type))
     const tip = computed(() => `<i class="enter-key-icon"></i> pour ${props.label}`)
     const inputId = computed(() => `${props.form}-${props.field.name}`)
-    const value = computed(() => get(props.modelValue, props.field.name))
+    const value = computed(() => {
+        if (props.field.type === 'select') {
+            //console.log(props.field.name, props.modelValue[props.field.name])
+            const res = props.field.options.options.find(e => {
+                const iri = e.value ? e.value : e['@id']
+                const searchedIri = typeof get(props.modelValue, props.field.name) === 'object' ? get(props.modelValue, props.field.name)['@id'] : get(props.modelValue, props.field.name)
+                return iri === searchedIri
+            })
+            //console.log('res', res)
+            if (typeof res === 'undefined') return get(props.modelValue, props.field.name)
+            if (typeof res.value === 'undefined') {
+                //console.log('res.value not defined', res['@id'])
+                return res['@id']
+            }
+            //console.log('res.value defined', res.value)
+            return res.value
+        }
+        return get(props.modelValue, props.field.name)
+    })
     const violation = computed(() => props.violations.find(v => v.propertyPath === props.field.name)?.message)
     const hasViolation = computed(() => Boolean(violation.value))
     const css = computed(() => ({'is-invalid': hasViolation.value}))

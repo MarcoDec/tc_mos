@@ -40,7 +40,7 @@
                     :fields="fields"
                     :machine="machine"
                     :store="store"
-                @show="show"/>
+                    @show="show"/>
             </table>
         </div>
     </div>

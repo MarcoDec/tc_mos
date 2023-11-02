@@ -16,7 +16,7 @@
     function create() {
         props.machine.send('submit')
         console.log(props.fields.fields)
-        props.fields.fields.forEach((f) => {
+        props.fields.fields.forEach(f => {
             if (f.type === 'date') {
                 localData.value[f.name] = localData.value[f.name].toISOString().slice(0, 10)
             }
@@ -24,9 +24,7 @@
                 if (/\/api\/\w+\/\d+/.test(localData.value[f.name])) {
                     //On ne fait rien
                 } else {
-                    const theField = f.optionsList.find(o => {
-                        return o.text === localData.value[f.name]
-                    })
+                    const theField = f.optionsList.find(o => o.text === localData.value[f.name])
                     //console.log(f.name, theField['@id'], localData.value[f.name])
                     localData.value[f.name] = theField['@id']
                 }
