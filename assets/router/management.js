@@ -185,7 +185,7 @@ export default [
             showRouteName: 'suivi_depenses_ventes_show',
             icon: 'hourglass-half',
             sort: readonly({label: 'Nom', name: 'name'}),
-            title: 'Délais de paiement des factures'
+            title: 'Suivi des Dépenses et Ventes'
         }
     },
     {
@@ -205,7 +205,7 @@ export default [
             ],
             icon: 'hourglass-half',
             sort: readonly({label: 'Année', name: 'year'}),
-            title: 'Délais de paiement des factures'
+            title: 'Détails Suivi des Dépenses et Ventes'
         }
     }
 ]

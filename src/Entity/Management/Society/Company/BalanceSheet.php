@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiProperty;
 
 #[
     ApiResource(
@@ -53,11 +54,13 @@ class BalanceSheet extends Entity implements MeasuredInterface
 {
     #[
         ORM\Embedded,
+        ApiProperty(description: 'Total des recettes',openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         Serializer\Groups(['read:balance-sheet', 'write:balance-sheet'])
     ]
     private Measure $totalIncome;
     #[
         ORM\Embedded,
+        ApiProperty(description: 'Total des dépenses',openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
         Serializer\Groups(['read:balance-sheet', 'write:balance-sheet'])
     ]
     private Measure $totalExpense;
@@ -78,6 +81,7 @@ class BalanceSheet extends Entity implements MeasuredInterface
     #[
         ORM\ManyToOne(targetEntity: Currency::class),
         ORM\JoinColumn(nullable: true),
+        ApiProperty(description: 'Devise', example: '/api/currencies/1'),
         Serializer\Groups(['create:balance-sheet', 'read:balance-sheet', 'write:balance-sheet'])
     ]
     private ?Currency $currency;
@@ -85,6 +89,7 @@ class BalanceSheet extends Entity implements MeasuredInterface
     #[
         ORM\ManyToOne(targetEntity: Company::class),
         ORM\JoinColumn(nullable: false),
+        ApiProperty(description: 'Entreprise', example: '/api/companies/1'),
         Serializer\Groups(['create:balance-sheet', 'read:balance-sheet', 'write:balance-sheet'])
     ]
     private Company $company;
