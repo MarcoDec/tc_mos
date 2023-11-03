@@ -1,7 +1,7 @@
 # Makefile
 
 # Définition de la commande par défaut quand on exécute 'make' sans arguments
-all: build up
+all: rebuild
 
 # Définition de la tâche 'build' pour construire les services
 build:
@@ -25,6 +25,24 @@ setup:
 		yarn && \
 		php -d memory_limit=-1 /var/www/html/TConcept-GPAO/bin/console gpao:database:load && \
 		yarn dev \
+	'
+
+# Commande pour se connecter au conteneur et exécuter la commande doctrine:migrations:diff
+diff:
+	docker exec tconcept_gpao_php zsh -c '\
+		php -d memory_limit=-1 /var/www/html/TConcept-GPAO/bin/console doctrine:migrations:diff \
+	'
+
+# Commande pour se connecter au conteneur et exécuter la commande doctrine:migrations:migrate
+migrate:
+	docker exec tconcept_gpao_php zsh -c '\
+		php -d memory_limit=-1 /var/www/html/TConcept-GPAO/bin/console doctrine:migrations:migrate \
+	'
+
+# Commande pour se connecter au conteneur et exécuter la commande doctrine:fixtures:load
+clear:
+	docker exec tconcept_gpao_php zsh -c '\
+		php -d memory_limit=-1 /var/www/html/TConcept-GPAO/bin/console cache:clear \
 	'
 
 .PHONY: all build up down rebuild
