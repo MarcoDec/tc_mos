@@ -11,6 +11,10 @@ build:
 up:
 	docker compose up -d
 
+yarndev:
+	docker exec tconcept_gpao_php zsh -c '\
+		yarn dev \
+    '
 # Définition de la tâche 'down' pour arrêter et supprimer les conteneurs, réseaux, images et volumes
 down:
 	docker compose down
