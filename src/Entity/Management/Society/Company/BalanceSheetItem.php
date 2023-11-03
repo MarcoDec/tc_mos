@@ -4,15 +4,11 @@ namespace App\Entity\Management\Society\Company;
 
 use App\Entity\AbstractAttachment;
 use App\Entity\Embeddable\Measure;
-use App\Entity\Entity;
-use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\AttachmentTrait;
-use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiProperty;
 
@@ -78,6 +74,13 @@ class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
     ];
     //endregion
     //region définition des propriétés
+    #[
+        ORM\ManyToOne(targetEntity: BalanceSheet::class, inversedBy: 'balanceSheetItems'),
+        ORM\JoinColumn(nullable: false),
+        ApiProperty(description: 'Bilan', example: '/api/balance_sheets/1'),
+        Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
+    ]
+    private BalanceSheet $balanceSheet;
     #[
         ORM\Column(type: 'datetime'),
         ApiProperty(description: 'Date de la facture', example: '2021-01-01'),
@@ -265,6 +268,15 @@ class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
     public function setSubCategory(string $subCategory): BalanceSheetItem
     {
         $this->subCategory = $subCategory;
+        return $this;
+    }
+    public function getBalanceSheet(): BalanceSheet
+    {
+        return $this->balanceSheet;
+    }
+    public function setBalanceSheet(BalanceSheet $balanceSheet): BalanceSheetItem
+    {
+        $this->balanceSheet = $balanceSheet;
         return $this;
     }
     //endregion
