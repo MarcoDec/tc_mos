@@ -2,12 +2,17 @@
 
 namespace App\Entity\Management\Society\Company;
 
+use App\Entity\AbstractAttachment;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
+use App\Entity\Traits\AttachmentTrait;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiProperty;
 
@@ -21,8 +26,9 @@ use ApiPlatform\Core\Annotation\ApiProperty;
     ORM\Entity(),
     ORM\Table('balance_sheet_item')
  ]
-class BalanceSheetItem extends Entity implements MeasuredInterface
+class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
 {
+    use AttachmentTrait;
     //region définition des constantes
     public const INCOMES = [
         "VENTES"
@@ -134,10 +140,10 @@ class BalanceSheetItem extends Entity implements MeasuredInterface
     private string $paymentMethod;
     #[
         ORM\Column(type: 'string', length: 255),
-        ApiProperty(description: 'Catégorie', example: 'SALAIRE'),
+        ApiProperty(description: 'Catégorie paiement', example: 'SALAIRE'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private string $category;
+    private string $paymentCategory;
     #[
         ORM\Column(type: 'string', length: 255),
         ApiProperty(description: 'Sous-catégorie', example: 'AVANCE SUR SALAIRE'),
@@ -147,12 +153,13 @@ class BalanceSheetItem extends Entity implements MeasuredInterface
     //endregion
 
     public function __construct() {
+        parent::__construct();
         $this->quantity = new Measure();
         $this->unitPrice = new Measure();
         $this->vat = new Measure();
         $this->amount = new Measure();
     }
-
+    //region définition de getters et setters
     public function getBillDate(): \DateTimeInterface
     {
         return $this->billDate;
@@ -243,14 +250,13 @@ class BalanceSheetItem extends Entity implements MeasuredInterface
         $this->paymentMethod = $paymentMethod;
         return $this;
     }
-    public function getCategory(): string
+    public function getPaymentCategory(): string
     {
-        return $this->category;
+        return $this->paymentCategory;
     }
-    public function setCategory(string $category): BalanceSheetItem
+    public function setPaymentCategory(string $category): void
     {
-        $this->category = $category;
-        return $this;
+        $this->paymentCategory = $category;
     }
     public function getSubCategory(): string
     {
@@ -261,7 +267,8 @@ class BalanceSheetItem extends Entity implements MeasuredInterface
         $this->subCategory = $subCategory;
         return $this;
     }
-
+    //endregion
+    //region définition des méthodes associées à l'interface MeasuredInterface
     public function getMeasures(): array
     {
         return [$this->quantity, $this->unitPrice, $this->vat, $this->amount];
@@ -271,4 +278,27 @@ class BalanceSheetItem extends Entity implements MeasuredInterface
     {
         return null;
     }
+    //endregion
+    //region définition des méthodes associées à la classe AbstractAttachment
+    public function getExpirationDirectoriesParameter(): string
+    {
+        return '';
+    }
+
+    public function getExpirationDurationParameter(): string
+    {
+        return '';
+    }
+
+    public function getExpirationDateStr(): string
+    {
+        return 'day';
+    }
+
+    public function getParameterClass(): string
+    {
+        return '';
+    }
+
+    //endregion
 }
