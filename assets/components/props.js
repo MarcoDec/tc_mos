@@ -23,15 +23,19 @@ export function fieldValidator(field) {
                 console.error('field.options must be defined and not null')
                 return false
             }
-            if (!Array.isArray(field.options.options)) {
-                console.error('field.options.options must be defined and an array', field.options)
-                return false
-            }
-            for (const option of field.options.options)
-                if (typeof option.text === 'undefined' || option.text === null || typeof option.value === 'undefined') {
-                    console.error('field.options', 'field.text and field.value must be defined', field, option)
+            if (typeof field.options.base === 'undefined'){
+                if (!Array.isArray(field.options.options)) {
+                    console.error('field.options.options must be defined and an array', field.options)
                     return false
                 }
+                for (const option of field.options.options)
+                    if (typeof option.text === 'undefined' || option.text === null || typeof option.value === 'undefined') {
+                        console.error('field.options', 'field.text and field.value must be defined', field, option)
+                        return false
+                    }
+            } else {
+                console.log('field.options.base', field.options.base)
+            }
         }
     }
     return true

@@ -1,4 +1,6 @@
 <script setup>
+    import {ref} from 'vue'
+    import useOptions from '../../../../../stores/option/options'
     import AppOptionGroups from './AppOptionGroups.vue'
     import AppOptions from './AppOptions.vue'
 
@@ -9,13 +11,19 @@
         id: {required: true, type: String},
         modelValue: {default: null, type: String}
     })
+    const optionsTransfered = ref({})
     function getOptions() {
-        if (typeof props.field.optionsList === 'undefined') {
-            return props.field.options.options
+        if (typeof props.field.options.base === 'undefined') {
+            if (typeof props.field.optionsList === 'undefined') {
+                optionsTransfered.value = props.field.options.options
+            }
+            optionsTransfered.value = props.field.optionsList
         }
-        return props.field.optionsList
+        const options = useOptions(props.field.options.base)
+        // eslint-disable-next-line no-return-assign
+        options.fetchOp().then(() => optionsTransfered.value = options.items)
     }
-
+    getOptions()
     const emit = defineEmits(['update:modelValue'])
 
     function update(v) {
@@ -50,6 +58,6 @@
         @input="input"
         @update:model-value="update">
         <AppOptionGroups v-if="field.hasGroups" :groups="field.groups"/>
-        <AppOptions v-else :options="getOptions()"/>
+        <AppOptions v-else :options="optionsTransfered"/>
     </select>
 </template>
