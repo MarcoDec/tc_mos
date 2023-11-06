@@ -14,7 +14,34 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 
 #[
     ApiResource(
-        collectionOperations: ['get', 'post'],
+        collectionOperations: [
+            'get' => [
+                'method' => 'GET',
+                'path' => '/balance-sheet-items',
+                'openapi_context' => [
+                    'description' => 'Récupère les écritures comptables',
+                    'summary' => 'Récupère les écritures comptables'
+                ],
+                'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
+                'normalization_context' => [
+                    'groups' => ['read:balance-sheet-item:collection', 'read:balance-sheet-item', 'read:measure', self::API_GROUP_READ],
+                    'skip_null_values' => false
+                ]
+            ],
+            'post' => [
+                'method' => 'POST',
+                'path' => '/balance-sheet-items',
+                'openapi_context' => [
+                    'description' => 'Ajoute une écriture comptable',
+                    'summary' => 'Ajoute une écriture comptable'
+                ],
+                'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
+                'normalization_context' => [
+                    'groups' => ['read:balance-sheet-item', 'read:measure', self::API_GROUP_READ],
+                    'skip_null_values' => false
+                ]
+            ]
+        ],
         itemOperations: ['get', 'patch', 'delete'],
         denormalizationContext: ['groups' => ['write:measure', 'write:balance-sheet-item']],
         normalizationContext: ['groups' => ['read:id', 'read:measure', 'read:balance-sheet-item'], 'skip_null_values' => false]
@@ -77,7 +104,7 @@ class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
     #[
         ORM\ManyToOne(targetEntity: BalanceSheet::class, inversedBy: 'balanceSheetItems'),
         ORM\JoinColumn(nullable: false),
-        ApiProperty(description: 'Bilan', example: '/api/balance_sheets/1'),
+        ApiProperty(description: 'Bilan', example: '/api/balance-sheets/1'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
     private BalanceSheet $balanceSheet;

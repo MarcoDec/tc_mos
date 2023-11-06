@@ -1,4 +1,5 @@
 import AppCompanyList from '../components/pages/management/company/AppCompanyList.vue'
+import AppBalanceSheetShow from '../components/pages/management/company/balance_sheet/AppBalanceSheetShow.vue'
 import AppSocietyList from '../components/pages/management/society/bottom/AppSocietyList.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import MonthCalendar from '../components/pages/management/agenda/agendaMonth/MonthCalendar.vue'
@@ -189,23 +190,9 @@ export default [
         }
     },
     {
-        component: AppTablePageSuspense,
+        component: AppBalanceSheetShow,
         meta: {title: 'Détails des Dépenses et Ventes — T-Concept GPAO'},
         name: 'suivi_depenses_ventes_show',
-        path: '/suivi-depenses-ventes/show/:id',
-        props: {
-            apiBaseRoute: 'balance-sheet-items',
-            fields: [
-                {label: 'Mois', name: 'month', type: 'number', sort: true},
-                {label: 'Année', name: 'year', type: 'number', sort: true},
-                {label: 'Company', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
-                {create: false, label: 'Dépenses totales', name: 'totalExpense', sort: false, type: 'price', update: false},
-                {create: false, label: 'Ventes totales', name: 'totalIncome', sort: false, type: 'price', update: false},
-                {label: 'Devise', name: 'currency', options: {base: 'currencies'}, sort: false, /* sortName: 'currency.name', */ type: 'select'}
-            ],
-            icon: 'hourglass-half',
-            sort: readonly({label: 'Année', name: 'year'}),
-            title: 'Détails Suivi des Dépenses et Ventes'
-        }
+        path: '/suivi-depenses-ventes/show/:id'
     }
 ]
