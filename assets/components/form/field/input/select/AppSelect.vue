@@ -30,7 +30,6 @@
                     return {...item, value: item['@id']}
                 })
                 fieldTransfered.value = {...props.field, options: {options: options.items}}
-                console.log('optionsTransfered', optionsTransfered.value)
                 formFieldKey.value++
             })
         }

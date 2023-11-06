@@ -34,7 +34,7 @@ export function fieldValidator(field) {
                         return false
                     }
             } else {
-                console.log('field.options.base', field.options.base)
+                //console.log('field.options.base', field.options.base)
             }
         }
     }
