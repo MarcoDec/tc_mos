@@ -59,8 +59,6 @@
         storedFields.dispose()
     })
     function show(data) {
-        console.log('data', data)
-        console.log(props.showRouteName, data)
         router.push({name: props.showRouteName, params: {id: data}})
     }
 </script>
