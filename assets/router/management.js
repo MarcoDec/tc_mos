@@ -175,8 +175,8 @@ export default [
         props: {
             apiBaseRoute: 'balance-sheets',
             fields: [
-                {label: 'Mois', name: 'month', type: 'number', sort: true},
-                {label: 'Année', name: 'year', type: 'number', sort: true},
+                {label: 'Mois', name: 'month', type: 'number', step: 1, sort: true},
+                {label: 'Année', name: 'year', type: 'number', step: 1, sort: true},
                 {label: 'Company', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
                 {label: 'Devise', name: 'currency', options: {base: 'currencies'}, sort: false, /* sortName: 'currency.name', */ type: 'select'},
                 {create: false, label: 'Dépenses totales', name: 'totalExpense', sort: false, type: 'price', update: false},
