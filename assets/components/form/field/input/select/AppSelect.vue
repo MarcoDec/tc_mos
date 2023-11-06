@@ -1,5 +1,5 @@
 <script setup>
-    import {ref} from 'vue'
+    import {onBeforeMount, ref} from 'vue'
     import useOptions from '../../../../../stores/option/options'
     import AppOptionGroups from './AppOptionGroups.vue'
     import AppOptions from './AppOptions.vue'
@@ -12,18 +12,29 @@
         modelValue: {default: null, type: String}
     })
     const optionsTransfered = ref({})
-    function getOptions() {
+    const fieldTransfered = ref({})
+    const formFieldKey = ref(0)
+    onBeforeMount(() => {
         if (typeof props.field.options.base === 'undefined') {
             if (typeof props.field.optionsList === 'undefined') {
                 optionsTransfered.value = props.field.options.options
+            } else {
+                optionsTransfered.value = props.field.optionsList
+                fieldTransfered.value = props.field
             }
-            optionsTransfered.value = props.field.optionsList
+        } else {
+            const options = useOptions(props.field.options.base)
+            // eslint-disable-next-line no-return-assign
+            options.fetchOp().then(() => {
+                optionsTransfered.value = options.items.map(item => {
+                    return {...item, value: item['@id']}
+                })
+                fieldTransfered.value = {...props.field, options: {options: options.items}}
+                console.log('optionsTransfered', optionsTransfered.value)
+                formFieldKey.value++
+            })
         }
-        const options = useOptions(props.field.options.base)
-        // eslint-disable-next-line no-return-assign
-        options.fetchOp().then(() => optionsTransfered.value = options.items)
-    }
-    getOptions()
+    })
     const emit = defineEmits(['update:modelValue'])
 
     function update(v) {
@@ -39,6 +50,7 @@
     <AppMultiselect
         v-if="field.big"
         :id="id"
+        :key="formFieldKey"
         :disabled="disabled"
         :field="field"
         :form="form"
@@ -50,6 +62,7 @@
     <select
         v-else
         :id="id"
+        :key="formFieldKey"
         :disabled="disabled"
         :form="form"
         :name="field.name"
