@@ -5,11 +5,10 @@
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import {useBalanceSheetItemStore} from '../../../../../stores/management/balance-sheets/balanceSheetItems'
     import {useBalanceSheetStore} from '../../../../../stores/management/balance-sheets/balanceSheets'
-    import {useCompanyStore} from '../../../../../stores/management/companies/companies'
     import useUser from '../../../../../stores/security'
+    import AppCardShow from '../../../../AppCardShow.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
 
-    console.log('Début AppBalanceSheetShow.vue')
     const route = useRoute()
     const idBalanceSheet = Number(route.params.id)
 
@@ -22,6 +21,18 @@
     const isWriterOrAdmin = fetchUser.isManagementWriter || fetchUser.isManagementAdmin
     const roleuser = ref(isWriterOrAdmin ? 'writer' : 'reader')
 
+    const formFields = [
+        {label: 'Mois', name: 'month', type: 'number', step: 1},
+        {label: 'Année', name: 'year', type: 'number', step: 1},
+        {label: 'Company', name: 'company', options: {base: 'companies'}, type: 'select'},
+        {label: 'Devise', name: 'currency', options: {base: 'currencies'}, type: 'select'}
+    ]
+    const formData = ref({
+        month: 0,
+        year: 0,
+        company: '',
+        currency: ''
+    })
     //region récupération de la balance sheet
     const currentBalanceSheet = computed(() => {
         if (fetchBalanceSheet.item === null) return {
@@ -36,15 +47,18 @@
         }
         return fetchBalanceSheet.item
     })
+    const formKey = ref(0)
     balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${idBalanceSheet}`)
     onBeforeMount(async () => {
         await fetchBalanceSheet.fetchById(idBalanceSheet)
         currentBalanceSheet.value = fetchBalanceSheet.item
-        console.log('currentBalanceSheet', currentBalanceSheet.value)
+        formData.value = currentBalanceSheet.value
+        formData.value.company = currentBalanceSheet.value.company['@id']
+        formData.value.currency = currentBalanceSheet.value.currency['@id']
+        //console.log('chargement données items',balanceSheetItemsCriteria.getFetchCriteria)
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
-        console.log('fetchBalanceSheetItems', fetchBalanceSheetItems.items)
-        company.value = await api(fetchBalanceSheet.item.company['@id'], 'GET')
-        console.log('company', company.value)
+        company.value = await api(formData.value.company, 'GET')
+        formKey.value++
     })
     //endregion
     const tabFields = [
@@ -94,7 +108,22 @@
         balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${idBalanceSheet}`)
         await balanceSheetItemsCriteria.fetch(balanceSheetItemsCriteria.getFetchCriteria)
     }
-    console.log('Fin AppBalanceSheetShow.vue')
+    //console.log('Fin AppBalanceSheetShow.vue')
+    function updateFormData(value) {
+        formData.value = value
+    }
+    async function reloadBalanceSheet() {
+        await fetchBalanceSheet.fetchById(idBalanceSheet)
+        currentBalanceSheet.value = fetchBalanceSheet.item
+        formData.value = currentBalanceSheet.value
+        formData.value.company = currentBalanceSheet.value.company['@id']
+        formData.value.currency = currentBalanceSheet.value.currency['@id']
+        formKey.value++
+    }
+    async function updateForm() {
+        await fetchBalanceSheet.update({month: formData.value.month, year: formData.value.year, company: formData.value.company, currency: formData.value.currency}, idBalanceSheet)
+        await reloadBalanceSheet()
+    }
 </script>
 
 <template>
@@ -102,18 +131,37 @@
         <div class="title">
             Suivi des dépenses {{ currentBalanceSheet.month }} - {{ currentBalanceSheet.year }} pour {{ company.name }}
         </div>
-        <h2>Synthèse</h2>
-        <div class="row">
-            <div class="col">
-                <div>Total Achats: {{ currentBalanceSheet.totalExpense.value }} {{ currentBalanceSheet.totalExpense.code }}</div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <AppCardShow
+                        id="properties"
+                        :key="formKey"
+                        :component-attribute="formData"
+                        :fields="formFields"
+                        @update:model-value="updateFormData"
+                        @update="updateForm"
+                        title="Caractéristiques du suivi"/>
+                </div>
             </div>
-            <div class="col">
-                <div>Total Ventes: {{ currentBalanceSheet.totalIncome.value }} {{ currentBalanceSheet.totalIncome.code }}</div>
+            <div class="row">
+                <div class="col p-0">
+                    <h2>Synthèse</h2>
+                </div>
             </div>
-            <div class="col">
-                <div>Solde: {{ currentBalanceSheet.totalIncome.value - currentBalanceSheet.totalExpense.value }} {{ currentBalanceSheet.totalExpense.code }}</div>
+            <div class="row">
+                <div class="col synth text-info">
+                    <div>Total Achats: {{ currentBalanceSheet.totalExpense.value }} {{ currentBalanceSheet.totalExpense.code }}</div>
+                </div>
+                <div class="col synth text-info">
+                    <div>Total Ventes: {{ currentBalanceSheet.totalIncome.value }} {{ currentBalanceSheet.totalIncome.code }}</div>
+                </div>
+                <div class="col synth text-info">
+                    <div>Solde: {{ currentBalanceSheet.totalIncome.value - currentBalanceSheet.totalExpense.value }} {{ currentBalanceSheet.totalExpense.code }}</div>
+                </div>
             </div>
         </div>
+
         <h2>Achats</h2>
         <h3>Dépenses normales</h3>
         <h3>Salaires</h3>
@@ -163,5 +211,11 @@
         background-color: #44546A;
         color: white;
         padding-left: 20px;
+    }
+    .synth {
+        padding: 5px 5px 5px 20px;
+    }
+    .border {
+        border: 1px solid black;
     }
 </style>
