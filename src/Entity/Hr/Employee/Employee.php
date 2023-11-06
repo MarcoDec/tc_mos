@@ -214,7 +214,7 @@ class Employee extends Entity implements BarCodeInterface, PasswordAuthenticated
 
     #[  
         ORM\Embedded,
-        Serializer\Groups(['read:employee', 'write:employee', 'write:employee:it'])
+        Serializer\Groups(['create:employee', 'read:employee', 'write:employee', 'write:employee:it'])
     ]
     private Roles $embRoles;
 

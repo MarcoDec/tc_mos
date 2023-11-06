@@ -54,6 +54,7 @@ function AppFormJS(props, context) {
                     }))
                 }
             } else {
+                console.log('field', field)
                 groups.push(h(AppFormField, {
                     disabled: props.disabled,
                     field,

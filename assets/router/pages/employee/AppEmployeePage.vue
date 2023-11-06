@@ -1,108 +1,145 @@
 <script setup>
+    import {computed, ref} from 'vue-demi'
     import AppEmployeeCreate from './AppEmployeeCreate.vue'
-    import AppTablePage from '../AppTablePage'
-    import {computed} from 'vue-demi'
-    import useEmployees from '../../../stores/employee/employees'
-    import {useTableMachine} from '../../../machine'
-    const title = 'Créer un Employee'
+    import useFetchCriteria from '../../../stores/fetch-criteria/fetchCriteria'
+    import {useEmployeesStore} from '../../../stores/employee/employees'
+    import useUser from '../../../stores/security'
+
+    defineProps({
+        icon: {required: true, type: String},
+        title: {required: true, type: String}
+    })
+
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
-    const machineEmployee = useTableMachine('machine-employee')
-    const employees = useEmployees()
+
+    const fetchUser = useUser()
+    const currentCompany = fetchUser.company
+    console.log('currentCompany', currentCompany)
+    const isHrWriterOrAdmin = fetchUser.isHrWriter || fetchUser.isHrAdmin
+    const roleuser = ref(isHrWriterOrAdmin ? 'writer' : 'reader')
+
+    const storeEmployeesList = useEmployeesStore()
+    await storeEmployeesList.fetch()
+
+    const employeeListCriteria = useFetchCriteria('employee-list-criteria')
+    employeeListCriteria.addFilter('company', currentCompany)
+    console.log('employeeListCriteria', employeeListCriteria.addFilter('company', currentCompany))
+
+    async function refreshTable() {
+        await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
+    }
+    await refreshTable()
+
+    const itemsTable = computed(() => storeEmployeesList.itemsEmployees)
+
+    const optionsEtat = [
+        {text: 'agreed', value: 'agreed'},
+        {text: 'draft', value: 'draft'},
+        {text: 'to_validate', value: 'to_validate'},
+        {text: 'warning', value: 'warning'}
+    ]
 
     const fields = computed(() => [
+        {label: 'Matricule', name: 'timeCard', trie: false, type: 'text'},
+        {label: 'Nom', name: 'surName', trie: true, type: 'text'},
+        {label: 'prenom', name: 'name', trie: true, type: 'text'},
+        {label: 'Initiales', name: 'initials', trie: true, type: 'text'},
+        {label: 'Identifiant', name: 'username', trie: true, type: 'text'},
+        {label: 'Compte utilisateur', name: 'userEnabled', trie: false, type: 'boolean'},
         {
-            create: true,
-            label: 'Matricule',
-            name: 'matricule',
-            sort: true,
-            type: 'text',
-            update: false
-        },
-        {
-            create: true,
-            label: 'Nom',
-            name: 'nom',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            label: 'Prenom',
-            name: 'prenom',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            label: 'Initiales',
-            name: 'initiales',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            label: 'Identifiant',
-            name: 'identifiant',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            label: 'Services',
-            name: 'service',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            label: 'Compte utilisateur',
-            name: 'compte',
-            sort: true,
-            type: 'boolean',
-            update: true
-        },
-
-        {
-            create: true,
             label: 'Etat',
-            name: 'etat',
-            sort: true,
-            type: 'text',
-            update: true
+            name: 'state',
+            options: {
+                label: value =>
+                    optionsEtat.find(option => option.type === value)?.text ?? null,
+                options: optionsEtat
+            },
+            trie: false,
+            type: 'select'
         }
     ])
+
+    async function deleted(id){
+        await storeEmployeesList.remove(id)
+        await refreshTable()
+    }
+    async function getPage(nPage){
+        employeeListCriteria.gotoPage(parseFloat(nPage))
+        await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
+    }
+
+    async function search(inputValues) {
+        console.log('inputValues', inputValues)
+        employeeListCriteria.resetAllFilter()
+        employeeListCriteria.addFilter('company', currentCompany)
+        if (inputValues.timeCard) employeeListCriteria.addFilter('timeCard', inputValues.timeCard)
+        if (inputValues.surName) employeeListCriteria.addFilter('surName', inputValues.surName)
+        if (inputValues.name) employeeListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.initials) employeeListCriteria.addFilter('initials', inputValues.initials)
+        if (inputValues.username) employeeListCriteria.addFilter('username', inputValues.username)
+        if (inputValues.userEnabled) employeeListCriteria.addFilter('userEnabled', inputValues.userEnabled)
+        if (inputValues.state) employeeListCriteria.addFilter('embState.state[]', inputValues.state)
+        await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
+    }
+    async function cancelSearch() {
+        employeeListCriteria.resetAllFilter()
+        employeeListCriteria.addFilter('company', currentCompany)
+        await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
+    }
+
+    async function trierAlphabet(payload) {
+        employeeListCriteria.addSort(payload.name, payload.direction)
+        await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
+    }
 </script>
 
 <template>
     <div class="row">
-        <AppModal :id="modalId" class="four" :title="title">
-            <AppEmployeeCreate/>
-        </AppModal>
         <div class="col">
-            <AppTablePage
-                :fields="fields"
-                icon="user-tag"
-                :machine="machineEmployee"
-                :store="employees"
-                title="La liste de Employees">
-                <template #cell(etat)>
-                    <AppTrafficLight/>
-                </template>
-                <template #btn>
+            <h1>
+                <Fa :icon="icon"/>
+                {{ title }}
+                <span v-if="isHrWriterOrAdmin" class="btn-float-right">
                     <AppBtn
                         variant="success"
+                        label="Créer"
                         data-bs-toggle="modal"
                         :data-bs-target="target">
+                        <Fa icon="plus"/>
                         Créer
                     </AppBtn>
-                </template>
-            </AppTablePage>
+                </span>
+            </h1>
+        </div>
+    </div>
+    <div class="row">
+        <AppEmployeeCreate :current-company="currentCompany" :modal-id="modalId" :title="title" :target="target"/>
+        <div class="col">
+            <AppSuspense>
+                <AppCardableTable
+                    :current-page="storeEmployeesList.currentPage"
+                    :fields="fields"
+                    :first-page="storeEmployeesList.firstPage"
+                    :items="itemsTable"
+                    :last-page="storeEmployeesList.lastPage"
+                    :next-page="storeEmployeesList.nextPage"
+                    :pag="storeEmployeesList.pagination"
+                    :previous-page="storeEmployeesList.previousPage"
+                    :user="roleuser"
+                    form="formEmployeeCardableTable"
+                    @deleted="deleted"
+                    @get-page="getPage"
+                    @trier-alphabet="trierAlphabet"
+                    @search="search"
+                    @cancel-search="cancelSearch"/>
+            </AppSuspense>
         </div>
     </div>
 </template>
+
+<style scoped>
+    .btn-float-right{
+        float: right;
+    }
+</style>
