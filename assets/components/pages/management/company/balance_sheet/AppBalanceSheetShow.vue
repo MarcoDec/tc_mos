@@ -23,7 +23,19 @@
     const roleuser = ref(isWriterOrAdmin ? 'writer' : 'reader')
 
     //region récupération de la balance sheet
-    const currentBalanceSheet = ref({})
+    const currentBalanceSheet = computed(() => {
+        if (fetchBalanceSheet.item === null) return {
+            '@id': '',
+            '@type': '',
+            id: '',
+            month: '',
+            year: '',
+            totalExpense: {value: 0, code: ''},
+            totalIncome: {value: 0, code: ''},
+            company: {name: ''}
+        }
+        return fetchBalanceSheet.item
+    })
     balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${idBalanceSheet}`)
     onBeforeMount(async () => {
         await fetchBalanceSheet.fetchById(idBalanceSheet)
@@ -88,8 +100,26 @@
 <template>
     <AppSuspense>
         <div class="title">
-            Suivi des dépenses {{ fetchBalanceSheet.item.month }} - {{ fetchBalanceSheet.item.year }} pour {{ company.name }}
+            Suivi des dépenses {{ currentBalanceSheet.month }} - {{ currentBalanceSheet.year }} pour {{ company.name }}
         </div>
+        <h2>Synthèse</h2>
+        <div class="row">
+            <div class="col">
+                <div>Total Achats: {{ currentBalanceSheet.totalExpense.value }} {{ currentBalanceSheet.totalExpense.code }}</div>
+            </div>
+            <div class="col">
+                <div>Total Ventes: {{ currentBalanceSheet.totalIncome.value }} {{ currentBalanceSheet.totalIncome.code }}</div>
+            </div>
+            <div class="col">
+                <div>Solde: {{ currentBalanceSheet.totalIncome.value - currentBalanceSheet.totalExpense.value }} {{ currentBalanceSheet.totalExpense.code }}</div>
+            </div>
+        </div>
+        <h2>Achats</h2>
+        <h3>Dépenses normales</h3>
+        <h3>Salaires</h3>
+        <h3>Achats Matières Premières</h3>
+        <h3>Frais de transport</h3>
+        <h2>Ventes</h2>
         <div class="row">
             <div class="col">
                 <AppSuspense>
@@ -121,5 +151,17 @@
     .title {
         font-size: 2em;
         color: #41b883;
+        font-weight: bolder;
+    }
+    h2 {
+        background-color: #8ac2f1;
+        color: white;
+        padding-left: 10px;
+        margin-bottom: 0;
+    }
+    h3 {
+        background-color: #44546A;
+        color: white;
+        padding-left: 20px;
     }
 </style>
