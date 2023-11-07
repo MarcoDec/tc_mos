@@ -35,6 +35,7 @@
     button.active {
         background-color: #43abd7 !important;
         color: white !important;
+        box-shadow: inset black 0px 0px 10px;
     }
     div.nav-link-text {
         text-wrap: normal;

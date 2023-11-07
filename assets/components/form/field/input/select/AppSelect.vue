@@ -26,9 +26,7 @@
             const options = useOptions(props.field.options.base)
             // eslint-disable-next-line no-return-assign
             options.fetchOp().then(() => {
-                optionsTransfered.value = options.items.map(item => {
-                    return {...item, value: item['@id']}
-                })
+                optionsTransfered.value = options.items.map(item => ({...item, value: item['@id']}))
                 fieldTransfered.value = {...props.field, options: {options: options.items}}
                 formFieldKey.value++
             })

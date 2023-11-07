@@ -114,8 +114,8 @@
         </div>
         <AppTabs id="main_tabs">
             <AppTab
-                active
                 id="achats_tab"
+                active
                 icon="cart-shopping"
                 tabs="main_tabs"
                 title="Achats">
