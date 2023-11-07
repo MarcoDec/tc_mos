@@ -22,3 +22,9 @@
     </li>
 </template>
 
+<style scoped>
+    button.active {
+        background-color: #43abd7 !important;
+        color: white !important;
+    }
+</style>
