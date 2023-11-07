@@ -10,6 +10,7 @@ import {
     faBriefcase,
     faBuilding,
     faBullseye,
+    faBusinessTime,
     faCalendar,
     faCalendarDay,
     faCalendarWeek,
@@ -49,6 +50,7 @@ import {
     faMale,
     faMapMarked,
     faMapMarkedAlt,
+    faMoneyBill1,
     faOilWell,
     faPalette,
     faPallet,
@@ -61,6 +63,7 @@ import {
     faProjectDiagram,
     faPuzzlePiece,
     faReceipt,
+    faRightToBracket,
     faRulerHorizontal,
     faRulerVertical,
     faScrewdriverWrench,
@@ -71,8 +74,10 @@ import {
     faSignOutAlt,
     faSignal,
     faSitemap,
+    faSquarePlus,
     faStar,
     faTimes,
+    faTruck,
     faToolbox,
     faTrash,
     faTruckField,
@@ -155,6 +160,7 @@ library.add(faShoppingCart)
 library.add(faShuttleVan)
 library.add(faSignOutAlt)
 library.add(faSitemap)
+library.add(faSquarePlus)
 library.add(faTimes)
 library.add(faToolbox)
 library.add(faTrash)
@@ -178,3 +184,7 @@ library.add(faCubesStacked)
 library.add(faRulerVertical)
 library.add(faStar)
 library.add(faGaugeHigh)
+library.add(faMoneyBill1)
+library.add(faRightToBracket)
+library.add(faTruck)
+library.add(faBusinessTime)

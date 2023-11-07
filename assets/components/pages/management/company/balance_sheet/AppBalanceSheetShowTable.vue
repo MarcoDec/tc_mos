@@ -4,14 +4,16 @@
     import {useBalanceSheetItemStore} from '../../../../../stores/management/balance-sheets/balanceSheetItems'
     import useUser from '../../../../../stores/security'
     import AppSuspense from '../../../../AppSuspense.vue'
+    import Fa from '../../../../Fa'
+    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     const props = defineProps({
+        addForm: {required: true, type: Boolean},
         title: {required: true, type: String},
         idBalanceSheet: {required: true, type: Number},
         tabFields: {required: true, type: Array},
         tabId: {required: true, type: String},
         paymentCategory: {required: true, type: String}
     })
-    console.log('AppBalanceSheetShowTable.vue', props.title)
 
     const fetchUser = useUser()
     const isWriterOrAdmin = fetchUser.isManagementWriter || fetchUser.isManagementAdmin
@@ -27,6 +29,8 @@
     async function refreshTable() {
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
     }
+    const getId = /.*?\/(\d+)/
+
     function update(item) {
         const itemId = item['@id'].match(getId)[1]
         console.log(item, itemId)
@@ -59,11 +63,61 @@
     onBeforeMount(async () => {
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
     })
+    const AddForm = ref(false)
+    let addFormKey = 0
+    const isPopupVisible = ref(false)
+    const formData = ref({})
+    const fieldsForm = ref({})
+    let violations = []
+    onBeforeMount(() => {
+        fieldsForm.value = props.tabFields
+    })
+    function input(v){
+        formData.value = v
+        if (v.families && v.families.includes('camion')) {
+            //on s'assure que fieldsForm contient la définition du champ destination
+            if (typeof fieldsForm.value.find(item => item.name === 'destination') === 'undefined') {
+                fieldsForm.value.push(destinationField)
+                addFormKey++
+            }
+        } else if (typeof fieldsForm.value.find(item => item.name === 'destination') !== 'undefined') {
+            fieldsForm.value.pop()
+            formData.value.destination = null
+            addFormKey++
+        }
+    }
+
+    async function ajoutItem(){
+        formData.value.file = [formData.value.file]
+        violations = await fetchBalanceSheetItems.add(formData.value)
+        if (violations.length > 0){
+            isPopupVisible.value = true
+        } else {
+            AddForm.value = false
+            isPopupVisible.value = false
+            await refreshTable() //On recharge les données
+        }
+    }
+    function annule(){
+        AddForm.value = false
+        const itemsNull = {
+            families: null
+        }
+        formData.value = itemsNull
+        isPopupVisible.value = false
+    }
 </script>
 
 <template>
     <div>
         <div class="container-fluid tableau">
+            <div v-if="addForm" class="row">
+                <div class="col">
+                    <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="AddForm = !AddForm">
+                        <Fa icon="plus"/> Ajouter
+                    </AppBtn>
+                </div>
+            </div>
             <div class="row">
                 <div class="col">
                     <AppSuspense>
@@ -73,7 +127,7 @@
                             :first-page="fetchBalanceSheetItems.firstPage"
                             :items="itemsTable"
                             :last-page="fetchBalanceSheetItems.lastPage"
-                            :min="false"
+                            :min="AddForm"
                             :next-page="fetchBalanceSheetItems.nextPage"
                             :pag="fetchBalanceSheetItems.pagination"
                             :previous-page="fetchBalanceSheetItems.previousPage"
@@ -88,13 +142,34 @@
                             @cancel-search="cancelSearch"/>
                     </AppSuspense>
                 </div>
+                <div v-show="AddForm" :key="addFormKey" class="col-6">
+                    <AppSuspense>
+                        <AppCard class="bg-blue col" title="">
+                            <div class="row">
+                                <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                                    <Fa icon="angle-double-left"/>
+                                </button>
+                                <h4 class="col">
+                                    <Fa icon="square-plus"/> Ajouter un nouvel élément
+                                </h4>
+                            </div>
+                            <AppSuspense>
+                                <AppFormCardable id="addItem" :model-value="formData" :fields="fieldsForm" label-cols @update:model-value="input"/>
+                            </AppSuspense>
+                            <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                                <div v-for="violation in violations" :key="violation">
+                                    <li>{{ violation.message }}</li>
+                                </div>
+                            </div>
+                            <div class="btnright row">
+                                <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutItem">
+                                    <Fa icon="plus"/> Enregister
+                                </AppBtn>
+                            </div>
+                        </AppCard>
+                    </AppSuspense>
+                </div>
             </div>
         </div>
     </div>
 </template>
-
-<style scoped>
-    div.tableau {
-        color: red;
-    }
-</style>

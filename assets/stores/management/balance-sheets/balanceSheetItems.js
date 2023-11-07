@@ -3,6 +3,9 @@ import api from '../../../api'
 
 export const useBalanceSheetItemStore = defineStore('balanceSheetsItemStore', {
     actions: {
+        async add(data) {
+            await api('/api/balance-sheet-items', 'POST', data)
+        },
         async fetch(criteria = '?pagination=false') {
             const response = await api(`/api/balance-sheet-items${criteria}`, 'GET')
             this.items = response['hydra:member']
