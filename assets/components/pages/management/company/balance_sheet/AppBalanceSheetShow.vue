@@ -8,7 +8,8 @@
     import AppSuspense from '../../../../AppSuspense.vue'
     import AppTab from '../../../../tab/AppTab.vue'
     import AppTabs from '../../../../tab/AppTabs.vue'
-    import AppBalanceSheetShowTable from './AppBalanceSheetShowTable.vue'
+    import AppBalanceSheetTabAchats from './AppBalanceSheetTabAchats.vue'
+    import AppBalanceSheetTabVentes from './AppBalanceSheetTabVentes.vue'
 
     const route = useRoute()
     const idBalanceSheet = Number(route.params.id)
@@ -72,117 +73,6 @@
         await fetchBalanceSheet.update({month: formData.value.month, year: formData.value.year, company: formData.value.company, currency: formData.value.currency}, idBalanceSheet)
         await reloadBalanceSheet()
     }
-    const fileField = {
-        label: 'Fichier',
-        name: 'file',
-        trie: true,
-        type: 'file'
-    }
-    const priceMeasure = {
-        code: {
-            label: 'Devise',
-            name: 'code',
-            type: 'select',
-            options: {base: 'currencies'}
-        },
-        value: {
-            label: 'Montant',
-            name: 'value',
-            type: 'number',
-            step: 0.01
-        }
-    }
-    const purchaseTablesFields = [
-        {
-            title: 'Dépenses normales',
-            icon: 'money-bill-1',
-            id: 'depenses_normales',
-            fields: [
-                {label: 'Date Paiement', name: 'paymentDate', trie: true, type: 'date', min: true},
-                {label: 'Date Facture', name: 'billDate', trie: true, type: 'date', min: false},
-                {label: 'N° Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
-                {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
-                {label: 'Libelle', name: 'label', trie: true, type: 'text', min: true},
-                {
-                    label: 'Débit / MHT',
-                    name: 'amount',
-                    trie: true,
-                    type: 'measure',
-                    min: true,
-                    measure: priceMeasure
-                },
-                {label: 'Méthode de paiement', name: 'paymentMethod', trie: true, type: 'text', min: false},
-                fileField
-            ],
-            paymentCategory: 'Dépenses normales'
-        },
-        {
-            title: 'Salaires',
-            icon: 'business-time',
-            id: 'salaires',
-            fields: [
-                {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
-                {label: 'N° Matricule', name: 'paymentRef', trie: true, type: 'text'},
-                {label: 'Type Paies', name: 'subCategory', trie: true, type: 'text', min: true},
-                {label: 'Nom & Prénom', name: 'label', trie: true, type: 'text', min: true},
-                {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
-                {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
-                fileField
-            ],
-            paymentCategory: 'Salaires'
-        },
-        {
-            title: 'Achats Matières Premières',
-            icon: 'right-to-bracket',
-            id: 'achats_matières_premières',
-            fields: [
-                {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
-                {label: 'Date Facture', name: 'billDate', trie: true, type: 'date'},
-                {label: 'Numéro de Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
-                {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
-                {label: 'Libellé', name: 'label', trie: true, type: 'text', min: false},
-                {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
-                {label: 'tva', name: 'vat', trie: true, type: 'measure', min: true, measure: priceMeasure},
-                {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
-                fileField
-            ],
-            paymentCategory: 'Achats Matières Premières'
-        },
-        {
-            title: 'Frais de transport',
-            icon: 'truck',
-            id: 'frais_de_transport',
-            fields: [
-                {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
-                {label: 'Date Facture', name: 'billDate', trie: true, type: 'date'},
-                {label: 'Ref Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
-                {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
-                {label: 'Libellé', name: 'label', trie: true, type: 'text'},
-                {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
-                {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
-                fileField
-            ],
-            paymentCategory: 'Frais de transport'
-        }
-    ]
-    const sellingTablesFields = [
-        {
-            title: 'Ventes',
-            icon: 'hand-holding-dollar',
-            id: 'ventes',
-            fields: [
-                {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
-                {label: 'N° Facture/Avoir', name: 'paymentRef', trie: true, type: 'text', min: true},
-                {label: 'Client', name: 'stakeholder', trie: true, type: 'text', min: true},
-                {label: 'Libellé', name: 'label', trie: true, type: 'text'},
-                {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
-                {label: 'tva', name: 'vat', trie: true, type: 'measure', measure: priceMeasure},
-                {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
-                fileField
-            ],
-            paymentCategory: 'Ventes'
-        }
-    ]
 </script>
 
 <template>
@@ -222,41 +112,21 @@
                 </div>
             </div>
         </div>
-
-        <h2>Achats</h2>
-        <AppTabs id="achats_tabs" format-nav="block">
+        <AppTabs id="main_tabs">
             <AppTab
-                v-for="table in purchaseTablesFields"
-                :id="table.id"
-                :key="table.id"
-                :icon="table.icon"
-                tabs="achats_tabs"
-                :title="table.title">
-                <AppBalanceSheetShowTable
-                    :add-form="isWriterOrAdmin"
-                    :id-balance-sheet="idBalanceSheet"
-                    :payment-category="table.paymentCategory"
-                    :tab-fields="table.fields"
-                    :tab-id="table.id"
-                    :title="table.title"/>
+                active
+                id="achats_tab"
+                icon="cart-shopping"
+                tabs="main_tabs"
+                title="Achats">
+                <AppBalanceSheetTabAchats :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
             </AppTab>
-        </AppTabs>
-        <h2>Ventes</h2>
-        <AppTabs id="ventes_tabs">
             <AppTab
-                v-for="table in sellingTablesFields"
-                :id="table.id"
-                :key="table.id"
-                :icon="table.icon"
-                tabs="ventes_tabs"
-                :title="table.title">
-                <AppBalanceSheetShowTable
-                    :add-form="isWriterOrAdmin"
-                    :id-balance-sheet="idBalanceSheet"
-                    :payment-category="table.paymentCategory"
-                    :tab-fields="table.fields"
-                    :tab-id="table.id"
-                    :title="table.title"/>
+                id="ventes_tab"
+                icon="hand-holding-dollar"
+                tabs="main_tabs"
+                title="Ventes">
+                <AppBalanceSheetTabVentes :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
             </AppTab>
         </AppTabs>
     </AppSuspense>

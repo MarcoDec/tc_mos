@@ -109,67 +109,71 @@
 </script>
 
 <template>
-    <div>
-        <div class="container-fluid tableau">
-            <div v-if="addForm" class="row">
-                <div class="col">
-                    <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="AddForm = !AddForm">
-                        <Fa icon="plus"/> Ajouter
-                    </AppBtn>
-                </div>
+    <div class="container-fluid tableau">
+        <div v-if="addForm" class="row">
+            <div class="col">
+                <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="AddForm = !AddForm">
+                    <Fa icon="plus"/> Ajouter
+                </AppBtn>
             </div>
-            <div class="row">
-                <div class="col">
-                    <AppSuspense>
-                        <AppCardableTable
-                            :current-page="fetchBalanceSheetItems.currentPage"
-                            :fields="tabFields"
-                            :first-page="fetchBalanceSheetItems.firstPage"
-                            :items="itemsTable"
-                            :last-page="fetchBalanceSheetItems.lastPage"
-                            :min="AddForm"
-                            :next-page="fetchBalanceSheetItems.nextPage"
-                            :pag="fetchBalanceSheetItems.pagination"
-                            :previous-page="fetchBalanceSheetItems.previousPage"
-                            :title="title"
-                            :user="roleuser"
-                            form="formCompanyCardableTable"
-                            @update="update"
-                            @deleted="deleteTableItem"
-                            @get-page="getPage"
-                            @trier-alphabet="trierAlphabet"
-                            @search="search"
-                            @cancel-search="cancelSearch"/>
-                    </AppSuspense>
-                </div>
-                <div v-show="AddForm" :key="addFormKey" class="col-6">
-                    <AppSuspense>
-                        <AppCard class="bg-blue col" title="">
-                            <div class="row">
-                                <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                                    <Fa icon="angle-double-left"/>
-                                </button>
-                                <h4 class="col">
-                                    <Fa icon="square-plus"/> Ajouter un nouvel élément
-                                </h4>
+        </div>
+        <div class="row">
+            <div class="col">
+                <AppSuspense>
+                    <AppCardableTable
+                        :current-page="fetchBalanceSheetItems.currentPage"
+                        :fields="tabFields"
+                        :first-page="fetchBalanceSheetItems.firstPage"
+                        :items="itemsTable"
+                        :last-page="fetchBalanceSheetItems.lastPage"
+                        :min="AddForm"
+                        :next-page="fetchBalanceSheetItems.nextPage"
+                        :pag="fetchBalanceSheetItems.pagination"
+                        :previous-page="fetchBalanceSheetItems.previousPage"
+                        :title="title"
+                        :user="roleuser"
+                        form="formCompanyCardableTable"
+                        @update="update"
+                        @deleted="deleteTableItem"
+                        @get-page="getPage"
+                        @trier-alphabet="trierAlphabet"
+                        @search="search"
+                        @cancel-search="cancelSearch"/>
+                </AppSuspense>
+            </div>
+            <div v-show="AddForm" :key="addFormKey" class="col-6">
+                <AppSuspense>
+                    <AppCard class="bg-blue col" title="">
+                        <div class="row">
+                            <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
+                                <Fa icon="angle-double-left"/>
+                            </button>
+                            <h4 class="col">
+                                <Fa icon="square-plus"/> Ajouter un nouvel élément
+                            </h4>
+                        </div>
+                        <AppSuspense>
+                            <AppFormCardable id="addItem" :model-value="formData" :fields="fieldsForm" label-cols @update:model-value="input"/>
+                        </AppSuspense>
+                        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
+                            <div v-for="violation in violations" :key="violation">
+                                <li>{{ violation.message }}</li>
                             </div>
-                            <AppSuspense>
-                                <AppFormCardable id="addItem" :model-value="formData" :fields="fieldsForm" label-cols @update:model-value="input"/>
-                            </AppSuspense>
-                            <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                                <div v-for="violation in violations" :key="violation">
-                                    <li>{{ violation.message }}</li>
-                                </div>
-                            </div>
-                            <div class="btnright row">
-                                <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutItem">
-                                    <Fa icon="plus"/> Enregister
-                                </AppBtn>
-                            </div>
-                        </AppCard>
-                    </AppSuspense>
-                </div>
+                        </div>
+                        <div class="btnright row">
+                            <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutItem">
+                                <Fa icon="plus"/> Enregister
+                            </AppBtn>
+                        </div>
+                    </AppCard>
+                </AppSuspense>
             </div>
         </div>
     </div>
 </template>
+
+<style scoped>
+    .tableau {
+        min-height: 300px;
+    }
+</style>
