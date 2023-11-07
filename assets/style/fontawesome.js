@@ -82,7 +82,9 @@ import {
     faUserTag,
     faWarehouse,
     faWrench,
-    faGaugeHigh
+    faGaugeHigh,
+    faCartShopping,
+    faScaleBalanced
 } from '@fortawesome/free-solid-svg-icons'
 import {faElementor, faProductHunt} from '@fortawesome/free-brands-svg-icons'
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -100,6 +102,7 @@ library.add(faBullseye)
 library.add(faCalendarDay)
 library.add(faCaretDown)
 library.add(faCaretUp)
+library.add(faCartShopping)
 library.add(faCertificate)
 library.add(faCheck)
 library.add(faCheckCircle)
@@ -143,6 +146,7 @@ library.add(faProjectDiagram)
 library.add(faPuzzlePiece)
 library.add(faReceipt)
 library.add(faRulerHorizontal)
+library.add(faScaleBalanced)
 library.add(faScrewdriverWrench)
 library.add(faSearch)
 library.add(faSignal)
