@@ -8,7 +8,8 @@
         id: {required: true, type: String},
         formatNav: {required: false, type: String, default: 'flex'}
     })
-    const css = computed(() => ({'icon-mode': iconMode.value}))
+    const css = computed(() => ({'icon-mode': iconMode.value, 'flex-row': props.formatNav !== 'flex'}))
+    const cssLi = computed(() => ({'nav-item': props.formatNav === 'flex', 'nav-link-horizontal': props.formatNav !== 'flex'}))
     const icon = computed(() => `${props.id}-icon`)
     const tabs = useTabs(props.id)
 
@@ -24,7 +25,7 @@
 <template>
     <div :id="id" :class="css" class="d-flex">
         <ul class="bg-white nav nav-tabs" role="tablist" :style="`--form: var(--form-${id})`">
-            <li class="nav-item tab-icon" role="presentation" title="Icônes">
+            <li :class="cssLi" class="tab-icon" role="presentation" title="Icônes">
                 <label :for="icon" class="form-check-label">
                     <Fa icon="icons"/>
                 </label>
@@ -32,7 +33,7 @@
                     <input :id="icon" v-model="iconMode" class="form-check-input" type="checkbox"/>
                 </div>
             </li>
-            <AppTabLink v-for="tab in tabs.tabs" :key="tab.id" :tab="tab"/>
+            <AppTabLink v-for="tab in tabs.tabs" :key="tab.id" :tab="tab" :format-nav="formatNav"/>
         </ul>
         <div class="bg-white tab-content">
             <slot/>
@@ -55,5 +56,9 @@
 
     li {
         padding-bottom: 0px;
+    }
+
+    .nav-link-horizontal {
+        max-width: 150px;
     }
 </style>

@@ -1,9 +1,11 @@
 <script setup>
-    defineProps({tab: {required: true, type: Object}})
+    import {computed, defineProps} from 'vue'
+    const props = defineProps({tab: {required: true, type: Object}, formatNav: {required: false, type: String, default: 'flex'}})
+    const cssLi = computed(() => ({'nav-item': props.formatNav === 'flex', 'nav-link-horizontal': props.formatNav !== 'flex'}))
 </script>
 
 <template>
-    <li :title="tab.title" class="nav-item" role="presentation">
+    <li :title="tab.title" :class="cssLi" role="presentation">
         <button
             :id="tab.labelledby"
             :aria-controls="tab.id"
@@ -26,5 +28,13 @@
     button.active {
         background-color: #43abd7 !important;
         color: white !important;
+    }
+    div.nav-link-text {
+        text-wrap: normal;
+        max-width: 120px;
+        width: 120px
+    }
+    .nav-link-horizontal {
+        max-width: 150px;
     }
 </style>
