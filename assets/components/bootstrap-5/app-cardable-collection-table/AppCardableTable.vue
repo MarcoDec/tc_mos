@@ -17,7 +17,8 @@
         previousPage: {required: true, type: String},
         user: {required: true, type: String},
         shouldDelete: {required: false, default: true},
-        shouldSee: {required: false, default: true}
+        shouldSee: {required: false, default: true},
+        title: {default: null, required: false, type: String}
     })
     //console.log('props.fields', props.fields)
     const displayedFields = computed(() => (props.min ? props.fields.filter(({min}) => min) : props.fields))
@@ -50,7 +51,7 @@
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCardableTableHeader :fields="displayedFields" @trier-alphabet="trierAlphabet"/>
+        <AppCardableTableHeader :fields="displayedFields" :title="title" @trier-alphabet="trierAlphabet"/>
         <tbody>
             <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
             <tr class="bg-dark">
