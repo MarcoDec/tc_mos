@@ -24,7 +24,7 @@
 
 <template>
     <div :id="id" :class="css" class="d-flex">
-        <ul class="bg-white nav nav-tabs" role="tablist" :style="`--form: var(--form-${id})`">
+        <ul class="bg-white nav" :class="{'nav-tabs-flex': formatNav === 'flex', 'nav-tabs-block': formatNav !== 'flex'}" role="tablist" :style="`--form: var(--form-${id})`">
             <li :class="cssLi" class="tab-icon" role="presentation" title="Icônes">
                 <label :for="icon" class="form-check-label">
                     <Fa icon="icons"/>
@@ -47,8 +47,14 @@
         width: 100vw;
     }
 
-    .nav-tabs {
-         display: var(--form);
+    .nav-tabs-flex {
+        display: flex;
+        margin-top: 0px;
+    }
+    .nav-tabs-block {
+        display: flex;
+        flex-direction: column;
+        margin: 0px;
     }
     .tab-content{
         width: 100%;

@@ -25,6 +25,13 @@
 </template>
 
 <style scoped>
+    button {
+        border: 0px;
+        border-radius: 10px;
+    }
+    button:hover {
+        box-shadow: inset black 0px 0px 10px;
+    }
     button.active {
         background-color: #43abd7 !important;
         color: white !important;
@@ -36,5 +43,6 @@
     }
     .nav-link-horizontal {
         max-width: 150px;
+        margin: 0px;
     }
 </style>
