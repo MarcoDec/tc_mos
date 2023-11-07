@@ -5,6 +5,8 @@
     import {useBalanceSheetStore} from '../../../../../stores/management/balance-sheets/balanceSheets'
     import AppCardShow from '../../../../AppCardShow.vue'
     import AppSuspense from '../../../../AppSuspense.vue'
+    import AppTab from '../../../../tab/AppTab.vue'
+    import AppTabs from '../../../../tab/AppTabs.vue'
     import AppBalanceSheetShowTable from './AppBalanceSheetShowTable.vue'
 
     const route = useRoute()
@@ -68,6 +70,7 @@
     const purchaseTablesFields = [
         {
             title: 'Dépenses normales',
+            id: 'depenses_normales',
             fields: [
                 {label: 'Date Paiement', name: 'paymentDate', trie: true, type: 'text'},
                 {label: 'Date Facture', name: 'billDate', trie: true, type: 'text'},
@@ -81,6 +84,7 @@
         },
         {
             title: 'Salaires',
+            id: 'salaires',
             fields: [
                 {label: 'Date', name: 'paymentDate', trie: true, type: 'text'},
                 {label: 'N° Matricule', name: 'paymentRef', trie: true, type: 'text'},
@@ -93,6 +97,7 @@
         },
         {
             title: 'Achats Matières Premières',
+            id: 'achats_matières_premières',
             fields: [
                 {label: 'Date', name: 'paymentDate', trie: true, type: 'text'},
                 {label: 'Date Facture', name: 'billDate', trie: true, type: 'text'},
@@ -107,6 +112,7 @@
         },
         {
             title: 'Frais de transport',
+            id: 'frais_de_transport',
             fields: [
                 {label: 'Date', name: 'paymentDate', trie: true, type: 'text'},
                 {label: 'Date Facture', name: 'billDate', trie: true, type: 'text'},
@@ -122,6 +128,7 @@
     const sellingTablesFields = [
         {
             title: 'Ventes',
+            id: 'ventes',
             fields: [
                 {label: 'Date', name: 'paymentDate', trie: true, type: 'text'},
                 {label: 'N° Facture/Avoir', name: 'paymentRef', trie: true, type: 'text'},
@@ -175,21 +182,39 @@
         </div>
 
         <h2>Achats</h2>
-        <AppBalanceSheetShowTable
-            v-for="table in purchaseTablesFields"
-            :key="table.title"
-            :id-balance-sheet="idBalanceSheet"
-            :payment-category="table.paymentCategory"
-            :tab-fields="table.fields"
-            :title="table.title"/>
+        <AppTabs id="achats_tabs">
+            <AppTab
+                v-for="table in purchaseTablesFields"
+                :id="table.id"
+                :key="table.id"
+                icon="puzzle-piece"
+                tabs="achats_tabs"
+                :title="table.title">
+                <AppBalanceSheetShowTable
+                    :id-balance-sheet="idBalanceSheet"
+                    :payment-category="table.paymentCategory"
+                    :tab-fields="table.fields"
+                    :tab-id="table.id"
+                    :title="table.title"/>
+            </AppTab>
+        </AppTabs>
         <h2>Ventes</h2>
-        <AppBalanceSheetShowTable
-            v-for="table in sellingTablesFields"
-            :key="table.title"
-            :id-balance-sheet="idBalanceSheet"
-            :payment-category="table.paymentCategory"
-            :tab-fields="table.fields"
-            :title="table.title"/>
+        <AppTabs id="ventes_tabs">
+            <AppTab
+                v-for="table in sellingTablesFields"
+                :id="table.id"
+                :key="table.id"
+                icon="puzzle-piece"
+                tabs="ventes_tabs"
+                :title="table.title">
+                <AppBalanceSheetShowTable
+                    :id-balance-sheet="idBalanceSheet"
+                    :payment-category="table.paymentCategory"
+                    :tab-fields="table.fields"
+                    :tab-id="table.id"
+                    :title="table.title"/>
+            </AppTab>
+        </AppTabs>
     </AppSuspense>
 </template>
 
@@ -218,4 +243,5 @@
     .border {
         border: 1px solid black;
     }
+    div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
 </style>

@@ -8,6 +8,7 @@
         title: {required: true, type: String},
         idBalanceSheet: {required: true, type: Number},
         tabFields: {required: true, type: Array},
+        tabId: {required: true, type: String},
         paymentCategory: {required: true, type: String}
     })
     console.log('AppBalanceSheetShowTable.vue', props.title)
@@ -16,7 +17,7 @@
     const isWriterOrAdmin = fetchUser.isManagementWriter || fetchUser.isManagementAdmin
     const roleuser = ref(isWriterOrAdmin ? 'writer' : 'reader')
     const fetchBalanceSheetItems = useBalanceSheetItemStore()
-    const balanceSheetItemsCriteria = useFetchCriteria('balanceSheetItems-criteria')
+    const balanceSheetItemsCriteria = useFetchCriteria(`balanceSheetItems-criteria-${props.tabId}`)
     function addPermanentFilter() {
         balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
         balanceSheetItemsCriteria.addFilter('paymentCategory', props.paymentCategory)
