@@ -8,7 +8,7 @@
         id: {required: true, type: String},
         formatNav: {required: false, type: String, default: 'flex'}
     })
-    const css = computed(() => ({'icon-mode': iconMode.value, 'flex-row': props.formatNav !== 'flex'}))
+    const css = computed(() => ({/*'icon-mode': iconMode.value,*/ 'flex-row': props.formatNav !== 'flex'}))
     const cssLi = computed(() => ({'nav-item': props.formatNav === 'flex', 'nav-link-horizontal': props.formatNav !== 'flex'}))
     const icon = computed(() => `${props.id}-icon`)
     const tabs = useTabs(props.id)
@@ -18,7 +18,7 @@
     })
 
     onMounted(() => {
-        document.documentElement.style.setProperty(`--form-${props.id}`, props.formatNav)
+        //document.documentElement.style.setProperty(`--form-${props.id}`, props.formatNav)
     })
 </script>
 
@@ -33,7 +33,7 @@
                     <input :id="icon" v-model="iconMode" class="form-check-input" type="checkbox"/>
                 </div>
             </li>
-            <AppTabLink v-for="tab in tabs.tabs" :key="tab.id" :tab="tab" :format-nav="formatNav"/>
+            <AppTabLink v-for="tab in tabs.tabs" :key="tab.id" :icon-mode="iconMode" :tab="tab" :format-nav="formatNav"/>
         </ul>
         <div class="bg-white tab-content">
             <slot/>

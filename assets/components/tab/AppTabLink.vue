@@ -1,7 +1,14 @@
 <script setup>
     import {computed, defineProps} from 'vue'
-    const props = defineProps({tab: {required: true, type: Object}, formatNav: {required: false, type: String, default: 'flex'}})
+    const props = defineProps(
+        {
+            iconMode: {required: false, type: Boolean, default: false},
+            tab: {required: true, type: Object},
+            formatNav: {required: false, type: String, default: 'flex'}
+        }
+    )
     const cssLi = computed(() => ({'nav-item': props.formatNav === 'flex', 'nav-link-horizontal': props.formatNav !== 'flex'}))
+    const cssDivText = computed(() => ({'nav-link-text-horizontal': props.formatNav === 'flex', 'nav-link-text': props.formatNav !== 'flex'}))
 </script>
 
 <template>
@@ -17,7 +24,7 @@
             role="tab"
             type="button">
             <Fa :icon="tab.icon" class="me-1"/>
-            <div class="nav-link-text">
+            <div :class="cssDivText" v-if="!iconMode">
                 {{ tab.title }}
             </div>
         </button>
@@ -41,6 +48,9 @@
         text-wrap: normal;
         max-width: 120px;
         width: 120px
+    }
+    div.nav-link-text-horizontal {
+        text-wrap: normal;
     }
     .nav-link-horizontal {
         max-width: 150px;
