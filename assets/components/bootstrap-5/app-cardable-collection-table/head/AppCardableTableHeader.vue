@@ -16,7 +16,9 @@
     <thead class="table-dark">
         <tr v-if="title !== null">
             <td class="bg-secondary text-uppercase text-xl-center" :colspan="fields.length + 2">
-                {{ title }}
+                <slot name="title">
+                    {{ title }}
+                </slot>
             </td>
         </tr>
         <tr>

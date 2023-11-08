@@ -51,7 +51,11 @@
 
 <template>
     <table class="table table-bordered table-hover table-striped">
-        <AppCardableTableHeader :fields="displayedFields" :title="title" @trier-alphabet="trierAlphabet"/>
+        <AppCardableTableHeader :fields="displayedFields" :title="title" @trier-alphabet="trierAlphabet">
+            <template #title>
+                <slot name="title"/>
+            </template>
+        </AppCardableTableHeader>
         <tbody>
             <AppCardableTableBodyHeader :form="form" :fields="displayedFields" :user="user" :model-value="input" @search="search" @cancel-search="cancelSearch" @update:model-value="onUpdateSearchModelValue"/>
             <tr class="bg-dark">
