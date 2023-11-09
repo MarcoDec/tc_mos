@@ -26,7 +26,8 @@
                 } else {
                     const theField = f.optionsList.find(o => o.text === localData.value[f.name])
                     //console.log(f.name, theField['@id'], localData.value[f.name])
-                    localData.value[f.name] = theField['@id']
+                    if (typeof theField === 'undefined') localData.value[f.name] = null
+                    else localData.value[f.name] = theField['@id']
                 }
             }
         })
