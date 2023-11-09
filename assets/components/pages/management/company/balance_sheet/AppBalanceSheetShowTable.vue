@@ -6,6 +6,8 @@
     import AppSuspense from '../../../../AppSuspense.vue'
     import Fa from '../../../../Fa'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
+    import {useCookies} from '@vueuse/integrations/useCookies'
+    const token = useCookies(['token']).get('token')
     const props = defineProps({
         addForm: {required: true, type: Boolean},
         title: {required: true, type: String},
@@ -87,19 +89,32 @@
     function input(v){
         console.log('input', v)
     }
+    const addFormName = `addItemForm_${props.tabId}`
 
-    async function ajoutItem(){
-        addPermanentFields()
-        if (typeof formData.value.file !== 'undefined' && formData.value.file !== null) formData.value.file = [formData.value.file]
-        else formData.value.file = null
-        violations = await fetchBalanceSheetItems.add({data: formData.value})
-        if (typeof violations !== 'undefined' && violations.length > 0){
-            isPopupVisible.value = true
-        } else {
-            AddForm.value = false
-            isPopupVisible.value = false
-            await refreshTable() //On recharge les données
-        }
+    function ajoutItem(){
+        const addForm = document.getElementById(addFormName)
+        const formDataAddItem = new FormData(addForm)
+        console.log('ajoutItem', formDataAddItem.get('paymentDate'))
+        fetch('/api/balance-sheet-items', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            method: 'POST',
+            body: formDataAddItem
+        }).then(response => {
+            console.log('response', response)
+        })
+        // addPermanentFields()
+        // if (typeof formData.value.file !== 'undefined' && formData.value.file !== null) formData.value.file = [formData.value.file]
+        // else formData.value.file = null
+        // violations = await fetchBalanceSheetItems.add({data: formData.value})
+        // if (typeof violations !== 'undefined' && violations.length > 0){
+        //     isPopupVisible.value = true
+        // } else {
+        //     AddForm.value = false
+        //     isPopupVisible.value = false
+        //     await refreshTable() //On recharge les données
+        // }
     }
     function annule(){
         AddForm.value = false
@@ -128,7 +143,7 @@
                         :previous-page="fetchBalanceSheetItems.previousPage"
                         :title="title"
                         :user="roleuser"
-                        form="formCompanyCardableTable"
+                        :form="`updateItemForm${tabId}`"
                         @update="update"
                         @deleted="deleteTableItem"
                         @get-page="getPage"
@@ -156,7 +171,7 @@
                             </h4>
                         </div>
                         <AppSuspense>
-                            <AppFormCardable id="addItem" :model-value="formData" :fields="fieldsForm" label-cols @update:model-value="input"/>
+                            <AppFormCardable :id="addFormName" :model-value="formData" :fields="fieldsForm" label-cols @update:model-value="input"/>
                         </AppSuspense>
                         <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
                             <div v-for="violation in violations" :key="violation">
