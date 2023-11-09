@@ -11,7 +11,7 @@
     })
     const theValue = computed(() => {
         if (typeof props.modelValue === 'boolean') {
-            console.warn('AppInput.vue entrée booléenne détectée, remplacement valeur par chaine texte vide')
+            console.warn('AppInput.vue entrée booléenne détectée, remplacement valeur par chaine texte vide', props.field)
             return ''
         }
         return props.modelValue
