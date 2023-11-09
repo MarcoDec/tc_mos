@@ -35,7 +35,6 @@
     }
     const itemsTable = computed(() => fetchBalanceSheetItems.items)
     async function refreshTable() {
-        console.log('refreshTable')
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
     }
     const getId = /.*?\/(\d+)/
@@ -94,6 +93,8 @@
     function ajoutItem(){
         const addForm = document.getElementById(addFormName)
         const formDataAddItem = new FormData(addForm)
+        formDataAddItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
+        formDataAddItem.append('paymentCategory', props.paymentCategory)
         console.log('ajoutItem', formDataAddItem.get('paymentDate'))
         fetch('/api/balance-sheet-items', {
             headers: {
@@ -101,20 +102,9 @@
             },
             method: 'POST',
             body: formDataAddItem
-        }).then(response => {
-            console.log('response', response)
+        }).then(() => {
+            refreshTable()
         })
-        // addPermanentFields()
-        // if (typeof formData.value.file !== 'undefined' && formData.value.file !== null) formData.value.file = [formData.value.file]
-        // else formData.value.file = null
-        // violations = await fetchBalanceSheetItems.add({data: formData.value})
-        // if (typeof violations !== 'undefined' && violations.length > 0){
-        //     isPopupVisible.value = true
-        // } else {
-        //     AddForm.value = false
-        //     isPopupVisible.value = false
-        //     await refreshTable() //On recharge les données
-        // }
     }
     function annule(){
         AddForm.value = false

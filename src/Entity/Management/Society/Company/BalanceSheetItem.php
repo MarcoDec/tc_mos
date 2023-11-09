@@ -3,7 +3,7 @@
 namespace App\Entity\Management\Society\Company;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
-use App\Controller\Management\Company\BalanceSheetItemController;
+use App\Controller\Management\Company\BalanceSheetItemPostController;
 use App\Entity\AbstractAttachment;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -56,12 +56,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
             'post' => [
                 'method' => 'POST',
                 'path' => '/balance-sheet-items',
+                'read' => true,
+                'write' => true,
+                'deserialize' => false, //OK
                 'openapi_context' => [
                     'description' => 'Ajoute une écriture comptable',
                     'summary' => 'Ajoute une écriture comptable'
                 ],
                 'input_formats' => ['multipart'],
-                'controller' => PlaceholderAction::class,
+                'controller' => BalanceSheetItemPostController::class,
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
@@ -140,7 +143,12 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     ];
     //endregion
     //region définition des propriétés
-
+    #[
+        ApiProperty(description: 'Lien pièce jointe'),
+        ORM\Column(type: 'string', nullable: true),
+        Serializer\Groups(['read:file', 'read:balance-sheet-item'])
+    ]
+    private ?string $url = null;
     #[
         ApiProperty(description: 'Lien image'),
         ORM\Column(type: 'string', nullable: true),
@@ -225,7 +233,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
         ApiProperty(description: 'Sous-catégorie', example: 'AVANCE SUR SALAIRE'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private ?string $subCategory;
+    private ?string $subCategory='';
     //endregion
 
     public function __construct() {
@@ -372,4 +380,18 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
         return $this->filePath;
     }
     //endregion
+    public function getBaseFolder() {
+        return 'BalanceSheet/'.$this->balanceSheet->getId().'/BalanceSheetItems';
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): BalanceSheetItem
+    {
+        $this->url = $url;
+        return $this;
+    }
 }
