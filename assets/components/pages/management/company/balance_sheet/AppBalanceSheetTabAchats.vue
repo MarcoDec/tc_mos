@@ -4,13 +4,14 @@
     import AppBalanceSheetShowTable from './AppBalanceSheetShowTable.vue'
     import {defineProps} from 'vue'
 
-    defineProps({
+    const props = defineProps({
         idBalanceSheet: {required: true, type: Number},
         isWriterOrAdmin: {required: true, type: Boolean}
     })
     const fileField = {
         label: 'Fichier',
         name: 'file',
+        multiple: false,
         trie: true,
         type: 'file'
     }
@@ -101,20 +102,42 @@
             paymentCategory: 'Frais de transport'
         }
     ]
+    const defaultFormValue = {
+        balanceSheet: `/api/balance-sheets/${props.idBalanceSheet}`,
+        paymentCategory: '',
+        paymentDate: new Date().toISOString().substr(0, 10),
+        billDate: new Date().toISOString().substr(0, 10),
+        paymentRef: '',
+        stakeholder: '',
+        subCategory: '',
+        label: '',
+        amount: {code: '/api/currencies/1', value: 0},
+        vat: {code: '/api/currencies/1', value: 0},
+        paymentMethod: '',
+        file: null
+    }
+    const defaultFormValues = [
+        {...defaultFormValue, subCategory: null, vat: null, paymentCategory: 'Dépenses normales'},
+        {...defaultFormValue, billDate: null, stakeholder: null, vat: null, paymentCategory: 'Salaires'},
+        {...defaultFormValue, paymentCategory: 'Achats Matières Premières', subCategory: null},
+        {...defaultFormValue, paymentCategory: 'Frais de transport', subCategory: null, vat: null}
+    ]
 </script>
 
 <template>
     <AppTabs id="achats_tabs" format-nav="block">
         <AppTab
-            v-for="table in purchaseTablesFields"
+            v-for="(table, index) in purchaseTablesFields"
             :id="table.id"
             :key="table.id"
+            :active="index === 0"
             :icon="table.icon"
             tabs="achats_tabs"
             :title="table.title">
             <AppBalanceSheetShowTable
                 :add-form="isWriterOrAdmin"
                 :id-balance-sheet="idBalanceSheet"
+                :default-form-values="defaultFormValues[purchaseTablesFields.indexOf(table)]"
                 :payment-category="table.paymentCategory"
                 :tab-fields="table.fields"
                 :tab-id="table.id"
