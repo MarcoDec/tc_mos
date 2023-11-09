@@ -229,7 +229,6 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
     //endregion
 
     public function __construct() {
-        parent::__construct();
         $this->quantity = new Measure();
         $this->unitPrice = new Measure();
         $this->vat = new Measure();
