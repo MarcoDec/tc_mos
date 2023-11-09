@@ -2,7 +2,7 @@
     import AppBalanceSheetShowTable from './AppBalanceSheetShowTable.vue'
     import {defineProps} from 'vue'
 
-    defineProps({
+    const props = defineProps({
         idBalanceSheet: {required: true, type: Number},
         isWriterOrAdmin: {required: true, type: Boolean}
     })
@@ -42,12 +42,25 @@
         ],
         paymentCategory: 'Ventes'
     }
+    const defaultFormValues = {
+        balanceSheet: `/api/balance-sheets/${props.idBalanceSheet}`,
+        paymentCategory: sellingTablesField.paymentCategory,
+        paymentDate: new Date().toISOString().substr(0, 10),
+        paymentRef: '',
+        stakeholder: '',
+        label: '',
+        amount: {code: '/api/currencies/1', value: 0},
+        vat: {code: '/api/currencies/1', value: 0},
+        paymentMethod: '',
+        file: null
+    }
 </script>
 
 <template>
     <AppBalanceSheetShowTable
         :add-form="isWriterOrAdmin"
         :id-balance-sheet="idBalanceSheet"
+        :default-form-values="defaultFormValues"
         :payment-category="sellingTablesField.paymentCategory"
         :tab-fields="sellingTablesField.fields"
         :tab-id="sellingTablesField.id"
