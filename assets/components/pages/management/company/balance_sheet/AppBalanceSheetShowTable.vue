@@ -1,7 +1,7 @@
 <script setup>
     import {computed, defineProps, onBeforeMount, ref} from 'vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
-    import {useBalanceSheetItemStore} from '../../../../../stores/management/balance-sheets/balanceSheetItems'
+    import useBalanceSheetItemStore from '../../../../../stores/management/balance-sheets/balanceSheetItems'
     import useUser from '../../../../../stores/security'
     import AppSuspense from '../../../../AppSuspense.vue'
     import Fa from '../../../../Fa'
@@ -12,21 +12,28 @@
         idBalanceSheet: {required: true, type: Number},
         tabFields: {required: true, type: Array},
         tabId: {required: true, type: String},
-        paymentCategory: {required: true, type: String}
+        paymentCategory: {required: true, type: String},
+        defaultFormValues: {required: true, type: Object}
     })
 
     const fetchUser = useUser()
     const isWriterOrAdmin = fetchUser.isManagementWriter || fetchUser.isManagementAdmin
     const roleuser = ref(isWriterOrAdmin ? 'writer' : 'reader')
-    const fetchBalanceSheetItems = useBalanceSheetItemStore()
+    const fetchBalanceSheetItems = useBalanceSheetItemStore(props.paymentCategory)
     const balanceSheetItemsCriteria = useFetchCriteria(`balanceSheetItems-criteria-${props.tabId}`)
+    const formData = ref(props.defaultFormValues)
     function addPermanentFilter() {
         balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
         balanceSheetItemsCriteria.addFilter('paymentCategory', props.paymentCategory)
     }
     addPermanentFilter()
+    function addPermanentFields(){
+        formData.value.balanceSheet = `/api/balance-sheets/${props.idBalanceSheet}`
+        formData.value.paymentCategory = props.paymentCategory
+    }
     const itemsTable = computed(() => fetchBalanceSheetItems.items)
     async function refreshTable() {
+        console.log('refreshTable')
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
     }
     const getId = /.*?\/(\d+)/
@@ -52,7 +59,13 @@
     async function search(inputValues) {
         balanceSheetItemsCriteria.resetAllFilter()
         addPermanentFilter()
-        if (inputValues.name) balanceSheetItemsCriteria.addFilter('name', inputValues.name)
+        if (inputValues.paymentRef) balanceSheetItemsCriteria.addFilter('paymentRef', inputValues.paymentRef)
+        if (inputValues.stakeholder) balanceSheetItemsCriteria.addFilter('stakeholder', inputValues.stakeholder)
+        if (inputValues.label) balanceSheetItemsCriteria.addFilter('label', inputValues.label)
+        if (inputValues.paymentMethod) balanceSheetItemsCriteria.addFilter('paymentMethod', inputValues.paymentMethod)
+        if (inputValues.subCategory) balanceSheetItemsCriteria.addFilter('subCategory', inputValues.subCategory)
+        if (inputValues.billDate) balanceSheetItemsCriteria.addFilter('billDate', inputValues.billDate)
+        if (inputValues.paymentDate) balanceSheetItemsCriteria.addFilter('paymentDate', inputValues.paymentDate)
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
     }
     async function cancelSearch() {
@@ -66,31 +79,21 @@
     const AddForm = ref(false)
     let addFormKey = 0
     const isPopupVisible = ref(false)
-    const formData = ref({})
     const fieldsForm = ref({})
     let violations = []
     onBeforeMount(() => {
         fieldsForm.value = props.tabFields
     })
     function input(v){
-        formData.value = v
-        if (v.families && v.families.includes('camion')) {
-            //on s'assure que fieldsForm contient la définition du champ destination
-            if (typeof fieldsForm.value.find(item => item.name === 'destination') === 'undefined') {
-                fieldsForm.value.push(destinationField)
-                addFormKey++
-            }
-        } else if (typeof fieldsForm.value.find(item => item.name === 'destination') !== 'undefined') {
-            fieldsForm.value.pop()
-            formData.value.destination = null
-            addFormKey++
-        }
+        console.log('input', v)
     }
 
     async function ajoutItem(){
-        formData.value.file = [formData.value.file]
-        violations = await fetchBalanceSheetItems.add(formData.value)
-        if (violations.length > 0){
+        addPermanentFields()
+        if (typeof formData.value.file !== 'undefined' && formData.value.file !== null) formData.value.file = [formData.value.file]
+        else formData.value.file = null
+        violations = await fetchBalanceSheetItems.add({data: formData.value})
+        if (typeof violations !== 'undefined' && violations.length > 0){
             isPopupVisible.value = true
         } else {
             AddForm.value = false
@@ -110,13 +113,6 @@
 
 <template>
     <div class="container-fluid tableau">
-        <div v-if="addForm" class="row">
-            <div class="col">
-                <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="AddForm = !AddForm">
-                    <Fa icon="plus"/> Ajouter
-                </AppBtn>
-            </div>
-        </div>
         <div class="row">
             <div class="col">
                 <AppSuspense>
@@ -138,7 +134,14 @@
                         @get-page="getPage"
                         @trier-alphabet="trierAlphabet"
                         @search="search"
-                        @cancel-search="cancelSearch"/>
+                        @cancel-search="cancelSearch">
+                        <template #title>
+                            {{ title }}
+                            <AppBtn v-if="addForm" class="btn-float-right" label="Ajout" variant="success" size="sm" @click="AddForm = !AddForm">
+                                <Fa icon="plus"/> Ajouter
+                            </AppBtn>
+                        </template>
+                    </AppCardableTable>
                 </AppSuspense>
             </div>
             <div v-show="AddForm" :key="addFormKey" class="col-6">
