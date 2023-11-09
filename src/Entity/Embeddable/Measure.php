@@ -36,8 +36,8 @@ class Measure {
     ]
     private ?string $denominator = null;
 
-    private ?Unit $denominatorUnit = null;
-    private ?Unit $unit = null;
+    private ?AbstractUnit $denominatorUnit = null;
+    private ?AbstractUnit $unit = null;
 
     #[
         ORM\Column(options: ['default' => 0]),
@@ -51,7 +51,7 @@ class Measure {
         return $this;
     }
 
-    final public function convert(Unit $unit, ?Unit $denominator = null): self {
+    final public function convert(AbstractUnit $unit, ?AbstractUnit $denominator = null): self {
         $this->getSafeUnit()->assertSameAs($unit);
         if ($this->getSafeUnit()->getCode() !== $unit->getCode()) {
             $this->value *= $this->getSafeUnit()->getConvertorDistance($unit);
@@ -84,18 +84,18 @@ class Measure {
         return $this->denominator;
     }
 
-    final public function getDenominatorUnit(): ?Unit {
+    final public function getDenominatorUnit(): ?AbstractUnit {
         return $this->denominatorUnit;
     }
 
-    final public function getSafeUnit(): Unit {
+    final public function getSafeUnit(): AbstractUnit {
         if ($this->unit === null) {
             throw new LogicException('Unit not loaded.');
         }
         return $this->unit;
     }
 
-    final public function getUnit(): ?Unit {
+    final public function getUnit(): ?AbstractUnit {
         return $this->unit;
     }
 
@@ -119,12 +119,12 @@ class Measure {
         return $this;
     }
 
-    final public function setDenominatorUnit(?Unit $denominatorUnit): self {
+    final public function setDenominatorUnit(?AbstractUnit $denominatorUnit): self {
         $this->denominatorUnit = $denominatorUnit;
         return $this;
     }
 
-    final public function setUnit(?Unit $unit): self {
+    final public function setUnit(?AbstractUnit $unit): self {
         $this->unit = $unit;
         return $this;
     }
@@ -139,9 +139,9 @@ class Measure {
     }
 
     private function convertToSame(self $measure): self {
-        /** @var Unit $unit */
+        /** @var AbstractUnit $unit */
         $unit = $this->getSafeUnit()->getLess($measure->getSafeUnit());
-        /** @var null|Unit $denominator */
+        /** @var null|AbstractUnit $denominator */
         $denominator = $this->denominatorUnit !== null && $measure->denominatorUnit !== null
             ? $this->denominatorUnit->getLess($measure->denominatorUnit)
             : null;
