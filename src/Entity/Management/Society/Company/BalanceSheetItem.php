@@ -143,7 +143,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
 
     #[
         ApiProperty(description: 'Lien image'),
-        ORM\Column(type: 'string'),
+        ORM\Column(type: 'string', nullable: true),
         Serializer\Groups(['read:file', 'read:balance-sheet-item'])
     ]
     protected ?string $filePath = null;
