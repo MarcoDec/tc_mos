@@ -370,7 +370,7 @@ class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
         Serializer\Groups(['read:file'])
     ]
     final public function getFilepath(): ?string {
-        return parent::getFilepath();
+        return $this->filePath;
     }
     //endregion
 }
