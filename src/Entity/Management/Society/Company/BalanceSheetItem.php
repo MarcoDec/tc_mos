@@ -2,17 +2,47 @@
 
 namespace App\Entity\Management\Society\Company;
 
+use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Controller\Management\Company\BalanceSheetItemController;
 use App\Entity\AbstractAttachment;
+use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
+use App\Entity\Entity;
+use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
 use App\Entity\Traits\AttachmentTrait;
+use App\Entity\Traits\FileTrait;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
+use PHPUnit\TextUI\XmlConfiguration\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiProperty;
-
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'paymentRef'=>'partial',
+        'stakeholder'=>'partial',
+        'label'=>'partial',
+        'paymentMethod'=>'partial',
+        'subCategory'=>'partial',
+        'paymentCategory'=>'exact'
+    ]),
+    ApiFilter(filterClass: OrderFilter::class, properties: [
+        'paymentRef',
+        'stakeholder',
+        'label',
+        'paymentMethod',
+        'paymentCategory',
+        'subCategory'
+    ]),
+    ApiFilter(filterClass: DateFilter::class, properties: [
+        'billDate',
+        'paymentDate'
+    ]),
     ApiResource(
         collectionOperations: [
             'get' => [
@@ -21,11 +51,6 @@ use ApiPlatform\Core\Annotation\ApiProperty;
                 'openapi_context' => [
                     'description' => 'Récupère les écritures comptables',
                     'summary' => 'Récupère les écritures comptables'
-                ],
-                'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
-                'normalization_context' => [
-                    'groups' => ['read:balance-sheet-item:collection', 'read:balance-sheet-item', 'read:measure', self::API_GROUP_READ],
-                    'skip_null_values' => false
                 ]
             ],
             'post' => [
@@ -35,23 +60,37 @@ use ApiPlatform\Core\Annotation\ApiProperty;
                     'description' => 'Ajoute une écriture comptable',
                     'summary' => 'Ajoute une écriture comptable'
                 ],
-                'denormalization_context' => self::API_DEFAULT_DENORMALIZATION_CONTEXT,
-                'normalization_context' => [
-                    'groups' => ['read:balance-sheet-item', 'read:measure', self::API_GROUP_READ],
-                    'skip_null_values' => false
-                ]
+                'input_formats' => ['multipart'],
+                'controller' => PlaceholderAction::class,
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get', 'patch', 'delete'],
-        denormalizationContext: ['groups' => ['write:measure', 'write:balance-sheet-item']],
-        normalizationContext: ['groups' => ['read:id', 'read:measure', 'read:balance-sheet-item'], 'skip_null_values' => false]
+        itemOperations: [
+            'get' => NO_ITEM_GET_OPERATION,
+            'patch',
+            'delete',
+            'post' => [
+                'controller' => PlaceholderAction::class,
+                'input_formats' => ['multipart'],
+                'method' => 'POST',
+                'openapi_context' => [
+                    'description' => 'Modifie un élément de bilan compatable',
+                    'summary' => 'Modifie un élement de bilan comptable',
+                ],
+                'path' => '/balance-sheet-items/{id}',
+                'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_ADMIN.'\')',
+                'status' => 200
+            ]
+            ],
+        denormalizationContext: ['groups' => ['write:measure', 'write:file', 'write:balance-sheet-item']],
+        normalizationContext: ['groups' => ['read:id', 'read:measure', 'read:file','read:balance-sheet-item'], 'skip_null_values' => false]
     ),
     ORM\Entity(),
     ORM\Table('balance_sheet_item')
  ]
-class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
+class BalanceSheetItem extends Entity implements MeasuredInterface, FileEntity
 {
-    use AttachmentTrait;
+    use FileTrait;
     //region définition des constantes
     public const INCOMES = [
         "VENTES"
@@ -101,43 +140,50 @@ class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
     ];
     //endregion
     //region définition des propriétés
+
     #[
-        ORM\ManyToOne(targetEntity: BalanceSheet::class, inversedBy: 'balanceSheetItems'),
+        ApiProperty(description: 'Lien image'),
+        ORM\Column(type: 'string'),
+        Serializer\Groups(['read:file', 'read:balance-sheet-item'])
+    ]
+    protected ?string $filePath = null;
+    #[
+        ORM\ManyToOne(targetEntity: BalanceSheet::class),
         ORM\JoinColumn(nullable: false),
         ApiProperty(description: 'Bilan', example: '/api/balance-sheets/1'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
     private BalanceSheet $balanceSheet;
     #[
-        ORM\Column(type: 'datetime'),
+        ORM\Column(type: 'datetime', nullable: true),
         ApiProperty(description: 'Date de la facture', example: '2021-01-01'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private \DateTimeInterface $billDate;
+    private ?\DateTimeInterface $billDate;
     #[
-        ORM\Column(type: 'datetime'),
+        ORM\Column(type: 'datetime', nullable: true),
         ApiProperty(description: 'Date du paiement', example: '2021-01-01'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private \DateTimeInterface $paymentDate;
+    private ?\DateTimeInterface $paymentDate;
     #[
-        ORM\Column(type: 'string', length: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true),
         ApiProperty(description: 'Référence du paiement', example: 'R565423'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private string $paymentRef;
+    private ?string $paymentRef;
     #[
-        ORM\Column(type: 'string', length: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true),
         ApiProperty(description: 'Partie prenante', example: 'MANITOU'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private string $stakeholder;
+    private ?string $stakeholder;
     #[
-        ORM\Column(type: 'string', length: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true),
         ApiProperty(description: 'Libellé', example: 'Cosse de batterie'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private string $label;
+    private ?string $label;
     #[
         ORM\Embedded,
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
@@ -163,23 +209,23 @@ class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
     ]
     private Measure $amount;
     #[
-        ORM\Column(type: 'string', length: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true),
         ApiProperty(description: 'Méthode de paiement', example: 'ESPECES'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private string $paymentMethod;
+    private ?string $paymentMethod;
     #[
-        ORM\Column(type: 'string', length: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true),
         ApiProperty(description: 'Catégorie paiement', example: 'SALAIRE'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private string $paymentCategory;
+    private ?string $paymentCategory;
     #[
-        ORM\Column(type: 'string', length: 255),
+        ORM\Column(type: 'string', length: 255, nullable: true),
         ApiProperty(description: 'Sous-catégorie', example: 'AVANCE SUR SALAIRE'),
         Serializer\Groups(['read:balance-sheet-item', 'write:balance-sheet-item'])
     ]
-    private string $subCategory;
+    private ?string $subCategory;
     //endregion
 
     public function __construct() {
@@ -190,47 +236,47 @@ class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
         $this->amount = new Measure();
     }
     //region définition de getters et setters
-    public function getBillDate(): \DateTimeInterface
+    public function getBillDate(): ?\DateTimeInterface
     {
         return $this->billDate;
     }
-    public function setBillDate(\DateTimeInterface $billDate): BalanceSheetItem
+    public function setBillDate(?\DateTimeInterface $billDate): BalanceSheetItem
     {
         $this->billDate = $billDate;
         return $this;
     }
-    public function getPaymentDate(): \DateTimeInterface
+    public function getPaymentDate(): ?\DateTimeInterface
     {
         return $this->paymentDate;
     }
-    public function setPaymentDate(\DateTimeInterface $paymentDate): BalanceSheetItem
+    public function setPaymentDate(?\DateTimeInterface $paymentDate): BalanceSheetItem
     {
         $this->paymentDate = $paymentDate;
         return $this;
     }
-    public function getPaymentRef(): string
+    public function getPaymentRef(): ?string
     {
         return $this->paymentRef;
     }
-    public function setPaymentRef(string $paymentRef): BalanceSheetItem
+    public function setPaymentRef(?string $paymentRef): BalanceSheetItem
     {
         $this->paymentRef = $paymentRef;
         return $this;
     }
-    public function getStakeholder(): string
+    public function getStakeholder(): ?string
     {
         return $this->stakeholder;
     }
-    public function setStakeholder(string $stakeholder): BalanceSheetItem
+    public function setStakeholder(?string $stakeholder): BalanceSheetItem
     {
         $this->stakeholder = $stakeholder;
         return $this;
     }
-    public function getLabel(): string
+    public function getLabel(): ?string
     {
         return $this->label;
     }
-    public function setLabel(string $label): BalanceSheetItem
+    public function setLabel(?string $label): BalanceSheetItem
     {
         $this->label = $label;
         return $this;
@@ -271,28 +317,28 @@ class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
         $this->amount = $amount;
         return $this;
     }
-    public function getPaymentMethod(): string
+    public function getPaymentMethod(): ?string
     {
         return $this->paymentMethod;
     }
-    public function setPaymentMethod(string $paymentMethod): BalanceSheetItem
+    public function setPaymentMethod(?string $paymentMethod): BalanceSheetItem
     {
         $this->paymentMethod = $paymentMethod;
         return $this;
     }
-    public function getPaymentCategory(): string
+    public function getPaymentCategory(): ?string
     {
         return $this->paymentCategory;
     }
-    public function setPaymentCategory(string $category): void
+    public function setPaymentCategory(?string $category): void
     {
         $this->paymentCategory = $category;
     }
-    public function getSubCategory(): string
+    public function getSubCategory(): ?string
     {
         return $this->subCategory;
     }
-    public function setSubCategory(string $subCategory): BalanceSheetItem
+    public function setSubCategory(?string $subCategory): BalanceSheetItem
     {
         $this->subCategory = $subCategory;
         return $this;
@@ -318,26 +364,13 @@ class BalanceSheetItem extends AbstractAttachment implements MeasuredInterface
         return null;
     }
     //endregion
-    //region définition des méthodes associées à la classe AbstractAttachment
-    public function getExpirationDirectoriesParameter(): string
-    {
-        return '';
+    //region définition des méthodes associées à l'interface FileEntity
+    #[
+        ApiProperty(description: 'Icône', example: '/uploads/balance-sheet-items/1.jpg'),
+        Serializer\Groups(['read:file'])
+    ]
+    final public function getFilepath(): ?string {
+        return parent::getFilepath();
     }
-
-    public function getExpirationDurationParameter(): string
-    {
-        return '';
-    }
-
-    public function getExpirationDateStr(): string
-    {
-        return 'day';
-    }
-
-    public function getParameterClass(): string
-    {
-        return '';
-    }
-
     //endregion
 }
