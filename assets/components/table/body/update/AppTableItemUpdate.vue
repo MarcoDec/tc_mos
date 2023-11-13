@@ -29,7 +29,7 @@
         }
     }
     const machineViolations = computed(() => props.machine.state.value.context.violations)
-    const fieldViolations = computed(() => Array.isArray(machineViolations.value) ? machineViolations.value : [])
+    const fieldViolations = computed(() => (Array.isArray(machineViolations.value) ? machineViolations.value : []))
     const isMachineViolationGlobalError = computed(() => !Array.isArray(machineViolations.value))
 </script>
 

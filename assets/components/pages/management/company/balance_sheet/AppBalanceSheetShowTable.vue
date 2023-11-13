@@ -12,6 +12,7 @@
         addForm: {required: true, type: Boolean},
         title: {required: true, type: String},
         idBalanceSheet: {required: true, type: Number},
+        formFields: {required: true, type: Array},
         tabFields: {required: true, type: Array},
         tabId: {required: true, type: String},
         paymentCategory: {required: true, type: String},
@@ -83,7 +84,7 @@
     const fieldsForm = ref({})
     let violations = []
     onBeforeMount(() => {
-        fieldsForm.value = props.tabFields
+        fieldsForm.value = props.formFields
     })
     function input(v){
         console.log('input', v)
@@ -183,5 +184,8 @@
 <style scoped>
     .tableau {
         min-height: 300px;
+    }
+    .btn:hover {
+        border: white 1px solid;
     }
 </style>

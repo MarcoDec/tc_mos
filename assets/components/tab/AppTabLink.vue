@@ -2,7 +2,7 @@
     import {computed, defineProps} from 'vue'
     const props = defineProps(
         {
-            iconMode: {required: false, type: Boolean, default: false},
+            iconMode: {required: false, type: Boolean/*, default: false*/},
             tab: {required: true, type: Object},
             formatNav: {required: false, type: String, default: 'flex'}
         }
@@ -24,7 +24,7 @@
             role="tab"
             type="button">
             <Fa :icon="tab.icon" class="me-1"/>
-            <div :class="cssDivText" v-if="!iconMode">
+            <div v-if="!iconMode" :class="cssDivText">
                 {{ tab.title }}
             </div>
         </button>

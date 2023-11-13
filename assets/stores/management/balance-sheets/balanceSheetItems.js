@@ -2,8 +2,8 @@ import {defineStore} from 'pinia'
 import api from '../../../api'
 
 export default function useBalanceSheetItemStore(base = 'base') {
-    const id = `balanceSheetItems/${base}`
-    return defineStore(id, {
+    const storeName = `balanceSheetItems/${base}`
+    return defineStore(storeName, {
         actions: {
             async add(data) {
                 await api('/api/balance-sheet-items', 'POST', data)

@@ -60,6 +60,9 @@
             <div v-else-if="field.type === 'multiselect-fetch'">
                 {{ item[field.name][field.filteredProperty] }}
             </div>
+            <div v-else-if="field.type === 'link'">
+                <a v-if="item[field.name] !== null && item[field.name] !== ''" :href="item[field.name]" target="_blank">Download file</a>
+            </div>
             <div v-else>
                 <span v-if="isObject(item[field.name])" class="bg-danger text-white">Object given for field '{{ field.name }}' - {{ item[field.name] }}</span>
                 <span v-else>{{ item[field.name] }}</span>

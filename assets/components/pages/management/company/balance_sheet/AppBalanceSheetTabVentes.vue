@@ -6,12 +6,6 @@
         idBalanceSheet: {required: true, type: Number},
         isWriterOrAdmin: {required: true, type: Boolean}
     })
-    const fileField = {
-        label: 'Fichier',
-        name: 'file',
-        trie: true,
-        type: 'file'
-    }
     const priceMeasure = {
         code: {
             label: 'Devise',
@@ -26,6 +20,34 @@
             step: 0.01
         }
     }
+    const formFileField = {
+        label: 'Fichier',
+        name: 'file',
+        multiple: false,
+        trie: true,
+        type: 'file'
+    }
+    const showFileField = {
+        label: 'Fichier',
+        name: 'url',
+        trie: true,
+        type: 'link'
+    }
+    const sellingFormField = {
+        title: 'Ventes',
+        icon: 'hand-holding-dollar',
+        id: 'ventes',
+        fields: [
+            {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
+            {label: 'N° Facture/Avoir', name: 'paymentRef', trie: true, type: 'text', min: true},
+            {label: 'Client', name: 'stakeholder', trie: true, type: 'text', min: true},
+            {label: 'Libellé', name: 'label', trie: true, type: 'text'},
+            {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
+            {label: 'tva', name: 'vat', trie: true, type: 'measure', measure: priceMeasure},
+            {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
+            formFileField
+        ]
+    }
     const sellingTablesField = {
         title: 'Ventes',
         icon: 'hand-holding-dollar',
@@ -38,7 +60,7 @@
             {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
             {label: 'tva', name: 'vat', trie: true, type: 'measure', measure: priceMeasure},
             {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
-            fileField
+            showFileField
         ],
         paymentCategory: 'Ventes'
     }
@@ -62,6 +84,7 @@
         :id-balance-sheet="idBalanceSheet"
         :default-form-values="defaultFormValues"
         :payment-category="sellingTablesField.paymentCategory"
+        :form-fields="sellingFormField.fields"
         :tab-fields="sellingTablesField.fields"
         :tab-id="sellingTablesField.id"
         :title="sellingTablesField.title"/>
@@ -69,7 +92,7 @@
 
 <style scoped>
 div {
-    background-color: #c8c8c8;
+    background-color: white;
 }
 div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
 </style>

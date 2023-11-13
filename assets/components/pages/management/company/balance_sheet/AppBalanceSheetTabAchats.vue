@@ -8,12 +8,19 @@
         idBalanceSheet: {required: true, type: Number},
         isWriterOrAdmin: {required: true, type: Boolean}
     })
-    const fileField = {
+    const formFileField = {
         label: 'Fichier',
         name: 'file',
         multiple: false,
         trie: true,
         type: 'file'
+    }
+
+    const showFileField = {
+        label: 'Fichier',
+        name: 'url',
+        trie: true,
+        type: 'link'
     }
     const priceMeasure = {
         code: {
@@ -29,6 +36,79 @@
             step: 0.01
         }
     }
+    const purchaseFormFields = [
+        {
+            title: 'Dépenses normales',
+            icon: 'money-bill-1',
+            id: 'depenses_normales',
+            fields: [
+                {label: 'Date Paiement', name: 'paymentDate', trie: true, type: 'date', min: true},
+                {label: 'Date Facture', name: 'billDate', trie: true, type: 'date', min: false},
+                {label: 'N° Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
+                {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
+                {label: 'Libelle', name: 'label', trie: true, type: 'text', min: true},
+                {
+                    label: 'Débit / MHT',
+                    name: 'amount',
+                    trie: true,
+                    type: 'measure',
+                    min: true,
+                    measure: priceMeasure
+                },
+                {label: 'Méthode de paiement', name: 'paymentMethod', trie: true, type: 'text', min: false},
+                formFileField
+            ],
+            paymentCategory: 'Dépenses normales'
+        },
+        {
+            title: 'Salaires',
+            icon: 'business-time',
+            id: 'salaires',
+            fields: [
+                {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
+                {label: 'N° Matricule', name: 'paymentRef', trie: true, type: 'text'},
+                {label: 'Type Paies', name: 'subCategory', trie: true, type: 'text', min: true},
+                {label: 'Nom & Prénom', name: 'label', trie: true, type: 'text', min: true},
+                {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
+                {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
+                formFileField
+            ],
+            paymentCategory: 'Salaires'
+        },
+        {
+            title: 'Achats Matières Premières',
+            icon: 'right-to-bracket',
+            id: 'achats_matières_premières',
+            fields: [
+                {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
+                {label: 'Date Facture', name: 'billDate', trie: true, type: 'date'},
+                {label: 'Numéro de Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
+                {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
+                {label: 'Libellé', name: 'label', trie: true, type: 'text', min: false},
+                {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
+                {label: 'tva', name: 'vat', trie: true, type: 'measure', min: true, measure: priceMeasure},
+                {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
+                formFileField
+            ],
+            paymentCategory: 'Achats Matières Premières'
+        },
+        {
+            title: 'Frais de transport',
+            icon: 'truck',
+            id: 'frais_de_transport',
+            fields: [
+                {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
+                {label: 'Date Facture', name: 'billDate', trie: true, type: 'date'},
+                {label: 'Ref Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
+                {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
+                {label: 'Libellé', name: 'label', trie: true, type: 'text'},
+                {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
+                {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
+                formFileField
+            ],
+            paymentCategory: 'Frais de transport'
+        }
+    ]
     const purchaseTablesFields = [
         {
             title: 'Dépenses normales',
@@ -49,7 +129,7 @@
                     measure: priceMeasure
                 },
                 {label: 'Méthode de paiement', name: 'paymentMethod', trie: true, type: 'text', min: false},
-                fileField
+                showFileField
             ],
             paymentCategory: 'Dépenses normales'
         },
@@ -64,7 +144,7 @@
                 {label: 'Nom & Prénom', name: 'label', trie: true, type: 'text', min: true},
                 {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
                 {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
-                fileField
+                showFileField
             ],
             paymentCategory: 'Salaires'
         },
@@ -81,7 +161,7 @@
                 {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
                 {label: 'tva', name: 'vat', trie: true, type: 'measure', min: true, measure: priceMeasure},
                 {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
-                fileField
+                showFileField
             ],
             paymentCategory: 'Achats Matières Premières'
         },
@@ -97,7 +177,7 @@
                 {label: 'Libellé', name: 'label', trie: true, type: 'text'},
                 {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
                 {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
-                fileField
+                showFileField
             ],
             paymentCategory: 'Frais de transport'
         }
@@ -140,6 +220,7 @@
                 :default-form-values="defaultFormValues[purchaseTablesFields.indexOf(table)]"
                 :payment-category="table.paymentCategory"
                 :tab-fields="table.fields"
+                :form-fields="purchaseFormFields[purchaseTablesFields.indexOf(table)].fields"
                 :tab-id="table.id"
                 :title="table.title"/>
         </AppTab>
@@ -148,7 +229,7 @@
 
 <style scoped>
     div {
-        background-color: #c8c8c8;
+        background-color: white;
     }
     div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
 </style>
