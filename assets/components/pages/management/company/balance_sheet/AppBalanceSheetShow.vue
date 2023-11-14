@@ -39,7 +39,11 @@
     })
     const balanceSheetCurrency = computed(() => {
         console.log(currentBalanceSheet.value)
-        return currentBalanceSheet.value.currency ?? null
+        if (typeof currentBalanceSheet.value.currency === 'undefined') return ''
+        if (currentBalanceSheet.value.currency === null) return ''
+        if (typeof currentBalanceSheet.value.currency === 'string') return currentBalanceSheet.value.currency
+        if (typeof currentBalanceSheet.value.currency === 'object') return currentBalanceSheet.value.currency['@id']
+        return ''
     })
     //endregion
     //region Définition des champs de formulaires et tableaux
