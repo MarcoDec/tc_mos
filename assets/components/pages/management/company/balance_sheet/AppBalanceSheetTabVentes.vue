@@ -4,8 +4,11 @@
 
     const props = defineProps({
         idBalanceSheet: {required: true, type: Number},
-        isWriterOrAdmin: {required: true, type: Boolean}
+        isWriterOrAdmin: {required: true, type: Boolean},
+        balanceSheetCurrency: {required: true, type: String}
     })
+    //region Définition des champs de formulaires et tableaux
+    //region      Définition des champs communs
     const priceMeasure = {
         code: {
             label: 'Devise',
@@ -33,6 +36,8 @@
         trie: true,
         type: 'link'
     }
+    //endregion
+    //region      Définition des champs de formulaires et tableaux pour les Ventes
     const sellingFormField = {
         title: 'Ventes',
         icon: 'hand-holding-dollar',
@@ -64,6 +69,9 @@
         ],
         paymentCategory: 'Ventes'
     }
+    //endregion
+    //endregion
+    //region Initialisation des données de formulaires
     const defaultFormValues = {
         balanceSheet: `/api/balance-sheets/${props.idBalanceSheet}`,
         paymentCategory: sellingTablesField.paymentCategory,
@@ -71,11 +79,12 @@
         paymentRef: '',
         stakeholder: '',
         label: '',
-        amount: {code: '/api/currencies/1', value: 0},
-        vat: {code: '/api/currencies/1', value: 0},
+        amount: {code: props.balanceSheetCurrency, value: 0},
+        vat: {code: props.balanceSheetCurrency, value: 0},
         paymentMethod: '',
         file: null
     }
+    //endregion
 </script>
 
 <template>

@@ -6,8 +6,11 @@
 
     const props = defineProps({
         idBalanceSheet: {required: true, type: Number},
-        isWriterOrAdmin: {required: true, type: Boolean}
+        isWriterOrAdmin: {required: true, type: Boolean},
+        balanceSheetCurrency: {required: true, type: String}
     })
+    //region Définition des champs de formulaires et tableaux
+    //region    Définition des champs partagés
     const formFileField = {
         label: 'Fichier',
         name: 'file',
@@ -15,7 +18,6 @@
         trie: true,
         type: 'file'
     }
-
     const showFileField = {
         label: 'Fichier',
         name: 'url',
@@ -36,6 +38,8 @@
             step: 0.01
         }
     }
+    //endregion
+    //region    Définition des champs des formulaires d'ajout
     const purchaseFormFields = [
         {
             title: 'Dépenses normales',
@@ -109,6 +113,8 @@
             paymentCategory: 'Frais de transport'
         }
     ]
+    //endregion
+    //region    Définition des champs des tableaux
     const purchaseTablesFields = [
         {
             title: 'Dépenses normales',
@@ -182,6 +188,9 @@
             paymentCategory: 'Frais de transport'
         }
     ]
+    //endregion
+    //endregion
+    //region      Initialisation des valeurs par défault des formulaires
     const defaultFormValue = {
         balanceSheet: `/api/balance-sheets/${props.idBalanceSheet}`,
         paymentCategory: '',
@@ -191,17 +200,22 @@
         stakeholder: '',
         subCategory: '',
         label: '',
-        amount: {code: '/api/currencies/1', value: 0},
-        vat: {code: '/api/currencies/1', value: 0},
+        amount: {code: props.balanceSheetCurrency, value: 0},
+        vat: {code: props.balanceSheetCurrency, value: 0},
         paymentMethod: '',
         file: null
     }
     const defaultFormValues = [
+        // Champs subCategory et vat inutiles pour les dépenses normales
         {...defaultFormValue, subCategory: null, vat: null, paymentCategory: 'Dépenses normales'},
+        // Champ billDate, stakeholder et vat inutiles pour les salaires
         {...defaultFormValue, billDate: null, stakeholder: null, vat: null, paymentCategory: 'Salaires'},
+        // Champ subCategory inutile pour les achats matières premières
         {...defaultFormValue, paymentCategory: 'Achats Matières Premières', subCategory: null},
+        // Champs subCategory et vat inutiles pour les frais de transport
         {...defaultFormValue, paymentCategory: 'Frais de transport', subCategory: null, vat: null}
     ]
+    //endregion
 </script>
 
 <template>

@@ -30,10 +30,6 @@
         balanceSheetItemsCriteria.addFilter('paymentCategory', props.paymentCategory)
     }
     addPermanentFilter()
-    function addPermanentFields(){
-        formData.value.balanceSheet = `/api/balance-sheets/${props.idBalanceSheet}`
-        formData.value.paymentCategory = props.paymentCategory
-    }
     const itemsTable = computed(() => fetchBalanceSheetItems.items)
     async function refreshTable() {
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
@@ -47,6 +43,7 @@
         // router.push({name: 'company', params: {'id_company': itemId}})
     }
     async function deleteTableItem(id) {
+        console.log('deleteTableItem', id)
         await fetchBalanceSheetItems.remove(id)
         await refreshTable()
     }
@@ -79,7 +76,6 @@
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
     })
     const AddForm = ref(false)
-    let addFormKey = 0
     const isPopupVisible = ref(false)
     const fieldsForm = ref({})
     let violations = []
@@ -87,16 +83,22 @@
         fieldsForm.value = props.formFields
     })
     function input(v){
-        console.log('input', v)
+        //console.log('input', v)
     }
     const addFormName = `addItemForm_${props.tabId}`
-
+    const addFormKey = ref(0)
+    function resetFormData(){
+        formData.value = {}
+        formData.value = props.defaultFormValues
+        console.log('resetFormData', formData.value)
+        addFormKey.value++
+    }
     function ajoutItem(){
         const addForm = document.getElementById(addFormName)
         const formDataAddItem = new FormData(addForm)
         formDataAddItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
         formDataAddItem.append('paymentCategory', props.paymentCategory)
-        console.log('ajoutItem', formDataAddItem.get('paymentDate'))
+        //console.log('ajoutItem', formDataAddItem.get('paymentDate'))
         fetch('/api/balance-sheet-items', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -104,15 +106,13 @@
             method: 'POST',
             body: formDataAddItem
         }).then(() => {
+            resetFormData()
             refreshTable()
         })
     }
     function annule(){
         AddForm.value = false
-        const itemsNull = {
-            families: null
-        }
-        formData.value = itemsNull
+        resetFormData()
         isPopupVisible.value = false
     }
 </script>

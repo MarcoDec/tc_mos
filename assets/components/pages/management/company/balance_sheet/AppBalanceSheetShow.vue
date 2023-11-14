@@ -10,30 +10,19 @@
     import AppTabs from '../../../../tab/AppTabs.vue'
     import AppBalanceSheetTabAchats from './AppBalanceSheetTabAchats.vue'
     import AppBalanceSheetTabVentes from './AppBalanceSheetTabVentes.vue'
-
+    //region Récupération des données de route
     const route = useRoute()
     const idBalanceSheet = Number(route.params.id)
+    //endregion
 
-    const fetchBalanceSheet = useBalanceSheetStore()
-    const company = ref({})
-
+    //region Récupération des données utilisateur
     const fetchUser = useUser()
     const isWriterOrAdmin = fetchUser.isManagementWriter || fetchUser.isManagementAdmin
-    //const roleuser = ref(isWriterOrAdmin ? 'writer' : 'reader')
+    //endregion
 
-    const formFields = [
-        {label: 'Mois', name: 'month', type: 'number', step: 1},
-        {label: 'Année', name: 'year', type: 'number', step: 1},
-        {label: 'Company', name: 'company', options: {base: 'companies'}, type: 'select'},
-        {label: 'Devise', name: 'currency', options: {base: 'currencies'}, type: 'select'}
-    ]
-    const formData = ref({
-        month: 0,
-        year: 0,
-        company: '',
-        currency: ''
-    })
-    //region récupération de la balance sheet
+    //region Définition des données à charger
+    const company = ref({})
+    const fetchBalanceSheet = useBalanceSheetStore()
     const currentBalanceSheet = computed(() => {
         if (fetchBalanceSheet.item === null) return {
             '@id': '',
@@ -43,21 +32,32 @@
             year: '',
             totalExpense: {value: 0, code: ''},
             totalIncome: {value: 0, code: ''},
-            company: {name: ''}
+            company: {name: ''},
+            currency: null
         }
         return fetchBalanceSheet.item
     })
-    const formKey = ref(0)
-    onBeforeMount(async () => {
-        await fetchBalanceSheet.fetchById(idBalanceSheet)
-        currentBalanceSheet.value = fetchBalanceSheet.item
-        formData.value = currentBalanceSheet.value
-        formData.value.company = currentBalanceSheet.value.company['@id']
-        formData.value.currency = currentBalanceSheet.value.currency['@id']
-        company.value = await api(formData.value.company, 'GET')
-        formKey.value++
+    const balanceSheetCurrency = computed(() => {
+        console.log(currentBalanceSheet.value)
+        return currentBalanceSheet.value.currency ?? null
     })
     //endregion
+    //region Définition des champs de formulaires et tableaux
+    const formFields = [
+        {label: 'Mois', name: 'month', type: 'number', step: 1},
+        {label: 'Année', name: 'year', type: 'number', step: 1},
+        {label: 'Company', name: 'company', options: {base: 'companies'}, type: 'select'},
+        {label: 'Devise', name: 'currency', options: {base: 'currencies'}, type: 'select'}
+    ]
+    //endregion
+    //region Définition des variables et fonctions de formulaire
+    const formKey = ref(0)
+    const formData = ref({
+        month: 0,
+        year: 0,
+        company: '',
+        currency: ''
+    })
     function updateFormData(value) {
         formData.value = value
     }
@@ -73,6 +73,18 @@
         await fetchBalanceSheet.update({month: formData.value.month, year: formData.value.year, company: formData.value.company, currency: formData.value.currency}, idBalanceSheet)
         await reloadBalanceSheet()
     }
+    //endregion
+    //region Chargement des données onBeforeMount
+    onBeforeMount(async () => {
+        await fetchBalanceSheet.fetchById(idBalanceSheet)
+        currentBalanceSheet.value = fetchBalanceSheet.item
+        formData.value = currentBalanceSheet.value
+        formData.value.company = currentBalanceSheet.value.company['@id']
+        formData.value.currency = currentBalanceSheet.value.currency['@id']
+        company.value = await api(formData.value.company, 'GET')
+        formKey.value++
+    })
+    //endregion
 </script>
 
 <template>
@@ -119,14 +131,14 @@
                 icon="cart-shopping"
                 tabs="main_tabs"
                 title="Achats">
-                <AppBalanceSheetTabAchats :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
+                <AppBalanceSheetTabAchats :balance-sheet-currency="balanceSheetCurrency" :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
             </AppTab>
             <AppTab
                 id="ventes_tab"
                 icon="hand-holding-dollar"
                 tabs="main_tabs"
                 title="Ventes">
-                <AppBalanceSheetTabVentes :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
+                <AppBalanceSheetTabVentes :balance-sheet-currency="balanceSheetCurrency" :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
             </AppTab>
         </AppTabs>
     </AppSuspense>
