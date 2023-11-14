@@ -25,7 +25,7 @@
 
 <template>
     <td>
-        <button v-if="shouldSee" class="btn btn-icon btn-secondary btn-sm mx-2" @click="update">
+        <button v-if="shouldSee" class="btn btn-icon btn-secondary btn-sm mx-2" :title="item.id" @click="update">
             <Fa icon="eye"/>
         </button>
         <template v-if="shouldDelete">
