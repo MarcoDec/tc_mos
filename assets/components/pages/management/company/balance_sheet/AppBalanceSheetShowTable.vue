@@ -50,11 +50,11 @@
     }
     async function getPage(nPage){
         balanceSheetItemsCriteria.gotoPage(nPage)
-        await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
+        await refreshTable()
     }
     async function trierAlphabet(payload) {
         balanceSheetItemsCriteria.addSort(payload.name, payload.direction)
-        await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
+        await refreshTable()
     }
     async function search(inputValues) {
         balanceSheetItemsCriteria.resetAllFilter()
@@ -64,14 +64,20 @@
         if (inputValues.label) balanceSheetItemsCriteria.addFilter('label', inputValues.label)
         if (inputValues.paymentMethod) balanceSheetItemsCriteria.addFilter('paymentMethod', inputValues.paymentMethod)
         if (inputValues.subCategory) balanceSheetItemsCriteria.addFilter('subCategory', inputValues.subCategory)
-        if (inputValues.billDate) balanceSheetItemsCriteria.addFilter('billDate', inputValues.billDate)
-        if (inputValues.paymentDate) balanceSheetItemsCriteria.addFilter('paymentDate', inputValues.paymentDate)
-        await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
+        if (inputValues.billDate) {
+            balanceSheetItemsCriteria.addFilter('billDate[after]', inputValues.billDate)
+            balanceSheetItemsCriteria.addFilter('billDate[before]', inputValues.billDate)
+        }
+        if (inputValues.paymentDate) {
+            balanceSheetItemsCriteria.addFilter('paymentDate[after]', inputValues.paymentDate)
+            balanceSheetItemsCriteria.addFilter('paymentDate[before]', inputValues.paymentDate)
+        }
+        await refreshTable()
     }
     async function cancelSearch() {
         balanceSheetItemsCriteria.resetAllFilter()
-        balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
-        await balanceSheetItemsCriteria.fetch(balanceSheetItemsCriteria.getFetchCriteria)
+        addPermanentFilter()
+        await refreshTable()
     }
     function openUpdateForm() {
         UpdateForm.value = true
