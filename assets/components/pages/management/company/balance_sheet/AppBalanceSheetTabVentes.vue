@@ -62,9 +62,9 @@
             {label: 'N° Facture/Avoir', name: 'paymentRef', trie: true, type: 'text', min: true},
             {label: 'Client', name: 'stakeholder', trie: true, type: 'text', min: true},
             {label: 'Libellé', name: 'label', trie: true, type: 'text'},
+            {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
             {label: 'Montant', name: 'amount', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
             {label: 'tva', name: 'vat', trie: false, type: 'measure', measure: priceMeasure, filter: false},
-            {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
             showFileField
         ],
         paymentCategory: 'Ventes'

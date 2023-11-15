@@ -124,6 +124,7 @@
                 {label: 'N° Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
                 {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
                 {label: 'Libelle', name: 'label', trie: true, type: 'text', min: true},
+                {label: 'Méthode de paiement', name: 'paymentMethod', trie: true, type: 'text', min: false},
                 {
                     label: 'Débit / MHT',
                     name: 'amount',
@@ -133,7 +134,6 @@
                     measure: priceMeasure,
                     filter: false
                 },
-                {label: 'Méthode de paiement', name: 'paymentMethod', trie: true, type: 'text', min: false},
                 showFileField
             ],
             paymentCategory: 'Dépenses normales'
@@ -147,8 +147,8 @@
                 {label: 'N° Matricule', name: 'paymentRef', trie: true, type: 'text'},
                 {label: 'Type Paies', name: 'subCategory', trie: true, type: 'text', min: true},
                 {label: 'Nom & Prénom', name: 'label', trie: true, type: 'text', min: true},
-                {label: 'Montant', name: 'amount', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
                 {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
+                {label: 'Montant', name: 'amount', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
                 showFileField
             ],
             paymentCategory: 'Salaires'
@@ -163,9 +163,9 @@
                 {label: 'Numéro de Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
                 {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
                 {label: 'Libellé', name: 'label', trie: true, type: 'text', min: false},
+                {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
                 {label: 'Montant', name: 'amount', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
                 {label: 'tva', name: 'vat', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
-                {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
                 showFileField
             ],
             paymentCategory: 'Achats Matières Premières'
@@ -180,8 +180,8 @@
                 {label: 'Ref Facture', name: 'paymentRef', trie: true, type: 'text', min: true},
                 {label: 'Fournisseur', name: 'stakeholder', trie: true, type: 'text', min: true},
                 {label: 'Libellé', name: 'label', trie: true, type: 'text'},
-                {label: 'Montant', name: 'amount', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
                 {label: 'Méthode paiement', name: 'paymentMethod', trie: true, type: 'text'},
+                {label: 'Montant', name: 'amount', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
                 showFileField
             ],
             paymentCategory: 'Frais de transport'
