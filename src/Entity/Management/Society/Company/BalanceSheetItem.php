@@ -4,25 +4,24 @@ namespace App\Entity\Management\Society\Company;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use App\Controller\Management\Company\BalanceSheetItemPostController;
-use App\Entity\AbstractAttachment;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
 use App\Entity\Interfaces\FileEntity;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Management\Unit;
-use App\Entity\Traits\AttachmentTrait;
 use App\Entity\Traits\FileTrait;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
-use PHPUnit\TextUI\XmlConfiguration\File;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use App\Filter\RelationFilter;
 #[
+    ApiFilter(filterClass: RelationFilter::class, properties: ['balanceSheet']),
     ApiFilter(filterClass: SearchFilter::class, properties: [
         'paymentRef'=>'partial',
         'stakeholder'=>'partial',
