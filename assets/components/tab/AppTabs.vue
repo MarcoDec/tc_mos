@@ -3,11 +3,12 @@
     import AppTabLink from './AppTabLink.vue'
     import useTabs from '../../stores/tab/tabs'
 
-    const iconMode = ref(false)
     const props = defineProps({
         id: {required: true, type: String},
+        iconMode: {required: false, type: Boolean},
         formatNav: {required: false, type: String, default: 'flex'}
     })
+    const iconMode = ref(props.iconMode)
     const css = computed(() => ({/*'icon-mode': iconMode.value,*/ 'flex-row': props.formatNav !== 'flex'}))
     const cssLi = computed(() => ({'nav-item': props.formatNav === 'flex', 'nav-link-horizontal': props.formatNav !== 'flex'}))
     const icon = computed(() => `${props.id}-icon`)
