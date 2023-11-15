@@ -184,7 +184,7 @@ export default [
             ],
             enableShow: true,
             showRouteName: 'suivi_depenses_ventes_show',
-            icon: 'hourglass-half',
+            icon: 'gauge-high',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Suivi des Dépenses et Ventes'
         }
