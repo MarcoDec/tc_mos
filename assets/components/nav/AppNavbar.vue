@@ -9,7 +9,9 @@
     <nav id="app-nav-bar" class="bg-dark mb-1 navbar navbar-dark navbar-expand-xxl sticky-top">
         <AppContainer fluid>
             <span class="m-0 navbar-brand p-0">
-                <AppRouterLink :to="{name: 'home'}">T-Concept</AppRouterLink>
+                <AppRouterLink :to="{name: 'home'}">
+                    <img src="/img/TConcept_Logo.png"/>
+                </AppRouterLink>
             </span>
             <button
                 aria-controls="nav-navigation"
