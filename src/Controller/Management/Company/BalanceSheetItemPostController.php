@@ -2,8 +2,11 @@
 
 namespace App\Controller\Management\Company;
 
+use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Company\BalanceSheetItem;
+use App\Entity\Management\Unit;
 use App\Filesystem\FileManager;
+use App\Entity\Embeddable\Measure;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Exception\RuntimeException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -16,8 +19,49 @@ class BalanceSheetItemPostController
         private readonly EntityManagerInterface $entityManager,
         private readonly FileManager            $fileManager) {
     }
+
+    private function getMeasureGen($requestParameters, $valueTxt, $currencyTxt, $unitClass): Measure {
+        $idRegExp= '/(\d+)$/';
+        $measure= new Measure();
+        $measure->setValue(floatval($requestParameters[$valueTxt]));
+        preg_match($idRegExp, $requestParameters[$currencyTxt], $matches);
+        if (!empty($matches)) {
+            $currencyId = $matches[0];
+            $currency = $this->entityManager->getRepository($unitClass)->findOneBy(['id' => $currencyId]);
+            $measure->setUnit($currency);
+            $measure->setCode($currency->getCode());
+        }
+        return $measure;
+    }
+    private function getMeasureCurrency($requestParameters, $valueTxt, $currencyTxt): Measure {
+        return $this->getMeasureGen($requestParameters, $valueTxt, $currencyTxt, Currency::class);
+    }
+
+    private function getMeasureUnit($requestParameters, $valueTxt, $currencyTxt): Measure {
+        return $this->getMeasureGen($requestParameters, $valueTxt, $currencyTxt, Unit::class);
+    }
+
     public function __invoke(Request $request):BalanceSheetItem {
         $this->getEntity($request);
+        $requestParameters = $request->request->all();
+        dump([
+            'request' => $request,
+            'requestParameters' => $requestParameters,
+            'entity' => $this->entity
+        ]);
+        $currencyProperties = ['amount', 'unitPrice', 'vat'];
+        $unitProperties = ['quantity'];
+        foreach ($currencyProperties as $property) {
+            if (isset($requestParameters[$property.'-value']) && isset($requestParameters[$property.'-code'])) {
+                $this->entity->{'set'.ucfirst($property)}($this->getMeasureCurrency($requestParameters, $property.'-value', $property.'-code'));
+            }
+        }
+        foreach ($unitProperties as $property) {
+            if (isset($requestParameters[$property.'-value']) && isset($requestParameters[$property.'-code'])) {
+                $this->entity->{'set'.ucfirst($property)}($this->getMeasureUnit($requestParameters, $property.'-value', $property.'-code'));
+            }
+        }
+        dump(['entity' => $this->entity]);
         $this->getFileAndPersist($request);
         return $this->entity;
     }

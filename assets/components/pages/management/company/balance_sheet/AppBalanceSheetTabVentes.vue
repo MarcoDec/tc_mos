@@ -91,6 +91,7 @@
     <AppBalanceSheetShowTable
         :add-form="isWriterOrAdmin"
         :id-balance-sheet="idBalanceSheet"
+        :balance-sheet-currency="balanceSheetCurrency"
         :default-form-values="defaultFormValues"
         :payment-category="sellingTablesField.paymentCategory"
         :form-fields="sellingFormField.fields"

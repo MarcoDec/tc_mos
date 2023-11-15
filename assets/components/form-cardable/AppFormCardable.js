@@ -17,27 +17,31 @@ function AppForm(props, context) {
         if (typeof context.slots['default'] === 'function')
             groups.push(generateSlot())
     } else {
-        for (const field of props.fields) {
-            groups.push(h(AppFormGroup, {
-                disabled: props.disabled,
-                field,
-                form: props.id,
-                key: field.name,
-                labelCols: props.labelCols,
-                modelValue: props.modelValue[field.name],
-                // eslint-disable-next-line no-loop-func
-                'onUpdate:modelValue': value => {
-                    // console.log('value', value)
-                    currentValue[field.name] = value
-                    context.emit('update:modelValue', currentValue)
-                },
-                onSearchChange: value => {
-                    context.emit('searchChange', value)
-                },
-                violation: props.violations.find(violation => violation.propertyPath === field.name)
-            }))
+        //console.log(props.fields)
+        if (props.fields === null || typeof props.fields[Symbol.iterator] !== 'function') {
+            console.error('The fields prop must be an array of objects', props.fields, props.id)
+        } else {
+            for (const field of props.fields) {
+                groups.push(h(AppFormGroup, {
+                    disabled: props.disabled,
+                    field,
+                    form: props.id,
+                    key: field.name,
+                    labelCols: props.labelCols,
+                    modelValue: props.modelValue[field.name],
+                    // eslint-disable-next-line no-loop-func
+                    'onUpdate:modelValue': value => {
+                        // console.log('value', value)
+                        currentValue[field.name] = value
+                        context.emit('update:modelValue', currentValue)
+                    },
+                    onSearchChange: value => {
+                        context.emit('searchChange', value)
+                    },
+                    violation: props.violations.find(violation => violation.propertyPath === field.name)
+                }))
+            }
         }
-
         if (props.submitLabel !== null){
             groups.push(h(
                 'div',

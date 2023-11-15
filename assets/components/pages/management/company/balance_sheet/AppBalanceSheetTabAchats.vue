@@ -219,7 +219,7 @@
 </script>
 
 <template>
-    <AppTabs id="achats_tabs" format-nav="block">
+    <AppTabs id="achats_tabs" format-nav="block" :icon-mode="true">
         <AppTab
             v-for="(table, index) in purchaseTablesFields"
             :id="table.id"
@@ -231,6 +231,7 @@
             <AppBalanceSheetShowTable
                 :add-form="isWriterOrAdmin"
                 :id-balance-sheet="idBalanceSheet"
+                :balance-sheet-currency="balanceSheetCurrency"
                 :default-form-values="defaultFormValues[purchaseTablesFields.indexOf(table)]"
                 :payment-category="table.paymentCategory"
                 :tab-fields="table.fields"

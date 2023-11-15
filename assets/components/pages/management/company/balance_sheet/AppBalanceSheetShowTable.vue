@@ -5,11 +5,12 @@
     import useUser from '../../../../../stores/security'
     import AppSuspense from '../../../../AppSuspense.vue'
     import Fa from '../../../../Fa'
-    import AppFormCardable from '../../../../form-cardable/AppFormCardable'
     import {useCookies} from '@vueuse/integrations/useCookies'
-    const token = useCookies(['token']).get('token')
+    import AppBalanceSheetForm from './AppBalanceSheetForm.vue'
+
     const props = defineProps({
         addForm: {required: true, type: Boolean},
+        balanceSheetCurrency: {required: true, type: String},
         title: {required: true, type: String},
         idBalanceSheet: {required: true, type: Number},
         formFields: {required: true, type: Array},
@@ -18,32 +19,32 @@
         paymentCategory: {required: true, type: String},
         defaultFormValues: {required: true, type: Object}
     })
-
+    console.log('props', props)
+    //region Récupération des données des sessions
     const fetchUser = useUser()
+    const token = useCookies(['token']).get('token')
     const isWriterOrAdmin = fetchUser.isManagementWriter || fetchUser.isManagementAdmin
     const roleuser = ref(isWriterOrAdmin ? 'writer' : 'reader')
+    //endregion
+    //region Définition des variables liées au chargement des données
     const fetchBalanceSheetItems = useBalanceSheetItemStore(props.paymentCategory)
     const balanceSheetItemsCriteria = useFetchCriteria(`balanceSheetItems-criteria-${props.tabId}`)
-    const formData = ref(props.defaultFormValues)
     function addPermanentFilter() {
         balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
         balanceSheetItemsCriteria.addFilter('paymentCategory', props.paymentCategory)
     }
     addPermanentFilter()
-    const itemsTable = computed(() => fetchBalanceSheetItems.items)
+    const tableKey = ref(0)
+    const itemsTable = ref([])
     async function refreshTable() {
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
+        itemsTable.value = fetchBalanceSheetItems.items
+        tableKey.value++
     }
-    const getId = /.*?\/(\d+)/
-
-    function update(item) {
-        const itemId = item['@id'].match(getId)[1]
-        console.log(item, itemId)
-        // eslint-disable-next-line quote-props
-        // router.push({name: 'company', params: {'id_company': itemId}})
-    }
+    //endregion
+    //const getId = /.*?\/(\d+)/
+    //region Définition des variables et fonctions du tableau
     async function deleteTableItem(id) {
-        console.log('deleteTableItem', id)
         await fetchBalanceSheetItems.remove(id)
         await refreshTable()
     }
@@ -72,32 +73,62 @@
         balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
         await balanceSheetItemsCriteria.fetch(balanceSheetItemsCriteria.getFetchCriteria)
     }
-    onBeforeMount(async () => {
-        await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
-    })
+    function openUpdateForm() {
+        UpdateForm.value = true
+        AddForm.value = false
+        addViolations.value = []
+        updateViolations.value = []
+    }
+    //endregion
+    //region Définition des variables et fonctions de formulaires
+    const addFormData = ref({})
     const AddForm = ref(false)
-    const isPopupVisible = ref(false)
-    const fieldsForm = ref({})
-    let violations = []
-    onBeforeMount(() => {
-        fieldsForm.value = props.formFields
-    })
-    function input(v){
-        //console.log('input', v)
-    }
-    const addFormName = `addItemForm_${props.tabId}`
-    const addFormKey = ref(0)
+    const addFieldsForm = ref(props.tabFields)
+    const addViolations = ref([])
+    const addFormName = computed(() => `addForm${props.tabId}`)
+
+    const updateFormData = ref({})
+    const UpdateForm = ref(false)
+    const updateFieldsForm = ref({})
+    const updateViolations = ref([])
+    const updateFormName = computed(() => `updateForm${props.tabId}`)
+
+    const formKey = ref(0)
     function resetFormData(){
-        formData.value = {}
-        formData.value = props.defaultFormValues
-        console.log('resetFormData', formData.value)
-        addFormKey.value++
+        addFormData.value = {}
+        addFormData.value = props.defaultFormValues
+        addViolations.value = []
+        updateViolations.value = []
+        updateFormData.value = {}
+        updateFormData.value = props.defaultFormValues
+        //region On initialise les valeurs des champs de formulaire de type measure avec la valeur de la devise de la balanceSheet parente
+        props.formFields.forEach(field => {
+            if (field.type === 'measure') {
+                addFormData.value[field.name].code = props.balanceSheetCurrency
+            }
+        })
+        //endregion
     }
-    function ajoutItem(){
-        const addForm = document.getElementById(addFormName)
-        const formDataAddItem = new FormData(addForm)
+    resetFormData()
+    function cancel() {
+        AddForm.value = false
+        UpdateForm.value = false
+        resetFormData()
+    }
+    function addNewItem(){
+        const addFormElement = document.getElementById(`form_${addFormName.value}`)
+        console.log('addNewItem', addFormElement)
+        const formDataAddItem = new FormData(addFormElement)
         formDataAddItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
         formDataAddItem.append('paymentCategory', props.paymentCategory)
+        // props.formFields.forEach(field => {
+        //     if (field.type === 'measure' && typeof formDataAddItem.get(`${field.name}-code`) === 'string') {
+        //         formDataAddItem.append(field.name, {
+        //             value: formDataAddItem.get(`${field.name}-value`),
+        //             code: formDataAddItem.get(`${field.name}-code`)
+        //         })
+        //     }
+        // })
         //console.log('ajoutItem', formDataAddItem.get('paymentDate'))
         fetch('/api/balance-sheet-items', {
             headers: {
@@ -110,11 +141,35 @@
             refreshTable()
         })
     }
-    function annule(){
-        AddForm.value = false
-        resetFormData()
-        isPopupVisible.value = false
+    function updateItem(data){
+        console.log('updateItem', data)
+        //const updateForm = document.getElementById(updateFormName)
+        //const formDataUpdateItem = new FormData(updateForm)
+        // formDataUpdateItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
+        // formDataUpdateItem.append('paymentCategory', props.paymentCategory)
+        //console.log('ajoutItem', formDataAddItem.get('paymentDate'))
+        // fetch(`/api/balance-sheet-items/${}`, {
+        //     headers: {
+        //         Authorization: `Bearer ${token}`
+        //     },
+        //     method: 'POST',
+        //     body: formDataUpdateItem
+        // }).then(() => {
+        //     resetFormData()
+        //     refreshTable()
+        // })
     }
+    //endregion
+
+    //endregion
+    //region Chargement des données onBeforeMount()
+    onBeforeMount(async () => {
+        addFieldsForm.value = props.formFields
+        updateFieldsForm.value = props.formFields
+        await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
+        itemsTable.value = fetchBalanceSheetItems.items
+    })
+    //endregion
 </script>
 
 <template>
@@ -123,19 +178,20 @@
             <div class="col">
                 <AppSuspense>
                     <AppCardableTable
+                        :key="tableKey"
                         :current-page="fetchBalanceSheetItems.currentPage"
                         :fields="tabFields"
                         :first-page="fetchBalanceSheetItems.firstPage"
                         :items="itemsTable"
                         :last-page="fetchBalanceSheetItems.lastPage"
-                        :min="AddForm"
+                        :min="AddForm || UpdateForm"
                         :next-page="fetchBalanceSheetItems.nextPage"
                         :pag="fetchBalanceSheetItems.pagination"
                         :previous-page="fetchBalanceSheetItems.previousPage"
                         :title="title"
                         :user="roleuser"
                         :form="`updateItemForm${tabId}`"
-                        @update="update"
+                        @update="openUpdateForm"
                         @deleted="deleteTableItem"
                         @get-page="getPage"
                         @trier-alphabet="trierAlphabet"
@@ -150,32 +206,27 @@
                     </AppCardableTable>
                 </AppSuspense>
             </div>
-            <div v-show="AddForm" :key="addFormKey" class="col-6">
-                <AppSuspense>
-                    <AppCard class="bg-blue col" title="">
-                        <div class="row">
-                            <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="annule">
-                                <Fa icon="angle-double-left"/>
-                            </button>
-                            <h4 class="col">
-                                <Fa icon="square-plus"/> Ajouter un nouvel élément
-                            </h4>
-                        </div>
-                        <AppSuspense>
-                            <AppFormCardable :id="addFormName" :model-value="formData" :fields="fieldsForm" label-cols @update:model-value="input"/>
-                        </AppSuspense>
-                        <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
-                            <div v-for="violation in violations" :key="violation">
-                                <li>{{ violation.message }}</li>
-                            </div>
-                        </div>
-                        <div class="btnright row">
-                            <AppBtn class="btn-float-right" label="Ajout" variant="success" size="sm" @click="ajoutItem">
-                                <Fa icon="plus"/> Enregister
-                            </AppBtn>
-                        </div>
-                    </AppCard>
-                </AppSuspense>
+            <div v-show="AddForm || UpdateForm" :key="formKey" class="col-6">
+                <AppBalanceSheetForm
+                    v-if="AddForm"
+                    :id="addFormName"
+                    icon="square-plus"
+                    title="Ajouter un nouvel élément"
+                    :fields="addFieldsForm"
+                    :form-data="addFormData"
+                    :violations="addViolations"
+                    @cancel="cancel"
+                    @save="addNewItem"/>
+                <AppBalanceSheetForm
+                    v-if="UpdateForm"
+                    :id="updateFormName"
+                    icon="pencil"
+                    title="Modifier l'élément"
+                    :fields="updateFieldsForm"
+                    form-data="updateFormData"
+                    :violations="updateViolations"
+                    @cancel="cancel"
+                    @save="updateItem"/>
             </div>
         </div>
     </div>

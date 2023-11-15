@@ -1,6 +1,6 @@
 <script setup>
     import {computed, onBeforeMount, ref} from 'vue'
-    import {useRoute} from 'vue-router'
+    import {useRoute, useRouter} from 'vue-router'
     import api from '../../../../../api'
     import {useBalanceSheetStore} from '../../../../../stores/management/balance-sheets/balanceSheets'
     import useUser from '../../../../../stores/security'
@@ -38,7 +38,6 @@
         return fetchBalanceSheet.item
     })
     const balanceSheetCurrency = computed(() => {
-        console.log(currentBalanceSheet.value)
         if (typeof currentBalanceSheet.value.currency === 'undefined') return ''
         if (currentBalanceSheet.value.currency === null) return ''
         if (typeof currentBalanceSheet.value.currency === 'string') return currentBalanceSheet.value.currency
@@ -47,6 +46,7 @@
     })
     //endregion
     //region Définition des champs de formulaires et tableaux
+    const router = useRouter()
     const formFields = [
         {label: 'Mois', name: 'month', type: 'number', step: 1},
         {label: 'Année', name: 'year', type: 'number', step: 1},
@@ -76,6 +76,8 @@
     async function updateForm() {
         await fetchBalanceSheet.update({month: formData.value.month, year: formData.value.year, company: formData.value.company, currency: formData.value.currency}, idBalanceSheet)
         await reloadBalanceSheet()
+        keyAchatsTab.value++
+        keyVentesTab.value++
     }
     //endregion
     //region Chargement des données onBeforeMount
@@ -89,11 +91,17 @@
         formKey.value++
     })
     //endregion
+    function goToList() {
+        router.push({name: 'suivi_depenses_ventes'})
+    }
+    const keyAchatsTab = ref(0)
+    const keyVentesTab = ref(0)
 </script>
 
 <template>
     <AppSuspense>
         <div class="title">
+            <Fa class="clickable" :brand="false" icon="gauge-high" @click="goToList"/>
             Suivi des dépenses {{ currentBalanceSheet.month }} - {{ currentBalanceSheet.year }} pour {{ company.name }}
         </div>
         <div class="container-fluid">
@@ -128,21 +136,21 @@
                 </div>
             </div>
         </div>
-        <AppTabs id="main_tabs">
+        <AppTabs id="main_tabs" :icon-mode="true">
             <AppTab
                 id="achats_tab"
                 active
                 icon="cart-shopping"
                 tabs="main_tabs"
                 title="Achats">
-                <AppBalanceSheetTabAchats :balance-sheet-currency="balanceSheetCurrency" :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
+                <AppBalanceSheetTabAchats :key="keyAchatsTab" :balance-sheet-currency="balanceSheetCurrency" :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
             </AppTab>
             <AppTab
                 id="ventes_tab"
                 icon="hand-holding-dollar"
                 tabs="main_tabs"
                 title="Ventes">
-                <AppBalanceSheetTabVentes :balance-sheet-currency="balanceSheetCurrency" :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
+                <AppBalanceSheetTabVentes :key="keyVentesTab" :balance-sheet-currency="balanceSheetCurrency" :is-writer-or-admin="isWriterOrAdmin" :id-balance-sheet="idBalanceSheet"/>
             </AppTab>
         </AppTabs>
     </AppSuspense>
@@ -171,4 +179,11 @@
         padding: 5px 5px 5px 20px;
     }
     div.active { position: relative; z-index: 0; overflow: scroll; max-height: 100%}
+    .clickable {
+        cursor: pointer;
+        color: black;
+    }
+    .clickable:hover {
+        box-shadow: inset darkmagenta 0 0 10px;
+    }
 </style>
