@@ -14,6 +14,9 @@ use App\Entity\Management\Society\Company\Company;
 use App\Entity\Selling\Customer\BillingAddress;
 use App\Entity\Selling\Customer\Customer;
 use App\Entity\Selling\Customer\DeliveryAddress;
+use App\Entity\Selling\Order\Item;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -165,9 +168,15 @@ class Order extends Entity {
     ]
     private ?string $ref = null;
 
+    #[
+        ORM\OneToMany(targetEntity: Item::class, mappedBy: 'order')
+    ]
+    private Collection $sellingOrderItems;
+
     public function __construct() {
         $this->embBlocker = new Closer();
         $this->embState = new State();
+        $this->sellingOrderItems = new ArrayCollection();
     }
 
     final public function getBilledTo(): ?BillingAddress {
@@ -208,6 +217,10 @@ class Order extends Entity {
 
     final public function getRef(): ?string {
         return $this->ref;
+    }
+
+    public function getSellingOrderItems(): Collection {
+        return $this->sellingOrderItems;
     }
 
     final public function getState(): string {
@@ -261,6 +274,16 @@ class Order extends Entity {
 
     final public function setRef(?string $ref): self {
         $this->ref = $ref;
+        return $this;
+    }
+
+    final public function setSellingOrderItems(Collection $sellingOrderItems): self {
+        $this->sellingOrderItems = $sellingOrderItems;
+
+        foreach ($sellingOrderItems as $sellingOrderItem) {
+            $sellingOrderItem->setOrder($this);
+        }
+
         return $this;
     }
 

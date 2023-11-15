@@ -11,8 +11,11 @@ use App\Entity\Embeddable\Closer;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Selling\Order\Item\State;
 use App\Entity\Item as BaseItem;
+use App\Entity\Production\Manufacturing\Expedition;
 use App\Filter\RelationFilter;
 use App\Repository\Selling\Order\ItemRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 
@@ -125,10 +128,18 @@ abstract class Item extends BaseItem {
     ]
     protected $order;
 
+    #[
+        ApiProperty(description: 'Expéditions associées', example: '/api/expeditions/1'),
+        ORM\OneToMany(targetEntity: Expedition::class, mappedBy: 'item'),
+        Serializer\Groups(['read:item'])
+    ]
+    private Collection $expeditions;
+
     public function __construct() {
         parent::__construct();
         $this->embBlocker = new Closer();
         $this->embState = new State();
+        $this->expeditions = new ArrayCollection();
     }
 
     final public function getBlocker(): string {
@@ -143,19 +154,24 @@ abstract class Item extends BaseItem {
         return $this->embState;
     }
 
+    final public function getExpeditions(): Collection {
+        return $this->expeditions;
+    }
+
+    #[
+        ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-orders/1'),
+        Serializer\Groups(['read:item'])
+    ]
+    final public function getItem() {
+        return $this->item;
+    }
+
     final public function getState(): string {
         return $this->embState->getState();
     }
 
     final public function isArSent(): bool {
         return $this->arSent;
-    }
-    #[
-        ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-orders/1'),
-        Serializer\Groups(['read:item'])
-    ]
-    final public function getItem(){
-        return $this->item;
     }
 
     /**
@@ -187,6 +203,18 @@ abstract class Item extends BaseItem {
      */
     final public function setEmbState(State $embState): self {
         $this->embState = $embState;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    final public function setExpeditions(Collection $expeditions): self {
+        $this->expeditions = $expeditions;
+
+        foreach ($expeditions as $expedition) {
+            $expedition->setItem($this);
+        }
         return $this;
     }
 

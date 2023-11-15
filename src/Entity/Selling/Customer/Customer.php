@@ -20,6 +20,7 @@ use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
 use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
+use App\Entity\Selling\Order\Order;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -278,6 +279,11 @@ class Customer extends Entity {
     ]
     private WebPortal $qualityPortal;
 
+    #[
+        ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')
+    ]
+    private Collection $sellingOrders;
+
     /**
      * @return Collection
      */
@@ -331,6 +337,8 @@ class Customer extends Entity {
         $this->embState = new State();
         $this->monthlyOutstanding = new Measure();
         $this->outstandingMax = new Measure();
+        $this->sellingOrders = new ArrayCollection();
+
     }
 
     final public function addAdministeredBy(Company $administeredBy): self {
@@ -545,6 +553,22 @@ class Customer extends Entity {
     public function setLogisticPortal(WebPortal $logisticPortal): self
     {
         $this->logisticPortal = $logisticPortal;
+
+        return $this;
+    }
+    public function getSellingOrders(): Collection {
+
+        return $this->sellingOrders;
+    
+    }
+
+    
+    final public function setSellingOrders(Collection $sellingOrders): self {
+        $this->sellingOrders = $sellingOrders;
+
+        foreach ($sellingOrders as $sellingOrder) {
+            $sellingOrder->setCustomer($this);
+        }
 
         return $this;
     }

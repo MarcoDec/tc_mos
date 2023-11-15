@@ -5,6 +5,7 @@ namespace App\Entity\Production\Manufacturing;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Entity\Accounting\Item as AccountingItem;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -15,7 +16,8 @@ use App\Entity\Selling\Order\Item;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 /**
  * @template I of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
@@ -128,6 +130,12 @@ class Expedition extends Entity {
     ]
     private State $embState;
 
+    #[
+        ORM\OneToMany(targetEntity: AccountingItem::class, mappedBy: 'expedition'),
+        Serializer\Groups(['read:expedition', 'write:expedition'])
+    ]
+    private Collection $expedition_items;
+
     /** @var Item<I>|null */
     #[
         ApiProperty(description: 'Item', readableLink: false, example: '/api/selling-order-items/1'),
@@ -170,7 +178,7 @@ class Expedition extends Entity {
         $this->quantity = new Measure();
         $this->embBlocker = new Blocker();
         $this->embState = new State();
-
+        $this->expedition_items = new ArrayCollection();
     }
 
     final public function getBatchNumber(): ?string {
@@ -191,6 +199,10 @@ class Expedition extends Entity {
 
     final public function getEmbBlocker(): Blocker {
         return $this->embBlocker;
+    }
+    
+    public function getExpeditionItems(): Collection {
+        return $this->expedition_items;
     }
 
     final public function getBlocker(): string {

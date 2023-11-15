@@ -6,6 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Management\VatMessageForce;
+use App\Entity\Accounting\Item as AccountingItem;
 use App\Entity\Embeddable\Accounting\State;
 use App\Entity\Embeddable\Blocker;
 use App\Entity\Embeddable\Hr\Employee\Roles;
@@ -16,6 +17,8 @@ use App\Entity\Management\VatMessage;
 use App\Entity\Selling\Customer\Contact;
 use App\Entity\Selling\Customer\Customer;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -104,6 +107,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Bill extends Entity {
     #[
+        ORM\Embedded,
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    public Blocker $embBlocker;
+
+    #[
+        ORM\OneToMany(targetEntity: AccountingItem::class, mappedBy: 'bill'),
+        Serializer\Groups(['read:bill', 'write:bill'])
+    ]
+    private Collection $bill_items;
+
+    #[
         ApiProperty(description: 'Date de facturation', example: '2022-03-24'),
         ORM\Column(type: 'date_immutable', nullable: true),
         Serializer\Groups(['read:bill', 'write:bill'])
@@ -140,13 +155,7 @@ class Bill extends Entity {
 
     #[
         ORM\Embedded,
-        Serializer\Groups(['read:bill'])
-    ]
-    private Blocker $embBlocker;
-
-    #[
-        ORM\Embedded,
-        Serializer\Groups(['read:bill'])
+        Serializer\Groups(['read:bill', 'write:bill'])
     ]
     private State $embState;
 
@@ -207,10 +216,15 @@ class Bill extends Entity {
         $this->exclTax = new Measure();
         $this->inclTax = new Measure();
         $this->vat = new Measure();
+        $this->bill_items = new ArrayCollection();
     }
 
     final public function getBillingDate(): ?DateTimeImmutable {
         return $this->billingDate;
+    }
+
+    public function getBillItems(): Collection {
+        return $this->bill_items;
     }
 
     final public function getBlocker(): string {
@@ -275,6 +289,16 @@ class Bill extends Entity {
 
     final public function setBillingDate(?DateTimeImmutable $billingDate): self {
         $this->billingDate = $billingDate;
+        return $this;
+    }
+
+    final public function setBillItems(Collection $billItems): self {
+        $this->bill_items = $billItems;
+
+        foreach ($billItems as $billItem) {
+            $billItem->setBill($this);
+        }
+
         return $this;
     }
 
