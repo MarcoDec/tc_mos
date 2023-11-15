@@ -27,14 +27,14 @@
         label: 'Fichier',
         name: 'file',
         multiple: false,
-        trie: true,
         type: 'file'
     }
     const showFileField = {
         label: 'Fichier',
         name: 'url',
-        trie: true,
-        type: 'link'
+        trie: false,
+        type: 'link',
+        filter: false
     }
     //endregion
     //region      Définition des champs de formulaires et tableaux pour les Ventes
@@ -43,13 +43,13 @@
         icon: 'hand-holding-dollar',
         id: 'ventes',
         fields: [
-            {label: 'Date', name: 'paymentDate', trie: true, type: 'date', min: true},
-            {label: 'N° Facture/Avoir', name: 'paymentRef', trie: true, type: 'text', min: true},
-            {label: 'Client', name: 'stakeholder', trie: true, type: 'text', min: true},
-            {label: 'Libellé', name: 'label', trie: true, type: 'text'},
-            {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
-            {label: 'tva', name: 'vat', trie: true, type: 'measure', measure: priceMeasure},
-            {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
+            {label: 'Date', name: 'paymentDate', type: 'date'},
+            {label: 'N° Facture/Avoir', name: 'paymentRef', type: 'text'},
+            {label: 'Client', name: 'stakeholder', type: 'text'},
+            {label: 'Libellé', name: 'label', type: 'text'},
+            {label: 'Montant', name: 'amount', type: 'measure', measure: priceMeasure},
+            {label: 'tva', name: 'vat', type: 'measure', measure: priceMeasure},
+            {label: 'Mode de paiement', name: 'paymentMethod', type: 'text'},
             formFileField
         ]
     }
@@ -62,8 +62,8 @@
             {label: 'N° Facture/Avoir', name: 'paymentRef', trie: true, type: 'text', min: true},
             {label: 'Client', name: 'stakeholder', trie: true, type: 'text', min: true},
             {label: 'Libellé', name: 'label', trie: true, type: 'text'},
-            {label: 'Montant', name: 'amount', trie: true, type: 'measure', min: true, measure: priceMeasure},
-            {label: 'tva', name: 'vat', trie: true, type: 'measure', measure: priceMeasure},
+            {label: 'Montant', name: 'amount', trie: false, type: 'measure', min: true, measure: priceMeasure, filter: false},
+            {label: 'tva', name: 'vat', trie: false, type: 'measure', measure: priceMeasure, filter: false},
             {label: 'Mode de paiement', name: 'paymentMethod', trie: true, type: 'text'},
             showFileField
         ],

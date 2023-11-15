@@ -57,6 +57,7 @@
         await refreshTable()
     }
     async function search(inputValues) {
+        console.log(inputValues)
         balanceSheetItemsCriteria.resetAllFilter()
         addPermanentFilter()
         if (inputValues.paymentRef) balanceSheetItemsCriteria.addFilter('paymentRef', inputValues.paymentRef)
@@ -71,6 +72,9 @@
         if (inputValues.paymentDate) {
             balanceSheetItemsCriteria.addFilter('paymentDate[after]', inputValues.paymentDate)
             balanceSheetItemsCriteria.addFilter('paymentDate[before]', inputValues.paymentDate)
+        }
+        if (inputValues.amount) {
+            if (inputValues.amount.value) balanceSheetItemsCriteria.addFilter('amount.value', inputValues.amount.value)
         }
         await refreshTable()
     }
