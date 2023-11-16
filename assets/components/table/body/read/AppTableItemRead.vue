@@ -15,6 +15,9 @@
     const normalizedIndex = computed(() => props.index + 1)
     //console.log(props.id ,props.fields)
     async function remove() {
+        if (confirm('Voulez-vous vraiment supprimer cet élément ?') === false) {
+            return
+        }
         props.send('submit')
         await props.item.remove()
         props.send('success')
