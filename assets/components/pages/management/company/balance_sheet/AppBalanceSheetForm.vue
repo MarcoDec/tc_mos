@@ -29,7 +29,7 @@
 </script>
 
 <template>
-    <AppCard class="bg-blue col">
+    <AppCard class="bg-blue col" title="">
         <div class="row">
             <button id="btnRetour1" class="btn btn-danger btn-icon btn-sm col-1" @click="cancel">
                 <Fa icon="angle-double-left"/>
