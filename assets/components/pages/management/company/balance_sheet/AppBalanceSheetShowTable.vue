@@ -81,8 +81,13 @@
         addPermanentFilter()
         await refreshTable()
     }
-    function openUpdateForm() {
-        UpdateForm.value = true
+    function openUpdateForm(data) {
+        console.log(data)
+        if (!UpdateForm.value) {
+            updateFormData.value = data
+            updateFormName.value = `updateForm${props.tabId}`
+        }
+        UpdateForm.value = !UpdateForm.value
         AddForm.value = false
         addViolations.value = []
         updateViolations.value = []
@@ -122,6 +127,15 @@
         AddForm.value = false
         UpdateForm.value = false
         resetFormData()
+    }
+    function showAddForm() {
+        if (!AddForm.value) {
+            addFormName.value = `addForm${props.tabId}`
+            resetFormData()
+            formKey.value++
+        }
+        AddForm.value = !AddForm.value
+        UpdateForm.value = false
     }
     function addNewItem(){
         const addFormElement = document.getElementById(`form_${addFormName.value}`)
@@ -205,17 +219,19 @@
                         @cancel-search="cancelSearch">
                         <template #title>
                             {{ title }}
-                            <AppBtn v-if="addForm" class="btn-float-right" label="Ajout" variant="success" size="sm" @click="AddForm = !AddForm">
+                            <AppBtn v-if="addForm" class="btn-float-right" label="Ajout" variant="success" size="sm" @click="showAddForm">
                                 <Fa icon="plus"/> Ajouter
                             </AppBtn>
                         </template>
                     </AppCardableTable>
                 </AppSuspense>
             </div>
-            <div v-show="AddForm || UpdateForm" :key="formKey" class="col-6">
+            <div v-if="AddForm || UpdateForm" class="col-6">
+                Ich bin da
                 <AppBalanceSheetForm
-                    v-if="AddForm"
+                    v-show="AddForm"
                     :id="addFormName"
+                    :key="`${addFormName}-${formKey}`"
                     icon="square-plus"
                     title="Ajouter un nouvel élément"
                     :fields="addFieldsForm"
@@ -223,16 +239,17 @@
                     :violations="addViolations"
                     @cancel="cancel"
                     @save="addNewItem"/>
-                <AppBalanceSheetForm
-                    v-if="UpdateForm"
-                    :id="updateFormName"
-                    icon="pencil"
-                    title="Modifier l'élément"
-                    :fields="updateFieldsForm"
-                    form-data="updateFormData"
-                    :violations="updateViolations"
-                    @cancel="cancel"
-                    @save="updateItem"/>
+<!--                <AppBalanceSheetForm-->
+<!--                    v-if="UpdateForm"-->
+<!--                    :id="updateFormName"-->
+<!--                    :key="`${updateFormName}-${formKey}`"-->
+<!--                    icon="pencil"-->
+<!--                    title="Modifier l'élément"-->
+<!--                    :fields="updateFieldsForm"-->
+<!--                    form-data="updateFormData"-->
+<!--                    :violations="updateViolations"-->
+<!--                    @cancel="cancel"-->
+<!--                    @save="updateItem"/>-->
             </div>
         </div>
     </div>
