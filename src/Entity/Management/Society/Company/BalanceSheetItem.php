@@ -36,7 +36,9 @@ use App\Filter\RelationFilter;
         'label',
         'paymentMethod',
         'paymentCategory',
-        'subCategory'
+        'subCategory',
+        'billDate' => 'DESC',
+        'paymentDate' => 'DESC'
     ]),
     ApiFilter(filterClass: DateFilter::class, properties: [
         'billDate',

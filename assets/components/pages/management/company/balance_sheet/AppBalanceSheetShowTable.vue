@@ -19,7 +19,6 @@
         paymentCategory: {required: true, type: String},
         defaultFormValues: {required: true, type: Object}
     })
-    console.log('props', props)
     //region Récupération des données des sessions
     const fetchUser = useUser()
     const token = useCookies(['token']).get('token')
@@ -36,10 +35,10 @@
     addPermanentFilter()
     const tableKey = ref(0)
     const itemsTable = ref([])
-    async function refreshTable() {
+    async function refreshTable(updateKey = true) {
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
         itemsTable.value = fetchBalanceSheetItems.items
-        tableKey.value++
+        if (updateKey) tableKey.value++
     }
     //endregion
     //const getId = /.*?\/(\d+)/
@@ -54,10 +53,9 @@
     }
     async function trierAlphabet(payload) {
         balanceSheetItemsCriteria.addSort(payload.name, payload.direction)
-        await refreshTable()
+        await refreshTable(false) // On ne change pas la clé du tableau pour ne pas perdre le tri
     }
     async function search(inputValues) {
-        console.log(inputValues)
         balanceSheetItemsCriteria.resetAllFilter()
         addPermanentFilter()
         if (inputValues.paymentRef) balanceSheetItemsCriteria.addFilter('paymentRef', inputValues.paymentRef)
@@ -127,7 +125,6 @@
     }
     function addNewItem(){
         const addFormElement = document.getElementById(`form_${addFormName.value}`)
-        console.log('addNewItem', addFormElement)
         const formDataAddItem = new FormData(addFormElement)
         formDataAddItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
         formDataAddItem.append('paymentCategory', props.paymentCategory)
@@ -139,7 +136,6 @@
         //         })
         //     }
         // })
-        //console.log('ajoutItem', formDataAddItem.get('paymentDate'))
         fetch('/api/balance-sheet-items', {
             headers: {
                 Authorization: `Bearer ${token}`
