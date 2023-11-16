@@ -1,117 +1,189 @@
 <script setup>
     import AppProductCreate from './AppProductCreate.vue'
-    import AppTablePage from '../AppTablePage'
-    import {computed} from 'vue-demi'
-    import useProducts from '../../../stores/product/products'
-    import {useTableMachine} from '../../../machine'
+    import {computed, ref} from 'vue-demi'
+    import useUser from '../../../stores/security'
+    import useFetchCriteria from '../../../stores/fetch-criteria/fetchCriteria'
+    import {useProductStore} from '../../../stores/project/product/products'
+    import useOptions from '../../../stores/option/options'
 
-    const title = 'Créer un production'
+    defineProps({
+        icon: {required: true, type: String},
+        title: {required: true, type: String}
+    })
     const modalId = computed(() => 'target')
     const target = computed(() => `#${modalId.value}`)
-    const machineProduct = useTableMachine('machine-product')
-    const products = useProducts()
+
+    const fetchUser = useUser()
+    const currentCompany = fetchUser.company
+    const isProjectWriterOrAdmin = fetchUser.isProjectWriter || fetchUser.isProjectAdmin
+    const roleuser = ref(isProjectWriterOrAdmin ? 'writer' : 'reader')
+
+    const storeProductsList = useProductStore()
+    await storeProductsList.fetch()
+
+    const productListCriteria = useFetchCriteria('product-list-criteria')
+    productListCriteria.addFilter('company', currentCompany)
+
+    async function refreshTable() {
+        await storeProductsList.fetch(productListCriteria.getFetchCriteria)
+    }
+    await refreshTable()
+
+    const itemsTable = computed(() => storeProductsList.productItem)
+
+    const optionsEtat = [
+        {text: 'agreed', value: 'agreed'},
+        {text: 'draft', value: 'draft'},
+        {text: 'to_validate', value: 'to_validate'},
+        {text: 'warning', value: 'warning'}
+    ]
+    const stateBlockerOptions = [
+        {text: 'blocked', value: 'blocked'},
+        {text: 'disabled', value: 'disabled'},
+        {text: 'enabled', value: 'enabled'}
+    ]
+    const typeProductOptions = [
+        {text: 'Prototype', value: 'Prototype'},
+        {text: 'EI', value: 'EI'},
+        {text: 'Série', value: 'Série'},
+        {text: 'Piéce de rechange', value: 'Piéce de rechange'}
+    ]
+
+    const fecthOptionsProductFamilies = useOptions('product-families')
+    await fecthOptionsProductFamilies.fetchOp()
+    const optionsProductFamilies = computed(() =>
+        fecthOptionsProductFamilies.options.map(op => {
+            const text = op.text
+            const value = op.value
+            return {text, value}
+        }))
 
     const fields = computed(() => [
+        {label: 'nom', name: 'name', trie: true, type: 'text'},
+        {label: 'Référence', name: 'code', trie: true, type: 'text'},
         {
-            create: true,
-            label: 'Img',
-            name: 'img',
-            sort: true,
-            type: 'text',
-            update: false
-        },
-        {
-            create: true,
-            label: 'Référence',
-            name: 'ref',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
             label: 'Famille',
-            name: 'famille',
-            sort: true,
-            type: 'text',
-            update: true
+            name: 'family',
+            options: {
+                label: value =>
+                    optionsProductFamilies.value.find(option => option.value === value)?.text ?? null,
+                options: optionsProductFamilies.value
+            },
+            type: 'select'
         },
         {
-            create: true,
-            label: 'Type De Produit',
-            name: 'type',
-            sort: true,
-            type: 'text',
-            update: true
+            label: 'Type de Produit',
+            name: 'kind',
+            options: {
+                label: value =>
+                    typeProductOptions.find(option => option.value === value)?.text ?? null,
+                options: typeProductOptions
+            },
+            type: 'select'
         },
-
+        {label: 'Date d\'expiration', name: 'endOfLife', trie: false, type: 'date'},
         {
-            create: true,
-            label: 'Client',
-            name: 'client',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            label: 'Stocks',
-            name: 'stock',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            label: 'Besoins enregistrés',
-            name: 'besoin',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
-            label: 'Date d\'expiration',
-            name: 'date',
-            sort: true,
-            type: 'text',
-            update: true
-        },
-        {
-            create: true,
             label: 'Etat',
-            name: 'etat',
-            sort: true,
-            type: 'text',
-            update: true
+            name: 'state',
+            options: {
+                label: value =>
+                    optionsEtat.find(option => option.type === value)?.text ?? null,
+                options: optionsEtat
+            },
+            trie: false,
+            type: 'select'
+        },
+        {
+            label: 'Etat de de blocage',
+            name: 'stateBlocker',
+            options: {
+                label: value =>
+                    stateBlockerOptions.find(option => option.type === value)?.text ?? null,
+                options: stateBlockerOptions
+            },
+            trie: false,
+            type: 'select'
         }
     ])
+    async function deleted(id){
+        await storeProductsList.remove(id)
+        await refreshTable()
+    }
+    async function getPage(nPage){
+        productListCriteria.gotoPage(parseFloat(nPage))
+        await storeProductsList.fetch(productListCriteria.getFetchCriteria)
+    }
+    async function search(inputValues) {
+        productListCriteria.resetAllFilter()
+        productListCriteria.addFilter('company', currentCompany)
+        if (inputValues.name) productListCriteria.addFilter('name', inputValues.name)
+        if (inputValues.code) productListCriteria.addFilter('code', inputValues.code)
+        if (inputValues.family) productListCriteria.addFilter('family', inputValues.family)
+        if (inputValues.kind) productListCriteria.addFilter('kind', inputValues.kind)
+        if (inputValues.endOfLife) productListCriteria.addFilter('endOfLife', inputValues.endOfLife)
+        if (inputValues.stateBlocker) productListCriteria.addFilter('embBlocker.state[]', inputValues.stateBlocker)
+        if (inputValues.state) productListCriteria.addFilter('embState.state[]', inputValues.state)
+        await storeProductsList.fetch(productListCriteria.getFetchCriteria)
+    }
+    async function cancelSearch() {
+        productListCriteria.resetAllFilter()
+        productListCriteria.addFilter('company', currentCompany)
+        await storeProductsList.fetch(productListCriteria.getFetchCriteria)
+    }
+    async function trierAlphabet(payload) {
+        productListCriteria.addSort(payload.name, payload.direction)
+        await storeProductsList.fetch(productListCriteria.getFetchCriteria)
+    }
 </script>
 
 <template>
     <div class="row">
-        <AppModal :id="modalId" class="four" :title="title">
-            <AppProductCreate/>
-        </AppModal>
         <div class="col">
-            <AppTablePage
-                :fields="fields"
-                icon="user-tag"
-                :machine="machineProduct"
-                :store="products"
-                title="La liste de Production">
-                <template #cell(etat)>
-                    <AppTrafficLight/>
-                </template>
-                <template #btn>
+            <h1>
+                <Fa :icon="icon"/>
+                {{ title }}
+                <span v-if="isProjectWriterOrAdmin" class="btn-float-right">
                     <AppBtn
                         variant="success"
+                        label="Créer"
                         data-bs-toggle="modal"
                         :data-bs-target="target">
+                        <Fa icon="plus"/>
                         Créer
                     </AppBtn>
-                </template>
-            </AppTablePage>
+                </span>
+            </h1>
+        </div>
+    </div>
+    <div class="row">
+        <AppSuspense>
+            <AppProductCreate :modal-id="modalId" :title="title" :options-product-families="optionsProductFamilies" :target="target"/>
+        </AppSuspense>
+        <div class="col">
+            <AppSuspense>
+                <AppCardableTable
+                    :current-page="storeProductsList.currentPage"
+                    :fields="fields"
+                    :first-page="storeProductsList.firstPage"
+                    :items="itemsTable"
+                    :last-page="storeProductsList.lastPage"
+                    :next-page="storeProductsList.nextPage"
+                    :pag="storeProductsList.pagination"
+                    :previous-page="storeProductsList.previousPage"
+                    :user="roleuser"
+                    form="formProductCardableTable"
+                    @deleted="deleted"
+                    @get-page="getPage"
+                    @trier-alphabet="trierAlphabet"
+                    @search="search"
+                    @cancel-search="cancelSearch"/>
+            </AppSuspense>
         </div>
     </div>
 </template>
+
+<style scoped>
+    .btn-float-right{
+        float: right;
+    }
+</style>

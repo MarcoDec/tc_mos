@@ -24,6 +24,7 @@ use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\NumericFilter;
+use App\Filter\SetFilter;
 use App\Repository\Hr\Employee\EmployeeRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -44,6 +45,7 @@ use App\Controller\Hr\Employee\EmployeePatchController;
         properties: ['initials' => 'partial', 'name' => 'partial', 'surname' => 'partial', 'username' => 'partial', 'company'=>'exact']
     ),
     ApiFilter(filterClass: OrderFilter::class, properties: ['initials', 'id', 'name', 'surname', 'username']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiResource(
         description: 'Employé',
         collectionOperations: [

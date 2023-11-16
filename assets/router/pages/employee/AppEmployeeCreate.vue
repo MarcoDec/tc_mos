@@ -25,7 +25,8 @@
             const value = op.value
             return {text, value}
         }))
-    console.log('optionsCompany', optionsCompany)
+
+    const empCompany = {company: props.currentCompany}
 
     const levelOptions = [
         {text: 'Opérateur', value: '1'},
@@ -49,7 +50,6 @@
                  optionsCompany.value.find(option => option.type === value)?.text ?? null,
              options: optionsCompany.value
          },
-         modelValue: props.currentCompany,
          type: 'select'},
         {
             label: 'Niveau',
@@ -82,7 +82,6 @@
         } else {
             employeeData[key] = value[key]
         }
-        console.log('employeeData', employeeData)
     }
 
     async function employeeFormCreate(){
@@ -98,7 +97,6 @@
                 username: employeeData?.username || '',
                 company: employeeData?.company || props.currentCompany
             }
-            console.log('employee', employee)
             await storeEmployeesList.addEmployee(employee)
             isPopupVisible.value = false
             isCreatedPopupVisible.value = true
@@ -107,14 +105,13 @@
             violations = error
             isPopupVisible.value = true
             isCreatedPopupVisible.value = false
-            console.log('violations', violations)
         }
     }
 </script>
 
 <template>
     <AppModal :id="modalId" class="four" :title="title">
-        <AppFormJS id="employee" :fields="fields" @update:model-value="employeeForm"/>
+        <AppFormJS id="employee" :fields="fields" :model-value="empCompany" @update:model-value="employeeForm"/>
         <div v-if="isPopupVisible" class="alert alert-danger" role="alert">
             <li>{{ violations }}</li>
         </div>

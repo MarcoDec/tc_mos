@@ -19,14 +19,64 @@ export const useProductStore = defineStore('products', {
         async fetchProductFamily() {
             const response = await api('/api/product-families', 'GET')
             this.productsFamily = response['hydra:member']
+        },
+        async fetch(criteria = '') {
+            const response = await api(`/api/products${criteria}`, 'GET')
+            this.productsItems = await this.updatePagination(response)
+        },
+        async updatePagination(response) {
+            const responseData = await response['hydra:member']
+            let paginationView = {}
+            if (Object.prototype.hasOwnProperty.call(response, 'hydra:view')) {
+                paginationView = response['hydra:view']
+            } else {
+                paginationView = responseData
+            }
+            if (Object.prototype.hasOwnProperty.call(paginationView, 'hydra:first')) {
+                this.pagination = true
+                this.firstPage = paginationView['hydra:first'] ? paginationView['hydra:first'].match(/page=(\d+)/)[1] : '1'
+                this.lastPage = paginationView['hydra:last'] ? paginationView['hydra:last'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.nextPage = paginationView['hydra:next'] ? paginationView['hydra:next'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                this.currentPage = paginationView['@id'].match(/page=(\d+)/)[1]
+                this.previousPage = paginationView['hydra:previous'] ? paginationView['hydra:previous'].match(/page=(\d+)/)[1] : paginationView['@id'].match(/page=(\d+)/)[1]
+                return responseData
+            }
+            this.pagination = false
+            return responseData
+        },
+        async remove(id){
+            await api(`/api/products/${id}`, 'DELETE')
+            this.productsItems = this.productsItems.filter(productItem => Number(productItem['@id'].match(/\d+/)[0]) !== id)
+        },
+        async addProduct(payload) {
+            const response = await api('/api/products', 'POST', payload)
+            this.currentProduct = response['@id']
         }
     },
-    getters: {},
+    getters: {
+        productItem: state => state.productsItems.map(item => {
+            const newObject = {
+                '@id': item['@id'],
+                type: item['@type'],
+                code: item.code,
+                stateBlocker: item.embBlocker.state,
+                state: item.embState.state,
+                endOfLife: item.endOfLife,
+                family: item.family,
+                id: item.index,
+                kind: item.kind,
+                name: item.name
+            }
+            return newObject
+        })
+    },
     state: () => ({
         isLoaded: false,
         isLoading: false,
         product: {},
         products: [],
-        productsFamily: []
+        productsFamily: [],
+        productsItems: [],
+        currentProduct: ''
     })
 })

@@ -15,7 +15,6 @@
 
     const fetchUser = useUser()
     const currentCompany = fetchUser.company
-    console.log('currentCompany', currentCompany)
     const isHrWriterOrAdmin = fetchUser.isHrWriter || fetchUser.isHrAdmin
     const roleuser = ref(isHrWriterOrAdmin ? 'writer' : 'reader')
 
@@ -24,7 +23,6 @@
 
     const employeeListCriteria = useFetchCriteria('employee-list-criteria')
     employeeListCriteria.addFilter('company', currentCompany)
-    console.log('employeeListCriteria', employeeListCriteria.addFilter('company', currentCompany))
 
     async function refreshTable() {
         await storeEmployeesList.fetch(employeeListCriteria.getFetchCriteria)
@@ -35,8 +33,6 @@
 
     const optionsEtat = [
         {text: 'agreed', value: 'agreed'},
-        {text: 'draft', value: 'draft'},
-        {text: 'to_validate', value: 'to_validate'},
         {text: 'warning', value: 'warning'}
     ]
 
@@ -70,7 +66,6 @@
     }
 
     async function search(inputValues) {
-        console.log('inputValues', inputValues)
         employeeListCriteria.resetAllFilter()
         employeeListCriteria.addFilter('company', currentCompany)
         if (inputValues.timeCard) employeeListCriteria.addFilter('timeCard', inputValues.timeCard)

@@ -6,9 +6,7 @@ export const useEmployeesStore = defineStore('employees', {
     actions: {
         ...actionsItems,
         async fetch(criteria = '') {
-            console.log('criteria', criteria)
             const response = await api(`/api/employees${criteria}`, 'GET')
-            console.log('response employees', response)
             this.employees = await this.updatePagination(response)
         },
         async updatePagination(response) {
@@ -36,8 +34,7 @@ export const useEmployeesStore = defineStore('employees', {
             this.employees = this.employees.filter(employee => Number(employee['@id'].match(/\d+/)[0]) !== id)
         },
         async addEmployee(payload) {
-            const response = await api('/api/employees', 'POST', payload)
-            console.log('response addEmployee', response)
+            await api('/api/employees', 'POST', payload)
         }
     },
     getters: {

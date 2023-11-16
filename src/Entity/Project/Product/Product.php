@@ -25,6 +25,7 @@ use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Selling\ProductReference;
 use App\Entity\Traits\BarCodeTrait;
 use App\Filter\RelationFilter;
+use App\Filter\SetFilter;
 use App\Repository\Project\Product\ProductRepository;
 use App\Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Validator as AppAssert;
@@ -37,9 +38,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: DateFilter::class, properties: ['endOfLife']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'index', 'kind', 'name']),
+    ApiFilter(filterClass: SetFilter::class, properties: ['embState.state','embBlocker.state']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['family']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'index' => 'partial', 'kind' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['code' => 'partial', 'index' => 'partial', 'kind' => 'partial', 'name'=> 'partial']),
     ApiResource(
         description: 'Produit',
         collectionOperations: [

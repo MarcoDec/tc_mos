@@ -100,9 +100,13 @@ export default [
         path: '/manufacturingOrder-list'
     },
     {
-        component: () => import('./pages/product/AppProductPage.vue'),
+        component: () => import('./pages/product/AppProductListPage.vue'),
         meta: {requiresAuth: true},
         name: 'product-list',
-        path: '/product-list'
+        path: '/product-list',
+        props: {
+            icon: 'user-tag',
+            title: 'Créer un produit'
+        }
     }
 ]

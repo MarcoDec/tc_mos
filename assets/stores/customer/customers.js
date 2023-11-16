@@ -34,8 +34,7 @@ export const useCustomersStore = defineStore('customers', {
             this.customers = this.customers.filter(customer => Number(customer['@id'].match(/\d+/)[0]) !== id)
         },
         async addCustomer(payload) {
-            const response = await api('/api/customers', 'POST', payload)
-            console.log('response addCustomer', response)
+            await api('/api/customers', 'POST', payload)
         }
     },
     getters: {
@@ -49,6 +48,13 @@ export const useCustomersStore = defineStore('customers', {
                 '@id': item['@id'],
                 name: item.name,
                 state: item.embState.state
+            }
+            return newObject
+        }),
+        optionCustomers: state => state.customers.map(item => {
+            const newObject = {
+                value: item['@id'],
+                text: item.name
             }
             return newObject
         }),
