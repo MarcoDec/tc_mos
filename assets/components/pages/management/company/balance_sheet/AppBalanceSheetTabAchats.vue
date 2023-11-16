@@ -88,7 +88,7 @@
                 {label: 'Fournisseur', name: 'stakeholder', type: 'text'},
                 {label: 'Libellé', name: 'label', type: 'text'},
                 {label: 'Montant', name: 'amount', type: 'measure', measure: priceMeasure},
-                {label: 'tva', name: 'vat', ttype: 'measure', measure: priceMeasure},
+                {label: 'tva', name: 'vat', type: 'measure', measure: priceMeasure},
                 {label: 'Méthode paiement', name: 'paymentMethod', type: 'text'},
                 formFileField
             ],
