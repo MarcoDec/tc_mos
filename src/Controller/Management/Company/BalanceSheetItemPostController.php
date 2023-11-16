@@ -77,18 +77,23 @@ class BalanceSheetItemPostController
     public function getFileAndPersist(Request $request, bool $withError = true):void {
         $host = $request->getSchemeAndHttpHost();
         $file = $request->files->get('file');
-        if ($withError && $file->getError()===1) {
-            throw new FileException($file->getErrorMessage());
+        if ($file === null) {
+            // no file uploaded
+        } else {
+            if ($withError && $file->getError()===1) {
+                throw new FileException($file->getErrorMessage());
+            }
+            $this->entity->setFile($file);
+            $this->entityManager->persist($this->entity);
+            $this->entityManager->flush(); // pour récupération id utilisé par default dans getBaseFolder
+            $saveFolder = $this->entity->getBaseFolder();
+            if ($this->entity->getSubCategory() !== 'null') {
+                $saveFolder .= '/' . $this->entity->getSubCategory();
+            } else $this->entity->setSubCategory('');
+            $this->fileManager->persistFile($saveFolder, $file);
+            $this->entity->setUrl($host.'/uploads'.$saveFolder.'/'.str_replace(' ', '_', $file->getClientOriginalName()));
+            $this->entityManager->flush(); // pour persist du chemin vers le fichier
         }
-        $this->entity->setFile($file);
-        $this->entityManager->persist($this->entity);
-        $this->entityManager->flush(); // pour récupération id utilisé par default dans getBaseFolder
-        $saveFolder = $this->entity->getBaseFolder();
-        if ($this->entity->getSubCategory() !== 'null') {
-            $saveFolder .= '/' . $this->entity->getSubCategory();
-        } else $this->entity->setSubCategory('');
-        $this->fileManager->persistFile($saveFolder, $file);
-        $this->entity->setUrl($host.'/uploads'.$saveFolder.'/'.str_replace(' ', '_', $file->getClientOriginalName()));
-        $this->entityManager->flush(); // pour persist du chemin vers le fichier
+
     }
 }
