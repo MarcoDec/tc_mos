@@ -84,8 +84,8 @@
     function openUpdateForm(data) {
         if (!UpdateForm.value) {
             updateFormData.value = data
-            updateFormData.value.paymentDate = data.paymentDate.split('T')[0]
-            updateFormData.value.billDate = data.billDate.split('T')[0]
+            if (data.paymentDate) updateFormData.value.paymentDate = data.paymentDate.split('T')[0]
+            if (data.billDate) updateFormData.value.billDate = data.billDate.split('T')[0]
             updateFormName.value = `updateForm${props.tabId}`
             formKey.value++
         }
