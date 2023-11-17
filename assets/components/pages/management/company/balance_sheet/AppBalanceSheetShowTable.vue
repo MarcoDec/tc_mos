@@ -82,10 +82,12 @@
         await refreshTable()
     }
     function openUpdateForm(data) {
-        console.log(data)
         if (!UpdateForm.value) {
             updateFormData.value = data
+            updateFormData.value.paymentDate = data.paymentDate.split('T')[0]
+            updateFormData.value.billDate = data.billDate.split('T')[0]
             updateFormName.value = `updateForm${props.tabId}`
+            formKey.value++
         }
         UpdateForm.value = !UpdateForm.value
         AddForm.value = false
@@ -123,11 +125,6 @@
         //endregion
     }
     resetFormData()
-    function cancel() {
-        AddForm.value = false
-        UpdateForm.value = false
-        resetFormData()
-    }
     function showAddForm() {
         if (!AddForm.value) {
             addFormName.value = `addForm${props.tabId}`
@@ -137,19 +134,20 @@
         AddForm.value = !AddForm.value
         UpdateForm.value = false
     }
+    function showUpdateForm() {
+        if (!UpdateForm.value) {
+            updateFormName.value = `updateForm${props.tabId}`
+            resetFormData()
+            formKey.value++
+        }
+        UpdateForm.value = !UpdateForm.value
+        AddForm.value = false
+    }
     function addNewItem(){
         const addFormElement = document.getElementById(`form_${addFormName.value}`)
         const formDataAddItem = new FormData(addFormElement)
         formDataAddItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
         formDataAddItem.append('paymentCategory', props.paymentCategory)
-        // props.formFields.forEach(field => {
-        //     if (field.type === 'measure' && typeof formDataAddItem.get(`${field.name}-code`) === 'string') {
-        //         formDataAddItem.append(field.name, {
-        //             value: formDataAddItem.get(`${field.name}-value`),
-        //             code: formDataAddItem.get(`${field.name}-code`)
-        //         })
-        //     }
-        // })
         fetch('/api/balance-sheet-items', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -161,23 +159,21 @@
             refreshTable()
         })
     }
-    function updateItem(data){
-        console.log('updateItem', data)
-        //const updateForm = document.getElementById(updateFormName)
-        //const formDataUpdateItem = new FormData(updateForm)
-        // formDataUpdateItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
-        // formDataUpdateItem.append('paymentCategory', props.paymentCategory)
-        //console.log('ajoutItem', formDataAddItem.get('paymentDate'))
-        // fetch(`/api/balance-sheet-items/${}`, {
-        //     headers: {
-        //         Authorization: `Bearer ${token}`
-        //     },
-        //     method: 'POST',
-        //     body: formDataUpdateItem
-        // }).then(() => {
-        //     resetFormData()
-        //     refreshTable()
-        // })
+    function updateItem(){
+        const updateFormElement = document.getElementById(`form_${updateFormName.value}`)
+        const formDataUpdateItem = new FormData(updateFormElement)
+        formDataUpdateItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
+        formDataUpdateItem.append('paymentCategory', props.paymentCategory)
+        fetch(`/api/balance-sheet-items/${updateFormData.value.id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            method: 'POST',
+            body: formDataUpdateItem
+        }).then(() => {
+            resetFormData()
+            refreshTable()
+        })
     }
     //endregion
 
@@ -227,7 +223,6 @@
                 </AppSuspense>
             </div>
             <div v-if="AddForm || UpdateForm" class="col-6">
-                Ich bin da
                 <AppBalanceSheetForm
                     v-show="AddForm"
                     :id="addFormName"
@@ -237,19 +232,19 @@
                     :fields="addFieldsForm"
                     :form-data="addFormData"
                     :violations="addViolations"
-                    @cancel="cancel"
+                    @cancel="showAddForm"
                     @save="addNewItem"/>
-<!--                <AppBalanceSheetForm-->
-<!--                    v-if="UpdateForm"-->
-<!--                    :id="updateFormName"-->
-<!--                    :key="`${updateFormName}-${formKey}`"-->
-<!--                    icon="pencil"-->
-<!--                    title="Modifier l'élément"-->
-<!--                    :fields="updateFieldsForm"-->
-<!--                    form-data="updateFormData"-->
-<!--                    :violations="updateViolations"-->
-<!--                    @cancel="cancel"-->
-<!--                    @save="updateItem"/>-->
+                <AppBalanceSheetForm
+                    v-show="UpdateForm"
+                    :id="updateFormName"
+                    :key="`${updateFormName}-${formKey}`"
+                    icon="pencil"
+                    title="Modifier l'élément"
+                    :fields="updateFieldsForm"
+                    :form-data="updateFormData"
+                    :violations="updateViolations"
+                    @cancel="showUpdateForm"
+                    @save="updateItem"/>
             </div>
         </div>
     </div>

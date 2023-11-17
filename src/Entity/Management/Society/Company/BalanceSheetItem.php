@@ -3,6 +3,7 @@
 namespace App\Entity\Management\Society\Company;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
+use App\Controller\Management\Company\BalanceSheetItemPatchController;
 use App\Controller\Management\Company\BalanceSheetItemPostController;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
@@ -70,15 +71,22 @@ use App\Filter\RelationFilter;
             ]
         ],
         itemOperations: [
-            'get' => NO_ITEM_GET_OPERATION,
-            'patch',
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère une écriture comptable',
+                    'summary' => 'Récupère une écriture comptable'
+                ]
+            ],
             'delete',
-            'post' => [
-                'controller' => PlaceholderAction::class,
+            'patch' => [
+                'controller' => BalanceSheetItemPatchController::class,
                 'input_formats' => ['multipart'],
                 'method' => 'POST',
+                'read' => true,
+                'write' => true,
+                'deserialize' => false, //OK
                 'openapi_context' => [
-                    'description' => 'Modifie un élément de bilan compatable',
+                    'description' => 'Modifie un élément de bilan comptable',
                     'summary' => 'Modifie un élement de bilan comptable',
                 ],
                 'path' => '/balance-sheet-items/{id}',
