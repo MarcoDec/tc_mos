@@ -77,6 +77,16 @@ services:
         event: postPersist
         name: doctrine.orm.entity_listener
 
+  App\EventListener\Management\BalanceSheet\BalanceSheetItemEventListener:
+    autoconfigure: false
+    tags:
+      - entity: App\Entity\Management\Society\Company\BalanceSheetItem
+        event: postPersist
+        name: doctrine.orm.entity_listener
+      - entity: App\Entity\Management\Society\Company\BalanceSheetItem
+        event: postUpdate
+        name: doctrine.orm.entity_listener
+
   App\EventListener\HttpKernel\ExceptionListener:
     arguments:
       $exceptionToStatus: '%api_platform.exception_to_status%'
