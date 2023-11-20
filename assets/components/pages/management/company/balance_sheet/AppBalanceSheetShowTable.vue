@@ -1,5 +1,5 @@
 <script setup>
-    import {computed, defineProps, onBeforeMount, ref} from 'vue'
+    import {computed, onBeforeMount, ref, toRefs} from 'vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
     import useBalanceSheetItemStore from '../../../../../stores/management/balance-sheets/balanceSheetItems'
     import useUser from '../../../../../stores/security'
@@ -8,7 +8,7 @@
     import {useCookies} from '@vueuse/integrations/useCookies'
     import AppBalanceSheetForm from './AppBalanceSheetForm.vue'
 
-    const props = defineProps({
+    const {addForm, balanceSheetCurrency, title, idBalanceSheet, formFields, tabFields, tabId, paymentCategory, defaultFormValues} = toRefs(defineProps({
         addForm: {required: true, type: Boolean},
         balanceSheetCurrency: {required: true, type: String},
         title: {required: true, type: String},
@@ -18,7 +18,7 @@
         tabId: {required: true, type: String},
         paymentCategory: {required: true, type: String},
         defaultFormValues: {required: true, type: Object}
-    })
+    }))
     //region Récupération des données des sessions
     const fetchUser = useUser()
     const token = useCookies(['token']).get('token')
@@ -26,11 +26,11 @@
     const roleuser = ref(isWriterOrAdmin ? 'writer' : 'reader')
     //endregion
     //region Définition des variables liées au chargement des données
-    const fetchBalanceSheetItems = useBalanceSheetItemStore(props.paymentCategory)
-    const balanceSheetItemsCriteria = useFetchCriteria(`balanceSheetItems-criteria-${props.tabId}`)
+    const fetchBalanceSheetItems = useBalanceSheetItemStore(paymentCategory.value)
+    const balanceSheetItemsCriteria = useFetchCriteria(`balanceSheetItems-criteria-${tabId.value}`)
     function addPermanentFilter() {
-        balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
-        balanceSheetItemsCriteria.addFilter('paymentCategory', props.paymentCategory)
+        balanceSheetItemsCriteria.addFilter('balanceSheet', `/api/balance-sheets/${idBalanceSheet.value}`)
+        balanceSheetItemsCriteria.addFilter('paymentCategory', paymentCategory.value)
     }
     addPermanentFilter()
     const tableKey = ref(0)
@@ -86,7 +86,7 @@
             updateFormData.value = data
             if (data.paymentDate) updateFormData.value.paymentDate = data.paymentDate.split('T')[0]
             if (data.billDate) updateFormData.value.billDate = data.billDate.split('T')[0]
-            updateFormName.value = `updateForm${props.tabId}`
+            updateFormName.value = `updateForm${tabId.value}`
             formKey.value++
         }
         UpdateForm.value = !UpdateForm.value
@@ -98,28 +98,28 @@
     //region Définition des variables et fonctions de formulaires
     const addFormData = ref({})
     const AddForm = ref(false)
-    const addFieldsForm = ref(props.tabFields)
+    const addFieldsForm = ref(tabFields.value)
     const addViolations = ref([])
-    const addFormName = computed(() => `addForm${props.tabId}`)
+    const addFormName = computed(() => `addForm${tabId.value}`)
 
     const updateFormData = ref({})
     const UpdateForm = ref(false)
     const updateFieldsForm = ref({})
     const updateViolations = ref([])
-    const updateFormName = computed(() => `updateForm${props.tabId}`)
+    const updateFormName = computed(() => `updateForm${tabId.value}`)
 
     const formKey = ref(0)
     function resetFormData(){
         addFormData.value = {}
-        addFormData.value = props.defaultFormValues
+        addFormData.value = defaultFormValues.value
         addViolations.value = []
         updateViolations.value = []
         updateFormData.value = {}
-        updateFormData.value = props.defaultFormValues
+        updateFormData.value = defaultFormValues.value
         //region On initialise les valeurs des champs de formulaire de type measure avec la valeur de la devise de la balanceSheet parente
-        props.formFields.forEach(field => {
+        formFields.value.forEach(field => {
             if (field.type === 'measure') {
-                addFormData.value[field.name].code = props.balanceSheetCurrency
+                addFormData.value[field.name].code = balanceSheetCurrency.value
             }
         })
         //endregion
@@ -127,7 +127,7 @@
     resetFormData()
     function showAddForm() {
         if (!AddForm.value) {
-            addFormName.value = `addForm${props.tabId}`
+            addFormName.value = `addForm${tabId.value}`
             resetFormData()
             formKey.value++
         }
@@ -136,7 +136,7 @@
     }
     function showUpdateForm() {
         if (!UpdateForm.value) {
-            updateFormName.value = `updateForm${props.tabId}`
+            updateFormName.value = `updateForm${tabId.value}`
             resetFormData()
             formKey.value++
         }
@@ -146,8 +146,8 @@
     function addNewItem(){
         const addFormElement = document.getElementById(`form_${addFormName.value}`)
         const formDataAddItem = new FormData(addFormElement)
-        formDataAddItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
-        formDataAddItem.append('paymentCategory', props.paymentCategory)
+        formDataAddItem.append('balanceSheet', `/api/balance-sheets/${idBalanceSheet.value}`)
+        formDataAddItem.append('paymentCategory', paymentCategory.value)
         fetch('/api/balance-sheet-items', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -162,8 +162,8 @@
     function updateItem(){
         const updateFormElement = document.getElementById(`form_${updateFormName.value}`)
         const formDataUpdateItem = new FormData(updateFormElement)
-        formDataUpdateItem.append('balanceSheet', `/api/balance-sheets/${props.idBalanceSheet}`)
-        formDataUpdateItem.append('paymentCategory', props.paymentCategory)
+        formDataUpdateItem.append('balanceSheet', `/api/balance-sheets/${idBalanceSheet.value}`)
+        formDataUpdateItem.append('paymentCategory', paymentCategory.value)
         fetch(`/api/balance-sheet-items/${updateFormData.value.id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -180,8 +180,8 @@
     //endregion
     //region Chargement des données onBeforeMount()
     onBeforeMount(async () => {
-        addFieldsForm.value = props.formFields
-        updateFieldsForm.value = props.formFields
+        addFieldsForm.value = formFields.value
+        updateFieldsForm.value = formFields.value
         await fetchBalanceSheetItems.fetch(balanceSheetItemsCriteria.getFetchCriteria)
         itemsTable.value = fetchBalanceSheetItems.items
     })

@@ -2,13 +2,13 @@
     import AppTab from '../../../../tab/AppTab.vue'
     import AppTabs from '../../../../tab/AppTabs.vue'
     import AppBalanceSheetShowTable from './AppBalanceSheetShowTable.vue'
-    import {defineProps} from 'vue'
+    import {toRefs} from 'vue'
 
-    const props = defineProps({
+    const {idBalanceSheet, isWriterOrAdmin, balanceSheetCurrency} = toRefs(defineProps({
         idBalanceSheet: {required: true, type: Number},
         isWriterOrAdmin: {required: true, type: Boolean},
         balanceSheetCurrency: {required: true, type: String}
-    })
+    }))
     //region Définition des champs de formulaires et tableaux
     //region    Définition des champs partagés
     const formFileField = {
@@ -223,8 +223,8 @@
         stakeholder: '',
         subCategory: '',
         label: '',
-        amount: {code: props.balanceSheetCurrency, value: 0},
-        vat: {code: props.balanceSheetCurrency, value: 0},
+        amount: {code: balanceSheetCurrency.value, value: 0},
+        vat: {code: balanceSheetCurrency.value, value: 0},
         paymentMethod: '',
         file: null
     }

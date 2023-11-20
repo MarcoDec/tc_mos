@@ -1,14 +1,14 @@
 <script setup>
-    import {ref} from 'vue'
+    import {ref, toRefs} from 'vue'
     const emit = defineEmits(['update:modelValue'])
-    const props = defineProps({
+    const {disabled, form, id, modelValue} = toRefs(defineProps({
         disabled: {type: Boolean},
         form: {required: true, type: String},
         id: {required: true, type: String},
         modelValue: {type: Boolean}
-    })
+    }))
 
-    const ratingValue = ref(props.modelValue)
+    const ratingValue = ref(modelValue.value)
     function input(value) {
         if (ratingValue.value === value) {
             ratingValue.value = 0

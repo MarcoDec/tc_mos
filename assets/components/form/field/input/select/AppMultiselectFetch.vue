@@ -3,60 +3,50 @@
      * Ce composant permet l'utilisation d'un système d'auto-complétion pour un simple select ou un multiselect à partir
      * de données chargées depuis une api.
      *
-     * Les paramètres essentiels pour qu'il faut avoir défini pour un fonctionnement correct sont:
-     * - `props.field.api` : défini la base de l'url de l'api qui sera utilisé
-     * - `props.field.filteredProperty` : défini le nom de la propriété de l'object qui sera utilisé pour le filtre
-     * - `props.field.max` : défini le nombre max d'élément sélectionnable. Si cette valeur vaut 1, alors c'est un simple select.
+     * Les paramètres essentiels pour qu'il faille avoir défini pour un fonctionnement correct sont :
+     * - `field.api` : défini la base de l'url de l'api qui sera utilisé
+     * - `field.filteredProperty` : défini le nom de la propriété de l'object qui sera utilisé pour le filtre
+     * - `field.max` : défini le nombre max d'élément sélectionnable. Si cette valeur vaut 1, alors c'est un simple select.
      */
-    import {computed, ref} from 'vue'
+    import {computed, ref, toRefs} from 'vue'
     import api from '../../../../../api'
     import AppMultiselect from './AppMultiselect.vue'
     import useFetchCriteria from '../../../../../stores/fetch-criteria/fetchCriteria'
 
     const key = ref(0)
-    const props = defineProps({
+    const {disabled, field, form, id, mode, modelValue} = toRefs(defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
         id: {required: true, type: String},
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
-    })
-    const localModelValue = ref(props.modelValue)
+    }))
+    const localModelValue = ref(modelValue.value)
     const emit = defineEmits(['searchChange', 'update:modelValue'])
-    const fetchCriteria = useFetchCriteria(`${props.form}FetchCriteria`)
+    const fetchCriteria = useFetchCriteria(`${form.value}FetchCriteria`)
     const items = ref([])
-    const options = computed(() => items.value.map(item => ({text: `${item[props.field.filteredProperty]}`, value: item['@id']})))
+    const options = computed(() => items.value.map(item => ({text: `${item[field.value.filteredProperty]}`, value: item['@id']})))
     const multiselectField = computed(() => ({
-        label: props.field.label,
-        name: props.field.name,
+        label: field.value.label,
+        name: field.value.name,
         options: {label: value => options.value.find(option => option.value === value)?.text ?? null, options: options.value}
     }))
     const newModelValue = ref([])
     if (Array.isArray(localModelValue.value) && localModelValue.value.length > 0) {
-        // on charge les données de l'api et on les met dans items pour que la variable 'options' soit mise à jour
+        // on charge les données de l'api et on les met dans les items pour que la variable 'options' soit mise à jour
         console.log('localModelValue', localModelValue.value)
         localModelValue.value.forEach(value => {
             if (value['@id'] === 'undefined') api(value, 'GET').then(response => {
                 items.value.push(response)
                 newModelValue.value.push(response['@id'])
-                // newModelValue.value.push({
-                //     text: `${response[props.field.filteredProperty]}`,
-                //     value: response['@id']
-                // })
                 key.value++
             })
             else api(value['@id'], 'GET').then(response => {
                 items.value.push(response)
-                // newModelValue.value.push({
-                //     text: `${response[props.field.filteredProperty]}`,
-                //     value: response['@id']
-                // })
                 newModelValue.value.push(response['@id'])
                 key.value++
             })
-            //console.log('items', items.value)
-            //console.log(newModelValue.value)
         })
     }
     async function updateItems() {

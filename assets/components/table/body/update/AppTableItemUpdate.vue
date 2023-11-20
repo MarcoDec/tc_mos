@@ -1,34 +1,34 @@
 <script setup>
     import AppTableItemUpdateField from './AppTableItemUpdateField.vue'
-    import {computed} from 'vue'
+    import {computed, toRefs} from 'vue'
 
-    const props = defineProps({
+    const {fields, id, index, item, machine} = toRefs(defineProps({
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         index: {required: true, type: Number},
         item: {required: true, type: Object},
         machine: {required: true, type: Object}
-    })
-    const form = computed(() => `${props.id}-form`)
-    const normalizedIndex = computed(() => props.index + 1)
+    }))
+    const form = computed(() => `${id.value}-form`)
+    const normalizedIndex = computed(() => index.value + 1)
 
-    props.item.initUpdate(props.fields)
+    item.value.initUpdate(fields.value)
 
     function cancel() {
-        props.machine.send('search')
+        machine.value.send('search')
     }
 
     async function update() {
-        props.machine.send('submit')
+        machine.value.send('submit')
         try {
-            await props.item.update()
-            props.machine.send('success')
-            props.machine.send('search')
+            await item.value.update()
+            machine.value.send('success')
+            machine.value.send('search')
         } catch (violations) {
-            props.machine.send('fail', {violations})
+            machine.value.send('fail', {violations})
         }
     }
-    const machineViolations = computed(() => props.machine.state.value.context.violations)
+    const machineViolations = computed(() => machine.value.state.value.context.violations)
     const fieldViolations = computed(() => (Array.isArray(machineViolations.value) ? machineViolations.value : []))
     const isMachineViolationGlobalError = computed(() => !Array.isArray(machineViolations.value))
 </script>

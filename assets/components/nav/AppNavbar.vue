@@ -10,7 +10,7 @@
         <AppContainer fluid>
             <span class="m-0 navbar-brand p-0">
                 <AppRouterLink :to="{name: 'home'}">
-                    <img src="/img/TConcept_Logo.png"/>
+                    <img src="/public/img/TConcept_Logo.png"/>
                 </AppRouterLink>
             </span>
             <button
