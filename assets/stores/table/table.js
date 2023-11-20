@@ -4,7 +4,7 @@ import flat from 'flat'
 import useRow from './row'
 
 export default function useTable(id) {
-    return defineStore(id, {
+    return defineStore(`table${id}`, {
         actions: {
             async cancel() {
                 this.id = id
@@ -12,9 +12,26 @@ export default function useTable(id) {
                 await this.fetch()
             },
             async create() {
-                const response = await api(this.url, 'POST', this.createBody)
-                this.resetItems()
-                this.rows.push(useRow(response, this))
+                const fieldType = this.getApiTypedRoutes.field
+                if (fieldType) {
+                    const fieldValue = this.createBody[fieldType]
+                    const urls = this.getApiTypedRoutes.routes
+                    const urlLength = urls.length
+                    let url = ''
+                    for (let i = 0; i < urlLength; i++) {
+                        const theValue = urls[i].valeur
+                        if (theValue === fieldValue) {
+                            url = urls[i].url
+                        }
+                    }
+                    const response = await api(url, 'POST', this.createBody)
+                    this.resetItems()
+                    this.rows.push(useRow(response, this))
+                } else {
+                    const response = await api(this.url, 'POST', this.createBody)
+                    this.resetItems()
+                    this.rows.push(useRow(response, this))
+                }
             },
             dispose() {
                 for (const row of this.rows)
@@ -22,7 +39,7 @@ export default function useTable(id) {
                 this.$dispose()
             },
             async fetch() {
-                const response = await api(this.url, 'GET', this.fetchBody)
+                const response = await api(this.url + this.readFilter, 'GET', this.fetchBody)
                 this.resetItems()
                 for (const row of response['hydra:member'])
                     this.rows.push(useRow(row, this))
@@ -52,12 +69,13 @@ export default function useTable(id) {
                 return field => (this.isSorter(field) ? this.order : 'none')
             },
             baseUrl() {
-                return `/api/${this.$id}`
+                return this.url
             },
             fetchBody() {
                 return {...this.orderBody, ...this.flatSearch}
             },
             flatSearch: state => flat(state.search),
+            getApiTypedRoutes: state => state.apiTypedRoutes,
             isSorter: state => field => field.name === state.sorted,
             order() {
                 return `${this.orderParam}ending`
@@ -66,14 +84,21 @@ export default function useTable(id) {
                 return state.sortName === null ? {} : {[`order[${state.sortName}]`]: this.orderParam}
             },
             orderParam: state => (state.asc ? 'asc' : 'desc'),
-            url: state => `/api/${state.id}`
+            url: state => `/api/${state.apiBaseRoute}`
         },
         state: () => ({
+            apiBaseRoute: '',
+            apiTypedRoutes: null,
             asc: true,
+            company: '',
             createBody: {},
+            enableShow: false,
             id,
+            isCompanyFiltered: false,
+            readFilter: '',
             rows: [],
             search: {},
+            showRouteName: null,
             sortName: null,
             sorted: null
         })

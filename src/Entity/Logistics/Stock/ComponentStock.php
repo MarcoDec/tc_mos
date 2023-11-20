@@ -9,11 +9,14 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Doctrine\DBAL\Types\ItemType;
 use App\Entity\Embeddable\Hr\Employee\Roles;
+use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component;
 use App\Filter\RelationFilter;
 use App\Repository\Logistics\Stock\ComponentStockRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use App\Controller\Logistics\Stock\ItemComponentStockQuantiteSumController;
+
 
 /**
  * @template-extends Stock<Component>
@@ -45,6 +48,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'path' => '/component-stocks/receipt',
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
+            ], 
+            'filtreComponentTotalQuantite' => [
+                'controller' => ItemComponentStockQuantiteSumController::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer les stocks de composants et fait une somme des quantites',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par composant'
+                ],
+                'path' => '/component-stocks/filtreComponentTotalQuantite/{api}',
+                'read' => false,
+                'write' => false
             ],
             'post' => [
                 'openapi_context' => [
@@ -55,7 +76,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION, 'patch'],
         shortName: 'ComponentStock',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
@@ -77,12 +98,16 @@ class ComponentStock extends Stock {
     #[
         ApiProperty(description: 'Composant', example: '/api/components/1'),
         ORM\JoinColumn(name: 'component_id'),
-        ORM\ManyToOne(targetEntity: Component::class),
+        ORM\ManyToOne(targetEntity: Component::class, fetch: 'EAGER'),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
     protected $item;
 
     final protected function getType(): string {
         return ItemType::TYPE_COMPONENT;
+    }
+
+    public function getUnit(): ?Unit {
+        return $this->item?->getUnit();
     }
 }

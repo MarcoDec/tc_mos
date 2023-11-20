@@ -16,3 +16,10 @@
         <slot/>
     </div>
 </template>
+
+<style scoped>
+    div.tab-pane {
+        box-shadow: inset black 10px 10px 10px -10px;
+        padding: 5px 5px 5px 5px;
+    }
+</style>

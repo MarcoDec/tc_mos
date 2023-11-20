@@ -29,7 +29,9 @@ final class TransferDataPersister implements DataPersisterInterface {
         $data
             ->setQuantity($previous->getQuantity())
             ->substract(clone $transfered->getQuantity())
-            ->setWarehouse($previous->getWarehouse());
+            ->setWarehouse($previous->getWarehouse())
+            ->setLocation($previous->getLocation())
+        ;
         if ($data->getQuantity()->getValue() <= 0) {
             $this->em->remove($data);
         }

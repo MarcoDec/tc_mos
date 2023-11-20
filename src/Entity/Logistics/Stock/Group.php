@@ -30,7 +30,8 @@ use Symfony\Component\String\UnicodeString;
     shortName: 'StockGroup',
     attributes: [
         'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
-    ]
+    ],
+   paginationClientEnabled: true
 )]
 final class Group {
     private readonly string $id;

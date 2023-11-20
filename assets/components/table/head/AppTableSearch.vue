@@ -1,5 +1,6 @@
 <script setup>
     const props = defineProps({
+        disableAdd: {required: false, type: Boolean},
         fields: {required: true, type: Object},
         id: {required: true, type: String},
         send: {required: true, type: Function},
@@ -23,6 +24,7 @@
     <AppTableHeaderForm
         :id="id"
         v-model="store.search"
+        :disable-add="disableAdd"
         :can-reverse="fields.create"
         :fields="fields"
         :send="send"

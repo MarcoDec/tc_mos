@@ -1,4 +1,5 @@
 <script setup>
+    import AppInputGuesserJS from './AppInputGuesserJS'
     import {computed} from 'vue'
 
     const emit = defineEmits(['update:modelValue'])
@@ -11,6 +12,8 @@
     })
     const codeId = computed(() => `${props.id}-code`)
     const valueId = computed(() => `${props.id}-value`)
+    const valueName = computed(() => `${props.field.name}-value`)
+    const codeName = computed(() => `${props.field.name}-code`)
 
     function codeValue(code) {
         emit('update:modelValue', {...props.modelValue, code})
@@ -23,18 +26,20 @@
 
 <template>
     <div :id="id" class="input-group">
-        <AppInputGuesser
+        <AppInputGuesserJS
             :id="valueId"
-            :disabled="disabled"
+            :disabled="disabled || field.measure.value.disabled"
             :field="field.measure.value"
             :form="form"
+            :name="valueName"
             :model-value="modelValue?.value"
             @update:model-value="inputValue"/>
-        <AppInputGuesser
+        <AppInputGuesserJS
             :id="codeId"
-            :disabled="disabled"
+            :disabled="disabled || field.measure.code.disabled"
             :field="field.measure.code"
             :form="form"
+            :name="codeName"
             :model-value="modelValue?.code"
             @update:model-value="codeValue"/>
     </div>

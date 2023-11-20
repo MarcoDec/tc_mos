@@ -16,22 +16,26 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
     ApiFilter(filterClass: RelationFilter::class, properties: ['customer', 'product']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['product.code' => 'partial', 'product.name' => 'partial', 'product.price.code' => 'partial', 'product.price.value' => 'partial',
+        'product.index' => 'partial', 'product.forecastVolume.value' => 'partial', 'product.forecastVolume.code' => 'partial'
+    ]),
     ApiResource(
-        description: 'Produit',
+        description: 'Produit Client',
         collectionOperations: [
             'get' => [
                 'openapi_context' => [
-                    'description' => 'Récupère les produits',
-                    'summary' => 'Récupère les produits',
+                    'description' => 'Récupère les produits associés aux clients',
+                    'summary' => 'Récupère les produits associés aux clients',
                 ],
             ],
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un produit',
-                    'summary' => 'Créer un produit',
+                    'description' => 'Associe un produit à un client',
+                    'summary' => 'Associe un produit à un client',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_WRITER.'\')'
             ]
@@ -39,8 +43,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
         itemOperations: [
             'delete' => [
                 'openapi_context' => [
-                    'description' => 'Supprime un produit',
-                    'summary' => 'Supprime un produit',
+                    'description' => 'Supprime une association d\'un produit à un client',
+                    'summary' => 'Supprime une association d\'un produit à un client',
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_SELLING_ADMIN.'\')'
             ],
@@ -59,7 +63,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'openapi_definition_name' => 'CustomerProduct-read',
             'skip_null_values' => false
         ],
-        paginationEnabled: false
+        paginationEnabled: true
     ),
     ORM\Entity(repositoryClass: ProductRepository::class),
     ORM\Table(name: 'product_customer')
@@ -74,18 +78,18 @@ class Product extends Entity {
     private Collection $administeredBy;
 
     #[
-        ApiProperty(description: 'Client', readableLink: false, example: '/api/customers/8'),
+        ApiProperty(description: 'Client', readableLink: true),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:product-customer', 'write:product-customer'])
+        Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order', 'read:expedition', 'read:nomenclature'])
     ]
     private ?Customer $customer;
 
     #[
-        ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/45'),
+        ApiProperty(description: 'Produit', readableLink: true),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['read:product-customer', 'write:product-customer'])
+        Serializer\Groups(['read:product-customer', 'write:product-customer', 'read:manufacturing-order','read:nomenclature'])
     ]
     private ?TechnicalSheet $product;
 

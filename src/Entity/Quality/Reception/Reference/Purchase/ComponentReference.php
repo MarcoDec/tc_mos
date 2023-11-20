@@ -10,24 +10,34 @@ use App\Entity\Quality\Reception\Reference\Reference;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @template-extends Reference<Component>
  */
-#[
+#[   
+    ApiFilter(filterClass: SearchFilter::class, properties: ['sampleQuantity' => 'partial']),
     ApiResource(
-        description: 'Définition d\'un contrôle réception',
+        description: 'Définition d\'un contrôle réception pour un composant',
         collectionOperations: [
             'post' => [
                 'openapi_context' => [
-                    'description' => 'Créer un contrôle réception',
-                    'summary' => 'Créer un contrôle réception',
+                    'description' => 'Créer un contrôle réception pour un composant',
+                    'summary' => 'Créer un contrôle réception pour un composant',
                     'tags' => ['Reference']
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_QUALITY_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: [
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récupère un contrôle réception pour un composant',
+                    'summary' => 'Récupère un contrôle réception pour un composant',
+                    'tags' => ['Reference']
+                ],
+            ]],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_QUALITY_READER.'\')'
         ],

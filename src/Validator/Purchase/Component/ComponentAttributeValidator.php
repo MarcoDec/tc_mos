@@ -39,7 +39,7 @@ final class ComponentAttributeValidator extends ConstraintValidator {
                         ->addViolation();
                 }
                 break;
-            case AttributeType::TYPE_UNIT:
+            case AttributeType::TYPE_MEASURE:
                 if (empty($value->getMeasure()->getCode()) || empty($value->getMeasure()->getValue())) {
                     $this->context->buildViolation($constraint->message)
                         ->setParameter('{{ type }}', 'une mesure')

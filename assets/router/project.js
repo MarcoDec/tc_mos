@@ -1,3 +1,4 @@
+import AppShowGuiProduct from '../components/pages/project/product/AppShowGuiProduct.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
 import AppTreePageSuspense from '../components/pages/tree/AppTreePageSuspense.vue'
 import {readonly} from 'vue'
@@ -24,14 +25,15 @@ export default [
         name: 'project-operations',
         path: '/project-operations',
         props: {
+            apiBaseRoute: 'project-operations',
             fields: [
                 {label: 'Code', name: 'code'},
                 {label: 'Nom', name: 'name'},
                 {label: 'Auto', name: 'auto', sort: false, type: 'boolean'},
                 {label: 'Limite', name: 'boundary', sort: false},
-                {label: 'Cadence', name: 'cadence', search: false, sort: false, type: 'measure'},
+                {label: 'Cadence', measure: {code: 'U/jr', value: 'valeur'}, name: 'cadence', search: false, sort: false, type: 'measure'},
                 {label: 'Prix', name: 'price', search: false, sort: false, type: 'price'},
-                {label: 'Durée', name: 'time', search: false, sort: false, type: 'measure'},
+                {label: 'Durée', measure: {code: 'h', value: 'valeur'}, name: 'time', search: false, sort: false, type: 'measure'},
                 {label: 'Type', name: 'type', options: {base: 'operation-types'}, sortName: 'type.name', type: 'select'}
             ],
             icon: 'atom',
@@ -45,6 +47,7 @@ export default [
         name: 'operation-types',
         path: '/operation-types',
         props: {
+            apiBaseRoute: 'operation-types',
             brands: true,
             fields: [
                 {label: 'Nom', name: 'name'},
@@ -61,6 +64,33 @@ export default [
             icon: 'elementor',
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Types d\'opérations'
+        }
+    },
+    {
+        component: AppShowGuiProduct,
+        meta: {container: false, title: 'Produit — T-Concept GPAO'},
+        name: 'product',
+        path: '/product/:id_product'
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Paramètres production— T-Concept GPAO'},
+        name: 'project parameters',
+        path: '/project-parameters',
+        props: {
+            apiBaseRoute: 'parameters',
+            disableAdd: true,
+            disableRemove: true,
+            fields: [
+                {label: 'Nom', name: 'name', update: false},
+                {label: 'Description', name: 'description', type: 'textarea'},
+                {label: 'Type', name: 'kind', type: 'text', update: false},
+                {label: 'Valeur', name: 'value', type: 'text'}
+            ],
+            icon: 'gear',
+            readFilter: '?page=1&pagination=false&type=project',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Paramètres'
         }
     }
 ]

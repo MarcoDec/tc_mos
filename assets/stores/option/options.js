@@ -3,6 +3,8 @@ import {defineStore} from 'pinia'
 import useOption from './option'
 
 function sort(a, b) {
+    // console.log(a.text, b.text)
+    if (typeof a.text === 'undefined' || typeof b.text === 'undefined') return 0
     return a.text.localeCompare(b.text)
 }
 
@@ -17,17 +19,34 @@ export default function useOptions(base, valueProp = '@id') {
                 this.$dispose()
             },
             async fetch() {
-                if (!this.fetchable)
+                if (!this.fetchable || this.isLoaded)
                     return
                 const response = await api(this.url)
-                for (const option of response['hydra:member'])
+                this.resetItems()
+                for (const option of response['hydra:member']) {
                     this.options.push(useOption(option, this))
+                    this.items.push(option)
+                }
                 this.options.sort(sort)
+                this.isLoaded = true
                 this.fetchable = false
+            },
+            async fetchOp() {
+                if (this.isLoaded === false) {
+                    const response = await api(this.url)
+                    this.resetItems()
+                    for (const option of response['hydra:member']) {
+                        this.options.push(useOption(option, this))
+                        this.items.push(option)
+                    }
+                    this.isLoaded = true
+                    this.options.sort(sort)
+                }
             },
             resetItems() {
                 const options = [...this.options]
                 this.options = []
+                this.items = []
                 for (const option of options)
                     option.$dispose()
             }
@@ -54,8 +73,11 @@ export default function useOptions(base, valueProp = '@id') {
             label() {
                 return value => this.find(value)?.text ?? null
             },
-            url: state => `/api/${state.base}/options`
+            url: state => `/api/${state.base}/options`,
+            hasOptions(state){
+                return state.options.length > 0
+            }
         },
-        state: () => ({base, fetchable: false, id, options: [], valueProp})
+        state: () => ({base, fetchable: false, id, isLoaded: false, options: [], valueProp, items: []})
     })()
 }

@@ -4,6 +4,7 @@ namespace App\Entity\Logistics\Stock;
 
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Doctrine\DBAL\Types\Embeddable\Logistics\Order\ReceiptStateType;
@@ -14,7 +15,7 @@ use App\Entity\Entity;
 use App\Entity\Interfaces\BarCodeInterface;
 use App\Entity\Interfaces\MeasuredInterface;
 use App\Entity\Logistics\Order\Receipt;
-use App\Entity\Logistics\Warehouse;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Entity\Management\Unit;
 use App\Entity\Production\Manufacturing\Operation;
 use App\Entity\Purchase\Order\Item;
@@ -26,12 +27,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @template T of \App\Entity\Purchase\Component\Component|\App\Entity\Project\Product\Product
  */
 #[
-    ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['warehouse', 'item']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['batchNumber' => 'partial', 'location' => 'partial', 'quantity.value' => 'partial', 'quantity.code' => 'partial','jail' => 'partial', 'name' => 'partial', 'company']),
+
     ApiResource(
         description: 'Stock',
         collectionOperations: [
@@ -50,7 +54,13 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_ADMIN.'\')'
             ],
-            'get' => NO_ITEM_GET_OPERATION,
+            'get' => [
+                'openapi_context' => [
+                    'description' => 'Récu^père un stock',
+                    'summary' => 'Récupère un stock'
+                ],
+                'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
+            ],
             'patch' => [
                 'openapi_context' => [
                     'description' => 'Modifie un stock',
@@ -84,8 +94,8 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ],
                 'method' => 'POST',
                 'openapi_context' => [
-                    'description' => 'Transfert un stock',
-                    'summary' => 'Transfert un stock'
+                    'description' => 'Transfère un stock',
+                    'summary' => 'Transfère un stock'
                 ],
                 'path' => '/stocks/{id}/transfer',
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
@@ -129,14 +139,14 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
 
     /** @var null|T */
     #[
-        ApiProperty(description: 'Élément', example: '/api/components/1'),
+        ApiProperty(description: 'Élément', readableLink: false,  example: '/api/components/1'),
         Serializer\Groups(['read:stock'])
     ]
     protected $item;
 
     #[
         ApiProperty(description: 'Enfermé ?', example: false),
-        ORM\Column(options: ['default' => false]),
+        ORM\Column(type: 'boolean', options: ['default' => false]),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
     protected bool $jail = false;
@@ -144,7 +154,7 @@ abstract class Stock extends Entity implements BarCodeInterface, MeasuredInterfa
     #[
         ApiProperty(description: 'Localisation', example: 'Rayon B'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:stock', 'receipt:stock', 'write:stock'])
+        Serializer\Groups(['read:stock', 'receipt:stock', 'transfer:stock', 'write:stock'])
     ]
     protected ?string $location = null;
 

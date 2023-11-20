@@ -37,9 +37,9 @@ trait SocietyTrait {
     private string $forceVat = VatMessageForce::TYPE_FORCE_DEFAULT;
 
     #[
-        ApiProperty(description: 'Incoterms', required: false, example: '/api/incoterms/1'),
+        ApiProperty(description: 'Incoterms', readableLink: false, required: false, example: '/api/incoterms/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['create:society', 'read:society', 'write:society'])
+        Serializer\Groups(['read:society', 'create:society', 'write:society'])
     ]
     private ?Incoterms $incoterms = null;
 
@@ -82,7 +82,7 @@ trait SocietyTrait {
     private ?string $vat = null;
 
     #[
-        ApiProperty(description: 'Message TVA', required: false, example: '/api/vat-messages/1'),
+        ApiProperty(description: 'Message TVA', readableLink:false, required: false, example: '/api/vat-messages/1'),
         ORM\ManyToOne,
         Serializer\Groups(['read:society', 'write:society'])
     ]

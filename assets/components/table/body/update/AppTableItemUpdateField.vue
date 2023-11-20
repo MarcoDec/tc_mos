@@ -1,7 +1,10 @@
 <script setup>
+    import AppTableFormField from './../../AppTableFormField.vue'
+    import AppTableItemField from './../read/AppTableItemField.vue'
     defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
+        initialField: {required: true, type: Object},
         item: {required: true, type: Object},
         modelValue: {default: () => ({}), type: Object},
         row: {required: true, type: String},
@@ -18,6 +21,7 @@
     <AppTableFormField
         v-if="field.update"
         :field="field"
+        :initial-field="initialField"
         :form="form"
         :model-value="modelValue"
         :store="item"

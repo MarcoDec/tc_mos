@@ -4,7 +4,7 @@ namespace App\DataProvider\Logistics;
 
 use ApiPlatform\Core\DataProvider\CollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
-use App\Entity\Logistics\Warehouse;
+use App\Entity\Logistics\Warehouse\Warehouse;
 use App\Repository\Logistics\WarehouseRepository;
 
 final class WarehouseDataProvider implements CollectionDataProviderInterface, RestrictedDataProviderInterface {

@@ -2,7 +2,6 @@
     defineProps({id: {required: true, type: String}})
 
     const emit = defineEmits(['submit'])
-
     function submit(e) {
         e.preventDefault()
         emit('submit')

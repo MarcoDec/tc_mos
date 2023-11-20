@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: EnumFilter::class, properties: ['type']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['unit']),
     ApiFilter(filterClass: SearchFilter::class, properties: ['description' => 'partial', 'name' => 'partial']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'type', 'unit.code']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'description', 'type', 'unit.code']),
     ApiResource(
         description: 'Attribut',
         collectionOperations: [
@@ -76,7 +76,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             'openapi_definition_name' => 'Attribute-read',
             'skip_null_values' => false
         ],
-        order: ['name' => 'asc']
+        //order: ['name' => 'asc'],
+        paginationClientEnabled: true,
     ),
     ORM\Entity(repositoryClass: AttributeRepository::class)
 ]

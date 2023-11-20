@@ -19,14 +19,16 @@ use App\Entity\Management\Currency;
 use App\Entity\Management\InvoiceTimeDue;
 use App\Entity\Management\Society\Company\Company;
 use App\Entity\Management\Society\Society;
+use App\Entity\Selling\Customer\Attachment\CustomerAttachment;
 use App\Validator as AppAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'address.city' => 'partial', 'address.country' => 'partial', 'address.email' => 'partial', 'address.phoneNumber' => 'partial']),
     ApiResource(
         description: 'Client',
         collectionOperations: [
@@ -76,7 +78,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                         'name' => 'process',
                         'required' => true,
                         'schema' => [
-                            'enum' => ['accounting', 'admin', 'logistics', 'main'],
+                            'enum' => ['accounting', 'admin', 'logistics', 'main', 'quality'],
                             'type' => 'string'
                         ]
                     ]],
@@ -140,7 +142,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Adresse'),
         ORM\Embedded,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:main'])
     ]
     private Address $address;
 
@@ -148,21 +150,26 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Compagnies dirigeantes', readableLink: false, example: ['/api/companies/1']),
         ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'customers'),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private Collection $administeredBy;
 
     #[
+       ORM\OneToMany(mappedBy: 'customer',targetEntity: CustomerAttachment::class)
+       ]
+    private Collection $attachments;
+
+    #[
         ApiProperty(description: 'Temps de livraison', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private Measure $conveyanceDuration;
 
     #[
         ApiProperty(description: 'Cuivre'),
         ORM\Embedded,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:accounting'])
     ]
     private Copper $copper;
 
@@ -189,23 +196,29 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Acceptation des équivalents', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private bool $equivalentEnabled = false;
 
     #[
         ApiProperty(description: 'Factures par email', example: false),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private bool $invoiceByEmail = false;
 
     #[
         ApiProperty(description: 'Langue', example: 'Français'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:customer'])
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:main'])
     ]
     private ?string $language = null;
+    #[
+        ApiProperty(description: 'Portail logistique'),
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
+    ]
+    private WebPortal $logisticPortal;
 
     #[
         ApiProperty(description: 'Encours mensuels', openapiContext: ['$ref' => '#/components/schemas/Measure-price']),
@@ -217,13 +230,14 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Nom', required: true, example: 'Kaporingol'),
         ORM\Column,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
+        Serializer\Groups(['read:nomenclature', 'create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin', 'read:item'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Nombre de bons de livraison mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
+        Assert\LessThanOrEqual(value: 254),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:logistics'])
     ]
     private int $nbDeliveries = 10;
@@ -231,6 +245,7 @@ class Customer extends Entity {
     #[
         ApiProperty(description: 'Nombre de factures mensuel', example: 10),
         ORM\Column(type: 'tinyint', options: ['default' => 10, 'unsigned' => true]),
+        Assert\LessThanOrEqual(value: 254),
         Serializer\Groups(['read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private int $nbInvoices = 10;
@@ -250,18 +265,59 @@ class Customer extends Entity {
     private Measure $outstandingMax;
 
     #[
-        ApiProperty(description: 'Date de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/1'),
+        ApiProperty(description: 'Condition calendaire de réglement de la facture', readableLink: false, example: '/api/invoice-time-dues/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
         Serializer\Groups(['create:customer', 'read:customer', 'write:customer', 'write:customer:accounting'])
     ]
     private ?InvoiceTimeDue $paymentTerms = null;
+    #[
+        ApiProperty(description: 'Portail de gestion Qualité'),
+        ORM\Embedded,
+        Serializer\Groups(['read:customer', 'write:customer', 'write:customer:quality'])
+    ]
+    private WebPortal $qualityPortal;
 
+    /**
+     * @return Collection
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Collection $attachments
+     * @return Customer
+     */
+    public function setAttachments(Collection $attachments): Customer
+    {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
+    /**
+     * @return WebPortal
+     */
+    public function getQualityPortal(): WebPortal
+    {
+        return $this->qualityPortal;
+    }
+
+    /**
+     * @param WebPortal $qualityPortal
+     * @return Customer
+     */
+    public function setQualityPortal(WebPortal $qualityPortal): Customer
+    {
+        $this->qualityPortal = $qualityPortal;
+        return $this;
+    }
     #[
         ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/1'),
         ORM\JoinColumn(nullable: false),
         ORM\ManyToOne,
-        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection'])
+        Serializer\Groups(['create:customer', 'read:customer', 'read:customer:collection', 'write:customer', 'write:customer:admin'])
     ]
     private ?Society $society = null;
 
@@ -477,6 +533,19 @@ class Customer extends Entity {
 
     final public function setState(string $state): self {
         $this->embState->setState($state);
+        return $this;
+    }
+
+    
+    public function getLogisticPortal(): WebPortal
+    {
+        return $this->logisticPortal;
+    }
+
+    public function setLogisticPortal(WebPortal $logisticPortal): self
+    {
+        $this->logisticPortal = $logisticPortal;
+
         return $this;
     }
 }

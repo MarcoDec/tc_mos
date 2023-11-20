@@ -11,6 +11,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Production\Manufacturing\Operation as ManufacturingOperation;
 use App\Filter\RelationFilter;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -23,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: BooleanFilter::class, properties: ['auto']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name', 'type.name']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['type']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['boundary' => 'partial', 'code' => 'partial', 'name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['boundary' => 'partial', 'code' => 'partial', 'name' => 'partial', 'cadence.code' => 'partial', 'cadence.value' => 'partial']),
     ApiResource(
         description: 'Opération',
         collectionOperations: [
@@ -75,25 +77,25 @@ use Symfony\Component\Validator\Constraints as Assert;
     ORM\Entity,
     ORM\Table(name: 'project_operation')
 ]
-class Operation extends Entity {
+class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Automatique', example: true),
         ORM\Column(options: ['default' => false]),
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private bool $auto = false;
 
     #[
         ApiProperty(description: 'Limite', example: 'Lorem ipsum'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private ?string $boundary = null;
 
     #[
         ApiProperty(description: 'Cadence', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Measure $cadence;
 
@@ -101,7 +103,7 @@ class Operation extends Entity {
         ApiProperty(description: 'Code', example: 'SAZ'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private ?string $code = null;
 
@@ -109,7 +111,7 @@ class Operation extends Entity {
         ApiProperty(description: 'Nom', example: 'Nom'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private ?string $name = null;
 
@@ -127,14 +129,14 @@ class Operation extends Entity {
     #[
         ApiProperty(description: 'Durée', openapiContext: ['$ref' => '#/components/schemas/Measure-duration']),
         ORM\Embedded,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private Measure $time;
 
     #[
         ApiProperty(description: 'Type', readableLink: false, required: false, example: '/api/operation-types/1'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:project-operation', 'write:project-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
     ]
     private ?Type $type = null;
 
@@ -244,5 +246,15 @@ class Operation extends Entity {
     final public function setType(?Type $type): self {
         $this->type = $type;
         return $this;
+    }
+
+    public function getMeasures(): array
+    {
+        return [$this->cadence, $this->time, $this->price];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return null;
     }
 }

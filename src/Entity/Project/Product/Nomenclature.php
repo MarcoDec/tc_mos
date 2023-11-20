@@ -10,15 +10,31 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Embeddable\Measure;
 use App\Entity\Entity;
+use App\Entity\Interfaces\MeasuredInterface;
+use App\Entity\Management\Unit;
 use App\Entity\Purchase\Component\Component;
+use App\Entity\Purchase\Component\Equivalent\ComponentEquivalent;
 use App\Filter\RelationFilter;
+use App\Validator\Project\Product\NomenclatureUnitConsistency;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
 
 #[
     ApiFilter(filterClass: BooleanFilter::class, properties: ['mandated']),
-    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'product']),
-    ApiFilter(filterClass: OrderFilter::class, properties: ['component.id', 'product.code']),
+    ApiFilter(filterClass: RelationFilter::class, properties: ['component', 'product', 'subProduct', 'equivalent']),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['component.id', 'product.code', 'equivalent.code']),
+    ApiFilter(filterClass: SearchFilter::class, properties: [
+        'product.product.code' => 'partial',
+        'product.product.name' => 'partial',
+        'product.product.embState.state' => 'partial',
+        'product.customer.name' => 'partial',
+        'product.product.forecastVolume.value' => 'partial',
+        'product.product.forecastVolume.code' => 'partial',
+        'product.product.internalIndex' => 'partial',
+        'equivalent.code' => 'partial',
+    ]),
     ApiResource(
         description: 'Nomenclature',
         collectionOperations: [
@@ -66,13 +82,14 @@ use Symfony\Component\Serializer\Annotation as Serializer;
             'skip_null_values' => false
         ]
     ),
-    ORM\Entity
+    ORM\Entity,
+    NomenclatureUnitConsistency
 ]
-class Nomenclature extends Entity {
+class Nomenclature extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Composant', readableLink: false, example: '/api/components/1'),
-        ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\JoinColumn(nullable: true),
+        ORM\ManyToOne(targetEntity: Component::class),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
     private ?Component $component;
@@ -87,11 +104,26 @@ class Nomenclature extends Entity {
     #[
         ApiProperty(description: 'Produit', readableLink: false, example: '/api/products/1'),
         ORM\JoinColumn(nullable: false),
-        ORM\ManyToOne,
+        ORM\ManyToOne(targetEntity: Product::class),
         Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
     ]
     private ?Product $product;
 
+    #[
+        ApiProperty(description: 'Sous-Produit', readableLink: false, example: '/api/products/1'),
+        ORM\JoinColumn(nullable: true),
+        ORM\ManyToOne(targetEntity: Product::class),
+        Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
+    ]
+    private ?Product $subProduct;
+
+    #[
+        ApiProperty(description: 'Equivalent', readableLink: false, example: '/api/component-equivalents/1'),
+        ORM\JoinColumn(nullable: true),
+        ORM\ManyToOne(targetEntity: ComponentEquivalent::class),
+        Serializer\Groups(['read:nomenclature', 'write:nomenclature'])
+        ]
+    private ?ComponentEquivalent $equivalent;
     #[
         ApiProperty(description: 'Quantité', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded(Measure::class),
@@ -101,6 +133,8 @@ class Nomenclature extends Entity {
 
     public function __construct() {
         $this->quantity = new Measure();
+        $this->component = null;
+        $this->product = null;
     }
 
     final public function getComponent(): ?Component {
@@ -138,4 +172,44 @@ class Nomenclature extends Entity {
         $this->quantity = $quantity;
         return $this;
     }
+
+    public function getMeasures(): array
+    {
+        return [$this->quantity];
+    }
+
+    public function getUnit(): ?Unit
+    {
+        return $this->component ? $this->component->getUnit() : ($this->product ? $this->product->getUnit() : null);
+    }
+
+    /**
+     * @return Product|null
+     */
+    public function getSubProduct(): ?Product
+    {
+        return $this->subProduct;
+    }
+
+    /**
+     * @param Product|null $subProduct
+     * @return Nomenclature
+     */
+    public function setSubProduct(?Product $subProduct): Nomenclature
+    {
+        $this->subProduct = $subProduct;
+        return $this;
+    }
+
+    public function getEquivalent(): ?ComponentEquivalent
+    {
+        return $this->equivalent;
+    }
+
+    public function setEquivalent(?ComponentEquivalent $equivalent): Nomenclature
+    {
+        $this->equivalent = $equivalent;
+        return $this;
+    }
+
 }

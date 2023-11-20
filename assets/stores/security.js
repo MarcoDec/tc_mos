@@ -9,11 +9,13 @@ function defineUserStore() {
         const id = ref(0)
         const name = ref(null)
         const roles = ref([])
-
+        const company = ref(null)
         const isHrAdmin = computed(() => roles.value.includes('ROLE_HR_ADMIN'))
         const isHrWriter = computed(() => isHrAdmin.value || roles.value.includes('ROLE_HR_WRITER'))
         const isLogisticsAdmin = computed(() => roles.value.includes('ROLE_LOGISTICS_ADMIN'))
         const isLogisticsWriter = computed(() => isLogisticsAdmin.value || roles.value.includes('ROLE_LOGISTICS_WRITER'))
+        const isMaintenanceAdmin = computed(() => roles.value.includes('ROLE_MAINTENANCE_ADMIN'))
+        const isMaintenanceWriter = computed(() => isMaintenanceAdmin.value || roles.value.includes('ROLE_MAINTENANCE_WRITER'))
         const isManagementAdmin = computed(() => roles.value.includes('ROLE_MANAGEMENT_ADMIN'))
         const isManagementWriter = computed(() => isManagementAdmin.value || roles.value.includes('ROLE_MANAGEMENT_WRITER'))
         const isProductionAdmin = computed(() => roles.value.includes('ROLE_PRODUCTION_ADMIN'))
@@ -24,6 +26,8 @@ function defineUserStore() {
         const isPurchaseWriter = computed(() => isPurchaseAdmin.value || roles.value.includes('ROLE_PURCHASE_WRITER'))
         const isQualityAdmin = computed(() => roles.value.includes('ROLE_QUALITY_ADMIN'))
         const isQualityWriter = computed(() => isQualityAdmin.value || roles.value.includes('ROLE_QUALITY_WRITER'))
+        const isSellingAdmin = computed(() => roles.value.includes('ROLE_SELLING_ADMIN'))
+        const isSellingWriter = computed(() => isSellingAdmin.value || roles.value.includes('ROLE_SELLING_WRITER'))
 
         function clear() {
             store.$reset()
@@ -34,11 +38,13 @@ function defineUserStore() {
             id.value = response.id
             name.value = response.name
             roles.value = response.roles
+            company.value = response.company
             cookies.set('token', response.token)
         }
 
         return {
             clear,
+            company,
             async connect(data) {
                 try {
                     save(await api('/api/login', 'POST', data))
@@ -68,6 +74,9 @@ function defineUserStore() {
             isLogisticsAdmin,
             isLogisticsReader: computed(() => isLogisticsWriter.value || roles.value.includes('ROLE_LOGISTICS_READER')),
             isLogisticsWriter,
+            isMaintenanceAdmin,
+            isMaintenanceReader: computed(() => isMaintenanceWriter.value || roles.value.includes('ROLE_MAINTENANCE_READER')),
+            isMaintenanceWriter,
             isManagementAdmin,
             isManagementReader: computed(() => isManagementWriter.value || roles.value.includes('ROLE_MANAGEMENT_READER')),
             isManagementWriter,
@@ -83,6 +92,9 @@ function defineUserStore() {
             isQualityAdmin,
             isQualityReader: computed(() => isQualityWriter.value || roles.value.includes('ROLE_QUALITY_READER')),
             isQualityWriter,
+            isSellingAdmin,
+            isSellingReader: computed(() => isSellingWriter.value || roles.value.includes('ROLE_SELLING_READER')),
+            isSellingWriter,
             async logout() {
                 try {
                     await api('/api/logout', 'POST')

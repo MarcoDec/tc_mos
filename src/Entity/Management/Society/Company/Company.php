@@ -5,6 +5,7 @@ namespace App\Entity\Management\Society\Company;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use App\Collection;
 use App\Entity\Embeddable\Hr\Employee\Roles;
 use App\Entity\Entity;
@@ -12,7 +13,6 @@ use App\Entity\Management\Currency;
 use App\Entity\Management\Society\Society;
 use App\Entity\Project\Product\Product;
 use App\Entity\Purchase\Component\Component;
-use App\Entity\Purchase\Supplier\Supplier;
 use App\Entity\Quality\Reception\Check;
 use App\Entity\Quality\Reception\Reference\Management\CompanyReference;
 use App\Entity\Selling\Customer\Customer;
@@ -23,8 +23,16 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\Management\Company\CompanyPatchController;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'society.id' => 'exact', 'deliveryTime' => 'partial',
+        'deliveryTimeOpenDays' => 'partial', 'engineHourRate' => 'partial', 'generalMargin' => 'partial', 'handlingHourRate' => 'partial',
+        'managementFees' => 'partial', 'numberOfTeamPerDay' => 'partial', 'workTimetable' => 'partial', 'currency.id' => 'exact'
+    ]),
+    ApiFilter(filterClass: OrderFilter::class, properties: ['name', 'workTimetable']),
     ApiResource(
         description: 'Compagnie',
         collectionOperations: [
@@ -72,6 +80,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ],
             'patch' => [
+                'controller' => CompanyPatchController::class,
+                'method' => 'PATCH',
                 'openapi_context' => [
                     'description' => 'Modifie une compagnie',
                     'parameters' => [[
@@ -86,6 +96,8 @@ use Symfony\Component\Validator\Constraints as Assert;
                     'summary' => 'Modifie une compagnie'
                 ],
                 'path' => '/companies/{id}/{process}',
+                'read' => false,
+                'write' => true,
                 'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_WRITER.'\')',
                 'validation_groups' => AppAssert\ProcessGroupsGenerator::class
             ]
@@ -94,11 +106,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'security' => 'is_granted(\''.Roles::ROLE_MANAGEMENT_READER.'\')'
         ],
         denormalizationContext: [
-            'groups' => ['write:company'],
+            'groups' => ['write:address', 'write:company'],
             'openapi_definition_name' => 'Company-write'
         ],
         normalizationContext: [
-            'groups' => ['read:company', 'read:id'],
+            'groups' => ['read:address', 'read:company', 'read:id'],
             'openapi_definition_name' => 'Company-read',
             'skip_null_values' => false
         ]
@@ -107,9 +119,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 ]
 class Company extends Entity {
     #[
-        ApiProperty(description: 'Monnaie', readableLink: false, example: '/api/currencies/2'),
-        Assert\NotBlank,
-        Serializer\Groups(['read:company', 'write:company'])
+        ApiProperty(description: 'Monnaie', readableLink: true, example: '/api/currencies/2'),
+        ORM\ManyToOne(targetEntity: Currency::class, fetch: "EAGER"),
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
     ]
     private ?Currency $currency;
 
@@ -121,14 +133,14 @@ class Company extends Entity {
         ApiProperty(description: 'Temps de livraison', example: 7),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:logistics'])
+        Serializer\Groups(['read:company', 'write:company', 'read:company:collection', 'write:company:logistics'])
     ]
     private int $deliveryTime = 0;
 
     #[
         ApiProperty(description: 'Est-ce un temps de livraison en jours ouvrés ?', example: true),
         ORM\Column(options: ['default' => true]),
-        Serializer\Groups(['read:company', 'write:company', 'write:company:logistics'])
+        Serializer\Groups(['read:company', 'write:company', 'read:company:collection', 'write:company:logistics'])
     ]
     private bool $deliveryTimeOpenDays = true;
 
@@ -136,7 +148,7 @@ class Company extends Entity {
         ApiProperty(description: 'Taux horaire machine', example: 27),
         ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
     ]
     private float $engineHourRate = 0;
 
@@ -144,7 +156,7 @@ class Company extends Entity {
         ApiProperty(description: 'Marge générale', example: 2),
         ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
     ]
     private float $generalMargin = 0;
 
@@ -152,7 +164,7 @@ class Company extends Entity {
         ApiProperty(description: 'Taux horaire manutention', example: 15),
         ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:selling'])
     ]
     private float $handlingHourRate = 0;
 
@@ -160,7 +172,7 @@ class Company extends Entity {
         ApiProperty(description: 'IPv4', example: '255.255.255.254'),
         ORM\Column(length: 15, nullable: true),
         Assert\Ip(version: Assert\Ip::V4),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'write:company:admin'])
     ]
     private ?string $ip;
 
@@ -168,7 +180,7 @@ class Company extends Entity {
         ApiProperty(description: 'Frais de gestion', example: 15),
         ORM\Column(options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company', 'write:company:selling'])
+        Serializer\Groups(['read:company', 'write:company', 'read:company:collection', 'write:company:selling'])
     ]
     private float $managementFees = 0;
 
@@ -176,14 +188,14 @@ class Company extends Entity {
         ApiProperty(description: 'Nom', example: 'Kaporingol'),
         Assert\NotBlank,
         ORM\Column,
-        Serializer\Groups(['read:company', 'read:company:collection', 'read:printer', 'write:company', 'write:company:admin'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'read:printer', 'read:zone', 'write:company', 'write:company:admin'])
     ]
     private ?string $name = null;
 
     #[
         ApiProperty(description: 'Notes', example: 'Texte libre'),
         ORM\Column(type: 'text', nullable: true),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company' , 'write:company:main'])
     ]
     private ?string $notes;
 
@@ -191,7 +203,7 @@ class Company extends Entity {
         ApiProperty(description: 'Nombre de travailleurs dans l\'équipe par jour', example: 4),
         ORM\Column(type: 'tinyint', options: ['default' => 0, 'unsigned' => true]),
         Assert\PositiveOrZero,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'write:company', 'read:company:collection', 'write:company:main'])
     ]
     private int $numberOfTeamPerDay = 0;
 
@@ -204,20 +216,16 @@ class Company extends Entity {
     private DoctrineCollection $references;
 
     #[
-        ApiProperty(description: 'Société', readableLink: false, example: '/api/societies/2'),
+        ApiProperty(description: 'Société'),
         ORM\ManyToOne,
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:admin', 'write:company:main'])
     ]
     private ?Society $society = null;
-
-    /** @var DoctrineCollection<int, Supplier> */
-    #[ORM\ManyToMany(targetEntity: Supplier::class, mappedBy: 'administeredBy')]
-    private DoctrineCollection $suppliers;
 
     #[
         ApiProperty(description: 'Calendrier de travail', example: '2 jours'),
         ORM\Column(nullable: true),
-        Serializer\Groups(['read:company', 'write:company'])
+        Serializer\Groups(['read:company', 'read:company:collection', 'write:company', 'write:company:main'])
     ]
     private ?string $workTimetable;
 
@@ -225,7 +233,6 @@ class Company extends Entity {
         $this->customers = new ArrayCollection();
         $this->products = new ArrayCollection();
         $this->references = new ArrayCollection();
-        $this->suppliers = new ArrayCollection();
     }
 
     final public function addCustomer(Customer $customer): self {
@@ -248,14 +255,6 @@ class Company extends Entity {
         if (!$this->references->contains($reference)) {
             $this->references->add($reference);
             $reference->addItem($this);
-        }
-        return $this;
-    }
-
-    final public function addSupplier(Supplier $supplier): self {
-        if (!$this->suppliers->contains($supplier)) {
-            $this->suppliers->add($supplier);
-            $supplier->addAdministeredBy($this);
         }
         return $this;
     }
@@ -337,13 +336,6 @@ class Company extends Entity {
         return $this->society;
     }
 
-    /**
-     * @return DoctrineCollection<int, Supplier>
-     */
-    final public function getSuppliers(): DoctrineCollection {
-        return $this->suppliers;
-    }
-
     #[Serializer\Groups(['read:company:option'])]
     final public function getText(): ?string {
         return $this->getName();
@@ -377,14 +369,6 @@ class Company extends Entity {
         if ($this->references->contains($reference)) {
             $this->references->removeElement($reference);
             $reference->removeItem($this);
-        }
-        return $this;
-    }
-
-    final public function removeSupplier(Supplier $supplier): self {
-        if ($this->suppliers->contains($supplier)) {
-            $this->suppliers->removeElement($supplier);
-            $supplier->removeAdministeredBy($this);
         }
         return $this;
     }

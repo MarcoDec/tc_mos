@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 ]
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get', 'patch', 'delete'],
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_PRODUCTION_WRITER.'\')'
         ],
@@ -49,7 +49,7 @@ class Workstation extends Engine {
     #[
         ApiProperty(description: 'Groupe', readableLink: false, example: '/api/workstation-groups/1'),
         ORM\ManyToOne(targetEntity: Group::class),
-        Serializer\Groups(['read:engine', 'write:engine'])
+        Serializer\Groups(['read:engine', 'write:engine','read:manufacturing-operation'])
     ]
     protected $group;
 }

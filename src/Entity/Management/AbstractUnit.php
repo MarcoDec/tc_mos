@@ -39,7 +39,12 @@ abstract class AbstractUnit extends Entity {
     protected ?string $name = null;
 
     /** @var null|static */
-    protected $parent;
+   #[
+        ApiProperty(description: "unité parente", example: '/api/units/1'),
+        ORM\ManyToOne(targetEntity: Unit::class, fetch: 'EAGER', inversedBy: 'children'),
+        Serializer\Groups(['read:unit'])
+   ]
+    protected ?AbstractUnit $parent;
 
     #[
         ApiProperty(description: 'Base', required: true, example: 1),
@@ -137,7 +142,9 @@ abstract class AbstractUnit extends Entity {
      * @param null|static $unit
      */
     final public function has(?self $unit): bool {
-        return $unit !== null && $this->getFamily()->contains(static fn (self $member): bool => $member->getId() === $unit->getId());
+       $unitFamily = $this->getFamily();
+       $test = $unit !== null && ($unit->getCode() == $this->getCode()||$unitFamily->contains(static fn (self $member): bool => $member->getId() === $unit->getId()));
+       return $test;
     }
 
     /**

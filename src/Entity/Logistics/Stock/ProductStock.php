@@ -55,7 +55,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                 'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_WRITER.'\')'
             ]
         ],
-        itemOperations: ['get' => NO_ITEM_GET_OPERATION],
+        itemOperations: ['get' => NO_ITEM_GET_OPERATION, 'patch'],
         shortName: 'ProductStock',
         attributes: [
             'security' => 'is_granted(\''.Roles::ROLE_LOGISTICS_READER.'\')'
@@ -77,7 +77,7 @@ class ProductStock extends Stock {
     #[
         ApiProperty(description: 'Produit', example: '/api/products/1'),
         ORM\JoinColumn(name: 'product_id'),
-        ORM\ManyToOne(targetEntity: Product::class),
+        ORM\ManyToOne(targetEntity: Product::class, fetch: 'EAGER'),
         Serializer\Groups(['read:stock', 'write:stock'])
     ]
     protected $item;

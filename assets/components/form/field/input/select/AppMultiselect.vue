@@ -1,8 +1,8 @@
 <script setup>
     import Multiselect from '@vueform/multiselect'
-    import {readonly} from 'vue'
+    import {readonly, onErrorCaptured, ref} from 'vue'
 
-    defineProps({
+    const props = defineProps({
         disabled: {type: Boolean},
         field: {required: true, type: Object},
         form: {required: true, type: String},
@@ -10,12 +10,24 @@
         mode: {default: 'tags', type: String},
         modelValue: {default: null, type: [Array, String]}
     })
-    const emit = defineEmits(['update:modelValue'])
+    const localModelValue = ref(props.modelValue)
+    if (typeof localModelValue.value === 'string') {
+        localModelValue.value = [localModelValue.value]
+    }
+    const emit = defineEmits(['update:modelValue', 'searchChange'])
     const css = readonly({search: 'form-control form-control-sm'})
-
     function input(value) {
         emit('update:modelValue', value)
     }
+    function updateSearch(data) {
+        if (data !== '') {
+            emit('searchChange', data)
+        }
+    }
+    onErrorCaptured((err, compInst, errorInfo) => {
+        console.log(props, err, compInst, errorInfo)
+        return false
+    })
 </script>
 
 <template>
@@ -25,16 +37,18 @@
         :data-mode="mode"
         :disabled="disabled"
         :form="form"
+        :max="field.max ?? -1"
         :mode="mode"
-        :model-value="modelValue"
-        :options="field.optionsList"
-        :value-prop="field.options.valueProp"
+        :model-value="localModelValue"
+        :options="field.options && field.options.options "
+        :value-prop="field.options && field.options.valueProp "
         class="text-dark"
         label="text"
-        searchable
+        :searchable="true"
+        @search-change="updateSearch"
         @update:model-value="input">
         <template #afterlist>
-            <input :name="field.name" :value="modelValue" type="hidden"/>
+            <input :name="field.name" :value="localModelValue" type="hidden"/>
         </template>
     </Multiselect>
 </template>

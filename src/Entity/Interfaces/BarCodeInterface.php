@@ -21,6 +21,9 @@ interface BarCodeInterface {
     /** @var string Préfix du code barre des stocks */
     final public const STOCK_BAR_CODE_PREFIX = '05';
 
+    /** @var string Préfixe du code barre des équivalents */
+    final public const EQUIVALENT_BAR_CODE_TABLE_NUMBER = '07';
+
     /**
      * Retourne le numéro de la table à mettre en préfixe du code barre.
      *

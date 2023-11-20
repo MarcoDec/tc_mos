@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EventListener;
+namespace App\EventListener\Project\Product;
 
 use App\Entity\Family;
 use App\Filesystem\FileManager;
