@@ -124,13 +124,13 @@
                     </div>
                     <div class="row">
                         <div class="col synth text-info">
-                            <div><Fa :brands="false" icon="cart-shopping"/> Total Achats: {{ currentBalanceSheet.totalExpense.value }} {{ currentBalanceSheet.totalExpense.code }}</div>
+                            <div><Fa :brands="false" icon="cart-shopping"/> Total Achats: {{ new Intl.NumberFormat().format(currentBalanceSheet.totalExpense.value) }} {{ currentBalanceSheet.totalExpense.code }}</div>
                         </div>
                         <div class="col synth text-info">
-                            <div><Fa :brands="false" icon="hand-holding-dollar"/>Total Ventes: {{ currentBalanceSheet.totalIncome.value }} {{ currentBalanceSheet.totalIncome.code }}</div>
+                            <div><Fa :brands="false" icon="hand-holding-dollar"/>Total Ventes: {{ new Intl.NumberFormat().format(currentBalanceSheet.totalIncome.value) }} {{ currentBalanceSheet.totalIncome.code }}</div>
                         </div>
                         <div class="col synth text-info">
-                            <div><Fa :brands="false" icon="scale-balanced"/>Solde: {{ currentBalanceSheet.totalIncome.value - currentBalanceSheet.totalExpense.value }} {{ currentBalanceSheet.totalExpense.code }}</div>
+                            <div><Fa :brands="false" icon="scale-balanced"/>Solde: {{ new Intl.NumberFormat().format(currentBalanceSheet.totalIncome.value - currentBalanceSheet.totalExpense.value) }} {{ currentBalanceSheet.totalExpense.code }}</div>
                         </div>
                     </div>
                 </div>
