@@ -1,15 +1,22 @@
 {
-  "isProd": false,
-  "viteServer": {
-    "origin": "http://0.0.0.0:8001",
-    "base": "/build/"
-  },
+  "isProd": true,
+  "viteServer": false,
   "entryPoints": {
     "index": {
       "js": [
-        "http://0.0.0.0:8001/build/assets/index.js"
+        "/build/index.6c30ebd2.js"
+      ],
+      "css": [
+        "/build/index.39655ba7.css"
+      ],
+      "preload": [
+        "/build/fontawesome.96129b36.js"
       ]
     }
   },
-  "assets": null
+  "assets": {
+    "public/img/TConcept_Logo.png": "/build/TConcept_Logo.c546cfef.png",
+    "assets/components/pages/logistic/warehouse/AppWarehouseList.css": "/build/AppWarehouseList.7bce639f.css",
+    "assets/index.css": "/build/index.39655ba7.css"
+  }
 }
