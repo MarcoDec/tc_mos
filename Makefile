@@ -48,5 +48,9 @@ clear:
 	docker exec tconcept_gpao_php zsh -c '\
 		php -d memory_limit=-1 /var/www/html/TConcept-GPAO/bin/console cache:clear \
 	'
+clean-logs:
+	docker exec tconcept_gpao_php zsh -c '\
+		rm -rf /var/www/html/TConcept-GPAO/var/log/* \
+	'
 
 .PHONY: all build up down rebuild
