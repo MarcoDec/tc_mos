@@ -10,11 +10,14 @@ use App\Entity\Quality\Reception\Reference\Reference;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @template-extends Reference<Component>
  */
-#[
+#[   
+    ApiFilter(filterClass: SearchFilter::class, properties: ['sampleQuantity' => 'partial']),
     ApiResource(
         description: 'Définition d\'un contrôle réception pour un composant',
         collectionOperations: [

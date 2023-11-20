@@ -1,7 +1,7 @@
 <script setup>
     import AppBtnJS from './AppBtnJS'
     import AppFormJS from './form/AppFormJS'
-    import {ref} from 'vue'
+    import {onBeforeMount, ref} from 'vue'
 
     const props = defineProps({
         componentAttribute: {required: true, type: Object},
@@ -12,7 +12,10 @@
     const emit = defineEmits(['cancel', 'update', 'update:modelValue'])
     const updated = ref(false)
     const disable = ref(true)
-    const localData = ref(props.componentAttribute)
+    const localData = ref({})
+    onBeforeMount(() => {
+        localData.value = props.componentAttribute
+    })
     function update() {
         updated.value = true
         disable.value = false

@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(filterClass: BooleanFilter::class, properties: ['auto']),
     ApiFilter(filterClass: OrderFilter::class, properties: ['code', 'name', 'type.name']),
     ApiFilter(filterClass: RelationFilter::class, properties: ['type']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['boundary' => 'partial', 'code' => 'partial', 'name' => 'partial']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['boundary' => 'partial', 'code' => 'partial', 'name' => 'partial', 'cadence.code' => 'partial', 'cadence.value' => 'partial']),
     ApiResource(
         description: 'Opération',
         collectionOperations: [
@@ -95,7 +95,7 @@ class Operation extends Entity implements MeasuredInterface {
     #[
         ApiProperty(description: 'Cadence', openapiContext: ['$ref' => '#/components/schemas/Measure-unitary']),
         ORM\Embedded,
-        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation'])
+        Serializer\Groups(['read:project-operation', 'write:project-operation', 'read:manufacturing-operation', 'read:operation-employee:collection'])
     ]
     private Measure $cadence;
 

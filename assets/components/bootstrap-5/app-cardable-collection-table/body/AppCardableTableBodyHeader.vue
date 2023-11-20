@@ -1,28 +1,33 @@
 <script setup>
+    import {computed, ref} from 'vue'
     import clone from 'clone'
-    import {computed} from 'vue'
 
-    const emit = defineEmits(['cancelSearch', 'search'])
+    const emit = defineEmits(['cancelSearch', 'search', 'update:model-value'])
     const props = defineProps({
         fields: {required: true, type: Array},
         form: {required: true, type: String},
+        // eslint-disable-next-line vue/no-unused-properties
         modelValue: {default: null, type: [Array, Boolean, Number, String, Object]}
     })
-    let inputValues = {}
+    //console.log('props.fields', props.fields)
+    const inputValues = ref([])
     const tabFields = computed(() => props.fields.map(element => {
         const cloned = clone(element)
-
+        /*
         if (cloned.type === 'boolean'){
             cloned.type = 'grpbutton'
-        }
+        }*/
         return cloned
     }))
     function search() {
-        emit('search', inputValues)
+        emit('search', inputValues.value)
     }
     async function cancelSearch() {
-        inputValues = {}
-        emit('cancelSearch', inputValues)
+        inputValues.value = []
+        emit('cancelSearch', inputValues.value)
+    }
+    function onUpdateModelValue(event, fieldName) {
+        emit('update:model-value', {field: fieldName, event})
     }
 </script>
 
@@ -41,7 +46,12 @@
         </td>
 
         <td v-for="field in tabFields" :key="field.name">
-            <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" :update:model-value="modelValue"/>
+            <template v-if="field.filter !== false">
+                <AppInputGuesser v-if="!field.searchDisabled" :id="field.name" v-model="inputValues[field.name]" :form="form" :field="field" @update:model-value="onUpdateModelValue($event, field.name)"/>
+            </template>
+            <template v-else>
+                {{ inputValues[field.name] }}
+            </template>
         </td>
     </tr>
 </template>

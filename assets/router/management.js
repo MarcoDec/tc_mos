@@ -1,7 +1,10 @@
-import AppSocity from '../components/pages/management/society/AppSocity.vue'
+import AppCompanyList from '../components/pages/management/company/AppCompanyList.vue'
+import AppBalanceSheetShow from '../components/pages/management/company/balance_sheet/AppBalanceSheetShow.vue'
+import AppSocietyList from '../components/pages/management/society/bottom/AppSocietyList.vue'
 import AppTablePageSuspense from '../components/pages/table/AppTablePageSuspense.vue'
-import MonthCalendar from '../components/pages/management/company/agenda/agendaMonth/MonthCalendar.vue'
+import MonthCalendar from '../components/pages/management/agenda/agendaMonth/MonthCalendar.vue'
 import {readonly} from 'vue'
+import AppShowGuiCompany from '../components/pages/management/company/AppShowGuiCompany.vue'
 
 export default [
     {
@@ -118,13 +121,23 @@ export default [
         path: '/agenda'
     },
     {
-        component: AppSocity,
+        component: AppSocietyList,
         meta: {title: 'Listes des sociétés  — T-Concept GPAO'},
         name: 'society-list',
         path: '/society-list',
         props: {
             icon: 'city',
             title: 'Société'
+        }
+    },
+    {
+        component: AppCompanyList,
+        meta: {title: 'Listes des compagnies  — T-Concept GPAO'},
+        name: 'company-list',
+        path: '/company-list',
+        props: {
+            icon: 'city',
+            title: 'Compagnies'
         }
     },
     {
@@ -143,5 +156,43 @@ export default [
             sort: readonly({label: 'Nom', name: 'name'}),
             title: 'Définition des équipes'
         }
+    },
+    {
+        component: AppShowGuiCompany,
+        meta: {container: false, title: 'Entreprise — T-Concept GPAO'},
+        name: 'company',
+        path: '/company/:id_company',
+        props: {
+            icon: 'city',
+            title: 'Compagnie'
+        }
+    },
+    {
+        component: AppTablePageSuspense,
+        meta: {title: 'Suivi des Dépenses et Ventes — T-Concept GPAO'},
+        name: 'suivi_depenses_ventes',
+        path: '/suivi-depenses-ventes',
+        props: {
+            apiBaseRoute: 'balance-sheets',
+            fields: [
+                {label: 'Mois', name: 'month', type: 'number', step: 1, sort: true},
+                {label: 'Année', name: 'year', type: 'number', step: 1, sort: true},
+                {label: 'Company', name: 'company', options: {base: 'companies'}, sort: false, /* sortName: 'company.name',  */type: 'select'},
+                {label: 'Devise', name: 'currency', options: {base: 'currencies'}, sort: false, /* sortName: 'currency.name', */ type: 'select'},
+                {create: false, label: 'Dépenses totales', name: 'totalExpense', sort: false, type: 'price', update: false},
+                {create: false, label: 'Ventes totales', name: 'totalIncome', sort: false, type: 'price', update: false}
+            ],
+            enableShow: true,
+            showRouteName: 'suivi_depenses_ventes_show',
+            icon: 'gauge-high',
+            sort: readonly({label: 'Nom', name: 'name'}),
+            title: 'Suivi des Dépenses et Ventes'
+        }
+    },
+    {
+        component: AppBalanceSheetShow,
+        meta: {title: 'Détails des Dépenses et Ventes — T-Concept GPAO'},
+        name: 'suivi_depenses_ventes_show',
+        path: '/suivi-depenses-ventes/show/:id'
     }
 ]

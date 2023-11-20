@@ -98,7 +98,8 @@
     "symfony/workflow": "6.1.*",
     "symfony/yaml": "6.1.*",
     "voku/html-min": "^4.5.0",
-    "ext-ssh2": "*"
+    "ext-ssh2": "*",
+    "ext-http": "*"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.12.0",

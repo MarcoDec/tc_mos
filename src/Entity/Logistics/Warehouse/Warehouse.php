@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiFilter(filterClass: OrderFilter::class, properties: ['name']),
-    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company', 'destination']),
+    ApiFilter(filterClass: SearchFilter::class, properties: ['name' => 'partial', 'company' => 'exact', 'destination']),
     ApiFilter(filterClass: SetFilter::class, properties: ['families' => 'partial']),
     ApiResource(
         description: 'Entrepôt',
@@ -101,8 +101,9 @@ class Warehouse extends Entity {
     ]
     private ?Company $company = null;
 
-    #[ApiProperty(description: 'Destination', readableLink: false, example: '/api/destination/1'),
-    ORM\ManyToOne,
+    #[
+        ApiProperty(description: 'Destination', readableLink: false, example: '/api/companies/1'),
+        ORM\ManyToOne,
     Serializer\Groups(['write:warehouse', 'read:warehouse'])
     ]
     private ?Company $destination = null;

@@ -62,9 +62,10 @@
             <slot/>
         </td>
         <AppTableFormField
-            v-for="field in fields.fields"
+            v-for="(field, index) in fields.fields"
             :key="field.name"
             :field="field"
+            :initial-field="fields.initialFields[index]"
             :form="form"
             :label="lowerLabel"
             :mode="mode"

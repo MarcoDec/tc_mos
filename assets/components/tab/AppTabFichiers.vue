@@ -25,7 +25,6 @@
     //const fetchElementAttachment = useComponentAttachmentStore()
     //const fetchElementAttachment = props.elementAttachmentStore
     //const useFetchElementStore = useComponentListStore()
-    const useFetchElementStore = props.elementStore()
     const elementAttachments = computed(() =>
         props.elementAttachmentStore.elementAttachments.map(attachment => ({
             category: attachment.category,
@@ -56,7 +55,7 @@
         return arr
     }
     async function initializeData() {
-        currentElementData.value = useFetchElementStore.component
+        currentElementData.value = props.elementStore.component
         const folderList = parametersStore.parameter.value.split(',').map(x => ({
             text: x,
             value: x

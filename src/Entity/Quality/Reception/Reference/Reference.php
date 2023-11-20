@@ -21,9 +21,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\Quality\Reception\ItemReferenceComponentController;
+
 
 /**
  * @template I of \App\Entity\Management\Society\Company\Company|\App\Entity\Purchase\Component\Component|\App\Entity\Purchase\Component\Family|\App\Entity\Purchase\Supplier\Supplier|\App\Entity\Project\Product\Family|\App\Entity\Project\Product\Product
+ *     ApiFilter(filterClass: SearchFilter::class, properties: ['items.id' => 'partial', 'sampleQuantity' => 'partial', 'kind' => 'partial', 'name' => 'partial', 'minValue.code' => 'partial', 'minValue.value' => 'partial', 'maxValue.code' => 'partial', 'maxValue.value' => 'partial']),
  */
 #[
     ApiResource(
@@ -34,6 +39,24 @@ use Symfony\Component\Serializer\Annotation as Serializer;
                     'description' => 'Récupère les contrôles réceptions',
                     'summary' => 'Récupère les contrôles réceptions'
                 ]
+            ],    
+            'filtreComponent' => [
+                'controller' => ItemReferenceComponentController::class,
+                'method' => 'GET',
+                'openapi_context' => [
+                    'description' => 'Filtrer par composant les références',
+                    'parameters' => [[
+                        'in' => 'path',
+                        'name' => 'api',
+                        'schema' => [
+                            'type' => 'integer',
+                        ]
+                    ]],
+                    'summary' => 'Filtrer par composant les références'
+                ],
+                'path' => '/references/componentFilter/{api}',
+                'read' => false,
+                'write' => false
             ]
         ],
         itemOperations: [
