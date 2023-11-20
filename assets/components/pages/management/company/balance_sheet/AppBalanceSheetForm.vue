@@ -1,22 +1,22 @@
 <script setup>
-    import {ref} from 'vue'
+    import {ref, toRefs} from 'vue'
     import AppSuspense from '../../../../AppSuspense.vue'
     import Fa from '../../../../Fa'
     import AppFormCardable from '../../../../form-cardable/AppFormCardable'
 
-    const props = defineProps({
+    const {fields, formData, icon, id, title, violations} = toRefs(defineProps({
         fields: {required: true, type: Array, default: () => []},
         formData: {required: false, type: Object, default: () => ({})},
         icon: {required: false, type: String, default: 'square-plus'},
         id: {required: true, type: String},
         title: {required: false, type: String, default: 'Ajouter un élément'},
         violations: {required: false, type: Array, default: () => []}
-    })
+    }))
     const emits = defineEmits(['input', 'update:modelValue', 'save', 'cancel'])
-    const formData = ref(props.formData)
-    const fieldsForm = ref(props.fields)
+    const localFormData = ref(formData.value)
+    const fieldsForm = ref(fields.value)
     const isPopupVisible = ref(false)
-    const violations = ref(props.violations)
+    const localViolations = ref(violations.value)
     function cancel(){
         emits('cancel')
     }
@@ -42,13 +42,13 @@
             </h4>
         </div>
         <AppSuspense>
-            <AppFormCardable :id="`form_${id}`" :model-value="formData" :fields="fieldsForm" label-cols @update:model-value="input"/>
+            <AppFormCardable :id="`form_${id}`" :model-value="localFormData" :fields="fieldsForm" label-cols @update:model-value="input"/>
         </AppSuspense>
         <div v-if="isPopupVisible" class="violations">
             <slot name="violations">
                 <div class="alert alert-danger" role="alert">
                     <ul>
-                        <li v-for="violation in violations" :key="violation">
+                        <li v-for="violation in localViolations" :key="violation">
                             {{ violation.message }}
                         </li>
                     </ul>

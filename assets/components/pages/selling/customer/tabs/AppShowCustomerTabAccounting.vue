@@ -1,15 +1,15 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, ref, toRefs} from 'vue'
     import generateCustomer from '../../../../../stores/selling/customers/customer'
     import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
     import {useInvoiceTimeDuesStore} from '../../../../../stores/management/invoiceTimeDues'
     import {useSocietyStore} from '../../../../../stores/management/societies/societies'
     import {useVatMessagesStore} from '../../../../../stores/management/vatMessages'
 
-    const props = defineProps({
+    const {dataCustomers, dataSociety} = toRefs(defineProps({
         dataCustomers: {required: true, type: Object},
         dataSociety: {required: true, type: Object}
-    })
+    }))
     const fetchCustomerStore = useCustomerStore()
     const fetchSocietyStore = useSocietyStore()
     const fetchVatMessageStore = useVatMessagesStore()
@@ -152,28 +152,28 @@
     ]
     const localData = ref({})
     localData.value = {
-        accountingAccount: props.dataSociety.accountingAccount,
-        forceVat: props.dataSociety.forceVat,
+        accountingAccount: dataSociety.value.accountingAccount,
+        forceVat: dataSociety.value.forceVat,
         // accountingPortal: {
         //     password: props.dataCustomers.accountingPortal.password,
         //     url: props.dataCustomers.accountingPortal.url,
         //     username: props.dataCustomers.accountingPortal.username
         // },
-        invoiceByEmail: props.dataCustomers.invoiceByEmail,
+        invoiceByEmail: dataCustomers.value.invoiceByEmail,
         invoiceMin: {
             code: 'EUR',
-            value: props.dataSociety.invoiceMin.value
+            value: dataSociety.value.invoiceMin.value
         },
-        nbInvoices: props.dataCustomers.nbInvoices,
-        password: props.dataCustomers.accountingPortal.password,
-        paymentTerms: props.dataCustomers.paymentTerms,
-        url: props.dataCustomers.accountingPortal.url,
-        username: props.dataCustomers.accountingPortal.username,
-        vat: props.dataSociety.vat,
-        vatMessage: props.dataSociety.vatMessage
+        nbInvoices: dataCustomers.value.nbInvoices,
+        password: dataCustomers.value.accountingPortal.password,
+        paymentTerms: dataCustomers.value.paymentTerms,
+        url: dataCustomers.value.accountingPortal.url,
+        username: dataCustomers.value.accountingPortal.username,
+        vat: dataSociety.value.vat,
+        vatMessage: dataSociety.value.vatMessage
     }
     async function updateComp() {
-        const dataSociety = {
+        const localDataSociety = {
             accountingAccount: localData.value.accountingAccount,
             forceVat: localData.value.forceVat,
             invoiceMin: {
@@ -194,12 +194,12 @@
             paymentTerms: localData.value.paymentTerms
         }
 
-        const item = generateCustomer(props.dataCustomers)
+        const item = generateCustomer(dataCustomers.value)
         await item.updateAccounting(dataCustomer)
 
-        await fetchSocietyStore.update(dataSociety, props.dataSociety.id)
-        await fetchSocietyStore.fetchById(props.dataSociety.id)
-        await fetchCustomerStore.fetchOne(props.dataCustomers.id)
+        await fetchSocietyStore.update(localDataSociety, dataSociety.value.id)
+        await fetchSocietyStore.fetchById(dataSociety.value.id)
+        await fetchCustomerStore.fetchOne(dataCustomers.value.id)
     }
     function updateLocalData(value) {
         localData.value = value

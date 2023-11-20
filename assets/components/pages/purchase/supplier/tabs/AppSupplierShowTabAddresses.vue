@@ -1,13 +1,11 @@
 <script setup>
-    //import api from '../../../../api'
-    //import {computed} from 'vue'
     import generateSupplier from '../../../../../stores/purchase/supplier/supplier'
-    //import useOptions from '../../../../stores/option/options'
     import {useSuppliersStore} from '../../../../../stores/purchase/supplier/suppliers'
+    import {toRefs} from 'vue'
 
-    const props = defineProps({
+    const {optionsCountries} = toRefs(defineProps({
         optionsCountries: {required: true, type: Array}
-    })
+    }))
     const fetchSuppliersStore = useSuppliersStore()
     const Adressefields = [
         {label: 'Email', name: 'getEmail', type: 'text'},
@@ -20,9 +18,9 @@
             name: 'getCountry',
             options: {
                 label: value =>
-                    props.optionsCountries.find(option => option.type === value)?.text
+                    optionsCountries.value.find(option => option.type === value)?.text
                     ?? null,
-                options: props.optionsCountries
+                options: optionsCountries.value
             },
             type: 'select'
         },

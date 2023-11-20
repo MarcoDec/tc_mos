@@ -1,11 +1,11 @@
 <script setup>
     import {cloneDeep, get, set} from 'lodash'
-    import {computed, onMounted, onUnmounted, readonly, ref, shallowRef} from 'vue'
+    import {computed, onMounted, onUnmounted, readonly, ref, shallowRef, toRefs} from 'vue'
     import {Tooltip} from 'bootstrap'
 
     const el = ref()
     const emit = defineEmits(['update:modelValue'])
-    const props = defineProps({
+    const {field, form, initialField, label, mode, modelValue, store, violations} = toRefs(defineProps({
         field: {required: true, type: Object},
         form: {required: true, type: String},
         initialField: {required: true, type: Object},
@@ -14,23 +14,23 @@
         modelValue: {default: () => ({}), type: Object},
         store: {required: true, type: Object},
         violations: {default: () => [], type: Array}
-    })
+    }))
     const tooltip = shallowRef(null)
     const tooltipIgnore = readonly(['boolean', 'color', 'multiselect', 'select'])
-    const hasContent = computed(() => props.mode === null || props.field[props.mode])
-    const hasTooltip = computed(() => !tooltipIgnore.includes(props.field.type))
-    const tip = computed(() => `<i class="enter-key-icon"></i> pour ${props.label}`)
-    const inputId = computed(() => `${props.form}-${props.field.name}`)
+    const hasContent = computed(() => mode.value === null || field.value[mode.value])
+    const hasTooltip = computed(() => !tooltipIgnore.includes(field.value.type))
+    const tip = computed(() => `<i class="enter-key-icon"></i> pour ${label.value}`)
+    const inputId = computed(() => `${form.value}-${field.value.name}`)
     const value = computed(() => {
-        if (props.field.type === 'select') {
+        if (field.value.type === 'select') {
             //console.log(props.field.name, props.modelValue[props.field.name])
-            const res = props.field.options.options.find(e => {
+            const res = field.value.options.options.find(e => {
                 const iri = e.value ? e.value : e['@id']
-                const searchedIri = typeof get(props.modelValue, props.field.name) === 'object' ? get(props.modelValue, props.field.name)['@id'] : get(props.modelValue, props.field.name)
+                const searchedIri = typeof get(modelValue.value, field.value.name) === 'object' ? get(modelValue.value, field.value.name)['@id'] : get(modelValue.value, field.value.name)
                 return iri === searchedIri
             })
             //console.log('res', res)
-            if (typeof res === 'undefined') return get(props.modelValue, props.field.name)
+            if (typeof res === 'undefined') return get(modelValue.value, field.value.name)
             if (typeof res.value === 'undefined') {
                 //console.log('res.value not defined', res['@id'])
                 return res['@id']
@@ -38,15 +38,15 @@
             //console.log('res.value defined', res.value)
             return res.value
         }
-        return get(props.modelValue, props.field.name)
+        return get(modelValue.value, field.value.name)
     })
-    const violation = computed(() => props.violations.find(v => v.propertyPath === props.field.name)?.message)
+    const violation = computed(() => violations.value.find(v => v.propertyPath === field.value.name)?.message)
     const hasViolation = computed(() => Boolean(violation.value))
     const css = computed(() => ({'is-invalid': hasViolation.value}))
 
-    const localField = ref(props.field)
+    const localField = ref(field.value)
     if (props.initialField.type === 'multiselect-fetch') {
-        localField.value = {...localField.value, ...props.initialField}
+        localField.value = {...localField.value, ...initialField.value}
         console.log('localField', localField.value)
     }
     function dispose() {
@@ -57,7 +57,7 @@
     }
 
     function input(v) {
-        const cloned = set(cloneDeep(props.modelValue), props.field.name, v)
+        const cloned = set(cloneDeep(modelValue.value), field.value.name, v)
         emit('update:modelValue', cloned)
     }
 

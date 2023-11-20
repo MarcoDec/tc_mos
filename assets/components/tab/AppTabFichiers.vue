@@ -1,17 +1,17 @@
 <script setup>
-    import {computed, ref} from 'vue'
+    import {computed, ref, toRefs} from 'vue'
     import AppCardShow from '../AppCardShow.vue'
     import MyTree from '../MyTree.vue'
     import {useParametersStore} from '../../stores/parameters/parameters'
 
-    const props = defineProps({
+    const {attachmentElementLabel, elementApiUrl, elementAttachmentStore, elementId, elementParameterName, elementStore} = toRefs(defineProps({
         attachmentElementLabel: {required: true, type: String},
         elementApiUrl: {required: true, type: String},
         elementAttachmentStore: {required: true, type: Object},
         elementId: {required: true, type: Number},
         elementParameterName: {required: true, type: String},
         elementStore: {required: true, type: Object}
-    })
+    }))
     //region Déclaration des variables
     const currentElementData = ref({})
     const isError = ref(false)
@@ -22,11 +22,8 @@
     const foldersId = ref([])
     const files = ref([])
     const parametersStore = useParametersStore()
-    //const fetchElementAttachment = useComponentAttachmentStore()
-    //const fetchElementAttachment = props.elementAttachmentStore
-    //const useFetchElementStore = useComponentListStore()
     const elementAttachments = computed(() =>
-        props.elementAttachmentStore.elementAttachments.map(attachment => ({
+        elementAttachmentStore.value.elementAttachments.map(attachment => ({
             category: attachment.category,
             color: '#43abd7',
             icon: 'file-contract',
@@ -55,12 +52,12 @@
         return arr
     }
     async function initializeData() {
-        currentElementData.value = props.elementStore.component
+        currentElementData.value = elementStore.value.component
         const folderList = parametersStore.parameter.value.split(',').map(x => ({
             text: x,
             value: x
         }))
-        await props.elementAttachmentStore.fetchByElement(props.elementId)
+        await elementAttachmentStore.value.fetchByElement(elementId.value)
         fichiersFields.value = [
             {label: 'Catégorie', name: 'category', options: {options: folderList}, type: 'select'},
             {label: 'Fichier', multiple: true, name: 'file', type: 'file'}
@@ -128,8 +125,8 @@
                 category: formData.get('category'),
                 file: document.getElementById('addFichiers-file').files[x]
             }
-            data[props.attachmentElementLabel] = props.elementApiUrl
-            results.push(props.elementAttachmentStore.ajout(data))
+            data[attachmentElementLabel.value] = elementApiUrl.value
+            results.push(elementAttachmentStore.value.ajout(data))
         }
         isError.value = false
         Promise.allSettled(await results)
@@ -151,7 +148,7 @@
     //endregion
     //region Chargement des données / Variables
     //await parametersStore.getByName('COMPONENT_ATTACHMENT_CATEGORIES')
-    await parametersStore.getByName(props.elementParameterName)
+    await parametersStore.getByName(elementParameterName.value)
     await initializeData()
     //endregion
 </script>

@@ -1,27 +1,27 @@
 <script setup>
-    import {computed, onUnmounted, ref} from 'vue'
+    import {computed, onUnmounted, ref, toRefs} from 'vue'
     import generateCustomer from '../../../../../stores/selling/customers/customer'
     import {useCustomerStore} from '../../../../../stores/selling/customers/customers'
     import useOptions from '../../../../../stores/option/options'
     import {useSocietyStore} from '../../../../../stores/management/societies/societies'
 
-    const props = defineProps({
+    const {dataCustomers} = toRefs(defineProps({
         dataCustomers: {required: true, type: Object}
-    })
+    }))
     const localData = ref({})
     const societyId = ref(0)
     const fetchCustomerStore = useCustomerStore()
     const fecthCompanyOptions = useOptions('companies')
     const fetchSocietyStore = useSocietyStore()
     await fecthCompanyOptions.fetchOp()
-    societyId.value = props.dataCustomers.society.split('/')[3]
+    societyId.value = dataCustomers.value.society.split('/')[3]
     await fetchSocietyStore.fetchById(societyId.value)
     localData.value = {
-        administeredBy: props.dataCustomers.administeredBy,
+        administeredBy: dataCustomers.value.administeredBy,
         ar: fetchSocietyStore.society.ar,
-        equivalentEnabled: props.dataCustomers.equivalentEnabled,
-        language: props.dataCustomers.language,
-        notes: props.dataCustomers.notes,
+        equivalentEnabled: dataCustomers.value.equivalentEnabled,
+        language: dataCustomers.value.language,
+        notes: dataCustomers.value.notes,
         siren: fetchSocietyStore.society.siren
     }
     onUnmounted(() => {
@@ -62,12 +62,12 @@
             ar: localData.value.ar,
             siren: localData.value.siren
         }
-        const item = generateCustomer(props.dataCustomers)
-        await item.updateMain(props.dataCustomers.id, data)
+        const item = generateCustomer(dataCustomers.value)
+        await item.updateMain(dataCustomers.value.id, data)
 
         await fetchSocietyStore.update(dataSociety, societyId.value)
         await fetchSocietyStore.fetchById(societyId.value)
-        await fetchCustomerStore.fetchOne(props.dataCustomers.id)
+        await fetchCustomerStore.fetchOne(dataCustomers.value.id)
     }
     //const val = ref(Number(fetchCustomerStore.customer.administeredBy))
     async function input(value) {

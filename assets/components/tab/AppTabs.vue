@@ -1,18 +1,18 @@
 <script setup>
-    import {computed, onUnmounted, ref, onMounted} from 'vue'
+    import {computed, onUnmounted, ref, onMounted, toRefs} from 'vue'
     import AppTabLink from './AppTabLink.vue'
     import useTabs from '../../stores/tab/tabs'
 
-    const props = defineProps({
+    const {id, iconMode, formatNav} = toRefs(defineProps({
         id: {required: true, type: String},
         iconMode: {required: false, type: Boolean},
         formatNav: {required: false, type: String, default: 'flex'}
-    })
-    const iconMode = ref(props.iconMode)
-    const css = computed(() => ({/*'icon-mode': iconMode.value,*/ 'flex-row': props.formatNav !== 'flex'}))
-    const cssLi = computed(() => ({'nav-item': props.formatNav === 'flex', 'nav-link-horizontal': props.formatNav !== 'flex'}))
-    const icon = computed(() => `${props.id}-icon`)
-    const tabs = useTabs(props.id)
+    }))
+    const localIconMode = ref(iconMode.value)
+    const css = computed(() => ({/*'icon-mode': iconMode.value,*/ 'flex-row': formatNav.value !== 'flex'}))
+    const cssLi = computed(() => ({'nav-item': formatNav.value === 'flex', 'nav-link-horizontal': formatNav.value !== 'flex'}))
+    const icon = computed(() => `${id.value}-icon`)
+    const tabs = useTabs(id.value)
 
     onUnmounted(() => {
         tabs.dispose()
@@ -31,10 +31,10 @@
                     <Fa icon="icons"/>
                 </label>
                 <div class="form-check form-switch">
-                    <input :id="icon" v-model="iconMode" class="form-check-input" type="checkbox"/>
+                    <input :id="icon" v-model="localIconMode" class="form-check-input" type="checkbox"/>
                 </div>
             </li>
-            <AppTabLink v-for="tab in tabs.tabs" :key="tab.id" :icon-mode="iconMode" :tab="tab" :format-nav="formatNav"/>
+            <AppTabLink v-for="tab in tabs.tabs" :key="tab.id" :icon-mode="localIconMode" :tab="tab" :format-nav="formatNav"/>
         </ul>
         <div class="bg-white tab-content">
             <slot/>

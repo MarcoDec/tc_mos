@@ -1,33 +1,34 @@
 <script setup>
-    const props = defineProps({
+    import {toRefs} from 'vue'
+    const {fields, machine, tree} = toRefs(defineProps({
         fields: {required: true, type: Object},
         machine: {required: true, type: Object},
         tree: {required: true, type: Object}
-    })
-    props.tree.selected.initUpdate(props.fields)
+    }))
+    tree.value.selected.initUpdate(fields.value)
 
     function blur() {
-        props.tree.blur()
+        tree.value.blur()
     }
 
     async function remove(data) {
-        props.machine.send('submit')
+        machine.value.send('submit')
         try {
-            await props.tree.selected.remove(data)
-            props.machine.send('success')
+            await tree.value.selected.remove(data)
+            machine.value.send('success')
         } catch (violations) {
-            props.machine.send('fail', {violations})
+            machine.value.send('fail', {violations})
         }
     }
 
     async function submit(data) {
-        props.machine.send('submit')
+        machine.value.send('submit')
         try {
-            await props.tree.selected.update(data)
-            props.tree.selected.initUpdate(props.fields)
-            props.machine.send('success')
+            await tree.value.selected.update(data)
+            tree.value.selected.initUpdate(fields.value)
+            machine.value.send('success')
         } catch (violations) {
-            props.machine.send('fail', {violations})
+            machine.value.send('fail', {violations})
         }
     }
 </script>
@@ -36,7 +37,7 @@
     <AppTreeForm
         :fields="fields"
         :machine="machine"
-        :model-value="props.tree.selected.updated"
+        :model-value="tree.selected.updated"
         submit-label="Modifier"
         @submit="submit">
         <template #default="{disabled, label, type}">
